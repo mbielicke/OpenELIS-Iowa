@@ -27,12 +27,12 @@ package org.openelis.modules.order1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DEFAULT;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -49,9 +49,7 @@ import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.Warning;
@@ -61,6 +59,7 @@ import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -87,7 +86,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 public class InternalOrderScreenUI extends Screen {
@@ -96,53 +94,60 @@ public class InternalOrderScreenUI extends Screen {
     interface InternalOrderUiBinder extends UiBinder<Widget, InternalOrderScreenUI> {
     };
 
-    public static final InternalOrderUiBinder uiBinder = GWT.create(InternalOrderUiBinder.class);
+    public static final InternalOrderUiBinder      uiBinder   = GWT.create(InternalOrderUiBinder.class);
 
-    protected OrderManager1                   manager;
+    protected OrderManager1                        manager;
 
-    protected ModulePermission                userPermission;
+    protected ModulePermission                     userPermission;
 
-    protected ScreenNavigator<IdNameVO>       nav;
-
-    @UiField
-    protected ButtonGroup                     atozButtons;
+    protected ScreenNavigator<IdNameVO>            nav;
 
     @UiField
-    protected Table                           atozTable;
+    protected ButtonGroup                          atozButtons;
 
     @UiField
-    protected Button                          query, previous, next, add, update, commit, abort,
-                    optionsButton, atozNext, atozPrev;
+    protected Table                                atozTable;
 
     @UiField
-    protected Menu                            optionsMenu;
+    protected Button                               query, previous, next, add, update, commit,
+                    abort, optionsButton, atozNext, atozPrev;
 
     @UiField
-    protected MenuItem                        duplicate, orderHistory, orderItemHistory;
+    protected Menu                                 optionsMenu;
 
     @UiField
-    protected TextBox<Integer>                id, neededDays;
+    protected MenuItem                             duplicate, orderHistory, orderItemHistory;
 
     @UiField
-    protected TextBox<String>                 requestedBy;
+    protected TextBox<Integer>                     id, neededDays;
 
     @UiField
-    protected Calendar                        orderedDate;
+    protected TextBox<String>                      requestedBy;
 
     @UiField
-    protected Dropdown<Integer>               status, costCenter;
+    protected Calendar                             orderedDate;
 
     @UiField
-    protected TabLayoutPanel                  tabPanel;
+    protected Dropdown<Integer>                    status, costCenter;
+
+    @UiField
+    protected TabLayoutPanel                       tabPanel;
 
     @UiField(provided = true)
-    protected InternalOrderItemTabUI          itemTab;
+    protected InternalOrderItemTabUI               itemTab;
 
     @UiField(provided = true)
-    protected ShippingNotesTabUI              shippingNotesTab;
+    protected ShippingNotesTabUI                   shippingNotesTab;
 
     @UiField(provided = true)
-    protected InternalOrderFillTabUI          fillTab;
+    protected InternalOrderFillTabUI               fillTab;
+
+    protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
+
+    protected AsyncCallbackUI<OrderManager1>       addCall, fetchForUpdateCall, updateCall,
+                    fetchByIdCall, unlockCall, duplicateCall;
+
+    protected OrderManager1.Load                   elements[] = {OrderManager1.Load.ITEMS};
 
     public InternalOrderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -464,45 +469,49 @@ public class InternalOrderScreenUI extends Screen {
             public void executeQuery(final Query query) {
                 QueryData field;
 
-                window.setBusy(Messages.get().gen_querying());
-                /*
-                 * this screen should only query for internal orders
-                 */
-                field = new QueryData();
-                field.setKey(OrderMeta.getType());
-                field.setQuery(Constants.order().INTERNAL);
-                field.setType(QueryData.Type.STRING);
-                query.setFields(field);
+                setBusy(Messages.get().gen_querying());
 
-                query.setRowsPerPage(25);
-                try {
-                    OrderService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                        public void onSuccess(ArrayList<IdNameVO> result) {
+                if (queryCall == null) {
+                    queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
+                        public void success(ArrayList<IdNameVO> result) {
+                            clearStatus();
                             setQueryResult(result);
                         }
 
-                        public void onFailure(Throwable error) {
+                        public void notFound() {
                             setQueryResult(null);
-                            if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().gen_noRecordsFound());
-                                setState(DEFAULT);
-                            } else if (error instanceof LastPageException) {
-                                window.setError(Messages.get().gen_noMoreRecordInDir());
-                            } else {
-                                Window.alert("Error: Internal Order call query failed; " +
-                                             error.getMessage());
-                                window.setError(Messages.get().gen_queryFailed());
-                            }
+                            setState(DEFAULT);
+                            setDone(Messages.get().gen_noRecordsFound());
                         }
-                    });
-                } catch (Exception e) {
-                    Window.alert("Error: Internal Order call query failed; " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+
+                        public void lastPage() {
+                            setQueryResult(null);
+                            setError(Messages.get().gen_noMoreRecordInDir());
+                        }
+
+                        public void failure(Throwable error) {
+                            setQueryResult(null);
+                            Window.alert("Error: Internal Order call query failed; " +
+                                         error.getMessage());
+                            setError(Messages.get().gen_queryFailed());
+                        }
+                    };
                 }
+
+                /*
+                 * this screen should only query for internal orders
+                 */
+                field = new QueryData(OrderMeta.getType(),
+                                      QueryData.Type.STRING,
+                                      Constants.order().INTERNAL);
+                query.setFields(field);
+                query.setRowsPerPage(25);
+                OrderService1.get().query(query, queryCall);
             }
 
             public boolean fetch(IdNameVO entry) {
-                return fetchById( (entry == null) ? null : entry.getId());
+                fetchById( (entry == null) ? null : entry.getId());
+                return true;
             }
 
             public ArrayList<Item<Integer>> getModel() {
@@ -555,7 +564,7 @@ public class InternalOrderScreenUI extends Screen {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    window.setError(Messages.get().gen_mustCommitOrAbort());
+                    setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
                     /*
                      * make sure that all detached tabs are closed when the main
@@ -603,7 +612,7 @@ public class InternalOrderScreenUI extends Screen {
         setState(QUERY);
         fireDataChange();
         id.setFocus(true);
-        window.setDone(Messages.get().gen_enterFieldsToQuery());
+        setDone(Messages.get().gen_enterFieldsToQuery());
     }
 
     @UiHandler("previous")
@@ -618,50 +627,71 @@ public class InternalOrderScreenUI extends Screen {
 
     @UiHandler("add")
     protected void add(ClickEvent event) {
-        try {
-            manager = OrderService1.get().getInstance(Constants.order().INTERNAL);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
-            return;
+        if (addCall == null) {
+            addCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                    neededDays.setFocus(true);
+                    setDone(Messages.get().gen_enterInformationPressCommit());
+                }
+
+                public void failure(Throwable error) {
+                    Window.alert(error.getMessage());
+                    logger.log(Level.SEVERE, error.getMessage(), error);
+                    clearStatus();
+                }
+            };
         }
-        setData();
-        setState(ADD);
-        fireDataChange();
-        neededDays.setFocus(true);
-        window.setDone(Messages.get().gen_enterInformationPressCommit());
+
+        OrderService1.get().getInstance(Constants.order().INTERNAL, addCall);
     }
 
     @UiHandler("update")
     protected void update(ClickEvent event) {
-        window.setBusy(Messages.get().gen_lockForUpdate());
-        try {
-            manager = OrderService1.get().fetchForUpdate(manager.getOrder().getId(),
-                                                         OrderManager1.Load.ITEMS);
-            if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder()
-                                                                            .getStatusId())) {
-                Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
-                manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                     OrderManager1.Load.ITEMS);
-                setData();
-                setState(DISPLAY);
-                fireDataChange();
-                window.clearStatus();
-                return;
+        setBusy(Messages.get().lockForUpdate());
 
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-            window.clearStatus();
-            return;
+        if (fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder()
+                                                                                    .getStatusId())) {
+                        Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
+                        try {
+                            manager = OrderService1.get().unlock(manager.getOrder().getId(),
+                                                                 OrderManager1.Load.ITEMS);
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
+                                                                           : "null", e);
+                        }
+                        setData();
+                        setState(DISPLAY);
+                        fireDataChange();
+                    } else {
+                        setData();
+                        setState(UPDATE);
+                        fireDataChange();
+                        neededDays.setFocus(true);
+                    }
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                }
+
+                public void finish() {
+                    clearStatus();
+                }
+            };
         }
-        setData();
-        setState(UPDATE);
-        fireDataChange();
-        neededDays.setFocus(true);
-        window.clearStatus();
+
+        OrderService1.get()
+                     .fetchForUpdate(manager.getOrder().getId(), elements, fetchForUpdateCall);
     }
 
     @UiHandler("commit")
@@ -678,7 +708,7 @@ public class InternalOrderScreenUI extends Screen {
         validation = validate();
 
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().gen_correctErrors());
+            setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -699,7 +729,7 @@ public class InternalOrderScreenUI extends Screen {
     protected void abort(ClickEvent event) {
         finishEditing();
         clearErrors();
-        window.setBusy(Messages.get().gen_cancelChanges());
+        setBusy(Messages.get().gen_cancelChanges());
 
         if (isState(QUERY)) {
             try {
@@ -707,44 +737,59 @@ public class InternalOrderScreenUI extends Screen {
                 setData();
                 setState(DEFAULT);
                 fireDataChange();
-                window.setDone(Messages.get().gen_queryAborted());
+                setDone(Messages.get().gen_queryAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
-                window.clearStatus();
+                clearStatus();
             }
         } else if (isState(ADD)) {
             manager = null;
             setData();
             setState(DEFAULT);
             fireDataChange();
-            window.setDone(Messages.get().gen_addAborted());
+            setDone(Messages.get().gen_addAborted());
         } else if (isState(UPDATE)) {
-            try {
-                manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                     OrderManager1.Load.ITEMS);
-                setData();
-                setState(DISPLAY);
-                fireDataChange();
-                window.setDone(Messages.get().gen_updateAborted());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-                window.clearStatus();
+            if (unlockCall == null) {
+                unlockCall = new AsyncCallbackUI<OrderManager1>() {
+                    public void success(OrderManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(DISPLAY);
+                        fireDataChange();
+                        setDone(Messages.get().gen_updateAborted());
+                    }
+
+                    public void failure(Throwable e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                    }
+                };
             }
+
+            OrderService1.get().unlock(manager.getOrder().getId(), elements, unlockCall);
         }
     }
 
     protected void duplicate() {
-        try {
-            manager = OrderService1.get().duplicate(manager.getOrder().getId());
-            setData();
-            setState(ADD);
-            fireDataChange();
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        if (duplicateCall == null) {
+            duplicateCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            };
         }
+
+        OrderService1.get().duplicate(manager.getOrder().getId(), duplicateCall);
     }
 
     protected void orderHistory() {
@@ -780,30 +825,40 @@ public class InternalOrderScreenUI extends Screen {
         nav.setQuery(query);
     }
 
-    protected void commitUpdate(boolean ignoreWarning) {
+    protected void commitUpdate(final boolean ignoreWarning) {
         if (isState(ADD))
-            window.setBusy(Messages.get().gen_adding());
+            setBusy(Messages.get().gen_adding());
         else
-            window.setBusy(Messages.get().gen_updating());
+            setBusy(Messages.get().gen_updating());
 
-        try {
-            manager = OrderService1.get().update(manager, ignoreWarning);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.clearStatus();
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
-                showWarningsDialog(e);
-        } catch (Exception e) {
-            if (isState(ADD))
-                Window.alert("commitAdd(): " + e.getMessage());
-            else
-                Window.alert("commitUpdate(): " + e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
+        if (updateCall == null) {
+            updateCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    clearStatus();
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                        showWarningsDialog(e);
+                }
+
+                public void failure(Throwable e) {
+                    if (isState(ADD))
+                        Window.alert("commitAdd(): " + e.getMessage());
+                    else
+                        Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
         }
+
+        OrderService1.get().update(manager, ignoreWarning, updateCall);
     }
 
     /*
@@ -874,33 +929,41 @@ public class InternalOrderScreenUI extends Screen {
         fillTab.setData(manager);
     }
 
-    private boolean fetchById(Integer id) {
+    private void fetchById(Integer id) {
         if (id == null) {
             manager = null;
             setData();
             setState(DEFAULT);
         } else {
-            window.setBusy(Messages.get().gen_fetching());
-            try {
+            setBusy(Messages.get().gen_fetching());
+            if (fetchByIdCall == null) {
+                fetchByIdCall = new AsyncCallbackUI<OrderManager1>() {
+                    public void success(OrderManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(DISPLAY);
+                    }
 
-                manager = OrderService1.get().fetchById(id, OrderManager1.Load.ITEMS);
-                setData();
-                setState(DISPLAY);
-            } catch (NotFoundException e) {
-                fetchById(null);
-                window.setDone(Messages.get().gen_noRecordsFound());
-                return false;
-            } catch (Exception e) {
-                fetchById(null);
-                Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-                return false;
+                    public void notFound() {
+                        fetchById(null);
+                        setDone(Messages.get().gen_noRecordsFound());
+                    }
+
+                    public void failure(Throwable e) {
+                        fetchById(null);
+                        Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+
+                    public void finish() {
+                        fireDataChange();
+                        clearStatus();
+                    }
+                };
             }
-        }
-        fireDataChange();
-        window.clearStatus();
 
-        return true;
+            OrderService1.get().fetchById(id, elements, fetchByIdCall);
+        }
     }
 
     /**

@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -413,7 +414,7 @@ public class TestTabUI extends Screen {
             tnode.setCell(1, ot.getTestName());
             tnode.setCell(2, ot.getMethodName());
             tnode.setCell(3, ot.getDescription());
-            tnode.setData(manager.getUid(ot));
+            tnode.setData(Constants.uid().get(ot));
             root.add(tnode);
 
             for (j = 0; j < manager.analyte.count(ot); j++ ) {
@@ -423,7 +424,7 @@ public class TestTabUI extends Screen {
                 anode.setType(ANALYTE_LEAF);
                 anode.setCell(0, ota.getTestAnalyteIsReportable());
                 anode.setCell(1, ota.getAnalyteName());
-                anode.setData(manager.getUid(ota));
+                anode.setData(Constants.uid().get(ota));
                 tnode.add(anode);
             }
         }
