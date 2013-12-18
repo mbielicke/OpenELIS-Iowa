@@ -28,8 +28,8 @@
         <xs:sequence>
             <xs:element name="name" minOccurs="0" type="xs:string" />
             <xs:element name="environment" minOccurs="0" type="xs:string" />
-            <xs:element name="profiles" minOccurs="0" type="profiles">
-            </xs:element>
+            <xs:element name="profiles" minOccurs="0" type="profiles" />
+            <xs:element name="organization_parameter" minOccurs="0" maxOccurs="unbounded" type="organizationParameter"/>
         </xs:sequence>
         <xs:attribute name="include_all_analyses" type="xs:string" use="required" />
     </xs:complexType>
@@ -260,6 +260,16 @@
         <xs:attribute name="is_active" type="xs:string" />
         <xs:attribute name="address_id" type="xs:integer" use="required" />
     </xs:complexType>
+    
+    <xs:complexType name="organizationParameter">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string" />
+            <xs:element name="Type" type="dictionary" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+        <xs:attribute name="organization_id" type="xs:integer" use="required" />
+        <xs:attribute name="type_id" type="xs:integer" use="required" />
+    </xs:complexType>
 
     <xs:complexType name="analysis">
         <xs:sequence>
@@ -267,6 +277,7 @@
             <xs:element name="section" type="section" />
             <xs:element name="unit_of_measure" minOccurs="0" type="dictionary" />
             <xs:element name="status" type="dictionary" />
+            <xs:element name="panel" minOccurs="0" type="panel" />
             <xs:element name="analysis_qaevent" minOccurs="0" maxOccurs="unbounded" type="analysisQaevent" />
             <xs:element name="analysis_user" type="analysis_user" minOccurs="0"
                 maxOccurs="unbounded" />

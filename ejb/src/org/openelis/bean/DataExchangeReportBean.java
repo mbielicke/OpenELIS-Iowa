@@ -61,7 +61,6 @@ import org.openelis.domain.SampleDO;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -115,6 +114,7 @@ public class DataExchangeReportBean {
         ArrayList<EventLogDO> elogs;
         ArrayList<SampleManager1> sms;
         ExchangeCriteriaManager cm;
+        ArrayList<Integer> accessions;
 
         try {
             cm = ExchangeCriteriaManager.fetchByName(name);
@@ -131,8 +131,8 @@ public class DataExchangeReportBean {
 
         /*
          * we need to figure out the last time this exchange criteria "job" was
-         * run. For first time job, just set the start time to ending time (no samples).
-         * Ending time of released samples/analysis is a minute ago.
+         * run. For first time job, just set the start time to ending time (no
+         * samples). Ending time of released samples/analysis is a minute ago.
          */
         cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, -1);
@@ -169,17 +169,18 @@ public class DataExchangeReportBean {
                                            SampleManager1.Load.NOTE,
                                            SampleManager1.Load.ANALYSISUSER,
                                            SampleManager1.Load.RESULT);
-            message(sms, cm);
+            accessions = message(sms, cm);
 
             /*
-             * log all the accession numbers that were generated with the
-             * successful execution
+             * log all the accession numbers; the ones generated with the
+             * successful execution are logged as is whereas the ones with a
+             * failure are logged as negative numbers
              */
             sb = new StringBuilder();
-            for (SampleManager1 sm : sms) {
+            for (Integer accession : accessions) {
                 if (sb.length() > 0)
                     sb.append(",");
-                sb.append(SampleManager1Accessor.getSample(sm).getAccessionNumber());
+                sb.append(accession);
             }
             addEventLog(Messages.get().dataExchange_executedCriteria(name),
                         cm.getExchangeCriteria().getId(),
@@ -275,7 +276,7 @@ public class DataExchangeReportBean {
                 builder.constructWhere(field);
                 builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +
                                  Constants.dictionary().ORG_REPORT_TO);
-                i++;
+                i++ ;
             } else if (SampleMeta.getReleasedDate().equals(field.getKey())) {
                 qf = new QueryFieldUtil();
                 qf.parse(field.getQuery());
@@ -296,7 +297,7 @@ public class DataExchangeReportBean {
                 fields.remove(i);
             } else {
                 builder.constructWhere(field);
-                i++;
+                i++ ;
             }
         }
 
@@ -340,8 +341,13 @@ public class DataExchangeReportBean {
 
     /**
      * The method exports each sample using the criteria manager's information.
+     * The returned list consists of the accessions numbers of the samples being
+     * exported such that if a sample could be exported then its accession
+     * number is added as is to the list otherwise the negative number
+     * corresponding to the accession number is added
      */
-    private void message(ArrayList<SampleManager1> sms, ExchangeCriteriaManager cm) throws Exception {
+    private ArrayList<Integer> message(ArrayList<SampleManager1> sms, ExchangeCriteriaManager cm) throws Exception {
+        Integer accession;
         URI uri;
         Document doc;
         ClassLoader loader;
@@ -352,6 +358,7 @@ public class DataExchangeReportBean {
         Socket outsocket;
         OutputStream out;
         ByteArrayOutputStream ba;
+        ArrayList<Integer> accessions;
 
         /*
          * the xslt transforms the simple flat xml to an organized
@@ -362,9 +369,11 @@ public class DataExchangeReportBean {
         transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
 
         ba = new ByteArrayOutputStream();
+        accessions = new ArrayList<Integer>();
         for (SampleManager1 sm : sms) {
             out = null;
             outsocket = null;
+            accession = sm.getSample().getAccessionNumber();
             try {
                 /*
                  * generate a simple xml and use a simple buffer in case we have
@@ -379,8 +388,7 @@ public class DataExchangeReportBean {
                  */
                 uri = new URI(cm.getExchangeCriteria().getDestinationUri());
                 if ("file".equals(uri.getScheme())) {
-                    outfile = new File(uri.getPath() + File.separator +
-                                       sm.getSample().getAccessionNumber().toString() +
+                    outfile = new File(uri.getPath() + File.separator + accession.toString() +
                                        "_exchange.xml");
                     outfile.setExecutable(false, false);
                     outfile.setReadable(true, false);
@@ -394,9 +402,13 @@ public class DataExchangeReportBean {
                     out.write(ba.toByteArray());
                 }
                 ba.reset();
-
-                log.fine("Generated xml for accession number: " +
-                         sm.getSample().getAccessionNumber());
+                accessions.add(accession);
+                log.fine("Generated xml for accession number: " + accession);
+            } catch (Exception e) {
+                accessions.add( -accession);
+                log.log(Level.SEVERE,
+                        "Failed to generate xml for accession number:  " + accession,
+                        e);
             } finally {
                 if (out != null)
                     out.close();
@@ -404,6 +416,8 @@ public class DataExchangeReportBean {
                     outsocket.close();
             }
         }
+
+        return accessions;
     }
 
     /*

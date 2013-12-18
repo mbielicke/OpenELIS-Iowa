@@ -89,7 +89,8 @@ public class ApplicationBean {
                         "pos_last_of_subset", "pos_last_of_run", "pos_last_of_subset_and_run",
                         "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
                         "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
-                        "released_reportto_email", "org_hold_sample", "reflex_auto",
+                        "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
+                        "org_test_epartner_url", "org_epartner_aggr", "reflex_auto",
                         "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "round_int",
                         "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
                         "round_sig_fig_noe", "sample_completed", "sample_error",
@@ -213,6 +214,9 @@ public class ApplicationBean {
         Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL = dictId(map, "receivable_reportto_email");
         Constants.dictionary().RELEASED_REPORTTO_EMAIL = dictId(map, "released_reportto_email");
         Constants.dictionary().ORG_HOLD_SAMPLE = dictId(map, "org_hold_sample");
+        Constants.dictionary().ORG_PROD_EPARTNER_URL = dictId(map, "org_prod_epartner_url");
+        Constants.dictionary().ORG_TEST_EPARTNER_URL = dictId(map, "org_test_epartner_url");
+        Constants.dictionary().ORG_EPARTNER_AGGR = dictId(map, "org_epartner_aggr");
         Constants.dictionary().REFLEX_AUTO = dictId(map, "reflex_auto");
         Constants.dictionary().REFLEX_PROMPT = dictId(map, "reflex_prompt");
         Constants.dictionary().REFLEX_AUTO_NDUP = dictId(map, "reflex_auto_ndup");

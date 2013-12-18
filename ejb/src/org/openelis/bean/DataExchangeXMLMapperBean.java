@@ -53,6 +53,7 @@ import org.openelis.domain.ExchangeProfileDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.PanelDO;
@@ -92,50 +93,53 @@ import org.w3c.dom.Node;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DataExchangeXMLMapperBean {
     @EJB
-    private UserCacheBean            systemUserCache;
+    private UserCacheBean             systemUserCache;
 
     @EJB
-    private DictionaryCacheBean      dictionaryCache;
+    private DictionaryCacheBean       dictionaryCache;
 
     @EJB
-    private MethodBean               method;
+    private MethodBean                method;
 
     @EJB
-    private ProjectBean              project;
+    private ProjectBean               project;
 
     @EJB
-    private OrganizationBean         organization;
+    private OrganizationBean          organization;
 
     @EJB
-    private PWSBean                  pws;
+    private PWSBean                   pws;
 
     @EJB
-    private QaEventBean              qaevent;
+    private QaEventBean               qaevent;
 
     @EJB
-    private TestBean                 test;
+    private TestBean                  test;
 
     @EJB
-    private AnalyteBean              analyte;
+    private AnalyteBean               analyte;
 
     @EJB
-    private ExchangeExternalTermBean exchangeExternalTerm;
+    private ExchangeExternalTermBean  exchangeExternalTerm;
 
     @EJB
-    private TestTrailerBean          testTrailer;
+    private TestTrailerBean           testTrailer;
 
     @EJB
-    private SectionCacheBean         sectionCache;
+    private SectionCacheBean          sectionCache;
 
     @EJB
-    private PanelBean                panel;
+    private PanelBean                 panel;
 
     @EJB
-    private TestResultBean           testResult;
+    private TestResultBean            testResult;
 
-    private HashSet<Integer>         users, dicts, tests, testAnalytes, testResults, methods,
+    @EJB
+    private OrganizationParameterBean organizationParameter;
+
+    private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
                     analytes, projects, organizations, qas, trailers, sections, panels;
-    private static SimpleDateFormat  dateFormat, timeFormat;
+    private static SimpleDateFormat   dateFormat, timeFormat;
 
     @PostConstruct
     public void init() {
@@ -158,7 +162,9 @@ public class DataExchangeXMLMapperBean {
     public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm) throws Exception {
         Boolean sampleOverridden, showValue;
         Document doc;
-        Element root, elm, elm1;
+        Element root, header, elm, elm1;
+        SampleOrganizationViewDO reportTo;
+        ArrayList<OrganizationParameterDO> orgps;
         String testIds[];
         ArrayList<Integer> profiles;
         HashMap<Integer, Boolean> analyses;
@@ -178,8 +184,8 @@ public class DataExchangeXMLMapperBean {
         root = doc.getDocumentElement();
         root.setAttribute("Type", "result-out");
 
-        elm = createHeader(doc, cm.getExchangeCriteria());
-        root.appendChild(elm);
+        header = createHeader(doc, cm.getExchangeCriteria());
+        root.appendChild(header);
 
         /*
          * either export all the analyses or just the specified tests
@@ -200,11 +206,11 @@ public class DataExchangeXMLMapperBean {
          */
         if (cm.getProfiles().count() > 0) {
             elm1 = doc.createElement("profiles");
-            for (int i = 0; i < cm.getProfiles().count(); i++) {
+            for (int i = 0; i < cm.getProfiles().count(); i++ ) {
                 elm1.appendChild(createProfile(doc, cm.getProfiles().getProfileAt(i)));
                 profiles.add(cm.getProfiles().getProfileAt(i).getProfileId());
             }
-            elm.appendChild(elm1);
+            header.appendChild(elm1);
         }
 
         /*
@@ -265,9 +271,31 @@ public class DataExchangeXMLMapperBean {
                 root.appendChild(createSampleProject(doc, p));
         }
 
+        reportTo = null;
         if (getOrganizations(sm) != null) {
-            for (SampleOrganizationViewDO o : getOrganizations(sm))
+            for (SampleOrganizationViewDO o : getOrganizations(sm)) {
+                if (Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId()))
+                    reportTo = o;
                 root.appendChild(createSampleOrganization(doc, o));
+            }
+        }
+
+        /*
+         * add the report to organization's destination URL and aggregator URL
+         * to the header
+         */
+        if (reportTo != null) {
+            try {
+                orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
+                for (OrganizationParameterDO op : orgps) {
+                    if (Constants.dictionary().ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
+                        Constants.dictionary().ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
+                        Constants.dictionary().ORG_EPARTNER_AGGR.equals(op.getTypeId()))
+                        header.appendChild(createOrganizationParameter(doc, op));
+                }
+            } catch (NotFoundException e) {
+                // ignore
+            }
         }
 
         if (getSampleExternalNote(sm) != null) {
@@ -307,7 +335,7 @@ public class DataExchangeXMLMapperBean {
                  * skip cancelled and test id's that were in restricted list
                  */
                 if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
-                    (!onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
+                    ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
                     continue;
                 root.appendChild(createAnalysis(doc, a));
                 analyses.put(a.getId(),
@@ -404,7 +432,7 @@ public class DataExchangeXMLMapperBean {
             for (TestTrailerDO t : testTrailer.fetchByIds(trailers))
                 root.appendChild(createTrailer(doc, t));
         }
-        
+
         if (testResults != null) {
             for (TestResultViewDO tr : testResult.fetchByIds(testResults))
                 root.appendChild(createTestResult(doc, tr));
@@ -416,7 +444,7 @@ public class DataExchangeXMLMapperBean {
         }
 
         if (panels != null) {
-            for (PanelDO p : panel.fetchByIds(trailers))
+            for (PanelDO p : panel.fetchByIds(panels))
                 root.appendChild(createPanel(doc, p));
         }
 
@@ -436,7 +464,7 @@ public class DataExchangeXMLMapperBean {
             for (AnalyteViewDO ana : analyte.fetchByIds(analytes))
                 root.appendChild(createAnalyte(doc, ana));
         }
-        
+
         if (dicts != null) {
             for (Integer id : dicts)
                 root.appendChild(createDictionary(doc, dictionaryCache.getById(id)));
@@ -476,7 +504,7 @@ public class DataExchangeXMLMapperBean {
                 if (elm != null)
                     root.appendChild(elm);
             }
-            
+
             if (testAnalytes.size() > 0) {
                 elm = createTranslations(Constants.table().TEST_ANALYTE,
                                          testAnalytes,
@@ -982,6 +1010,22 @@ public class DataExchangeXMLMapperBean {
 
         return elm;
     }
+    
+    public Element createOrganizationParameter(Document doc,
+                                               OrganizationParameterDO organizationParameter) {
+        Element elm;
+
+        elm = doc.createElement("organization_parameter");
+
+        setAttribute(elm, "id", organizationParameter.getId());
+        setAttribute(elm, "organization_id", organizationParameter.getOrganizationId());
+        setAttribute(elm, "type_id", organizationParameter.getTypeId());
+        setText(doc, elm, "value", organizationParameter.getValue());
+
+        addDictionary(organizationParameter.getTypeId());
+
+        return elm;
+    }
 
     public Element createDictionary(Document doc, DictionaryDO dictionary) {
         Element elm;
@@ -1258,7 +1302,7 @@ public class DataExchangeXMLMapperBean {
             testAnalytes.add(id);
         }
     }
-    
+
     private void addTestResult(Integer id) {
         if (id != null) {
             if (testResults == null)
