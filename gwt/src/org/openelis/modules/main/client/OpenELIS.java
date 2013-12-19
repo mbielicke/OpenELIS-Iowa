@@ -38,6 +38,7 @@ import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
 import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
+import org.openelis.modules.completeRelease1.client.CompleteReleaseScreenUI;
 import org.openelis.modules.cron.client.CronScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
@@ -624,10 +625,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.reviewAndRelease());
-                            window.setSize("20px", "20px");
-                            window.setContent(new CompleteReleaseScreen(window));
+                            window.setSize("750px", "618px");
+                            window.setContent(new CompleteReleaseScreenUI(window));
                             browser.addWindow(window, "reviewAndRelease");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
