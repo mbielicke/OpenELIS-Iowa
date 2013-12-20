@@ -112,6 +112,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
     private AutoComplete<Integer>       referenceName;
     private Dropdown<Integer>           referenceTableId;
     private TableWidget                 termMappingTable;
+    private static final String         DATE_RANGE_PATTERN = "\\[\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\.{2}\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\]";
 
     public ExchangeVocabularyMapScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeVocabularyMapDef.class));
@@ -572,8 +573,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                         refTableId = Integer.parseInt(field.getQuery());
                     else if (ExchangeLocalTermMeta.getReferenceName().equals(field.getKey()))
                         /*
-                         * this field contains the search string for the records
-                         * in the selected reference table
+                         * this field contains the search string
                          */
                         refField = field;
                 }
@@ -590,15 +590,14 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     } else {
                         refQuery = "";
                     }
+
                     /*
                      * create separate query fields for each column queried for
                      * in the search string, e.g. test name, row analyte name
                      */
                     fields = getTestAnalyteQueryFields(refQuery);
-                    if (fields != null) {
-                        for (QueryData field : fields)
-                            query.setFields(field);
-                    }
+                    for (QueryData f : fields)
+                        query.setFields(f);
                 } else {
                     if (refField == null) {
                         refField = new QueryData();
@@ -1119,6 +1118,13 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
+            /*
+             * the search string may contain the begin and end dates of an
+             * inactive test, so they need to be removed before executing the
+             * query so that they don't unintentionally get included in the
+             * query
+             */
+            search = search.replaceAll(DATE_RANGE_PATTERN, "");
             tests = TestService.get().fetchByName(search);
             sb = new StringBuilder();
             for (TestMethodVO data : tests) {
@@ -1211,9 +1217,13 @@ public class ExchangeVocabularyMapScreen extends Screen {
         ArrayList<QueryData> fields;
         QueryData field;
 
+        /*
+         * the search string may contain the begin and end dates of an inactive
+         * test, so they need to be removed before executing the query so that
+         * they don't unintentionally get included in the query
+         */
+        search = search.replaceAll(DATE_RANGE_PATTERN, "");
         names = search.split(",");
-        if (names.length > 4)
-            return null;
 
         /*
          * create a query field for each level, e.g. test, row analyte etc.,
@@ -1223,28 +1233,18 @@ public class ExchangeVocabularyMapScreen extends Screen {
         isLastLevel = true;
         for (int i = (names.length - 1); i >= 0; i-- ) {
             name = DataBaseUtil.trim(names[i]);
-            if (state != State.QUERY) {
+            if (name == null)
+                name = "";
+
+            if (isLastLevel) {
                 /*
-                 * in states other than Query, query field for a level is
-                 * created only if some search is specified for it
+                 * to prevent queries from becoming too general and taking a
+                 * long time to execute, the wild card is added for only the
+                 * last level being queried e.g. if both test and method are
+                 * present then the wildcard will be added for only the method
                  */
-                if (name == null) {
-                    continue;
-                } else if (isLastLevel) {
-                    /*
-                     * the wild card is added for only the last level being
-                     * queried e.g. if both test and method are present then the
-                     * wildcard will be added for only the method
-                     */
-                    name = name + "*";
-                    isLastLevel = false;
-                }
-            } else if (name == null) {
-                /*
-                 * in Query state, an empty level is replaced by a wild card, so
-                 * that any records at the next level could be matched
-                 */
-                name = "*";
+                name = name + "*";
+                isLastLevel = false;
             }
 
             key = null;
