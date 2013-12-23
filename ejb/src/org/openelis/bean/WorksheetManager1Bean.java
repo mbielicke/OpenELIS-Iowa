@@ -210,47 +210,51 @@ public class WorksheetManager1Bean {
             map1.put(data.getId(), wm); // for linking
         }
 
-        if (el.contains(WorksheetManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().WORKSHEET)) {
-                wm = map1.get(data.getReferenceId());
-                addNote(wm, data);
-            }
-        }
-
-        if (el.contains(WorksheetManager1.Load.DETAIL)) {
-            /*
-             * build level 2, everything is based on item ids
-             */
-            for (WorksheetItemDO data : item.fetchByWorksheetIds(ids1)) {
-                wm = map1.get(data.getWorksheetId());
-                addItem(wm, data);
-            }
-    
-            /*
-             * build level 3, everything is based on analysis ids
-             */
-            ids2 = new ArrayList<Integer>();
-            map2 = new HashMap<Integer, WorksheetManager1>();
-            for (WorksheetAnalysisViewDO data : analysis.fetchByWorksheetIds(ids1)) {
-                wm = map1.get(data.getWorksheetId());
-                addAnalysis(wm, data);
-                if (!map2.containsKey(data.getId())) {
-                    ids2.add(data.getId());
-                    map2.put(data.getId(), wm);
+        if (!ids1.isEmpty()) {
+            if (el.contains(WorksheetManager1.Load.NOTE)) {
+                for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().WORKSHEET)) {
+                    wm = map1.get(data.getReferenceId());
+                    addNote(wm, data);
                 }
             }
     
-            for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
-                wm = map2.get(data.getWorksheetAnalysisId());
-                addResult(wm, data);
-            }
-
-            for (WorksheetQcResultViewDO data : wqResult.fetchByWorksheetAnalysisIds(ids2)) {
-                wm = map2.get(data.getWorksheetAnalysisId());
-                addQcResult(wm, data);
+            if (el.contains(WorksheetManager1.Load.DETAIL)) {
+                /*
+                 * build level 2, everything is based on item ids
+                 */
+                for (WorksheetItemDO data : item.fetchByWorksheetIds(ids1)) {
+                    wm = map1.get(data.getWorksheetId());
+                    addItem(wm, data);
+                }
+        
+                /*
+                 * build level 3, everything is based on analysis ids
+                 */
+                ids2 = new ArrayList<Integer>();
+                map2 = new HashMap<Integer, WorksheetManager1>();
+                for (WorksheetAnalysisViewDO data : analysis.fetchByWorksheetIds(ids1)) {
+                    wm = map1.get(data.getWorksheetId());
+                    addAnalysis(wm, data);
+                    if (!map2.containsKey(data.getId())) {
+                        ids2.add(data.getId());
+                        map2.put(data.getId(), wm);
+                    }
+                }
+        
+                if (!ids2.isEmpty()) {
+                    for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
+                        wm = map2.get(data.getWorksheetAnalysisId());
+                        addResult(wm, data);
+                    }
+        
+                    for (WorksheetQcResultViewDO data : wqResult.fetchByWorksheetAnalysisIds(ids2)) {
+                        wm = map2.get(data.getWorksheetAnalysisId());
+                        addQcResult(wm, data);
+                    }
+                }
             }
         }
-
+        
         return wms;
     }
 
@@ -365,8 +369,8 @@ public class WorksheetManager1Bean {
      */
     public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
         int i, dep, ldep;
-        boolean locked, nodep;
-        ArrayList<Integer> analyteIndexes, excludedIds, sampleIds;
+        boolean locked, nodep, unlock;
+        ArrayList<Integer> analyteIndexes, excludedIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
         ArrayList<TestAnalyteViewDO> analytes;
@@ -491,6 +495,7 @@ public class WorksheetManager1Bean {
             if (data.getAnalysisId() != null) {
                 if (data.getId() < 0 && data.getFromOtherId() == null) {
                     initAnalysisIds.add(data.getAnalysisId());
+                    updatedAnalyses.put(data.getAnalysisId(), data);
                     updateAnalysisIds.add(data.getAnalysisId());
                 } else if ((data.isChanged() || data.isStatusChanged() || data.isUnitChanged()) &&
                            !updatedAnalyses.containsKey(data.getAnalysisId())) {
@@ -521,12 +526,19 @@ public class WorksheetManager1Bean {
         }
 
         if (!updateAnalysisIds.isEmpty()) {
-            sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds), SampleManager1.Load.SINGLERESULT);
+            sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds),
+                                                       SampleManager1.Load.ORGANIZATION,
+                                                       SampleManager1.Load.QA,
+                                                       SampleManager1.Load.SINGLERESULT);
             for (SampleManager1 sMan : sMans) {
                 for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
-                    if (initAnalysisIds.contains(ana.getId()))
+                    if (initAnalysisIds.contains(ana.getId())) {
                         aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
-                    if (updatedAnalyses.containsKey(ana.getId())) {
+                        waVDO = updatedAnalyses.get(ana.getId());
+                        if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
+                                                     ana.getUnitOfMeasureId()))
+                            aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                    } else if (updatedAnalyses.containsKey(ana.getId())) {
                         waVDO = updatedAnalyses.get(ana.getId());
                         if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
                                                      ana.getUnitOfMeasureId()))
@@ -564,23 +576,22 @@ public class WorksheetManager1Bean {
             try {
                 sampleMan.update(sMans, true);
             } catch (Exception anyE) {
+                unlock = true;
                 if (anyE instanceof ValidationErrorsList) {
-                    if (((ValidationErrorsList)anyE).hasErrors()) {
-                        try {
-                            unlockSamples(sMans);
-                        } catch (Exception anyE1) {
-                            ((ValidationErrorsList)anyE).add(anyE1);
-                        }
-                        throw anyE;
-                    }
+                    errors = (ValidationErrorsList)anyE;
+                    if (!errors.hasErrors())
+                        unlock = false;
                 } else {
                     errors = new ValidationErrorsList();
                     errors.add(anyE);
+                }
+                if (unlock) {
                     try {
                         unlockSamples(sMans);
                     } catch (Exception anyE1) {
                         errors.add(anyE1);
                     }
+                    ctx.setRollbackOnly();
                     throw errors;
                 }
             }
