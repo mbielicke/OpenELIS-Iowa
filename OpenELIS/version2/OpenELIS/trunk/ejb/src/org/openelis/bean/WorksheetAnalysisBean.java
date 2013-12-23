@@ -103,8 +103,8 @@ public class WorksheetAnalysisBean {
         query.setParameter("worksheetIds", ids);
 
         list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
+//        if (list.isEmpty())
+//            throw new NotFoundException();
 
         returnList = new ArrayList<WorksheetAnalysisViewDO>();
         for (i = 0; i < list.size(); i++) {
