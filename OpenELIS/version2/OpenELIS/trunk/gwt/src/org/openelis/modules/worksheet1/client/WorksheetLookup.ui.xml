@@ -46,7 +46,7 @@ UIRF Software License are applicable instead of those above.
     	  	</td>
             <td class="{res.style.Prompt}"><ui:text from="{msg.gen_username}" /></td>
 		    <td>
-              <w:AutoComplete ui:field="systemUserId" width="166" case="LOWER">
+              <w:AutoComplete ui:field="systemUserId" width="166px" case="LOWER">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
                     <t:Column width="166" label="{msg.gen_username}">
@@ -79,7 +79,7 @@ UIRF Software License are applicable instead of those above.
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="100" bottom="25px">
+    <g:layer top="100px" bottom="25px">
       <t:Table ui:field="worksheetTable" visibleRows="9" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="100" label="{msg.worksheet_worksheetNumber}" sortable="true">
           <t:LabelCell />
@@ -94,7 +94,7 @@ UIRF Software License are applicable instead of those above.
         </t:Column>
         <t:Column width="100" label="{msg.gen_status}" sortable="true">
           <t:DropdownCell>
-            <w:Dropdown ui:field="tableStatusId" width="84" field="Integer"/>
+            <w:Dropdown ui:field="tableStatusId" width="84px" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
         <t:Column width="175" label="{msg.gen_description}" sortable="true">
