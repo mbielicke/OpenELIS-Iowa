@@ -42,7 +42,7 @@
         </t:Column>
         <t:Column width="110" label="{msg.gen_description}">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="description" width="110" dropWidth="200" case="MIXED">
+            <w:AutoComplete ui:field="description" width="110px" dropWidth="200px" case="MIXED">
               <w:popup>
                 <t:Table visibleRows="10" header="true" horizontalScroll="NEVER">
                   <t:Column label="{msg.qc_qcName}">
@@ -55,7 +55,7 @@
         </t:Column>
         <t:Column width="70" label="{msg.worksheet_qcLink}">
           <t:DropdownCell>
-            <w:Dropdown ui:field="qcLink" field="Integer"/>
+            <w:Dropdown ui:field="qcLink" width="70px" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
         <t:Column width="100" label="{msg.gen_test}">
@@ -66,7 +66,7 @@
         </t:Column>
         <t:Column width="100" label="{msg.gen_unit}">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="unitOfMeasureId" width="120" case="MIXED">
+            <w:AutoComplete ui:field="unitOfMeasureId" width="120px" case="MIXED">
               <w:popup>
                 <t:Table visibleRows="10">
                   <t:Column>
@@ -79,7 +79,7 @@
         </t:Column>
         <t:Column width="75" label="{msg.gen_status}">
           <t:DropdownCell>
-            <w:Dropdown ui:field="analysisStatusId" width="75" field="Integer"/>
+            <w:Dropdown ui:field="analysisStatusId" width="75px" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
         <t:Column width="75" label="{msg.sample_collected}">

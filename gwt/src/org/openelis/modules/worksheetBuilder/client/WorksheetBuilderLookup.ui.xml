@@ -146,17 +146,17 @@ UIRF Software License are applicable instead of those above.
             </t:Column>
             <t:Column width="100" sortable="true" label="{msg.gen_section}">
               <t:DropdownCell>
-                <w:Dropdown ui:field="tableSection" width="84" field="Integer"/>
+                <w:Dropdown ui:field="tableSection" width="84px" field="Integer"/>
               </t:DropdownCell>
             </t:Column>
             <t:Column width="100" sortable="true" label="{msg.gen_unit}">
               <t:DropdownCell>
-                <w:Dropdown ui:field="tableUnit" width="84" field="Integer"/>
+                <w:Dropdown ui:field="tableUnit" width="84px" field="Integer"/>
               </t:DropdownCell>
             </t:Column>
             <t:Column width="75" sortable="true" label="{msg.gen_status}">
               <t:DropdownCell>
-                <w:Dropdown ui:field="tableStatus" width="59" field="Integer"/>
+                <w:Dropdown ui:field="tableStatus" width="59px" field="Integer"/>
               </t:DropdownCell>
             </t:Column>
             <t:Column width="75" sortable="true" label="{msg.sample_collected}">

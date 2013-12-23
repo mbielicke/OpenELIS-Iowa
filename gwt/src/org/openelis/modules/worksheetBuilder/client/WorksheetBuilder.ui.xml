@@ -186,7 +186,7 @@
                   <ui:text from="{msg.worksheet_instrumentName}:"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="instrumentName" width="165" dropWidth="765" case="LOWER">
+                  <w:AutoComplete ui:field="instrumentName" width="165px" dropWidth="765px" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
                         <t:Column width="150" label="{msg.gen_name}">
