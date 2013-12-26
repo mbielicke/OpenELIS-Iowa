@@ -69,13 +69,14 @@ public class TurnaroundNotificationWarningReportBean {
     protected void generateEmail(ArrayList<Object[]> resultList) throws Exception {
         int i;
         ArrayList<SectionParameterDO> emailList;
+        Date colDate;
         Datetime date, now;
         Integer accession, prevSecId, currSecId, holdingTime, warningTime;
         Float daysElapsed;
-        SimpleDateFormat yToD, yToM;
+        SimpleDateFormat yToD, yToM, hToM;
         String colString, expireString, recString, toEmail, test, method, orgName, sectionName, prevSectionName, anaStatus;
         StringBuilder contents;
-        Timestamp availableDate, colDate, expireDate, nowDateTime, recDate;
+        Timestamp availableDate, expireDate, nowDateTime, recDate;
         Time colTime;
 
         prevSecId = null;
@@ -85,12 +86,13 @@ public class TurnaroundNotificationWarningReportBean {
         nowDateTime = new Timestamp(now.getDate().getTime());
         yToD = new SimpleDateFormat("yyyy-MM-dd");
         yToM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        hToM = new SimpleDateFormat("HH:mm");
 
         toEmail = "";
         contents.setLength(0);
         for (Object[] result : resultList) {
             accession = (Integer)result[0];
-            colDate = (Timestamp)result[1];
+            colDate = (Date)result[1];
             colTime = (Time)result[2];
             recDate = (Timestamp)result[3];
             orgName = (String)result[4];
@@ -111,7 +113,7 @@ public class TurnaroundNotificationWarningReportBean {
             if (colDate != null) {
                 colString = yToD.format(colDate);
                 if (colTime != null)
-                    colString = yToM.format(JasperUtil.concatDateAndTime(colDate, colTime));
+                    colString = colString + " " + hToM.format(colTime);
             }
 
             recString = "";

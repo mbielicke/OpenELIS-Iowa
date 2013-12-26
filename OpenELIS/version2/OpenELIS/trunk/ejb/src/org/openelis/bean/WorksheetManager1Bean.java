@@ -1016,6 +1016,7 @@ public class WorksheetManager1Bean {
                     waVDO.setTestId(waVDO1.getTestId());
                     waVDO.setTestName(waVDO1.getTestName());
                     waVDO.setMethodName(waVDO1.getMethodName());
+                    waVDO.setSectionName(waVDO1.getSectionName());
                     waVDO.setUnitOfMeasureId(waVDO1.getUnitOfMeasureId());
                     waVDO.setUnitOfMeasure(waVDO1.getUnitOfMeasure());
                     waVDO.setStatusId(waVDO1.getStatusId());

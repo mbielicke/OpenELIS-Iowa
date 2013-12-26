@@ -46,15 +46,15 @@ import org.openelis.ui.common.Datetime;
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId," +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.worksheetAnalysisId, wav.qcSystemUserId, wav.qcStartedDate," +
                         "wav.fromOtherId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
-                        "wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, wav.receivedDate, "+
-                        "wav.priority)"
+                        "wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, " +
+                        "wav.receivedDate, wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId = :worksheetId order by wav.worksheetItemId, wav.id"),
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetIds",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId," +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.worksheetAnalysisId, wav.qcSystemUserId, wav.qcStartedDate," +
                         "wav.fromOtherId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
-                        "wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, wav.receivedDate, "+
-                        "wav.priority)"
+                        "wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, " +
+                        "wav.receivedDate, wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId in (:worksheetIds) order by wav.worksheetId, wav.worksheetItemId, wav.id")})
 @Entity
 @Table(name = "worksheet_analysis_view")
@@ -108,6 +108,9 @@ public class WorksheetAnalysisView  {
     
     @Column(name = "time_holding")
     private Integer                     timeHolding;
+    
+    @Column(name = "section_name")
+    private String                      sectionName;
     
     @Column(name = "unit_of_measure_id")
     private Integer                     unitOfMeasureId;
@@ -192,6 +195,10 @@ public class WorksheetAnalysisView  {
 
     public Integer getTimeHolding() {
         return timeHolding;
+    }
+
+    public String getSectionName() {
+        return sectionName;
     }
 
     public Integer getUnitOfMeasureId() {
