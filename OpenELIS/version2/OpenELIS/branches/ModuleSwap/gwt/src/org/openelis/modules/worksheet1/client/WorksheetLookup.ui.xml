@@ -1,0 +1,114 @@
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+  
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+  
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+  
+The Original Code is OpenELIS code.
+  
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+  
+Contributor(s): ______________________________________.
+  
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+  -->
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:w='urn:import:org.openelis.ui.widget'
+             xmlns:t='urn:import:org.openelis.ui.widget.table' 
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+             xmlns:o="urn:import:org.openelis.modules.worksheet.client">
+
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="100px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+			<td class="{res.style.Prompt}"><ui:text from="{msg.worksheet_worksheetNumber}:" /></td>
+			<td>
+			  <w:TextBox ui:field="worksheetId" width="100px" field="Integer" />
+    	  	</td>
+            <td class="{res.style.Prompt}"><ui:text from="{msg.gen_username}" /></td>
+		    <td>
+              <w:AutoComplete ui:field="systemUserId" width="166px" case="LOWER">
+                <w:popup>
+                  <t:Table visibleRows="10" header="true">
+                    <t:Column width="166" label="{msg.gen_username}">
+                      <t:LabelCell />
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
+      	  	</td>
+          </tr>
+          <tr>
+      	    <td class="{res.style.Prompt}"><ui:text from="{msg.gen_created}:" /></td>
+      	  	<td>
+              <c:Calendar ui:field="createdDate" width="134px" begin="0" end="4" /> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+            </td>
+            <td class="{res.style.Prompt}"><ui:text from="{msg.gen_status}:" /></td>
+            <td>
+              <w:Dropdown ui:field="statusId" width="119px" field="Integer" />
+            </td>
+            <td>
+              <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}" css="{res.FormFieldButton}"/>
+            </td>
+          </tr>
+          <tr>
+      	  <td class="{res.style.Prompt}"><ui:text from="{msg.gen_description}:" /></td>
+      	  <td colspan="3">
+      	    <w:TextBox ui:field="description" width="400px" case="LOWER" field="String" />
+          </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+    <g:layer top="100px" bottom="25px">
+      <t:Table ui:field="worksheetTable" visibleRows="9" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
+        <t:Column width="100" label="{msg.worksheet_worksheetNumber}" sortable="true">
+          <t:LabelCell />
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_username}" sortable="true">
+          <t:LabelCell />
+        </t:Column>
+        <t:Column width="130" label="{msg.gen_created}" sortable="true">
+          <t:CalendarCell>
+            <c:Calendar width="130px" begin="0" end="4" /> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+          </t:CalendarCell>
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_status}" sortable="true">
+          <t:DropdownCell>
+            <w:Dropdown ui:field="tableStatusId" width="84px" field="Integer"/>
+          </t:DropdownCell>
+        </t:Column>
+        <t:Column width="175" label="{msg.gen_description}" sortable="true">
+          <t:LabelCell />
+        </t:Column>
+      </t:Table>
+    </g:layer>
+    <g:layer bottom="0px" height="25px">
+      <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+        <g:HorizontalPanel>
+          <w:Button ui:field="select" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_select}" />
+          <w:Button ui:field="cancel" leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_cancel}" />
+        </g:HorizontalPanel>
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
