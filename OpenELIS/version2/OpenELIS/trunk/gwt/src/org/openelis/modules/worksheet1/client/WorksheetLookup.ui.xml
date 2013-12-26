@@ -36,7 +36,7 @@ UIRF Software License are applicable instead of those above.
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" height="100px">
+    <g:layer top="0px" height="85px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
@@ -79,7 +79,7 @@ UIRF Software License are applicable instead of those above.
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="100px" bottom="25px">
+    <g:layer top="85px" bottom="25px">
       <t:Table ui:field="worksheetTable" visibleRows="9" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="100" label="{msg.worksheet_worksheetNumber}" sortable="true">
           <t:LabelCell />

@@ -1020,7 +1020,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             modal = new ModalWindow();
             modal.setName(Messages.get().worksheet_worksheetLookup());
             modal.setContent(wLookupScreen);
-            modal.setSize("636px", "482px");
+            modal.setSize("636px", "385px");
             wLookupScreen.setWindow(modal);
         } catch (Exception e) {
             e.printStackTrace();
