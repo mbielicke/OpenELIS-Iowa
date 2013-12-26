@@ -78,6 +78,7 @@ import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
@@ -159,7 +160,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected HashMap<Integer, ResultViewDO>            modifiedResults;
     protected HashMap<Integer, TestAnalyteViewDO>       addedAnalytes;
-    protected HashMap<String, ArrayList<Row>>           analytesMap;
+    protected HashMap<String, ArrayList<Object>>        analytesMap;
     protected WorksheetLookupScreenUI                   wLookupScreen;
     
     public WorksheetBuilderScreenUI(WindowInt window) throws Exception {
@@ -175,7 +176,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         
         manager = null;
         formatIds = new ArrayList<Integer>();
-        analytesMap = new HashMap<String, ArrayList<Row>>();
+        analytesMap = new HashMap<String, ArrayList<Object>>();
         modifiedResults = new HashMap<Integer, ResultViewDO>();
         addedAnalytes = new HashMap<Integer, TestAnalyteViewDO>();
         updateWarningShown = false;
@@ -1028,15 +1029,17 @@ public class WorksheetBuilderScreenUI extends Screen {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void showAnalytes(final String uid) {
-        ArrayList<Row> model;
+        ArrayList<Object> analyteList;
+        SectionPermission perm;
         WorksheetAnalysisViewDO data;
         
         if (uid != null) {
-            model = analytesMap.get(uid);
-            if (model != null) {
-                analyteTable.setModel(model);
-                if (!isState(ADD, UPDATE) || model.get(0).getData() instanceof QcAnalyteViewDO) {
+            analyteList = analytesMap.get(uid);
+            if (analyteList != null) {
+                analyteTable.setModel((ArrayList<Row>)analyteList.get(1));
+                if (!isState(ADD, UPDATE) || Boolean.FALSE.equals(analyteList.get(0))) {
                     checkAllAnalytes.setEnabled(false);
                     uncheckAllAnalytes.setEnabled(false);
                 } else {
@@ -1047,14 +1050,17 @@ public class WorksheetBuilderScreenUI extends Screen {
             } else {
                 data = (WorksheetAnalysisViewDO)manager.getObject(uid);
                 if (data.getAnalysisId() != null) {
-                    if (isState(ADD, UPDATE)) {
+                    perm = UserCache.getPermission().getSection(data.getSectionName());
+                    if (isState(ADD, UPDATE) && perm.hasCompletePermission()) {
                         WorksheetBuilderService.get().fetchAnalytesByAnalysis(data.getAnalysisId(),
                                                                               data.getTestId(),
                                                                               new AsyncCallback<ArrayList<ResultViewDO>>() {
                             public void onSuccess(ArrayList<ResultViewDO> analytes) {
+                                ArrayList<Object> analyteList;
                                 ArrayList<Row> model;
                                 Row row;
     
+                                analyteList = new ArrayList<Object>();
                                 model = new ArrayList<Row>();
                                 for (DataObject ana : analytes) {
                                     row = new Row(2);
@@ -1064,7 +1070,9 @@ public class WorksheetBuilderScreenUI extends Screen {
                                     model.add(row);
                                 }
                                 analyteTable.setModel(model);
-                                analytesMap.put(uid, model);
+                                analyteList.add(Boolean.TRUE);
+                                analyteList.add(model);
+                                analytesMap.put(uid, analyteList);
                                 checkAllAnalytes.setEnabled(true);
                                 uncheckAllAnalytes.setEnabled(true);
                                 window.clearStatus();
@@ -1084,10 +1092,12 @@ public class WorksheetBuilderScreenUI extends Screen {
                                                                         new AsyncCallback<AnalysisResultManager>() {
                             public void onSuccess(AnalysisResultManager arMan) {
                                 int i;
+                                ArrayList<Object> analyteList;
                                 ArrayList<Row> model;
                                 ResultViewDO result;
                                 Row row;
     
+                                analyteList = new ArrayList<Object>();
                                 model = new ArrayList<Row>();
                                 for (i = 0; i < arMan.rowCount(); i++) {
                                     result = arMan.getResultAt(i, 0);
@@ -1098,7 +1108,9 @@ public class WorksheetBuilderScreenUI extends Screen {
                                     model.add(row);
                                 }
                                 analyteTable.setModel(model);
-                                analytesMap.put(uid, model);
+                                analyteList.add(Boolean.FALSE);
+                                analyteList.add(model);
+                                analytesMap.put(uid, analyteList);
                                 window.clearStatus();
                             }
                             
@@ -1116,9 +1128,11 @@ public class WorksheetBuilderScreenUI extends Screen {
                     QcService.get().fetchAnalytesByLotId(data.getQcLotId(),
                                                          new AsyncCallback<ArrayList<QcAnalyteViewDO>>() {
                         public void onSuccess(ArrayList<QcAnalyteViewDO> analytes) {
+                            ArrayList<Object> analyteList;
                             ArrayList<Row> model;
                             Row row;
     
+                            analyteList = new ArrayList<Object>();
                             model = new ArrayList<Row>();
                             for (QcAnalyteViewDO analyte : analytes) {
                                 row = new Row(2);
@@ -1128,7 +1142,9 @@ public class WorksheetBuilderScreenUI extends Screen {
                                 model.add(row);
                             }
                             analyteTable.setModel(model);
-                            analytesMap.put(uid, model);
+                            analyteList.add(Boolean.FALSE);
+                            analyteList.add(model);
+                            analytesMap.put(uid, analyteList);
                             window.clearStatus();
                         }
                         
@@ -1153,11 +1169,13 @@ public class WorksheetBuilderScreenUI extends Screen {
         }
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("checkAllAnalytes")
     protected void checkAllAnalytes(ClickEvent event) {
         checkAnalytes("Y");
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("uncheckAllAnalytes")
     protected void uncheckAllAnalytes(ClickEvent event) {
         checkAnalytes("N");

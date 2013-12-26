@@ -48,6 +48,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
@@ -68,6 +69,7 @@ import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.ActionEvent;
 import org.openelis.ui.event.ActionHandler;
@@ -236,6 +238,7 @@ public class WorksheetItemTabUI extends Screen {
         
         worksheetItemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                SectionPermission perm;
                 WorksheetAnalysisViewDO data;
                 
                 //
@@ -251,14 +254,21 @@ public class WorksheetItemTabUI extends Screen {
                 } else if (event.getCol() == 6) {
                     data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
                                                                                                 .getData());
+                    perm = UserCache.getPermission().getSection(data.getSectionName());
                     if (data.getQcLotId() != null ||
                         Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
                         Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
                         event.cancel();
-                    } else if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
-                        Window.alert(Messages.get().worksheet_builderUpdateWarning());
-                        ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
-                        event.cancel();
+                    } else {
+                        if (perm == null || !perm.hasCompletePermission()) {
+                            Window.alert(Messages.get().worksheet_completePermissionRequiredForOperation(data.getSectionName(),
+                                                                                                         Messages.get().edit()));
+                            event.cancel();
+                        } else if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+                            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+                            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+                            event.cancel();
+                        }
                     }
                 }
             }
@@ -1143,6 +1153,7 @@ public class WorksheetItemTabUI extends Screen {
         int i, j, rowIndex;
         Integer rows[];
         Row dataRow, tempRow;
+        SectionPermission perm;
         StringBuffer buffer;
         WorksheetItemDO wiDO;
         WorksheetAnalysisViewDO data, tempData;
@@ -1162,6 +1173,21 @@ public class WorksheetItemTabUI extends Screen {
             rowIndex = rows[i];
             dataRow = worksheetItemTable.getRowAt(rowIndex);
             data = (WorksheetAnalysisViewDO)manager.getObject((String)dataRow.getData());
+            
+            //
+            // If this is an analysis record, check to see if the user has permission
+            // to modify the record
+            //
+            if (data.getAnalysisId() != null) {
+                perm = UserCache.getPermission().getSection(data.getSectionName());
+                if (perm == null || !perm.hasCompletePermission()) {
+                    if (buffer.length() > 0)
+                        buffer.insert(0, "\n");
+                    buffer.insert(0, "Row " + (i + 1) + ": " + Messages.get().worksheet_completePermissionRequiredForOperation(data.getSectionName(),
+                                                                                                                               Messages.get().gen_remove()));
+                    continue;
+                }
+            }
             
             //
             // Check if other rows are linked to this one via QC Link
@@ -1320,13 +1346,31 @@ public class WorksheetItemTabUI extends Screen {
     protected void duplicateRow(ClickEvent event) {
         int index;
         Row dataRow;
-        WorksheetAnalysisViewDO waVDO, newWAVDO;
+        SectionPermission perm;
         WorksheetItemDO wiDO, newWIDO;
+        WorksheetAnalysisViewDO waVDO;
 
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
             return;
+        }
+
+        worksheetItemTable.finishEditing();
+        index = worksheetItemTable.getSelectedRow();
+        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        
+        //
+        // If this is an analysis record, check to see if the user has permission
+        // to modify the record
+        //
+        if (waVDO.getAnalysisId() != null) {
+            perm = UserCache.getPermission().getSection(waVDO.getSectionName());
+            if (perm == null || !perm.hasCompletePermission()) {
+                Window.alert(Messages.get().worksheet_completePermissionRequiredForOperation(waVDO.getSectionName(),
+                                                                                             Messages.get().duplicateRecord()));
+                return;
+            }
         }
 
         if (manager.getTotalCapacity() != null &&
@@ -1335,8 +1379,6 @@ public class WorksheetItemTabUI extends Screen {
             return;
         }
                                
-        worksheetItemTable.finishEditing();
-        index = worksheetItemTable.getSelectedRow();
         manager.item.duplicate(index);
         worksheetItemTable.setModel(getTableModel());
         worksheetItemTable.selectRowAt(index + 1);
@@ -1437,6 +1479,7 @@ public class WorksheetItemTabUI extends Screen {
         toDO.setTestId(fromDO.getTestId());
         toDO.setTestName(fromDO.getTestName());
         toDO.setMethodName(fromDO.getMethodName());
+        toDO.setSectionName(fromDO.getSectionName());
         toDO.setUnitOfMeasureId(fromDO.getUnitOfMeasureId());
         toDO.setUnitOfMeasure(fromDO.getUnitOfMeasure());
         toDO.setStatusId(fromDO.getStatusId());
@@ -1455,6 +1498,7 @@ public class WorksheetItemTabUI extends Screen {
         waVDO.setTestId(avVO.getTestId());
         waVDO.setTestName(avVO.getTestName());
         waVDO.setMethodName(avVO.getMethodName());
+        waVDO.setSectionName(avVO.getSectionName());
         waVDO.setUnitOfMeasureId(avVO.getUnitOfMeasureId());
         if (waVDO.getUnitOfMeasureId() != null) {
             try {                                                               // unit
