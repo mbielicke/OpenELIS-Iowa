@@ -195,9 +195,6 @@ public abstract class SampleProjectLookupUI extends Screen {
             public void onRowAdded(RowAddedEvent event) {
                 SampleProjectViewDO data;
 
-                // data = new SampleProjectViewDO();
-                // data.setIsPermanent("N");
-                // manager.addProject(data);
                 data = manager.project.add();
                 data.setIsPermanent("N");
                 removeProjectButton.setEnabled(true);

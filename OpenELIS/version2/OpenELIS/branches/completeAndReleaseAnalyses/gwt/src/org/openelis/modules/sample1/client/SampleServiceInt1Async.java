@@ -45,8 +45,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface SampleServiceInt1Async {
     public void getInstance(String domain, AsyncCallback<SampleManager1> callback);
-    
-    public void fetchById(Integer sampleId, SampleManager1.Load elements[], AsyncCallback<SampleManager1> callback);
+
+    public void fetchById(Integer sampleId, SampleManager1.Load elements[],
+                          AsyncCallback<SampleManager1> callback);
 
     public void fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
                            AsyncCallback<ArrayList<SampleManager1>> callback);
@@ -54,14 +55,19 @@ public interface SampleServiceInt1Async {
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              SampleManager1.Load elements[],
                              AsyncCallback<ArrayList<SampleManager1>> callback);
-    
+
+    public void fetchByAnalysisQuery(Query query,
+                              SampleManager1.Load elements[],
+                              AsyncCallback<ArrayList<SampleManager1>> callback);
+
     public void fetchByAnalyses(ArrayList<Integer> analysisIds, SampleManager1.Load elements[],
                                 AsyncCallback<ArrayList<SampleManager1>> callback);
-    
-    public void fetchByAccession(Integer accessionNum, SampleManager1.Load elements[], AsyncCallback<SampleManager1> callback);
+
+    public void fetchByAccession(Integer accessionNum, SampleManager1.Load elements[],
+                                 AsyncCallback<SampleManager1> callback);
 
     public void query(Query query, AsyncCallback<ArrayList<IdAccessionVO>> callback);
-    
+
     public void fetchForUpdate(Integer sampleId, SampleManager1.Load elements[],
                                AsyncCallback<SampleManager1> callback);
 
@@ -76,23 +82,21 @@ public interface SampleServiceInt1Async {
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback);
 
-    public void validateAccessionNumber(SampleManager1 sm,
-                                AsyncCallback<Void> callback);
+    public void validateAccessionNumber(SampleManager1 sm, AsyncCallback<Void> callback);
 
-    public void mergeQuickEntry(SampleManager1 sm,
-                                   AsyncCallback<SampleManager1> callback);
+    public void mergeQuickEntry(SampleManager1 sm, AsyncCallback<SampleManager1> callback);
 
     public void importOrder(SampleManager1 sm, Integer orderId,
-                           AsyncCallback<SampleTestReturnVO> callback);
-    
+                            AsyncCallback<SampleTestReturnVO> callback);
+
     public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback);
 
     public void addAnalysis(SampleManager1 sm, SampleTestRequestVO test,
-                        AsyncCallback<SampleTestReturnVO> callback);
+                            AsyncCallback<SampleTestReturnVO> callback);
 
     public void addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
-                         AsyncCallback<SampleTestReturnVO> callback);
-    
+                            AsyncCallback<SampleTestReturnVO> callback);
+
     public void removeAnalysis(SampleManager1 sm, Integer analysisId,
                                AsyncCallback<SampleManager1> callback);
 
@@ -102,16 +106,16 @@ public interface SampleServiceInt1Async {
 
     public void changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer unitId,
                                      AsyncCallback<SampleTestReturnVO> callback);
-    
+
     public void changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId,
                                      AsyncCallback<SampleManager1> callback);
 
     public void changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId,
-                                AsyncCallback<SampleManager1> callback);
+                                   AsyncCallback<SampleManager1> callback);
 
     public void changeAnalysisPrep(SampleManager1 sm, Integer analysisId, Integer preAnalysisId,
-                            AsyncCallback<SampleManager1> callback);
-    
+                                   AsyncCallback<SampleManager1> callback);
+
     public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
                              AsyncCallback<SampleTestReturnVO> callback);
 

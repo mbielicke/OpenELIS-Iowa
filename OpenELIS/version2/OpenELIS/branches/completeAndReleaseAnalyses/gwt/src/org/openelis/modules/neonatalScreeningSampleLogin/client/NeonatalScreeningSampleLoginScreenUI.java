@@ -631,6 +631,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 historySampleQA.setEnabled(isState(DISPLAY));
             }
         });
+        
         historySampleQA.addCommand(new Command() {
             @Override
             public void execute() {
@@ -702,9 +703,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * disabled until the functionality for the orders for this
                  * domain has been implemented
                  */
-                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                orderId.setQueryMode(isState(QUERY));
-                // orderId.setEnabled(false);
+                //orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                //orderId.setQueryMode(isState(QUERY));
+                orderId.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
