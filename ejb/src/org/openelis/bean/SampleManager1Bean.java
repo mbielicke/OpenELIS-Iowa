@@ -665,6 +665,21 @@ public class SampleManager1Bean {
     }
 
     /**
+     * Returns sample managers based on the analyses found by the specified
+     * query and requested load elements
+     */
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(ArrayList<QueryData> fields, int first,
+                                                          int max, SampleManager1.Load... elements) throws Exception {
+        ArrayList<Integer> ids;
+
+        ids = new ArrayList<Integer>();
+
+        for (IdVO vo : analysis.query(fields, first, max))
+            ids.add(vo.getId());
+        return fetchByAnalyses(ids, elements);
+    }
+
+    /**
      * Returns sample managers loaded with additional elements
      */
     public SampleManager1 fetchWith(SampleManager1 sm, SampleManager1.Load... elements) throws Exception {
@@ -869,15 +884,16 @@ public class SampleManager1Bean {
         AnalysisReportFlagsDO defaultARF;
 
         /*
-         * validation needs test, aux group manager and pws DO. Build lists of analysis
-         * test ids, aux group ids to fetch test and aux group managers.
+         * validation needs test, aux group manager and pws DO. Build lists of
+         * analysis test ids, aux group ids to fetch test and aux group
+         * managers.
          */
         ids = new HashSet<Integer>();
         ids1 = new HashSet<Integer>();
         ids2 = new HashSet<Integer>();
         for (SampleManager1 sm : sms) {
             if (getSampleSDWIS(sm) != null)
-                    ids2.add(getSampleSDWIS(sm).getPwsId());            
+                ids2.add(getSampleSDWIS(sm).getPwsId());
             for (AnalysisViewDO an : getAnalyses(sm))
                 ids.add(an.getTestId());
             if (getAuxilliary(sm) != null) {
@@ -976,7 +992,7 @@ public class SampleManager1Bean {
          * analysis that is added to the database
          */
         defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
-        
+
         /*
          * the front code uses negative ids (temporary ids) to link sample items
          * and analysis, analysis and results. The negative ids are mapped to
@@ -1221,7 +1237,7 @@ public class SampleManager1Bean {
 
                             defaultARF.setAnalysisId(data.getId());
                             analysisReportFlags.add(defaultARF);
-                            
+
                             amap.put(tmpid, data.getId());
                             amap.put(data.getId(), data.getId());
                         } else if ( !amap.containsKey(data.getId())) {
@@ -1342,8 +1358,8 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Changes the sample's status to the passed value or the lowest
-     * status of the analyses
+     * Changes the sample's status to the passed value or the lowest status of
+     * the analyses
      */
     public void changeSampleStatus(SampleManager1 sm, Integer statusId) {
         boolean isError, isLoggedIn, isCompleted, isReleased;
@@ -2194,7 +2210,7 @@ public class SampleManager1Bean {
                             /*
                              * set the analysis in error because its data is
                              * inconsistent e.g. its unit of measure is not
-                             * valid for the sample item's sample type 
+                             * valid for the sample item's sample type
                              */
                             if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId()))
                                 analysisHelper.changeAnalysisStatus(sm,

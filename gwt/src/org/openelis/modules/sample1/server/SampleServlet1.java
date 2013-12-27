@@ -96,6 +96,17 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
+    
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query,
+                                                  SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchByAnalysisQuery(query.getFields(),
+                                                       query.getPage() * query.getRowsPerPage(),
+                                                       query.getRowsPerPage(), elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 
     public SampleManager1 fetchForUpdate(Integer sampleId, Load... elements) throws Exception {
         try {

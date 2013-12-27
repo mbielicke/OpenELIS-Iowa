@@ -128,6 +128,22 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query, Load... elements) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.fetchByAnalysisQuery(query, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchByAnalysisQuery(Query query,
+                                     Load[] elements,
+                                     AsyncCallback<ArrayList<SampleManager1>> callback) {
+        service.fetchByAnalysisQuery(query, elements, callback);
+    }
+
+    @Override
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
         Callback<ArrayList<SampleManager1>> callback;
