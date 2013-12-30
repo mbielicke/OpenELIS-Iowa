@@ -25,5 +25,16 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-
+  <inherits name="org.openelis.modules.worksheet1.Worksheet1"/>
+  <inherits name="org.openelis.modules.instrument.InstrumentService"/>
+  <inherits name="org.openelis.modules.sample1.Sample1"/>
+  <inherits name="org.openelis.modules.history.History"/>
+  <inherits name="org.openelis.modules.result.Result"/>
+  <inherits name="org.openelis.modules.qc.QCService"/>
+  <inherits name="org.openelis.modules.analysis.AnalysisService"/>
+  <inherits name="org.openelis.modules.sample.Sample"/>
+  <inherits name="org.openelis.modules.test.TestService"/>
+  <inherits name="org.openelis.modules.auxData.AuxData"/>
+  
+  <entry-point class="org.openelis.modules.worksheetBuilder.client.WorksheetBuilderEntry"/>
 </module>

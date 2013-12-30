@@ -1,1 +1,3 @@
-<module/>
+<module>
+  <entry-point class="org.openelis.modules.preferences.client.PreferenceEntry"/>
+</module>

@@ -36,6 +36,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -47,6 +48,9 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
+    
+    public static final SimpleEventBus mainBus = new SimpleEventBus();
+    
     /**
      * This is the entry point method.
      */
