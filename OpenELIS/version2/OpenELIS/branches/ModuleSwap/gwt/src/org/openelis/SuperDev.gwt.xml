@@ -24,16 +24,28 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
+
+<!--
+  This module is used to compile a version of OpenELIS compatible to 
+  be used with SuperDevelopment Mode. 
+ -->
 <module rename-to="openelis">
-  
+  <!--  Inherit base app module -->
   <inherits name="org.openelis.OpenELIS"/>
- 
+  
+  <!-- Used to link DebugIds for Testing -->
+  <inherits name="com.google.gwt.user.Debug"/>
+  
+  <!-- Inherit screen modules for compile -->
   <inherits name="org.openelis.modules.provider.Provider"/>
  
+  <!--  SuperDev mode only works with safari -->
   <set-property name="user.agent" value="safari" />
     
+  <!--  Keeps CSS classes in human readable form for development -->
   <set-configuration-property name="CssResource.style" value="pretty"/>
   
+  <!--  Creates the linker for SuperDev mode to redirect -->
   <add-linker name="xsiframe"/>
   <set-configuration-property name="devModeRedirectEnabled" value="true"/>
   

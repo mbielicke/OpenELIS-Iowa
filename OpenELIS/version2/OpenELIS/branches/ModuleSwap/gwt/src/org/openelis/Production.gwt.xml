@@ -24,7 +24,14 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
+
+<!-- This module definition is used to create the app with all screens and
+     browser implementations to be deployed to procuction system. 
+ -->
 <module rename-to="openelis">
+  <!--  Inherit base module of application -->
   <inherits name="org.openelis.OpenELIS"/>
+  
+  <!-- Inherit all screen modules for build -->
   <inherits name="org.openelis.modules.Screens"/>
 </module>
