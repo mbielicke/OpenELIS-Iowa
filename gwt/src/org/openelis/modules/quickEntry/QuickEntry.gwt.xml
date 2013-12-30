@@ -32,6 +32,5 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.systemvariable.SystemVariableService"/>
   <inherits name="org.openelis.modules.preferences.PreferencesService"/>
   
-  
   <entry-point class="org.openelis.modules.quickEntry.client.QuickEntry"/>
 </module>

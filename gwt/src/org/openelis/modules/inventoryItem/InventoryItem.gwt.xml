@@ -26,7 +26,7 @@ UIRF Software License are applicable instead of those above.
 -->
 <module>
   <inherits name="org.openelis.modules.history.History"/>
-  <inherits name="org.openelis.modules.note.Note"/>
+  <inherits name="org.openelis.modules.note.NoteService"/>
   
   <entry-point class="org.openelis.modules.inventoryItem.client.InventoryItemEntry"/>
 </module>
