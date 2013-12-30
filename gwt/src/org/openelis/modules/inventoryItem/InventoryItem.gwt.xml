@@ -25,5 +25,8 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
- 
+  <inherits name="org.openelis.modules.history.History"/>
+  <inherits name="org.openelis.modules.note.Note"/>
+  
+  <entry-point class="org.openelis.modules.inventoryItem.client.InventoryItemEntry"/>
 </module>

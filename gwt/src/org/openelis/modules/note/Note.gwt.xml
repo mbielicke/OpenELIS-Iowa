@@ -25,4 +25,6 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 
-<module/>
+<module>
+  <inherits name="org.openelis.modules.standardnote.StandardNote"/>
+</module>
