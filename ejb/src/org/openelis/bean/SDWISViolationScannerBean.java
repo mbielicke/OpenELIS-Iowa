@@ -27,8 +27,8 @@ package org.openelis.bean;
 
 import static org.openelis.manager.OrderManager1Accessor.getItems;
 import static org.openelis.manager.SampleManager1Accessor.getResults;
-import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -211,7 +211,7 @@ public class SDWISViolationScannerBean {
          * get all of the test results with abnormal flags that are associated
          * with the tests we are interested in
          */
-        trs = testResult.fetchTestResultsByTestIdsAndFlagPattern(tids, "rf%a%");
+        trs = testResult.fetchTestResultsByTestIdsAndFlagPattern(tids, "rf_an");
         if (trs.size() == 0) {
             log.log(Level.SEVERE, Messages.get().sdwisScan_noAbnormalResultsFoundException());
             systemVariable.abortUpdate(lastRun.getId());
