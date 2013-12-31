@@ -6,7 +6,7 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -18,7 +18,7 @@ public class ReportEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.TEST_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.TEST_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -45,7 +45,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SAMPLE_LOGIN_LABEL_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SAMPLE_LOGIN_LABEL_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -72,7 +72,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SAMPLE_LOGIN_LABEL_ADD_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SAMPLE_LOGIN_LABEL_ADD_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -99,7 +99,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.BATCH_FINAL_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.BATCH_FINAL_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -126,7 +126,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.BATCH_FINAL_REPORT_REPRINT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.BATCH_FINAL_REPORT_REPRINT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -153,7 +153,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.VERIFICATION_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.VERIFICATION_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -179,7 +179,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.REQUEST_FORM_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.REQUEST_FORM_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -205,7 +205,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SAMPLE_IN_HOUSE_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SAMPLE_IN_HOUSE_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -231,7 +231,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.VOLUME_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.VOLUME_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -257,7 +257,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.TURNAROUND_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.TURNAROUND_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -283,7 +283,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.QA_SUMMARY_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.QA_SUMMARY_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -310,7 +310,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SDWIS_UNLOAD_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SDWIS_UNLOAD_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -337,7 +337,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.TO_DO_ANALYTE_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.TO_DO_ANALYTE_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -363,8 +363,7 @@ public class ReportEntry implements EntryPoint {
                 
             }
         });
-        
-        OpenELISEntry.mainBus.addHandler(OpenELIS.KIT_TRACKING_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.KIT_TRACKING_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -390,7 +389,7 @@ public class ReportEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.HOLD_REFUSE_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.HOLD_REFUSE_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {

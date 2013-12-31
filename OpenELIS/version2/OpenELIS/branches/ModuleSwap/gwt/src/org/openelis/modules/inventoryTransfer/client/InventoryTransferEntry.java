@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -17,7 +18,7 @@ public class InventoryTransferEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.INVENTORY_TRANSFER, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.INVENTORY_TRANSFER, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -25,7 +26,7 @@ public class InventoryTransferEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(OpenELIS.getMessages().inventoryTransfer());
+                            window.setName(Messages.get().inventoryTransfer());
                             window.setSize("20px", "20px");
                             window.setContent(new InventoryTransferScreen(window));
                             OpenELIS.getBrowser().addWindow(window, "inventoryTransfer");

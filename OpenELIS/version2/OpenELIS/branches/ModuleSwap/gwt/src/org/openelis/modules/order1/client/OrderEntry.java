@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -17,7 +18,7 @@ public class OrderEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.INTERNAL_ORDER, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.INTERNAL_ORDER, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -25,7 +26,7 @@ public class OrderEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(OpenELIS.getMessages().internalOrder());
+                            window.setName(Messages.get().internalOrder());
                             window.setSize("880px", "588px");
                             window.setContent(new InternalOrderScreenUI(window));
                             OpenELIS.getBrowser().addWindow(window, "internalOrder");
@@ -43,7 +44,7 @@ public class OrderEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.VENDOR_ORDER, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.VENDOR_ORDER, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -51,7 +52,7 @@ public class OrderEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(OpenELIS.getMessages().vendorOrder());
+                            window.setName(Messages.get().vendorOrder());
                             window.setSize("880px", "588px");
                             window.setContent(new VendorOrderScreenUI(window));
                             OpenELIS.getBrowser().addWindow(window, "vendorOrder");
@@ -70,7 +71,7 @@ public class OrderEntry implements EntryPoint {
             }
         });
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SENDOUT_ORDER, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SENDOUT_ORDER, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -78,7 +79,7 @@ public class OrderEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(OpenELIS.getMessages().sendoutOrder());
+                            window.setName(Messages.get().sendoutOrder());
                             window.setSize("1020px", "588px");
                             window.setContent(new SendoutOrderScreenUI(window));
                             OpenELIS.getBrowser().addWindow(window, "sendoutOrder");

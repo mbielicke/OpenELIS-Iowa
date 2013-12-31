@@ -6,7 +6,7 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -18,7 +18,7 @@ public class TurnaroundStatisticEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.TURNAROUND_STATISTIC_REPORT, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.TURNAROUND_STATISTIC_REPORT, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {

@@ -37,7 +37,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="com.google.gwt.user.Debug"/>
   
   <!-- Inherit screen modules for compile -->
-  <inherits name="org.openelis.modules.provider.Provider"/>
+  <inherits name="org.openelis.modules.organization.OrganizationDev"/>
  
   <!--  SuperDev mode only works with safari -->
   <set-property name="user.agent" value="safari" />

@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -18,7 +19,7 @@ public class OrganizationEntry implements EntryPoint {
     @Override
     public void onModuleLoad() {
         
-        OpenELISEntry.mainBus.addHandler(OpenELIS.ORGANIZATION,new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.ORGANIZATION,new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -26,7 +27,7 @@ public class OrganizationEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(OpenELIS.getMessages().organization());
+                            window.setName(Messages.get().organization());
                             window.setSize("20px", "20px");
                             window.setContent(new OrganizationScreen(window));
                             OpenELIS.getBrowser().addWindow(window, "organization");

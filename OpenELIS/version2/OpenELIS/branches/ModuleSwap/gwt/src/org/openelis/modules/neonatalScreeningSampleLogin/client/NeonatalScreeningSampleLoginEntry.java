@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -17,7 +18,7 @@ public class NeonatalScreeningSampleLoginEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SAMPLE_NEONATAL, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SAMPLE_NEONATAL, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -25,7 +26,7 @@ public class NeonatalScreeningSampleLoginEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(OpenELIS.getMessages().neonatalScreeningSampleLogin());
+                            window.setName(Messages.get().neonatalScreeningSampleLogin());
                             window.setSize("890px", "850px");
                             window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
                             OpenELIS.getBrowser().addWindow(window, "neonatalScreeningSampleLogin");

@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -16,7 +17,7 @@ import com.google.gwt.user.client.Window;
 public class QCEntry implements EntryPoint {
     
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.QUALITY_CONTROL, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.QUALITY_CONTROL, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -24,7 +25,7 @@ public class QCEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(OpenELIS.getMessages().QC());
+                            window.setName(Messages.get().QC());
                             window.setSize("20px", "20px");
                             window.setContent(new QcScreen(window));
                             OpenELIS.getBrowser().addWindow(window, "QC");

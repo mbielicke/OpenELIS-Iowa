@@ -6,7 +6,7 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -17,7 +17,7 @@ import com.google.gwt.user.client.Window;
 public class SystemVariableEntry implements EntryPoint {
     
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SYSTEM_VARIABLE, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SYSTEM_VARIABLE, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {

@@ -49,7 +49,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
     
-    public static final SimpleEventBus mainBus = new SimpleEventBus();
+    public static final SimpleEventBus mainBus = ScreenBus.get();
     
     /**
      * This is the entry point method.
