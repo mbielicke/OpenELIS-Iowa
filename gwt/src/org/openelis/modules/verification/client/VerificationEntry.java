@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -16,13 +17,13 @@ import com.google.gwt.user.client.Window;
 public class VerificationEntry implements EntryPoint {
     
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.VERIFICATION, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.VERIFICATION, new ShowScreenHandler() {
             public void showScreen() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(OpenELIS.getMessages().verification());
+                            window.setName(Messages.get().verification());
                             window.setSize("20px", "20px");
                             window.setContent(new VerificationScreen(window));
                             OpenELIS.getBrowser().addWindow(window, "verification");

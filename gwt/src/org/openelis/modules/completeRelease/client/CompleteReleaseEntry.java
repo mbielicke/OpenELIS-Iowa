@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -17,7 +18,7 @@ public class CompleteReleaseEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.SAMPLE_COMPLETE_RELEASE, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.SAMPLE_COMPLETE_RELEASE, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -25,7 +26,7 @@ public class CompleteReleaseEntry implements EntryPoint {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(OpenELIS.getMessages().reviewAndRelease());
+                            window.setName(Messages.get().reviewAndRelease());
                             window.setSize("20px", "20px");
                             window.setContent(new CompleteReleaseScreen(window));
                             OpenELIS.getBrowser().addWindow(window, "reviewAndRelease");

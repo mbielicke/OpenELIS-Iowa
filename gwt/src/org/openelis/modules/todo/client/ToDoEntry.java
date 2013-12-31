@@ -4,8 +4,9 @@ import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.OpenELISEntry;
+import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -17,7 +18,7 @@ public class ToDoEntry implements EntryPoint {
     
     @Override
     public void onModuleLoad() {
-        OpenELISEntry.mainBus.addHandler(OpenELIS.TO_DO, new ShowScreenHandler() {
+        ScreenBus.get().addHandler(ScreenBus.TO_DO, new ShowScreenHandler() {
             
             @Override
             public void showScreen() {
@@ -27,7 +28,7 @@ public class ToDoEntry implements EntryPoint {
 
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(OpenELIS.getMessages().toDo());
+                            window.setName(Messages.get().toDo());
                             window.setSize("20px", "20px");
                             screen = new ToDoScreen(window);
                             window.setContent(screen);

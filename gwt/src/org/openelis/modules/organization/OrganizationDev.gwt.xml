@@ -1,0 +1,8 @@
+<module rename-to="openelis">
+  <inherits name="org.openelis.modules.history.History"/>
+  <inherits name="org.openelis.modules.note.NoteService"/>
+  <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
+  
+  <entry-point class="org.openelis.modules.organization.client.OrganizationDevEntry"/>
+  
+</module>
