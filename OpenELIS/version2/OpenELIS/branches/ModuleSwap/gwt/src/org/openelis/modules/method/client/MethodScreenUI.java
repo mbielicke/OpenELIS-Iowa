@@ -635,5 +635,55 @@ public class MethodScreenUI extends Screen {
         }
 
     }
+    
+    @Override
+    protected void onEnsureDebugId(String baseID) {
+        super.onEnsureDebugId(baseID);
+        
+        activeBegin.ensureDebugId(baseID + Ids.ACTIVE_BEGIN);
+        activeEnd.ensureDebugId(baseID + Ids.ACTIVE_END);
+        name.ensureDebugId(baseID + Ids.NAME);
+        description.ensureDebugId(baseID + Ids.DESCRIPTION);
+        reportingDescription.ensureDebugId(baseID + Ids.REPORTING_DESCRIPTION);
+        isActive.ensureDebugId(baseID + Ids.IS_ACTIVE);
+        query.ensureDebugId(baseID + Ids.QUERY);
+        previous.ensureDebugId(baseID + Ids.PREVIOUS);
+        next.ensureDebugId(baseID + Ids.NEXT);
+        add.ensureDebugId(baseID + Ids.ADD);
+        update.ensureDebugId(baseID + Ids.UPDATE);
+        commit.ensureDebugId(baseID + Ids.COMMIT);
+        abort.ensureDebugId(baseID + Ids.ABORT);
+        atozNext.ensureDebugId(baseID + Ids.A_TO_Z_NEXT);
+        atozPrev.ensureDebugId(baseID + Ids.A_TO_Z_PREV);
+        optionsButton.ensureDebugId(baseID + Ids.OPTIONS_BUTTON);
+        optionsMenu.ensureDebugId(baseID + Ids.OPTIONS_MENU);
+        history.ensureDebugId(baseID + Ids.HISTORY);
+        atozButtons.ensureDebugId(baseID + Ids.A_TO_Z_Buttons);
+        atozTable.ensureDebugId(baseID + Ids.A_TO_Z_TABLE);
+    }
+    
+    public static class Ids {
+        
+        public static final String ACTIVE_BEGIN = ".activeBegin",
+                                   ACTIVE_END = ".activeEnd",
+                                   NAME = ".name",
+                                   DESCRIPTION = ".description",
+                                   REPORTING_DESCRIPTION = ".reportingDescription",
+                                   IS_ACTIVE = ".isActive",
+                                   QUERY = ".query",
+                                   PREVIOUS = ".previous", 
+                                   NEXT = ".next",
+                                   ADD = ".add",
+                                   UPDATE = ".update",
+                                   COMMIT = ".commit",
+                                   ABORT = ".abort",
+                                   A_TO_Z_NEXT = ".atozNext",
+                                   A_TO_Z_PREV = ".atozPrev",
+                                   OPTIONS_BUTTON = ".optionsButton",
+                                   OPTIONS_MENU = ".optionsMenu",
+                                   HISTORY = ".history",
+                                   A_TO_Z_Buttons = ".atozButtons",
+                                   A_TO_Z_TABLE = ".atozTable";
+    }
 
 }

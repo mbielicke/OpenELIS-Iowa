@@ -36,6 +36,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -101,6 +102,8 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                 });
             }
         });
+        
+        DebugInfo.setDebugIdPrefix("");
     }
 
     /**

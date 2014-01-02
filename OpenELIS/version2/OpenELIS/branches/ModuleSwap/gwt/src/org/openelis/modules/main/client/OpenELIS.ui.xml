@@ -153,7 +153,7 @@
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
                 </w:Menu>
               </w:Menu>
-              <w:Menu label="{msg.maintenance}">
+              <w:Menu label="{msg.maintenance}" ui:field="maintenance">
                 <w:MenuItem description="{msg.testDescription}" enabled="false" icon="{res.icon.testIcon}" ui:field="test"
                   display="{msg.test}" />
                 <w:MenuItem description="{msg.methodDescription}" enabled="false" icon="{res.icon.methodIcon}" ui:field="method"
