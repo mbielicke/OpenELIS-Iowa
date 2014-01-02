@@ -237,7 +237,7 @@ public class MCLViolationReportBean {
                                   bactPosBody.toString());
                         sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
                                   "\r\n" + bactPosBody.toString());
-                        log.fine("Bacterial Positive email sent for PWS ID " + analysis.getPwsId());
+                        log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
                         bactPosBody.setLength(0);
                     }
                     lastPWSId = analysis.getPwsId();
@@ -304,7 +304,7 @@ public class MCLViolationReportBean {
                           bactPosBody.toString());
                 sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
                           "\r\n" + bactPosBody.toString());
-                log.fine("Bacterial Positive email sent for PWS ID " + analysis.getPwsId());
+                log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
             }
 
             lastRun.setValue(format.format(now));
