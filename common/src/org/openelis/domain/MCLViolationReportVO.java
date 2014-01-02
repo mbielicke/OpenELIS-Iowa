@@ -40,11 +40,11 @@ public class MCLViolationReportVO implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, accessionNumber, stateLabId, analysisId,
-                              sectionId, unitOfMeasureId;
+    protected Integer         sampleId, accessionNumber, stateLabId, sampleCategoryId,
+                              sampleTypeId, analysisId, sectionId, unitOfMeasureId;
     protected Datetime        collectionDate, collectionTime, anaStartedDate, anaReleasedDate;
-    protected String          facilityId, sampleType, samplePointId, location, pwsId,
-                              pwsName, fieldOffice, organizationName, testName, 
+    protected String          facilityId, sampleType, samplePointId, location, collector,
+                              pwsId, pwsName, fieldOffice, organizationName, testName,
                               methodName, unitDescription, sectionName;
 
     public MCLViolationReportVO() {
@@ -52,7 +52,8 @@ public class MCLViolationReportVO implements Serializable {
     
     public MCLViolationReportVO(Integer sampleId, Integer accessionNumber, Date collectionDate,
                                 Date collectionTime, Integer stateLabId, String facilityId,
-                                String sampleType, String samplePointId, String location,
+                                Integer sampleTypeId, String sampleType, Integer sampleCategoryId,
+                                String samplePointId, String location, String collector,
                                 String pwsId, String pwsName, String fieldOffice,
                                 String organizationName, Integer analysisId, Integer sectionId,
                                 String sectionName, Integer unitOfMeasureId, Date anaStartedDate,
@@ -64,9 +65,12 @@ public class MCLViolationReportVO implements Serializable {
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setStateLabId(stateLabId);
         setFacilityId(DataBaseUtil.trim(facilityId));
+        setSampleTypeId(sampleTypeId);
         setSampleType(DataBaseUtil.trim(sampleType));
+        setSampleCategoryId(sampleCategoryId);
         setSamplePointId(DataBaseUtil.trim(samplePointId));
         setLocation(DataBaseUtil.trim(location));
+        setCollector(DataBaseUtil.trim(collector));
         setPwsId(DataBaseUtil.trim(pwsId));
         setPwsName(DataBaseUtil.trim(pwsName));
         setFieldOffice(DataBaseUtil.trim(fieldOffice));
@@ -130,12 +134,28 @@ public class MCLViolationReportVO implements Serializable {
         this.facilityId = DataBaseUtil.trim(facilityId);
     }
 
+    public Integer getSampleTypeId() {
+        return sampleTypeId;
+    }
+
+    public void setSampleTypeId(Integer sampleTypeId) {
+        this.sampleTypeId = sampleTypeId;
+    }
+
     public String getSampleType() {
         return sampleType;
     }
 
     public void setSampleType(String sampleType) {
         this.sampleType = DataBaseUtil.trim(sampleType);
+    }
+
+    public Integer getSampleCategoryId() {
+        return sampleCategoryId;
+    }
+
+    public void setSampleCategoryId(Integer sampleCategoryId) {
+        this.sampleCategoryId = sampleCategoryId;
     }
 
     public String getSamplePointId() {
@@ -152,6 +172,14 @@ public class MCLViolationReportVO implements Serializable {
 
     public void setLocation(String location) {
         this.location = DataBaseUtil.trim(location);
+    }
+
+    public String getCollector() {
+        return collector;
+    }
+
+    public void setCollector(String collector) {
+        this.collector = DataBaseUtil.trim(collector);
     }
 
     public String getPwsId() {
