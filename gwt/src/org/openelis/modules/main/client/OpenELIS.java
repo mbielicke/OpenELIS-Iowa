@@ -39,6 +39,7 @@ import org.openelis.modules.main.client.event.ShowScreenHandler;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
@@ -66,6 +67,9 @@ public class OpenELIS extends Screen {
     protected static Browser        browser;
     // protected CollapsePanel favoritesCollapse;
     protected static OpenELISConstants               msg      = GWT.create(OpenELISConstants.class);
+    
+    @UiField
+    protected Menu maintenance;
 
     @UiField
     protected MenuItem              preference, logout, sampleLoginLabelReport,
@@ -112,7 +116,8 @@ public class OpenELIS extends Screen {
     }
 
     protected void initialize() {
-
+        ensureDebugId("main");
+        
         addCommand(preference, "openelis", new Command() {
             public void execute() {
                 showScreen(PREFERENCE);
@@ -612,5 +617,176 @@ public class OpenELIS extends Screen {
                 item.addCommand(handler);
             }
         }
+    }
+    
+    @Override
+    protected void onEnsureDebugId(String baseID) {
+        super.onEnsureDebugId(baseID);
+        
+        preference.ensureDebugId(baseID + Ids.PREFRENCE); 
+        logout.ensureDebugId(baseID + Ids.LOGOUT); 
+        sampleLoginLabelReport.ensureDebugId(baseID + Ids.SAMPLE_LOGIN_LABEL_REPORT);
+        sampleLoginLabelAdditionalReport.ensureDebugId(baseID + Ids.SAMPLE_LOGIN_ADDITIONAL_REPORT);
+        quickEntry.ensureDebugId(baseID + Ids.QUICK_ENTRY);
+        verification.ensureDebugId(baseID + Ids.VERIFICATION); 
+        tracking.ensureDebugId(baseID + Ids.TRACKING);
+        environmentalSampleLogin.ensureDebugId(baseID + Ids.ENVIRONMENTAL_SAMPLE_LOGIN);
+        privateWellWaterSampleLogin.ensureDebugId(baseID + Ids.PRIVATE_WELL_WATER_SAMPLE_LOGIN);
+        sdwisSampleLogin.ensureDebugId(baseID + Ids.SDWIS_SAMPLE_LOGIN);
+        clinicalSampleLogin.ensureDebugId(baseID + Ids.CLINICAL_SAMPLE_LOGIN);
+        neonatalScreeningSampleLogin.ensureDebugId(baseID + Ids.NEONATAL_SCREENING_SAMPLE_LOGIN);
+        animalSampleLogin.ensureDebugId(baseID + Ids.ANIMAL_SAMPLE_LOGIN);
+        ptSampleLogin.ensureDebugId(baseID + Ids.PT_SAMPLE_LOGIN);
+        testSampleManager.ensureDebugId(baseID + Ids.TEST_SAMPLE_MANAGER);
+        project.ensureDebugId(baseID + Ids.PROJECT); 
+        provider.ensureDebugId(baseID + Ids.PROVIDER);
+        organization.ensureDebugId(baseID + Ids.ORGANIZATION);
+        worksheetBuilder.ensureDebugId(baseID + Ids.WORKSHEET_BUILDER); 
+        worksheetCreation.ensureDebugId(baseID + Ids.WORKSHEET_CREATION); 
+        worksheetCompletion.ensureDebugId(baseID + Ids.WORKSHEET_COMPLETION);
+        addOrCancel.ensureDebugId(baseID + Ids.ADD_OR_CANCEL);
+        reviewAndRelease.ensureDebugId(baseID + Ids.REVIEW_AND_RELEASE);
+        toDo.ensureDebugId(baseID + Ids.TO_DO);
+        labelFor.ensureDebugId(baseID + Ids.LABEL_FOR); 
+        storage.ensureDebugId(baseID + Ids.STORAGE);
+        QC.ensureDebugId(baseID + Ids.QC); 
+        analyteParameter.ensureDebugId(baseID + Ids.ANALYTE_PARAMETER);
+        internalOrder.ensureDebugId(baseID + Ids.INTERNAL_ORDER);
+        vendorOrder.ensureDebugId(baseID + Ids.VENDOR_ORDER);
+        sendoutOrder.ensureDebugId(baseID + Ids.SENDOUT_ORDER);
+        fillOrder.ensureDebugId(baseID + Ids.FILL_ORDER);
+        shipping.ensureDebugId(baseID + Ids.SHIPPING);
+        buildKits.ensureDebugId(baseID + Ids.BUILD_KITS);
+        inventoryTransfer.ensureDebugId(baseID + Ids.INVENTORY_TRANSFER);
+        inventoryReceipt.ensureDebugId(baseID + Ids.INVENTORY_RECEIPT);
+        inventoryAdjustment.ensureDebugId(baseID + Ids.INVENTORY_ADJUSTMENT);
+        inventoryItem.ensureDebugId(baseID + Ids.INVENTORY_ITEM);
+        verificationReport.ensureDebugId(baseID + Ids.VERIFICAITON_REPORT);
+        testRequestFormReport.ensureDebugId(baseID + Ids.TEST_REQUEST_FORM_REPORT);
+        orderRequestForm.ensureDebugId(baseID + Ids.ORDER_REQUEST_FORM); 
+        holdRefuseOrganization.ensureDebugId(baseID + Ids.HOLD_REFUSE_ORGANIZATION);
+        testReport.ensureDebugId(baseID + Ids.TEST_REPORT);
+        billingReport.ensureDebugId(baseID + Ids.BILLING_REPORT);
+        sampleInhouseReport.ensureDebugId(baseID + Ids.SAMPLE_IN_HOUSE_REPORT); 
+        volumeReport.ensureDebugId(baseID + Ids.VOLUME_REPORT);
+        toDoAnalyteReport.ensureDebugId(baseID + Ids.TO_DO_ANALYTE_REPORT);
+        sampleDataExport.ensureDebugId(baseID + Ids.SAMPLE_DATA_EXPORT);
+        QASummaryReport.ensureDebugId(baseID + Ids.QA_SUMMARY_REPORT);
+        testCountByFacility.ensureDebugId(baseID + Ids.TEST_COUNTY_BY_FACILITY);
+        turnaround.ensureDebugId(baseID + Ids.TURNAROUND);
+        turnAroundStatisticReport.ensureDebugId(baseID + Ids.TURNAROUND_STATISTIC_REPORT);
+        kitTrackingReport.ensureDebugId(baseID + Ids.KIT_TRACKING_REPORT);
+        sdwisUnloadReport.ensureDebugId(baseID + Ids.SDWIS_UNLOAD_REPORT);
+        dataView.ensureDebugId(baseID + Ids.DATA_VIEW);
+        qcChart.ensureDebugId(baseID + Ids.QC_CHART);
+        finalReport.ensureDebugId(baseID + Ids.FINAL_REPORT);
+        finalReportBatch.ensureDebugId(baseID + Ids.FINAL_REPORT_BATCH);
+        finalReportBatchReprint.ensureDebugId(baseID + Ids.FINAL_REPORT_BATCH_REPRINT);
+        test.ensureDebugId(baseID + Ids.TEST);
+        method.ensureDebugId(baseID + Ids.METHOD);
+        panel.ensureDebugId(baseID + Ids.PANEL);
+        QAEvent.ensureDebugId(baseID + Ids.QA_EVENT);
+        labSection.ensureDebugId(baseID + Ids.LAB_SECTION); 
+        analyte.ensureDebugId(baseID + Ids.ANALYTE);
+        dictionary.ensureDebugId(baseID + Ids.DICTIONARY);
+        auxiliaryPrompt.ensureDebugId(baseID + Ids.AUXILIARY_PROMPT);
+        exchangeVocabularyMap.ensureDebugId(baseID + Ids.EXCHANGE_VOCABULARY_MAP);
+        exchangeDataSelection.ensureDebugId(baseID + Ids.EXCHANGE_DATA_SELECTION); 
+        label.ensureDebugId(baseID + Ids.LABEL);
+        standardNote.ensureDebugId(baseID + Ids.STANDARD_NOTE);
+        trailerForTest.ensureDebugId(baseID + Ids.TRAILER_FOR_TEST);
+        storageUnit.ensureDebugId(baseID + Ids.STORAGE_UNIT);
+        storageLocation.ensureDebugId(baseID + Ids.STORAGE_LOCATION);
+        instrument.ensureDebugId(baseID + Ids.INSTRUMENT);
+        scriptlet.ensureDebugId(baseID + Ids.SCRIPTLET);
+        systemVariable.ensureDebugId(baseID + Ids.SYSTEM_VARIABLE);
+        pws.ensureDebugId(baseID + Ids.PWS);
+        cron.ensureDebugId(baseID + Ids.CRON); 
+        logs.ensureDebugId(baseID + Ids.LOGS);   
+        maintenance.ensureDebugId(baseID + Ids.MAINTENANCE);
+    }
+    
+    public static class Ids {
+        public static final String PREFRENCE = ".preference", 
+        		                   LOGOUT = ".logout", 
+        		                   SAMPLE_LOGIN_LABEL_REPORT = ".sampleLoginLabelReport",
+        		                   SAMPLE_LOGIN_ADDITIONAL_REPORT = ".sampleLoginLabelAdditionalReport",
+        		                   QUICK_ENTRY = ".quickEntry",
+        		                   VERIFICATION = ".verification", 
+        		                   TRACKING = ".tracking",
+        		                   ENVIRONMENTAL_SAMPLE_LOGIN = ".environmentalSampleLogin",
+        		                   PRIVATE_WELL_WATER_SAMPLE_LOGIN = ".privateWellWaterSampleLogin",
+        		                   SDWIS_SAMPLE_LOGIN = ".sdwisSampleLogin",
+        		                   CLINICAL_SAMPLE_LOGIN = ".clinicalSampleLogin",
+        		                   NEONATAL_SCREENING_SAMPLE_LOGIN = ".neonatalScreeningSampleLogin",
+        		                   ANIMAL_SAMPLE_LOGIN = ".animalSampleLogin",
+        		                   PT_SAMPLE_LOGIN = ".ptSampleLogin",
+        		                   TEST_SAMPLE_MANAGER = ".testSampleManager",
+        		                   PROJECT = ".project", 
+        		                   PROVIDER = ".provider",
+        		                   ORGANIZATION = ".organization",
+        		                   WORKSHEET_BUILDER = ".worksheetBuilder", 
+        		                   WORKSHEET_CREATION = ".worksheetCreation", 
+        		                   WORKSHEET_COMPLETION = ".worksheetCompletion",
+        		                   ADD_OR_CANCEL = ".addOrCancel",
+        		                   REVIEW_AND_RELEASE = ".reviewAndRelease",
+        		                   TO_DO = ".toDo",
+        		                   LABEL_FOR = ".labelFor", 
+        		                   STORAGE = ".storage",
+        		                   QC = ".QC", 
+        		                   ANALYTE_PARAMETER = ".analyteParameter",
+        		                   INTERNAL_ORDER = ".internalOrder",
+        		                   VENDOR_ORDER = ".vendorOrder",
+        		                   SENDOUT_ORDER = ".sendoutOrder",
+        		                   FILL_ORDER = ".fillOrder",
+        		                   SHIPPING = ".shipping",
+        		                   BUILD_KITS = ".buildKits",
+        		                   INVENTORY_TRANSFER = ".inventoryTransfer",
+        		                   INVENTORY_RECEIPT = ".inventoryReceipt",
+        		                   INVENTORY_ADJUSTMENT = ".inventoryAdjustment",
+        		                   INVENTORY_ITEM = ".inventoryItem",
+        		                   VERIFICAITON_REPORT = ".verificationReport",
+        		                   TEST_REQUEST_FORM_REPORT = ".testRequestFormReport",
+        		                   ORDER_REQUEST_FORM = ".orderRequestForm", 
+        		                   HOLD_REFUSE_ORGANIZATION = ".holdRefuseOrganization",
+        		                   TEST_REPORT = ".testReport",
+        		                   BILLING_REPORT = ".billingReport",
+        		                   SAMPLE_IN_HOUSE_REPORT = ".sampleInhouseReport", 
+        		                   VOLUME_REPORT = ".volumeReport",
+        		                   TO_DO_ANALYTE_REPORT = ".toDoAnalyteReport",
+        		                   SAMPLE_DATA_EXPORT = ".sampleDataExport",
+        		                   QA_SUMMARY_REPORT = ".QASummaryReport",
+        		                   TEST_COUNTY_BY_FACILITY = ".testCountByFacility",
+        		                   TURNAROUND = ".turnaround",
+        		                   TURNAROUND_STATISTIC_REPORT = ".turnAroundStatisticReport",
+        		                   KIT_TRACKING_REPORT = ".kitTrackingReport",
+        		                   SDWIS_UNLOAD_REPORT = ".sdwisUnloadReport",
+        		                   DATA_VIEW = ".dataView",
+        		                   QC_CHART = ".qcChart",
+        		                   FINAL_REPORT = ".finalReport",
+        		                   FINAL_REPORT_BATCH = ".finalReportBatch",
+        		                   FINAL_REPORT_BATCH_REPRINT = ".finalReportBatchReprint",
+        		                   TEST = ".test",
+        		                   METHOD = ".method",
+        		                   PANEL = ".panel",
+        		                   QA_EVENT = ".QAEvent",
+        		                   LAB_SECTION = ".labSection", 
+        		                   ANALYTE = ".analyte",
+        		                   DICTIONARY = ".dictionary",
+        		                   AUXILIARY_PROMPT = ".auxiliaryPrompt",
+        		                   EXCHANGE_VOCABULARY_MAP = ".exchangeVocabularyMap",
+        		                   EXCHANGE_DATA_SELECTION = ".exchangeDataSelection", 
+        		                   LABEL = ".label",
+        		                   STANDARD_NOTE = ".standardNote",
+        		                   TRAILER_FOR_TEST = ".trailerForTest",
+        		                   STORAGE_UNIT = ".storageUnit",
+        		                   STORAGE_LOCATION = ".storageLocation",
+        		                   INSTRUMENT = ".instrument",
+        		                   SCRIPTLET = ".scriptlet",
+        		                   SYSTEM_VARIABLE = ".systemVariable",
+        		                   PWS = ".pws",
+        		                   CRON = ".cron", 
+        		                   LOGS = ".logs",  
+                                   MAINTENANCE = ".maintenence";
     }
 }
