@@ -50,6 +50,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.NotFoundException;
@@ -79,6 +80,8 @@ public class MCLViolationReportBean {
     private SectionParameterBean sectParamBean;
     @EJB
     private SystemVariableBean   sysVarBean;
+    @EJB
+    private TestResultBean       testResultBean;
 
     private static final Logger  log = Logger.getLogger("openelis");
 
@@ -138,8 +141,8 @@ public class MCLViolationReportBean {
         ReportStatus status;
         ResultViewDO rowResult, colResult;
         SimpleDateFormat format;
-        String resultSign, resultString, toEmail;
-        StringBuilder shlBody, dnrBody;
+        String lastPWSId, resultSign, resultString, toEmail;
+        StringBuilder bactPosBody, dnrMCLBody, shlMCLBody;
         SystemVariableDO lastRun;
 
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -172,8 +175,10 @@ public class MCLViolationReportBean {
                 analysisList = new ArrayList<MCLViolationReportVO>();
             }
 
-            shlBody = new StringBuilder();
-            dnrBody = new StringBuilder();
+            lastPWSId = "xyzzy";
+            bactPosBody = new StringBuilder();
+            dnrMCLBody = new StringBuilder();
+            shlMCLBody = new StringBuilder();
             analysis = new MCLViolationReportVO();
             for (i = 0; i < analysisList.size(); i++ ) {
                 analysis = analysisList.get(i);
@@ -223,6 +228,22 @@ public class MCLViolationReportBean {
                                ") is missing results.");
                     continue;
                 }
+                
+                if (!lastPWSId.equals(analysis.getPwsId())) {
+                    if (!"xyzzy".equals(lastPWSId) && bactPosBody.length() > 0) {
+                        sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                                  "\r\nThis is an automatic notification for Bacterial Positive. " +
+                                  "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
+                                  bactPosBody.toString());
+                        sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                                  "\r\n" + bactPosBody.toString());
+                        log.fine("Bacterial Positive email sent for PWS ID " + analysis.getPwsId());
+                        bactPosBody.setLength(0);
+                    }
+                    lastPWSId = analysis.getPwsId();
+                }
+                printBactPosBody(bactPosBody, analysis, adMan, results);
+                
                 for (j = 0; j < results.size(); j++) {
                     resultRow = results.get(j);
                     rowResult = resultRow.get(0);
@@ -245,13 +266,13 @@ public class MCLViolationReportBean {
                                     mclValue = Double.parseDouble(colResult.getValue());
                                     if (resultValue > mclValue ||
                                         (resultValue == mclValue && (resultSign == null || !"<".equals(resultSign)))) {
-                                        if (shlBody.length() <= 0)
-                                            printHeader(shlBody, analysis);
-                                        printResultRow(shlBody,
+                                        if (shlMCLBody.length() <= 0)
+                                            printSHLMCLHeader(shlMCLBody, analysis);
+                                        printSHLMCLResultRow(shlMCLBody,
                                                        analysis,
                                                        rowResult,
                                                        colResult);
-                                        printDNR(dnrBody, analysis, adMan, rowResult);
+                                        printDNRMCL(dnrMCLBody, analysis, adMan, rowResult);
                                     }
                                 } catch (NumberFormatException numE) {
                                     log.log(Level.SEVERE,
@@ -264,16 +285,26 @@ public class MCLViolationReportBean {
                     }
                 }
 
-                if (shlBody.length() > 0) {
-                    printFooter(shlBody);
-                    sendEmail(toEmail, "OpenELIS MCL Violation", shlBody.toString());
+                if (shlMCLBody.length() > 0) {
+                    printSHLMCLFooter(shlMCLBody);
+                    sendEmail(toEmail, "OpenELIS MCL Violation", shlMCLBody.toString());
                     sendEmail(dnrEmail, "Chemical Exceedance Report for " +
-                                        analysis.getFieldOffice(), dnrBody.toString());
+                                        analysis.getFieldOffice(), dnrMCLBody.toString());
                     log.fine("MCL Violation email sent for Accession #" +
                              analysis.getAccessionNumber());
-                    shlBody.setLength(0);
-                    dnrBody.setLength(0);
+                    shlMCLBody.setLength(0);
+                    dnrMCLBody.setLength(0);
                 }
+            }
+
+            if (bactPosBody.length() > 0) {
+                sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                          "\r\nThis is an automatic notification for Bacterial Positive. " +
+                          "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
+                          bactPosBody.toString());
+                sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                          "\r\n" + bactPosBody.toString());
+                log.fine("Bacterial Positive email sent for PWS ID " + analysis.getPwsId());
             }
 
             lastRun.setValue(format.format(now));
@@ -288,7 +319,7 @@ public class MCLViolationReportBean {
         return status;
     }
 
-    protected void printHeader(StringBuilder body, MCLViolationReportVO analysis) {
+    protected void printSHLMCLHeader(StringBuilder body, MCLViolationReportVO analysis) {
         body.append("\r\n")
             .append("This is an automatic notification for MCL violation. NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n")
             .append("The following analyte(s) exceed the MCL specified by the test and IDNR has been notified.<br>\r\n")
@@ -309,7 +340,7 @@ public class MCLViolationReportBean {
             .append("<td>MCL</td></tr>\r\n");
     }
 
-    protected void printResultRow(StringBuilder body, MCLViolationReportVO analysis,
+    protected void printSHLMCLResultRow(StringBuilder body, MCLViolationReportVO analysis,
                                   ResultViewDO rowResult, ResultViewDO mclResult) {
         body.append("    <tr><td>").append(rowResult.getAnalyte()).append("</td>")
             .append("<td>").append(rowResult.getValue()).append("</td>")
@@ -317,14 +348,14 @@ public class MCLViolationReportBean {
             .append("<td>").append(mclResult.getValue()).append("</td></tr>\r\n");
     }
 
-    protected void printFooter(StringBuilder body) {
+    protected void printSHLMCLFooter(StringBuilder body) {
         body.append("</table>\r\n")
             .append("<br>\r\n")
             .append("* Result values are changed to mg/L if required.<br>\r\n")
             .append("<br>\r\n");
     }
 
-    protected void printDNR(StringBuilder body, MCLViolationReportVO analysis,
+    protected void printDNRMCL(StringBuilder body, MCLViolationReportVO analysis,
                             AuxDataManager adMan, ResultViewDO rowResult) {
         int i;
         AuxDataViewDO auxDataVDO;
@@ -390,6 +421,129 @@ public class MCLViolationReportBean {
               .append("Analysis Released ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
               .append("Result ").append(getAdjustedResult(rowResult, analysis)).append("<br>\r\n")
               .append("<br>\r\n");
+    }
+    
+    protected void printBactPosBody(StringBuilder body, MCLViolationReportVO analysis,
+                                    AuxDataManager adMan, ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
+        boolean positive;
+        int i;
+        AuxDataViewDO adVDO;
+        ResultViewDO rowResult;
+        String freeChlorine, repeatCode, totalChlorine, origSampleNumber;
+        StringBuilder resultLines;
+        TestResultViewDO trVDO;
+        
+        if (!Constants.dictionary().SDWIS_CATEGORY_BACTERIAL.equals(analysis.getSampleCategoryId()) ||
+            (!Constants.dictionary().SMPL_TYPE_RP.equals(analysis.getSampleTypeId()) &&
+             !Constants.dictionary().SMPL_TYPE_RT.equals(analysis.getSampleTypeId())))
+            return;
+        
+        positive = false;
+        resultLines = new StringBuilder();
+        for (ArrayList<ResultViewDO> resultRow : results) {
+            rowResult = resultRow.get(0);
+            resultLines.append(rowResult.getAnalyte()).append(" Result ");
+            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rowResult.getTypeId()))
+                resultLines.append(dictionaryCache.getById(Integer.valueOf(rowResult.getValue()))
+                                                  .getEntry());
+            else
+                resultLines.append(rowResult.getValue());
+            resultLines.append("<br>\r\n");
+            
+            try {
+                trVDO = testResultBean.fetchById(rowResult.getTestResultId());
+                if (Constants.dictionary().RESULT_FLAG_ABNORMAL_DNR.equals(trVDO.getFlagsId()))
+                    positive = true;
+            } catch (Exception anyE) {
+                log.severe(anyE.getMessage());
+                throw anyE;
+            }
+        }
+        
+        if (!positive)
+            return;
+        
+        repeatCode = "";
+        freeChlorine = "";
+        totalChlorine = "";
+        origSampleNumber = "";
+        for (i = 0; i < adMan.count(); i++) {
+            adVDO = adMan.getAuxDataAt(i);
+            if ("repeat_code".equals(adVDO.getAnalyteExternalId())) {
+                if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
+                    try {
+                        repeatCode = dictionaryCache.getById(Integer.valueOf(adVDO.getValue()))
+                                                    .getCode();
+                    } catch (Exception anyE) {
+                        log.severe("Error looking up dictionary entry for Repeat Code; " +
+                                   anyE.getMessage());
+                        throw anyE;
+                    }
+                }
+            } else if ("free_chlorine".equals(adVDO.getAnalyteExternalId()) && adVDO.getValue() != null) {
+                freeChlorine = adVDO.getValue();
+            } else if ("total_chlorine".equals(adVDO.getAnalyteExternalId()) && adVDO.getValue() != null) {
+                totalChlorine = adVDO.getValue();
+            } else if ("orig_sample_number".equals(adVDO.getAnalyteExternalId()) && adVDO.getValue() != null) {
+                origSampleNumber = adVDO.getValue();
+            }
+        }
+
+        if (body.length() <= 0) {
+            body.append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
+                .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
+                .append("Lab ID ");
+
+            if (analysis.getSectionName().endsWith("-ank"))
+                body.append("397");
+            else if (analysis.getSectionName().endsWith("-ic"))
+                body.append("27");
+            else if (analysis.getSectionName().endsWith("-lk"))
+                body.append("393");
+            
+            body.append("<br>\r\n");
+        }
+    
+        body.append("Facility ID ");
+        
+        if (analysis.getFacilityId() != null)
+            body.append(analysis.getFacilityId());
+    
+        body.append("<br>\r\n")
+            .append("Sample Point Description ");
+        
+        if (analysis.getLocation() != null)
+            body.append(analysis.getLocation());
+    
+        body.append("<br>\r\n")
+              .append("Sample Type ").append(analysis.getSampleType().substring(0, 2)).append("<br>\r\n")
+              .append("Sample Collection Date ").append(ReportUtil.toString(analysis.getCollectionDate(), "yyyy-MM-dd"));
+        
+        if (analysis.getCollectionTime() != null)
+            body.append(" ").append(ReportUtil.toString(analysis.getCollectionTime(), "HH:mm"));
+
+        body.append("<br>\r\n")
+            .append("Lab Sample # ").append("OE").append(analysis.getAccessionNumber()).append("<br>\r\n")
+            .append(resultLines.toString());
+        
+        if (Constants.dictionary().SMPL_TYPE_RP.equals(analysis.getSampleTypeId()))
+            body.append("Original Sample # ").append(origSampleNumber).append("<br>\r\n");
+            
+        body.append("Sample Collector ").append(analysis.getCollector()).append("<br>\r\n")
+            .append("RP code ").append(repeatCode).append("<br>\r\n")
+            .append("Free Chlorine, in mg/L");
+        
+        if (!"".equals(freeChlorine))
+            body.append(" ").append(freeChlorine);
+
+        body.append("<br>\r\n")
+            .append("Total Chlorine, mg/L");
+        
+        if (!"".equals(totalChlorine))
+            body.append(" ").append(totalChlorine);
+            
+        body.append("<br>\r\n")
+            .append("<br>\r\n");
     }
 
     protected void sendEmail(String toEmail, String subject, String body) {
