@@ -171,13 +171,13 @@ public class SDWISAdditionalScannerBean {
              * determine if the pws is open currently
              */
             if (p.getEndMonth() < p.getStartMonth())
-                open = ( (cal.get(Calendar.MONTH) > p.getStartMonth() || cal.get(Calendar.MONTH) < p.getEndMonth()) ||
-                        (cal.get(Calendar.MONTH) == p.getStartMonth() && cal.get(Calendar.DAY_OF_MONTH) >= p.getStartDay()) || (cal.get(Calendar.MONTH) == p.getEndMonth() && cal.get(Calendar.DAY_OF_MONTH) < p.getEndDay())) &&
+                open = ( (cal.get(Calendar.MONTH) + 1 > p.getStartMonth() || cal.get(Calendar.MONTH) + 1 < p.getEndMonth()) ||
+                        (cal.get(Calendar.MONTH) + 1 == p.getStartMonth() && cal.get(Calendar.DAY_OF_MONTH) >= p.getStartDay()) || (cal.get(Calendar.MONTH) + 1 == p.getEndMonth() && cal.get(Calendar.DAY_OF_MONTH) < p.getEndDay())) &&
                        DataBaseUtil.isAfter(current, p.getEffBeginDt()) &&
                        (p.getEffEndDt() == null || DataBaseUtil.isAfter(p.getEffEndDt(), current));
             else
-                open = ( (cal.get(Calendar.MONTH) > p.getStartMonth() && cal.get(Calendar.MONTH) < p.getEndMonth()) ||
-                        (cal.get(Calendar.MONTH) == p.getStartMonth() && cal.get(Calendar.DAY_OF_MONTH) >= p.getStartDay()) || (cal.get(Calendar.MONTH) == p.getEndMonth() && cal.get(Calendar.DAY_OF_MONTH) < p.getEndDay())) &&
+                open = ( (cal.get(Calendar.MONTH) + 1 > p.getStartMonth() && cal.get(Calendar.MONTH) + 1 < p.getEndMonth()) ||
+                        (cal.get(Calendar.MONTH) + 1 == p.getStartMonth() && cal.get(Calendar.DAY_OF_MONTH) >= p.getStartDay()) || (cal.get(Calendar.MONTH) + 1 == p.getEndMonth() && cal.get(Calendar.DAY_OF_MONTH) < p.getEndDay())) &&
                        DataBaseUtil.isAfter(current, p.getEffBeginDt()) &&
                        (p.getEffEndDt() == null || DataBaseUtil.isAfter(p.getEffEndDt(), current));
 
