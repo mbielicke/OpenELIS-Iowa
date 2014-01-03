@@ -168,9 +168,9 @@ public class SampleManagerOrderHelperBean {
                                       ArrayList<String> analytes) throws Exception {
         Integer accession;
         SampleOrganizationViewDO sRepOrg, sBillOrg;
-        ArrayList<SampleOrganizationViewDO> sSecOrgs;
         OrderViewDO data;
         OrganizationDO org;
+        ArrayList<SampleOrganizationViewDO> sSecOrgs;
 
         data = getOrder(om);
 

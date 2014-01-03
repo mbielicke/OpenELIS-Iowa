@@ -445,7 +445,6 @@ public class OrderManager1Bean {
      * are validated before add/update and the order record must have a lock
      * record if it has an id.
      */
-    @RolesAllowed({"order-add", "order-update"})
     public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception {
         ArrayList<OrderManager1> oms;
 
