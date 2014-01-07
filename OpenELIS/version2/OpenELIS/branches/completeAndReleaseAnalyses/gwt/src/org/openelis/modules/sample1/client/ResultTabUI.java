@@ -455,7 +455,7 @@ public class ResultTabUI extends Screen {
                     uid = Constants.uid().get(analysis);
                 else
                     uid = null;
-
+                
                 displayResults(uid);
             }
         });
@@ -485,6 +485,7 @@ public class ResultTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(displayedUid, uid))
                     redraw = true;
 
+                setState(state);
                 displayResults(uid);
             }
         });
@@ -522,8 +523,7 @@ public class ResultTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -585,12 +585,8 @@ public class ResultTabUI extends Screen {
         }
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
             displayedUid = uid;
-            setState(state);
             fireDataChange();
         }
     }

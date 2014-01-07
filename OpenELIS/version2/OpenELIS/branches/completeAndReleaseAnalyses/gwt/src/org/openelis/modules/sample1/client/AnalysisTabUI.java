@@ -700,6 +700,7 @@ public class AnalysisTabUI extends Screen {
                 else
                     uid = null;
 
+                setState(state);
                 displayAnalysis(uid);
             }
         });
@@ -732,13 +733,7 @@ public class AnalysisTabUI extends Screen {
                     sampleItem = null;
                 }
 
-                if (isState(QUERY)) {
-                    /*
-                     * In query state the tab needs to be put in query mode, so
-                     * it's to be refreshedregardless of the previous data
-                     */
-                    redraw = true;
-                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+               if (DataBaseUtil.isDifferent(displayedUid, uid)) {
                     /*
                      * since the individual fields in the DOs for the previous
                      * (displayed) and current analysis are not compared to
@@ -799,6 +794,7 @@ public class AnalysisTabUI extends Screen {
                     }
                 }
 
+                setState(state);
                 displayAnalysis(uid);
             }
         });
@@ -822,6 +818,7 @@ public class AnalysisTabUI extends Screen {
                     redraw = true;
                     analysis = (AnalysisViewDO)manager.getObject(event.getUid());
                     sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
+                    setState(state);
                     displayAnalysis(event.getUid());
                 }
             }
@@ -878,8 +875,7 @@ public class AnalysisTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -943,12 +939,8 @@ public class AnalysisTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
             displayedUid = uid;
-            setState(state);
             fireDataChange();
         }
     }

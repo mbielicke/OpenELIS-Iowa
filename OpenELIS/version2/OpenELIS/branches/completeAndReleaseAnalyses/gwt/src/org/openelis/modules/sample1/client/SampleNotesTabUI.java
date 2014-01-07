@@ -118,14 +118,14 @@ public class SampleNotesTabUI extends Screen {
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
+                setState(state);
                 displayNotes();
             }
         });
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -176,7 +176,6 @@ public class SampleNotesTabUI extends Screen {
                 id2 = manager.sampleInternalNote.get(0).getId();
             redraw = DataBaseUtil.isDifferent(id1, id2);
         }
-
         displayNotes();
     }
 
@@ -207,7 +206,6 @@ public class SampleNotesTabUI extends Screen {
                 displayedExtNote = null;
                 displayedIntNote = null;
             }
-            setState(state);
             fireDataChange();
         }
     }

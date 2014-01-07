@@ -31,13 +31,18 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.EnvironmentalTabUI;
+import org.openelis.modules.sample1.client.NeonatalTabUI;
+import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.ResultTabUI;
+import org.openelis.modules.sample1.client.SDWISTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.SampleTabUI;
+import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.ModulePermission;
@@ -51,6 +56,7 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -62,9 +68,13 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.ui.widget.table.event.UnselectionEvent;
+import org.openelis.ui.widget.table.event.UnselectionHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -107,6 +117,18 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected SampleTabUI                                sampleTab;
 
     @UiField(provided = true)
+    protected EnvironmentalTabUI                         environmentalTab;
+
+    @UiField(provided = true)
+    protected PrivateWellTabUI                           privateWellTab;
+
+    @UiField(provided = true)
+    protected SDWISTabUI                                 sdwisTab;
+    
+    @UiField(provided = true)
+    protected NeonatalTabUI                     neonatalTab;
+
+    @UiField(provided = true)
     protected SampleItemTabUI                            sampleItemTab;
 
     @UiField(provided = true)
@@ -130,11 +152,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     @UiField(provided = true)
     protected AuxDataTabUI                               auxDataTab;
 
-    protected ArrayList<SampleManager1>                  managers;
-
     protected SampleManager1                             manager;
 
-    protected boolean                                    canEdit, isBusy;
+    protected boolean                                    canEdit, isBusy, reloadTable;
 
     protected ModulePermission                           userPermission;
 
@@ -145,8 +165,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall;
 
     private enum Tabs {
-        SAMPLE, SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE,
-        QA_EVENTS, AUX_DATA, BLANK
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
+        ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
     };
 
     /**
@@ -169,13 +189,19 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                            "unit_of_measure",
                                            "qaevent_type",
                                            "aux_field_value_type",
-                                           "organization_type");
+                                           "organization_type",
+                                           "sdwis_sample_type",
+                                           "sdwis_sample_category");
         } catch (Exception e) {
             window.close();
             throw e;
         }
 
         sampleTab = new SampleTabUI(this);
+        environmentalTab = new EnvironmentalTabUI(this);
+        privateWellTab = new PrivateWellTabUI(this);
+        sdwisTab = new SDWISTabUI(this);
+        neonatalTab = new NeonatalTabUI(this);
         sampleItemTab = new SampleItemTabUI(this);
         analysisTab = new AnalysisTabUI(this);
         resultTab = new ResultTabUI(this);
@@ -217,14 +243,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        managers = null;
-        manager = null;
-
         initialize();
-        evaluateEdit();
-        setData();
-        setState(DEFAULT);
-        fireDataChange();
+        refreshScreen(null, DEFAULT);
+        // reloadTabs(DEFAULT, Tabs.BLANK);
 
         logger.fine("Complete Release Screen Opened");
     }
@@ -433,12 +454,33 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(table, "table", new ScreenHandler<Item<Integer>>() {
-            public void onDataChange(DataChangeEvent event) {
-                table.setModel(getTableModel());
-            }
+            // public void onDataChange(DataChangeEvent event) {
+            // if (reloadTable)
+            // table.setModel(getTableModel());
+            // }
 
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
+            }
+        });
+
+        table.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                Bundle data;
+
+                data = table.getRowAt(event.getSelectedItem()).getData();
+                refreshTabs(state, data, getTabsForDomain(data.manager));
+            }
+        });
+
+        table.addUnselectionHandler(new UnselectionHandler<Integer>() {
+            public void onUnselection(UnselectionEvent<Integer> event) {
+                /*
+                 * in Update state, the currently selected row's manager gets
+                 * locked, so selecting another row is not allowed
+                 */
+                if (isState(UPDATE))
+                    event.cancel();
             }
         });
 
@@ -464,6 +506,78 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        addScreenHandler(environmentalTab, "environmentalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                environmentalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                environmentalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                privateWellTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                privateWellTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sdwisTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sdwisTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+        
+        addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                neonatalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                neonatalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+        
+        addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the table is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sampleItemTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -477,6 +591,104 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
             public Object getQuery() {
                 return analysisTab.getQueryFields();
+            }
+        });
+
+        addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the table is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                resultTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+
+            public void isValid(Validation validation) {
+                super.isValid(validation);
+                if (resultTab.getIsBusy())
+                    validation.setStatus(FLAGGED);
+            }
+        });
+
+        addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the table is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                analysisNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sampleNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the table is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                storageTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the table is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                qaEventTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                auxDataTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                auxDataTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
             }
         });
 
@@ -581,13 +793,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("query")
     protected void query(ClickEvent event) {
-        managers = null;
-        manager = null;
-        evaluateEdit();
-        setData();
-        showTabs(Tabs.SAMPLE, Tabs.ANALYSIS);
-        setState(QUERY);
-        fireDataChange();
+        refreshScreen(null, QUERY);
+        refreshTabs(QUERY, null, Tabs.SAMPLE, Tabs.ANALYSIS);
         setDone(Messages.get().gen_enterFieldsToQuery());
     }
 
@@ -660,14 +867,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().gen_cancelChanges());
 
         if (state == QUERY) {
-            manager = null;
-            evaluateEdit();
-            setData();
-            showTabs(Tabs.BLANK);
-            setState(DEFAULT);
-            fireDataChange();
+            refreshScreen(null, DEFAULT);
+            refreshTabs(DEFAULT, null, Tabs.BLANK);
             setDone(Messages.get().gen_queryAborted());
         }
+    }
+
+    public void setState(State state) {
+        evaluateEdit();
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     /**
@@ -675,6 +884,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void setData() {
         sampleTab.setData(manager);
+        environmentalTab.setData(manager);
+        privateWellTab.setData(manager);
+        sdwisTab.setData(manager);
+        neonatalTab.setData(manager);
         sampleItemTab.setData(manager);
         analysisTab.setData(manager);
         resultTab.setData(manager);
@@ -711,60 +924,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         return b.toString();
     }
 
-    /**
-     * makes the tabs specified in the argument visible and the others not
-     * visible
-     */
-    private void showTabs(Tabs... tabs) {
-        EnumSet<Tabs> el;
-
-        el = EnumSet.copyOf(Arrays.asList(tabs));
-
-        for (Tabs tab : Tabs.values())
-            tabPanel.setTabVisible(tab.ordinal(), el.contains(tab));
-
-        if (tabs[0] != Tabs.BLANK) {
-            tabPanel.selectTab(tabs[0].ordinal());
-            // sampleContent.selectTab(tabs[0].ordinal());
-            // tabPanel.setStyleName("None");
-        } /*
-           * else { if (tab == Tabs.BLANK)
-           * sampleContent.selectTab(tabs[0].ordinal()); else
-           * sampleContent.selectTab(tab.ordinal());
-           * sampleContent.getTabBar().setStyleName("gwt-TabBar"); }
-           */
-    }
-
     private void executeQuery(final Query query) {
         QueryData field;
-        /*
-         * querying by single result makes sure that only the analyses queried
-         * for on the screen are present in the returned managers and not all
-         * the analyses in those samples
-         */
-        SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
-                        SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
-                        SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
-                        SampleManager1.Load.QA, SampleManager1.Load.SINGLERESULT,
-                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
 
         setBusy(Messages.get().gen_querying());
 
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
+                    Bundle data;
+
                     clearStatus();
-                    managers = result;
-                    evaluateEdit();
-                    setData();
-                    setState(DISPLAY);
-                    fireDataChange();
-                    /*
-                     * this list is only used for loading the table, the
-                     * individual bundles linked to the rows must be used after
-                     * loading the table
-                     */
-                    managers = null;
+                    refreshScreen(result, DISPLAY);
+                    if (table.getRowCount() > 0) {
+                        table.selectRowAt(0);
+                        data = table.getRowAt(0).getData();
+                        refreshTabs(DISPLAY, data, getTabsForDomain(data.manager));
+                    }
                 }
 
                 public void notFound() {
@@ -791,10 +967,84 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                               "!" + Constants.domain().QUICKENTRY);
         query.setFields(field);
         query.setRowsPerPage(500);
+
+        /*
+         * querying by single result makes sure that only the analyses queried
+         * for on the screen are present in the returned managers and not all
+         * the analyses in those samples
+         */
+        SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
+                        SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                        SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
+                        SampleManager1.Load.QA, SampleManager1.Load.SINGLERESULT,
+                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
+
         SampleService1.get().fetchByAnalysisQuery(query, elements, queryCall);
     }
 
-    private ArrayList<Row> getTableModel() {
+    private void refreshScreen(ArrayList<SampleManager1> managers,
+                               State state) {
+        setState(state);
+        table.setModel(getTableModel(managers));
+    }
+
+    private void refreshTabs(State state, Bundle data, Tabs... tabs) {
+        String uid;
+        SelectedType type;
+
+        if (data != null) {
+            manager = data.manager;
+            type = SelectedType.ANALYSIS;
+            uid = data.analysisUid;
+        } else {
+            manager = null;
+            type = SelectedType.NONE;
+            uid = null;
+        }
+        showTabs(tabs);
+        setData();
+        setState(state);
+        fireDataChange();
+        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+    }
+
+    private Tabs[] getTabsForDomain(SampleManager1 manager) {
+        Tabs domainTab;
+
+        domainTab = null;
+        if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain()))
+            domainTab = Tabs.ENVIRONMENTAL;
+        else if (Constants.domain().PRIVATEWELL.equals(manager.getSample().getDomain()))
+            domainTab = Tabs.PRIVATE_WELL;
+        else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain()))
+            domainTab = Tabs.SDWIS;
+        else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain()))
+            domainTab = Tabs.NEONATAL;
+
+        Tabs tabs[] = {Tabs.SAMPLE, domainTab, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT,
+                        Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE, Tabs.QA_EVENTS,
+                        Tabs.AUX_DATA};
+
+        return tabs;
+    }
+
+    /**
+     * makes the tabs specified in the argument visible and the others not
+     * visible
+     */
+    private void showTabs(Tabs... tabs) {
+        EnumSet<Tabs> el;
+
+        el = EnumSet.copyOf(Arrays.asList(tabs));
+
+        for (Tabs tab : Tabs.values())
+            tabPanel.setTabVisible(tab.ordinal(), el.contains(tab));
+
+        if (tabs[0] != Tabs.BLANK && tabPanel.getSelectedIndex() < 0)
+            tabPanel.selectTab(tabs[0].ordinal());
+    }
+
+    private ArrayList<Row> getTableModel(ArrayList<SampleManager1> managers) {
         int i, j;
         SampleItemViewDO item;
         AnalysisViewDO ana;
@@ -806,8 +1056,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             return model;
 
         /*
-         * load the table with the analyses with results, as those are the ones
-         * returned by the query executed on the screen
+         * load the table with the analyses that have results, as those are the
+         * ones returned by the query executed on the screen
          */
         for (SampleManager1 sm : managers) {
             for (i = 0; i < sm.item.count(); i++ ) {
@@ -848,8 +1098,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     private class RowComparator implements Comparator<Row> {
-
-        @Override
         public int compare(Row row1, Row row2) {
             int compVal;
             AnalysisViewDO ana1, ana2;

@@ -72,27 +72,27 @@
               <t:Table ui:field="table" verticalScroll="ALWAYS" horizontalScroll="ALWAYS"
                 header="true" styleName="{res.table.ScreenTableWithSides}"
               >
-                <t:Column width="115" label="{msg.sample_accessionNum}">
+                <t:Column width="115" label="{msg.sample_accessionNum}" sortable="true">
                   <t:TextBoxCell>
                     <w:TextBox field="Integer" />
                   </t:TextBoxCell>
                 </t:Column>
-                <t:Column width="192" label="{msg.gen_test}">
+                <t:Column width="192" label="{msg.gen_test}" sortable="true">
                   <t:TextBoxCell>
                     <w:TextBox case="LOWER" field="String" />
                   </t:TextBoxCell>
                 </t:Column>
-                <t:Column width="192" label="{msg.gen_method}">
+                <t:Column width="192" label="{msg.gen_method}" sortable="true">
                   <t:TextBoxCell>
                     <w:TextBox case="LOWER" field="String" />
                   </t:TextBoxCell>
                 </t:Column>
-                <t:Column width="101" label="{msg.analysis_status}">
+                <t:Column width="101" label="{msg.analysis_status}" sortable="true">
                   <t:DropdownCell>
                     <w:Dropdown width="100" ui:field="analysisStatus" field="Integer" />
                   </t:DropdownCell>
                 </t:Column>
-                <t:Column width="100" label="{msg.sample_status}">
+                <t:Column width="100" label="{msg.sample_status}" sortable="true">
                   <t:DropdownCell>
                     <w:Dropdown width="100" ui:field="sampleStatus" field="Integer" />
                   </t:DropdownCell>
@@ -112,6 +112,46 @@
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:SampleTabUI ui:field="sampleTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.environmental}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:EnvironmentalTabUI ui:field="environmentalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.privateWell}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:PrivateWellTabUI ui:field="privateWellTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sdwis}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:SDWISTabUI ui:field="sdwisTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sampleNeonatal_neonatal}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:NeonatalTabUI ui:field="neonatalTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

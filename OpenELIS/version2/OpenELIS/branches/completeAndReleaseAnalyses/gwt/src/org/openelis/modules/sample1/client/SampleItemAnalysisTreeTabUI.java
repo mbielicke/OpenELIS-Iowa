@@ -44,7 +44,6 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.panel.client.PanelService;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -458,8 +457,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
