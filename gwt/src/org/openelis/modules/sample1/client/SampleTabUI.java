@@ -11,7 +11,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleOrganizationViewDO;
@@ -20,10 +19,6 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
-import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
-import org.openelis.modules.sample1.client.SampleService1;
-import org.openelis.modules.sample1.client.TestSelectionLookupUI;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
@@ -33,7 +28,6 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
@@ -86,7 +80,10 @@ public class SampleTabUI extends Screen {
     protected TextBox<String>                clientReference;
 
     @UiField
-    protected Dropdown<Integer>              status;
+    protected Dropdown<Integer>              status, type;
+    
+    @UiField
+    protected Dropdown<String>               orgState, country;
 
     @UiField
     protected Table                          organizationTable, projectTable;
@@ -99,8 +96,6 @@ public class SampleTabUI extends Screen {
                     addProjectButton, removeProjectButton;
 
     protected SampleManager1                 manager;
-
-    protected ScreenNavigator<IdAccessionVO> nav;
 
     protected Screen                         parentScreen;
 
@@ -123,7 +118,9 @@ public class SampleTabUI extends Screen {
 
     public void initialize() {
         Item<Integer> row;
+        Item<String> srow;
         ArrayList<Item<Integer>> model;
+        ArrayList<Item<String>> smodel;
 
         screen = this;
 
@@ -159,7 +156,9 @@ public class SampleTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                orderId.setEnabled(false);
+                orderId.setEnabled(isState(QUERY) ||
+                                   (canEdit && isState(ADD, UPDATE)));
+                orderId.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -541,11 +540,37 @@ public class SampleTabUI extends Screen {
         }
 
         status.setModel(model);
+        
+        model = new ArrayList<Item<Integer>>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("organization_type")) {
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled( ("Y".equals(d.getIsActive())));
+            model.add(row);
+        }
+
+        type.setModel(model);
+        
+        smodel = new ArrayList<Item<String>>();
+        smodel.add(new Item<String>(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("state")) {
+            srow = new Item<String>(d.getEntry(), d.getEntry());
+            srow.setEnabled("Y".equals(d.getIsActive()));
+            smodel.add(srow);
+        }
+        orgState.setModel(smodel);
+
+        smodel = new ArrayList<Item<String>>();
+        smodel.add(new Item<String>(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("country")) {
+            srow = new Item<String>(d.getEntry(), d.getEntry());
+            srow.setEnabled("Y".equals(d.getIsActive()));
+            smodel.add(srow);
+        }
+        country.setModel(smodel);
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -560,15 +585,6 @@ public class SampleTabUI extends Screen {
      * the latest manager then the widgets are not refreshed
      */
     public void onDataChange() {
-        /*
-         * if (isState(State.QUERY)) { /* In Query state, the table shows only
-         * one row but it's not in query mode, because the manager cache can't
-         * be used in query mode. In the row, a dropdown is shown for the
-         * analyte (aux field) and a dropdown or textbox is shown for the value.
-         * The widget for the value is determined using the analyte chosen and
-         * the cache. Thus the table needs to be reloaded to show that one row,
-         * regardless of the previous data. / redraw = true; }
-         */
         redraw = true;
         displaySample();
     }
@@ -578,11 +594,7 @@ public class SampleTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
-            setState(state);
             fireDataChange();
         }
     }
@@ -596,7 +608,7 @@ public class SampleTabUI extends Screen {
     }
 
     /*
-     * getters and setters for the fields at the sample or domain level
+     * getters and setters for the fields at the sample level
      */
 
     /**
@@ -677,8 +689,8 @@ public class SampleTabUI extends Screen {
     /**
      * sets the order id
      */
-    private void setOrderId(Integer ordId) {
-        manager.getSample().setOrderId(ordId);
+    private void setOrderId(Integer orderId) {
+        manager.getSample().setOrderId(orderId);
     }
 
     /**
@@ -780,6 +792,26 @@ public class SampleTabUI extends Screen {
         if (r > -1 && organizationTable.getRowCount() > 0)
             organizationTable.removeRowAt(r);
     }
+    
+    @UiHandler("addProjectButton")
+    protected void addProject(ClickEvent event) {
+        int r;
+
+        projectTable.addRow();
+        r = projectTable.getRowCount() - 1;
+        projectTable.selectRowAt(r);
+        projectTable.scrollToVisible(r);
+        projectTable.startEditing(r, 0);
+    }
+    
+    @UiHandler("removeProjectButton")
+    protected void removeProject(ClickEvent event) {
+        int r;
+
+        r = projectTable.getSelectedRow();
+        if (r > -1 && projectTable.getRowCount() > 0)
+            projectTable.removeRowAt(r);
+    }
 
     private ArrayList<Row> getOrganizationTableModel() {
         ArrayList<Row> model;
@@ -822,26 +854,6 @@ public class SampleTabUI extends Screen {
         // !Constants.domain().NEONATAL.equals(domain))
     }
     
-    @UiHandler("addProjectButton")
-    protected void addProject(ClickEvent event) {
-        int r;
-
-        projectTable.addRow();
-        r = projectTable.getRowCount() - 1;
-        projectTable.selectRowAt(r);
-        projectTable.scrollToVisible(r);
-        projectTable.startEditing(r, 0);
-    }
-    
-    @UiHandler("removeProjectButton")
-    protected void removeProject(ClickEvent event) {
-        int r;
-
-        r = projectTable.getSelectedRow();
-        if (r > -1 && projectTable.getRowCount() > 0)
-            projectTable.removeRowAt(r);
-    }   
-
     private ArrayList<Row> getProjectTableModel() {
         ArrayList<Row> model;
         SampleProjectViewDO data;

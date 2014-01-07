@@ -417,7 +417,7 @@ public abstract class AuxDataTabUI extends Screen {
         Row row;
         ResultCell.Value rv;
 
-        if (isState(State.QUERY)) {
+        if (isState(QUERY)) {
             /*
              * In Query state, the table shows only one row but it's not in
              * query mode, because the manager cache can't be used in query
@@ -462,7 +462,6 @@ public abstract class AuxDataTabUI extends Screen {
                 redraw = true;
             }
         }
-
         displayAuxData();
     }
 
@@ -591,11 +590,7 @@ public abstract class AuxDataTabUI extends Screen {
         table.onResize();
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
-            setState(state);
             fireDataChange();
         }
     }

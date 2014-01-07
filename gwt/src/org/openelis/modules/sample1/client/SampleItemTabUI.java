@@ -283,17 +283,7 @@ public class SampleItemTabUI extends Screen {
                 else
                     sampleItem = null;
 
-                if (isState(QUERY)) {
-                    /*
-                     * In query state the tree is empty, so no sample item is
-                     * selected in it and the current uid is null. If there was
-                     * no sample item selected in the tree before going in query
-                     * state, the previous (displayed) uid was null too. This
-                     * makes sure that the tab is redrawn for query state even
-                     * if both uids are null and thus not different.
-                     */
-                    redraw = true;
-                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
                     /*
                      * while the tab is not visible, the data in the sample item
                      * linked by displayed uid may get changed e.g. if displayed
@@ -306,7 +296,7 @@ public class SampleItemTabUI extends Screen {
                      */
                     redraw = true;
                 }
-
+                setState(state);
                 displaySampleItem(uid);
             }
         });
@@ -349,8 +339,7 @@ public class SampleItemTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -389,7 +378,6 @@ public class SampleItemTabUI extends Screen {
              */
             redraw = false;
             displayedUid = uid;
-            setState(state);
             fireDataChange();
         }
     }

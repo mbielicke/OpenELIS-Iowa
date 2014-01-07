@@ -10,64 +10,86 @@
   may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
-  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:w='urn:import:org.openelis.ui.widget'
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-
   <g:LayoutPanel>
     <g:layer top="0" bottom="25">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sample_type}:" />
+              <ui:text from="{msg.pwsId}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="typeOfSample" width="150px" field="Integer" />
+              <g:HorizontalPanel>
+                <w:TextBox ui:field="pwsNumber0" width="75px" case="UPPER" field="String"
+                  maxLength="9" />
+                <g:AbsolutePanel>
+                  <w:Button ui:field="pwsLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
+                    text="" css="{res.FormFieldButton}" />
+                </g:AbsolutePanel>
+              </g:HorizontalPanel>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.pwsName}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="pwsName" width="250px" field="String" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleItem_source}:" />
+              <ui:text from="{msg.stateLabNo}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="sourceOfSample" width="150px" field="Integer" />
+              <w:TextBox ui:field="stateLabId" width="102px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleItem_sourceOther}:" />
+              <ui:text from="{msg.facilityId}:" />
             </td>
             <td>
-              <w:TextBox ui:field="sourceOther" width="215px" maxLength="40" />
+              <w:TextBox ui:field="facilityId" width="75px" case="UPPER" field="String"
+                maxLength="12" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_container}:" />
+              <ui:text from="{msg.sampleType}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="container" width="225px" />
+              <w:Dropdown ui:field="sampleType" width="120px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleItem_containerReference}:" />
+              <ui:text from="{msg.sampleCat}:" />
             </td>
             <td>
-              <w:TextBox ui:field="containerReference" width="150px" maxLength="20" />
+              <w:Dropdown ui:field="sampleCategory" width="108px" field="Integer" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_qty}:" />
+              <ui:text from="{msg.samplePtId}:" />
             </td>
             <td>
-              <w:TextBox ui:field="quantity" width="150px" maxLength="20" field="Double" />
+              <w:TextBox ui:field="samplePointId" width="75px" case="UPPER" field="String"
+                maxLength="11" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_unit}:" />
+              <ui:text from="{msg.location}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="unitOfMeasure" width="150px" />
+              <w:TextBox ui:field="location" width="250px" field="String" maxLength="40" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.collector}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="collector" width="162px" case="LOWER" field="String"
+                maxLength="20" />
             </td>
           </tr>
         </table>

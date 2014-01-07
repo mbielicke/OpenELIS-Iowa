@@ -192,6 +192,7 @@ public class AnalysisNotesTabUI extends Screen {
                     redraw = DataBaseUtil.isDifferent(id1, id2);
                 }
 
+                setState(state);
                 displayNotes();
             }
         });
@@ -213,8 +214,7 @@ public class AnalysisNotesTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -238,10 +238,6 @@ public class AnalysisNotesTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
-            redraw = false;
             if (manager != null && analysis != null) {
                 displayedExtNote = manager.analysisExternalNote.get(analysis);
                 if (manager.analysisInternalNote.count(analysis) > 0)
@@ -250,8 +246,7 @@ public class AnalysisNotesTabUI extends Screen {
                 displayedExtNote = null;
                 displayedIntNote = null;
             }
-
-            setState(state);
+            redraw = false;
             fireDataChange();
         }
     }
