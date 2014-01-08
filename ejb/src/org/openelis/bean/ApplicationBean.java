@@ -228,6 +228,7 @@ public class ApplicationBean {
         Constants.dictionary().RESULT_FLAG_CDC = dictId(map, "rf_c");
         Constants.dictionary().RESULT_FLAG_DNR = dictId(map, "rf_n");
         Constants.dictionary().RESULT_FLAG_DPH = dictId(map, "rf_h");
+        Constants.dictionary().ROUND_INT = dictId(map, "round_int");
         Constants.dictionary().ROUND_INT_SIG_FIG = dictId(map, "round_int_sig_fig");
         Constants.dictionary().ROUND_INT_SIG_FIG_NOE = dictId(map, "round_int_sig_fig_noe");
         Constants.dictionary().ROUND_SIG_FIG = dictId(map, "round_sig_fig");
