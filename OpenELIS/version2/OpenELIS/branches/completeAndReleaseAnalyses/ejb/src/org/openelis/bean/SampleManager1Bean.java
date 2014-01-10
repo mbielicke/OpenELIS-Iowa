@@ -1466,7 +1466,7 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Check to see if 1) the accession number bas been issues by the login
+     * Check to see if 1) the accession number has been issued by the login
      * barcode process and 2) accession number has not been assigned to another
      * sample.
      */

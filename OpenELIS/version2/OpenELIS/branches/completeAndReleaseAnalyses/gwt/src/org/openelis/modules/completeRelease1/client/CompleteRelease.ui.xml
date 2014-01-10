@@ -104,7 +104,7 @@
       </g:LayoutPanel>
     </g:layer>
     <g:layer top="270px" bottom="0px">
-      <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX" width="720px">
+      <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX">
         <w:tab>
           <w:customHeader>
             <w:TabWidget text="{msg.sample_sample}" tabVisible="false" />

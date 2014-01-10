@@ -25,15 +25,27 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.PWSDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.pws.client.PWSScreen;
+import org.openelis.modules.pws.client.PWSService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -45,12 +57,15 @@ import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SDWISTabUI extends Screen {
@@ -77,9 +92,11 @@ public class SDWISTabUI extends Screen {
 
     protected Screen                parentScreen;
 
+    protected SDWISTabUI            screen;
+
     protected EventBus              parentBus;
 
-    protected boolean              canEdit, isBusy, isVisible, redraw;
+    protected boolean               canEdit, isBusy, isVisible, redraw;
 
     public SDWISTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -94,42 +111,42 @@ public class SDWISTabUI extends Screen {
         Item<Integer> row;
         ArrayList<Item<Integer>> model;
 
+        screen = this;
+
         addScreenHandler(pwsNumber0, SampleMeta.getSDWISPwsNumber0(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 pwsNumber0.setValue(getPwsNumber0());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                // boolean clearValue;
-                // PWSDO data;
-                //
-                // clearValue = false;
-                // if (!DataBaseUtil.isEmpty(event.getValue())) {
-                // try {
-                // data = PWSService.get().fetchPwsByNumber0(event.getValue());
-                // getSDWISManager().getSDWIS().setPwsId(data.getId());
-                // getSDWISManager().getSDWIS().setPwsName(data.getName());
-                // getSDWISManager().getSDWIS().setPwsNumber0(data.getNumber0());
-                // pwsName.setValue(data.getName());
-                // } catch (ValidationErrorsList e) {
-                // showErrors(e);
-                // clearValue = true;
-                // } catch (NotFoundException e) {
-                // clearValue = true;
-                // }catch (Exception e) {
-                // Window.alert("pwsId valueChange: " + e.getMessage());
-                // }
-                // } else {
-                // clearValue = true;
-                // }
-                //
-                // if (clearValue) {
-                // getSDWISManager().getSDWIS().setPwsId(null);
-                // getSDWISManager().getSDWIS().setPwsName(null);
-                // getSDWISManager().getSDWIS().setPwsNumber0(null);
-                // pwsId.setValue(null);
-                // pwsName.setValue(null);
-                // }
+                PWSDO data;
+
+                data = null;
+                if ( !DataBaseUtil.isEmpty(event.getValue())) {
+                    try {
+                        data = PWSService.get().fetchPwsByNumber0(event.getValue());
+                    } catch (ValidationErrorsList e) {
+                        showErrors(e);
+                    } catch (NotFoundException e) {
+                        // ignore
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+
+                if (data != null) {
+                    setPwsId(data.getId());
+                    setPwsName(data.getName());
+                    setPwsNumber0(data.getNumber0());
+                    pwsName.setValue(data.getName());
+                } else {
+                    setPwsId(null);
+                    setPwsName(null);
+                    setPwsNumber0(null);
+                    pwsNumber0.setValue(null);
+                    pwsName.setValue(null);
+                }
 
             }
 
@@ -140,7 +157,6 @@ public class SDWISTabUI extends Screen {
         });
 
         addScreenHandler(pwsLookupButton, "pwsLookupButton", new ScreenHandler<Object>() {
-
             public void onStateChange(StateChangeEvent event) {
                 pwsLookupButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
@@ -270,7 +286,7 @@ public class SDWISTabUI extends Screen {
                 collector.setQueryMode(isState(QUERY));
             }
         });
-        
+
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
@@ -315,6 +331,42 @@ public class SDWISTabUI extends Screen {
         displaySampleSDWIS();
     }
 
+    @UiHandler("pwsLookupButton")
+    protected void pwsLookup(ClickEvent event) {
+        PWSScreen pwsScreen;
+        ScreenWindow modal;
+        
+        try {
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().pwsInformation());
+            pwsScreen = new PWSScreen(getPwsNumber0(), modal);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+
+        pwsScreen.addActionHandler(new ActionHandler<PWSScreen.Action>() {
+            public void onAction(ActionEvent<PWSScreen.Action> event) {
+                PWSDO data;
+
+                if (isState(ADD, State.UPDATE) && event.getAction() == PWSScreen.Action.SELECT) {
+                    data = (PWSDO)event.getData();
+                    setPwsId(data.getId());
+                    setPwsName(data.getName());
+                    setPwsNumber0(data.getNumber0());
+
+                    pwsNumber0.clearExceptions();
+                    fireDataChange();
+                    pwsNumber0.setFocus(true);
+                }
+            }
+        });
+
+        modal.setContent(pwsScreen);
+        pwsScreen.initialize();
+    }
+
     private void displaySampleSDWIS() {
         if ( !isVisible)
             return;
@@ -333,40 +385,11 @@ public class SDWISTabUI extends Screen {
                                                                                             .getStatusId()));
     }
 
-    private void openPwsScreen() {
-        // PWSScreen pwsScreen;
-        // ScreenWindow modal;
-        //
-        // try {
-        // modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        // modal.setName(Messages.get().pwsInformation());
-        //
-        // pwsScreen = new PWSScreen(pwsId.getValue(),modal);
-        //
-        // pwsScreen.addActionHandler(new ActionHandler<PWSScreen.Action>() {
-        // public void onAction(ActionEvent<PWSScreen.Action> event) {
-        // PWSDO pwsDO;
-        // if (state == State.ADD || state == State.UPDATE) {
-        // if (event.getAction() == PWSScreen.Action.SELECT) {
-        // pwsDO = (PWSDO)event.getData();
-        // getSDWISManager().getSDWIS().setPwsId(pwsDO.getId());
-        // getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
-        // getSDWISManager().getSDWIS().setPwsNumber0(pwsDO.getNumber0());
-        //
-        // pwsId.clearExceptions();
-        // DataChangeEvent.fire(screen);
-        // setFocus(pwsId);
-        //
-        // }
-        // }
-        // }
-        // });
-        //
-        // modal.setContent(pwsScreen);
-        // pwsScreen.initialize();
-        // } catch (Exception e) {
-        // Window.alert("openPWSScreen: " + e.getMessage());
-        // }
+    /**
+     * sets the pws id
+     */
+    private void setPwsId(Integer pwsId) {
+        manager.getSampleSDWIS().setPwsId(pwsId);
     }
 
     /**
@@ -380,6 +403,13 @@ public class SDWISTabUI extends Screen {
     }
 
     /**
+     * sets the pws number0
+     */
+    private void setPwsNumber0(String pwsNumber0) {
+        manager.getSampleSDWIS().setPwsNumber0(pwsNumber0);
+    }
+
+    /**
      * returns the pws name or null if the manager is null or if this is not a
      * SDWIS sample
      */
@@ -387,6 +417,13 @@ public class SDWISTabUI extends Screen {
         if (manager == null || manager.getSampleSDWIS() == null)
             return null;
         return manager.getSampleSDWIS().getPwsName();
+    }
+
+    /**
+     * sets the pws name
+     */
+    private void setPwsName(String pwsName) {
+        manager.getSampleSDWIS().setPwsName(pwsName);
     }
 
     /**
@@ -404,7 +441,6 @@ public class SDWISTabUI extends Screen {
      */
     private void setStateLabId(Integer stateLabId) {
         manager.getSampleSDWIS().setStateLabId(stateLabId);
-
     }
 
     /**
@@ -477,8 +513,8 @@ public class SDWISTabUI extends Screen {
     }
 
     /**
-     * returns the location or null if the manager is null or if this is not
-     * a SDWIS sample
+     * returns the location or null if the manager is null or if this is not a
+     * SDWIS sample
      */
     private String getLocation() {
         if (manager == null || manager.getSampleSDWIS() == null)
@@ -494,8 +530,8 @@ public class SDWISTabUI extends Screen {
     }
 
     /**
-     * returns the collector or null if the manager is null or if this is not
-     * a SDWIS sample
+     * returns the collector or null if the manager is null or if this is not a
+     * SDWIS sample
      */
     private String getCollector() {
         if (manager == null || manager.getSampleSDWIS() == null)

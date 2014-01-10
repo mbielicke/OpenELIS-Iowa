@@ -342,14 +342,13 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * The model shown in this dropdown in Display and Query state
-                 * is the list of all sections in the system. Also, In Query
-                 * state, the model needs to be set in this dropdown before it
-                 * can be switched to query mode. So for those states, the model
-                 * is set here.
+                /* 
+                 * 
+                 * The model for this dropdown in Display and Query states is
+                 * the list of all sections in the system and it needs to be
+                 * present before query mode can be set.
                  */
-                if (isState(DISPLAY, QUERY))
+                if (isState(DISPLAY, QUERY) && section.getModel() != allSectionsModel)
                     section.setModel(allSectionsModel);
                 section.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
                 section.setQueryMode(isState(QUERY));
@@ -389,7 +388,8 @@ public class AnalysisTabUI extends Screen {
                                   * before it can be switched to query mode. So
                                   * for those states, the model is set here.
                                   */
-                                 if (isState(DISPLAY, QUERY))
+                                 if (isState(DISPLAY, QUERY) &&
+                                     unitOfMeasure.getModel() != allUnitsModel)
                                      unitOfMeasure.setModel(allUnitsModel);
                                  unitOfMeasure.setEnabled(isState(QUERY) ||
                                                           (isState(ADD, UPDATE) && canEdit));
@@ -700,7 +700,6 @@ public class AnalysisTabUI extends Screen {
                 else
                     uid = null;
 
-                setState(state);
                 displayAnalysis(uid);
             }
         });
@@ -727,13 +726,14 @@ public class AnalysisTabUI extends Screen {
 
                 if (uid != null) {
                     analysis = (AnalysisViewDO)manager.getObject(uid);
-                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
+                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid()
+                                                                              .getSampleItem(analysis.getSampleItemId()));
                 } else {
                     analysis = null;
                     sampleItem = null;
                 }
 
-               if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
                     /*
                      * since the individual fields in the DOs for the previous
                      * (displayed) and current analysis are not compared to
@@ -793,7 +793,6 @@ public class AnalysisTabUI extends Screen {
                         redraw = true;
                     }
                 }
-
                 setState(state);
                 displayAnalysis(uid);
             }
@@ -817,7 +816,8 @@ public class AnalysisTabUI extends Screen {
                 if (screen != event.getSource()) {
                     redraw = true;
                     analysis = (AnalysisViewDO)manager.getObject(event.getUid());
-                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
+                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid()
+                                                                              .getSampleItem(analysis.getSampleItemId()));
                     setState(state);
                     displayAnalysis(event.getUid());
                 }
@@ -1229,8 +1229,7 @@ public class AnalysisTabUI extends Screen {
         TestTypeOfSampleManager ttsm;
 
         model = null;
-        if ( !isState(ADD, UPDATE) || analysis == null || sampleItem == null ||
-            sampleItem.getTypeOfSampleId() == null)
+        if (analysis == null || sampleItem == null || sampleItem.getTypeOfSampleId() == null)
             return model;
 
         try {
