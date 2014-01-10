@@ -68,106 +68,133 @@
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="55px" bottom="110px">
-      <t:Table ui:field="organizationTable" header="true" styleName="{res.table.ScreenTableWithSides}">
-        <t:Column width="125" label="{msg.gen_type}" required="true">
-          <t:DropdownCell>
-            <w:Dropdown field="Integer" ui:field="type" />
-          </t:DropdownCell>
-        </t:Column>
-        <t:Column width="180" label="{msg.order_attention}">
-          <t:TextBoxCell>
-            <w:TextBox field="String" case="UPPER" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="220" label="{msg.gen_name}">
-          <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="organization" case="UPPER" required="true"
-              width="130" dropWidth="490px"
-            >
-              <w:popup>
-                <t:Table visibleRows="10" header="true">
-                  <t:Column width="200" label="{msg.gen_name}">
-                    <t:LabelCell />
-                  </t:Column>
-                  <t:Column width="130" label="{msg.address_street}">
-                    <t:LabelCell />
-                  </t:Column>
-                  <t:Column width="120" label="{msg.address_city}">
-                    <t:LabelCell />
-                  </t:Column>
-                  <t:Column width="20" label="{msg.address_st}">
-                    <t:LabelCell />
-                  </t:Column>
-                </t:Table>
-              </w:popup>
-            </w:AutoComplete>
-          </t:AutoCompleteCell>
-        </t:Column>
-        <t:Column width="130" label="{msg.address_aptSuite}">
-          <t:LabelCell />
-        </t:Column>
-        <t:Column width="130" label="{msg.address_address}">
-          <t:LabelCell />
-        </t:Column>
-        <t:Column width="110" label="{msg.address_city}">
-          <t:LabelCell />
-        </t:Column>
-        <t:Column width="55" label="{msg.address_state}">
-          <t:DropdownCell>
-            <w:Dropdown field="String" ui:field="orgState" />
-          </t:DropdownCell>
-        </t:Column>
-        <t:Column width="70" label="{msg.address_zipcode}">
-          <t:LabelCell />
-        </t:Column>
-        <t:Column width="126" label="{msg.address_country}">
-          <t:DropdownCell>
-            <w:Dropdown field="String" ui:field="country" />
-          </t:DropdownCell>
-        </t:Column>
-      </t:Table>
-    </g:layer>
-    <g:layer top="133px" height="25px">
-      <g:HorizontalPanel>
-        <w:Button ui:field="addOrganizationButton" leftIcon="{res.icon.addRowIcon}" text="{msg.gen_addRow}" />
-        <w:Button ui:field="removeOrganizationButton" leftIcon="{res.icon.removeRowIcon}"
-          text="{msg.gen_removeRow}" />
-      </g:HorizontalPanel>
-    </g:layer>
-    <g:layer top="162px" bottom="25px">
-      <t:Table ui:field="projectTable" header="true" styleName="{res.table.ScreenTableWithSides}">
-        <t:Column width="220" label="{msg.gen_name}">
-          <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="project" case="LOWER" required="true" width="220px"
-              dropWidth="450px"
-            >
-              <w:popup>
-                <t:Table visibleRows="10" header="true">
-                  <t:Column width="150" label="{msg.gen_name}">
-                    <t:LabelCell />
-                  </t:Column>
-                  <t:Column width="275" label="{msg.gen_description}">
-                    <t:LabelCell />
-                  </t:Column>
-                </t:Table>
-              </w:popup>
-            </w:AutoComplete>
-          </t:AutoCompleteCell>
-        </t:Column>
-        <t:Column width="240" label="{msg.gen_description}">
-          <t:LabelCell />
-        </t:Column>
-        <t:Column width="60" label="{msg.sample_isPerm}">
-          <t:CheckBoxCell />
-        </t:Column>
-      </t:Table>
-    </g:layer>
-    <g:layer bottom="0px" height="25px">
-      <g:HorizontalPanel>
-        <w:Button ui:field="addProjectButton" leftIcon="{res.icon.addRowIcon}" text="{msg.gen_addRow}" />
-        <w:Button ui:field="removeProjectButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
-      </g:HorizontalPanel>
+    <g:layer top="55px" bottom="5px">
+      <g:LayoutPanel>
+        <g:layer width="49%" left="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="25px">
+              <t:Table ui:field="organizationTable" header="true"
+                styleName="{res.table.ScreenTableWithSides}"
+              >
+                <t:Column width="100" label="{msg.gen_type}" required="true">
+                  <t:DropdownCell>
+                    <w:Dropdown field="Integer" ui:field="type" width="145px" />
+                  </t:DropdownCell>
+                </t:Column>
+                <t:Column width="100" label="{msg.order_attention}">
+                  <t:TextBoxCell>
+                    <w:TextBox field="String" case="UPPER" maxLength="30" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="220" label="{msg.gen_name}">
+                  <t:AutoCompleteCell>
+                    <w:AutoComplete ui:field="organization" case="UPPER" required="true"
+                      width="130" dropWidth="490px"
+                    >
+                      <w:popup>
+                        <t:Table visibleRows="10" header="true">
+                          <t:Column width="200" label="{msg.gen_name}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="130" label="{msg.address_street}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="120" label="{msg.address_city}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="20" label="{msg.address_st}">
+                            <t:LabelCell />
+                          </t:Column>
+                        </t:Table>
+                      </w:popup>
+                    </w:AutoComplete>
+                  </t:AutoCompleteCell>
+                </t:Column>
+                <t:Column width="130" label="{msg.address_aptSuite}">
+                  <t:TextBoxCell>
+                    <w:TextBox case="UPPER" field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="130" label="{msg.address_address}">
+                  <t:TextBoxCell>
+                    <w:TextBox case="UPPER" field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="110" label="{msg.address_city}">
+                  <t:TextBoxCell>
+                    <w:TextBox case="UPPER" field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="55" label="{msg.address_state}">
+                  <t:DropdownCell>
+                    <w:Dropdown ui:field="orgState" case="UPPER" width="40px" field="String" />
+                  </t:DropdownCell>
+                </t:Column>
+                <t:Column width="70" label="{msg.address_zipcode}">
+                  <t:TextBoxCell>
+                    <w:TextBox field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="126" label="{msg.address_country}">
+                  <t:DropdownCell>
+                    <w:Dropdown ui:field="orgCountry" width="110px" field="String" />
+                  </t:DropdownCell>
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom="0px" height="25px">
+              <g:HorizontalPanel>
+                <w:Button ui:field="addOrganizationButton" leftIcon="{res.icon.addRowIcon}"
+                  text="{msg.gen_addRow}" />
+                <w:Button ui:field="removeOrganizationButton" leftIcon="{res.icon.removeRowIcon}"
+                  text="{msg.gen_removeRow}" />
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+        <g:layer width="49%" right="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="25px">
+              <t:Table ui:field="projectTable" header="true" styleName="{res.table.ScreenTableWithSides}">
+                <t:Column width="100" label="{msg.gen_name}">
+                  <t:AutoCompleteCell>
+                    <w:AutoComplete ui:field="project" case="LOWER" required="true"
+                      width="100px" dropWidth="450px"
+                    >
+                      <w:popup>
+                        <t:Table visibleRows="10" header="true">
+                          <t:Column width="150" label="{msg.gen_name}">
+                            <t:LabelCell />
+                          </t:Column>
+                          <t:Column width="275" label="{msg.gen_description}">
+                            <t:LabelCell />
+                          </t:Column>
+                        </t:Table>
+                      </w:popup>
+                    </w:AutoComplete>
+                  </t:AutoCompleteCell>
+                </t:Column>
+                <t:Column width="200" label="{msg.gen_description}">
+                  <t:TextBoxCell>
+                    <w:TextBox field="String" />
+                  </t:TextBoxCell>
+                </t:Column>
+                <t:Column width="50" label="{msg.sample_isPerm}">
+                  <t:CheckBoxCell />
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom="0px" height="25px">
+              <g:HorizontalPanel>
+                <w:Button ui:field="addProjectButton" leftIcon="{res.icon.addRowIcon}"
+                  text="{msg.gen_addRow}" />
+                <w:Button ui:field="removeProjectButton" leftIcon="{res.icon.removeRowIcon}"
+                  text="{msg.gen_removeRow}" />
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

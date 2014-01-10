@@ -22,6 +22,7 @@ import org.openelis.modules.project.client.ProjectService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
@@ -35,6 +36,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.QueryFieldUtil;
+import org.openelis.ui.widget.Queryable;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Row;
@@ -83,7 +85,7 @@ public class SampleTabUI extends Screen {
     protected Dropdown<Integer>              status, type;
     
     @UiField
-    protected Dropdown<String>               orgState, country;
+    protected Dropdown<String>               orgState, orgCountry;
 
     @UiField
     protected Table                          organizationTable, projectTable;
@@ -281,6 +283,50 @@ public class SampleTabUI extends Screen {
                                  organizationTable.setEnabled(true);
                                  organizationTable.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Object getQuery() {
+                                 ArrayList<QueryData> qds;
+                                 QueryData qd;
+
+                                 qds = new ArrayList<QueryData>();
+                                 for (int i = 0; i < 9; i++ ) {
+                                     qd = (QueryData) ((Queryable)organizationTable.getColumnWidget(i)).getQuery();
+                                     if (qd != null) {
+                                         switch (i) {
+                                             case 0:
+                                                 qd.setKey(SampleMeta.getSampleOrgTypeId());
+                                                 break;
+                                             case 1:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAttention());
+                                                 break;
+                                             case 2:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationName());
+                                                 break;
+                                             case 3:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressMultipleUnit());
+                                                 break;
+                                             case 4:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressStreetAddress());
+                                                 break;
+                                             case 5:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressCity());
+                                                 break;
+                                             case 6:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressState());
+                                                 break;
+                                             case 7:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressZipCode());
+                                                 break;
+                                             case 8:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressCountry());
+                                                 break;
+                                         }
+                                         qds.add(qd);
+                                     }
+                                 }
+
+                                 return qds;
+                             }
                          });
 
         organizationTable.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -407,6 +453,32 @@ public class SampleTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 projectTable.setEnabled(true);
                 projectTable.setQueryMode(isState(QUERY));
+            }
+            
+            public Object getQuery() {
+                ArrayList<QueryData> qds;
+                QueryData qd;
+
+                qds = new ArrayList<QueryData>();
+                for (int i = 0; i < 3; i++ ) {
+                    qd = (QueryData) ((Queryable)projectTable.getColumnWidget(i)).getQuery();
+                    if (qd != null) {
+                        switch (i) {
+                            case 0:
+                                qd.setKey(SampleMeta.getSampleProjProjectName());
+                                break;
+                            case 1:
+                                qd.setKey(SampleMeta.getSampleProjProjectDescription());
+                                break;
+                            case 2:
+                                qd.setKey(SampleMeta.getSampleProjectIsPermanent());
+                                break;
+                        }
+                        qds.add(qd);
+                    }
+                }
+
+                return qds;
             }
         });
 
@@ -566,7 +638,7 @@ public class SampleTabUI extends Screen {
             srow.setEnabled("Y".equals(d.getIsActive()));
             smodel.add(srow);
         }
-        country.setModel(smodel);
+        orgCountry.setModel(smodel);
     }
 
     public void setData(SampleManager1 manager) {

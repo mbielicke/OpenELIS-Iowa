@@ -250,7 +250,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                          duplicateCall;   
     
     // @formatter:off
-    protected SampleManager1.Load                       elements[] = {
+    protected static final SampleManager1.Load        elements[] = {
                                                                         SampleManager1.Load.ANALYSISUSER,
                                                                         SampleManager1.Load.AUXDATA,
                                                                         SampleManager1.Load.NOTE,
@@ -3759,45 +3759,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void setFormNumber(String formNumber) {
         manager.getSampleNeonatal().setFormNumber(formNumber);
-    }
-
-    private AsyncCallbackUI<SampleManager1> getChangeAnalysisCall(final AnalysisChangeEvent event) {
-        AsyncCallbackUI<SampleManager1> callBack;
-
-        callBack = new AsyncCallbackUI<SampleManager1>() {
-            public void success(SampleManager1 result) {
-                analysisChanged(event, result, null);
-            }
-
-            public void failure(Throwable error) {
-                Window.alert(error.getMessage());
-                logger.log(Level.SEVERE, error.getMessage(), error);
-                clearStatus();
-            }
-        };
-
-        return callBack;
-    }
-
-    private void analysisChanged(AnalysisChangeEvent event, SampleManager1 man,
-                                 SampleTestReturnVO ret) {
-        manager = man;
-        setData();
-        setState(state);
-        /*
-         * notify all tabs that need to refresh themselves because of the change
-         * in the analysis
-         */
-        bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                        event.getChangeId(),
-                                                        event.getAction()), screen);
-        bus.fireEvent(new ResultChangeEvent(event.getUid()));
-
-        clearStatus();
-        if (ret != null)
-            showErrorsOrTests(ret);
-        else
-            isBusy = false;
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -21,8 +22,11 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -56,7 +60,6 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -124,9 +127,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected SDWISTabUI                                 sdwisTab;
-    
+
     @UiField(provided = true)
-    protected NeonatalTabUI                     neonatalTab;
+    protected NeonatalTabUI                              neonatalTab;
 
     @UiField(provided = true)
     protected SampleItemTabUI                            sampleItemTab;
@@ -154,7 +157,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected SampleManager1                             manager;
 
-    protected boolean                                    canEdit, isBusy, reloadTable;
+    protected boolean                                    isBusy;
 
     protected ModulePermission                           userPermission;
 
@@ -163,6 +166,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected HashMap<String, Object>                    cache;
 
     protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall;
+    
+    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall;
 
     private enum Tabs {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -244,8 +249,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
-        refreshScreen(null, DEFAULT);
-        // reloadTabs(DEFAULT, Tabs.BLANK);
+        setState(DEFAULT);
+        table.setModel(getTableModel(null));
+        refreshTabs(null);
 
         logger.fine("Complete Release Screen Opened");
     }
@@ -454,33 +460,28 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(table, "table", new ScreenHandler<Item<Integer>>() {
-            // public void onDataChange(DataChangeEvent event) {
-            // if (reloadTable)
-            // table.setModel(getTableModel());
-            // }
-
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
+                table.setAllowMultipleSelection(isState(DISPLAY));
             }
         });
 
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
-                Bundle data;
+                Integer rows[];
+                AnalysisDataBundle data;
 
-                data = table.getRowAt(event.getSelectedItem()).getData();
-                refreshTabs(state, data, getTabsForDomain(data.manager));
-            }
-        });
-
-        table.addUnselectionHandler(new UnselectionHandler<Integer>() {
-            public void onUnselection(UnselectionEvent<Integer> event) {
+                rows = table.getSelectedRows();
                 /*
-                 * in Update state, the currently selected row's manager gets
-                 * locked, so selecting another row is not allowed
+                 * show no tabs if multiple rows are selected, otherwise load
+                 * the tabs with the selected row's data
                  */
-                if (isState(UPDATE))
-                    event.cancel();
+                if (rows.length > 1)
+                    data = null;
+                else
+                    data = table.getRowAt(rows[0]).getData();
+
+                refreshTabs(data);
             }
         });
 
@@ -547,7 +548,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 neonatalTab.onDataChange();
@@ -561,7 +562,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -793,11 +794,63 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("query")
     protected void query(ClickEvent event) {
-        refreshScreen(null, QUERY);
-        refreshTabs(QUERY, null, Tabs.SAMPLE, Tabs.ANALYSIS);
+        setState(QUERY);
+        table.setModel(getTableModel(null));
+        refreshTabs(null);
         setDone(Messages.get().gen_enterFieldsToQuery());
     }
+    
+    /**
+     * Puts the screen in update state and loads the tabs with a locked manager.
+     * Builds the cache from the manager.
+     */
+    protected void update(ClickEvent event) {
+        if (table.getSelectedRows().length > 1) {
+            window.setError(Messages.get().sample_cantUpdateMultiple());
+            return;
+        }
+        
+        setBusy(Messages.get().gen_lockForUpdate());
 
+        if (fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
+                    AnalysisDataBundle data;
+                    
+                    updateAllRows(result);
+                    data = (AnalysisDataBundle)table.getRowAt(table.getSelectedRow()).getData();
+                    setState(UPDATE);
+                    refreshTabs(data);
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                public void finish() {
+                    clearStatus();
+                }
+            };
+        }
+        
+        SampleManager1.Load elements[] = { 
+                                           SampleManager1.Load.ANALYSISUSER,
+                                           SampleManager1.Load.AUXDATA,
+                                           SampleManager1.Load.NOTE,
+                                           SampleManager1.Load.ORGANIZATION,
+                                           SampleManager1.Load.PROJECT, 
+                                           SampleManager1.Load.QA,
+                                           SampleManager1.Load.RESULT,
+                                           SampleManager1.Load.STORAGE,
+                                           SampleManager1.Load.WORKSHEET
+        };
+
+        SampleService1.get().fetchForUpdate(manager.getSample().getId(),
+                                            elements,
+                                            fetchForUpdateCall);
+    }
+    
     /**
      * Validates the data on the screen and based on the current state, executes
      * various service operations to commit the data.
@@ -867,16 +920,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().gen_cancelChanges());
 
         if (state == QUERY) {
-            refreshScreen(null, DEFAULT);
-            refreshTabs(DEFAULT, null, Tabs.BLANK);
+            setState(DEFAULT);
+            table.setModel(getTableModel(null));
+            refreshTabs(null);
             setDone(Messages.get().gen_queryAborted());
         }
-    }
-
-    public void setState(State state) {
-        evaluateEdit();
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     /**
@@ -896,13 +944,64 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         storageTab.setData(manager);
         qaEventTab.setData(manager);
     }
-
+    
     /**
-     * determines if the fields on the screen can be edited based on the data
+     * creates the cache of objects like TestManager that are used frequently by
+     * the different parts of the screen
      */
-    private void evaluateEdit() {
-        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                            .getStatusId()));
+    private void buildCache() {
+        int i, j;
+        Integer prevId;
+        ArrayList<Integer> ids;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        AuxDataViewDO aux;
+        ArrayList<TestManager> tms;
+        ArrayList<AuxFieldGroupManager> afgms;
+
+        cache = new HashMap<String, Object>();
+
+        try {
+            /*
+             * the list of tests to be fetched
+             */
+            ids = new ArrayList<Integer>();
+            for (i = 0; i < manager.item.count(); i++ ) {
+                item = manager.item.get(i);
+                for (j = 0; j < manager.analysis.count(item); j++ ) {
+                    ana = manager.analysis.get(item, j);
+                    ids.add(ana.getTestId());
+                }
+            }
+
+            if (ids.size() > 0) {
+                tms = TestService.get().fetchByIds(ids);
+                for (TestManager tm : tms)
+                    cache.put("tm:" + tm.getTest().getId(), tm);
+            }
+
+            /*
+             * the list of aux field groups to be fetched
+             */
+            ids.clear();
+            prevId = null;
+            for (i = 0; i < manager.auxData.count(); i++ ) {
+                aux = manager.auxData.get(i);
+                if ( !aux.getGroupId().equals(prevId)) {
+                    ids.add(aux.getGroupId());
+                    prevId = aux.getGroupId();
+                }
+            }
+
+            if (ids.size() > 0) {
+                afgms = AuxiliaryService.get().fetchByIds(ids);
+                for (AuxFieldGroupManager afgm : afgms)
+                    cache.put("am:" + afgm.getGroup().getId(), afgm);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     /**
@@ -932,24 +1031,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
-                    Bundle data;
+                    AnalysisDataBundle data;
 
                     clearStatus();
-                    refreshScreen(result, DISPLAY);
+                    setState(DISPLAY);
+                    table.setModel(getTableModel(result));
                     if (table.getRowCount() > 0) {
                         table.selectRowAt(0);
                         data = table.getRowAt(0).getData();
-                        refreshTabs(DISPLAY, data, getTabsForDomain(data.manager));
+                        refreshTabs(data);
                     }
                 }
 
                 public void notFound() {
                     setState(DEFAULT);
+                    table.setModel(getTableModel(null));
+                    refreshTabs(null);
                     setDone(Messages.get().gen_noRecordsFound());
-                }
-
-                public void lastPage() {
-                    setError(Messages.get().gen_noMoreRecordInDir());
                 }
 
                 public void failure(Throwable error) {
@@ -981,56 +1079,89 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         SampleService1.get().fetchByAnalysisQuery(query, elements, queryCall);
     }
+    
+    private void updateAllRows(SampleManager1 manager) {
+        Row row;
 
-    private void refreshScreen(ArrayList<SampleManager1> managers,
-                               State state) {
-        setState(state);
-        table.setModel(getTableModel(managers));
+        for (int i = 0; i < table.getRowCount(); i++ ) {
+            row = table.getRowAt(i);
+
+            if (manager.getSample().getAccessionNumber().equals(row.getCell(0)))
+                updateTableRow(i, manager);
+        }
     }
 
-    private void refreshTabs(State state, Bundle data, Tabs... tabs) {
+    private void updateTableRow(int index, SampleManager1 manager) {
+        Row row;
+        AnalysisViewDO ana;
+        AnalysisDataBundle data;
+
+        row = table.getRowAt(index);
+        data = (AnalysisDataBundle)row.getData();
+        ana = (AnalysisViewDO)manager.getObject(data.analysisUid);
+        data.manager = manager;
+        updateTableRowCells(index, manager.getSample(), ana);
+    }
+    
+    private void updateTableRowCells(int index, SampleDO sample, AnalysisViewDO ana) {
+        table.setValueAt(index, 0, sample.getAccessionNumber());
+        table.setValueAt(index, 1, ana.getTestName());
+        table.setValueAt(index, 2, ana.getMethodName());
+        table.setValueAt(index, 3, ana.getStatusId());
+        table.setValueAt(index, 4, sample.getStatusId());
+    }
+
+    private void refreshTabs(AnalysisDataBundle data) {
         String uid;
         SelectedType type;
+        Tabs domainTab;
 
         if (data != null) {
             manager = data.manager;
             type = SelectedType.ANALYSIS;
             uid = data.analysisUid;
+            /*
+             * find out which domain's tab is to be shown after sample tab
+             */
+            domainTab = null;
+            if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain()))
+                domainTab = Tabs.ENVIRONMENTAL;
+            else if (Constants.domain().PRIVATEWELL.equals(manager.getSample().getDomain()))
+                domainTab = Tabs.PRIVATE_WELL;
+            else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain()))
+                domainTab = Tabs.SDWIS;
+            else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain()))
+                domainTab = Tabs.NEONATAL;
+
+            showTabs(Tabs.SAMPLE,
+                     domainTab,
+                     Tabs.SAMPLE_ITEM,
+                     Tabs.ANALYSIS,
+                     Tabs.TEST_RESULT,
+                     Tabs.ANALYSIS_NOTES,
+                     Tabs.SAMPLE_NOTES,
+                     Tabs.STORAGE,
+                     Tabs.QA_EVENTS,
+                     Tabs.AUX_DATA);
         } else {
             manager = null;
             type = SelectedType.NONE;
             uid = null;
+            if (isState(QUERY))
+                showTabs(Tabs.SAMPLE, Tabs.ANALYSIS);
+            else
+                showTabs(Tabs.BLANK);
         }
-        showTabs(tabs);
+
         setData();
-        setState(state);
         fireDataChange();
         bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
     }
 
-    private Tabs[] getTabsForDomain(SampleManager1 manager) {
-        Tabs domainTab;
-
-        domainTab = null;
-        if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain()))
-            domainTab = Tabs.ENVIRONMENTAL;
-        else if (Constants.domain().PRIVATEWELL.equals(manager.getSample().getDomain()))
-            domainTab = Tabs.PRIVATE_WELL;
-        else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain()))
-            domainTab = Tabs.SDWIS;
-        else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain()))
-            domainTab = Tabs.NEONATAL;
-
-        Tabs tabs[] = {Tabs.SAMPLE, domainTab, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT,
-                        Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE, Tabs.QA_EVENTS,
-                        Tabs.AUX_DATA};
-
-        return tabs;
-    }
-
     /**
      * makes the tabs specified in the argument visible and the others not
-     * visible
+     * visible; selects the first visible tab if no tab is already selected, to
+     * show its widgets
      */
     private void showTabs(Tabs... tabs) {
         EnumSet<Tabs> el;
@@ -1072,7 +1203,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     row.setCell(2, ana.getMethodName());
                     row.setCell(3, ana.getStatusId());
                     row.setCell(4, sm.getSample().getStatusId());
-                    row.setData(new Bundle(Constants.uid().get(ana), Constants.uid().get(item), sm));
+                    row.setData(new AnalysisDataBundle(Constants.uid().get(ana),
+                                                       sm));
                     model.add(row);
                 }
             }
@@ -1086,43 +1218,51 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         return model;
     }
 
-    private class Bundle {
-        String         analysisUid, sampleItemUid;
+    /**
+     * 
+     * This class is used to hold the data associated with a given row in the
+     * table
+     */
+    private class AnalysisDataBundle {
+        String         analysisUid;
         SampleManager1 manager;
 
-        public Bundle(String analysisUid, String sampleItemUid, SampleManager1 manager) {
+        public AnalysisDataBundle(String analysisUid, SampleManager1 manager) {
             this.analysisUid = analysisUid;
-            this.sampleItemUid = sampleItemUid;
             this.manager = manager;
         }
     }
 
+    /**
+     * This class is used to sort the rows of the table based on the sample,
+     * sample item and analysis linked to a row. The rows are sorted by
+     * accession number then item sequence then test name and then method name.
+     */
     private class RowComparator implements Comparator<Row> {
         public int compare(Row row1, Row row2) {
             int compVal;
             AnalysisViewDO ana1, ana2;
             SampleItemViewDO item1, item2;
             SampleManager1 sm1, sm2;
-            Bundle b1, b2;
+            AnalysisDataBundle b1, b2;
 
             b1 = row1.getData();
             b2 = row2.getData();
 
             sm1 = b1.manager;
             sm2 = b2.manager;
-            /*
-             * order by accession number then item sequence then test name and
-             * then method name
-             */
+
             compVal = sm1.getSample().getAccessionNumber().compareTo(sm2.getSample()
                                                                         .getAccessionNumber());
             if (compVal == 0) {
-                item1 = (SampleItemViewDO)sm1.getObject(b1.sampleItemUid);
-                item2 = (SampleItemViewDO)sm2.getObject(b2.sampleItemUid);
+                ana1 = (AnalysisViewDO)sm1.getObject(b1.analysisUid);
+                ana2 = (AnalysisViewDO)sm2.getObject(b2.analysisUid);
+                
+                item1 = (SampleItemViewDO)sm1.getObject(Constants.uid().getSampleItem(ana1.getSampleItemId()));
+                item2 = (SampleItemViewDO)sm2.getObject(Constants.uid().getSampleItem(ana2.getSampleItemId()));
+                
                 compVal = item1.getItemSequence().compareTo(item2.getItemSequence());
                 if (compVal == 0) {
-                    ana1 = (AnalysisViewDO)sm1.getObject(b1.analysisUid);
-                    ana2 = (AnalysisViewDO)sm2.getObject(b2.analysisUid);
                     compVal = ana1.getTestName().compareTo(ana2.getTestName());
                     if (compVal == 0)
                         compVal = ana1.getMethodName().compareTo(ana2.getMethodName());

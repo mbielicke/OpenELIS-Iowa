@@ -112,9 +112,7 @@ public class SampleNotesTabUI extends Screen {
     }
 
     public void setData(OrderManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            this.manager = manager;
-        }
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -168,7 +166,6 @@ public class SampleNotesTabUI extends Screen {
                 displayedSampleNote = manager.sampleNote.get();
             else
                 displayedSampleNote = null;
-            setState(state);
             fireDataChange();
         }
     }

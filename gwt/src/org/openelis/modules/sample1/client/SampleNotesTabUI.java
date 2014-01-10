@@ -176,7 +176,7 @@ public class SampleNotesTabUI extends Screen {
                 id2 = manager.sampleInternalNote.get(0).getId();
             redraw = DataBaseUtil.isDifferent(id1, id2);
         }
-        displayNotes();
+         displayNotes();
     }
 
     @UiHandler("editNoteButton")

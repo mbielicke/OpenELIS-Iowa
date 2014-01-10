@@ -69,10 +69,7 @@ public class EnvironmentalTabUI extends Screen {
     @UiField
     protected TextBox<String>               collector, collectorPhone, location, description,
                     locationAddressMultipleUnit, locationAddressStreetAddress, locationAddressCity,
-                    locationAddressZipCode;
-
-    // @UiField
-    // protected Button locationLookupButton;    
+                    locationAddressZipCode;   
 
     @UiField
     protected Dropdown<String>            locationAddressState, locationAddressCountry;
@@ -305,14 +302,6 @@ public class EnvironmentalTabUI extends Screen {
                              }
                          });
 
-        // addScreenHandler(locationLookupButton, "locationLookupButton", new
-        // ScreenHandler<Object>() {
-        // public void onStateChange(StateChangeEvent event) {
-        // locationLookupButton.setEnabled(isState(DISPLAY) ||
-        // (canEdit && isState(ADD, UPDATE)));
-        // }
-        // });
-
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
@@ -362,9 +351,6 @@ public class EnvironmentalTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
             fireDataChange();
         }
