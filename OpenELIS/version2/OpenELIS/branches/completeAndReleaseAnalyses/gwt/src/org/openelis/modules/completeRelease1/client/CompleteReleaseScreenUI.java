@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -22,11 +21,8 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -51,6 +47,7 @@ import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -76,6 +73,8 @@ import org.openelis.ui.widget.table.event.UnselectionHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -157,6 +156,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected SampleManager1                             manager;
 
+    protected HashMap<Integer, SampleManager1>           managers;
+
     protected boolean                                    isBusy;
 
     protected ModulePermission                           userPermission;
@@ -166,8 +167,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected HashMap<String, Object>                    cache;
 
     protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall;
-    
-    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall;
+
+    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, updateCall, unlockCall;
 
     private enum Tabs {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -249,9 +250,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
+        manager = null;
+        showTabs(Tabs.BLANK);
+        setData();
         setState(DEFAULT);
         table.setModel(getTableModel(null));
-        refreshTabs(null);
+        fireDataChange();
+        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
+                                                                             null));
 
         logger.fine("Complete Release Screen Opened");
     }
@@ -465,22 +471,49 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 table.setAllowMultipleSelection(isState(DISPLAY));
             }
         });
+        
+        table.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                /*
+                 * since in Update state, the selected row's manager is locked,
+                 * no other row is allowed to be selected
+                 */
+                if (isState(UPDATE))
+                    event.cancel();
+            }
+        });
+        
+        table.addUnselectionHandler(new UnselectionHandler<Integer>() {
+            public void onUnselection(UnselectionEvent<Integer> event) {
+                /*
+                 * since in Update state, the selected row's manager is locked,
+                 * it's not allowed ton be unselected
+                 */
+                if (isState(UPDATE))
+                    event.cancel();
+            }
+        });
+
 
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
+                UUID data;
                 Integer rows[];
-                AnalysisDataBundle data;
 
                 rows = table.getSelectedRows();
                 /*
-                 * show no tabs if multiple rows are selected, otherwise load
-                 * the tabs with the selected row's data
+                 * show no tabs if multiple rows are selected, otherwise show
+                 * and load the tabs for the selected row's domain
                  */
-                if (rows.length > 1)
+                if (rows.length > 1) {
                     data = null;
-                else
-                    data = table.getRowAt(rows[0]).getData();
+                    manager = null;
+                } else {
+                    data = (UUID)table.getRowAt(rows[0]).getData();
+                    manager = managers.get(data.sampleId);
+                }
 
+                setData();
                 refreshTabs(data);
             }
         });
@@ -794,31 +827,42 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("query")
     protected void query(ClickEvent event) {
+        manager = null;
+        managers = null;
+        showTabs(Tabs.SAMPLE, Tabs.ANALYSIS);
+        setData();
         setState(QUERY);
         table.setModel(getTableModel(null));
-        refreshTabs(null);
+        fireDataChange();
+        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
+                                                                             null));
         setDone(Messages.get().gen_enterFieldsToQuery());
     }
-    
+
     /**
      * Puts the screen in update state and loads the tabs with a locked manager.
      * Builds the cache from the manager.
      */
+    @UiHandler("update")
     protected void update(ClickEvent event) {
         if (table.getSelectedRows().length > 1) {
             window.setError(Messages.get().sample_cantUpdateMultiple());
             return;
         }
-        
+
         setBusy(Messages.get().gen_lockForUpdate());
 
         if (fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
-                    AnalysisDataBundle data;
-                    
-                    updateAllRows(result);
-                    data = (AnalysisDataBundle)table.getRowAt(table.getSelectedRow()).getData();
+                    UUID data;
+
+                    managers.put(manager.getSample().getId(), result);
+                    updateRows(result.getSample().getId());
+                    data = table.getRowAt(table.getSelectedRow()).getData();
+                    manager = result;
+                    buildCache();
+                    setData();
                     setState(UPDATE);
                     refreshTabs(data);
                 }
@@ -833,24 +877,18 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             };
         }
-        
-        SampleManager1.Load elements[] = { 
-                                           SampleManager1.Load.ANALYSISUSER,
-                                           SampleManager1.Load.AUXDATA,
-                                           SampleManager1.Load.NOTE,
-                                           SampleManager1.Load.ORGANIZATION,
-                                           SampleManager1.Load.PROJECT, 
-                                           SampleManager1.Load.QA,
-                                           SampleManager1.Load.RESULT,
-                                           SampleManager1.Load.STORAGE,
-                                           SampleManager1.Load.WORKSHEET
-        };
+
+        SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
+                        SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                        SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
+                        SampleManager1.Load.QA, SampleManager1.Load.RESULT,
+                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
 
         SampleService1.get().fetchForUpdate(manager.getSample().getId(),
                                             elements,
                                             fetchForUpdateCall);
     }
-    
+
     /**
      * Validates the data on the screen and based on the current state, executes
      * various service operations to commit the data.
@@ -887,9 +925,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             case QUERY:
                 commitQuery();
                 break;
-        // case UPDATE:
-        // commitUpdate(false);
-        // break;
+            case UPDATE:
+                commitUpdate(false);
+                break;
         }
     }
 
@@ -907,6 +945,54 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         executeQuery(query);
         cache = null;
     }
+    
+    /**
+     * Calls the service method to commit the data on the screen, to the
+     * database. Shows any errors/warnings encountered during the commit,
+     * otherwise loads the screen with the committed data.
+     */
+    protected void commitUpdate(final boolean ignoreWarning) {
+        setBusy(Messages.get().gen_updating());
+
+        if (updateCall == null) {
+            updateCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
+                    UUID data;
+                    
+                    managers.put(manager.getSample().getId(), result);
+                    updateRow(table.getSelectedRow(), result);
+                    data = table.getRowAt(table.getSelectedRow()).getData();
+                    manager = result;
+                    
+                    setData();
+                    setState(DISPLAY);
+                    refreshTabs(data);
+                    clearStatus();
+                    /*
+                     * the cache is set to null only if the update succeeds
+                     * because otherwise, it can't be used by any tabs if the
+                     * user wants to change any data
+                     */
+                    cache = null;
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                        if (Window.confirm(getWarnings(e.getErrorList())))
+                            commitUpdate(true);
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
+        }
+
+        SampleService1.get().update(manager, ignoreWarning, updateCall);
+    }
 
     /**
      * Reverts any changes made to the data on the screen and disables editing
@@ -920,10 +1006,50 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().gen_cancelChanges());
 
         if (state == QUERY) {
+            manager = null;
+            showTabs(Tabs.BLANK);
+            setData();
             setState(DEFAULT);
             table.setModel(getTableModel(null));
-            refreshTabs(null);
+            fireDataChange();
+            bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
+                                                                                 null));
             setDone(Messages.get().gen_queryAborted());
+        } else if (state == UPDATE) {
+            if (unlockCall == null) {
+                unlockCall = new AsyncCallbackUI<SampleManager1>() {
+                    public void success(SampleManager1 result) {
+                        UUID data;
+
+                        managers.put(manager.getSample().getId(), result);
+                        updateRow(table.getSelectedRow(), result);
+                        data = table.getRowAt(table.getSelectedRow()).getData();
+                        manager = result;
+
+                        setData();
+                        setState(DISPLAY);
+                        refreshTabs(data);
+
+                        setDone(Messages.get().gen_updateAborted());
+                        cache = null;
+                    }
+
+                    public void failure(Throwable e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                        cache = null;
+                    }
+                };
+            }
+
+            SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
+                            SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                            SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
+                            SampleManager1.Load.QA, SampleManager1.Load.RESULT,
+                            SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
+
+            SampleService1.get().unlock(manager.getSample().getId(), elements, unlockCall);
         }
     }
 
@@ -944,7 +1070,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         storageTab.setData(manager);
         qaEventTab.setData(manager);
     }
-    
+
     /**
      * creates the cache of objects like TestManager that are used frequently by
      * the different parts of the screen
@@ -1031,22 +1157,45 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                 public void success(ArrayList<SampleManager1> result) {
-                    AnalysisDataBundle data;
+                    UUID data;
+                    ArrayList<Row> model;
 
-                    clearStatus();
+                    /*
+                     * this map is used to link a table row with the sample
+                     * manager
+                     */
+                    managers = new HashMap<Integer, SampleManager1>();
+                    for (SampleManager1 sm : result)
+                        managers.put(sm.getSample().getId(), sm);
+
+                    model = getTableModel(result);
+                    /*
+                     * sorting the model before loading it into the table is
+                     * more efficient than loading the table with it and then
+                     * sorting it one column at a time
+                     */
+                    Collections.sort(model, new RowComparator());
+                    table.setModel(model);
+                    table.selectRowAt(0);
+
+                    data = table.getRowAt(0).getData();
+                    manager = managers.get(data.sampleId);
+
+                    setData();
                     setState(DISPLAY);
-                    table.setModel(getTableModel(result));
-                    if (table.getRowCount() > 0) {
-                        table.selectRowAt(0);
-                        data = table.getRowAt(0).getData();
-                        refreshTabs(data);
-                    }
+                    refreshTabs(data);
+                    clearStatus();
                 }
 
                 public void notFound() {
+                    manager = null;
+                    showTabs(Tabs.BLANK);
+                    setData();
                     setState(DEFAULT);
                     table.setModel(getTableModel(null));
-                    refreshTabs(null);
+                    fireDataChange();
+                    bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
+                                                                                         null));
                     setDone(Messages.get().gen_noRecordsFound());
                 }
 
@@ -1079,83 +1228,29 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         SampleService1.get().fetchByAnalysisQuery(query, elements, queryCall);
     }
-    
-    private void updateAllRows(SampleManager1 manager) {
-        Row row;
+
+    private void updateRows(Integer sampleId) {
+        UUID data;
 
         for (int i = 0; i < table.getRowCount(); i++ ) {
-            row = table.getRowAt(i);
-
-            if (manager.getSample().getAccessionNumber().equals(row.getCell(0)))
-                updateTableRow(i, manager);
+            data = table.getRowAt(i).getData();
+            if (sampleId.equals(data.sampleId))
+                updateRow(i, managers.get(sampleId));
         }
     }
 
-    private void updateTableRow(int index, SampleManager1 manager) {
-        Row row;
+    private void updateRow(int index, SampleManager1 manager) {
         AnalysisViewDO ana;
-        AnalysisDataBundle data;
+        UUID data;
 
-        row = table.getRowAt(index);
-        data = (AnalysisDataBundle)row.getData();
+        data = table.getRowAt(index).getData();
         ana = (AnalysisViewDO)manager.getObject(data.analysisUid);
-        data.manager = manager;
-        updateTableRowCells(index, manager.getSample(), ana);
-    }
-    
-    private void updateTableRowCells(int index, SampleDO sample, AnalysisViewDO ana) {
-        table.setValueAt(index, 0, sample.getAccessionNumber());
+
+        table.setValueAt(index, 0, manager.getSample().getAccessionNumber());
         table.setValueAt(index, 1, ana.getTestName());
         table.setValueAt(index, 2, ana.getMethodName());
         table.setValueAt(index, 3, ana.getStatusId());
-        table.setValueAt(index, 4, sample.getStatusId());
-    }
-
-    private void refreshTabs(AnalysisDataBundle data) {
-        String uid;
-        SelectedType type;
-        Tabs domainTab;
-
-        if (data != null) {
-            manager = data.manager;
-            type = SelectedType.ANALYSIS;
-            uid = data.analysisUid;
-            /*
-             * find out which domain's tab is to be shown after sample tab
-             */
-            domainTab = null;
-            if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain()))
-                domainTab = Tabs.ENVIRONMENTAL;
-            else if (Constants.domain().PRIVATEWELL.equals(manager.getSample().getDomain()))
-                domainTab = Tabs.PRIVATE_WELL;
-            else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain()))
-                domainTab = Tabs.SDWIS;
-            else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain()))
-                domainTab = Tabs.NEONATAL;
-
-            showTabs(Tabs.SAMPLE,
-                     domainTab,
-                     Tabs.SAMPLE_ITEM,
-                     Tabs.ANALYSIS,
-                     Tabs.TEST_RESULT,
-                     Tabs.ANALYSIS_NOTES,
-                     Tabs.SAMPLE_NOTES,
-                     Tabs.STORAGE,
-                     Tabs.QA_EVENTS,
-                     Tabs.AUX_DATA);
-        } else {
-            manager = null;
-            type = SelectedType.NONE;
-            uid = null;
-            if (isState(QUERY))
-                showTabs(Tabs.SAMPLE, Tabs.ANALYSIS);
-            else
-                showTabs(Tabs.BLANK);
-        }
-
-        setData();
-        fireDataChange();
-        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+        table.setValueAt(index, 4, manager.getSample().getStatusId());
     }
 
     /**
@@ -1187,8 +1282,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             return model;
 
         /*
-         * load the table with the analyses that have results, as those are the
-         * ones returned by the query executed on the screen
+         * only the analyses with results are shown because they were returned
+         * by the screen's query
          */
         for (SampleManager1 sm : managers) {
             for (i = 0; i < sm.item.count(); i++ ) {
@@ -1203,33 +1298,69 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     row.setCell(2, ana.getMethodName());
                     row.setCell(3, ana.getStatusId());
                     row.setCell(4, sm.getSample().getStatusId());
-                    row.setData(new AnalysisDataBundle(Constants.uid().get(ana),
-                                                       sm));
+                    row.setData(new UUID(Constants.uid().get(ana), sm.getSample().getId()));
                     model.add(row);
                 }
             }
         }
 
-        /*
-         * sort the model before loading it into the table because
-         */
-        Collections.sort(model, new RowComparator());
-
         return model;
     }
 
+    private void refreshTabs(UUID data) {
+        String uid, domain;
+        Tabs domainTab;
+        SelectedType type;
+
+        if (data == null) {
+            uid = null;
+            type = SelectedType.NONE;
+            showTabs(Tabs.BLANK);
+        } else {
+            uid = data.analysisUid;
+            type = SelectedType.ANALYSIS;
+            /*
+             * find out which domain's tab is to be shown
+             */
+            domain = managers.get(data.sampleId).getSample().getDomain();
+            domainTab = null;
+            if (Constants.domain().ENVIRONMENTAL.equals(domain))
+                domainTab = Tabs.ENVIRONMENTAL;
+            else if (Constants.domain().PRIVATEWELL.equals(domain))
+                domainTab = Tabs.PRIVATE_WELL;
+            else if (Constants.domain().SDWIS.equals(domain))
+                domainTab = Tabs.SDWIS;
+            else if (Constants.domain().NEONATAL.equals(domain))
+                domainTab = Tabs.NEONATAL;
+
+            showTabs(Tabs.SAMPLE,
+                     domainTab,
+                     Tabs.SAMPLE_ITEM,
+                     Tabs.ANALYSIS,
+                     Tabs.TEST_RESULT,
+                     Tabs.ANALYSIS_NOTES,
+                     Tabs.SAMPLE_NOTES,
+                     Tabs.STORAGE,
+                     Tabs.QA_EVENTS,
+                     Tabs.AUX_DATA);
+            tabPanel.setTabHasData(0);
+        }
+
+        fireDataChange();
+        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+    }
+
     /**
-     * 
      * This class is used to hold the data associated with a given row in the
      * table
      */
-    private class AnalysisDataBundle {
-        String         analysisUid;
-        SampleManager1 manager;
+    private class UUID {
+        String  analysisUid;
+        Integer sampleId;
 
-        public AnalysisDataBundle(String analysisUid, SampleManager1 manager) {
+        public UUID(String analysisUid, Integer sampleId) {
             this.analysisUid = analysisUid;
-            this.manager = manager;
+            this.sampleId = sampleId;
         }
     }
 
@@ -1244,23 +1375,25 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             AnalysisViewDO ana1, ana2;
             SampleItemViewDO item1, item2;
             SampleManager1 sm1, sm2;
-            AnalysisDataBundle b1, b2;
+            UUID b1, b2;
 
             b1 = row1.getData();
             b2 = row2.getData();
 
-            sm1 = b1.manager;
-            sm2 = b2.manager;
+            sm1 = managers.get(b1.sampleId);
+            sm2 = managers.get(b2.sampleId);
 
             compVal = sm1.getSample().getAccessionNumber().compareTo(sm2.getSample()
                                                                         .getAccessionNumber());
             if (compVal == 0) {
                 ana1 = (AnalysisViewDO)sm1.getObject(b1.analysisUid);
                 ana2 = (AnalysisViewDO)sm2.getObject(b2.analysisUid);
-                
-                item1 = (SampleItemViewDO)sm1.getObject(Constants.uid().getSampleItem(ana1.getSampleItemId()));
-                item2 = (SampleItemViewDO)sm2.getObject(Constants.uid().getSampleItem(ana2.getSampleItemId()));
-                
+
+                item1 = (SampleItemViewDO)sm1.getObject(Constants.uid()
+                                                                 .getSampleItem(ana1.getSampleItemId()));
+                item2 = (SampleItemViewDO)sm2.getObject(Constants.uid()
+                                                                 .getSampleItem(ana2.getSampleItemId()));
+
                 compVal = item1.getItemSequence().compareTo(item2.getItemSequence());
                 if (compVal == 0) {
                     compVal = ana1.getTestName().compareTo(ana2.getTestName());
