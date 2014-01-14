@@ -44,6 +44,8 @@ import org.openelis.ui.widget.table.DropdownCell;
 import org.openelis.ui.widget.table.TextBoxCell;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -81,6 +83,16 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
      */
     public void render(HTMLTable table, int row, int col, Object value) {
         table.setText(row, col, display(value));
+    }
+    
+    public SafeHtml bulkRender(Object value) {
+        SafeHtmlBuilder builder = new SafeHtmlBuilder();
+        
+        builder.appendHtmlConstant("<td>");
+        builder.appendEscaped(display(value));
+        builder.appendHtmlConstant("</td>");
+        
+        return builder.toSafeHtml();
     }
 
     public String display(Object val) {
