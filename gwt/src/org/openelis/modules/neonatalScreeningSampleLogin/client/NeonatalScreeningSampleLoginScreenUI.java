@@ -366,12 +366,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         //
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
+                                 userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
-                    query.setPressed(true);
                     query.lock();
-                } else
-                    query.setPressed(false);
+                    query.setPressed(true);
+                }
             }
         });
         addShortcut(query, 'q', CTRL);
@@ -392,12 +392,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
                 if (isState(ADD)) {
-                    add.setPressed(true);
                     add.lock();
-                } else {
-                    add.setPressed(false);
+                    add.setPressed(true);
                 }
             }
         });
@@ -405,12 +403,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
-                    update.setPressed(true);
                     update.lock();
-                } else {
-                    update.setPressed(false);
+                    update.setPressed(true);
                 }
             }
         });
