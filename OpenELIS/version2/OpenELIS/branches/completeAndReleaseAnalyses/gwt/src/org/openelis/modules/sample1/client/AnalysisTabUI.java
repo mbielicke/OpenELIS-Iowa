@@ -115,6 +115,9 @@ public class AnalysisTabUI extends Screen {
     protected TextBox<String>          test;
 
     @UiField
+    protected TextBox<Integer>         revision;
+
+    @UiField
     protected AutoComplete             method, user;
 
     @UiField
@@ -123,9 +126,6 @@ public class AnalysisTabUI extends Screen {
 
     @UiField
     protected CheckBox                 isReportable, isPreliminary;
-
-    @UiField
-    protected TextBox<Integer>         revision;
 
     @UiField
     protected Calendar                 startedDate, completedDate, releasedDate, printedDate;
@@ -342,7 +342,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                /* 
+                /*
                  * 
                  * The model for this dropdown in Display and Query states is
                  * the list of all sections in the system and it needs to be
@@ -733,66 +733,83 @@ public class AnalysisTabUI extends Screen {
                     sampleItem = null;
                 }
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    /*
-                     * since the individual fields in the DOs for the previous
-                     * (displayed) and current analysis are not compared to
-                     * determine if they are different, the tab needs to be
-                     * refreshed if the current uid is different from the
-                     * displayed uid, even though the data in the tables may be
-                     * the same
-                     */
+                /*
+                 * The widgets are compared with the analysis' fields to reload
+                 * the tab even if the uid is the same as previous but the data
+                 * in some fields was changed; e.g. on complete and release
+                 * screen, the selected row's manager may be replaced with a
+                 * locked and refetched manager containing changes from the
+                 * database.
+                 */
+                if (DataBaseUtil.isDifferent(revision.getValue(), getRevision()) ||
+                    DataBaseUtil.isDifferent(test.getValue(), getTestName()) ||
+                    DataBaseUtil.isDifferent(method.getDisplay(), getMethodName()) ||
+                    DataBaseUtil.isDifferent(section.getValue(), getSectionId()) ||
+                    DataBaseUtil.isDifferent(samplePrep.getDisplay(),
+                                             DataBaseUtil.concatWithSeparator(getPreAnalysisTest(),
+                                                                              ", ",
+                                                                              getPreAnalysisMethod())) ||
+                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId()) ||
+                    DataBaseUtil.isDifferent(status.getValue(), getStatusId()) ||
+                    DataBaseUtil.isDifferent(panel.getDisplay(), getPanelName()) ||
+                    DataBaseUtil.isDifferent(isReportable.getValue(), getIsReportable()) ||
+                    DataBaseUtil.isDifferent(isPreliminary.getValue(), getIsPreliminary()) ||
+                    DataBaseUtil.isDifferentYM(startedDate.getValue(), getStartedDate()) ||
+                    DataBaseUtil.isDifferentYM(completedDate.getValue(), getCompletedDate()) ||
+                    DataBaseUtil.isDifferentYM(releasedDate.getValue(), getReleasedDate()) ||
+                    DataBaseUtil.isDifferentYM(printedDate.getValue(), getPrintedDate())) {
                     redraw = true;
-                } else {
-                    /*
-                     * compare worksheets
-                     */
-                    count1 = worksheetTable.getRowCount();
-                    count2 = analysis != null ? manager.worksheet.count(analysis) : 0;
-
-                    if (count1 == count2) {
-                        for (i = 0; i < count1; i++ ) {
-                            ws = manager.worksheet.get(analysis, i);
-                            row = worksheetTable.getRowAt(i);
-
-                            if (DataBaseUtil.isDifferent(ws.getId(), row.getCell(0)) ||
-                                DataBaseUtil.isDifferent(ws.getCreatedDate(), row.getCell(1)) ||
-                                DataBaseUtil.isDifferent(ws.getStatusId(), row.getCell(2)) ||
-                                DataBaseUtil.isDifferent(ws.getSystemUser(), row.getCell(3))) {
-                                redraw = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        redraw = true;
-                    }
-
-                    /*
-                     * compare analysis users
-                     */
-                    count1 = userTable.getRowCount();
-                    count2 = analysis != null ? manager.analysisUser.count(analysis) : 0;
-
-                    if (count1 == count2) {
-                        for (i = 0; i < count1; i++ ) {
-                            user = manager.analysisUser.get(analysis, i);
-                            row = userTable.getRowAt(i);
-
-                            if (row.getCell(0) != null)
-                                name = ((AutoCompleteValue)row.getCell(0)).getDisplay();
-                            else
-                                name = null;
-
-                            if (DataBaseUtil.isDifferent(user.getSystemUser(), name) ||
-                                DataBaseUtil.isDifferent(user.getActionId(), row.getCell(1))) {
-                                redraw = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        redraw = true;
-                    }
                 }
+
+                /*
+                 * compare worksheets
+                 */
+                count1 = worksheetTable.getRowCount();
+                count2 = analysis != null ? manager.worksheet.count(analysis) : 0;
+
+                if (count1 == count2) {
+                    for (i = 0; i < count1; i++ ) {
+                        ws = manager.worksheet.get(analysis, i);
+                        row = worksheetTable.getRowAt(i);
+
+                        if (DataBaseUtil.isDifferent(ws.getId(), row.getCell(0)) ||
+                            DataBaseUtil.isDifferent(ws.getCreatedDate(), row.getCell(1)) ||
+                            DataBaseUtil.isDifferent(ws.getStatusId(), row.getCell(2)) ||
+                            DataBaseUtil.isDifferent(ws.getSystemUser(), row.getCell(3))) {
+                            redraw = true;
+                            break;
+                        }
+                    }
+                } else {
+                    redraw = true;
+                }
+
+                /*
+                 * compare analysis users
+                 */
+                count1 = userTable.getRowCount();
+                count2 = analysis != null ? manager.analysisUser.count(analysis) : 0;
+
+                if (count1 == count2) {
+                    for (i = 0; i < count1; i++ ) {
+                        user = manager.analysisUser.get(analysis, i);
+                        row = userTable.getRowAt(i);
+
+                        if (row.getCell(0) != null)
+                            name = ((AutoCompleteValue)row.getCell(0)).getDisplay();
+                        else
+                            name = null;
+
+                        if (DataBaseUtil.isDifferent(user.getSystemUser(), name) ||
+                            DataBaseUtil.isDifferent(user.getActionId(), row.getCell(1))) {
+                            redraw = true;
+                            break;
+                        }
+                    }
+                } else {
+                    redraw = true;
+                }
+
                 setState(state);
                 displayAnalysis(uid);
             }
@@ -1115,6 +1132,13 @@ public class AnalysisTabUI extends Screen {
         analysis.setPanelId(panelId);
     }
 
+    private String getPanelName() {
+        if (analysis != null)
+            return analysis.getPanelName();
+
+        return null;
+    }
+
     private Integer getPreAnalysisId() {
         if (analysis != null)
             return analysis.getPreAnalysisId();
@@ -1127,6 +1151,20 @@ public class AnalysisTabUI extends Screen {
                                                               preAnalysisId,
                                                               AnalysisChangeEvent.Action.PREP_CHANGED),
                                       this);
+    }
+
+    private String getPreAnalysisTest() {
+        if (analysis != null)
+            return analysis.getPreAnalysisTest();
+
+        return null;
+    }
+
+    private String getPreAnalysisMethod() {
+        if (analysis != null)
+            return analysis.getPreAnalysisMethod();
+
+        return null;
     }
 
     private Datetime getStartedDate() {

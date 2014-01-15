@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -21,6 +22,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
@@ -45,6 +47,7 @@ import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -168,7 +171,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall;
 
-    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, updateCall, unlockCall;
+    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, updateCall,
+                    unlockCall;
 
     private enum Tabs {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -272,24 +276,22 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         //
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
+                                 userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
-                    query.setPressed(true);
                     query.lock();
-                } else
-                    query.setPressed(false);
+                    query.setPressed(true);
+                }
             }
         });
         addShortcut(query, 'q', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
-                    update.setPressed(true);
                     update.lock();
-                } else {
-                    update.setPressed(false);
+                    update.setPressed(true);
                 }
             }
         });
@@ -471,7 +473,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 table.setAllowMultipleSelection(isState(DISPLAY));
             }
         });
-        
+
         table.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 /*
@@ -482,7 +484,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     event.cancel();
             }
         });
-        
+
         table.addUnselectionHandler(new UnselectionHandler<Integer>() {
             public void onUnselection(UnselectionEvent<Integer> event) {
                 /*
@@ -493,7 +495,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     event.cancel();
             }
         });
-
 
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
@@ -945,7 +946,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         executeQuery(query);
         cache = null;
     }
-    
+
     /**
      * Calls the service method to commit the data on the screen, to the
      * database. Shows any errors/warnings encountered during the commit,
@@ -958,12 +959,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             updateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
                     UUID data;
-                    
+
                     managers.put(manager.getSample().getId(), result);
                     updateRow(table.getSelectedRow(), result);
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     manager = result;
-                    
+
                     setData();
                     setState(DISPLAY);
                     refreshTabs(data);
@@ -1253,23 +1254,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         table.setValueAt(index, 4, manager.getSample().getStatusId());
     }
 
-    /**
-     * makes the tabs specified in the argument visible and the others not
-     * visible; selects the first visible tab if no tab is already selected, to
-     * show its widgets
-     */
-    private void showTabs(Tabs... tabs) {
-        EnumSet<Tabs> el;
-
-        el = EnumSet.copyOf(Arrays.asList(tabs));
-
-        for (Tabs tab : Tabs.values())
-            tabPanel.setTabVisible(tab.ordinal(), el.contains(tab));
-
-        if (tabs[0] != Tabs.BLANK && tabPanel.getSelectedIndex() < 0)
-            tabPanel.selectTab(tabs[0].ordinal());
-    }
-
     private ArrayList<Row> getTableModel(ArrayList<SampleManager1> managers) {
         int i, j;
         SampleItemViewDO item;
@@ -1311,18 +1295,22 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         String uid, domain;
         Tabs domainTab;
         SelectedType type;
+        AnalysisViewDO ana;
+        SampleManager1 sm;
 
         if (data == null) {
             uid = null;
             type = SelectedType.NONE;
             showTabs(Tabs.BLANK);
         } else {
+            sm = managers.get(data.sampleId);
             uid = data.analysisUid;
+            ana = (AnalysisViewDO)sm.getObject(uid);
             type = SelectedType.ANALYSIS;
             /*
              * find out which domain's tab is to be shown
              */
-            domain = managers.get(data.sampleId).getSample().getDomain();
+            domain = sm.getSample().getDomain();
             domainTab = null;
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
                 domainTab = Tabs.ENVIRONMENTAL;
@@ -1343,11 +1331,81 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                      Tabs.STORAGE,
                      Tabs.QA_EVENTS,
                      Tabs.AUX_DATA);
-            tabPanel.setTabHasData(0);
+
+            setTabNotification(Tabs.TEST_RESULT, sm, ana);
+            setTabNotification(Tabs.ANALYSIS_NOTES, sm, ana);
+            setTabNotification(Tabs.SAMPLE_NOTES, sm, ana);
+            setTabNotification(Tabs.STORAGE, sm, ana);
+            setTabNotification(Tabs.QA_EVENTS, sm, ana);
+            setTabNotification(Tabs.AUX_DATA, sm, ana);
+
+            fireDataChange();
+            bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+        }
+    }
+
+    /**
+     * makes the tabs specified in the argument visible and the others not
+     * visible; selects the first visible tab if no tab is already selected, to
+     * show its widgets
+     */
+    private void showTabs(Tabs... tabs) {
+        EnumSet<Tabs> el;
+
+        el = EnumSet.copyOf(Arrays.asList(tabs));
+
+        for (Tabs tab : Tabs.values())
+            tabPanel.setTabVisible(tab.ordinal(), el.contains(tab));
+
+        if (tabs[0] != Tabs.BLANK && tabPanel.getSelectedIndex() < 0)
+            tabPanel.selectTab(tabs[0].ordinal());
+    }
+
+    private void setTabNotification(Tabs tabs, SampleManager1 sm, AnalysisViewDO ana) {
+        int count;
+        String label;
+        NoteViewDO note;
+
+        label = null;
+
+        switch (tabs) {
+            case TEST_RESULT:
+                label = String.valueOf(sm.result.count(ana));
+                break;
+            case ANALYSIS_NOTES:
+                note = sm.analysisExternalNote.get(ana);
+                if (note == null)
+                    count = 0;
+                else
+                    count = 1;
+                label = DataBaseUtil.concatWithSeparator(count,
+                                                         " - ",
+                                                         sm.analysisInternalNote.count(ana));
+                break;
+            case SAMPLE_NOTES:
+                note = sm.sampleExternalNote.get();
+                if (note == null)
+                    count = 0;
+                else
+                    count = 1;
+                label = DataBaseUtil.concatWithSeparator(count,
+                                                         " - ",
+                                                         sm.sampleInternalNote.count());
+                break;
+            case STORAGE:
+                label = String.valueOf(sm.storage.count(ana));
+                break;
+            case QA_EVENTS:
+                label = DataBaseUtil.concatWithSeparator(sm.qaEvent.count(),
+                                                         " - ",
+                                                         sm.qaEvent.count(ana));
+                break;
+            case AUX_DATA:
+                label = String.valueOf(sm.auxData.count());
+                break;
         }
 
-        fireDataChange();
-        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+        tabPanel.setTabNotification(tabs.ordinal(), label);
     }
 
     /**
