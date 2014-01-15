@@ -43,6 +43,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.meta.MethodMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.main.client.Ids;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
@@ -133,6 +134,8 @@ public class MethodScreenUI extends Screen {
     }
 
     private void initialize() {
+        ensureDebugId("method");
+        
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY,DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
@@ -640,12 +643,12 @@ public class MethodScreenUI extends Screen {
     protected void onEnsureDebugId(String baseID) {
         super.onEnsureDebugId(baseID);
         
-        activeBegin.ensureDebugId(baseID + Ids.ACTIVE_BEGIN);
-        activeEnd.ensureDebugId(baseID + Ids.ACTIVE_END);
-        name.ensureDebugId(baseID + Ids.NAME);
-        description.ensureDebugId(baseID + Ids.DESCRIPTION);
-        reportingDescription.ensureDebugId(baseID + Ids.REPORTING_DESCRIPTION);
-        isActive.ensureDebugId(baseID + Ids.IS_ACTIVE);
+        activeBegin.ensureDebugId(baseID + MethodMeta.getActiveBegin());
+        activeEnd.ensureDebugId(baseID + MethodMeta.getActiveEnd());
+        name.ensureDebugId(baseID + MethodMeta.getName());
+        description.ensureDebugId(baseID + MethodMeta.getDescription());
+        reportingDescription.ensureDebugId(baseID + MethodMeta.getReportingDescription());
+        isActive.ensureDebugId(baseID + MethodMeta.getIsActive());
         query.ensureDebugId(baseID + Ids.QUERY);
         previous.ensureDebugId(baseID + Ids.PREVIOUS);
         next.ensureDebugId(baseID + Ids.NEXT);
@@ -660,30 +663,6 @@ public class MethodScreenUI extends Screen {
         history.ensureDebugId(baseID + Ids.HISTORY);
         atozButtons.ensureDebugId(baseID + Ids.A_TO_Z_Buttons);
         atozTable.ensureDebugId(baseID + Ids.A_TO_Z_TABLE);
-    }
-    
-    public static class Ids {
-        
-        public static final String ACTIVE_BEGIN = ".activeBegin",
-                                   ACTIVE_END = ".activeEnd",
-                                   NAME = ".name",
-                                   DESCRIPTION = ".description",
-                                   REPORTING_DESCRIPTION = ".reportingDescription",
-                                   IS_ACTIVE = ".isActive",
-                                   QUERY = ".query",
-                                   PREVIOUS = ".previous", 
-                                   NEXT = ".next",
-                                   ADD = ".add",
-                                   UPDATE = ".update",
-                                   COMMIT = ".commit",
-                                   ABORT = ".abort",
-                                   A_TO_Z_NEXT = ".atozNext",
-                                   A_TO_Z_PREV = ".atozPrev",
-                                   OPTIONS_BUTTON = ".optionsButton",
-                                   OPTIONS_MENU = ".optionsMenu",
-                                   HISTORY = ".history",
-                                   A_TO_Z_Buttons = ".atozButtons",
-                                   A_TO_Z_TABLE = ".atozTable";
     }
 
 }
