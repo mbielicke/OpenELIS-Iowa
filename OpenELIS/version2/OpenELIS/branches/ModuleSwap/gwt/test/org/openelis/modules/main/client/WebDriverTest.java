@@ -4,6 +4,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openelis.meta.MethodMeta;
+import org.openelis.modules.method.client.MethodPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -28,6 +30,7 @@ public class WebDriverTest {
 
     @Test
     public void clickMethod() {
-        new LoginPage(driver).login().clickMaintenance().clickMethod();
+        MethodPage page = new LoginPage(driver).login().clickMaintenance().clickMethod();
+        page.clickAdd().enterName("My MEthod Name");
     }
 }
