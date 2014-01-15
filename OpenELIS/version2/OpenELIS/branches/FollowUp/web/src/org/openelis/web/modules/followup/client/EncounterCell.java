@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.openelis.domain.EncounterDO;
 import org.openelis.ui.widget.table.CellRenderer;
+import org.openelis.ui.widget.table.ColumnInt;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
@@ -136,6 +137,12 @@ public class EncounterCell implements CellRenderer, IsWidget, HasWidgets.ForIsWi
     public boolean remove(IsWidget w) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public void setColumn(ColumnInt col) {
+        // TODO Auto-generated method stub
+        
     }
 
 }
