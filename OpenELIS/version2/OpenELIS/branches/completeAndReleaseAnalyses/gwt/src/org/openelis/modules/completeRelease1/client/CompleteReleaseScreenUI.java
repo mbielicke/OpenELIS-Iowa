@@ -188,12 +188,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
         ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
     };
-    
+
     private SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
-                                      SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
-                                      SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
-                                      SampleManager1.Load.QA, SampleManager1.Load.RESULT,
-                                      SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
+                    SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                    SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
+                    SampleManager1.Load.QA, SampleManager1.Load.RESULT,
+                    SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -945,8 +945,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             for (SampleManager1 sm : sms)
                 managers.put(sm.getSample().getId(), sm);
-            
-            
+
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1298,8 +1297,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Updates the display and the "data" of all rows showing the analyses of
-     * the sample with this id
+     * Updates the display and the UUID of all rows showing the analyses of the
+     * sample with this id
      */
     private void updateRows(Integer sampleId) {
         UUID data;
@@ -1312,7 +1311,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Updates the display and the "data" of the row at this index
+     * Updates the display and the UUID of the row at this index
      */
     private void updateRow(int index, SampleManager1 manager) {
         AnalysisViewDO ana;
@@ -1328,7 +1327,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         table.setValueAt(index, 4, manager.getSample().getStatusId());
     }
 
-    private ArrayList<Row> getTableModel(ArrayList<SampleManager1> managers) {
+    private ArrayList<Row> getTableModel(ArrayList<SampleManager1> sms) {
         int i, j;
         SampleItemViewDO item;
         AnalysisViewDO ana;
@@ -1336,14 +1335,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
-        if (managers == null)
+        if (sms == null)
             return model;
 
         /*
          * only the analyses with results are shown because they were returned
          * by the screen's query
          */
-        for (SampleManager1 sm : managers) {
+        for (SampleManager1 sm : sms) {
             for (i = 0; i < sm.item.count(); i++ ) {
                 item = sm.item.get(i);
                 for (j = 0; j < sm.analysis.count(item); j++ ) {
@@ -1366,27 +1365,30 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Shows
+     * If the UUId is not null then reloads the tabs with the manager and
+     * analysis specified by it and updates the notifications on the tab
+     * headers; otherwise shows the blank tab and empties the other tabs. If
+     * forceReloadResults is true then forces the result tab to refresh itself.
      */
     private void refreshTabs(UUID data, boolean forceReloadResults) {
         String uid, domain;
         Tabs domainTab;
         SelectedType type;
         AnalysisViewDO ana;
-        SampleManager1 manager;
+        SampleManager1 sm;
 
         if (data == null) {
             uid = null;
             type = SelectedType.NONE;
             showTabs(Tabs.BLANK);
         } else {
-            manager = managers.get(data.sampleId);
+            sm = managers.get(data.sampleId);
             uid = data.analysisUid;
             type = SelectedType.ANALYSIS;
             /*
              * find out which domain's tab is to be shown
              */
-            domain = manager.getSample().getDomain();
+            domain = sm.getSample().getDomain();
             domainTab = null;
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
                 domainTab = Tabs.ENVIRONMENTAL;
@@ -1411,23 +1413,22 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             /*
              * show notifications on the header of the tabs
              */
-            ana = (AnalysisViewDO)manager.getObject(uid);
-            setTabNotification(Tabs.ANALYSIS_NOTES, manager, ana);
-            setTabNotification(Tabs.SAMPLE_NOTES, manager, ana);
-            setTabNotification(Tabs.STORAGE, manager, ana);
-            setTabNotification(Tabs.QA_EVENTS, manager, ana);
-            setTabNotification(Tabs.AUX_DATA, manager, ana);
+            ana = (AnalysisViewDO)sm.getObject(uid);
+            setTabNotification(Tabs.ANALYSIS_NOTES, sm, ana);
+            setTabNotification(Tabs.SAMPLE_NOTES, sm, ana);
+            setTabNotification(Tabs.STORAGE, sm, ana);
+            setTabNotification(Tabs.QA_EVENTS, sm, ana);
+            setTabNotification(Tabs.AUX_DATA, sm, ana);
         }
 
         fireDataChange();
         bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
         /*
-         * This forces the result tab to refresh itself when SelectionEvent
-         * isn't sufficient to do so, e.g. on going in Update state or clicking
-         * Abort. In these cases, the selected row's manager is reloaded from
-         * the database with possibly changed results. SelectionEvent doesn't
-         * refresh the tab because in the tab the uids of the previous and
-         * current analysis are compared and not the new and old results.
+         * This is done when SelectionEvent isn't sufficient to refresh the
+         * result tab, because it makes the tab compare the uids of the previous
+         * and current analysis and not the new and old results. The results can
+         * get changed when the manager is reloaded from the database e.g. on
+         * going in Update state or clicking Abort.
          */
         if (forceReloadResults)
             bus.fireEvent(new ResultChangeEvent(uid));
@@ -1451,8 +1452,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * creates and sets the notification displayed on the header of a given tab,
-     * e.g. number of records in the tab
+     * creates and sets notification, e.g. number of records, on the header of
+     * the given tab
      */
     private void setTabNotification(Tabs tabs, SampleManager1 sm, AnalysisViewDO ana) {
         int count1, count2;
@@ -1494,6 +1495,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         tabPanel.setTabNotification(tabs.ordinal(), label);
     }
 
+    /**
+     * shows the final report for the selected row's sample in preview mode
+     */
     private void previewFinalReport() {
         Query query;
         QueryData field;
@@ -1535,12 +1539,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * This class is used to hold the data associated with a given row in the
-     * table
+     * This class contains the unique ids that link a table row with its sample
+     * and analysis
      */
     private class UUID {
-        String  analysisUid;
         Integer sampleId;
+        String  analysisUid;
 
         public UUID(String analysisUid, Integer sampleId) {
             this.analysisUid = analysisUid;
