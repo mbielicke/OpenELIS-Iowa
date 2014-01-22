@@ -233,8 +233,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected NeonatalScreeningSampleLoginScreenUI      screen;
 
-    protected HashMap<String, Object>                   cache;
-
     protected TestSelectionLookupUI                     testSelectionLookup;
 
     protected SampleProjectLookupUI                     sampleprojectLookUp;
@@ -242,11 +240,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
     protected PatientLookupScreenUI                     pLookupScreen;
+    
+    protected HashMap<String, Object>                   cache;
 
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall, 
-                                                         updateCall, fetchByIdCall, unlockCall,
+                                                         commitUpdateCall, fetchByIdCall, unlockCall,
                                                          duplicateCall;   
     
     // @formatter:off
@@ -2429,8 +2429,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         else
             setBusy(Messages.get().updating());
 
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<SampleManager1>() {
+        if (commitUpdateCall == null) {
+            commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
                     manager = result;
                     evaluateEdit();
@@ -2465,7 +2465,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             };
         }
 
-        SampleService1.get().update(manager, ignoreWarning, updateCall);
+        SampleService1.get().update(manager, ignoreWarning, commitUpdateCall);
     }
 
     /**

@@ -735,28 +735,22 @@ public class AnalysisTabUI extends Screen {
 
                 /*
                  * The widgets are compared with the analysis' fields to reload
-                 * the tab even if the uid is the same as previous but the data
-                 * in some fields was changed; e.g. on complete and release
-                 * screen, the selected row's manager may be replaced with a
-                 * locked and refetched manager containing changes from the
-                 * database.
+                 * the tab even if the current uid is the same as previous but
+                 * the data in some fields is different; this can happen on
+                 * complete and release screen, where the selected analysis'
+                 * manager may be replaced with a locked and refetched manager
+                 * containing changes from the database.
                  */
-                if (DataBaseUtil.isDifferent(revision.getValue(), getRevision()) ||
-                    DataBaseUtil.isDifferent(test.getValue(), getTestName()) ||
-                    DataBaseUtil.isDifferent(method.getDisplay(), getMethodName()) ||
-                    DataBaseUtil.isDifferent(section.getValue(), getSectionId()) ||
+                if (DataBaseUtil.isDifferent(revision.getValue(), getRevision()) || DataBaseUtil.isDifferent(test.getValue(), getTestName()) ||
+                    DataBaseUtil.isDifferent(method.getDisplay(), getMethodName()) || DataBaseUtil.isDifferent(section.getValue(), getSectionId()) ||
                     DataBaseUtil.isDifferent(samplePrep.getDisplay(),
                                              DataBaseUtil.concatWithSeparator(getPreAnalysisTest(),
                                                                               ", ",
                                                                               getPreAnalysisMethod())) ||
-                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId()) ||
-                    DataBaseUtil.isDifferent(status.getValue(), getStatusId()) ||
-                    DataBaseUtil.isDifferent(panel.getDisplay(), getPanelName()) ||
-                    DataBaseUtil.isDifferent(isReportable.getValue(), getIsReportable()) ||
-                    DataBaseUtil.isDifferent(isPreliminary.getValue(), getIsPreliminary()) ||
-                    DataBaseUtil.isDifferentYM(startedDate.getValue(), getStartedDate()) ||
-                    DataBaseUtil.isDifferentYM(completedDate.getValue(), getCompletedDate()) ||
-                    DataBaseUtil.isDifferentYM(releasedDate.getValue(), getReleasedDate()) ||
+                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId()) || DataBaseUtil.isDifferent(status.getValue(), getStatusId()) ||
+                    DataBaseUtil.isDifferent(panel.getDisplay(), getPanelName()) || DataBaseUtil.isDifferent(isReportable.getValue(), getIsReportable()) ||
+                    DataBaseUtil.isDifferent(isPreliminary.getValue(), getIsPreliminary()) || DataBaseUtil.isDifferentYM(startedDate.getValue(), getStartedDate()) ||
+                    DataBaseUtil.isDifferentYM(completedDate.getValue(), getCompletedDate()) || DataBaseUtil.isDifferentYM(releasedDate.getValue(), getReleasedDate()) ||
                     DataBaseUtil.isDifferentYM(printedDate.getValue(), getPrintedDate())) {
                     redraw = true;
                 }

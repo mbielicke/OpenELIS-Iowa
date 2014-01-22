@@ -475,7 +475,14 @@ public class AnalysisHelperBean {
             if (ana.getStartedDate() == null)
                 ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
         } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
-            // TODO check to make sure that the analysis can be completed
+            if (ana.getSectionName() == null ||
+                !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_insufficientPrivilegesCompleteException(accession,
+                                                                                                           ana.getTestName(),
+                                                                                                           ana.getMethodName()));
+            }
+            
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
             // TODO check to make sure that the analysis can be released
         } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
@@ -600,7 +607,7 @@ public class AnalysisHelperBean {
         /*
          * find the analysis whose prep analysis is to be changed and also the
          * analysis that is to be set as the prep
-         */       
+         */
         for (AnalysisViewDO a : getAnalyses(sm)) {
             if (a.getId().equals(analysisId))
                 ana = a;
