@@ -84,7 +84,7 @@ public class SampleItemTabUI extends Screen {
 
     protected String                     displayedUid;
 
-    protected boolean                   canEdit, isVisible, redraw, hasReleasedAnalysis;
+    protected boolean                    canEdit, isVisible, redraw, hasReleasedAnalysis;
 
     public SampleItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -259,7 +259,7 @@ public class SampleItemTabUI extends Screen {
                 displaySampleItem(uid);
             }
         });
-        
+
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
@@ -277,25 +277,30 @@ public class SampleItemTabUI extends Screen {
                         uid = null;
                         break;
                 }
-                
+
                 if (uid != null)
                     sampleItem = (SampleItemViewDO)manager.getObject(uid);
                 else
                     sampleItem = null;
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    /*
-                     * while the tab is not visible, the data in the sample item
-                     * linked by displayed uid may get changed e.g. if displayed
-                     * uid is negative and a different manager uses the same uid
-                     * or if the manager is fetched again and the data was
-                     * changed in the database; this makes sure that whenever
-                     * the tab is opened again, it shows the latest data for the
-                     * sample item, because when a new manager is loaded the uid
-                     * in this event is null
-                     */
+                /*
+                 * The widgets are compared with the sample item's fields to
+                 * reload the tab even if the current uid is the same as
+                 * previous but the data in some fields is different; this can
+                 * happen on complete and release screen, where the selected
+                 * analysis' manager may be replaced with a locked and refetched
+                 * manager containing changes from the database.
+                 */
+                if (DataBaseUtil.isDifferent(typeOfSample.getValue(), getTypeOfSampleId()) ||
+                    DataBaseUtil.isDifferent(sourceOfSample.getValue(), getSourceOfSampleId()) ||
+                    DataBaseUtil.isDifferent(sourceOther.getValue(), getSourceOther()) ||
+                    DataBaseUtil.isDifferent(container.getValue(), getContainerId()) ||
+                    DataBaseUtil.isDifferent(containerReference.getValue(), getContainerReference()) ||
+                    DataBaseUtil.isDifferent(quantity.getValue(), getQuantity()) ||
+                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId())) {
                     redraw = true;
                 }
+
                 setState(state);
                 displaySampleItem(uid);
             }

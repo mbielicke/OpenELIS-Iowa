@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
@@ -22,7 +22,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
@@ -31,12 +30,14 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
+import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.SDWISTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
@@ -50,6 +51,7 @@ import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -61,6 +63,7 @@ import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Menu;
@@ -80,12 +83,14 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
@@ -102,6 +107,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected Menu                                       optionsMenu, historyMenu;
+
+    @UiField
+    protected CheckMenuItem                              previewFinalReport;
 
     @UiField
     protected MenuItem                                   historySample, historySampleSpecific,
@@ -171,13 +179,21 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall;
 
-    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, updateCall,
+    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, commitUpdateCall,
                     unlockCall;
+
+    protected Integer                                    lastAccession;
 
     private enum Tabs {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
         ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
     };
+    
+    private SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
+                                      SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                                      SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
+                                      SampleManager1.Load.QA, SampleManager1.Load.RESULT,
+                                      SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -299,6 +315,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
+                complete.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
                 commit.setEnabled(isState(QUERY, ADD, UPDATE));
             }
         });
@@ -319,6 +341,19 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
                 historyMenu.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                previewFinalReport.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        previewFinalReport.addCommand(new Command() {
+            @Override
+            public void execute() {
+                previewFinalReport();
             }
         });
 
@@ -396,22 +431,18 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         historyCurrentResult.addCommand(new Command() {
             @Override
             public void execute() {
-                String uid;
-                Object obj;
+                UUID data;
+                AnalysisViewDO ana;
+                SampleManager1 manager;
 
                 /*
                  * Show the history of the results of the analysis selected in
-                 * the tree. Inform the user that they first need to select an
-                 * analysis if this is not the case.
-                 * 
-                 * uid = sampleItemAnalysisTreeTab.getSelectedUid(); if (uid !=
-                 * null) { obj = manager.getObject(uid); if (obj instanceof
-                 * AnalysisViewDO) {
-                 * SampleHistoryUtility1.currentResult(manager,
-                 * ((AnalysisViewDO)obj).getId()); return; } }
-                 * 
-                 * setError(Messages.get().result_historyException());
+                 * the table.
                  */
+                data = table.getRowAt(table.getSelectedRow()).getData();
+                manager = managers.get(data.sampleId);
+                ana = (AnalysisViewDO)manager.getObject(data.analysisUid);
+                SampleHistoryUtility1.currentResult(manager, ana.getId());
             }
         });
 
@@ -515,7 +546,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
 
                 setData();
-                refreshTabs(data);
+                refreshTabs(data, false);
+                previewFinalReport();
             }
         });
 
@@ -865,7 +897,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     buildCache();
                     setData();
                     setState(UPDATE);
-                    refreshTabs(data);
+                    refreshTabs(data, true);
                 }
 
                 public void failure(Throwable e) {
@@ -879,15 +911,48 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             };
         }
 
-        SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
-                        SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
-                        SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
-                        SampleManager1.Load.QA, SampleManager1.Load.RESULT,
-                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
-
         SampleService1.get().fetchForUpdate(manager.getSample().getId(),
                                             elements,
                                             fetchForUpdateCall);
+    }
+
+    /**
+     * Completes the analyses selected in the table
+     */
+    @UiHandler("complete")
+    protected void complete(ClickEvent event) {
+        Integer selRows[];
+        HashSet<Integer> ids;
+        UUID data;
+        ArrayList<SampleManager1> sms;
+
+        window.setBusy(Messages.get().gen_updating());
+        ids = new HashSet<Integer>();
+
+        selRows = table.getSelectedRows();
+        for (int i = 0; i < selRows.length; i++ ) {
+            data = table.getRowAt(i).getData();
+            ids.add(data.sampleId);
+        }
+
+        /*
+         * lock the samples that the selected rows belong to
+         */
+        try {
+            sms = SampleService1.get().fetchForUpdate(new ArrayList<Integer>(ids), elements);
+            /*
+             * update the screen's hash with the new managers
+             */
+            for (SampleManager1 sm : sms)
+                managers.put(sm.getSample().getId(), sm);
+            
+            
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+            return;
+        }
     }
 
     /**
@@ -955,19 +1020,20 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected void commitUpdate(final boolean ignoreWarning) {
         setBusy(Messages.get().gen_updating());
 
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<SampleManager1>() {
+        if (commitUpdateCall == null) {
+            commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
                     UUID data;
 
                     managers.put(manager.getSample().getId(), result);
-                    updateRow(table.getSelectedRow(), result);
-                    data = table.getRowAt(table.getSelectedRow()).getData();
+                    updateRows(manager.getSample().getId());
                     manager = result;
 
                     setData();
                     setState(DISPLAY);
-                    refreshTabs(data);
+                    lastAccession = null;
+                    data = table.getRowAt(table.getSelectedRow()).getData();
+                    refreshTabs(data, true);
                     clearStatus();
                     /*
                      * the cache is set to null only if the update succeeds
@@ -992,7 +1058,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             };
         }
 
-        SampleService1.get().update(manager, ignoreWarning, updateCall);
+        SampleService1.get().update(manager, ignoreWarning, commitUpdateCall);
     }
 
     /**
@@ -1029,7 +1095,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                         setData();
                         setState(DISPLAY);
-                        refreshTabs(data);
+                        refreshTabs(data, true);
 
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
@@ -1184,7 +1250,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                     setData();
                     setState(DISPLAY);
-                    refreshTabs(data);
+                    lastAccession = null;
+                    refreshTabs(data, false);
                     clearStatus();
                 }
 
@@ -1230,6 +1297,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         SampleService1.get().fetchByAnalysisQuery(query, elements, queryCall);
     }
 
+    /**
+     * Updates the display and the "data" of all rows showing the analyses of
+     * the sample with this id
+     */
     private void updateRows(Integer sampleId) {
         UUID data;
 
@@ -1240,6 +1311,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
     }
 
+    /**
+     * Updates the display and the "data" of the row at this index
+     */
     private void updateRow(int index, SampleManager1 manager) {
         AnalysisViewDO ana;
         UUID data;
@@ -1291,26 +1365,28 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         return model;
     }
 
-    private void refreshTabs(UUID data) {
+    /**
+     * Shows
+     */
+    private void refreshTabs(UUID data, boolean forceReloadResults) {
         String uid, domain;
         Tabs domainTab;
         SelectedType type;
         AnalysisViewDO ana;
-        SampleManager1 sm;
+        SampleManager1 manager;
 
         if (data == null) {
             uid = null;
             type = SelectedType.NONE;
             showTabs(Tabs.BLANK);
         } else {
-            sm = managers.get(data.sampleId);
+            manager = managers.get(data.sampleId);
             uid = data.analysisUid;
-            ana = (AnalysisViewDO)sm.getObject(uid);
             type = SelectedType.ANALYSIS;
             /*
              * find out which domain's tab is to be shown
              */
-            domain = sm.getSample().getDomain();
+            domain = manager.getSample().getDomain();
             domainTab = null;
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
                 domainTab = Tabs.ENVIRONMENTAL;
@@ -1332,16 +1408,29 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                      Tabs.QA_EVENTS,
                      Tabs.AUX_DATA);
 
-            setTabNotification(Tabs.TEST_RESULT, sm, ana);
-            setTabNotification(Tabs.ANALYSIS_NOTES, sm, ana);
-            setTabNotification(Tabs.SAMPLE_NOTES, sm, ana);
-            setTabNotification(Tabs.STORAGE, sm, ana);
-            setTabNotification(Tabs.QA_EVENTS, sm, ana);
-            setTabNotification(Tabs.AUX_DATA, sm, ana);
-
-            fireDataChange();
-            bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+            /*
+             * show notifications on the header of the tabs
+             */
+            ana = (AnalysisViewDO)manager.getObject(uid);
+            setTabNotification(Tabs.ANALYSIS_NOTES, manager, ana);
+            setTabNotification(Tabs.SAMPLE_NOTES, manager, ana);
+            setTabNotification(Tabs.STORAGE, manager, ana);
+            setTabNotification(Tabs.QA_EVENTS, manager, ana);
+            setTabNotification(Tabs.AUX_DATA, manager, ana);
         }
+
+        fireDataChange();
+        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
+        /*
+         * This forces the result tab to refresh itself when SelectionEvent
+         * isn't sufficient to do so, e.g. on going in Update state or clicking
+         * Abort. In these cases, the selected row's manager is reloaded from
+         * the database with possibly changed results. SelectionEvent doesn't
+         * refresh the tab because in the tab the uids of the previous and
+         * current analysis are compared and not the new and old results.
+         */
+        if (forceReloadResults)
+            bus.fireEvent(new ResultChangeEvent(uid));
     }
 
     /**
@@ -1361,51 +1450,88 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             tabPanel.selectTab(tabs[0].ordinal());
     }
 
+    /**
+     * creates and sets the notification displayed on the header of a given tab,
+     * e.g. number of records in the tab
+     */
     private void setTabNotification(Tabs tabs, SampleManager1 sm, AnalysisViewDO ana) {
-        int count;
+        int count1, count2;
         String label;
-        NoteViewDO note;
 
         label = null;
 
         switch (tabs) {
-            case TEST_RESULT:
-                label = String.valueOf(sm.result.count(ana));
-                break;
             case ANALYSIS_NOTES:
-                note = sm.analysisExternalNote.get(ana);
-                if (note == null)
-                    count = 0;
-                else
-                    count = 1;
-                label = DataBaseUtil.concatWithSeparator(count,
-                                                         " - ",
-                                                         sm.analysisInternalNote.count(ana));
+                count1 = sm.analysisExternalNote.get(ana) == null ? 0 : 1;
+                count2 = sm.analysisInternalNote.count(ana);
+                if (count1 > 0 || count2 > 0)
+                    label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
                 break;
             case SAMPLE_NOTES:
-                note = sm.sampleExternalNote.get();
-                if (note == null)
-                    count = 0;
-                else
-                    count = 1;
-                label = DataBaseUtil.concatWithSeparator(count,
-                                                         " - ",
-                                                         sm.sampleInternalNote.count());
+                count1 = sm.sampleExternalNote.get() == null ? 0 : 1;
+                count2 = sm.sampleInternalNote.count();
+                if (count1 > 0 || count2 > 0)
+                    label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
                 break;
             case STORAGE:
-                label = String.valueOf(sm.storage.count(ana));
+                count1 = sm.storage.count(ana);
+                if (count1 > 0)
+                    label = String.valueOf(count1);
                 break;
             case QA_EVENTS:
-                label = DataBaseUtil.concatWithSeparator(sm.qaEvent.count(),
-                                                         " - ",
-                                                         sm.qaEvent.count(ana));
+                count1 = sm.qaEvent.count();
+                count2 = sm.qaEvent.count(ana);
+                if (count1 > 0 || count2 > 0)
+                    label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
                 break;
             case AUX_DATA:
-                label = String.valueOf(sm.auxData.count());
+                count1 = sm.auxData.count();
+                if (count1 > 0)
+                    label = String.valueOf(count1);
                 break;
         }
 
         tabPanel.setTabNotification(tabs.ordinal(), label);
+    }
+
+    private void previewFinalReport() {
+        Query query;
+        QueryData field;
+
+        if ( !previewFinalReport.isChecked() || !isState(DISPLAY) ||
+            table.getSelectedRows().length != 1 || manager == null ||
+            manager.getSample().getAccessionNumber().equals(lastAccession))
+            return;
+
+        lastAccession = manager.getSample().getAccessionNumber();
+        query = new Query();
+        field = new QueryData();
+        field.setKey("ACCESSION_NUMBER");
+        field.setQuery(lastAccession.toString());
+        field.setType(QueryData.Type.INTEGER);
+        query.setFields(field);
+
+        window.setBusy(Messages.get().gen_generatingReport());
+
+        FinalReportService.get().runReportForPreview(query, new AsyncCallback<ReportStatus>() {
+            public void onSuccess(ReportStatus status) {
+                String url;
+
+                if (ReportStatus.Status.SAVED.equals(status.getStatus())) {
+                    url = "/openelis/openelis/report?file=" + status.getMessage();
+                    Window.open(URL.encode(url), "FinalReport", null);
+                    setDone(Messages.get().gen_loadCompleteMessage());
+                } else {
+                    setDone(status.getMessage());
+                }
+            }
+
+            public void onFailure(Throwable caught) {
+                setError("Failed");
+                caught.printStackTrace();
+                Window.alert(caught.getMessage());
+            }
+        });
     }
 
     /**

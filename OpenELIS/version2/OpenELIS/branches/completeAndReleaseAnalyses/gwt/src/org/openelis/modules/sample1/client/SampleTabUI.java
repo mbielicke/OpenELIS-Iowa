@@ -70,44 +70,44 @@ public class SampleTabUI extends Screen {
     interface SampleTabUIBinder extends UiBinder<Widget, SampleTabUI> {
     };
 
-    private static SampleTabUIBinder         uiBinder = GWT.create(SampleTabUIBinder.class);
+    private static SampleTabUIBinder uiBinder = GWT.create(SampleTabUIBinder.class);
 
     @UiField
-    protected Calendar                       collectionDate, collectionTime, receivedDate;
+    protected Calendar               collectionDate, collectionTime, receivedDate;
 
     @UiField
-    protected TextBox<Integer>               accessionNumber, orderId;
+    protected TextBox<Integer>       accessionNumber, orderId;
 
     @UiField
-    protected TextBox<String>                clientReference;
+    protected TextBox<String>        clientReference;
 
     @UiField
-    protected Dropdown<Integer>              status, type;
-    
-    @UiField
-    protected Dropdown<String>               orgState, orgCountry;
+    protected Dropdown<Integer>      status, type;
 
     @UiField
-    protected Table                          organizationTable, projectTable;
+    protected Dropdown<String>       orgState, orgCountry;
 
     @UiField
-    protected AutoComplete                   organization, project;
+    protected Table                  organizationTable, projectTable;
 
     @UiField
-    protected Button                         addOrganizationButton, removeOrganizationButton,
+    protected AutoComplete           organization, project;
+
+    @UiField
+    protected Button                 addOrganizationButton, removeOrganizationButton,
                     addProjectButton, removeProjectButton;
 
-    protected SampleManager1                 manager;
+    protected SampleManager1         manager;
 
-    protected Screen                         parentScreen;
+    protected Screen                 parentScreen;
 
-    protected SampleTabUI                    screen;
+    protected SampleTabUI            screen;
 
-    protected EventBus                       parentBus;
+    protected EventBus               parentBus;
 
-    protected boolean                        canEdit, isBusy, isVisible, redraw;
+    protected boolean                canEdit, isBusy, isVisible, redraw;
 
-    protected TestSelectionLookupUI          testSelectionLookup;
+    protected TestSelectionLookupUI  testSelectionLookup;
 
     public SampleTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -158,8 +158,7 @@ public class SampleTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                orderId.setEnabled(isState(QUERY) ||
-                                   (canEdit && isState(ADD, UPDATE)));
+                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 orderId.setQueryMode(isState(QUERY));
             }
 
@@ -275,15 +274,23 @@ public class SampleTabUI extends Screen {
                          "organizationTable",
                          new ScreenHandler<ArrayList<Row>>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 if (!isState(QUERY))
+                                 if ( !isState(QUERY))
                                      organizationTable.setModel(getOrganizationTableModel());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  organizationTable.setEnabled(true);
                                  organizationTable.setQueryMode(isState(QUERY));
+                                 /*
+                                  * disable the types that are not allowed for
+                                  * this sample's domain
+                                  */
+                                 if (manager != null) {
+                                     for (Item<Integer> row : type.getModel())
+                                         row.setEnabled(canAddOrganizationType(row.getKey()));
+                                 }
                              }
-                             
+
                              public Object getQuery() {
                                  ArrayList<QueryData> qds;
                                  QueryData qd;
@@ -331,7 +338,7 @@ public class SampleTabUI extends Screen {
 
         organizationTable.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
-            public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+            public void onSelection(SelectionEvent<Integer> event) {
                 removeOrganizationButton.setEnabled(isState(ADD, UPDATE));
             }
         });
@@ -402,7 +409,7 @@ public class SampleTabUI extends Screen {
                         try {
                             if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(data.getOrganizationId()))
                                 Window.alert(Messages.get()
-                                                     .orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
+                                                     .gen_orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             e.printStackTrace();
@@ -439,14 +446,45 @@ public class SampleTabUI extends Screen {
                     organization.showAutoMatches(model);
                 } catch (Throwable e) {
                     Window.alert(e.getMessage());
+
                 }
                 window.clearStatus();
             }
         });
-        
+
+        organizationTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                manager.organization.add();
+                removeOrganizationButton.setEnabled(true);
+            }
+        });
+
+        organizationTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                manager.organization.remove(event.getIndex());
+                removeOrganizationButton.setEnabled(false);
+            }
+        });
+
+        addScreenHandler(addOrganizationButton,
+                         "addOrganizationButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 addOrganizationButton.setEnabled(isState(ADD, UPDATE));
+                             }
+                         });
+
+        addScreenHandler(removeOrganizationButton,
+                         "removeOrganizationButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 removeOrganizationButton.setEnabled(false);
+                             }
+                         });
+
         addScreenHandler(projectTable, "projectTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                if (!isState(QUERY))
+                if ( !isState(QUERY))
                     projectTable.setModel(getProjectTableModel());
             }
 
@@ -454,7 +492,7 @@ public class SampleTabUI extends Screen {
                 projectTable.setEnabled(true);
                 projectTable.setQueryMode(isState(QUERY));
             }
-            
+
             public Object getQuery() {
                 ArrayList<QueryData> qds;
                 QueryData qd;
@@ -487,7 +525,7 @@ public class SampleTabUI extends Screen {
                 removeProjectButton.setEnabled(isState(ADD, UPDATE));
             }
         });
-        
+
         projectTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -612,7 +650,7 @@ public class SampleTabUI extends Screen {
         }
 
         status.setModel(model);
-        
+
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("organization_type")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -621,7 +659,7 @@ public class SampleTabUI extends Screen {
         }
 
         type.setModel(model);
-        
+
         smodel = new ArrayList<Item<String>>();
         smodel.add(new Item<String>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("state")) {
@@ -864,7 +902,7 @@ public class SampleTabUI extends Screen {
         if (r > -1 && organizationTable.getRowCount() > 0)
             organizationTable.removeRowAt(r);
     }
-    
+
     @UiHandler("addProjectButton")
     protected void addProject(ClickEvent event) {
         int r;
@@ -875,7 +913,7 @@ public class SampleTabUI extends Screen {
         projectTable.scrollToVisible(r);
         projectTable.startEditing(r, 0);
     }
-    
+
     @UiHandler("removeProjectButton")
     protected void removeProject(ClickEvent event) {
         int r;
@@ -893,7 +931,7 @@ public class SampleTabUI extends Screen {
         model = new ArrayList<Row>();
         if (manager == null)
             return model;
-        
+
         for (int i = 0; i < manager.organization.count(); i++ ) {
             data = manager.organization.get(i);
 
@@ -925,7 +963,7 @@ public class SampleTabUI extends Screen {
         // Constants.dictionary().ORG_BILL_TO.equals(typeId) &&
         // !Constants.domain().NEONATAL.equals(domain))
     }
-    
+
     private ArrayList<Row> getProjectTableModel() {
         ArrayList<Row> model;
         SampleProjectViewDO data;
@@ -934,7 +972,7 @@ public class SampleTabUI extends Screen {
         model = new ArrayList<Row>();
         if (manager == null)
             return model;
-        
+
         for (int i = 0; i < manager.project.count(); i++ ) {
             data = manager.project.get(i);
 

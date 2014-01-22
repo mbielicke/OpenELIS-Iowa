@@ -941,7 +941,7 @@ public class SampleManager1Bean {
 
         e = new ValidationErrorsList();
         /*
-         * validate each sample and re-evalute its status
+         * validate each sample and re-evaluate its status
          */
         for (SampleManager1 sm : sms) {
             try {
