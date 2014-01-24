@@ -40,14 +40,17 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
@@ -74,6 +77,7 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.User;
@@ -87,6 +91,9 @@ public class WorksheetManager1Bean {
     
     @EJB
     private AnalysisHelperBean           aHelper;
+    
+    @EJB
+    private CategoryCacheBean            category;
     
     @EJB
     private DictionaryCacheBean          dictionary;
@@ -369,12 +376,13 @@ public class WorksheetManager1Bean {
      */
     public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
         int i, dep, ldep;
-        boolean locked, nodep, unlock;
+        boolean failedRun, locked, nodep, unlock, voidRun;
         ArrayList<Integer> analyteIndexes, excludedIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
         ArrayList<TestAnalyteViewDO> analytes;
         ArrayList<WorksheetResultViewDO> wResults;
+        Datetime createdDate, startedDate;
         Integer tmpid, id;
         HashMap<Integer, Integer> imap, amap;
         HashMap<Integer, ArrayList<Integer>> excludedMap;
@@ -386,6 +394,7 @@ public class WorksheetManager1Bean {
         HashSet<Integer> analysisIds, initAnalysisIds, updateAnalysisIds;
         ResultViewDO rVDO;
         SampleManager1 sManager;
+        SectionPermission userPermission;
         StringBuffer description;
         TestAnalyteViewDO taVDO;
         WorksheetAnalysisViewDO waVDO;
@@ -394,7 +403,9 @@ public class WorksheetManager1Bean {
         
         validate(wm);
 
+        failedRun = false;
         locked = false;
+        voidRun = false;
         if (getWorksheet(wm).getId() != null && getWorksheet(wm).getId() > 0) {
             lock.validateLock(Constants.table().WORKSHEET, getWorksheet(wm).getId());
             locked = true;
@@ -486,6 +497,11 @@ public class WorksheetManager1Bean {
             }
             imap.put(tmpid, data.getId());
         }
+        
+        if (Constants.dictionary().WORKSHEET_FAILED.equals(getWorksheet(wm).getStatusId()))
+            failedRun = true;
+        else if (Constants.dictionary().WORKSHEET_VOID.equals(getWorksheet(wm).getStatusId()))
+            voidRun = true;
 
         analysisIds = new HashSet<Integer>();
         initAnalysisIds = new HashSet<Integer>();
@@ -497,8 +513,8 @@ public class WorksheetManager1Bean {
                     initAnalysisIds.add(data.getAnalysisId());
                     updatedAnalyses.put(data.getAnalysisId(), data);
                     updateAnalysisIds.add(data.getAnalysisId());
-                } else if ((data.isChanged() || data.isStatusChanged() || data.isUnitChanged()) &&
-                           !updatedAnalyses.containsKey(data.getAnalysisId())) {
+                } else if ((data.isChanged() || data.isStatusChanged() || data.isUnitChanged() ||
+                            failedRun || voidRun) && !updatedAnalyses.containsKey(data.getAnalysisId())) {
                     updatedAnalyses.put(data.getAnalysisId(), data);
                     updateAnalysisIds.add(data.getAnalysisId());
                 }
@@ -525,6 +541,7 @@ public class WorksheetManager1Bean {
             }
         }
 
+        createdDate = getWorksheet(wm).getCreatedDate();
         if (!updateAnalysisIds.isEmpty()) {
             sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds),
                                                        SampleManager1.Load.ORGANIZATION,
@@ -533,19 +550,38 @@ public class WorksheetManager1Bean {
             for (SampleManager1 sMan : sMans) {
                 for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
                     if (initAnalysisIds.contains(ana.getId())) {
-                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
+                        if (!Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) &&
+                            !Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId()))
+                            aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
                         waVDO = updatedAnalyses.get(ana.getId());
                         if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
                                                      ana.getUnitOfMeasureId()))
                             aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
                     } else if (updatedAnalyses.containsKey(ana.getId())) {
+                        userPermission = userCache.getPermission().getSection(ana.getSectionName());
+                        if (userPermission == null || !userPermission.hasCompletePermission())
+                            throw new EJBException(Messages.get()
+                                                           .analysis_noCompletePermission(DataBaseUtil.toString(sMan.getSample()
+                                                                                                                    .getAccessionNumber()),
+                                                                                          ana.getTestName(),
+                                                                                          ana.getMethodName()));
+                        
                         waVDO = updatedAnalyses.get(ana.getId());
                         if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
                                                      ana.getUnitOfMeasureId()))
                             aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
-                        if (DataBaseUtil.isDifferent(waVDO.getStatusId(),
-                                                     ana.getStatusId()))
+                        if (failedRun && (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
+                                          Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()))) {
+                            aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_REQUEUE);
+                        } else if (voidRun && (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
+                                               Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()))) {
+                            startedDate = ana.getStartedDate();
+                            if (startedDate == null || !startedDate.before(createdDate))
+                                aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
+                        } else if (DataBaseUtil.isDifferent(waVDO.getStatusId(),
+                                                            ana.getStatusId())) {
                             aHelper.changeAnalysisStatus(sMan, ana.getId(), waVDO.getStatusId());
+                        }
                     }
                     results = newResults.get(ana.getId());
                     if (results != null && results.size() > 0) {
