@@ -55,6 +55,7 @@ import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -67,12 +68,14 @@ import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
@@ -91,6 +94,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -123,6 +127,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     
     private static WorksheetBuilderUiBinder             uiBinder = GWT.create(WorksheetBuilderUiBinder.class);
 
+    private Integer                                     origStatusId;
     private ModulePermission                            userPermission;
     private ScreenNavigator<IdNameVO>                   nav;
     private WorksheetManager1                           manager;
@@ -158,6 +163,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected boolean                                   updateWarningShown;
     protected ArrayList<Integer>                        formatIds;
     protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
+    protected EditNoteLookupUI                          failedNoteLookup;
     protected HashMap<Integer, ResultViewDO>            modifiedResults;
     protected HashMap<Integer, TestAnalyteViewDO>       addedAnalytes;
     protected HashMap<String, ArrayList<Object>>        analytesMap;
@@ -493,7 +499,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(19);
+                query.setRowsPerPage(20);
                 WorksheetService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
@@ -721,7 +727,7 @@ public class WorksheetBuilderScreenUI extends Screen {
 
         try {
             manager = WorksheetService1.get().fetchForUpdate(manager.getWorksheet().getId());
-
+            origStatusId = manager.getWorksheet().getStatusId();
             setData();
             setState(UPDATE);
             fireDataChange();
@@ -736,6 +742,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        Integer currStatusId;
         Validation validation;
         
         finishEditing();
@@ -758,7 +765,14 @@ public class WorksheetBuilderScreenUI extends Screen {
                 break;
                 
             case UPDATE:
-                commitUpdate();
+                currStatusId = manager.getWorksheet().getStatusId();
+                if (Constants.dictionary().WORKSHEET_FAILED.equals(currStatusId) &&
+                    !Constants.dictionary().WORKSHEET_FAILED.equals(origStatusId)) {
+                    openFailedRunNote();
+                    return;
+                } else {
+                    commitUpdate();
+                }
                 break;
         }
         
@@ -1027,6 +1041,49 @@ public class WorksheetBuilderScreenUI extends Screen {
             Window.alert("error: " + e.getMessage());
             return;
         }
+    }
+
+    protected void openFailedRunNote() {
+        ModalWindow modal;
+        NoteViewDO note;
+
+        if (failedNoteLookup == null) {
+            failedNoteLookup = new EditNoteLookupUI() {
+                public void ok() {
+                    if (DataBaseUtil.isEmpty(failedNoteLookup.getText())) {
+                        manager.note.removeEditing();
+                    } else {
+                        setNoteFields(manager.note.getEditing(), failedNoteLookup.getSubject(),
+                                      failedNoteLookup.getText());
+                        commitUpdate();
+                    }
+                }
+                
+                public void cancel() {
+                    // ignore
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("620px", "550px");
+        modal.setName(Messages.get().gen_noteEditor());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(failedNoteLookup);
+
+        note = manager.note.getEditing();
+        failedNoteLookup.setWindow(modal);
+        failedNoteLookup.setSubject(note.getSubject());
+        failedNoteLookup.setText(note.getText());
+        failedNoteLookup.setHasSubject("N".equals(note.getIsExternal()));
+    }
+
+    private void setNoteFields(NoteViewDO note, String subject, String text) {
+        note.setSubject(subject);
+        note.setText(text);
+        note.setSystemUser(UserCache.getPermission().getLoginName());
+        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
+        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
     }
 
     @SuppressWarnings("unchecked")

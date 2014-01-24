@@ -223,7 +223,7 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="110px" bottom="0px">
+        <g:layer top="106px" bottom="0px">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>
