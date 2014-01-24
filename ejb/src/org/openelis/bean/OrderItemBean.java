@@ -155,9 +155,9 @@ public class OrderItemBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getInventoryItemId()))
-            list.add(new FormErrorException(Messages.get().order_inventoryItemRequiredException(DataBaseUtil.toString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_inventoryItemRequiredException(DataBaseUtil.toString(data.getOrderId()))));
         if (DataBaseUtil.isEmpty(data.getQuantity()))
-            list.add(new FormErrorException(Messages.get().order_inventoryQuantityRequiredException(DataBaseUtil.toString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_inventoryQuantityRequiredException(DataBaseUtil.toString(data.getOrderId()))));
         if (list.size() > 0)
             throw list;
     }
