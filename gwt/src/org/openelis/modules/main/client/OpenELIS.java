@@ -66,7 +66,6 @@ import org.openelis.modules.provider.client.ProviderScreen;
 import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
-import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreenUI;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
@@ -569,7 +568,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.worksheetBuilder());
-                            window.setSize("1061px", "501px");
+                            window.setSize("1061px", "480px");
                             screen = new WorksheetBuilderScreenUI(window);
                             window.setContent(screen);
                             screen.initialize();
