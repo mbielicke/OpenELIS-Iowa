@@ -41,20 +41,18 @@ public class ToDoWorksheetVO implements Serializable {
 
     protected Integer         id, systemUserId, statusId;
     protected Datetime        createdDate;
-    protected String          systemUserName, testName, testMethodName, sectionName;
+    protected String          systemUserName, description, sectionName;
     
     public ToDoWorksheetVO() {
     }
     
     public ToDoWorksheetVO(Integer id, Date createdDate, Integer systemUserId,
-                            Integer statusId, String testName, String testMethodName,
-                            String sectionName) {
+                            Integer statusId, String description, String sectionName) {
         setId(id);
         setCreatedDate(DataBaseUtil.toYM(createdDate));
         setSystemUserId(systemUserId);
         setStatusId(statusId);
-        setTestName(testName);
-        setTestMethodName(testMethodName);
+        setDescription(description);
         setSectionName(sectionName);
     }
    
@@ -98,21 +96,13 @@ public class ToDoWorksheetVO implements Serializable {
         this.systemUserName = DataBaseUtil.trim(systemUserName);
     }
     
-    public String getTestName() {
-        return testName;
+    public String getDescription() {
+        return description;
     }
     
-    public void setTestName(String testName) {
-        this.testName = DataBaseUtil.trim(testName);
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
     }   
-    
-    public String getTestMethodName() {
-        return testMethodName;
-    }
-    
-    public void setTestMethodName(String testMethodName) {
-        this.testMethodName = DataBaseUtil.trim(testMethodName);
-    }
     
     public String getSectionName() {
         return sectionName;
@@ -121,5 +111,4 @@ public class ToDoWorksheetVO implements Serializable {
     public void setSectionName(String sectionName) {
         this.sectionName = DataBaseUtil.trim(sectionName);
     }
-
 }
