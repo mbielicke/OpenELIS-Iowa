@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace-production/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -5702,6 +5702,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Received Date")
   @Key("gen.receivedDate")
   String gen_receivedDate();
+
+  /**
+   * Translated "Remove".
+   * 
+   * @return translated "Remove"
+   */
+  @DefaultMessage("Remove")
+  @Key("gen.remove")
+  String gen_remove();
 
   /**
    * Translated "Remove Row".
@@ -14416,11 +14425,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String showManifest();
 
   /**
-   * Translated "Show my section''s only".
+   * Translated "Show my section(s) only".
    * 
-   * @return translated "Show my section''s only"
+   * @return translated "Show my section(s) only"
    */
-  @DefaultMessage("Show my section''s only")
+  @DefaultMessage("Show my section(s) only")
   @Key("showMySectOnly")
   String showMySectOnly();
 
@@ -16718,6 +16727,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must choose a format for this worksheet before adding analyses from another worksheet.")
   @Key("worksheet.chooseFormatBeforeAddFromOther")
   String worksheet_chooseFormatBeforeAddFromOther();
+
+  /**
+   * Translated "You must have complete permissions for the ''{0}'' section to {1} this row.".
+   * 
+   * @return translated "You must have complete permissions for the ''{0}'' section to {1} this row."
+   */
+  @DefaultMessage("You must have complete permissions for the ''{0}'' section to {1} this row.")
+  @Key("worksheet.completePermissionRequiredForOperation")
+  String worksheet_completePermissionRequiredForOperation(String arg0,  String arg1);
 
   /**
    * Translated "Created Date".
