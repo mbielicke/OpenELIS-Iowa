@@ -33,7 +33,7 @@
 				<r:Leaf key="test">
 					<r:LeafColumn>
 						<t:TextBoxCell>
-							<w:TextBox field="Integer" required="true" />
+							<w:TextBox field="Integer" />
 						</t:TextBoxCell>
 					</r:LeafColumn>
 					<r:LeafColumn>

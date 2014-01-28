@@ -84,6 +84,16 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
     public void render(HTMLTable table, int row, int col, Object value) {
         table.setText(row, col, display(value));
     }
+    
+    public SafeHtml bulkRender(Object value) {
+        SafeHtmlBuilder builder = new SafeHtmlBuilder();
+        
+        builder.appendHtmlConstant("<td>");
+        builder.appendEscaped(display(value));
+        builder.appendHtmlConstant("</td>");
+        
+        return builder.toSafeHtml();
+    }
 
     public String display(Object val) {
         Integer dictId;
@@ -104,16 +114,6 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
         }
 
         return DataBaseUtil.toString(value.display);
-    }
-
-    public SafeHtml bulkRender(Object value) {
-        SafeHtmlBuilder builder = new SafeHtmlBuilder();
-        
-        builder.appendHtmlConstant("<td>");
-        builder.appendEscaped(display(value));
-        builder.appendHtmlConstant("</td>");
-        
-        return builder.toSafeHtml();
     }
 
     @Override

@@ -27,7 +27,6 @@ package org.openelis.modules.order1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DEFAULT;
 import static org.openelis.ui.screen.State.DISPLAY;
@@ -1354,9 +1353,24 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         validation = validate();
 
-        if (validation.getStatus() != VALID) {
-            setError(Messages.get().gen_correctErrors());
-            return;
+        switch (validation.getStatus()) {
+            case WARNINGS:
+                /*
+                 * show the warnings and ask the user if the data should still
+                 * be committed; commit only if the user says yes
+                 */
+                if ( !Window.confirm(getWarnings(validation.getExceptions())))
+                    return;
+                break;
+            case FLAGGED:
+                /*
+                 * some part of the screen has some operation that needs to be
+                 * completed before committing the data
+                 */
+                return;
+            case ERRORS:
+                setError(Messages.get().gen_correctErrors());
+                return;
         }
 
         switch (super.state) {
@@ -2110,6 +2124,25 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             for (AuxFieldGroupManager afgm : afgms)
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
         }
+    }
+    
+    /**
+     * creates a string containing the message that there are warnings on the
+     * screen, followed by all warning messages, followed by the question
+     * whether the data should be committed
+     */
+    private String getWarnings(ArrayList<Exception> warnings) {
+        StringBuilder b;
+
+        b = new StringBuilder();
+        b.append(Messages.get().gen_warningDialogLine1()).append("\n");
+        if (warnings != null) {
+            for (Exception ex : warnings)
+                b.append(" * ").append(ex.getMessage()).append("\n");
+        }
+        b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+
+        return b.toString();
     }
 
     /**

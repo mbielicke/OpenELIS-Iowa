@@ -357,37 +357,6 @@ public class TestTabUI extends Screen {
     }
 
     public void onDataChange() {
-        // int count1, count2;
-        // OrderTestViewDO test;
-        // Node n;
-
-        /*
-         * it is difficult to determine which nodes are open and which are
-         * closed, which makes it difficult to compare the analytes
-         */
-        // count1 = tree.getRoot() == null ? 0 : tree.getRoot().getChildCount();
-        // count2 = manager == null ? 0 : manager.test.count();
-        //
-        // /*
-        // * find out if there's any difference between the item being displayed
-        // * and the item in the manager
-        // */
-        // if (count1 == count2) {
-        // for (int i = 0; i < count1; i++ ) {
-        // n = tree.getRoot().getChildAt(i);
-        // test = manager.test.get(i);
-        //
-        // if (DataBaseUtil.isDifferent(test.getItemSequence(), n.getCell(0)) ||
-        // DataBaseUtil.isDifferent(test.getTestName(), n.getCell(1)) ||
-        // DataBaseUtil.isDifferent(test.getMethodName(), n.getCell(2)) ||
-        // DataBaseUtil.isDifferent(test.getDescription(), n.getCell(3))) {
-        // redraw = true;
-        // break;
-        // }
-        // }
-        // } else {
-        // redraw = true;
-        // }
         redraw = true;
         displayTests();
     }
