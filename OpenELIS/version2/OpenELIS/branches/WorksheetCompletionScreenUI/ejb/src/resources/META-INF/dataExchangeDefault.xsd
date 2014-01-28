@@ -106,17 +106,20 @@
 
     <xs:complexType name="sampleSDWIS">
         <xs:sequence>
-            <xs:element name="pws" type="pws" />
             <xs:element name="facility_id" minOccurs="0" type="xs:string" />
-            <xs:element name="sample_type" type="dictionary" />
-            <xs:element name="sample_category" type="dictionary" />
             <xs:element name="sample_point_id" type="xs:string" />
             <xs:element name="location" minOccurs="0" type="xs:string" />
             <xs:element name="collector" minOccurs="0" type="xs:string" />
+            <xs:element name="pws" type="pws" />
+            <xs:element name="sample_type" type="dictionary" />
+            <xs:element name="sample_category" type="dictionary" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
         <xs:attribute name="sample_id" type="xs:integer" use="required" />
+        <xs:attribute name="pws_id" type="xs:integer" use="required" />
         <xs:attribute name="state_lab_id" type="xs:integer" />
+        <xs:attribute name="sample_type_id" type="xs:integer" use="required"/>
+        <xs:attribute name="sample_category_id" type="xs:integer" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="pws">

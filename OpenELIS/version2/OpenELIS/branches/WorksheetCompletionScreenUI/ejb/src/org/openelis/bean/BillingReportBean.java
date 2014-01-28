@@ -390,7 +390,8 @@ public class BillingReportBean {
                     anaCharge = 0.0;
                     for (ResultDO data : analytes) {
                         if (data.getAnalyteId().equals(SECTION_ANALYTE_ID)) {
-                            section = dictionary.getById(Integer.parseInt(data.getValue())).getEntry();
+                            if (data.getValue() != null)
+                                section = dictionary.getById(Integer.parseInt(data.getValue())).getEntry();
                         } else {
                             if ("Y".equals(data.getIsReportable()) && data.getValue() != null) {
                                 billAnalytes++;

@@ -236,8 +236,7 @@ public class SampleManagerOrderHelperBean {
         /*
          * set the ship to
          */
-        org = data.getOrganization();
-        org.setId(sRepOrg.getOrganizationId());
+        data.setOrganizationId(sRepOrg.getOrganizationId());
         data.setOrganizationAttention(sRepOrg.getOrganizationAttention());
 
         if (sBillOrg != null && !sRepOrg.getOrganizationId().equals(sBillOrg.getOrganizationId()))
