@@ -136,8 +136,8 @@ public class ExchangeLocalTermBean {
                           TestAnalyteViewMeta.getMethodId() + ", " +
                           TestAnalyteViewMeta.getMethodName() + ", " +
                           TestAnalyteViewMeta.getTestIsActive() + ", " +
-                          TestAnalyteViewMeta.getTestActiveEnd() + ", " +
                           TestAnalyteViewMeta.getTestActiveBegin() + ", " +
+                          TestAnalyteViewMeta.getTestActiveEnd() + ", " +
                           TestAnalyteViewMeta.getRowTestAnalyteId() + ", " +
                           TestAnalyteViewMeta.getRowAnalyteId() + ", " +
                           TestAnalyteViewMeta.getRowAnalyteName() + ", " +

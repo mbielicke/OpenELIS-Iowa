@@ -103,8 +103,8 @@ public class WorksheetAnalysisBean {
         query.setParameter("worksheetIds", ids);
 
         list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
+//        if (list.isEmpty())
+//            throw new NotFoundException();
 
         returnList = new ArrayList<WorksheetAnalysisViewDO>();
         for (i = 0; i < list.size(); i++) {
@@ -328,9 +328,10 @@ public class WorksheetAnalysisBean {
                                             qcStartedDate, waVVO.getFromOtherId(),
                                             waVVO.getDescription(), waVVO.getTestId(),
                                             waVVO.getTestName(), waVVO.getMethodName(),
-                                            waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),
-                                            waVVO.getStatusId(), collectionDate,
-                                            receivedDate, (Integer)null, (Date)null);
+                                            waVVO.getSectionName(), waVVO.getUnitOfMeasureId(),
+                                            waVVO.getUnitOfMeasure(), waVVO.getStatusId(),
+                                            collectionDate, receivedDate, (Integer)null,
+                                            (Date)null);
         if (waVVO.getAnalysisId() != null) {
             //
             // Compute and set the number of days until the analysis is 
