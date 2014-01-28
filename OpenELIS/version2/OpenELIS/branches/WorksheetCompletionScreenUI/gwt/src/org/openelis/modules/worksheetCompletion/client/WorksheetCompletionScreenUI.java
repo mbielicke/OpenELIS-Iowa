@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheetBuilder.client;
+package org.openelis.modules.worksheetCompletion.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
@@ -55,7 +55,6 @@ import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -68,14 +67,12 @@ import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
@@ -94,7 +91,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -119,15 +115,14 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.CellEditedEvent;
 import org.openelis.ui.widget.table.event.CellEditedHandler;
 
-public class WorksheetBuilderScreenUI extends Screen {
+public class WorksheetCompletionScreenUI extends Screen {
 
-    @UiTemplate("WorksheetBuilder.ui.xml")
-    interface WorksheetBuilderUiBinder extends UiBinder<Widget, WorksheetBuilderScreenUI> {
+    @UiTemplate("WorksheetCompletion.ui.xml")
+    interface WorksheetCompletionUiBinder extends UiBinder<Widget, WorksheetCompletionScreenUI> {
     };
     
-    private static WorksheetBuilderUiBinder             uiBinder = GWT.create(WorksheetBuilderUiBinder.class);
+    private static WorksheetCompletionUiBinder          uiBinder = GWT.create(WorksheetCompletionUiBinder.class);
 
-    private Integer                                     origStatusId;
     private ModulePermission                            userPermission;
     private ScreenNavigator<IdNameVO>                   nav;
     private WorksheetManager1                           manager;
@@ -137,10 +132,9 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField
     protected Calendar                                  createdDate;
     @UiField
-    protected Button                                    query, previous, next, add,
-                                                        update, commit, abort, lookupWorksheetButton,
-                                                        atozNext, atozPrev, optionsButton,
-                                                        checkAllAnalytes, uncheckAllAnalytes;
+    protected Button                                    query, previous, next, update,
+                                                        commit, abort, lookupWorksheetButton,
+                                                        atozNext, atozPrev, optionsButton;
     @UiField
     protected Dropdown<Integer>                         formatId, statusId;
     @UiField
@@ -150,7 +144,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField
     protected TabLayoutPanel                            tabPanel;
     @UiField
-    protected Table                                     analyteTable, atozTable;
+    protected Table                                     atozTable;
     @UiField
     protected TextBox<Integer>                          relatedWorksheetId, worksheetId;
     @UiField
@@ -160,21 +154,19 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField(provided = true)
     protected WorksheetNotesTabUI                       notesTab;
     
-    protected boolean                                   updateWarningShown;
     protected ArrayList<Integer>                        formatIds;
     protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
-    protected EditNoteLookupUI                          failedNoteLookup;
     protected HashMap<Integer, ResultViewDO>            modifiedResults;
     protected HashMap<Integer, TestAnalyteViewDO>       addedAnalytes;
     protected HashMap<String, ArrayList<Object>>        analytesMap;
     protected WorksheetLookupScreenUI                   wLookupScreen;
     
-    public WorksheetBuilderScreenUI(WindowInt window) throws Exception {
+    public WorksheetCompletionScreenUI(WindowInt window) throws Exception {
         setWindow(window);
         
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
-            throw new PermissionException(Messages.get().screenPermException("Worksheet Builder Screen"));
+            throw new PermissionException(Messages.get().screenPermException("Worksheet Completion Screen"));
 
         worksheetItemTab = new WorksheetItemTabUI(this, bus);
         notesTab = new WorksheetNotesTabUI(this, bus);
@@ -185,7 +177,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         analytesMap = new HashMap<String, ArrayList<Object>>();
         modifiedResults = new HashMap<Integer, ResultViewDO>();
         addedAnalytes = new HashMap<Integer, TestAnalyteViewDO>();
-        updateWarningShown = false;
     }
 
     /**
@@ -222,18 +213,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         });
 
         addShortcut(next, 'n', CTRL);
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
-                if (isState(ADD)) {
-                    add.setPressed(true);
-                    add.lock();
-                }
-            }
-        });
-
-        addShortcut(add, 'a', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
@@ -326,7 +305,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                systemUserId.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit()));
+                systemUserId.setEnabled(isState(QUERY));
                 systemUserId.setQueryMode(isState(QUERY));
             }
 
@@ -365,7 +344,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                formatId.setEnabled(isState(QUERY) || (isState(ADD) && canEdit()));
+                formatId.setEnabled(isState(QUERY));
                 formatId.setQueryMode(isState(QUERY));
             }
 
@@ -384,7 +363,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                relatedWorksheetId.setEnabled(isState(QUERY));
+                relatedWorksheetId.setEnabled(isState(QUERY) || (isState(UPDATE) && canEdit()));
                 relatedWorksheetId.setQueryMode(isState(QUERY));
             }
 
@@ -395,7 +374,7 @@ public class WorksheetBuilderScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                lookupWorksheetButton.setEnabled(isState(ADD, UPDATE) && canEdit());
+                lookupWorksheetButton.setEnabled(isState(UPDATE) && canEdit());
             }
         });
 
@@ -409,7 +388,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                instrumentName.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit()));
+                instrumentName.setEnabled(isState(QUERY) || (isState(UPDATE) && canEdit()));
                 instrumentName.setQueryMode(isState(QUERY));
             }
 
@@ -477,7 +456,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit()));
+                description.setEnabled(isState(QUERY) || (isState(UPDATE) && canEdit()));
                 description.setQueryMode(isState(QUERY));
 
             }
@@ -499,7 +478,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(20);
+                query.setRowsPerPage(21);
                 WorksheetService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
@@ -546,76 +525,9 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
         });
         
-        //
-        // right hand analyte table panel
-        //
-        addDataChangeHandler(new DataChangeEvent.Handler() {
-            public void onDataChange(DataChangeEvent event) {
-                analyteTable.setModel(null);
-            }
-        });
-        
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                analyteTable.setEnabled(true);
-                analytesMap.clear();
-                modifiedResults.clear();
-                addedAnalytes.clear();
-            }
-        });
-
-        analyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                //
-                //  only the reportable field can be edited
-                //
-                if (!isState(ADD, UPDATE) || event.getCol() != 0 ||
-                    analyteTable.getRowAt(event.getRow()).getData() instanceof QcAnalyteViewDO) {
-                    event.cancel();
-                } else if (isState(UPDATE) && !updateWarningShown) {
-                    Window.alert(Messages.get().worksheet_builderUpdateWarning());
-                    updateWarningShown = true;
-                    event.cancel();
-                }
-            }
-        });
-        
-        analyteTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                Object val;
-                Row row;
-                ResultViewDO data;
-
-                r = event.getRow();
-                c = event.getCol();
-                
-                row = analyteTable.getRowAt(r);
-                val = analyteTable.getValueAt(r,c);
-
-                data = row.getData();
-                switch (c) {
-                    case 0:
-                        data.setIsReportable((String)val);
-                        if (!modifiedResults.containsKey(data.getId()))
-                            modifiedResults.put(data.getId(), data);
-                        else
-                            modifiedResults.remove(data.getId());
-                        break;
-                }
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                checkAllAnalytes.setEnabled(false);
-                uncheckAllAnalytes.setEnabled(false);
-            }
-        });
-
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                if (isState(ADD, UPDATE)) {
+                if (isState(UPDATE)) {
                     event.cancel();
                     window.setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
@@ -651,26 +563,6 @@ public class WorksheetBuilderScreenUI extends Screen {
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         formatId.setModel(model);
 
-        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
-            public void onSelection(SelectionEvent event) {
-                showAnalytes(event.getUid());
-            }
-        });
-        
-        bus.addHandler(WorksheetManagerModifiedEvent.getType(), new WorksheetManagerModifiedEvent.Handler() {
-            public void onManagerModified(WorksheetManagerModifiedEvent event) {
-                manager = event.getManager();
-                setData();
-                fireDataChange();
-            }
-        });
-        
-        bus.addHandler(FormatSetEnabledEvent.getType(), new FormatSetEnabledEvent.Handler() {
-            public void onFormatSetEnabled(FormatSetEnabledEvent event) {
-                formatId.setEnabled(event.getEnable());
-            }
-        });
-
         setData();
         setState(DEFAULT);
         fireDataChange();
@@ -705,29 +597,13 @@ public class WorksheetBuilderScreenUI extends Screen {
     }
 
     @SuppressWarnings("unused")
-    @UiHandler("add")
-    protected void add(ClickEvent event) {
-        try {
-            manager = WorksheetService1.get().getInstance();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
-            return;
-        }
-        setData();
-        setState(ADD);
-        fireDataChange();
-        window.setDone(Messages.get().gen_enterInformationPressCommit());
-    }
-
-    @SuppressWarnings("unused")
     @UiHandler("update")
     protected void update(ClickEvent event) {
         window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = WorksheetService1.get().fetchForUpdate(manager.getWorksheet().getId());
-            origStatusId = manager.getWorksheet().getStatusId();
+
             setData();
             setState(UPDATE);
             fireDataChange();
@@ -742,7 +618,6 @@ public class WorksheetBuilderScreenUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
-        Integer currStatusId;
         Validation validation;
         
         finishEditing();
@@ -760,23 +635,10 @@ public class WorksheetBuilderScreenUI extends Screen {
                 commitQuery();
                 break;
                 
-            case ADD:
-                commitAdd();
-                break;
-                
             case UPDATE:
-                currStatusId = manager.getWorksheet().getStatusId();
-                if (Constants.dictionary().WORKSHEET_FAILED.equals(currStatusId) &&
-                    !Constants.dictionary().WORKSHEET_FAILED.equals(origStatusId)) {
-                    openFailedRunNote();
-                    return;
-                } else {
-                    commitUpdate();
-                }
+                commitUpdate();
                 break;
         }
-        
-        updateWarningShown = false;
     }
     
     private void commitQuery() {
@@ -787,25 +649,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         nav.setQuery(query);
     }
 
-    private void commitAdd() {
-        finishEditing();
-        window.setBusy(Messages.get().adding());
-
-        manager.setModifiedResults(new ArrayList<ResultViewDO>(modifiedResults.values()));
-        try {
-            manager = WorksheetService1.get().update(manager);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.setDone(Messages.get().gen_addingComplete());
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-        } catch (Exception e) {
-            Window.alert("commitAdd(): " + e.getMessage());
-            window.clearStatus();
-        }
-    }
-    
     private void commitUpdate() {
         finishEditing();
         window.setBusy(Messages.get().updating());
@@ -838,10 +681,6 @@ public class WorksheetBuilderScreenUI extends Screen {
                 window.setDone(Messages.get().gen_queryAborted());
                 break;
                 
-            case ADD:
-                abortAdd();
-                break;
-                
             case UPDATE:
                 abortUpdate();
                 break;
@@ -849,30 +688,8 @@ public class WorksheetBuilderScreenUI extends Screen {
             default:
                 window.clearStatus();
         }
-
-        updateWarningShown = false;
     }
 
-    private void abortAdd() {
-        ArrayList<DictionaryDO> dictList;
-        ArrayList<Item<Integer>> model;
-
-        //
-        // reset worksheet format dropdown model
-        //
-        formatIds.clear();
-        dictList = CategoryCache.getBySystemName("test_worksheet_format");
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
-        formatId.setModel(model);
-        
-        fetchById(null);
-        
-        window.setDone(Messages.get().gen_addAborted());
-    }
-    
     private void abortUpdate() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
@@ -1040,226 +857,6 @@ public class WorksheetBuilderScreenUI extends Screen {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
             return;
-        }
-    }
-
-    protected void openFailedRunNote() {
-        ModalWindow modal;
-        NoteViewDO note;
-
-        if (failedNoteLookup == null) {
-            failedNoteLookup = new EditNoteLookupUI() {
-                public void ok() {
-                    if (DataBaseUtil.isEmpty(failedNoteLookup.getText())) {
-                        manager.note.removeEditing();
-                    } else {
-                        setNoteFields(manager.note.getEditing(), failedNoteLookup.getSubject(),
-                                      failedNoteLookup.getText());
-                        commitUpdate();
-                    }
-                }
-                
-                public void cancel() {
-                    // ignore
-                }
-            };
-        }
-
-        modal = new ModalWindow();
-        modal.setSize("620px", "550px");
-        modal.setName(Messages.get().gen_noteEditor());
-        modal.setCSS(UIResources.INSTANCE.popupWindow());
-        modal.setContent(failedNoteLookup);
-
-        note = manager.note.getEditing();
-        failedNoteLookup.setWindow(modal);
-        failedNoteLookup.setSubject(note.getSubject());
-        failedNoteLookup.setText(note.getText());
-        failedNoteLookup.setHasSubject("N".equals(note.getIsExternal()));
-    }
-
-    private void setNoteFields(NoteViewDO note, String subject, String text) {
-        note.setSubject(subject);
-        note.setText(text);
-        note.setSystemUser(UserCache.getPermission().getLoginName());
-        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
-        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-    }
-
-    @SuppressWarnings("unchecked")
-    private void showAnalytes(final String uid) {
-        ArrayList<Object> analyteList;
-        SectionPermission perm;
-        WorksheetAnalysisViewDO data;
-        
-        if (uid != null) {
-            analyteList = analytesMap.get(uid);
-            if (analyteList != null) {
-                analyteTable.setModel((ArrayList<Row>)analyteList.get(1));
-                if (!isState(ADD, UPDATE) || Boolean.FALSE.equals(analyteList.get(0))) {
-                    checkAllAnalytes.setEnabled(false);
-                    uncheckAllAnalytes.setEnabled(false);
-                } else {
-                    checkAllAnalytes.setEnabled(true);
-                    uncheckAllAnalytes.setEnabled(true);
-                }
-                window.clearStatus();
-            } else {
-                data = (WorksheetAnalysisViewDO)manager.getObject(uid);
-                if (data.getAnalysisId() != null) {
-                    perm = UserCache.getPermission().getSection(data.getSectionName());
-                    if (isState(ADD, UPDATE) && perm.hasCompletePermission()) {
-                        WorksheetBuilderService.get().fetchAnalytesByAnalysis(data.getAnalysisId(),
-                                                                              data.getTestId(),
-                                                                              new AsyncCallback<ArrayList<ResultViewDO>>() {
-                            public void onSuccess(ArrayList<ResultViewDO> analytes) {
-                                ArrayList<Object> analyteList;
-                                ArrayList<Row> model;
-                                Row row;
-    
-                                analyteList = new ArrayList<Object>();
-                                model = new ArrayList<Row>();
-                                for (DataObject ana : analytes) {
-                                    row = new Row(2);
-                                    row.setCell(0, ((ResultViewDO)ana).getIsReportable());
-                                    row.setCell(1, ((ResultViewDO)ana).getAnalyte());
-                                    row.setData(ana);
-                                    model.add(row);
-                                }
-                                analyteTable.setModel(model);
-                                analyteList.add(Boolean.TRUE);
-                                analyteList.add(model);
-                                analytesMap.put(uid, analyteList);
-                                checkAllAnalytes.setEnabled(true);
-                                uncheckAllAnalytes.setEnabled(true);
-                                window.clearStatus();
-                            }
-                
-                            public void onFailure(Throwable error) {
-                                analyteTable.setModel(null);
-                                if (error instanceof NotFoundException) {
-                                    window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                                } else {
-                                    Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
-                                }
-                            }
-                        });
-                    } else {
-                        ResultService.get().fetchByAnalysisIdForDisplay(data.getAnalysisId(),
-                                                                        new AsyncCallback<AnalysisResultManager>() {
-                            public void onSuccess(AnalysisResultManager arMan) {
-                                int i;
-                                ArrayList<Object> analyteList;
-                                ArrayList<Row> model;
-                                ResultViewDO result;
-                                Row row;
-    
-                                analyteList = new ArrayList<Object>();
-                                model = new ArrayList<Row>();
-                                for (i = 0; i < arMan.rowCount(); i++) {
-                                    result = arMan.getResultAt(i, 0);
-                                    row = new Row(2);
-                                    row.setCell(0, result.getIsReportable());
-                                    row.setCell(1, result.getAnalyte());
-                                    row.setData(result);
-                                    model.add(row);
-                                }
-                                analyteTable.setModel(model);
-                                analyteList.add(Boolean.FALSE);
-                                analyteList.add(model);
-                                analytesMap.put(uid, analyteList);
-                                window.clearStatus();
-                            }
-                            
-                            public void onFailure(Throwable error) {
-                                analyteTable.setModel(null);
-                                if (error instanceof NotFoundException) {
-                                    window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                                } else {
-                                    Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
-                                }
-                            }
-                        });
-                    }
-                } else if (data.getQcLotId() != null) {
-                    QcService.get().fetchAnalytesByLotId(data.getQcLotId(),
-                                                         new AsyncCallback<ArrayList<QcAnalyteViewDO>>() {
-                        public void onSuccess(ArrayList<QcAnalyteViewDO> analytes) {
-                            ArrayList<Object> analyteList;
-                            ArrayList<Row> model;
-                            Row row;
-    
-                            analyteList = new ArrayList<Object>();
-                            model = new ArrayList<Row>();
-                            for (QcAnalyteViewDO analyte : analytes) {
-                                row = new Row(2);
-                                row.setCell(0, "N");
-                                row.setCell(1, analyte.getAnalyteName());
-                                row.setData(analyte);
-                                model.add(row);
-                            }
-                            analyteTable.setModel(model);
-                            analyteList.add(Boolean.FALSE);
-                            analyteList.add(model);
-                            analytesMap.put(uid, analyteList);
-                            window.clearStatus();
-                        }
-                        
-                        public void onFailure(Throwable error) {
-                            analyteTable.setModel(null);
-                            if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                            } else {
-                                Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
-                            }
-                        }
-                    });
-                }
-                
-                checkAllAnalytes.setEnabled(false);
-                uncheckAllAnalytes.setEnabled(false);
-            }
-        } else {
-            analyteTable.setModel(null);
-            checkAllAnalytes.setEnabled(false);
-            uncheckAllAnalytes.setEnabled(false);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @UiHandler("checkAllAnalytes")
-    protected void checkAllAnalytes(ClickEvent event) {
-        checkAnalytes("Y");
-    }
-
-    @SuppressWarnings("unused")
-    @UiHandler("uncheckAllAnalytes")
-    protected void uncheckAllAnalytes(ClickEvent event) {
-        checkAnalytes("N");
-    }
-
-    protected void checkAnalytes(String reportable) {
-        int i;
-        ResultViewDO data;
-        Row row;
-        
-        if (isState(UPDATE) && !updateWarningShown) {
-            Window.alert(Messages.get().worksheet_builderUpdateWarning());
-            updateWarningShown = true;
-            return;
-        }
-        
-        for (i = 0; i < analyteTable.getRowCount(); i++) {
-            row = analyteTable.getRowAt(i);
-            data = row.getData();
-            if (!reportable.equals(data.getIsReportable())) {
-                data.setIsReportable(reportable);
-                analyteTable.setValueAt(i, 0, reportable);
-                if (!modifiedResults.containsKey(data.getId()))
-                    modifiedResults.put(data.getId(), data);
-                else
-                    modifiedResults.remove(data.getId());
-            }
         }
     }
 

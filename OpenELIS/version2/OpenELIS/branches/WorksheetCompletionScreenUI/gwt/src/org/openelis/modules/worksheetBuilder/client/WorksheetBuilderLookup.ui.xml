@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
       	  	    <td>
                   <w:AutoComplete ui:field="testId" width="150px" dropWidth="650px" case="LOWER">
                     <w:popup>
-                      <t:Table visibleRows="10" header="true">
+                      <t:Table header="true">
                         <t:Column width="150" label="{msg.gen_test}">
                           <t:LabelCell/>
                         </t:Column>
