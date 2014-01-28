@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace-production/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -16747,6 +16747,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_createdDate();
 
   /**
+   * Translated "Edit Multiple".
+   * 
+   * @return translated "Edit Multiple"
+   */
+  @DefaultMessage("Edit Multiple")
+  @Key("worksheet.editMultiple")
+  String worksheet_editMultiple();
+
+  /**
+   * Translated "Export to Excel".
+   * 
+   * @return translated "Export to Excel"
+   */
+  @DefaultMessage("Export to Excel")
+  @Key("worksheet.exportToExcel")
+  String worksheet_exportToExcel();
+
+  /**
    * Translated "Format".
    * 
    * @return translated "Format"
@@ -16754,6 +16772,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Format")
   @Key("worksheet.format")
   String worksheet_format();
+
+  /**
+   * Translated "Import From Excel".
+   * 
+   * @return translated "Import From Excel"
+   */
+  @DefaultMessage("Import From Excel")
+  @Key("worksheet.importFromExcel")
+  String worksheet_importFromExcel();
 
   /**
    * Translated "Analysis Above".
@@ -16862,6 +16889,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Position")
   @Key("worksheet.position")
   String worksheet_position();
+
+  /**
+   * Translated "Push Results to Sample(s)".
+   * 
+   * @return translated "Push Results to Sample(s)"
+   */
+  @DefaultMessage("Push Results to Sample(s)")
+  @Key("worksheet.pushResultsToSamples")
+  String worksheet_pushResultsToSamples();
 
   /**
    * Translated "QC Link".
