@@ -264,6 +264,7 @@ public class OrganizationTabUI extends Screen {
                  * added to the manager.
                  */
                 data = manager.organization.add();
+                data.setOrderId(manager.getOrder().getId());
                 event.getRow().setData(data);
             }
         });
