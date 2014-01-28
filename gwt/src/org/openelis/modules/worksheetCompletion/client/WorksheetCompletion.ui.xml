@@ -30,7 +30,6 @@
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:west size="250">
@@ -64,7 +63,7 @@
     </g:west>
     <g:center>
       <g:LayoutPanel>
-        <g:layer top="0px" height="30px">
+        <g:layer top="0px" height="27px">
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
                            width="100%">
             <g:HorizontalPanel>
@@ -94,7 +93,20 @@
             </g:HorizontalPanel>
           </g:AbsolutePanel>
         </g:layer>
-        <g:layer top="30px" height="95px">
+        <g:layer top="27px" height="27px">
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
+                           width="100%">
+            <g:HorizontalPanel>
+              <w:Button css="{res.buttonPanel}" ui:field="exportToExcelButton" leftIcon="{res.icon.fieldLookupIcon}"
+                        text="{msg.worksheet_exportToExcel}" toggles="false"/>
+              <w:Button css="{res.buttonPanel}" ui:field="importFromExcelButton" leftIcon="{res.icon.fieldLookupIcon}"
+                        text="{msg.worksheet_importFromExcel}" toggles="false"/>
+              <w:Button css="{res.buttonPanel}" ui:field="pushResultsButton" leftIcon="{res.icon.fieldLookupIcon}"
+                        text="{msg.worksheet_pushResultsToSamples}" toggles="false"/>
+            </g:HorizontalPanel>
+          </g:AbsolutePanel>
+        </g:layer>
+        <g:layer top="54px" height="76px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
@@ -179,18 +191,10 @@
                   <w:TextBox ui:field="description" width="410px" case="LOWER" maxLength="60" field="String"/>
                 </td>
               </tr>
-              <tr>
-                <td>
-                  <g:HorizontalPanel>
-                    <w:Button ui:field="editWorksheetButton" leftIcon="{res.icon.fieldLookupIcon}" text="{msg.editWorksheet}" css="{res.FormFieldButton}"/>
-                    <w:Button ui:field="loadFromEditButton" leftIcon="{res.icon.fieldLookupIcon}" text="{msg.loadFromEditFile}" css="{res.FormFieldButton}"/>
-                  </g:HorizontalPanel>
-                </td>
-              </tr>
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="110px" bottom="0px">
+        <g:layer top="131px" bottom="0px">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>

@@ -66,7 +66,6 @@ import org.openelis.modules.provider.client.ProviderScreen;
 import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
-import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreenUI;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
@@ -102,6 +101,7 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
@@ -139,7 +139,7 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder, worksheetCreation, worksheetCompletion, addOrCancel,
+                    worksheetBuilder, worksheetCreation, worksheetCompletion, worksheetCompletionUI, addOrCancel,
                     reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
                     vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
@@ -569,7 +569,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.worksheetBuilder());
-                            window.setSize("1061px", "501px");
+                            window.setSize("1061px", "480px");
                             screen = new WorksheetBuilderScreenUI(window);
                             window.setContent(screen);
                             screen.initialize();
@@ -599,6 +599,35 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new WorksheetCompletionScreen(window));
                             browser.addWindow(window, "worksheetCompletion");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(worksheetCompletionUI, "worksheetcompletion", new Command() {
+            public void execute() {
+
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        WorksheetCompletionScreenUI screen;
+                        
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.worksheetCompletion() + " 2");
+                            window.setSize("1061px", "511px");
+                            screen = new WorksheetCompletionScreenUI(window);
+                            window.setContent(screen);
+                            screen.initialize();
+                            browser.addWindow(window, "worksheetCompletionUI");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());

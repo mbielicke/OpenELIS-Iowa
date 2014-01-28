@@ -31,6 +31,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetManager1;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -57,6 +58,12 @@ public class WorksheetCompletionService implements WorksheetCompletionServiceInt
 
     @Override
     public void getHeaderLabelsForScreen(WorksheetManager manager,
+                                         AsyncCallback<ArrayList<IdNameVO>> callback) {
+        service.getHeaderLabelsForScreen(manager, callback);
+    }
+
+    @Override
+    public void getHeaderLabelsForScreen(WorksheetManager1 manager,
                                          AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.getHeaderLabelsForScreen(manager, callback);
     }
@@ -91,6 +98,15 @@ public class WorksheetCompletionService implements WorksheetCompletionServiceInt
 
     @Override
     public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception {
+        Callback<ArrayList<IdNameVO>> callback;
+        
+        callback = new Callback<ArrayList<IdNameVO>>();
+        service.getHeaderLabelsForScreen(manager, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager1 manager) throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
         
         callback = new Callback<ArrayList<IdNameVO>>();

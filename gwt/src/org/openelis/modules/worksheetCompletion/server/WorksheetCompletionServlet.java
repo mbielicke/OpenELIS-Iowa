@@ -31,10 +31,12 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.WorksheetCompletionBean;
+import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.bean.WorksheetManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionServiceInt;
 
 @WebServlet("/openelis/worksheetCompletion")
@@ -47,6 +49,9 @@ public class WorksheetCompletionServlet extends RemoteServlet implements Workshe
     
     @EJB
     WorksheetManagerBean    worksheetManager;
+
+    @EJB
+    WorksheetManager1Bean   worksheetManager1;
 
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
         try {        
@@ -67,6 +72,14 @@ public class WorksheetCompletionServlet extends RemoteServlet implements Workshe
     public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception {
         try {        
             return worksheetCompletion.getHeaderLabelsForScreen(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager1 manager) throws Exception {
+        try {        
+            return worksheetManager1.getHeaderLabelsForScreen(manager);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

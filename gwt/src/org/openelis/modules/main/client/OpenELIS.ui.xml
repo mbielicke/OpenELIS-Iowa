@@ -80,6 +80,8 @@
                   display="{msg.worksheetBuilder}" />
                 <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
                   ui:field="worksheetCompletion" display="{msg.worksheetCompletion}" />
+                <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
+                  ui:field="worksheetCompletionUI" display="{msg.worksheetCompletion} 2" />
                 <w:MenuItem description="{msg.addOrCancelDescription}" enabled="false" icon="{res.icon.addOrCancelIcon}"
                   ui:field="addOrCancel" display="{msg.manageMultipleSamples}" />
                 <w:MenuItem description="{msg.reviewAndReleaseDescription}" enabled="false" icon="{res.icon.reviewAndReleaseIcon}"
