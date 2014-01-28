@@ -91,12 +91,12 @@ public class ApplicationBean {
                         "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
                         "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
                         "org_test_epartner_url", "org_epartner_aggr", "reflex_auto",
-                        "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "round_int",
-                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
-                        "round_sig_fig_noe", "sample_completed", "sample_error",
-                        "sample_logged_in", "sample_not_verified", "sample_released",
-                        "sdwis_category_bacterial", "sdwis_category_chemical",
-                        "sdwis_category_lead", "sdwis_category_radchem",
+                        "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "rf_a", "rf_ac",
+                        "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int", "round_int_sig_fig",
+                        "round_int_sig_fig_noe", "round_sig_fig", "round_sig_fig_noe",
+                        "sample_completed", "sample_error", "sample_logged_in",
+                        "sample_not_verified", "sample_released", "sdwis_category_bacterial",
+                        "sdwis_category_chemical", "sdwis_category_lead", "sdwis_category_radchem",
                         "section_mcl_violation_email", "shipping_status_processed",
                         "shipping_status_shipped", "smpl_type_rt", "smpl_type_rp", "smpl_type_sp",
                         "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only",
@@ -221,6 +221,13 @@ public class ApplicationBean {
         Constants.dictionary().REFLEX_PROMPT = dictId(map, "reflex_prompt");
         Constants.dictionary().REFLEX_AUTO_NDUP = dictId(map, "reflex_auto_ndup");
         Constants.dictionary().REFLEX_PROMPT_NDUP = dictId(map, "reflex_prompt_ndup");
+        Constants.dictionary().RESULT_FLAG_ABNORMAL = dictId(map, "rf_a");
+        Constants.dictionary().RESULT_FLAG_ABNORMAL_CDC = dictId(map, "rf_ac");
+        Constants.dictionary().RESULT_FLAG_ABNORMAL_DNR = dictId(map, "rf_an");
+        Constants.dictionary().RESULT_FLAG_ABNORMAL_DPH = dictId(map, "rf_ah");
+        Constants.dictionary().RESULT_FLAG_CDC = dictId(map, "rf_c");
+        Constants.dictionary().RESULT_FLAG_DNR = dictId(map, "rf_n");
+        Constants.dictionary().RESULT_FLAG_DPH = dictId(map, "rf_h");
         Constants.dictionary().ROUND_INT = dictId(map, "round_int");
         Constants.dictionary().ROUND_INT_SIG_FIG = dictId(map, "round_int_sig_fig");
         Constants.dictionary().ROUND_INT_SIG_FIG_NOE = dictId(map, "round_int_sig_fig_noe");

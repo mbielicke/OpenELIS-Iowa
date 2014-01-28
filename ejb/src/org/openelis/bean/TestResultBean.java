@@ -35,6 +35,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -47,7 +48,9 @@ import org.openelis.domain.TestResultViewDO;
 import org.openelis.entity.TestResult;
 import org.openelis.meta.TestMeta;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator.Type;
 
@@ -80,6 +83,18 @@ public class TestResultBean {
         }
     }
     
+    public TestResultViewDO fetchById(Integer id) throws Exception {
+        Query query = manager.createNamedQuery("TestResult.FetchById");
+        query.setParameter("id", id);
+        try {
+            return (TestResultViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+    }
+
     public ArrayList<TestResultViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
         Query query;
 

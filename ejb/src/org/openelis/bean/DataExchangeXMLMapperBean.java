@@ -661,7 +661,6 @@ public class DataExchangeXMLMapperBean {
         setText(doc, elm, "d_population_count", pws.getDPopulationCount());
         setText(doc, elm, "d_pws_st_type_cd", pws.getDPwsStTypeCd());
         setText(doc, elm, "activity_rsn_txt", pws.getActivityRsnTxt());
-        setText(doc, elm, "activity_status_cd", pws.getActivityStatusCd());
 
         return elm;
     }
