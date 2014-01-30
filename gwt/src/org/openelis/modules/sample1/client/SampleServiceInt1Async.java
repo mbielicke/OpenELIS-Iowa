@@ -73,11 +73,17 @@ public interface SampleServiceInt1Async {
 
     public void fetchForUpdate(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
                                AsyncCallback<ArrayList<SampleManager1>> callback);
+    
+    public void fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds, SampleManager1.Load elements[],
+                                  AsyncCallback<ArrayList<SampleManager1>> callback);
 
-    public void unlock(Integer sampleId, Load elements[], AsyncCallback<SampleManager1> callback);
+    public void unlock(Integer sampleId, SampleManager1.Load elements[], AsyncCallback<SampleManager1> callback);
 
     public void unlock(ArrayList<Integer> sampleIds, Load elements[],
                        AsyncCallback<ArrayList<SampleManager1>> callback);
+    
+    public void unlockByAnalyses(ArrayList<Integer> analysisIds,SampleManager1.Load elements[],
+                          AsyncCallback<ArrayList<SampleManager1>> callback);
 
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback);

@@ -181,9 +181,9 @@
               <t:Table ui:field="userTable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true"  styleName="{res.table.ScreenTableWithSides}"
               > 
-                <t:Column width="115" label="{msg.gen_user}">
+                <t:Column width="115" label="{msg.gen_user}" required="true">
                   <t:AutoCompleteCell>
-                    <w:AutoComplete ui:field = "user" case="LOWER" required="true">
+                    <w:AutoComplete ui:field = "user" case="LOWER">
                       <w:popup>
                         <t:Table visibleRows="10" header="false">
                           <t:Column width="100">

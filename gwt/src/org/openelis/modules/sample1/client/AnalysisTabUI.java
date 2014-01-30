@@ -218,7 +218,7 @@ public class AnalysisTabUI extends Screen {
                 Item<Integer> row;
 
                 if (sampleItem.getTypeOfSampleId() == null) {
-                    window.setError(Messages.get().sample_sampleItemTypeRequired());
+                    parentScreen.setError(Messages.get().sample_sampleItemTypeRequired());
                     return;
                 }
 

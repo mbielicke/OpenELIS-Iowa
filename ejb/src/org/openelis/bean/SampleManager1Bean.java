@@ -1464,6 +1464,26 @@ public class SampleManager1Bean {
         lock.unlock(Constants.table().SAMPLE, sampleIds);
         return fetchByIds(sampleIds, elements);
     }
+    
+    /**
+     * Unlocks and returns list of sample managers with specified analysis ids and
+     * requested load elements
+     */
+    @RolesAllowed({"sample-add", "sample-update"})
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                            SampleManager1.Load... elements) throws Exception {
+        HashSet<Integer> ids;
+        ArrayList<SampleManager1> sms;
+        
+        sms = fetchByAnalyses(analysisIds, elements);
+
+        ids = new HashSet<Integer>();
+        for (SampleManager1 sm : sms) 
+            ids.add(sm.getSample().getId());
+       
+        lock.unlock(Constants.table().SAMPLE, new ArrayList<Integer>(ids));
+        return sms;
+    }
 
     /**
      * Check to see if 1) the accession number has been issued by the login
@@ -2177,7 +2197,7 @@ public class SampleManager1Bean {
         if (getAnalyses(sm) != null) {
             for (AnalysisViewDO data : getAnalyses(sm)) {
                 amap.put(data.getId(), data);
-                if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged())
+                if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged()) {
                     try {
                         analysis.validate(data,
                                           tms.get(data.getTestId()),
@@ -2233,6 +2253,7 @@ public class SampleManager1Bean {
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
+                }
             }
         }
 

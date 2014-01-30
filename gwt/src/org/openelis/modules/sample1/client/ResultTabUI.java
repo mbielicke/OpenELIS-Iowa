@@ -126,7 +126,7 @@ public class ResultTabUI extends Screen {
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
     protected static int                                MEAN_CHAR_WIDTH = 8,
-                    DEFAULT_NUM_CHARS = 10;
+                    CHECK_BOX_NUM_CHARS = 4, DEFAULT_NUM_CHARS = 10;
 
     public ResultTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -455,7 +455,7 @@ public class ResultTabUI extends Screen {
                     uid = Constants.uid().get(analysis);
                 else
                     uid = null;
-                
+
                 displayResults(uid);
             }
         });
@@ -726,7 +726,7 @@ public class ResultTabUI extends Screen {
          * column
          */
         maxTextLength = new int[table.getColumnCount()];
-        maxTextLength[0] = DEFAULT_NUM_CHARS;
+        maxTextLength[0] = CHECK_BOX_NUM_CHARS;
         setMaxTextLength(maxTextLength, 1, Messages.get().gen_analyte());
         setMaxTextLength(maxTextLength, 2, Messages.get().gen_value());
         for (i = 3; i < maxTextLength.length; i++ )
