@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace-production/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -4919,6 +4919,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Analytes")
   @Key("gen.analytes")
   String gen_analytes();
+
+  /**
+   * Translated "Analytes & Results".
+   * 
+   * @return translated "Analytes & Results"
+   */
+  @DefaultMessage("Analytes & Results")
+  @Key("gen.analytesResults")
+  String gen_analytesResults();
 
   /**
    * Translated "Barcode              ".
@@ -15091,6 +15100,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_invalidValue();
 
   /**
+   * Translated "Name & Method ".
+   * 
+   * @return translated "Name & Method "
+   */
+  @DefaultMessage("Name & Method ")
+  @Key("test.nameMethod")
+  String test_nameMethod();
+
+  /**
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
@@ -15100,6 +15118,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_noSelectedRow();
 
   /**
+   * Translated "Prep Test & Reflex Test".
+   * 
+   * @return translated "Prep Test & Reflex Test"
+   */
+  @DefaultMessage("Prep Test & Reflex Test")
+  @Key("test.prepAndReflex")
+  String test_prepAndReflex();
+
+  /**
    * Translated "Test Results".
    * 
    * @return translated "Test Results"
@@ -15107,6 +15134,114 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test Results")
   @Key("test.results")
   String test_results();
+
+  /**
+   * Translated "History - Analyte ".
+   * 
+   * @return translated "History - Analyte "
+   */
+  @DefaultMessage("History - Analyte ")
+  @Key("test.testAnalyteHistory")
+  String test_testAnalyteHistory();
+
+  /**
+   * Translated "Test Details ".
+   * 
+   * @return translated "Test Details "
+   */
+  @DefaultMessage("Test Details ")
+  @Key("test.testDetails")
+  String test_testDetails();
+
+  /**
+   * Translated "History - Test".
+   * 
+   * @return translated "History - Test"
+   */
+  @DefaultMessage("History - Test")
+  @Key("test.testHistory")
+  String test_testHistory();
+
+  /**
+   * Translated "History - Prep".
+   * 
+   * @return translated "History - Prep"
+   */
+  @DefaultMessage("History - Prep")
+  @Key("test.testPrepHistory")
+  String test_testPrepHistory();
+
+  /**
+   * Translated "History - Reflex".
+   * 
+   * @return translated "History - Reflex"
+   */
+  @DefaultMessage("History - Reflex")
+  @Key("test.testReflexHistory")
+  String test_testReflexHistory();
+
+  /**
+   * Translated "History - Result".
+   * 
+   * @return translated "History - Result"
+   */
+  @DefaultMessage("History - Result")
+  @Key("test.testResultHistory")
+  String test_testResultHistory();
+
+  /**
+   * Translated "History - Sample Type".
+   * 
+   * @return translated "History - Sample Type"
+   */
+  @DefaultMessage("History - Sample Type")
+  @Key("test.testSampleTypeHistory")
+  String test_testSampleTypeHistory();
+
+  /**
+   * Translated "History - Section".
+   * 
+   * @return translated "History - Section"
+   */
+  @DefaultMessage("History - Section")
+  @Key("test.testSectionHistory")
+  String test_testSectionHistory();
+
+  /**
+   * Translated "History - Worksheet Analyte".
+   * 
+   * @return translated "History - Worksheet Analyte"
+   */
+  @DefaultMessage("History - Worksheet Analyte")
+  @Key("test.testWorksheetAnalyteHistory")
+  String test_testWorksheetAnalyteHistory();
+
+  /**
+   * Translated "History - Worksheet".
+   * 
+   * @return translated "History - Worksheet"
+   */
+  @DefaultMessage("History - Worksheet")
+  @Key("test.testWorksheetHistory")
+  String test_testWorksheetHistory();
+
+  /**
+   * Translated "History - Worksheet Item".
+   * 
+   * @return translated "History - Worksheet Item"
+   */
+  @DefaultMessage("History - Worksheet Item")
+  @Key("test.testWorksheetItemHistory")
+  String test_testWorksheetItemHistory();
+
+  /**
+   * Translated "Worksheet Layout".
+   * 
+   * @return translated "Worksheet Layout"
+   */
+  @DefaultMessage("Worksheet Layout")
+  @Key("test.worksheetLayout")
+  String test_worksheetLayout();
 
   /**
    * Translated "There is already an active test in the system with the same name and method".
