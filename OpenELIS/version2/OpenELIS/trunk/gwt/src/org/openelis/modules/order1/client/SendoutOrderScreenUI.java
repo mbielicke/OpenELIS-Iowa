@@ -1494,6 +1494,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             duplicateCall = new AsyncCallbackUI<OrderManager1>() {
                 public void success(OrderManager1 result) {
                     manager = result;
+                    manager.getOrder().setParentOrderId(null);
                     /*
                      * the screen is in add state, so we need the cache here
                      */
