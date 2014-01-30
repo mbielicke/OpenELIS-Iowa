@@ -39,9 +39,9 @@ import org.openelis.ui.server.RemoteServlet;
 public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
 
     private static final long  serialVersionUID = 1L;
-    
+
     @EJB
-    private SampleBean sample;
+    private SampleBean         sample;
 
     @EJB
     private SampleManager1Bean sampleManager1;
@@ -70,7 +70,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
         try {
@@ -79,7 +79,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public SampleManager1 fetchByAccession(Integer accessionNum, SampleManager1.Load... elements) throws Exception {
         try {
             return sampleManager1.fetchByAccession(accessionNum, elements);
@@ -87,7 +87,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception {
         try {
@@ -96,13 +96,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query,
-                                                  SampleManager1.Load... elements) throws Exception {
+                                                          SampleManager1.Load... elements) throws Exception {
         try {
             return sampleManager1.fetchByAnalysisQuery(query.getFields(),
                                                        query.getPage() * query.getRowsPerPage(),
-                                                       query.getRowsPerPage(), elements);
+                                                       query.getRowsPerPage(),
+                                                       elements);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -123,12 +124,21 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
+    public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds,
+                                                              Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchForUpdateByAnalyses(analysisIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {
         try {
             return sample.query(query.getFields(),
-                               query.getPage() * query.getRowsPerPage(),
-                               query.getRowsPerPage());
+                                query.getPage() * query.getRowsPerPage(),
+                                query.getRowsPerPage());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -154,6 +164,15 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
         try {
             return sampleManager1.unlock(sampleIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                                      SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.unlockByAnalyses(analysisIds, elements);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

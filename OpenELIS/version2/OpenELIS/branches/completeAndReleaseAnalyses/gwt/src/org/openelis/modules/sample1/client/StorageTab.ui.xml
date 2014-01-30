@@ -26,9 +26,9 @@
             <w:Label field="Integer" />
           </t:LabelCell>
         </t:Column>
-        <t:Column width="259" label="{msg.gen_location}">
+        <t:Column width="259" label="{msg.gen_location}" required="true">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field = "location" width="215" case="LOWER" required="true" dropWidth = "430">
+            <w:AutoComplete ui:field = "location" width="215" case="LOWER" dropWidth = "430">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="140" label="{msg.gen_parent}">
@@ -45,9 +45,9 @@
             </w:AutoComplete>
           </t:AutoCompleteCell>
         </t:Column>
-        <t:Column width="135" label="{msg.gen_checkIn}">
+        <t:Column width="135" label="{msg.gen_checkIn}" required="true">
           <t:CalendarCell>
-            <c:Calendar begin="0" end="4" required="true" />
+            <c:Calendar begin="0" end="4" />
           </t:CalendarCell>
         </t:Column>
         <t:Column width="136" label="{msg.gen_checkOut}">

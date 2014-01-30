@@ -412,7 +412,7 @@ public class SampleTabUI extends Screen {
                                                      .gen_orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
-                            e.printStackTrace();
+                            logger.log(Level.SEVERE, e.getMessage(), e);
                         }
                         break;
                 }
@@ -426,7 +426,7 @@ public class SampleTabUI extends Screen {
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
 
-                window.setBusy();
+                parentScreen.setBusy();
                 try {
                     list = OrganizationService.get()
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
@@ -444,11 +444,11 @@ public class SampleTabUI extends Screen {
                         model.add(row);
                     }
                     organization.showAutoMatches(model);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     Window.alert(e.getMessage());
-
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
-                window.clearStatus();
+                parentScreen.clearStatus();
             }
         });
 
@@ -579,7 +579,7 @@ public class SampleTabUI extends Screen {
                 ArrayList<ProjectDO> list;
                 ArrayList<Item<Integer>> model;
 
-                window.setBusy();
+                parentScreen.setBusy();
                 try {
                     list = ProjectService.get()
                                          .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
@@ -599,7 +599,7 @@ public class SampleTabUI extends Screen {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();
+                parentScreen.clearStatus();
             }
         });
 

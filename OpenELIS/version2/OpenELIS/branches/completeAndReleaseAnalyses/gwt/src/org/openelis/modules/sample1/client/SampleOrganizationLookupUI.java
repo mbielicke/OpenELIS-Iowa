@@ -374,7 +374,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         validation = validate();
 
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(Messages.get().gen_correctErrors());
             return;
         }
 
