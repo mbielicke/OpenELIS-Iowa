@@ -613,7 +613,7 @@ public class AuxDataHelperBean {
     private void fillSdwisAuxData(SampleManager1 sm, ArrayList<AuxDataViewDO> auxiliary,
                                   HashSet<String> analytes) {
         String extId;
-        SampleSDWISDO sdwis;
+        SampleSDWISViewDO sdwis;
         SampleDO sample;
 
         sdwis = getSampleSDWIS(sm);
@@ -633,7 +633,7 @@ public class AuxDataHelperBean {
                 data.setValue(sample.getClientReference());
             } else if (PWS_ID.equals(extId)) {
                 data.setTypeId(Constants.dictionary().AUX_ALPHA_UPPER);
-                data.setValue(sdwis.getPwsId().toString());
+                data.setValue(sdwis.getPwsNumber0());
             } else if (STATE_LAB_NUM.equals(extId)) {
                 data.setTypeId(Constants.dictionary().AUX_NUMERIC);
                 data.setValue(DataBaseUtil.toString(sdwis.getStateLabId()));

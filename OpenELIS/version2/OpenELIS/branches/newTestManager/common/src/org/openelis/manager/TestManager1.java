@@ -62,15 +62,39 @@ public class TestManager1 implements Serializable {
     protected ArrayList<TestWorksheetItemDO>        items;
     protected ArrayList<TestWorksheetAnalyteViewDO> worksheetAnalytes;
     protected ArrayList<DataObject>                 removed;
-    protected int                                   nextUID = -1;
+    protected int                                   nextUID          = -1;
 
     protected transient ResultFormatter             formatter;
-    transient public final TestSection              section = new TestSection();
-    transient public final TestType                 type    = new TestType();
-    transient public final TestAnalyte              analyte = new TestAnalyte();
-    transient public final TestResult               result  = new TestResult();
-    transient public final TestPrep                 prep    = new TestPrep();
-    transient public final TestReflex               reflex  = new TestReflex();
+    transient public final TestSection              section          = new TestSection();
+    transient public final TestType                 type             = new TestType();
+    transient public final TestAnalyte              analyte          = new TestAnalyte();
+    transient public final TestResult               result           = new TestResult();
+    transient public final TestPrep                 prep             = new TestPrep();
+    transient public final TestReflex               reflex           = new TestReflex();
+    transient public final TestWorksheetItem        item             = new TestWorksheetItem();
+    transient public final TestWorksheetAnalyte     worksheetAnalyte = new TestWorksheetAnalyte();
+
+    /**
+     * Returns the test DO
+     */
+    public TestViewDO getTest() {
+        return test;
+    }
+
+    /**
+     * Returns the test worksheet DO
+     */
+    public TestWorksheetViewDO getWorksheet() {
+        return worksheet;
+    }
+
+    /**
+     * Returns the next negative Id for this sample's newly created and as yet
+     * uncommitted data objects
+     */
+    public int getNextUID() {
+        return --nextUID;
+    }
 
     /**
      * Class to manage Test Section information
@@ -90,6 +114,18 @@ public class TestManager1 implements Serializable {
             if (sections == null)
                 sections = new ArrayList<TestSectionViewDO>();
             sections.add(data);
+
+            return data;
+        }
+
+        public TestSectionViewDO add(TestSectionViewDO section) {
+            TestSectionViewDO data;
+
+            data = add();
+            data.setFlagId(section.getFlagId());
+            data.setSection(section.getSection());
+            data.setSectionId(section.getSectionId());
+            data.setTestId(section.getTestId());
 
             return data;
         }
@@ -141,6 +177,17 @@ public class TestManager1 implements Serializable {
             return data;
         }
 
+        public TestTypeOfSampleDO add(TestTypeOfSampleDO type) {
+            TestTypeOfSampleDO data;
+
+            data = add();
+            data.setTypeOfSampleId(type.getTypeOfSampleId());
+            data.setUnitOfMeasureId(type.getUnitOfMeasureId());
+            data.setTestId(type.getTestId());
+
+            return data;
+        }
+
         /**
          * Removes a type from the list
          */
@@ -184,6 +231,26 @@ public class TestManager1 implements Serializable {
             if (analytes == null)
                 analytes = new ArrayList<TestAnalyteViewDO>();
             analytes.add(data);
+
+            return data;
+        }
+
+        public TestAnalyteViewDO add(TestAnalyteViewDO analyte) {
+            TestAnalyteViewDO data;
+
+            data = add();
+            data.setAnalyteId(analyte.getAnalyteId());
+            data.setAnalyteName(analyte.getAnalyteName());
+            data.setIsAlias(analyte.getIsAlias());
+            data.setIsColumn(analyte.getIsColumn());
+            data.setIsReportable(analyte.getIsReportable());
+            data.setResultGroup(analyte.getResultGroup());
+            data.setRowGroup(analyte.getRowGroup());
+            data.setScriptletId(analyte.getScriptletId());
+            data.setScriptletName(analyte.getScriptletName());
+            data.setSortOrder(analyte.getSortOrder());
+            data.setTestId(analyte.getTestId());
+            data.setTypeId(analyte.getTypeId());
 
             return data;
         }
@@ -235,6 +302,24 @@ public class TestManager1 implements Serializable {
             return data;
         }
 
+        public TestResultViewDO add(TestResultViewDO result) {
+            TestResultViewDO data;
+
+            data = add();
+            data.setDictionary(result.getDictionary());
+            data.setFlagsId(result.getFlagsId());
+            data.setResultGroup(result.getResultGroup());
+            data.setRoundingMethodId(result.getRoundingMethodId());
+            data.setSignificantDigits(result.getSignificantDigits());
+            data.setSortOrder(result.getSortOrder());
+            data.setTestId(result.getTestId());
+            data.setTypeId(result.getTypeId());
+            data.setUnitOfMeasureId(result.getUnitOfMeasureId());
+            data.setValue(result.getValue());
+
+            return data;
+        }
+
         /**
          * Removes a result from the list
          */
@@ -278,6 +363,19 @@ public class TestManager1 implements Serializable {
             if (preps == null)
                 preps = new ArrayList<TestPrepViewDO>();
             preps.add(data);
+
+            return data;
+        }
+
+        public TestPrepViewDO add(TestPrepViewDO prep) {
+            TestPrepViewDO data;
+
+            data = add();
+            data.setIsOptional(prep.getIsOptional());
+            data.setMethodName(prep.getMethodName());
+            data.setPrepTestId(prep.getPrepTestId());
+            data.setPrepTestName(prep.getPrepTestName());
+            data.setTestId(prep.getTestId());
 
             return data;
         }
@@ -329,6 +427,24 @@ public class TestManager1 implements Serializable {
             return data;
         }
 
+        public TestReflexViewDO add(TestReflexViewDO reflex) {
+            TestReflexViewDO data;
+
+            data = add();
+            data.setAddMethodName(reflex.getAddMethodName());
+            data.setAddTestId(reflex.getAddTestId());
+            data.setAddTestName(reflex.getAddTestName());
+            data.setFlagsId(reflex.getFlagsId());
+            data.setTestAnalyteId(reflex.getTestAnalyteId());
+            data.setTestAnalyteName(reflex.getTestAnalyteName());
+            data.setTestId(reflex.getTestId());
+            data.setTestResultId(reflex.getTestResultId());
+            data.setTestResultTypeId(reflex.getTestResultTypeId());
+            data.setTestResultValue(reflex.getTestResultValue());
+
+            return data;
+        }
+
         /**
          * Removes a reflex from the list
          */
@@ -352,6 +468,151 @@ public class TestManager1 implements Serializable {
                 return reflexes.size();
             return 0;
         }
+    }
+
+    /**
+     * Class to Test Worksheet Item information
+     */
+    public class TestWorksheetItem {
+
+        /**
+         * Returns the reflex at specified index.
+         */
+        public TestWorksheetItemDO get(int i) {
+            return items.get(i);
+        }
+
+        public TestWorksheetItemDO add() {
+            TestWorksheetItemDO data;
+
+            data = new TestWorksheetItemDO();
+            if (items == null)
+                items = new ArrayList<TestWorksheetItemDO>();
+            items.add(data);
+
+            return data;
+        }
+
+        public TestWorksheetItemDO add(TestWorksheetItemDO item) {
+            TestWorksheetItemDO data;
+
+            data = add();
+            data.setPosition(item.getPosition());
+            data.setQcName(item.getQcName());
+            data.setSortOrder(item.getSortOrder());
+            data.setTestWorksheetId(item.getTestWorksheetId());
+            data.setTypeId(item.getTypeId());
+
+            return data;
+        }
+
+        /**
+         * Removes a worksheet item from the list
+         */
+        public void remove(int i) {
+            TestWorksheetItemDO data;
+
+            data = items.remove(i);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        public void remove(TestWorksheetItemDO data) {
+            items.remove(data);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        /**
+         * Returns the number of worksheet items associated with this test
+         */
+        public int count() {
+            if (items != null)
+                return items.size();
+            return 0;
+        }
+    }
+
+    /**
+     * Class to Test Worksheet Analyte information
+     */
+    public class TestWorksheetAnalyte {
+
+        /**
+         * Returns the reflex at specified index.
+         */
+        public TestWorksheetAnalyteViewDO get(int i) {
+            return worksheetAnalytes.get(i);
+        }
+
+        public TestWorksheetAnalyteViewDO add() {
+            TestWorksheetAnalyteViewDO data;
+
+            data = new TestWorksheetAnalyteViewDO();
+            if (worksheetAnalytes == null)
+                worksheetAnalytes = new ArrayList<TestWorksheetAnalyteViewDO>();
+            worksheetAnalytes.add(data);
+
+            return data;
+        }
+
+        public TestWorksheetAnalyteViewDO add(TestWorksheetAnalyteViewDO analyte) {
+            TestWorksheetAnalyteViewDO data;
+
+            data = add();
+            data.setAnalyteName(analyte.getAnalyteName());
+            data.setFlagId(analyte.getFlagId());
+            data.setRepeat(analyte.getRepeat());
+            data.setSortOrder(analyte.getSortOrder());
+            data.setTestAnalyteId(analyte.getTestAnalyteId());
+            data.setTestId(analyte.getTestId());
+
+            return data;
+        }
+
+        /**
+         * Removes a worksheet analyte from the list
+         */
+        public void remove(int i) {
+            TestWorksheetAnalyteViewDO data;
+
+            data = worksheetAnalytes.remove(i);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        public void remove(TestWorksheetAnalyteViewDO data) {
+            worksheetAnalytes.remove(data);
+            dataObjectRemove(data.getId(), data);
+        }
+
+        /**
+         * Returns the number of worksheet analytes associated with this test
+         */
+        public int count() {
+            if (worksheetAnalytes != null)
+                return worksheetAnalytes.size();
+            return 0;
+        }
+    }
+
+    /**
+     * Returns the formatter used to format and validate this test's results
+     */
+    public ResultFormatter getFormatter() throws Exception {
+
+        if (formatter != null)
+            return formatter;
+
+        formatter = new ResultFormatter();
+        for (TestResultViewDO tr : results) {
+            formatter.add(tr.getId(),
+                          tr.getResultGroup(),
+                          tr.getUnitOfMeasureId(),
+                          tr.getTypeId(),
+                          tr.getSignificantDigits(),
+                          tr.getRoundingMethodId(),
+                          tr.getValue(),
+                          tr.getDictionary());
+        }
+        return formatter;
     }
 
     /**
