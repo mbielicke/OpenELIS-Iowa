@@ -291,7 +291,8 @@ public class SampleItemTabUI extends Screen {
                  * analysis' manager may be replaced with a locked and refetched
                  * manager containing changes from the database.
                  */
-                if (DataBaseUtil.isDifferent(typeOfSample.getValue(), getTypeOfSampleId()) ||
+                if (DataBaseUtil.isDifferent(displayedUid, uid) ||
+                    DataBaseUtil.isDifferent(typeOfSample.getValue(), getTypeOfSampleId()) ||
                     DataBaseUtil.isDifferent(sourceOfSample.getValue(), getSourceOfSampleId()) ||
                     DataBaseUtil.isDifferent(sourceOther.getValue(), getSourceOther()) ||
                     DataBaseUtil.isDifferent(container.getValue(), getContainerId()) ||
@@ -351,16 +352,6 @@ public class SampleItemTabUI extends Screen {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    public Validation validate() {
-        /*
-         * validate only if there's data loaded in the tab
-         */
-        if (displayedUid == null)
-            return new Validation();
-
-        return super.validate();
     }
 
     private void evaluateEdit() {

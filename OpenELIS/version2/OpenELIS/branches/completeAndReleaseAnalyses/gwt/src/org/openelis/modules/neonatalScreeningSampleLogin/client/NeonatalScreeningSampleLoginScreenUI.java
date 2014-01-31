@@ -140,9 +140,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                   UiBinder<Widget, NeonatalScreeningSampleLoginScreenUI> {
     };
 
-
-
-
     private static NeonatalScreeningSampleLoginUiBinder uiBinder   = GWT.create(NeonatalScreeningSampleLoginUiBinder.class);
 
     protected SampleManager1                            manager;
@@ -305,7 +302,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleNotesTab = new SampleNotesTabUI(this);
         storageTab = new StorageTabUI(this);
         qaEventTab = new QAEventTabUI(this);
-
         auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
@@ -2195,60 +2191,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         feedingId.setModel(model);
     }
 
-    /**
-     * validates the screen and sets the status of validation to "Flagged" if
-     * some operation needs to be completed before committing
-     */
-    public Validation validate() {
-        Validation validation;
-
-        validation = super.validate();
-        if (isBusy)
-            validation.setStatus(FLAGGED);
-
-        return validation;
-    }
-
-    /**
-     * returns from the cache, the object that has the specified key and is of
-     * the specified class
-     */
-    @Override
-    public <T> T get(Object key, Class<?> c) {
-        String cacheKey;
-        Object obj;
-
-        if (cache == null)
-            return null;
-
-        cacheKey = null;
-        if (c == TestManager.class)
-            cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
-            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
-
-        obj = cache.get(cacheKey);
-        if (obj != null)
-            return (T)obj;
-
-        /*
-         * if the requested object is not in the cache then obtain it and put it
-         * in the cache
-         */
-        try {
-            if (c == TestManager.class)
-                obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
-
-            cache.put(cacheKey, obj);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return (T)obj;
-    }
-
     /*
      * basic button methods
      */
@@ -2530,6 +2472,60 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             SampleService1.get().unlock(manager.getSample().getId(), elements, unlockCall);
         }
+    }
+    
+    /**
+     * validates the screen and sets the status of validation to "Flagged" if
+     * some operation needs to be completed before committing
+     */
+    public Validation validate() {
+        Validation validation;
+
+        validation = super.validate();
+        if (isBusy)
+            validation.setStatus(FLAGGED);
+
+        return validation;
+    }
+
+    /**
+     * returns from the cache, the object that has the specified key and is of
+     * the specified class
+     */
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
+        Object obj;
+
+        if (cache == null)
+            return null;
+
+        cacheKey = null;
+        if (c == TestManager.class)
+            cacheKey = Constants.uid().getTest((Integer)key);
+        else if (c == AuxFieldGroupManager.class)
+            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
+
+        obj = cache.get(cacheKey);
+        if (obj != null)
+            return (T)obj;
+
+        /*
+         * if the requested object is not in the cache then obtain it and put it
+         * in the cache
+         */
+        try {
+            if (c == TestManager.class)
+                obj = TestService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager.class)
+                obj = AuxiliaryService.get().fetchById((Integer)key);
+
+            cache.put(cacheKey, obj);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return (T)obj;
     }
 
     /**
