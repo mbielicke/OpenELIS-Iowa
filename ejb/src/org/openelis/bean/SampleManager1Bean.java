@@ -1479,7 +1479,7 @@ public class SampleManager1Bean {
 
         ids = new HashSet<Integer>();
         for (SampleManager1 sm : sms) 
-            ids.add(sm.getSample().getId());
+            ids.add(getSample(sm).getId());
        
         lock.unlock(Constants.table().SAMPLE, new ArrayList<Integer>(ids));
         return sms;

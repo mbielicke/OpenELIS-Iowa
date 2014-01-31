@@ -741,16 +741,23 @@ public class AnalysisTabUI extends Screen {
                  * manager may be replaced with a locked and refetched manager
                  * containing changes from the database.
                  */
-                if (DataBaseUtil.isDifferent(revision.getValue(), getRevision()) || DataBaseUtil.isDifferent(test.getValue(), getTestName()) ||
-                    DataBaseUtil.isDifferent(method.getDisplay(), getMethodName()) || DataBaseUtil.isDifferent(section.getValue(), getSectionId()) ||
+                if (DataBaseUtil.isDifferent(displayedUid, uid) ||
+                    DataBaseUtil.isDifferent(revision.getValue(), getRevision()) ||
+                    DataBaseUtil.isDifferent(test.getValue(), getTestName()) ||
+                    DataBaseUtil.isDifferent(method.getDisplay(), getMethodName()) ||
+                    DataBaseUtil.isDifferent(section.getValue(), getSectionId()) ||
                     DataBaseUtil.isDifferent(samplePrep.getDisplay(),
                                              DataBaseUtil.concatWithSeparator(getPreAnalysisTest(),
                                                                               ", ",
                                                                               getPreAnalysisMethod())) ||
-                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId()) || DataBaseUtil.isDifferent(status.getValue(), getStatusId()) ||
-                    DataBaseUtil.isDifferent(panel.getDisplay(), getPanelName()) || DataBaseUtil.isDifferent(isReportable.getValue(), getIsReportable()) ||
-                    DataBaseUtil.isDifferent(isPreliminary.getValue(), getIsPreliminary()) || DataBaseUtil.isDifferentYM(startedDate.getValue(), getStartedDate()) ||
-                    DataBaseUtil.isDifferentYM(completedDate.getValue(), getCompletedDate()) || DataBaseUtil.isDifferentYM(releasedDate.getValue(), getReleasedDate()) ||
+                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId()) ||
+                    DataBaseUtil.isDifferent(status.getValue(), getStatusId()) ||
+                    DataBaseUtil.isDifferent(panel.getDisplay(), getPanelName()) ||
+                    DataBaseUtil.isDifferent(isReportable.getValue(), getIsReportable()) ||
+                    DataBaseUtil.isDifferent(isPreliminary.getValue(), getIsPreliminary()) ||
+                    DataBaseUtil.isDifferentYM(startedDate.getValue(), getStartedDate()) ||
+                    DataBaseUtil.isDifferentYM(completedDate.getValue(), getCompletedDate()) ||
+                    DataBaseUtil.isDifferentYM(releasedDate.getValue(), getReleasedDate()) ||
                     DataBaseUtil.isDifferentYM(printedDate.getValue(), getPrintedDate())) {
                     redraw = true;
                 }

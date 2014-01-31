@@ -499,13 +499,15 @@ public class AnalysisHelperBean {
 
         perm = userCache.getPermission();
 
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+
         /*
          * change the status to the specified value after performing any
-         * necessary checks
+         * necessary checks and change any necessary fields
          */
         if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId)) {
             if (ana.getAvailableDate() == null)
-                ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                ana.setAvailableDate(now);
             else if (ana.getStartedDate() != null)
                 ana.setStartedDate(null);
         } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
@@ -520,7 +522,7 @@ public class AnalysisHelperBean {
             }
 
             if (ana.getStartedDate() == null)
-                ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                ana.setStartedDate(now);
         } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
             if (ana.getSectionName() == null ||
                 !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
@@ -590,7 +592,6 @@ public class AnalysisHelperBean {
                     throw e;
             }
 
-            now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
             /*
              * if this is the prep analysis of some in-prep analyses then move
              * them to logged-in
@@ -809,7 +810,8 @@ public class AnalysisHelperBean {
     /**
      * This method removes the analysis with the specified id and all of its
      * child data, e.g. results, qa events etc. It also removes any links
-     * between other analyses and this one.
+     * between other analyses and this one. Does not remove a previously
+     * committed analysis.
      */
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
         int i;
@@ -823,10 +825,10 @@ public class AnalysisHelperBean {
         ArrayList<NoteViewDO> notes;
         ArrayList<StorageViewDO> sts;
 
-        accession = getSample(sm).getAccessionNumber();
         /*
          * for display
          */
+        accession = getSample(sm).getAccessionNumber();
         if (accession == null)
             accession = 0;
 
@@ -858,12 +860,16 @@ public class AnalysisHelperBean {
                                                                                            ana.getMethodName()));
 
         /*
-         * if the analysis to be removed is the prep analysis of or was reflexed
-         * by any analyses then remove those links
+         * if the analysis to be removed is the prep analysis of any analyses
+         * then remove those links
          */
         for (AnalysisViewDO a : prepAnas)
             unlinkFromPrep(sm, a);
 
+        /*
+         * if the analysis to be removed was reflexed by any analyses then
+         * remove those links
+         */
         for (AnalysisViewDO a : rflxAnas) {
             a.setParentAnalysisId(null);
             a.setParentResultId(null);

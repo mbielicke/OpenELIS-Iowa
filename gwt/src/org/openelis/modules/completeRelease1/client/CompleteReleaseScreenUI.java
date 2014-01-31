@@ -25,20 +25,28 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleTestRequestVO;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
+import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.report.client.FinalReportService;
+import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
+import org.openelis.modules.sample1.client.AddTestEvent;
+import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
+import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.SDWISTabUI;
@@ -49,6 +57,7 @@ import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
+import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
@@ -61,6 +70,7 @@ import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
@@ -70,6 +80,7 @@ import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.table.Row;
@@ -176,6 +187,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected ModulePermission                 userPermission;
 
     protected CompleteReleaseScreenUI          screen;
+    
+    protected TestSelectionLookupUI            testSelectionLookup;
 
     protected HashMap<String, Object>          cache;
 
@@ -239,7 +252,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         sampleNotesTab = new SampleNotesTabUI(this);
         storageTab = new StorageTabUI(this);
         qaEventTab = new QAEventTabUI(this);
-
         auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
@@ -536,7 +548,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             public void onUnselection(UnselectionEvent<Integer> event) {
                 /*
                  * since in Update state, the selected row's manager is locked,
-                 * it's not allowed ton be unselected
+                 * it's not allowed to be unselected
                  */
                 if (isState(UPDATE))
                     event.cancel();
@@ -773,6 +785,154 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
+        
+        /*
+         * handlers for the events fired by the tabs
+         */
+
+        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+            @Override
+            public void onAnalysisChange(AnalysisChangeEvent event) {
+                AnalysisViewDO ana;
+                SampleTestReturnVO ret;
+
+                if (screen == event.getSource())
+                    return;
+
+                ana = (AnalysisViewDO)manager.getObject(event.getUid());
+                ret = null;
+
+                /*
+                 * based on the field in the analysis being changed, call a
+                 * specific service method
+                 */
+                setBusy();
+                try {
+                    switch (event.getAction()) {
+                        case METHOD_CHANGED:
+                            ret = SampleService1.get().changeAnalysisMethod(manager,
+                                                                            ana.getId(),
+                                                                            event.getChangeId());
+                            manager = ret.getManager();
+                            break;
+                        case STATUS_CHANGED:
+                            manager = SampleService1.get()
+                                                    .changeAnalysisStatus(manager,
+                                                                          ana.getId(),
+                                                                          event.getChangeId());
+                            break;
+                        case UNIT_CHANGED:
+                            manager = SampleService1.get().changeAnalysisUnit(manager,
+                                                                              ana.getId(),
+                                                                              event.getChangeId());
+                            break;
+                        case PREP_CHANGED:
+                            manager = SampleService1.get().changeAnalysisPrep(manager,
+                                                                              ana.getId(),
+                                                                              event.getChangeId());
+                            break;
+                    }
+                    managers.put(manager.getSample().getId(), manager);
+                    setData();
+                    setState(state);
+
+                    /*
+                     * notify all tabs that need to refresh themselves because
+                     * of the change in the analysis
+                     */
+                    bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
+                                                                    event.getChangeId(),
+                                                                    event.getAction()), screen);
+                    bus.fireEvent(new ResultChangeEvent(event.getUid()));
+
+                    clearStatus();
+                    showErrorsOrTests(ret);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            }
+        });
+
+        bus.addHandler(AddRowAnalytesEvent.getType(), new AddRowAnalytesEvent.Handler() {
+            @Override
+            public void onAddRowAnalytes(AddRowAnalytesEvent event) {
+                AnalysisViewDO ana;
+                setBusy();
+                try {
+                    ana = event.getAnalysis();
+                    manager = SampleService1.get().addRowAnalytes(manager,
+                                                                  ana,
+                                                                  event.getAnalytes(),
+                                                                  event.getIndexes());
+                    managers.put(manager.getSample().getId(), manager);
+                    setData();
+                    setState(state);
+                    bus.fireEvent(new ResultChangeEvent(Constants.uid().get(ana)));
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                clearStatus();
+            }
+        });
+
+        bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
+            @Override
+            public void onAddAuxGroup(AddAuxGroupEvent event) {
+                SampleTestReturnVO ret;
+                ArrayList<Integer> ids;
+
+                if (screen == event.getSource())
+                    return;
+
+                ids = event.getGroupIds();
+                if (ids != null && ids.size() > 0) {
+                    setBusy();
+                    try {
+                        ret = SampleService1.get().addAuxGroups(manager, ids);
+                        manager = ret.getManager();
+                        managers.put(manager.getSample().getId(), manager);
+                        setData();
+                        setState(state);
+                        bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
+                        clearStatus();
+                        showErrorsOrTests(ret);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                    }
+                }
+            }
+        });
+
+        bus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
+            @Override
+            public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
+                if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                    if (screen == event.getSource())
+                        return;
+
+                    setBusy();
+                    try {
+                        manager = SampleService1.get()
+                                                .removeAuxGroups(manager, event.getGroupIds());
+                        managers.put(manager.getSample().getId(), manager);
+                        setData();
+                        setState(state);
+                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()),
+                                                screen);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                    clearStatus();
+                }
+            }
+        });
+
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -811,60 +971,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
 
         analysisStatus.setModel(model);
-    }
-
-    /**
-     * validates the screen and sets the status of validation to "Flagged" if
-     * some operation needs to be completed before committing
-     */
-    public Validation validate() {
-        Validation validation;
-
-        validation = super.validate();
-        if (isBusy)
-            validation.setStatus(FLAGGED);
-
-        return validation;
-    }
-
-    /**
-     * returns from the cache, the object that has the specified key and is of
-     * the specified class
-     */
-    @Override
-    public <T> T get(Object key, Class<?> c) {
-        String cacheKey;
-        Object obj;
-
-        if (cache == null)
-            return null;
-
-        cacheKey = null;
-        if (c == TestManager.class)
-            cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
-            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
-
-        obj = cache.get(cacheKey);
-        if (obj != null)
-            return (T)obj;
-
-        /*
-         * if the requested object is not in the cache then obtain it and put it
-         * in the cache
-         */
-        try {
-            if (c == TestManager.class)
-                obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
-
-            cache.put(cacheKey, obj);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return (T)obj;
     }
 
     /*
@@ -930,8 +1036,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
 
         SampleService1.get().fetchForUpdateByAnalyses(getAnalysisIds(manager.getSample().getId()),
-                                            elements,
-                                            fetchForUpdateCall);
+                                                      elements,
+                                                      fetchForUpdateCall);
     }
 
     /**
@@ -1299,6 +1405,60 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * validates the screen and sets the status of validation to "Flagged" if
+     * some operation needs to be completed before committing
+     */
+    public Validation validate() {
+        Validation validation;
+
+        validation = super.validate();
+        if (isBusy)
+            validation.setStatus(FLAGGED);
+
+        return validation;
+    }
+
+    /**
+     * returns from the cache, the object that has the specified key and is of
+     * the specified class
+     */
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
+        Object obj;
+
+        if (cache == null)
+            return null;
+
+        cacheKey = null;
+        if (c == TestManager.class)
+            cacheKey = Constants.uid().getTest((Integer)key);
+        else if (c == AuxFieldGroupManager.class)
+            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
+
+        obj = cache.get(cacheKey);
+        if (obj != null)
+            return (T)obj;
+
+        /*
+         * if the requested object is not in the cache then obtain it and put it
+         * in the cache
+         */
+        try {
+            if (c == TestManager.class)
+                obj = TestService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager.class)
+                obj = AuxiliaryService.get().fetchById((Integer)key);
+
+            cache.put(cacheKey, obj);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return (T)obj;
+    }
+
+    /**
      * Sets the latest manager in the tabs
      */
     private void setData() {
@@ -1542,7 +1702,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         return model;
     }
-    
+
     /**
      * returns the ids of the analyses showing in the table that belong to the
      * sample with this id
@@ -1566,10 +1726,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * If the UUId is not null then reloads the tabs with the manager and
+     * If the UUID is not null then reloads the tabs with the manager and
      * analysis specified by it and updates the notifications on the tab
-     * headers; otherwise shows the blank tab and empties the other tabs. If
-     * forceReloadResults is true then forces the result tab to refresh itself.
+     * headers; otherwise shows the blank tab and empties the other tabs. Forces
+     * the result tab to refresh itself if forceReloadResults is true.
      */
     private void refreshTabs(UUID data, boolean forceReloadResults) {
         String uid, domain;
@@ -1626,10 +1786,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(type, uid));
         /*
          * This is done when SelectionEvent isn't sufficient to refresh the
-         * result tab, because it makes the tab compare the uids of the previous
-         * and current analysis and not the new and old results. The results can
-         * get changed when the manager is reloaded from the database e.g. on
-         * going in Update state or clicking Abort.
+         * result tab, because SelectionEvent makes the tab compare the uids of
+         * the previous and current analysis and not the new and old results.
+         * The results can get changed when the manager is reloaded from the
+         * database e.g. on going in Update state or clicking Abort.
          */
         if (forceReloadResults)
             bus.fireEvent(new ResultChangeEvent(uid));
@@ -1737,6 +1897,93 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 Window.alert(caught.getMessage());
             }
         });
+    }
+    
+    /**
+     * Calls the service method to add the tests/panels in the list, to the
+     * sample. If there were any errors during the operation then shows them or
+     * shows the popup for selecting prep/reflex tests for the added tests. Also
+     * notifies the tabs to reload themselves.
+     */
+    private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
+        SampleTestReturnVO ret;
+
+        setBusy();
+        try {
+            ret = SampleService1.get().addAnalyses(manager, tests);
+            manager = ret.getManager();
+            setData();
+            setState(state);
+            /*
+             * notify the tabs that some new tests have been added
+             */
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
+            clearStatus();
+            showErrorsOrTests(ret);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+        }
+    }
+
+    /**
+     * Shows the errors in the VO or the popup for selecting the prep/reflex
+     * tests for the analyses in the VO because they were added/changed in the
+     * back-end.
+     */
+    private void showErrorsOrTests(SampleTestReturnVO ret) {
+        ModalWindow modal;
+
+        if (ret == null)
+            return;
+
+        if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+            showErrors(ret.getErrors());
+        } else if (ret.getTests() != null && ret.getTests().size() > 0) {
+            /*
+             * show the pop for selecting prep/reflex tests
+             */
+            if (testSelectionLookup == null) {
+                testSelectionLookup = new TestSelectionLookupUI() {
+                    @Override
+                    public TestManager getTestManager(Integer testId) {
+                        return screen.get(testId, TestManager.class);
+                    }
+
+                    @Override
+                    public void ok() {
+                        ArrayList<SampleTestRequestVO> tests;
+
+                        tests = testSelectionLookup.getSelectedTests();
+                        /*
+                         * keep isBusy to be true if some tests were selected on
+                         * the popup because they need to be added to the
+                         * manager
+                         */
+                        if (tests != null && tests.size() > 0)
+                            addAnalyses(tests);
+                        else
+                            isBusy = false;
+                    }
+                };
+            }
+
+            /*
+             * make sure that the data can't be committed before the process of
+             * adding tests has completed
+             */
+            isBusy = true;
+
+            modal = new ModalWindow();
+            modal.setSize("520px", "350px");
+            modal.setName(Messages.get().testSelection_prepTestSelection());
+            modal.setCSS(UIResources.INSTANCE.popupWindow());
+            modal.setContent(testSelectionLookup);
+
+            testSelectionLookup.setData(manager, ret.getTests());
+            testSelectionLookup.setWindow(modal);
+        }
     }
 
     /**
