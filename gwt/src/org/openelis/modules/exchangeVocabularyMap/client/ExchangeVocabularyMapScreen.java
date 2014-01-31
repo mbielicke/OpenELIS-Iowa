@@ -48,13 +48,16 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -73,6 +76,7 @@ import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.TestAnalyteViewMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryService;
@@ -690,6 +694,14 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 return model;
             }
         };
+        
+        addStateChangeHandler(new StateChangeHandler<Screen.State>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                nav.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                           .contains(event.getState()) &&
+                    userPermission.hasSelectPermission());
+            }
+        });
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
