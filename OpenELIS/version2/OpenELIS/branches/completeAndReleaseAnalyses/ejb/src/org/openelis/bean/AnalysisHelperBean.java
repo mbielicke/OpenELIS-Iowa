@@ -510,6 +510,12 @@ public class AnalysisHelperBean {
                 ana.setAvailableDate(now);
             else if (ana.getStartedDate() != null)
                 ana.setStartedDate(null);
+            /*
+             * the completed date needs to be blanked if the status of the analysis
+             * will be changed from completed to something else, e.g. in-prep 
+             */
+            if (ana.getCompletedDate() != null)
+                ana.setCompletedDate(null);
         } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
             ana.setAvailableDate(null);
         } else if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId)) {

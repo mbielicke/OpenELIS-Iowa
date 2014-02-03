@@ -27,6 +27,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
@@ -795,101 +796,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 if (screen != event.getSource())
                     changeAnalysis(event);
             }
-
-            private void changeAnalysis(AnalysisChangeEvent event) {
-                SampleTestReturnVO ret;
-                ret = null;
-                
-                setBusy();
-                try {
-                    switch (event.getAction()) {
-                        case METHOD_CHANGED:
-                            ret = changeAnalysisMethod(manager, event.getUid(), event.getChangeId());
-                            manager = ret.getManager();
-                            break;
-                        case STATUS_CHANGED:
-                            manager = changeAnalysisStatus(manager, event.getUid(), event.getChangeId());
-                            break;
-                        case UNIT_CHANGED:
-                            manager = changeAnalysisUnit(manager, event.getUid(), event.getChangeId());
-                            break;
-                        case PREP_CHANGED:
-                            manager = changeAnalysisPrep(manager, event.getUid(), event.getChangeId());
-                            break;
-                    }
-                    managers.put(manager.getSample().getId(), manager);
-                    refreshRows(manager.getSample().getId());
-                    setData();
-                    setState(state);
-
-                    /*
-                     * notify all tabs that need to refresh themselves because of the change
-                     * in the analysis
-                     */
-                    bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(), event.getChangeId(),
-                                                                    event.getAction()),
-                                            screen);
-                    bus.fireEvent(new ResultChangeEvent(event.getUid()));
-                    clearStatus();
-                    showErrorsOrTests(ret);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    clearStatus();
-                }
-            }
         });
 
         bus.addHandler(AddRowAnalytesEvent.getType(), new AddRowAnalytesEvent.Handler() {
             @Override
             public void onAddRowAnalytes(AddRowAnalytesEvent event) {
-                AnalysisViewDO ana;
-                setBusy();
-                try {
-                    ana = event.getAnalysis();
-                    manager = SampleService1.get().addRowAnalytes(manager,
-                                                                  ana,
-                                                                  event.getAnalytes(),
-                                                                  event.getIndexes());
-                    managers.put(manager.getSample().getId(), manager);
-                    setData();
-                    setState(state);
-                    bus.fireEvent(new ResultChangeEvent(Constants.uid().get(ana)));
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-                clearStatus();
+                addRowAnalytes(manager,
+                               event.getAnalysis(),
+                               event.getAnalytes(),
+                               event.getIndexes());
             }
         });
 
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                SampleTestReturnVO ret;
-                ArrayList<Integer> ids;
-
-                if (screen == event.getSource())
-                    return;
-
-                ids = event.getGroupIds();
-                if (ids != null && ids.size() > 0) {
-                    setBusy();
-                    try {
-                        ret = SampleService1.get().addAuxGroups(manager, ids);
-                        manager = ret.getManager();
-                        managers.put(manager.getSample().getId(), manager);
-                        setData();
-                        setState(state);
-                        bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
-                        clearStatus();
-                        showErrorsOrTests(ret);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                        clearStatus();
-                    }
-                }
+                if (screen != event.getSource())
+                    addAuxGroups(manager, event.getGroupIds());
             }
         });
 
@@ -897,23 +820,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
-                    if (screen == event.getSource())
-                        return;
-
-                    setBusy();
-                    try {
-                        manager = SampleService1.get()
-                                                .removeAuxGroups(manager, event.getGroupIds());
-                        managers.put(manager.getSample().getId(), manager);
-                        setData();
-                        setState(state);
-                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()),
-                                                screen);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                    clearStatus();
+                    if (screen != event.getSource())
+                        removeAuxGroups(manager, event.getGroupIds());
                 }
             }
         });
@@ -1884,6 +1792,86 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * changes a particular field in the analysis specified by the event;
+     * refreshes the screen with the changed data or shows any errors
+     * encountered
+     */
+    private void changeAnalysis(AnalysisChangeEvent event) {
+        AnalysisViewDO ana;
+        SampleTestReturnVO ret;
+
+        ret = null;
+
+        ana = (AnalysisViewDO)manager.getObject(event.getUid());
+        setBusy();
+        try {
+            switch (event.getAction()) {
+                case METHOD_CHANGED:
+                    ret = SampleService1.get().changeAnalysisMethod(manager,
+                                                                    ana.getId(),
+                                                                    event.getChangeId());
+                    manager = ret.getManager();
+                    break;
+                case STATUS_CHANGED:
+                    manager = SampleService1.get().changeAnalysisStatus(manager,
+                                                                        ana.getId(),
+                                                                        event.getChangeId());
+                    break;
+                case UNIT_CHANGED:
+                    manager = SampleService1.get().changeAnalysisUnit(manager,
+                                                                      ana.getId(),
+                                                                      event.getChangeId());
+                    break;
+                case PREP_CHANGED:
+                    manager = SampleService1.get().changeAnalysisPrep(manager,
+                                                                      ana.getId(),
+                                                                      event.getChangeId());
+                    break;
+            }
+
+            managers.put(manager.getSample().getId(), manager);
+            refreshRows(manager.getSample().getId());
+            setData();
+            setState(state);
+
+            /*
+             * notify all tabs that need to refresh themselves because of the
+             * change in the analysis
+             */
+            bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
+                                                            event.getChangeId(),
+                                                            event.getAction()), screen);
+            bus.fireEvent(new ResultChangeEvent(event.getUid()));
+            clearStatus();
+            showErrorsOrTests(ret);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+        }
+    }
+
+    /**
+     * Adds the rows beginning with the specified test analytes to the analysis
+     * at the given indexes
+     */
+    private void addRowAnalytes(SampleManager1 sm, AnalysisViewDO ana,
+                                ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes) {
+        setBusy();
+        try {
+            manager = SampleService1.get().addRowAnalytes(sm, ana, analytes, indexes);
+            managers.put(sm.getSample().getId(), manager);
+            setData();
+            setState(state);
+            bus.fireEvent(new ResultChangeEvent(Constants.uid().get(ana)));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
      * Calls the service method to add the tests/panels in the list, to the
      * sample. If there were any errors during the operation then shows them or
      * shows the popup for selecting prep/reflex tests for the added tests. Also
@@ -1903,6 +1891,30 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
+            if (ret != null)
+                showErrorsOrTests(ret);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+        }
+    }
+
+    /**
+     * Adds the aux groups with the given ids to the manager
+     */
+    private void addAuxGroups(SampleManager1 sm, ArrayList<Integer> ids) {
+        SampleTestReturnVO ret;
+
+        setBusy();
+        try {
+            ret = SampleService1.get().addAuxGroups(sm, ids);
+            manager = ret.getManager();
+            managers.put(sm.getSample().getId(), manager);
+            setData();
+            setState(state);
+            bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
+            clearStatus();
             showErrorsOrTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1912,15 +1924,30 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Removes the aux groups with the given ids from the manager
+     */
+    private void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> ids) {
+        setBusy();
+        try {
+            manager = SampleService1.get().removeAuxGroups(sm, ids);
+            managers.put(sm.getSample().getId(), manager);
+            setData();
+            setState(state);
+            bus.fireEventFromSource(new RemoveAuxGroupEvent(ids), screen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
      * Shows the errors in the VO or the popup for selecting the prep/reflex
      * tests for the analyses in the VO because they were added/changed in the
      * back-end.
      */
     private void showErrorsOrTests(SampleTestReturnVO ret) {
         ModalWindow modal;
-
-        if (ret == null)
-            return;
 
         if (ret.getErrors() != null && ret.getErrors().size() > 0) {
             showErrors(ret.getErrors());
@@ -1970,35 +1997,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
     }
 
-    private SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
-        AnalysisViewDO ana;
-
-        ana = (AnalysisViewDO)sm.getObject(analysisUid);
-        return SampleService1.get().changeAnalysisMethod(sm, ana.getId(), changeId);
-    }
-
-    private SampleManager1 changeAnalysisStatus(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
-        AnalysisViewDO ana;
-
-        ana = (AnalysisViewDO)sm.getObject(analysisUid);
-
-        return SampleService1.get().changeAnalysisStatus(sm, ana.getId(), changeId);
-    }
-
-    private SampleManager1 changeAnalysisUnit(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
-        AnalysisViewDO ana;
-
-        ana = (AnalysisViewDO)sm.getObject(analysisUid);
-        return SampleService1.get().changeAnalysisUnit(sm, ana.getId(), changeId);
-    }
-
-    private SampleManager1 changeAnalysisPrep(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
-        AnalysisViewDO ana;
-
-        ana = (AnalysisViewDO)sm.getObject(analysisUid);
-        return SampleService1.get().changeAnalysisPrep(sm, ana.getId(), changeId);
-    }
-    
     /**
      * This class contains the unique ids that link a table row with its sample
      * and analysis
