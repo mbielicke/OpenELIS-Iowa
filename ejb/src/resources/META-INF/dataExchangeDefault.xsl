@@ -373,6 +373,8 @@
         <xsl:copy>
             <xsl:apply-templates select="@*|node()" />
 
+            <xsl:apply-templates select="//test_result[@id = current()/@test_result_id]"/>
+            
             <xsl:apply-templates select="//analyte[@id = current()/@analyte_id]">
                 <xsl:with-param name="test-analyte-id"><xsl:value-of select="current()/@test_analyte_id"/></xsl:with-param>
             </xsl:apply-templates>
@@ -437,6 +439,16 @@
                 <xsl:apply-templates
                     select="//analyte_translations/translation[@reference_id = current()/@id]" />
             </xsl:if>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="test_result">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+
+            <xsl:apply-templates select="//dictionary[@id = current()/@flags_id]">
+                <xsl:with-param name="tagname">flags</xsl:with-param>
+            </xsl:apply-templates>
         </xsl:copy>
     </xsl:template>
 
