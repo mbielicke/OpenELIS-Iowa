@@ -46,7 +46,6 @@ import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
-import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.SDWISTabUI;
@@ -187,7 +186,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected ModulePermission                 userPermission;
 
     protected CompleteReleaseScreenUI          screen;
-    
+
     protected TestSelectionLookupUI            testSelectionLookup;
 
     protected HashMap<String, Object>          cache;
@@ -785,7 +784,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         /*
          * handlers for the events fired by the tabs
          */
@@ -793,58 +792,44 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                AnalysisViewDO ana;
+                if (screen != event.getSource())
+                    changeAnalysis(event);
+            }
+
+            private void changeAnalysis(AnalysisChangeEvent event) {
                 SampleTestReturnVO ret;
-
-                if (screen == event.getSource())
-                    return;
-
-                ana = (AnalysisViewDO)manager.getObject(event.getUid());
                 ret = null;
-
-                /*
-                 * based on the field in the analysis being changed, call a
-                 * specific service method
-                 */
+                
                 setBusy();
                 try {
                     switch (event.getAction()) {
                         case METHOD_CHANGED:
-                            ret = SampleService1.get().changeAnalysisMethod(manager,
-                                                                            ana.getId(),
-                                                                            event.getChangeId());
+                            ret = changeAnalysisMethod(manager, event.getUid(), event.getChangeId());
                             manager = ret.getManager();
                             break;
                         case STATUS_CHANGED:
-                            manager = SampleService1.get()
-                                                    .changeAnalysisStatus(manager,
-                                                                          ana.getId(),
-                                                                          event.getChangeId());
+                            manager = changeAnalysisStatus(manager, event.getUid(), event.getChangeId());
                             break;
                         case UNIT_CHANGED:
-                            manager = SampleService1.get().changeAnalysisUnit(manager,
-                                                                              ana.getId(),
-                                                                              event.getChangeId());
+                            manager = changeAnalysisUnit(manager, event.getUid(), event.getChangeId());
                             break;
                         case PREP_CHANGED:
-                            manager = SampleService1.get().changeAnalysisPrep(manager,
-                                                                              ana.getId(),
-                                                                              event.getChangeId());
+                            manager = changeAnalysisPrep(manager, event.getUid(), event.getChangeId());
                             break;
                     }
                     managers.put(manager.getSample().getId(), manager);
+                    refreshRows(manager.getSample().getId());
                     setData();
                     setState(state);
 
                     /*
-                     * notify all tabs that need to refresh themselves because
-                     * of the change in the analysis
+                     * notify all tabs that need to refresh themselves because of the change
+                     * in the analysis
                      */
-                    bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                                    event.getChangeId(),
-                                                                    event.getAction()), screen);
+                    bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(), event.getChangeId(),
+                                                                    event.getAction()),
+                                            screen);
                     bus.fireEvent(new ResultChangeEvent(event.getUid()));
-
                     clearStatus();
                     showErrorsOrTests(ret);
                 } catch (Exception e) {
@@ -932,7 +917,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -1376,10 +1360,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     public void success(ArrayList<SampleManager1> result) {
                         UUID data;
 
-                        managers.put(manager.getSample().getId(), result.get(0));
-                        refreshRow(table.getSelectedRow());
-                        data = table.getRowAt(table.getSelectedRow()).getData();
                         manager = result.get(0);
+                        managers.put(manager.getSample().getId(), manager);
+                        refreshRows(manager.getSample().getId());
+                        data = table.getRowAt(table.getSelectedRow()).getData();
 
                         setData();
                         setState(DISPLAY);
@@ -1898,7 +1882,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
     }
-    
+
     /**
      * Calls the service method to add the tests/panels in the list, to the
      * sample. If there were any errors during the operation then shows them or
@@ -1986,6 +1970,35 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
     }
 
+    private SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)sm.getObject(analysisUid);
+        return SampleService1.get().changeAnalysisMethod(sm, ana.getId(), changeId);
+    }
+
+    private SampleManager1 changeAnalysisStatus(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)sm.getObject(analysisUid);
+
+        return SampleService1.get().changeAnalysisStatus(sm, ana.getId(), changeId);
+    }
+
+    private SampleManager1 changeAnalysisUnit(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)sm.getObject(analysisUid);
+        return SampleService1.get().changeAnalysisUnit(sm, ana.getId(), changeId);
+    }
+
+    private SampleManager1 changeAnalysisPrep(SampleManager1 sm, String analysisUid, Integer changeId) throws Exception {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)sm.getObject(analysisUid);
+        return SampleService1.get().changeAnalysisPrep(sm, ana.getId(), changeId);
+    }
+    
     /**
      * This class contains the unique ids that link a table row with its sample
      * and analysis
