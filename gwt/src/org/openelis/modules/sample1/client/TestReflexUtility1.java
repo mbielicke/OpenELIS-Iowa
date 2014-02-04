@@ -69,12 +69,16 @@ public abstract class TestReflexUtility1 {
 
         testIds = new HashSet<Integer>();
         /*
-         * keep track of the tests present in the sample
+         * find out which tests have been assigned to not cancelled analyses in
+         * the sample
          */
         for (i = 0; i < sm.item.count(); i++ ) {
             item = sm.item.get(i);
-            for (j = 0; j < sm.analysis.count(item); j++ )
-                testIds.add(sm.analysis.get(item, j).getTestId());
+            for (j = 0; j < sm.analysis.count(item); j++ ) {
+                ana = sm.analysis.get(item, j);
+                if ( !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    testIds.add(ana.getTestId());
+            }
         }
 
         ana = null;
@@ -115,7 +119,7 @@ public abstract class TestReflexUtility1 {
                                                tr.getAddTestId(),
                                                ana.getId(),
                                                null,
-                                               r.getId(),                                               
+                                               r.getId(),
                                                null,
                                                allowDup,
                                                null);

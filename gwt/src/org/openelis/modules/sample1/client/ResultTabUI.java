@@ -385,7 +385,8 @@ public class ResultTabUI extends Screen {
                                          */
                                         tests = testSelectionLookup.getSelectedTests();
                                         if (tests != null && tests.size() > 0)
-                                            parentBus.fireEvent(new AddTestEvent(tests));
+                                            parentBus.fireEventFromSource(new AddTestEvent(tests),
+                                                                          screen);
                                         else
                                             isBusy = false;
                                     }
@@ -511,6 +512,20 @@ public class ResultTabUI extends Screen {
                 analysis = (AnalysisViewDO)manager.getObject(event.getUid());
                 displayResults(event.getUid());
                 isBusy = false;
+            }
+        });
+
+        parentBus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
+            @Override
+            public void onAddTest(AddTestEvent event) {
+                /*
+                 * when the tab notifies the main screen that reflex tests need
+                 * to be added to the analysis, it sets isBusy to true so that
+                 * the data can't committed before the process of adding tests
+                 * is completed;
+                 */
+                if (screen != event.getSource())
+                    isBusy = false;
             }
         });
 

@@ -510,12 +510,6 @@ public class AnalysisHelperBean {
                 ana.setAvailableDate(now);
             else if (ana.getStartedDate() != null)
                 ana.setStartedDate(null);
-            /*
-             * the completed date needs to be blanked if the status of the analysis
-             * will be changed from completed to something else, e.g. in-prep 
-             */
-            if (ana.getCompletedDate() != null)
-                ana.setCompletedDate(null);
         } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
             ana.setAvailableDate(null);
         } else if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId)) {
@@ -688,6 +682,16 @@ public class AnalysisHelperBean {
             ana.setParentAnalysisId(null);
             ana.setParentResultId(null);
         }
+
+        /*
+         * The status of a completed analysis can be changed to something other
+         * than released e.g. by specifying a prep analysis for it. In those
+         * cases, the completed date needs to be blanked.
+         */
+        if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId) &&
+            !Constants.dictionary().ANALYSIS_RELEASED.equals(statusId) &&
+            ana.getCompletedDate() != null)
+            ana.setCompletedDate(null);
 
         ana.setStatusId(statusId);
 

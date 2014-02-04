@@ -114,10 +114,10 @@
               <ui:text from="{msg.analysis_samplePrep}:" />
             </td>
             <td colspan="5">
-               <w:Dropdown ui:field="samplePrep" width="367px" field="Integer">
+               <w:Dropdown ui:field="samplePrep" width="367px" field="Integer" dropWidth = "400px">
                 <w:popup>
                   <t:Table header="true">
-                    <t:Column width="130" label="{msg.gen_name}">
+                    <t:Column width="180" label="{msg.gen_name}">
                       <t:LabelCell />
                     </t:Column>
                     <t:Column width="130" label="{msg.sample_type}">

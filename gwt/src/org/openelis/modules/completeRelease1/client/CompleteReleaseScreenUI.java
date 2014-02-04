@@ -793,8 +793,43 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                if (screen != event.getSource())
-                    changeAnalysis(event);
+                AnalysisViewDO ana;
+                SampleManager1 sm;
+                SampleTestReturnVO ret;
+
+                if (screen == event.getSource())
+                    return;
+
+                setBusy();
+                
+                ana = (AnalysisViewDO)manager.getObject(event.getUid());
+                sm = null;
+                ret = null;
+                try {
+                    switch (event.getAction()) {
+                        case METHOD_CHANGED:
+                            ret = SampleService1.get().changeAnalysisMethod(manager, ana.getId(), event.getChangeId());
+                            sm = ret.getManager();
+                            break;
+                        case STATUS_CHANGED:
+                            sm = SampleService1.get().changeAnalysisStatus(manager, ana.getId(), event.getChangeId());
+                            break;
+                        case UNIT_CHANGED:
+                            sm = SampleService1.get().changeAnalysisUnit(manager, ana.getId(), event.getChangeId());
+                            break;
+                        case PREP_CHANGED:
+                            sm = SampleService1.get().changeAnalysisPrep(manager, ana.getId(), event.getChangeId());
+                            break;
+                    }
+                    analysisChanged(sm, event);
+                    clearStatus();
+                    if (ret != null)
+                        showErrorsOrTests(ret);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
             }
         });
 
@@ -1790,65 +1825,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
     }
+    
+    private void analysisChanged(SampleManager1 sm, AnalysisChangeEvent event) {
+        manager = sm;
+        managers.put(sm.getSample().getId(), sm);
+        refreshRows(sm.getSample().getId());
+        setData();
+        setState(state);
 
-    /**
-     * changes a particular field in the analysis specified by the event;
-     * refreshes the screen with the changed data or shows any errors
-     * encountered
-     */
-    private void changeAnalysis(AnalysisChangeEvent event) {
-        AnalysisViewDO ana;
-        SampleTestReturnVO ret;
-
-        ret = null;
-
-        ana = (AnalysisViewDO)manager.getObject(event.getUid());
-        setBusy();
-        try {
-            switch (event.getAction()) {
-                case METHOD_CHANGED:
-                    ret = SampleService1.get().changeAnalysisMethod(manager,
-                                                                    ana.getId(),
-                                                                    event.getChangeId());
-                    manager = ret.getManager();
-                    break;
-                case STATUS_CHANGED:
-                    manager = SampleService1.get().changeAnalysisStatus(manager,
-                                                                        ana.getId(),
-                                                                        event.getChangeId());
-                    break;
-                case UNIT_CHANGED:
-                    manager = SampleService1.get().changeAnalysisUnit(manager,
-                                                                      ana.getId(),
-                                                                      event.getChangeId());
-                    break;
-                case PREP_CHANGED:
-                    manager = SampleService1.get().changeAnalysisPrep(manager,
-                                                                      ana.getId(),
-                                                                      event.getChangeId());
-                    break;
-            }
-
-            managers.put(manager.getSample().getId(), manager);
-            refreshRows(manager.getSample().getId());
-            setData();
-            setState(state);
-
-            /*
-             * notify all tabs that need to refresh themselves because of the
-             * change in the analysis
-             */
-            bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                            event.getChangeId(),
-                                                            event.getAction()), screen);
-            bus.fireEvent(new ResultChangeEvent(event.getUid()));
-            clearStatus();
-            showErrorsOrTests(ret);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            clearStatus();
-        }
+        /*
+         * notify all tabs that need to refresh themselves because of the change
+         * in the analysis
+         */
+        bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
+                                                        event.getChangeId(),
+                                                        event.getAction()),
+                                screen);
+        bus.fireEvent(new ResultChangeEvent(event.getUid()));
     }
 
     /**
@@ -1891,8 +1884,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
-            if (ret != null)
-                showErrorsOrTests(ret);
+            showErrorsOrTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
