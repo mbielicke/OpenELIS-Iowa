@@ -519,10 +519,10 @@ public class ResultTabUI extends Screen {
             @Override
             public void onAddTest(AddTestEvent event) {
                 /*
-                 * when the tab notifies the main screen that reflex tests need
-                 * to be added to the analysis, it sets isBusy to true so that
-                 * the data can't committed before the process of adding tests
-                 * is completed;
+                 * the tab is set to "busy" when it notifies the main screen to
+                 * add reflex tests, because the data on the screen can't be
+                 * committed before adding the tests; after the tests get added,
+                 * the tab needs to not be "busy" to allow data to be committed
                  */
                 if (screen != event.getSource())
                     isBusy = false;
