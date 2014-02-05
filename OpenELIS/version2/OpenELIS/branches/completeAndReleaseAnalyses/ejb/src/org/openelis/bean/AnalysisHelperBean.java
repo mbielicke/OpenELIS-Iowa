@@ -431,7 +431,7 @@ public class AnalysisHelperBean {
      */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
                                                Integer statusId) throws Exception {
-        boolean resultsOverriden, addUser;
+        boolean resultsOverriden, addUser, hasUnreleaseNote;
         Integer accession;
         Datetime now;
         AnalysisViewDO ana;
@@ -442,7 +442,8 @@ public class AnalysisHelperBean {
         TestManager tm;
         ResultFormatter rf;
         ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
-        HashMap<Integer, AnalysisUserViewDO> cmplUsers, relUsers;
+        HashMap<Integer, AnalysisUserViewDO> cmplUsers;
+        AnalysisUserViewDO relUser;
         ValidationErrorsList e;
 
         ana = null;
@@ -478,7 +479,7 @@ public class AnalysisHelperBean {
          * find the users linked to the analysis
          */
         cmplUsers = new HashMap<Integer, AnalysisUserViewDO>();
-        relUsers = new HashMap<Integer, AnalysisUserViewDO>();
+        relUser = null;
         if (getUsers(sm) != null) {
             for (AnalysisUserViewDO data : getUsers(sm)) {
                 if ( !analysisId.equals(data.getAnalysisId()))
@@ -486,7 +487,7 @@ public class AnalysisHelperBean {
                 if (Constants.dictionary().AN_USER_AC_COMPLETED.equals(data.getActionId()))
                     cmplUsers.put(data.getSystemUserId(), data);
                 else if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId()))
-                    relUsers.put(data.getSystemUserId(), data);
+                    relUser = data;
             }
         }
 
@@ -524,114 +525,191 @@ public class AnalysisHelperBean {
             if (ana.getStartedDate() == null)
                 ana.setStartedDate(now);
         } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
-            if (ana.getSectionName() == null ||
-                !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
-                throw new InconsistencyException(Messages.get()
-                                                         .analysis_insufficientPrivilegesCompleteException(accession,
-                                                                                                           ana.getTestName(),
-                                                                                                           ana.getMethodName()));
-            }
-
-            tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
-
-            /*
-             * validate unit and sample type
-             */
-            analysis.validate(ana, tm, accession, item);
-
-            /*
-             * find out if the sample or the analysis has an overriding QA event
-             */
-            resultsOverriden = false;
-            if (getSampleQAs(sm) != null) {
-                for (SampleQaEventViewDO sqa : getSampleQAs(sm)) {
-                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId())) {
-                        resultsOverriden = true;
-                        break;
-                    }
-                }
-            }
-
-            if ( !resultsOverriden && getAnalysisQAs(sm) != null) {
-                for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
-                    if (analysisId.equals(aqa.getAnalysisId()) &&
-                        Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
-                        resultsOverriden = true;
-                        break;
-                    }
-                }
-            }
-
-            if ( !resultsOverriden) {
+            if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
                 /*
-                 * all results must be valid and all required results must be
-                 * filled
+                 * the analysis is being completed
                  */
-                rf = tm.getFormatter();
-                e = new ValidationErrorsList();
-                for (ResultViewDO r : getResults(sm)) {
-                    if ( !analysisId.equals(r.getAnalysisId()))
-                        continue;
 
-                    if ( !DataBaseUtil.isEmpty(r.getValue())) {
-                        try {
-                            result.validate(r, rf, accession, ana);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
+                if (ana.getSectionName() == null ||
+                    !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
+                    throw new InconsistencyException(Messages.get()
+                                                             .analysis_insufficientPrivilegesCompleteException(accession,
+                                                                                                               ana.getTestName(),
+                                                                                                               ana.getMethodName()));
+                }
+
+                tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
+
+                /*
+                 * validate unit and sample type
+                 */
+                analysis.validate(ana, tm, accession, item);
+
+                /*
+                 * find out if the sample or the analysis has an overriding QA
+                 * event
+                 */
+                resultsOverriden = false;
+                if (getSampleQAs(sm) != null) {
+                    for (SampleQaEventViewDO sqa : getSampleQAs(sm)) {
+                        if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId())) {
+                            resultsOverriden = true;
+                            break;
                         }
-                    } else if (Constants.dictionary().TEST_ANALYTE_REQ.equals(r.getTestAnalyteTypeId())) {
-                        e.add(new FormErrorException(Messages.get()
-                                                             .result_valueRequiredException(accession,
-                                                                                            ana.getTestName(),
-                                                                                            ana.getMethodName(),
-                                                                                            r.getAnalyte())));
                     }
                 }
 
-                if (e.size() > 0)
-                    throw e;
-            }
-
-            /*
-             * if this is the prep analysis of some in-prep analyses then move
-             * them to logged-in
-             */
-            for (AnalysisViewDO data : prepAnas) {
-                if (Constants.dictionary().ANALYSIS_INPREP.equals(data.getStatusId())) {
-                    data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
-                    data.setAvailableDate(now);
+                if ( !resultsOverriden && getAnalysisQAs(sm) != null) {
+                    for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
+                        if (analysisId.equals(aqa.getAnalysisId()) &&
+                            Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
+                            resultsOverriden = true;
+                            break;
+                        }
+                    }
                 }
-            }
 
-            if (ana.getStartedDate() == null)
-                ana.setStartedDate(now);
+                if ( !resultsOverriden) {
+                    /*
+                     * all results must be valid and all required results must
+                     * be filled
+                     */
+                    rf = tm.getFormatter();
+                    e = new ValidationErrorsList();
+                    for (ResultViewDO r : getResults(sm)) {
+                        if ( !analysisId.equals(r.getAnalysisId()))
+                            continue;
 
-            if (ana.getCompletedDate() == null)
-                ana.setCompletedDate(now);
+                        if ( !DataBaseUtil.isEmpty(r.getValue())) {
+                            try {
+                                result.validate(r, rf, accession, ana);
+                            } catch (Exception err) {
+                                DataBaseUtil.mergeException(e, err);
+                            }
+                        } else if (Constants.dictionary().TEST_ANALYTE_REQ.equals(r.getTestAnalyteTypeId())) {
+                            e.add(new FormErrorException(Messages.get()
+                                                                 .result_valueRequiredException(accession,
+                                                                                                ana.getTestName(),
+                                                                                                ana.getMethodName(),
+                                                                                                r.getAnalyte())));
+                        }
+                    }
 
-            /*
-             * if the logged in user hasn't already completed this analysis, add
-             * a record for it
-             */
-            addUser = true;
-            su = perm.getUser();
-            if (cmplUsers != null) {
-                au = cmplUsers.get(su.getId());
-                if (au != null)
-                    addUser = false;
-            }
+                    if (e.size() > 0)
+                        throw e;
+                }
 
-            if (addUser) {
-                au = new AnalysisUserViewDO();
-                au.setId(sm.getNextUID());
-                au.setAnalysisId(analysisId);
-                au.setSystemUserId(su.getId());
-                au.setSystemUser(su.getLoginName());
-                au.setActionId(Constants.dictionary().AN_USER_AC_COMPLETED);
-                addUser(sm, au);
+                /*
+                 * if this is the prep analysis of some in-prep analyses then
+                 * move them to logged-in
+                 */
+                for (AnalysisViewDO data : prepAnas) {
+                    if (Constants.dictionary().ANALYSIS_INPREP.equals(data.getStatusId())) {
+                        data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+                        data.setAvailableDate(now);
+                    }
+                }
+
+                if (ana.getStartedDate() == null)
+                    ana.setStartedDate(now);
+
+                if (ana.getCompletedDate() == null)
+                    ana.setCompletedDate(now);
+
+                /*
+                 * if the logged in user hasn't already completed this analysis,
+                 * add a record for it
+                 */
+                addUser = true;
+                su = perm.getUser();
+                if (cmplUsers != null) {
+                    au = cmplUsers.get(su.getId());
+                    if (au != null)
+                        addUser = false;
+                }
+
+                if (addUser) {
+                    au = new AnalysisUserViewDO();
+                    au.setId(sm.getNextUID());
+                    au.setAnalysisId(analysisId);
+                    au.setSystemUserId(su.getId());
+                    au.setSystemUser(su.getLoginName());
+                    au.setActionId(Constants.dictionary().AN_USER_AC_COMPLETED);
+                    addUser(sm, au);
+                }
+            } else {
+                /*
+                 * the analysis is being unreleased
+                 */
+
+                if (ana.getSectionName() == null ||
+                    !perm.getSection(ana.getSectionName()).hasReleasePermission()) {
+                    throw new InconsistencyException(Messages.get()
+                                                             .analysis_insufficientPrivilegesUnreleaseException(accession,
+                                                                                                                ana.getTestName(),
+                                                                                                                ana.getMethodName()));
+                }
+
+                /*
+                 * the analysis must have an uncommitted internal note for
+                 * describing the reason for unreleasing it
+                 */
+                hasUnreleaseNote = false;
+                if (getAnalysisInternalNotes(sm) != null) {
+                    for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
+                        if (data.getId() < 0 && analysisId.equals(data.getReferenceId())) {
+                            hasUnreleaseNote = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ( !hasUnreleaseNote)
+                    throw new InconsistencyException(Messages.get()
+                                                     .sample_unreleaseNoNoteException(accession));
+                
+                ana.setReleasedDate(null);
+                ana.setPrintedDate(null);
+                ana.setRevision(ana.getRevision() + 1);
             }
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
-            // TODO check to make sure that the analysis can be released
+            if (ana.getSectionName() == null ||
+                !perm.getSection(ana.getSectionName()).hasReleasePermission()) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_insufficientPrivilegesReleaseException(accession,
+                                                                                                          ana.getTestName(),
+                                                                                                          ana.getMethodName()));
+            }
+
+            /*
+             * can't release the analysis if sample is not verified
+             */
+            if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(getSample(sm).getStatusId())) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_cantReleaseSampleNotVerifiedException(accession,
+                                                                                                         ana.getTestName(),
+                                                                                                         ana.getMethodName()));
+            }
+
+            /*
+             * if a user released this analysis before then delete that record;
+             * create a new one
+             */
+            if (relUser != null) {
+                getUsers(sm).remove(relUser);
+                if (getRemoved(sm) == null)
+                    setRemoved(sm, new ArrayList<DataObject>());
+                getRemoved(sm).add(relUser);
+            }
+
+            su = perm.getUser();
+            au = new AnalysisUserViewDO();
+            au.setId(sm.getNextUID());
+            au.setAnalysisId(analysisId);
+            au.setSystemUserId(su.getId());
+            au.setSystemUser(su.getLoginName());
+            au.setActionId(Constants.dictionary().AN_USER_AC_RELEASED);
+            addUser(sm, au);
         } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
             if (ana.getId() < 0)
                 throw new InconsistencyException(Messages.get()

@@ -882,6 +882,7 @@ public class SampleManager1Bean {
         HashMap<Integer, QaEventDO> qas;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
         AnalysisReportFlagsDO defaultARF;
+        Datetime now;
 
         /*
          * validation needs test, aux group manager and pws DO. Build lists of
@@ -992,6 +993,12 @@ public class SampleManager1Bean {
          * analysis that is added to the database
          */
         defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
+
+        /*
+         * this will be used as the released date for any newly released
+         * analyses
+         */
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
 
         /*
          * the front code uses negative ids (temporary ids) to link sample items
@@ -1242,6 +1249,13 @@ public class SampleManager1Bean {
                             amap.put(data.getId(), data.getId());
                         } else if ( !amap.containsKey(data.getId())) {
                             tmpid = data.getId();
+                            /*
+                             * set the released date if this analysis is
+                             * currently being released
+                             */
+                            if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
+                                data.getReleasedDate() == null)
+                                data.setReleasedDate(now);
                             analysis.update(data);
                             amap.put(tmpid, data.getId());
                         }
@@ -1464,23 +1478,23 @@ public class SampleManager1Bean {
         lock.unlock(Constants.table().SAMPLE, sampleIds);
         return fetchByIds(sampleIds, elements);
     }
-    
+
     /**
-     * Unlocks and returns list of sample managers with specified analysis ids and
-     * requested load elements
+     * Unlocks and returns list of sample managers with specified analysis ids
+     * and requested load elements
      */
     @RolesAllowed({"sample-add", "sample-update"})
     public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
-                                            SampleManager1.Load... elements) throws Exception {
+                                                      SampleManager1.Load... elements) throws Exception {
         HashSet<Integer> ids;
         ArrayList<SampleManager1> sms;
-        
+
         sms = fetchByAnalyses(analysisIds, elements);
 
         ids = new HashSet<Integer>();
-        for (SampleManager1 sm : sms) 
+        for (SampleManager1 sm : sms)
             ids.add(getSample(sm).getId());
-       
+
         lock.unlock(Constants.table().SAMPLE, new ArrayList<Integer>(ids));
         return sms;
     }
