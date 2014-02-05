@@ -538,10 +538,6 @@ public class AnalysisTabUI extends Screen {
                 revision.setValue(getRevision());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setRevision(event.getValue());
-            }
-
             public void onStateChange(StateChangeEvent event) {
                 revision.setEnabled(isState(QUERY));
                 revision.setQueryMode(isState(QUERY));
@@ -1217,10 +1213,6 @@ public class AnalysisTabUI extends Screen {
             return analysis.getRevision();
 
         return null;
-    }
-
-    private void setRevision(Integer revision) {
-        analysis.setRevision(revision);
     }
 
     /**

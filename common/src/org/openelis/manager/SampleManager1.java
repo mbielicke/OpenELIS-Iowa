@@ -1494,7 +1494,7 @@ public class SampleManager1 implements Serializable {
         }
 
         /*
-         * create a hash map from from all the results
+         * create a hash map from all the results
          */
         private void localmapBuild() {
             Integer id;
