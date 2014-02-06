@@ -35,7 +35,7 @@ import org.openelis.utils.Auditable;
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
                       + " from Result r, Analysis an, Test t, SampleItem si, Sample s, Analyte a, TestAnalyte ta"
                       + " where  r.analysisId = an.id and an.testId = t.id and an.sampleItemId = si.id and si.sampleId = s.id and r.analyteId = a.id and r.testAnalyteId = ta.id"
-                      +	" and r.analysisId in (:ids) order by s.id, si.itemSequence, t.name, t.method.name, r.sortOrder"),                  
+                      +	" and r.analysisId in (:ids) order by s.id, si.itemSequence, t.name, t.method.name, an.id, r.sortOrder"),                  
     @NamedQuery( name = "Result.FetchForFinalReportByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId, ta.resultGroup)"
