@@ -5767,6 +5767,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_screenPermException(String arg0);
 
   /**
+   * Translated "Scriptlet".
+   * 
+   * @return translated "Scriptlet"
+   */
+  @DefaultMessage("Scriptlet")
+  @Key("gen.scriptlet")
+  String gen_scriptlet();
+
+  /**
    * Translated "Search".
    * 
    * @return translated "Search"
@@ -15082,6 +15091,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test();
 
   /**
+   * Translated "Activity ".
+   * 
+   * @return translated "Activity "
+   */
+  @DefaultMessage("Activity ")
+  @Key("test.activity")
+  String test_activity();
+
+  /**
+   * Translated "Additional Label".
+   * 
+   * @return translated "Additional Label"
+   */
+  @DefaultMessage("Additional Label")
+  @Key("test.additionalLabel")
+  String test_additionalLabel();
+
+  /**
    * Translated "No matching active test found for ''{0}, {1}''".
    * 
    * @return translated "No matching active test found for ''{0}, {1}''"
@@ -15127,6 +15154,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_prepAndReflex();
 
   /**
+   * Translated "Report Description".
+   * 
+   * @return translated "Report Description"
+   */
+  @DefaultMessage("Report Description")
+  @Key("test.reportDescription")
+  String test_reportDescription();
+
+  /**
+   * Translated "Report Method".
+   * 
+   * @return translated "Report Method"
+   */
+  @DefaultMessage("Report Method")
+  @Key("test.reportingMethod")
+  String test_reportingMethod();
+
+  /**
+   * Translated "Report Sequence".
+   * 
+   * @return translated "Report Sequence"
+   */
+  @DefaultMessage("Report Sequence")
+  @Key("test.reportingSequence")
+  String test_reportingSequence();
+
+  /**
    * Translated "Test Results".
    * 
    * @return translated "Test Results"
@@ -15134,6 +15188,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test Results")
   @Key("test.results")
   String test_results();
+
+  /**
+   * Translated "Revision Method".
+   * 
+   * @return translated "Revision Method"
+   */
+  @DefaultMessage("Revision Method")
+  @Key("test.revisionMethod")
+  String test_revisionMethod();
+
+  /**
+   * Translated "Sections".
+   * 
+   * @return translated "Sections"
+   */
+  @DefaultMessage("Sections")
+  @Key("test.sections")
+  String test_sections();
+
+  /**
+   * Translated "Sort Method".
+   * 
+   * @return translated "Sort Method"
+   */
+  @DefaultMessage("Sort Method")
+  @Key("test.sortingMethod")
+  String test_sortingMethod();
 
   /**
    * Translated "History - Analyte ".
@@ -15152,6 +15233,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test Details ")
   @Key("test.testDetails")
   String test_testDetails();
+
+  /**
+   * Translated "Format".
+   * 
+   * @return translated "Format"
+   */
+  @DefaultMessage("Format")
+  @Key("test.testFormat")
+  String test_testFormat();
 
   /**
    * Translated "History - Test".
@@ -15208,6 +15298,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_testSectionHistory();
 
   /**
+   * Translated "Trailer".
+   * 
+   * @return translated "Trailer"
+   */
+  @DefaultMessage("Trailer")
+  @Key("test.testTrailer")
+  String test_testTrailer();
+
+  /**
    * Translated "History - Worksheet Analyte".
    * 
    * @return translated "History - Worksheet Analyte"
@@ -15233,6 +15332,60 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("History - Worksheet Item")
   @Key("test.testWorksheetItemHistory")
   String test_testWorksheetItemHistory();
+
+  /**
+   * Translated "Holding hours".
+   * 
+   * @return translated "Holding hours"
+   */
+  @DefaultMessage("Holding hours")
+  @Key("test.timeHolding")
+  String test_timeHolding();
+
+  /**
+   * Translated "Transit days".
+   * 
+   * @return translated "Transit days"
+   */
+  @DefaultMessage("Transit days")
+  @Key("test.timeTransit")
+  String test_timeTransit();
+
+  /**
+   * Translated "Average days".
+   * 
+   * @return translated "Average days"
+   */
+  @DefaultMessage("Average days")
+  @Key("test.turnAroundAverage")
+  String test_turnAroundAverage();
+
+  /**
+   * Translated "Max. days".
+   * 
+   * @return translated "Max. days"
+   */
+  @DefaultMessage("Max. days")
+  @Key("test.turnAroundMax")
+  String test_turnAroundMax();
+
+  /**
+   * Translated "Warning days".
+   * 
+   * @return translated "Warning days"
+   */
+  @DefaultMessage("Warning days")
+  @Key("test.turnAroundWarn")
+  String test_turnAroundWarn();
+
+  /**
+   * Translated "Turn Around".
+   * 
+   * @return translated "Turn Around"
+   */
+  @DefaultMessage("Turn Around")
+  @Key("test.turnaround")
+  String test_turnaround();
 
   /**
    * Translated "Worksheet Layout".

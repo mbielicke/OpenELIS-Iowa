@@ -158,7 +158,7 @@
 					</g:HTMLPanel>
 				</g:layer>
 				<g:layer top="210px" bottom="0px">
-					<!-- <w:TabLayoutPanel ui:field="tabPanel" barHeight="18"
+					<w:TabLayoutPanel ui:field="tabPanel" barHeight="18"
 						barUnit="PX">
 						<w:tab>
 							<w:customHeader>
@@ -210,7 +210,7 @@
 								</g:layer>
 							</g:LayoutPanel>
 						</w:tab>
-					</w:TabLayoutPanel> -->
+					</w:TabLayoutPanel>
 				</g:layer>
 			</g:LayoutPanel>
 		</g:center>
