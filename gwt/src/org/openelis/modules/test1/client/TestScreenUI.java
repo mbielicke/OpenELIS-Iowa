@@ -37,17 +37,30 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.domain.TestPrepViewDO;
+import org.openelis.domain.TestReflexViewDO;
+import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestWorksheetAnalyteViewDO;
+import org.openelis.domain.TestWorksheetItemDO;
+import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.manager.TestManager1;
-import org.openelis.meta.OrderMeta;
 import org.openelis.meta.TestMeta;
-import org.openelis.modules.test.client.TestService;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
@@ -55,8 +68,10 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
+import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ButtonGroup;
 import org.openelis.ui.widget.Item;
@@ -69,6 +84,8 @@ import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -88,6 +105,8 @@ public class TestScreenUI extends Screen {
     protected TestManager1                         manager;
 
     protected ModulePermission                     userPermission;
+
+    protected ScreenNavigator<IdNameVO>            nav;
 
     @UiField
     protected ButtonGroup                          atozButtons;
@@ -117,15 +136,30 @@ public class TestScreenUI extends Screen {
     @UiField
     protected AutoComplete                         method;
 
-//    @UiField
-//    protected TabLayoutPanel                       tabPanel;
+    @UiField
+    protected TabLayoutPanel                       tabPanel;
+
+    @UiField(provided = true)
+    protected DetailsTabUI                         detailsTab;
 
     protected TestScreenUI                         screen;
 
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
-    protected AsyncCallbackUI<OrderManager1>       addCall, fetchForUpdateCall, updateCall,
+    protected AsyncCallbackUI<TestManager1>        addCall, fetchForUpdateCall, updateCall,
                     fetchByIdCall, unlockCall, duplicateCall;
+    
+    // @formatter:off
+    protected TestManager1.Load                    elements[] = {
+                                                                 TestManager1.Load.SECTION,
+                                                                 TestManager1.Load.TYPE,
+                                                                 TestManager1.Load.ANALYTE,
+                                                                 TestManager1.Load.RESULT,
+                                                                 TestManager1.Load.PREP,
+                                                                 TestManager1.Load.REFLEX,
+                                                                 TestManager1.Load.WORKSHEET
+                                                                 };
+    // @formatter:on
 
     public TestScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -135,24 +169,28 @@ public class TestScreenUI extends Screen {
             throw new PermissionException(Messages.get().gen_screenPermException("Test Screen"));
 
         try {
-            CategoryCache.getBySystemNames("order_status",
-                                           "cost_centers",
-                                           "laboratory_location",
-                                           "state",
-                                           "organization_type",
-                                           "country",
-                                           "sample_container",
+            CategoryCache.getBySystemNames("test_format",
+                                           "test_reporting_method",
+                                           "test_sorting_method",
+                                           "test_revision_method",
+                                           "test_section_flags",
                                            "type_of_sample",
-                                           "inventory_store",
-                                           "inventory_unit",
-                                           "standard_note_type",
-                                           "order_recurrence_unit");
+                                           "unit_of_measure",
+                                           "test_analyte_type",
+                                           "test_result_type",
+                                           "test_result_flags",
+                                           "rounding_method",
+                                           "test_reflex_flags",
+                                           "test_res_type_dictionary",
+                                           "test_worksheet_analyte_flags",
+                                           "test_worksheet_item_type",
+                                           "test_worksheet_format");
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
             window.close();
         }
 
+        detailsTab = new DetailsTabUI(this);
         // organizationTab = new OrganizationTabUI(this);
         // testTab = new TestTabUI(this);
         // containerTab = new ContainerTabUI(this);
@@ -173,16 +211,107 @@ public class TestScreenUI extends Screen {
         setState(DEFAULT);
         fireDataChange();
 
-        logger.fine("Sendout Order Screen Opened");
+        logger.fine("Test Screen Opened");
     }
 
     /**
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
-        ArrayList<Item<Integer>> model;
-
         screen = this;
+
+        //
+        // left hand navigation panel
+        //
+        nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
+            public void executeQuery(final Query query) {
+                QueryData field;
+
+                setBusy(Messages.get().gen_querying());
+
+                if (queryCall == null) {
+                    queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
+                        public void success(ArrayList<IdNameVO> result) {
+                            clearStatus();
+                            setQueryResult(result);
+                        }
+
+                        public void notFound() {
+                            setQueryResult(null);
+                            setState(DEFAULT);
+                            setDone(Messages.get().gen_noRecordsFound());
+                        }
+
+                        public void lastPage() {
+                            setQueryResult(null);
+                            setError(Messages.get().gen_noMoreRecordInDir());
+                        }
+
+                        public void failure(Throwable error) {
+                            setQueryResult(null);
+                            Window.alert("Error: Test call query failed; " + error.getMessage());
+                            setError(Messages.get().gen_queryFailed());
+                        }
+                    };
+                }
+                // TODO
+                // field = new QueryData(TestMeta.getName(),
+                // QueryData.Type.STRING, "");
+                // query.setFields(field);
+                query.setRowsPerPage(26);
+                TestService1.get().query(query, queryCall);
+            }
+
+            public boolean fetch(IdNameVO entry) {
+                fetchById( (entry == null) ? null : entry.getId());
+                return true;
+            }
+
+            public ArrayList<Item<Integer>> getModel() {
+                ArrayList<IdNameVO> result;
+                ArrayList<Item<Integer>> model;
+                Item<Integer> row;
+
+                model = null;
+                result = nav.getQueryResult();
+                if (result != null) {
+                    model = new ArrayList<Item<Integer>>();
+                    for (IdNameVO entry : result) {
+                        row = new Item<Integer>(2);
+                        row.setKey(entry.getId());
+                        row.setCell(0, entry.getId());
+                        row.setCell(1, entry.getName());
+                        model.add(row);
+                    }
+                }
+                return model;
+            }
+        };
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                boolean enable;
+                enable = isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission();
+                atozButtons.setEnabled(enable);
+                nav.enable(enable);
+            }
+        });
+
+        atozButtons.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                Query query;
+                QueryData field;
+
+                field = new QueryData();
+                field.setKey(TestMeta.getId());
+                field.setQuery( ((Button)event.getSource()).getAction());
+                field.setType(QueryData.Type.INTEGER);
+
+                query = new Query();
+                query.setFields(field);
+                nav.setQuery(query);
+            }
+        });
 
         //
         // button panel buttons
@@ -416,7 +545,7 @@ public class TestScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(name, OrderMeta.getOrganizationAttention(), new ScreenHandler<String>() {
+        addScreenHandler(name, TestMeta.getName(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(getName());
             }
@@ -435,7 +564,7 @@ public class TestScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(method, OrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
+        addScreenHandler(method, TestMeta.getMethodName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 setMethodSelection();
             }
@@ -462,41 +591,121 @@ public class TestScreenUI extends Screen {
     }
 
     protected void duplicate() {
-        // TODO
-        // if (duplicateCall == null) {
-        // duplicateCall = new AsyncCallbackUI<TestManager1>() {
-        // public void success(TestManager1 result) {
-        // manager = result;
-        // setData();
-        // setState(ADD);
-        // fireDataChange();
-        // }
-        //
-        // public void failure(Throwable e) {
-        // Window.alert(e.getMessage());
-        // logger.log(Level.SEVERE, e.getMessage(), e);
-        // }
-        // };
-        // }
-        //
-        // TestService1.get().duplicate(manager.getTest().getId(),
-        // duplicateCall);
+        if (duplicateCall == null) {
+            duplicateCall = new AsyncCallbackUI<TestManager1>() {
+                public void success(TestManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            };
+        }
+
+        TestService1.get().duplicate(manager.getTest().getId(), duplicateCall);
     }
 
     protected void testHistory() {
-        // TODO
+        IdNameVO hist;
+
+        hist = new IdNameVO(manager.getTest().getId(), manager.getTest().getName());
+        HistoryScreen.showHistory(Messages.get().testHistory(), Constants.table().TEST, hist);
     }
 
     protected void testSectionHistory() {
-        // TODO
+        int i, count;
+        IdNameVO refVoList[];
+        TestSectionViewDO data;
+        SectionViewDO sect;
+        String section;
+
+        try {
+            count = manager.section.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.section.get(i);
+                sect = SectionCache.getById(data.getSectionId());
+                if (sect != null)
+                    section = sect.getName();
+                else
+                    section = data.getSectionId().toString();
+
+                refVoList[i] = new IdNameVO(data.getId(), section);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testSectionHistory(),
+                                  Constants.table().TEST_SECTION,
+                                  refVoList);
     }
 
     protected void testSampleTypeHistory() {
-        // TODO
+        int i, count;
+        IdNameVO refVoList[];
+        TestTypeOfSampleDO data;
+        DictionaryDO dict;
+        String entry;
+        Integer typeId;
+
+        try {
+            count = manager.type.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.type.get(i);
+                typeId = data.getTypeOfSampleId();
+                dict = DictionaryCache.getById(typeId);
+                if (dict != null)
+                    entry = dict.getEntry();
+                else
+                    entry = typeId.toString();
+                refVoList[i] = new IdNameVO(data.getId(), entry);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testSampleTypeHistory(),
+                                  Constants.table().TEST_TYPE_OF_SAMPLE,
+                                  refVoList);
     }
 
     protected void testAnalyteHistory() {
-        // TODO
+        int i;
+        IdNameVO refVoList[];
+        TestAnalyteViewDO data;
+        ArrayList<IdNameVO> list;
+
+        try {
+            list = new ArrayList<IdNameVO>();
+            for (i = 0; i < manager.analyte.count(); i++ ) {
+                data = manager.analyte.get(i);
+                list.add(new IdNameVO(data.getId(), data.getAnalyteName()));
+            }
+
+            refVoList = new IdNameVO[list.size()];
+            for (i = 0; i < list.size(); i++ ) {
+                refVoList[i] = list.get(i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testAnalyteHistory(),
+                                  Constants.table().TEST_ANALYTE,
+                                  refVoList);
     }
 
     protected void testResultHistory() {
@@ -504,23 +713,126 @@ public class TestScreenUI extends Screen {
     }
 
     protected void testPrepHistory() {
-        // TODO
+        int i, count;
+        IdNameVO refVoList[];
+        TestPrepViewDO data;
+
+        try {
+            count = manager.prep.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.prep.get(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getPrepTestName() + ", " +
+                                                          data.getMethodName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testPrepHistory(),
+                                  Constants.table().TEST_PREP,
+                                  refVoList);
     }
 
     protected void testReflexHistory() {
-        // TODO
+        int i, count;
+        IdNameVO refVoList[];
+        TestReflexViewDO data;
+
+        try {
+            count = manager.reflex.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.reflex.get(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getAddTestName() + ", " +
+                                                          data.getAddMethodName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testReflexHistory(),
+                                  Constants.table().TEST_REFLEX,
+                                  refVoList);
     }
 
     protected void testWorksheetHistory() {
-        // TODO
+        IdNameVO hist;
+        TestWorksheetViewDO data;
+        Integer id;
+
+        try {
+            data = manager.getWorksheet();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        id = data.getId();
+        if (id == null)
+            id = -1;
+        hist = new IdNameVO(id, Messages.get().worksheet());
+        HistoryScreen.showHistory(Messages.get().testWorksheetHistory(),
+                                  Constants.table().TEST_WORKSHEET,
+                                  hist);
     }
 
     protected void testWorksheetItemHistory() {
-        // TODO
+        int i, count;
+        IdNameVO refVoList[];
+        TestWorksheetItemDO data;
+        String label;
+        Integer position;
+
+        try {
+            count = manager.item.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.item.get(i);
+                position = data.getPosition();
+                if (position != null)
+                    label = position.toString();
+                else
+                    label = "";
+                refVoList[i] = new IdNameVO(data.getId(), label);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testWorksheetItemHistory(),
+                                  Constants.table().TEST_WORKSHEET_ITEM,
+                                  refVoList);
     }
 
     protected void testWorksheetAnalyteHistory() {
-        // TODO
+        int i, count;
+        IdNameVO refVoList[];
+        TestWorksheetAnalyteViewDO data;
+
+        try {
+            count = manager.worksheetAnalyte.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = manager.worksheetAnalyte.get(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getAnalyteName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(Messages.get().testWorksheetAnalyteHistory(),
+                                  Constants.table().TEST_WORKSHEET_ANALYTE,
+                                  refVoList);
     }
 
     private void getMethodMatches(String match) {
@@ -531,7 +843,7 @@ public class TestScreenUI extends Screen {
         // TODO
         setBusy();
         try {
-            list = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(match));
+            list = TestService1.get().fetchByName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<Item<Integer>>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new Item<Integer>(1);
@@ -571,11 +883,24 @@ public class TestScreenUI extends Screen {
     }
 
     private void setMethodSelection() {
-        // TODO
+        if (manager == null || manager.getTest() == null)
+            method.setValue(null, "");
+        else
+            method.setValue(manager.getTest().getMethodId(), manager.getTest().getMethodName());
     }
 
     private void getMethodFromSelection() {
-        // TODO
+        AutoCompleteValue row;
+
+        row = method.getValue();
+        if (row == null || row.getId() == null) {
+            manager.getTest().setMethodId(null);
+            manager.getTest().setMethodName(null);
+            method.setValue(null, "");
+        } else {
+            manager.getTest().setMethodId(row.getId());
+            manager.getTest().setMethodName(method.getDisplay());
+        }
     }
 
     /**
@@ -583,5 +908,45 @@ public class TestScreenUI extends Screen {
      */
     private void setData() {
         // TODO
+        detailsTab.setData(manager);
+    }
+
+    private void fetchById(Integer id) {
+        if (id == null) {
+            manager = null;
+            setData();
+            setState(DEFAULT);
+            fireDataChange();
+            clearStatus();
+        } else {
+            setBusy(Messages.get().gen_fetching());
+            if (fetchByIdCall == null) {
+                fetchByIdCall = new AsyncCallbackUI<TestManager1>() {
+                    public void success(TestManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(DISPLAY);
+                    }
+
+                    public void notFound() {
+                        fetchById(null);
+                        setDone(Messages.get().gen_noRecordsFound());
+                    }
+
+                    public void failure(Throwable e) {
+                        fetchById(null);
+                        Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+
+                    public void finish() {
+                        fireDataChange();
+                        clearStatus();
+                    }
+                };
+            }
+
+            TestService1.get().fetchById(id, elements, fetchByIdCall);
+        }
     }
 }
