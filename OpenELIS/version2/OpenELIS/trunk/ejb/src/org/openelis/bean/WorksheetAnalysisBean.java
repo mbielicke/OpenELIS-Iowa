@@ -40,6 +40,7 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -237,6 +238,21 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdVO> fetchAnalysisIdsByWorksheetId(Integer id) throws Exception {
+        Query query;
+        List<IdVO> list;
+
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchAnalysisIdsByWorksheetId");
+        query.setParameter("id", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
