@@ -201,7 +201,7 @@ public class OrderBean {
             throw new LastPageException();
 
         try {
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size(); i++ ) {
                 data = (OrderViewDO)list.get(i);
                 if (data.getOrganizationId() != null)
                     data.setOrganization(organization.fetchById(data.getOrganizationId()));
@@ -245,7 +245,7 @@ public class OrderBean {
     public OrderDO update(OrderDO data) throws Exception {
         Order entity;
 
-        if (!data.isChanged())
+        if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -270,29 +270,36 @@ public class OrderBean {
     }
 
     public void validate(OrderDO data) throws Exception {
+        Integer orderId;
         ValidationErrorsList list;
+
+        /*
+         * for display
+         */
+        orderId = data.getId();
+        if (orderId == null)
+            orderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getStatusId()))
-            list.add(new FormErrorException(Messages.get()
-                                                    .order_statusRequiredException(DataBaseUtil.toString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_statusRequiredException(orderId)));
 
         if (DataBaseUtil.isEmpty(data.getNeededInDays()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_neededInDaysRequiredException(DataBaseUtil.toString(data.getId()))));
+                                                    .order_neededInDaysRequiredException(orderId)));
 
         if (Constants.order().SEND_OUT.equals(data.getType())) {
             if (DataBaseUtil.isEmpty(data.getNumberOfForms()))
                 list.add(new FormErrorException(Messages.get()
-                                                        .order_numFormsRequiredException(DataBaseUtil.toString(data.getId()))));
+                                                        .order_numFormsRequiredException(orderId)));
 
             if (DataBaseUtil.isEmpty(data.getShipFromId()))
                 list.add(new FormErrorException(Messages.get()
-                                                        .order_shipFromRequiredException(DataBaseUtil.toString(data.getId()))));
+                                                        .order_shipFromRequiredException(orderId)));
 
             if (DataBaseUtil.isEmpty(data.getCostCenterId()))
                 list.add(new FormErrorException(Messages.get()
-                                                        .order_costCenterRequiredException(DataBaseUtil.toString(data.getId()))));
+                                                        .order_costCenterRequiredException(orderId)));
         }
         if (list.size() > 0)
             throw list;

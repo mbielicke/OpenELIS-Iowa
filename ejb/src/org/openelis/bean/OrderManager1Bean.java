@@ -537,6 +537,21 @@ public class OrderManager1Bean {
                     }
                 }
             }
+
+            /*
+             * do not add an empty recurrence record; remove an existing record
+             * if it is now empty
+             */
+            or = getRecurrence(om);
+            if (or != null && orderRecurrence.isEmpty(or)) {
+                if (or.getId() != null) {
+                    if (getRemoved(om) == null)
+                        setRemoved(om, new ArrayList<DataObject>());
+                    getRemoved(om).add(or);
+                }
+                setRecurrence(om, null);
+            }
+
             /*
              * go through remove list and delete all the unwanted records
              */
@@ -560,6 +575,8 @@ public class OrderManager1Bean {
                         note.delete( ((NoteViewDO)data));
                     else if (data instanceof AuxDataViewDO)
                         auxdata.delete( ((AuxDataViewDO)data));
+                    else if (data instanceof OrderRecurrenceDO)
+                        orderRecurrence.delete((OrderRecurrenceDO)data);
                     else
                         throw new Exception("ERROR: DataObject passed for removal is of unknown type");
                 }
@@ -696,6 +713,7 @@ public class OrderManager1Bean {
                     or.setOrderId(getOrder(om).getId());
                     orderRecurrence.add(or);
                 } else {
+
                     orderRecurrence.update(or);
                 }
             }
@@ -1099,10 +1117,10 @@ public class OrderManager1Bean {
                 }
                 if (rcnt > 1)
                     e.add(new FormErrorException(Messages.get()
-                                                         .order_multipleReportToException(DataBaseUtil.toString(orderId))));
+                                                         .order_multipleReportToException(orderId)));
                 if (bcnt > 1)
                     e.add(new FormErrorException(Messages.get()
-                                                         .order_multipleBillToException(DataBaseUtil.toString(orderId))));
+                                                         .order_multipleBillToException(orderId)));
             }
 
             if (getContainers(om) != null) {
@@ -1132,7 +1150,7 @@ public class OrderManager1Bean {
                     if (itemId != null) {
                         if (itemIds.contains(itemId))
                             e.add(new FormErrorException(Messages.get()
-                                                                 .order_duplicateInvItemVendorOrderException(DataBaseUtil.toString(orderId),
+                                                                 .order_duplicateInvItemVendorOrderException(orderId,
                                                                                                              data.getInventoryItemName())));
                         else
                             itemIds.add(itemId);
@@ -1158,7 +1176,7 @@ public class OrderManager1Bean {
                                             ValidationErrorsList e) throws Exception {
         int i, testCount, contCount;
         Integer sequence, testId;
-        String ordNum;
+        Integer ordNum;
         ArrayList<OrderTestViewDO> ots;
         ArrayList<OrderContainerDO> ocs;
         OrderTestViewDO test;
@@ -1166,7 +1184,7 @@ public class OrderManager1Bean {
         TestTypeOfSampleManager samTypeMan;
 
         for (OrderManager1 om : oms) {
-            ordNum = DataBaseUtil.toString(getOrder(om).getId());
+            ordNum = getOrder(om).getId();
             ots = getTests(om);
             ocs = getContainers(om);
 
