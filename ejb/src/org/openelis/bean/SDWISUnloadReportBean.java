@@ -621,9 +621,12 @@ public class SDWISUnloadReportBean {
            // col 166-170
            .append(getPaddedString(totalChlorine, 5))
            // col 171-175
-           .append(getPaddedString(compIndicator, 1))
-           // col 176
-           .append(getPaddedString(compLabNumber, 20)); // col 177-196
+           .append(getPaddedString(compIndicator, 1)); // col 176
+        
+        if (compLabNumber != null && compLabNumber.length() > 0) // col 177-196
+            row.append(getPaddedString("OE" + compLabNumber, 20));
+        else
+            row.append(getPaddedString("", 20));
 
         if (compDateString != null && compDateString.length() > 0) { // col
                                                                      // 197-204
