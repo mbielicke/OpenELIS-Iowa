@@ -119,15 +119,23 @@ public class OrderOrganizationBean {
     }
 
     public void validate(OrderOrganizationDO data) throws Exception {
+        Integer orderId;
         ValidationErrorsList list;
+
+        /*
+         * for display
+         */
+        orderId = data.getOrderId();
+        if (orderId == null)
+            orderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_organizationTypeRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_organizationTypeRequiredException(orderId)));
         if (DataBaseUtil.isEmpty(data.getOrganizationId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_organizationRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_organizationRequiredException(orderId)));
 
         if (list.size() > 0)
             throw list;

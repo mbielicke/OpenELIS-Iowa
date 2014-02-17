@@ -298,14 +298,17 @@ public class ContainerTabUI extends Screen {
     @UiHandler("duplicateContainerButton")
     protected void duplicateContainer(ClickEvent event) {
         int n;
+        Integer orderId;
         OrderContainerDO data;
         Row row;
 
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
+
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiRowDuplicateNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                          .getId())));
+            parentScreen.getWindow().setError(Messages.get()
+                                                      .order_multiRowDuplicateNotAllowed(orderId));
             return;
         }
 
@@ -330,12 +333,14 @@ public class ContainerTabUI extends Screen {
     @UiHandler("moveUpButton")
     protected void moveUp(ClickEvent event) {
         int r;
+        Integer orderId;
+
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiRowMoveNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                     .getId())));
+            parentScreen.getWindow().setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
             return;
         }
 
@@ -355,12 +360,14 @@ public class ContainerTabUI extends Screen {
     @UiHandler("moveDownButton")
     protected void moveDown(ClickEvent event) {
         int r;
+        Integer orderId;
+
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiRowMoveNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                     .getId())));
+            parentScreen.getWindow().setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
             return;
         }
 

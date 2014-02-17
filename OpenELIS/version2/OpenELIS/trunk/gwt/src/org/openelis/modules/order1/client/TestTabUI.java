@@ -315,15 +315,18 @@ public class TestTabUI extends Screen {
 
     protected void check(String reportable) {
         int index;
+        Integer orderId;
         String uid;
         Node node, child;
         OrderTestAnalyteViewDO ota;
 
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
+
         if (tree.getSelectedNodes().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiTestCheckNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                       .getId())));
+            parentScreen.getWindow().setError(Messages.get()
+                                                      .order_multiTestCheckNotAllowed(orderId));
             return;
         }
         index = tree.getSelectedNode();
