@@ -46,7 +46,6 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -250,7 +249,6 @@ public class SampleNotesTabUI extends Screen {
         String subject, text;
         NoteViewDO note;
         ModalWindow modal;
-        ScheduledCommand cmd;
 
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
@@ -313,20 +311,14 @@ public class SampleNotesTabUI extends Screen {
 
         modal = new ModalWindow();
         modal.setSize("620px", "550px");
-        modal.setName(Messages.get().noteEditor());
+        modal.setName(Messages.get().gen_noteEditor());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(editNoteLookup);
 
         editNoteLookup.setWindow(modal);
         editNoteLookup.setSubject(subject);
         editNoteLookup.setText(text);
-        cmd = new ScheduledCommand() {
-            @Override
-            public void execute() {
-                editNoteLookup.setHasSubject( !isExternal);
-            }
-        };
-        Scheduler.get().scheduleDeferred(cmd);
+        editNoteLookup.setHasSubject( !isExternal);
     }
 
     private void setNoteFields(NoteViewDO note, String subject, String text) {

@@ -110,7 +110,7 @@ public class EnvironmentalTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? priority : description;
+                return forward ? priority : locationAddressCountry;
             }
         });
 
@@ -127,20 +127,9 @@ public class EnvironmentalTabUI extends Screen {
                 priority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 priority.setQueryMode(isState(QUERY));
             }
-        });
-
-        addScreenHandler(description, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                description.setValue(getDescription());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setDescription(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                description.setQueryMode(isState(QUERY));
+            
+            public Widget onTab(boolean forward) {
+                return forward ? collector : isHazardous;
             }
         });
 
@@ -156,6 +145,10 @@ public class EnvironmentalTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 collector.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? collectorPhone : priority;
             }
         });
 
@@ -175,6 +168,10 @@ public class EnvironmentalTabUI extends Screen {
                                                            (canEdit && isState(ADD, UPDATE)));
                                  collectorPhone.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? location : collector;
+                             }
                          });
 
         addScreenHandler(location, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
@@ -189,6 +186,29 @@ public class EnvironmentalTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 location.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? description : collectorPhone;
+            }
+        });
+        
+        addScreenHandler(description, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                description.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                description.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? locationAddressMultipleUnit : location;
             }
         });
         
@@ -209,6 +229,10 @@ public class EnvironmentalTabUI extends Screen {
                                                                                             UPDATE)));
                                  locationAddressMultipleUnit.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressStreetAddress : description;
+                             }
                          });
 
         addScreenHandler(locationAddressStreetAddress,
@@ -228,6 +252,10 @@ public class EnvironmentalTabUI extends Screen {
                                                                                              UPDATE)));
                                  locationAddressStreetAddress.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressCity : locationAddressMultipleUnit;
+                             }
                          });
 
         addScreenHandler(locationAddressCity,
@@ -245,6 +273,10 @@ public class EnvironmentalTabUI extends Screen {
                                  locationAddressCity.setEnabled(isState(QUERY) ||
                                                                 (canEdit && isState(ADD, UPDATE)));
                                  locationAddressCity.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressState : locationAddressStreetAddress;
                              }
                          });
 
@@ -264,6 +296,10 @@ public class EnvironmentalTabUI extends Screen {
                                                                  (canEdit && isState(ADD, UPDATE)));
                                  locationAddressState.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressZipCode : locationAddressCity;
+                             }
                          });
 
         addScreenHandler(locationAddressZipCode,
@@ -282,6 +318,10 @@ public class EnvironmentalTabUI extends Screen {
                                                                    (canEdit && isState(ADD, UPDATE)));
                                  locationAddressZipCode.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressCountry : locationAddressState;
+                             }
                          });
         
         addScreenHandler(locationAddressCountry,
@@ -299,6 +339,10 @@ public class EnvironmentalTabUI extends Screen {
                                  locationAddressCountry.setEnabled(isState(QUERY) ||
                                                                  (canEdit && isState(ADD, UPDATE)));
                                  locationAddressCountry.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isHazardous : locationAddressZipCode;
                              }
                          });
 

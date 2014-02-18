@@ -96,7 +96,7 @@ public class SDWISTabUI extends Screen {
 
     protected EventBus              parentBus;
 
-    protected boolean               canEdit, isBusy, isVisible, redraw;
+    protected boolean               canEdit, isVisible, redraw;
 
     public SDWISTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -119,40 +119,16 @@ public class SDWISTabUI extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                PWSDO data;
-
-                data = null;
-                if ( !DataBaseUtil.isEmpty(event.getValue())) {
-                    try {
-                        data = PWSService.get().fetchPwsByNumber0(event.getValue());
-                    } catch (ValidationErrorsList e) {
-                        showErrors(e);
-                    } catch (NotFoundException e) {
-                        // ignore
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                }
-
-                if (data != null) {
-                    setPwsId(data.getId());
-                    setPwsName(data.getName());
-                    setPwsNumber0(data.getNumber0());
-                    pwsName.setValue(data.getName());
-                } else {
-                    setPwsId(null);
-                    setPwsName(null);
-                    setPwsNumber0(null);
-                    pwsNumber0.setValue(null);
-                    pwsName.setValue(null);
-                }
-
+                setPwsNumber0(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
                 pwsNumber0.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 pwsNumber0.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? stateLabId : collector;
             }
         });
 
@@ -186,6 +162,10 @@ public class SDWISTabUI extends Screen {
                 stateLabId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 stateLabId.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? facilityId : pwsNumber0;
+            }
         });
 
         addScreenHandler(facilityId, SampleMeta.getSDWISFacilityId(), new ScreenHandler<String>() {
@@ -200,6 +180,10 @@ public class SDWISTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 facilityId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 facilityId.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? sampleType : stateLabId;
             }
         });
 
@@ -219,6 +203,10 @@ public class SDWISTabUI extends Screen {
                                                        (canEdit && isState(ADD, UPDATE)));
                                  sampleType.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sampleCategory : facilityId;
+                             }
                          });
 
         addScreenHandler(sampleCategory,
@@ -236,6 +224,10 @@ public class SDWISTabUI extends Screen {
                                  sampleCategory.setEnabled(isState(QUERY) ||
                                                            (canEdit && isState(ADD, UPDATE)));
                                  sampleCategory.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? samplePointId : sampleType;
                              }
                          });
 
@@ -255,6 +247,10 @@ public class SDWISTabUI extends Screen {
                                                           (canEdit && isState(ADD, UPDATE)));
                                  samplePointId.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? location : sampleCategory;
+                             }
                          });
 
         addScreenHandler(location, SampleMeta.getSDWISLocation(), new ScreenHandler<String>() {
@@ -270,6 +266,10 @@ public class SDWISTabUI extends Screen {
                 location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 location.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? collector : samplePointId;
+            }
         });
 
         addScreenHandler(collector, SampleMeta.getSDWISCollector(), new ScreenHandler<String>() {
@@ -284,6 +284,10 @@ public class SDWISTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 collector.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? pwsNumber0 : location;
             }
         });
 
@@ -335,7 +339,7 @@ public class SDWISTabUI extends Screen {
     protected void pwsLookup(ClickEvent event) {
         PWSScreen pwsScreen;
         ScreenWindow modal;
-        
+
         try {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(Messages.get().pwsInformation());
@@ -403,10 +407,38 @@ public class SDWISTabUI extends Screen {
     }
 
     /**
-     * sets the pws number0
+     * if there is a PWS with the passed value as its number0, then sets it as
+     * the sample's PWS; otherwise, blanks the sample's PWS fields
      */
-    private void setPwsNumber0(String pwsNumber0) {
-        manager.getSampleSDWIS().setPwsNumber0(pwsNumber0);
+    private void setPwsNumber0(String number0) {
+        PWSDO data;
+
+        data = null;
+        if ( !DataBaseUtil.isEmpty(number0)) {
+            try {
+                data = PWSService.get().fetchPwsByNumber0(number0);
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (NotFoundException e) {
+                // ignore
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+
+        if (data != null) {
+            setPwsId(data.getId());
+            setPwsName(data.getName());
+            manager.getSampleSDWIS().setPwsNumber0(data.getNumber0());
+            pwsName.setValue(data.getName());
+        } else {
+            setPwsId(null);
+            setPwsName(null);
+            manager.getSampleSDWIS().setPwsNumber0(null);
+            pwsNumber0.setValue(null);
+            pwsName.setValue(null);
+        }
     }
 
     /**

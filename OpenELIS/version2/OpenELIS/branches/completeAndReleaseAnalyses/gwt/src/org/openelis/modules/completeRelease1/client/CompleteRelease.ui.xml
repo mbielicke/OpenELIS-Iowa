@@ -26,10 +26,10 @@
           <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
             text="{msg.gen_update}" toggles="true" />
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
-          <w:Button css="{res.buttonPanel}" ui:field="complete" text="{msg.gen_complete}"
-            toggles="true" />
-          <w:Button css="{res.buttonPanel}" ui:field="release" text="{msg.gen_release}"
-            toggles="true" />
+          <w:Button css="{res.buttonPanel}" ui:field="complete" leftIcon="{res.icon.completeIcon}"
+            text="{msg.gen_complete}" toggles="true" />
+          <w:Button css="{res.buttonPanel}" ui:field="release" leftIcon="{res.icon.reviewAndReleaseIcon}"
+            text="{msg.gen_release}" toggles="true" />
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
           <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
             text="{msg.gen_commit}" />
@@ -41,9 +41,10 @@
               <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
                 rightIcon="{res.icon.OptionsButtonImage}" />
             </w:display>
-            <w:MenuItem ui:field="unreleaseAnalysis" icon="{res.icon.DuplicateRowButtonImage}"
-              display="{msg.analysis_unrelease}" />
+            <w:MenuItem ui:field="unreleaseAnalysis"  icon="{res.icon.unreleaseIcon}"
+              display="{msg.completeRelease_unrelease}" />
             <w:CheckMenuItem ui:field="previewFinalReport" display="{msg.finalreport_preview}" />
+            <w:MenuItem ui:field="queryByWorksheet" display="{msg.completeRelease_queryByWorksheet}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"
             >
@@ -60,6 +61,7 @@
               <w:MenuItem ui:field="historyAuxData" display="{msg.aux_data}" />
             </w:Menu>
           </w:Menu>
+          <w:Button css="{res.buttonPanel}" ui:field="details" leftIcon="{res.icon.fieldLookupIcon}" text="{msg.gen_details}" />
         </g:HorizontalPanel>
       </g:AbsolutePanel>
     </g:layer>
@@ -149,6 +151,16 @@
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:NeonatalTabUI ui:field="neonatalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sampleQuickEntry_quickEntry}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:QuickEntryTabUI ui:field="quickEntryTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

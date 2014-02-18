@@ -84,7 +84,7 @@ public class SampleManager1 implements Serializable {
      * after update
      */
     public enum PostProcessing {
-        ESAVE, UNRELEASE
+        UNRELEASE
     };
 
     protected SampleDO                            sample;
@@ -108,6 +108,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<AnalysisWorksheetVO>      worksheets;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID              = -1;
+    protected PostProcessing                      postProcessing; 
 
     transient public final SampleOrganization     organization         = new SampleOrganization();
     transient public final SampleProject          project              = new SampleProject();
@@ -210,6 +211,10 @@ public class SampleManager1 implements Serializable {
 
         }
         return uidMap.get(uid);
+    }
+    
+    public void setPostProcessing(PostProcessing postProcessing) {
+        this.postProcessing = postProcessing;
     }
 
     /**

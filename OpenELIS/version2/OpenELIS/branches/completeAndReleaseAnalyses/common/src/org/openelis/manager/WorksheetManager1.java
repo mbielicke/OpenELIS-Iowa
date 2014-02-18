@@ -458,6 +458,7 @@ public class WorksheetManager1 implements Serializable {
             toDO.setTestId(fromDO.getTestId());
             toDO.setTestName(fromDO.getTestName());
             toDO.setMethodName(fromDO.getMethodName());
+            toDO.setSectionName(fromDO.getSectionName());
             toDO.setUnitOfMeasureId(fromDO.getUnitOfMeasureId());
             toDO.setUnitOfMeasure(fromDO.getUnitOfMeasure());
             toDO.setStatusId(fromDO.getStatusId());

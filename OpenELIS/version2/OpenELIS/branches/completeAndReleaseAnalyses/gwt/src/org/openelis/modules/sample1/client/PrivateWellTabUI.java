@@ -103,8 +103,12 @@ public class PrivateWellTabUI extends Screen {
                 location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 location.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? locationAddressMultipleUnit : wellNumber;
+            }
         });
-
+        
         addScreenHandler(locationAddressMultipleUnit,
                          SampleMeta.getWellLocationAddrMultipleUnit(),
                          new ScreenHandler<String>() {
@@ -121,6 +125,10 @@ public class PrivateWellTabUI extends Screen {
                                                                         (canEdit && isState(ADD,
                                                                                             UPDATE)));
                                  locationAddressMultipleUnit.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressStreetAddress : location;
                              }
                          });
 
@@ -141,6 +149,10 @@ public class PrivateWellTabUI extends Screen {
                                                                                              UPDATE)));
                                  locationAddressStreetAddress.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressCity : locationAddressMultipleUnit;
+                             }
                          });
 
         addScreenHandler(locationAddressCity,
@@ -158,6 +170,10 @@ public class PrivateWellTabUI extends Screen {
                                  locationAddressCity.setEnabled(isState(QUERY) ||
                                                                 (canEdit && isState(ADD, UPDATE)));
                                  locationAddressCity.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressState : locationAddressStreetAddress;
                              }
                          });
 
@@ -177,6 +193,10 @@ public class PrivateWellTabUI extends Screen {
                                                                  (canEdit && isState(ADD, UPDATE)));
                                  locationAddressState.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressZipCode : locationAddressCity;
+                             }
                          });
 
         addScreenHandler(locationAddressZipCode,
@@ -195,8 +215,12 @@ public class PrivateWellTabUI extends Screen {
                                                                    (canEdit && isState(ADD, UPDATE)));
                                  locationAddressZipCode.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? wellOwner : locationAddressState;
+                             }
                          });
-
+        
         addScreenHandler(wellOwner, SampleMeta.getWellOwner(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellOwner.setValue(getOwner());
@@ -209,6 +233,10 @@ public class PrivateWellTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 wellOwner.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 wellOwner.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? collector : locationAddressZipCode;
             }
         });
 
@@ -225,6 +253,10 @@ public class PrivateWellTabUI extends Screen {
                 collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 collector.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? wellNumber : wellOwner;
+            }
         });
 
         addScreenHandler(wellNumber, SampleMeta.getWellWellNumber(), new ScreenHandler<Integer>() {
@@ -239,6 +271,10 @@ public class PrivateWellTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 wellNumber.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
                 wellNumber.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? location : collector;
             }
         });
         
