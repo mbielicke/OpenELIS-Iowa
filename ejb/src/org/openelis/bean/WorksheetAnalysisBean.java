@@ -238,21 +238,6 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    @SuppressWarnings("unchecked")
-    public ArrayList<IdVO> fetchAnalysisIdsByWorksheetId(Integer id) throws Exception {
-        Query query;
-        List<IdVO> list;
-
-        query = manager.createNamedQuery("WorksheetAnalysis.FetchAnalysisIdsByWorksheetId");
-        query.setParameter("id", id);
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
-    }
-
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
