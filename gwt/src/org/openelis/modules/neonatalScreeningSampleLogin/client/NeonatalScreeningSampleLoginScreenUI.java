@@ -2006,6 +2006,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                                               ana.getId(),
                                                                               event.getChangeId());
                             break;
+                         default:
+                             clearStatus();
+                             return;
+                             
                     }
 
                     setData();
@@ -2021,7 +2025,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     bus.fireEvent(new ResultChangeEvent(event.getUid()));
 
                     clearStatus();
-                    showErrorsOrTests(ret);
+                    if (ret != null)
+                        showErrorsOrTests(ret);
+                    else 
+                        isBusy = false;
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3894,9 +3901,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void showErrorsOrTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret == null)
-            return;
-
+        isBusy = false;
         if (ret.getErrors() != null && ret.getErrors().size() > 0) {
             showErrors(ret.getErrors());
         } else if (ret.getTests() != null && ret.getTests().size() > 0) {

@@ -40,6 +40,7 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -103,8 +104,8 @@ public class WorksheetAnalysisBean {
         query.setParameter("worksheetIds", ids);
 
         list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
+//        if (list.isEmpty())
+//            throw new NotFoundException();
 
         returnList = new ArrayList<WorksheetAnalysisViewDO>();
         for (i = 0; i < list.size(); i++) {
@@ -328,9 +329,10 @@ public class WorksheetAnalysisBean {
                                             qcStartedDate, waVVO.getFromOtherId(),
                                             waVVO.getDescription(), waVVO.getTestId(),
                                             waVVO.getTestName(), waVVO.getMethodName(),
-                                            waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),
-                                            waVVO.getStatusId(), collectionDate,
-                                            receivedDate, (Integer)null, (Date)null);
+                                            waVVO.getSectionName(), waVVO.getUnitOfMeasureId(),
+                                            waVVO.getUnitOfMeasure(), waVVO.getStatusId(),
+                                            collectionDate, receivedDate, (Integer)null,
+                                            (Date)null);
         if (waVVO.getAnalysisId() != null) {
             //
             // Compute and set the number of days until the analysis is 

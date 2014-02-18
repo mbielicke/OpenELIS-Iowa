@@ -440,11 +440,9 @@ public class AnalysisHelperBean {
         SystemUserVO su;
         SystemUserPermission perm;
         TestManager tm;
-        ResultFormatter rf;
         ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
         HashMap<Integer, AnalysisUserViewDO> cmplUsers;
         AnalysisUserViewDO relUser;
-        ValidationErrorsList e;
 
         ana = null;
         prepAnas = new ArrayList<AnalysisViewDO>();
@@ -476,7 +474,7 @@ public class AnalysisHelperBean {
         }
 
         /*
-         * find the users linked to the analysis
+         * find the users that completed/released the analysis
          */
         cmplUsers = new HashMap<Integer, AnalysisUserViewDO>();
         relUser = null;
@@ -488,6 +486,29 @@ public class AnalysisHelperBean {
                     cmplUsers.put(data.getSystemUserId(), data);
                 else if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId()))
                     relUser = data;
+            }
+        }
+
+        /*
+         * find out if the sample or the analysis has an overriding QA event
+         */
+        resultsOverriden = false;
+        if (getSampleQAs(sm) != null) {
+            for (SampleQaEventViewDO sqa : getSampleQAs(sm)) {
+                if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId())) {
+                    resultsOverriden = true;
+                    break;
+                }
+            }
+        }
+
+        if ( !resultsOverriden && getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
+                if (analysisId.equals(aqa.getAnalysisId()) &&
+                    Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
+                    resultsOverriden = true;
+                    break;
+                }
             }
         }
 
@@ -545,59 +566,8 @@ public class AnalysisHelperBean {
                  */
                 analysis.validate(ana, tm, accession, item);
 
-                /*
-                 * find out if the sample or the analysis has an overriding QA
-                 * event
-                 */
-                resultsOverriden = false;
-                if (getSampleQAs(sm) != null) {
-                    for (SampleQaEventViewDO sqa : getSampleQAs(sm)) {
-                        if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId())) {
-                            resultsOverriden = true;
-                            break;
-                        }
-                    }
-                }
-
-                if ( !resultsOverriden && getAnalysisQAs(sm) != null) {
-                    for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
-                        if (analysisId.equals(aqa.getAnalysisId()) &&
-                            Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
-                            resultsOverriden = true;
-                            break;
-                        }
-                    }
-                }
-
-                if ( !resultsOverriden) {
-                    /*
-                     * all results must be valid and all required results must
-                     * be filled
-                     */
-                    rf = tm.getFormatter();
-                    e = new ValidationErrorsList();
-                    for (ResultViewDO r : getResults(sm)) {
-                        if ( !analysisId.equals(r.getAnalysisId()))
-                            continue;
-
-                        if ( !DataBaseUtil.isEmpty(r.getValue())) {
-                            try {
-                                result.validate(r, rf, accession, ana);
-                            } catch (Exception err) {
-                                DataBaseUtil.mergeException(e, err);
-                            }
-                        } else if (Constants.dictionary().TEST_ANALYTE_REQ.equals(r.getTestAnalyteTypeId())) {
-                            e.add(new FormErrorException(Messages.get()
-                                                                 .result_valueRequiredException(accession,
-                                                                                                ana.getTestName(),
-                                                                                                ana.getMethodName(),
-                                                                                                r.getAnalyte())));
-                        }
-                    }
-
-                    if (e.size() > 0)
-                        throw e;
-                }
+                if ( !resultsOverriden)
+                    validateResults(sm, accession, ana, tm.getFormatter());
 
                 /*
                  * if this is the prep analysis of some in-prep analyses then
@@ -666,11 +636,17 @@ public class AnalysisHelperBean {
 
                 if ( !hasUnreleaseNote)
                     throw new InconsistencyException(Messages.get()
-                                                     .sample_unreleaseNoNoteException(accession));
-                
+                                                             .sample_unreleaseNoNoteException(accession));
+
                 ana.setReleasedDate(null);
                 ana.setPrintedDate(null);
                 ana.setRevision(ana.getRevision() + 1);
+
+                /*
+                 * increment the sample's revision if will be unreleased as well
+                 */
+                if (Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId()))
+                    getSample(sm).setRevision(getSample(sm).getRevision() + 1);
             }
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
             if (ana.getSectionName() == null ||
@@ -690,6 +666,15 @@ public class AnalysisHelperBean {
                                                                                                          ana.getTestName(),
                                                                                                          ana.getMethodName()));
             }
+
+            tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
+
+            /*
+             * validate the results to make sure that the values of any required
+             * analytes were not removed after completing the analysis
+             */
+            if ( !resultsOverriden)
+                validateResults(sm, accession, ana, tm.getFormatter());
 
             /*
              * if a user released this analysis before then delete that record;
@@ -1297,5 +1282,37 @@ public class AnalysisHelperBean {
         if (def != null)
             r.setValue(def);
         r.setTypeId(null);
+    }
+
+    /**
+     * Validates whether the results of the analysis are valid and all required
+     * results have a value
+     */
+    private void validateResults(SampleManager1 sm, Integer accession, AnalysisViewDO ana,
+                                 ResultFormatter rf) throws Exception {
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+        for (ResultViewDO r : getResults(sm)) {
+            if ( !ana.getId().equals(r.getAnalysisId()))
+                continue;
+
+            if ( !DataBaseUtil.isEmpty(r.getValue())) {
+                try {
+                    result.validate(r, rf, accession, ana);
+                } catch (Exception err) {
+                    DataBaseUtil.mergeException(e, err);
+                }
+            } else if (Constants.dictionary().TEST_ANALYTE_REQ.equals(r.getTestAnalyteTypeId())) {
+                e.add(new FormErrorException(Messages.get()
+                                                     .result_valueRequiredException(accession,
+                                                                                    ana.getTestName(),
+                                                                                    ana.getMethodName(),
+                                                                                    r.getAnalyte())));
+            }
+        }
+
+        if (e.size() > 0)
+            throw e;
     }
 }

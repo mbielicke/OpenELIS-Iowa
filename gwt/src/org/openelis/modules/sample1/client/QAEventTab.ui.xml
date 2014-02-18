@@ -47,7 +47,7 @@
                   <w:Button ui:field="sampleQALookupButton" leftIcon="{res.icon.fieldLookupIcon}"
                     text="{msg.gen_qaEvents}" />
                 </g:HorizontalPanel>
-                <w:Label ui:field="sampleBillableLabel" />
+                <w:Label ui:field="sampleBillableLabel" styleName="{res.style.WarningLabel}" wordWrap = "true"/>
               </g:VerticalPanel>
             </g:layer>
           </g:LayoutPanel>
@@ -79,7 +79,7 @@
                     <w:Button ui:field="analysisQALookupButton" leftIcon="{res.icon.fieldLookupIcon}"
                       text="{msg.gen_qaEvents}" />
                   </g:HorizontalPanel>
-                  <w:Label ui:field="analysisBillableLabel" />
+                  <w:Label ui:field="analysisBillableLabel" styleName="{res.style.WarningLabel}" wordWrap = "true"/>
                 </g:VerticalPanel>
             </g:layer>
           </g:LayoutPanel>

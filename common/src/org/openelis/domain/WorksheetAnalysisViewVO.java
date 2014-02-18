@@ -41,7 +41,8 @@ public class WorksheetAnalysisViewVO extends DataObject {
     protected Integer  analysisId, dueDays, id, fromOtherId, priority, qcLotId,
                        qcSystemUserId, statusId, testId, timeHolding, timeTaAverage,
                        unitOfMeasureId, worksheetAnalysisId, worksheetId, worksheetItemId;
-    protected String   accessionNumber, description, methodName, testName, unitOfMeasure;
+    protected String   accessionNumber, description, methodName, sectionName, testName,
+                       unitOfMeasure;
     protected Datetime collectionDate, collectionTime, expireDate, qcStartedDate,
                        receivedDate;
     
@@ -53,9 +54,10 @@ public class WorksheetAnalysisViewVO extends DataObject {
                                    Integer worksheetAnalysisId, Integer qcSystemUserId,
                                    Date qcStartedDate, Integer fromOtherId, String description,
                                    Integer testId, String testName, String methodName,
-                                   Integer timeTaAverage, Integer timeHolding, Integer unitOfMeasureId,
-                                   String unitOfMeasure, Integer statusId, Date collectionDate,
-                                   Date collectionTime, Date receivedDate, Integer priority) {
+                                   Integer timeTaAverage, Integer timeHolding, String sectionName,
+                                   Integer unitOfMeasureId, String unitOfMeasure,
+                                   Integer statusId, Date collectionDate, Date collectionTime,
+                                   Date receivedDate, Integer priority) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
@@ -72,6 +74,7 @@ public class WorksheetAnalysisViewVO extends DataObject {
         setMethodName(methodName);
         setTimeTaAverage(timeTaAverage);
         setTimeHolding(timeHolding);
+        setSectionName(sectionName);
         setUnitOfMeasureId(unitOfMeasureId);
         setUnitOfMeasure(unitOfMeasure);
         setStatusId(statusId);
@@ -207,6 +210,14 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     public void setTimeHolding(Integer timeHolding) {
         this.timeHolding = timeHolding;
+    }
+
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = DataBaseUtil.trim(sectionName);
     }
 
     public Integer getUnitOfMeasureId() {

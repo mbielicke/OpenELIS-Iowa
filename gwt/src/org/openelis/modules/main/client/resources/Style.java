@@ -14,6 +14,8 @@ public interface Style extends CssResource {
 	
 	public String Prompt();
 	
+	public String WarningLabel();
+	
 	public String favorite();
 	
 	public String LeftMenuPanePanelClosed();

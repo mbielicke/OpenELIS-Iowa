@@ -40,7 +40,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     protected boolean _statusChanged, _unitChanged;
     protected Integer dueDays, statusId, testId, unitOfMeasureId, worksheetId;
-    protected String description, methodName, testName, unitOfMeasure;
+    protected String description, methodName, sectionName, testName, unitOfMeasure;
     protected Datetime collectionDate, expireDate, receivedDate;
     
     public WorksheetAnalysisViewDO() {
@@ -51,9 +51,9 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
                                    Integer worksheetAnalysisId, Integer qcSystemUserId,
                                    Date qcStartedDate, Integer fromOtherId, String description,
                                    Integer testId, String testName, String methodName,
-                                   Integer unitOfMeasureId, String unitOfMeasure,
-                                   Integer statusId, Date collectionDate, Date receivedDate,
-                                   Integer dueDays, Date expireDate) {
+                                   String sectionName, Integer unitOfMeasureId,
+                                   String unitOfMeasure, Integer statusId, Date collectionDate,
+                                   Date receivedDate, Integer dueDays, Date expireDate) {
         super(id, worksheetItemId, accessionNumber, analysisId, qcLotId, worksheetAnalysisId,
               qcSystemUserId, qcStartedDate, fromOtherId);
         setWorksheetId(worksheetId);
@@ -61,6 +61,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
         setTestId(testId);
         setTestName(testName);
         setMethodName(methodName);
+        setSectionName(sectionName);
         setUnitOfMeasureId(unitOfMeasureId);
         setUnitOfMeasure(unitOfMeasure);
         setStatusId(statusId);
@@ -108,6 +109,14 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public void setMethodName(String methodName) {
         this.methodName = DataBaseUtil.trim(methodName);
+    }
+
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = DataBaseUtil.trim(sectionName);
     }
 
     public Integer getUnitOfMeasureId() {

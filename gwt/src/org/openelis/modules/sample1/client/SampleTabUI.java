@@ -158,7 +158,7 @@ public class SampleTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                orderId.setEnabled(isState(QUERY));
                 orderId.setQueryMode(isState(QUERY));
             }
 
@@ -632,6 +632,20 @@ public class SampleTabUI extends Screen {
             }
         });
 
+        parentBus.addHandler(AccessionChangeEvent.getType(), new AccessionChangeEvent.Handler() {
+            @Override
+            public void onAccessionChange(AccessionChangeEvent event) {
+                if (screen == event.getSource())
+                    return;
+                
+                redraw = true;   
+                displaySample();
+                if (event.getError() != null)
+                    accessionNumber.addException(event.getError());
+                isBusy = false;
+            }
+        });
+
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
@@ -688,6 +702,14 @@ public class SampleTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
+    
+    /**
+     * returns true if some operation performed by the tab needs to be completed
+     * before the data can be committed
+     */
+    public boolean getIsBusy() {
+        return isBusy;
+    }
 
     /**
      * notifies the tab that it may need to refresh the display in its widgets;
@@ -699,6 +721,14 @@ public class SampleTabUI extends Screen {
         displaySample();
     }
 
+    /**
+     * determines if the fields on the screen can be edited based on the data
+     */
+    private void evaluateEdit() {
+        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                            .getStatusId()));
+    }
+
     private void displaySample() {
         if ( !isVisible)
             return;
@@ -707,14 +737,6 @@ public class SampleTabUI extends Screen {
             redraw = false;
             fireDataChange();
         }
-    }
-
-    /**
-     * determines if the fields on the screen can be edited based on the data
-     */
-    private void evaluateEdit() {
-        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                            .getStatusId()));
     }
 
     /*
@@ -742,10 +764,12 @@ public class SampleTabUI extends Screen {
             return;
         }
 
+        isBusy = true;
         if (getAccessionNumber() != null) {
             if ( !Window.confirm(Messages.get().sample_accessionNumberEditConfirm())) {
                 accessionNumber.setValue(getAccessionNumber());
                 accessionNumber.setFocus(true);
+                isBusy = false;
                 return;
             }
         }
@@ -754,37 +778,12 @@ public class SampleTabUI extends Screen {
          * remove any exceptions added because of the previous value
          */
         accessionNumber.clearExceptions();
-
-        manager.getSample().setAccessionNumber(accession);
-        setBusy(Messages.get().gen_fetching());
-        if (isState(ADD)) {
-            try {
-                manager = SampleService1.get().mergeQuickEntry(manager);
-                setState(UPDATE);
-                fireDataChange();
-            } catch (NotFoundException e) {
-                manager.getSample().setAccessionNumber(accession);
-            } catch (InconsistencyException e) {
-                accessionNumber.addException(e);
-            } catch (Exception e) {
-                manager.getSample().setAccessionNumber(null);
-                accessionNumber.setValue(null);
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        } else if (isState(UPDATE)) {
-            try {
-                SampleService1.get().validateAccessionNumber(manager);
-            } catch (InconsistencyException e) {
-                accessionNumber.addException(e);
-            } catch (Exception e) {
-                manager.getSample().setAccessionNumber(null);
-                accessionNumber.setValue(null);
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
-        clearStatus();
+        
+        /*
+         * notify the main screen that the accession number is to be changed
+         */
+        parentBus.fireEventFromSource(new AccessionChangeEvent(accession, manager.getSample()
+                                                                                 .getId()), screen);
     }
 
     /**

@@ -71,6 +71,7 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -179,6 +180,9 @@ public class SampleManager1Bean {
 
     @EJB
     private WorksheetBean                worksheet;
+    
+    @EJB
+    private FinalReportBean              finalReport;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -582,7 +586,10 @@ public class SampleManager1Bean {
         if (el.contains(SampleManager1.Load.NOTE)) {
             for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
-                addAnalysisInternalNote(sm, data);
+                if ("Y".equals(data.getIsExternal()))
+                    addAnalysisExternalNote(sm, data);
+                else
+                    addAnalysisInternalNote(sm, data);
             }
         }
 
@@ -1055,10 +1062,19 @@ public class SampleManager1Bean {
             }
 
             // add/update sample
-            if (getSample(sm).getId() == null)
+            if (getSample(sm).getId() == null) {
                 sample.add(getSample(sm));
-            else
+            } else {
+                /*
+                 * check to see if the sample or any analysis has been
+                 * unreleased. call final report e-save if they have.
+                 */
+                if (getPostProcessing(sm) == PostProcessing.UNRELEASE) {
+                    finalReport.runReportForESave(getSample(sm).getAccessionNumber());
+                    setPostProcessing(sm, null);
+                }
                 sample.update(getSample(sm));
+            }
 
             // add/update sample domain
             if (getSampleEnvironmental(sm) != null) {

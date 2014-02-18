@@ -35,9 +35,9 @@ import org.openelis.ui.common.Datetime;
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId)"
                       + " from WorksheetAnalysis wa where wa.qcLotId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetStatusId",
-                query = "select distinct new org.openelis.domain.ToDoWorksheetVO(w.id, w.createdDate, w.systemUserId, w.statusId, t.name, m.name, s.name)"
-                      + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Test t, Method m, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
-                      +	" and wa.analysisId = a.id and a.testId = t.id and t.methodId = m.id and a.sectionId = s.id"),
+                query = "select distinct new org.openelis.domain.ToDoWorksheetVO(w.id, w.createdDate, w.systemUserId, w.statusId, w.description, s.name)"
+                      + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
+                      +	" and wa.analysisId = a.id and a.sectionId = s.id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByDateForQcChart",
                 query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
@@ -57,8 +57,8 @@ import org.openelis.ui.common.Datetime;
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wa.qcLotId = ql.id and ql.qcId = q.id and ql.locationId = :qcLocation and" + 
                         " q.name = :qcName and w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) " + 
                         "order by w.createdDate desc"),
-   @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
-               query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
+    @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
+                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         " wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         " wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +

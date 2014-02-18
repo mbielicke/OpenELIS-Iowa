@@ -23,7 +23,7 @@
               <ui:text from="{msg.sample_accessionNum}:" />
             </td>
             <td>
-              <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" required="true" />
+              <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"/>
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.order_orderNum}:" />
@@ -55,7 +55,7 @@
               <ui:text from="{msg.gen_status}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" />
+              <w:Dropdown ui:field="status" width="110px" field="Integer"/>
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.sample_clntRef}:" />
@@ -86,7 +86,7 @@
                     <w:TextBox field="String" case="UPPER" maxLength="30" />
                   </t:TextBoxCell>
                 </t:Column>
-                <t:Column width="220" label="{msg.gen_name}" required="true">
+                <t:Column width="220" label="{msg.gen_organization}" required="true">
                   <t:AutoCompleteCell>
                     <w:AutoComplete ui:field="organization" case="UPPER"
                       width="130" dropWidth="490px"
@@ -156,7 +156,7 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="25px">
               <t:Table ui:field="projectTable" header="true" styleName="{res.table.ScreenTableWithSides}">
-                <t:Column width="100" label="{msg.gen_name}"  required="true">
+                <t:Column width="100" label="{msg.project_project}"  required="true">
                   <t:AutoCompleteCell>
                     <w:AutoComplete ui:field="project" case="LOWER"
                       width="100px" dropWidth="450px"

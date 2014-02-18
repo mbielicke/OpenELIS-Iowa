@@ -76,9 +76,28 @@
 	width: 20px;
 }
 
+@sprite .completeIcon {
+    gwt-image: 'completeIcon';   
+}
+
+@sprite .Disabled .completeIcon {
+    gwt-image: 'completeDisabledIcon';   
+}
+
 @sprite .reviewAndReleaseIcon {
-	gwt-image: 'reviewAndReleaseIcon';
-	width: 20px;
+	gwt-image: 'reviewAndReleaseIcon';	
+}
+
+@sprite .Disabled .reviewAndReleaseIcon {
+    gwt-image: 'reviewAndReleaseDisabledIcon';    
+}
+
+@sprite .unreleaseIcon {
+    gwt-image: 'unreleaseIcon';  
+}
+
+@sprite .Disabled .unreleaseIcon {
+    gwt-image: 'unreleaseDisabledIcon';    
 }
 
 @sprite .toDoIcon {
