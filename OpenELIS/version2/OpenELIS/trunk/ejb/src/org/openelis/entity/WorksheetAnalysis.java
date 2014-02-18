@@ -68,11 +68,7 @@ import org.openelis.ui.common.Datetime;
                         "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcLot ql, QcAnalyte qa, Analyte a, Dictionary d " +  
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcLotId = ql.id and q.id = ql.qcId and wqr.qcAnalyteId = qa.id and" + 
                         " qa.analyteId = a.id and qa.isTrendable = 'Y' and d.id = w.formatId and wa.id in (:ids) " + 
-                        "order by w.createdDate"),
-    @NamedQuery( name = "WorksheetAnalysis.FetchAnalysisIdsForWorksheetId",
-                query = "select distinct new org.openelis.domain.IdVO(a.id) " +
-                        "from WorksheetAnalysis wa, WorksheetItem wi, Analysis a " +  
-                        "where wa.worksheetItemId = wi.id and wa.analysisId = a.id and wi.worksheetId = :id")})      
+                        "order by w.createdDate")})      
 
 @Entity
 @Table(name = "worksheet_analysis")
