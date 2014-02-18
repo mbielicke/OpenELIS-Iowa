@@ -45,6 +45,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
+import org.openelis.manager.SampleManager1.PostProcessing;
 
 /**
  * This class is used to bulk load sample manager.
@@ -303,5 +304,13 @@ public class SampleManager1Accessor {
     
     public static void setRemoved(SampleManager1 sm, ArrayList<DataObject> removed) {
         sm.removed = removed;
+    }
+    
+    public static PostProcessing getPostProcessing(SampleManager1 sm) {
+        return sm.postProcessing;
+    }
+    
+    public static void setPostProcessing(SampleManager1 sm, PostProcessing postProcessing) {
+        sm.postProcessing = postProcessing;
     }
 }
