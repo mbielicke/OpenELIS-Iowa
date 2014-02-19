@@ -9,33 +9,26 @@ public class CaseDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer         id, genderId, raceId, ethnicityId, patientId;
-    protected String          lastName, firstName, nationalId;
-    protected Datetime        created, birthDate, birthTime;
-    protected AddressDO       address;
+    protected Integer         id, nextkinId, casePatientId, caseNextkinId, organizationId, patientId;
+    protected String          isFinalized;
+    protected Datetime        created, completeDate;
+
     
     public CaseDO() {
-        address = new AddressDO();
+
     }
     
-    public CaseDO(Integer id, Date created, Integer patientId, String lastName, String firstName, Integer addressId, 
-                  Date birthDate, Date birthTime, Integer genderId, Integer raceId, Integer enthnicityId, String nationalId,
-                  String multipleUnit, String streetAddress, String city, String state, String zipCode,
-                  String workPhone, String homePhone, String cellPhone, String faxPhone,
-                  String email, String country) {
+    public CaseDO(Integer id, Date created, Integer patientId, Integer nextkinId, Integer casePatientId,
+                  Integer caseNextkinId, Integer organizationId, Date completeDate, String isFinalized) {
         setId(id);
-        setLastName(lastName);
-        setFirstName(firstName);
         setCreated(DataBaseUtil.toYM(created));
-        setBirthDate(DataBaseUtil.toYD(birthDate));
-        setBirthTime(DataBaseUtil.toHM(birthTime));
-        setGenderId(genderId);
-        setRaceId(raceId);
-        setEthnicityId(ethnicityId);
-        setNationalId(nationalId);
-        
-        address = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
-                                workPhone, homePhone, cellPhone, faxPhone, email, country);
+        setPatientId(patientId);
+        setNextkinId(nextkinId);
+        setCasePatientId(casePatientId);
+        setCaseNextkinId(nextkinId);
+        setOrganizationId(organizationId);
+        setCompleteDate(DataBaseUtil.toYM(completeDate));
+        setIsFinalized(isFinalized);
         _changed = false;
     }
     
@@ -57,79 +50,67 @@ public class CaseDO extends DataObject {
         _changed = true;
     }
 
-    public String getLastName() {
-        return lastName;
+    public Integer getPatientId() {
+        return patientId;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = DataBaseUtil.trim(lastName);
-        _changed = true;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = DataBaseUtil.trim(firstName);
-        _changed = true;
-    }
-
-    public Datetime getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Datetime birthDate) {
-        this.birthDate = DataBaseUtil.toYD(birthDate);
-        _changed = true;
-    }
-
-    public Datetime getBirthTime() {
-        return birthTime;
-    }
-
-    public void setBirthTime(Datetime birthTime) {
-        this.birthTime = DataBaseUtil.toHM(birthTime);
-        _changed = true;
-    }
-
-    public Integer getGenderId() {
-        return genderId;
-    }
-
-    public void setGenderId(Integer genderId) {
-        this.genderId = genderId;
-        _changed = true;
-    }
-
-    public Integer getRaceId() {
-        return raceId;
-    }
-
-    public void setRaceId(Integer raceId) {
-        this.raceId = raceId;
-        _changed = true;
-    }
-
-    public Integer getEthnicityId() {
-        return ethnicityId;
-    }
-
-    public void setEthnicityId(Integer ethnicityId) {
-        this.ethnicityId = ethnicityId;
+    public void setPatientId(Integer patientId) {
+        this.patientId = patientId;
         _changed = true;
     }
     
-    public String getNationalId() {
-        return nationalId;
+    public Integer getNextkinId() {
+        return nextkinId;
     }
-
-    public void setNationalId(String nationalId) {
-        this.nationalId = DataBaseUtil.trim(nationalId);
+    
+    public void setNextkinId(Integer nextkinId) {
+        this.nextkinId = nextkinId;
+        _changed = true;
+    }
+    
+    public Integer getCasePatientId() {
+        return casePatientId;
+    }
+    
+    public void setCasePatientId(Integer casePatientId) {
+        this.casePatientId = casePatientId;
+        _changed = true;
+    }
+    
+    public Integer getCaseNextkinId() {
+        return caseNextkinId;
+    }
+    
+    public void setCaseNextkinId(Integer caseNextkinId) {
+        this.caseNextkinId = caseNextkinId;
+        _changed = true;
+    }
+    
+    public Integer getOrganizationId() {
+        return organizationId;
+    }
+    
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
         _changed = true;
     }
 
-    public AddressDO getAddress() {
-        return address;
+    public Datetime getCompleteDate() {
+        return completeDate;
     }
+
+    public void setCompleteDate(Datetime completeDate) {
+        this.completeDate = DataBaseUtil.toYD(completeDate);
+        _changed = true;
+    }
+    
+    public String getIsFinalized() {
+        return isFinalized;
+    }
+    
+    public void setIsFinalized(String isFinalized) {
+        this.isFinalized = isFinalized;
+        _changed = true;
+    }
+
 }
