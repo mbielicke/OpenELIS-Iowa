@@ -41,11 +41,9 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.entity.OrderRecurrence;
-import org.openelis.meta.OrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -134,50 +132,71 @@ public class OrderRecurrenceBean {
         return data;
     }
 
+    public void delete(OrderRecurrenceDO data) throws Exception {
+        OrderRecurrence entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(OrderRecurrence.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+    }
+
     public void validate(OrderRecurrenceDO data) throws Exception {
+        Integer orderId;
         boolean validateFreq;
         ValidationErrorsList list;
+
+        if ("N".equals(data.getIsActive()))
+            return;
+
+        /*
+         * for display
+         */
+        orderId = data.getOrderId();
+        if (orderId == null)
+            orderId = 0;
 
         list = new ValidationErrorsList();
         validateFreq = true;
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceActiveBeginRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_recurrenceActiveBeginRequiredException(orderId)));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceActiveEndRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_recurrenceActiveEndRequiredException(orderId)));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getFrequency())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceFrequencyRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_recurrenceFrequencyRequiredException(orderId)));
             validateFreq = false;
         } else if (data.getFrequency() < 1) {
-            list.add(new FormErrorException(Messages.get()
-                                                    .order_freqInvalidException(DataBaseUtil.toString(data.getOrderId()))));
+            list.add(new FormErrorException(Messages.get().order_freqInvalidException(orderId)));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getUnitId())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceUnitRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_recurrenceUnitRequiredException(orderId)));
             validateFreq = false;
         }
 
-        if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd())) {
+        if ( !DataBaseUtil.isEmpty(data.getActiveBegin()) &&
+            !DataBaseUtil.isEmpty(data.getActiveEnd()) &&
+            DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_endDateAfterBeginDateException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_endDateAfterBeginDateException(orderId)));
             validateFreq = false;
         }
 
         if (validateFreq && !isFrequencyValid(data))
-            list.add(new FormErrorException(Messages.get()
-                                                    .order_notAllDatesValid(DataBaseUtil.toString(data.getOrderId()))));
+            list.add(new FormErrorException(Messages.get().order_notAllDatesValid(orderId)));
 
         if (list.size() > 0)
             throw list;
@@ -187,8 +206,7 @@ public class OrderRecurrenceBean {
         if (data == null)
             return true;
 
-        if (DataBaseUtil.isEmpty(data.getId()) && DataBaseUtil.isEmpty(data.getOrderId()) &&
-            DataBaseUtil.isEmpty(data.getIsActive()) &&
+        if ( (DataBaseUtil.isEmpty(data.getIsActive()) || "N".equals(data.getIsActive())) &&
             DataBaseUtil.isEmpty(data.getActiveBegin()) &&
             DataBaseUtil.isEmpty(data.getActiveEnd()) &&
             DataBaseUtil.isEmpty(data.getFrequency()) && DataBaseUtil.isEmpty(data.getUnitId()))
@@ -230,14 +248,14 @@ public class OrderRecurrenceBean {
                      */
                     switch (nmon) {
                         case 1:
-                            if (nday > 29 || ( (nyr % 4 != 0) && nday > 28)) 
+                            if (nday > 29 || ( (nyr % 4 != 0) && nday > 28))
                                 return false;
                             break;
                         case 3:
                         case 5:
                         case 8:
                         case 10:
-                            if (nday > 30) 
+                            if (nday > 30)
                                 return false;
                             break;
                     }
