@@ -513,6 +513,20 @@ public class ResultTabUI extends Screen {
             }
         });
 
+        parentBus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
+            @Override
+            public void onAddTest(AddTestEvent event) {
+                /*
+                 * the tab is set to "busy" when it notifies the main screen to
+                 * add reflex tests, because the data on the screen can't be
+                 * committed before adding the tests; after the tests get added,
+                 * the tab needs to not be "busy" to allow data to be committed
+                 */
+                if (screen != event.getSource())
+                    isBusy = false;
+            }
+        });
+        
         parentBus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
             @Override
             public void onQAEventChange(QAEventChangeEvent event) {

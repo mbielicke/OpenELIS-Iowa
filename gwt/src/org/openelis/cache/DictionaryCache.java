@@ -65,33 +65,39 @@ public class DictionaryCache {
         int i;
         DictionaryDO data;
         ArrayList<DictionaryDO> list;
+        ArrayList<Integer> dupIds;
 
-        i = 0;
+        /*
+         * make sure that the original list of ids doesn't get changed
+         */
+        dupIds = (ArrayList<Integer>)ids.clone();
+        
         /*
          * only keep the ids that are not present in the cache
          */
         list = new ArrayList<DictionaryDO>();
-        while (i < ids.size()) {
-            data = cache.get(ids.get(i));
+        i = 0;
+        while (i < dupIds.size()) {
+            data = cache.get(dupIds.get(i));
             if (data != null) {
-                ids.remove(i);
+                dupIds.remove(i);
                 list.add(data);
             } else {
                 i++ ;
             }
         }
 
-        if (ids.size() > 0) {
+        if (dupIds.size() > 0) {
             /*
              * fetch the dictionary records not in the cache 
              */
             try {
-                for (DictionaryDO d : DictionaryCacheService.get().getByIds(ids)) {
+                for (DictionaryDO d : DictionaryCacheService.get().getByIds(dupIds)) {
                     add(d);
                     list.add(d);
                 }
             } catch (Exception e) {
-                throw new Exception("DictionaryCache.getIds: one or more of \"" + ids +
+                throw new Exception("DictionaryCache.getIds: one or more of \"" + dupIds +
                                     "\" not found in system.");
             }
         }
