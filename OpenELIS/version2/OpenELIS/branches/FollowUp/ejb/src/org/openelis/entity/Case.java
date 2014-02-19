@@ -37,38 +37,44 @@ public class Case implements Auditable, Cloneable {
     @Column(name = "patient_id")
     private Integer patientId;
 
-    @Column(name = "last_name")
-    private String  lastName;
+    @Column(name = "nextkin_id")
+    private Integer nextkinId;
 
-    @Column(name = "first_name")
-    private String  firstName;
+    @Column(name = "case_patient_id")
+    private Integer casePatientId;
 
-    @Column(name = "address_id")
-    private Integer addressId;
+    @Column(name = "case_nextkin_id")
+    private Integer caseNextkinId;
 
-    @Column(name = "birth_date")
-    private Date    birthDate;
+    @Column(name = "organization_id")
+    private Integer organizationId;
 
-    @Column(name = "birth_time")
-    private Date    birthTime;
+    @Column(name = "complete_date")
+    private Date    completeDate;
 
-    @Column(name = "race_id")
-    private Integer raceId;
-
-    @Column(name = "ethnicity_id")
-    private Integer ethnicityId;
-
-    @Column(name = "national_id")
-    private String  nationalId;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", insertable = false, updatable = false)
-    private Address address;
+    @Column(name = "is_finalized")
+    private String  isFinalized;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", insertable = false, updatable = false)
     private Patient patient;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nextkin_id", insertable = false, updatable = false)
+    private Patient nextkin;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_nextkin_id", insertable = false, updatable = false)
+    private CasePatient caseNextkin;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_patient_id", insertable = false, updatable = false)
+    private CasePatient casePatient;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", insertable = false, updatable = false)
+    private Organization organization;
+    
     @Transient
     private Case    original;
 
@@ -99,85 +105,80 @@ public class Case implements Auditable, Cloneable {
             this.patientId = patientId;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        if (DataBaseUtil.isDifferent(lastName, this.lastName))
-            this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        if (DataBaseUtil.isDifferent(firstName, this.firstName))
-            this.firstName = firstName;
-    }
-
-    public Integer getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Integer addressId) {
-        if (DataBaseUtil.isDifferent(addressId, this.addressId))
-            this.addressId = addressId;
-    }
-
-    public Datetime getBirthDate() {
-        return DataBaseUtil.toYD(birthDate);
-    }
-
-    public void setBirthDate(Datetime birthDate) {
-        if (DataBaseUtil.isDifferent(birthDate, this.birthDate))
-            this.birthDate = DataBaseUtil.toDate(birthDate);
-    }
-
-    public Datetime getBirthTime() {
-        return DataBaseUtil.toYM(birthTime);
-    }
-
-    public void setBirthTime(Datetime birthTime) {
-        if (DataBaseUtil.isDifferent(birthTime, this.birthTime))
-            this.birthTime = DataBaseUtil.toDate(birthTime);
-    }
-
-    public Integer getRaceId() {
-        return raceId;
-    }
-
-    public void setRaceId(Integer raceId) {
-        if (DataBaseUtil.isDifferent(raceId, this.raceId))
-            this.raceId = raceId;
-    }
-
-    public Integer getEthnicityId() {
-        return ethnicityId;
-    }
-
-    public void setEthnicityId(Integer ethnicityId) {
-        if (DataBaseUtil.isDifferent(ethnicityId, this.ethnicityId))
-            this.ethnicityId = ethnicityId;
-    }
-
-    public String getNationalId() {
-        return nationalId;
-    }
-
-    public void setNationalId(String nationalId) {
-        if (DataBaseUtil.isDifferent(nationalId, this.nationalId))
-            this.nationalId = nationalId;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
     public Patient getPatient() {
         return patient;
     }
+    
+    public Integer getNextkinId() {
+        return nextkinId;
+    }
+    
+    public void setNextkinId(Integer nextkinId) {
+        if(DataBaseUtil.isDifferent(nextkinId, this.nextkinId))
+            this.nextkinId = nextkinId;
+    }
+    
+    public Patient getNextKin() {
+        return nextkin;
+    }
+    
+    public Integer getCasePatientId() {
+        return casePatientId;
+    }
+    
+    public void setCasePatientId(Integer casePatientId) {
+        if(DataBaseUtil.isDifferent(casePatientId, this.casePatientId))
+            this.casePatientId = casePatientId;
+    }
+    
+    public CasePatient getCasePatient() {
+        return casePatient;
+    }
+    
+    public Integer getCaseNextkinId() {
+        return caseNextkinId;
+    }
+    
+    public void setCaseNextkinId(Integer caseNextkinId) {
+        if(DataBaseUtil.isDifferent(caseNextkinId, this.caseNextkinId))
+            this.caseNextkinId = caseNextkinId;
+    }
+    
+    public CasePatient getCaseNextkin() {
+        return caseNextkin;
+    }
+    
+    public Integer getOrganizationId() {
+        return organizationId;
+    }
+    
+    public void setOrganizationId(Integer organizationId) {
+        if(DataBaseUtil.isDifferent(organizationId, this.organizationId))
+            this.organizationId = organizationId;
+    }
+    
+    public Organization getOrganization() {
+        return organization;
+    }
+    
+    public Datetime getCompleteDate() {
+        return DataBaseUtil.toYM(completeDate);
+    }
+
+    public void setCompleteDate(Datetime completeDate) {
+        if (DataBaseUtil.isDifferent(completeDate, this.completeDate))
+            this.completeDate = DataBaseUtil.toDate(completeDate);
+    }
+    
+    public String isFinalized() {
+        return isFinalized;
+    }
+    
+    public void setIsFinalized(String isFinalized) {
+        if(DataBaseUtil.isDifferent(isFinalized, this.isFinalized))
+            this.isFinalized = isFinalized;
+    }
+    
 
     @Override
     public void setClone() {
@@ -197,16 +198,14 @@ public class Case implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("last_name", lastName, original.lastName)
-                 .setField("first_name", firstName, original.firstName)
                  .setField("created", created, original.created)
-                 .setField("address_id", addressId, original.addressId, Constants.table().ADDRESS)
-                 .setField("birth_date", birthDate, original.birthDate)
-                 .setField("birth_time", birthTime, original.birthTime)
-                 .setField("patient_id", patientId, original.patientId, Constants.table().DICTIONARY)
-                 .setField("race_id", raceId, original.raceId, Constants.table().DICTIONARY)
-                 .setField("ethnicity_id", ethnicityId, original.ethnicityId, Constants.table().DICTIONARY)
-                 .setField("nationalId", nationalId, nationalId);
+                 .setField("patient_id", patientId, original.patientId, Constants.table().PATIENT)
+                 .setField("nextkin_id", nextkinId, original.nextkinId, Constants.table().PATIENT)
+                 .setField("case_pateint_id", casePatientId, original.casePatientId, Constants.table().CASE_PATIENT)
+                 .setField("case_nextkin_id", caseNextkinId, original.caseNextkinId, Constants.table().CASE_PATIENT)
+                 .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
+                 .setField("complete_date", completeDate, original.completeDate)
+                 .setField("is_finalized", isFinalized, original.isFinalized);
 
         return audit;
     }
