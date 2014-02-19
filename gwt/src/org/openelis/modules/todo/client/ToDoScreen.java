@@ -25,6 +25,8 @@
 */
 package org.openelis.modules.todo.client;
 
+import java.util.ArrayList;
+
 import org.openelis.constants.Messages;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -352,11 +354,13 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     private void showTrackingScreen(final Integer id) throws Exception {
         Browser browser;
         WindowInt window;
+        final ArrayList<Integer> ids;
         final SampleTrackingScreen trackingScreen;
 
         browser = OpenELIS.getBrowser();
         window = browser.getScreenByKey("tracking");
-
+        ids = new ArrayList<Integer>();
+        ids.add(id);
         if (window == null) {
             window = new org.openelis.ui.widget.Window(false);
             window.setName("Tracking");
@@ -365,12 +369,12 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
             browser.addWindow(window, "tracking");
             DeferredCommand.addCommand(new Command() {
                 public void execute() {
-                    trackingScreen.query(id);
+                    trackingScreen.query(ids);
                 }
             });
         } else {
             trackingScreen = (SampleTrackingScreen)window.getContent();
-            trackingScreen.query(id);
+            trackingScreen.query(ids);
         }        
     }
         

@@ -32,7 +32,11 @@ public interface IconCSS extends org.openelis.ui.resources.IconCSS {
     
     public String addOrCancelIcon();
     
+    public String completeIcon();
+    
     public String reviewAndReleaseIcon();
+    
+    public String unreleaseIcon();
     
     public String toDoIcon();
     

@@ -57,6 +57,9 @@ public interface SampleServiceInt1 extends RemoteService {
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception;
     
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query,
+                                                          SampleManager1.Load... elements) throws Exception;
+    
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception;
     
@@ -68,10 +71,15 @@ public interface SampleServiceInt1 extends RemoteService {
 
     public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds,
                                                     SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds, Load... elements) throws Exception;
 
-    public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception;
+    public SampleManager1 unlock(Integer sampleId, SampleManager1.Load... elements) throws Exception;
 
-    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception;
+    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                                      SampleManager1.Load... elements) throws Exception;
 
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception;
 

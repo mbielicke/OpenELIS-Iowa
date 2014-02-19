@@ -140,9 +140,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                   UiBinder<Widget, NeonatalScreeningSampleLoginScreenUI> {
     };
 
-
-
-
     private static NeonatalScreeningSampleLoginUiBinder uiBinder   = GWT.create(NeonatalScreeningSampleLoginUiBinder.class);
 
     protected SampleManager1                            manager;
@@ -233,8 +230,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected NeonatalScreeningSampleLoginScreenUI      screen;
 
-    protected HashMap<String, Object>                   cache;
-
     protected TestSelectionLookupUI                     testSelectionLookup;
 
     protected SampleProjectLookupUI                     sampleprojectLookUp;
@@ -242,15 +237,17 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
     protected PatientLookupScreenUI                     pLookupScreen;
+    
+    protected HashMap<String, Object>                   cache;
 
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall, 
-                                                         updateCall, fetchByIdCall, unlockCall,
+                                                         commitUpdateCall, fetchByIdCall, unlockCall,
                                                          duplicateCall;   
     
     // @formatter:off
-    protected SampleManager1.Load                       elements[] = {
+    protected static final SampleManager1.Load        elements[] = {
                                                                         SampleManager1.Load.ANALYSISUSER,
                                                                         SampleManager1.Load.AUXDATA,
                                                                         SampleManager1.Load.NOTE,
@@ -305,7 +302,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleNotesTab = new SampleNotesTabUI(this);
         storageTab = new StorageTabUI(this);
         qaEventTab = new QAEventTabUI(this);
-
         auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
@@ -366,12 +362,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         //
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
+                                 userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
-                    query.setPressed(true);
                     query.lock();
-                } else
-                    query.setPressed(false);
+                    query.setPressed(true);
+                }
             }
         });
         addShortcut(query, 'q', CTRL);
@@ -392,12 +388,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
                 if (isState(ADD)) {
-                    add.setPressed(true);
                     add.lock();
-                } else {
-                    add.setPressed(false);
+                    add.setPressed(true);
                 }
             }
         });
@@ -405,12 +399,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
-                    update.setPressed(true);
                     update.lock();
-                } else {
-                    update.setPressed(false);
+                    update.setPressed(true);
                 }
             }
         });
@@ -631,6 +623,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 historySampleQA.setEnabled(isState(DISPLAY));
             }
         });
+        
         historySampleQA.addCommand(new Command() {
             @Override
             public void execute() {
@@ -702,9 +695,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * disabled until the functionality for the orders for this
                  * domain has been implemented
                  */
-                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                orderId.setQueryMode(isState(QUERY));
-                // orderId.setEnabled(false);
+                //orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                //orderId.setQueryMode(isState(QUERY));
+                orderId.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
@@ -2013,6 +2006,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                                               ana.getId(),
                                                                               event.getChangeId());
                             break;
+                         default:
+                             clearStatus();
+                             return;
+                             
                     }
 
                     setData();
@@ -2028,7 +2025,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     bus.fireEvent(new ResultChangeEvent(event.getUid()));
 
                     clearStatus();
-                    showErrorsOrTests(ret);
+                    if (ret != null)
+                        showErrorsOrTests(ret);
+                    else 
+                        isBusy = false;
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2196,60 +2196,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         feedingId.setModel(model);
-    }
-
-    /**
-     * validates the screen and sets the status of validation to "Flagged" if
-     * some operation needs to be completed before committing
-     */
-    public Validation validate() {
-        Validation validation;
-
-        validation = super.validate();
-        if (isBusy)
-            validation.setStatus(FLAGGED);
-
-        return validation;
-    }
-
-    /**
-     * returns from the cache, the object that has the specified key and is of
-     * the specified class
-     */
-    @Override
-    public <T> T get(Object key, Class<?> c) {
-        String cacheKey;
-        Object obj;
-
-        if (cache == null)
-            return null;
-
-        cacheKey = null;
-        if (c == TestManager.class)
-            cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
-            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
-
-        obj = cache.get(cacheKey);
-        if (obj != null)
-            return (T)obj;
-
-        /*
-         * if the requested object is not in the cache then obtain it and put it
-         * in the cache
-         */
-        try {
-            if (c == TestManager.class)
-                obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
-
-            cache.put(cacheKey, obj);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return (T)obj;
     }
 
     /*
@@ -2432,8 +2378,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         else
             setBusy(Messages.get().updating());
 
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<SampleManager1>() {
+        if (commitUpdateCall == null) {
+            commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
                     manager = result;
                     evaluateEdit();
@@ -2468,7 +2414,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             };
         }
 
-        SampleService1.get().update(manager, ignoreWarning, updateCall);
+        SampleService1.get().update(manager, ignoreWarning, commitUpdateCall);
     }
 
     /**
@@ -2533,6 +2479,60 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             SampleService1.get().unlock(manager.getSample().getId(), elements, unlockCall);
         }
+    }
+    
+    /**
+     * validates the screen and sets the status of validation to "Flagged" if
+     * some operation needs to be completed before committing
+     */
+    public Validation validate() {
+        Validation validation;
+
+        validation = super.validate();
+        if (isBusy)
+            validation.setStatus(FLAGGED);
+
+        return validation;
+    }
+
+    /**
+     * returns from the cache, the object that has the specified key and is of
+     * the specified class
+     */
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
+        Object obj;
+
+        if (cache == null)
+            return null;
+
+        cacheKey = null;
+        if (c == TestManager.class)
+            cacheKey = Constants.uid().getTest((Integer)key);
+        else if (c == AuxFieldGroupManager.class)
+            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
+
+        obj = cache.get(cacheKey);
+        if (obj != null)
+            return (T)obj;
+
+        /*
+         * if the requested object is not in the cache then obtain it and put it
+         * in the cache
+         */
+        try {
+            if (c == TestManager.class)
+                obj = TestService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager.class)
+                obj = AuxiliaryService.get().fetchById((Integer)key);
+
+            cache.put(cacheKey, obj);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return (T)obj;
     }
 
     /**
@@ -3760,45 +3760,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSampleNeonatal().setFormNumber(formNumber);
     }
 
-    private AsyncCallbackUI<SampleManager1> getChangeAnalysisCall(final AnalysisChangeEvent event) {
-        AsyncCallbackUI<SampleManager1> callBack;
-
-        callBack = new AsyncCallbackUI<SampleManager1>() {
-            public void success(SampleManager1 result) {
-                analysisChanged(event, result, null);
-            }
-
-            public void failure(Throwable error) {
-                Window.alert(error.getMessage());
-                logger.log(Level.SEVERE, error.getMessage(), error);
-                clearStatus();
-            }
-        };
-
-        return callBack;
-    }
-
-    private void analysisChanged(AnalysisChangeEvent event, SampleManager1 man,
-                                 SampleTestReturnVO ret) {
-        manager = man;
-        setData();
-        setState(state);
-        /*
-         * notify all tabs that need to refresh themselves because of the change
-         * in the analysis
-         */
-        bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                        event.getChangeId(),
-                                                        event.getAction()), screen);
-        bus.fireEvent(new ResultChangeEvent(event.getUid()));
-
-        clearStatus();
-        if (ret != null)
-            showErrorsOrTests(ret);
-        else
-            isBusy = false;
-    }
-
     /**
      * warn the user if samples from this organization are to held or refused
      */
@@ -3940,9 +3901,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void showErrorsOrTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret == null)
-            return;
-
+        isBusy = false;
         if (ret.getErrors() != null && ret.getErrors().size() > 0) {
             showErrors(ret.getErrors());
         } else if (ret.getTests() != null && ret.getTests().size() > 0) {
