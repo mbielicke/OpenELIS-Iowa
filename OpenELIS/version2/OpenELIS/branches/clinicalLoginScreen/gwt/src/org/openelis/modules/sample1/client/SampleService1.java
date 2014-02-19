@@ -128,6 +128,22 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query, Load... elements) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.fetchByAnalysisQuery(query, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchByAnalysisQuery(Query query,
+                                     Load[] elements,
+                                     AsyncCallback<ArrayList<SampleManager1>> callback) {
+        service.fetchByAnalysisQuery(query, elements, callback);
+    }
+
+    @Override
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
         Callback<ArrayList<SampleManager1>> callback;
@@ -203,6 +219,22 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds,
+                                                              Load... elements) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.fetchForUpdateByAnalyses(analysisIds, elements, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds, Load[] elements,
+                                         AsyncCallback<ArrayList<SampleManager1>> callback) {
+        service.fetchForUpdateByAnalyses(analysisIds, elements, callback);
+    }
+
+    @Override
     public void unlock(Integer sampleId, Load[] elements, AsyncCallback<SampleManager1> callback) {
         service.unlock(sampleId, elements, callback);
     }
@@ -229,6 +261,22 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         callback = new Callback<ArrayList<SampleManager1>>();
         service.unlock(sampleIds, elements, callback);
         return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                                      Load... elements) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.unlockByAnalyses(analysisIds, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void unlockByAnalyses(ArrayList<Integer> analysisIds, Load[] elements,
+                                 AsyncCallback<ArrayList<SampleManager1>> callback) {
+        service.unlockByAnalyses(analysisIds, elements, callback);
     }
 
     @Override

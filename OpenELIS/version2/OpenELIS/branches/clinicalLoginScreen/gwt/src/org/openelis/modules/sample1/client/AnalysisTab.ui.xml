@@ -16,7 +16,7 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
-  <g:LayoutPanel>
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="90px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
@@ -114,10 +114,10 @@
               <ui:text from="{msg.analysis_samplePrep}:" />
             </td>
             <td colspan="5">
-               <w:Dropdown ui:field="samplePrep" width="367px" field="Integer">
+               <w:Dropdown ui:field="samplePrep" width="367px" field="Integer" dropWidth = "400px">
                 <w:popup>
                   <t:Table header="true">
-                    <t:Column width="130" label="{msg.gen_name}">
+                    <t:Column width="180" label="{msg.gen_name}">
                       <t:LabelCell />
                     </t:Column>
                     <t:Column width="130" label="{msg.sample_type}">
@@ -181,9 +181,9 @@
               <t:Table ui:field="userTable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true"  styleName="{res.table.ScreenTableWithSides}"
               > 
-                <t:Column width="115" label="{msg.gen_user}">
+                <t:Column width="115" label="{msg.gen_user}" required="true">
                   <t:AutoCompleteCell>
-                    <w:AutoComplete ui:field = "user" case="LOWER" required="true">
+                    <w:AutoComplete ui:field = "user" case="LOWER">
                       <w:popup>
                         <t:Table visibleRows="10" header="false">
                           <t:Column width="100">

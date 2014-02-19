@@ -40,7 +40,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
-import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.manager.SampleManager1;
@@ -394,7 +393,7 @@ public class QAEventTabUI extends Screen {
                         redraw = true;
                     }
                 }
-
+                setState(state);
                 displayQAEvents();
             }
         });
@@ -428,8 +427,7 @@ public class QAEventTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -475,11 +473,7 @@ public class QAEventTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
-            setState(state);
             fireDataChange();
         }
     }

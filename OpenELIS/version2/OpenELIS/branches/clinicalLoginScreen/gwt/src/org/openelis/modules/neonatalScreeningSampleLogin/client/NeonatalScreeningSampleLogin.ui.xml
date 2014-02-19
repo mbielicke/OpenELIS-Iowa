@@ -582,8 +582,8 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="505px" bottom="0px">
-      <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX" width="715px">
+    <g:layer top="510px" bottom="0px">
+      <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
         <w:tab>
           <w:customHeader>
             <w:TabWidget text="{msg.sample_item}" />

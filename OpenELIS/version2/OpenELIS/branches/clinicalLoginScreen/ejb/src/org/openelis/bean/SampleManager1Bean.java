@@ -71,6 +71,7 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -179,6 +180,9 @@ public class SampleManager1Bean {
 
     @EJB
     private WorksheetBean                worksheet;
+    
+    @EJB
+    private FinalReportBean              finalReport;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -582,7 +586,10 @@ public class SampleManager1Bean {
         if (el.contains(SampleManager1.Load.NOTE)) {
             for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
-                addAnalysisInternalNote(sm, data);
+                if ("Y".equals(data.getIsExternal()))
+                    addAnalysisExternalNote(sm, data);
+                else
+                    addAnalysisInternalNote(sm, data);
             }
         }
 
@@ -662,6 +669,21 @@ public class SampleManager1Bean {
         for (IdAccessionVO vo : sample.query(fields, first, max))
             ids.add(vo.getId());
         return fetchByIds(ids, elements);
+    }
+
+    /**
+     * Returns sample managers based on the analyses found by the specified
+     * query and requested load elements
+     */
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(ArrayList<QueryData> fields, int first,
+                                                          int max, SampleManager1.Load... elements) throws Exception {
+        ArrayList<Integer> ids;
+
+        ids = new ArrayList<Integer>();
+
+        for (IdVO vo : analysis.query(fields, first, max))
+            ids.add(vo.getId());
+        return fetchByAnalyses(ids, elements);
     }
 
     /**
@@ -867,17 +889,19 @@ public class SampleManager1Bean {
         HashMap<Integer, QaEventDO> qas;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
         AnalysisReportFlagsDO defaultARF;
+        Datetime now;
 
         /*
-         * validation needs test, aux group manager and pws DO. Build lists of analysis
-         * test ids, aux group ids to fetch test and aux group managers.
+         * validation needs test, aux group manager and pws DO. Build lists of
+         * analysis test ids, aux group ids to fetch test and aux group
+         * managers.
          */
         ids = new HashSet<Integer>();
         ids1 = new HashSet<Integer>();
         ids2 = new HashSet<Integer>();
         for (SampleManager1 sm : sms) {
             if (getSampleSDWIS(sm) != null)
-                    ids2.add(getSampleSDWIS(sm).getPwsId());            
+                ids2.add(getSampleSDWIS(sm).getPwsId());
             for (AnalysisViewDO an : getAnalyses(sm))
                 ids.add(an.getTestId());
             if (getAuxilliary(sm) != null) {
@@ -925,7 +949,7 @@ public class SampleManager1Bean {
 
         e = new ValidationErrorsList();
         /*
-         * validate each sample and re-evalute its status
+         * validate each sample and re-evaluate its status
          */
         for (SampleManager1 sm : sms) {
             try {
@@ -976,7 +1000,13 @@ public class SampleManager1Bean {
          * analysis that is added to the database
          */
         defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
-        
+
+        /*
+         * this will be used as the released date for any newly released
+         * analyses
+         */
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+
         /*
          * the front code uses negative ids (temporary ids) to link sample items
          * and analysis, analysis and results. The negative ids are mapped to
@@ -1032,10 +1062,19 @@ public class SampleManager1Bean {
             }
 
             // add/update sample
-            if (getSample(sm).getId() == null)
+            if (getSample(sm).getId() == null) {
                 sample.add(getSample(sm));
-            else
+            } else {
+                /*
+                 * check to see if the sample or any analysis has been
+                 * unreleased. call final report e-save if they have.
+                 */
+                if (getPostProcessing(sm) == PostProcessing.UNRELEASE) {
+                    finalReport.runReportForESave(getSample(sm).getAccessionNumber());
+                    setPostProcessing(sm, null);
+                }
                 sample.update(getSample(sm));
+            }
 
             // add/update sample domain
             if (getSampleEnvironmental(sm) != null) {
@@ -1221,11 +1260,18 @@ public class SampleManager1Bean {
 
                             defaultARF.setAnalysisId(data.getId());
                             analysisReportFlags.add(defaultARF);
-                            
+
                             amap.put(tmpid, data.getId());
                             amap.put(data.getId(), data.getId());
                         } else if ( !amap.containsKey(data.getId())) {
                             tmpid = data.getId();
+                            /*
+                             * set the released date if this analysis is
+                             * currently being released
+                             */
+                            if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
+                                data.getReleasedDate() == null)
+                                data.setReleasedDate(now);
                             analysis.update(data);
                             amap.put(tmpid, data.getId());
                         }
@@ -1342,8 +1388,8 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Changes the sample's status to the passed value or the lowest
-     * status of the analyses
+     * Changes the sample's status to the passed value or the lowest status of
+     * the analyses
      */
     public void changeSampleStatus(SampleManager1 sm, Integer statusId) {
         boolean isError, isLoggedIn, isCompleted, isReleased;
@@ -1450,7 +1496,27 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Check to see if 1) the accession number bas been issues by the login
+     * Unlocks and returns list of sample managers with specified analysis ids
+     * and requested load elements
+     */
+    @RolesAllowed({"sample-add", "sample-update"})
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                                      SampleManager1.Load... elements) throws Exception {
+        HashSet<Integer> ids;
+        ArrayList<SampleManager1> sms;
+
+        sms = fetchByAnalyses(analysisIds, elements);
+
+        ids = new HashSet<Integer>();
+        for (SampleManager1 sm : sms)
+            ids.add(getSample(sm).getId());
+
+        lock.unlock(Constants.table().SAMPLE, new ArrayList<Integer>(ids));
+        return sms;
+    }
+
+    /**
+     * Check to see if 1) the accession number has been issued by the login
      * barcode process and 2) accession number has not been assigned to another
      * sample.
      */
@@ -2161,7 +2227,7 @@ public class SampleManager1Bean {
         if (getAnalyses(sm) != null) {
             for (AnalysisViewDO data : getAnalyses(sm)) {
                 amap.put(data.getId(), data);
-                if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged())
+                if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged()) {
                     try {
                         analysis.validate(data,
                                           tms.get(data.getTestId()),
@@ -2194,7 +2260,7 @@ public class SampleManager1Bean {
                             /*
                              * set the analysis in error because its data is
                              * inconsistent e.g. its unit of measure is not
-                             * valid for the sample item's sample type 
+                             * valid for the sample item's sample type
                              */
                             if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId()))
                                 analysisHelper.changeAnalysisStatus(sm,
@@ -2217,6 +2283,7 @@ public class SampleManager1Bean {
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
+                }
             }
         }
 

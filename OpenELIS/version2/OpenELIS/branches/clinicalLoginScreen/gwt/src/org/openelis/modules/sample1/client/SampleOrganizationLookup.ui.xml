@@ -29,9 +29,9 @@
             <w:TextBox field="String" case="UPPER" />
           </t:TextBoxCell>
         </t:Column>
-        <t:Column width="220" label="{msg.gen_name}">
+        <t:Column width="220" label="{msg.gen_name}" required="true">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="organization" case="UPPER" required="true"
+            <w:AutoComplete ui:field="organization" case="UPPER" 
               width="130" dropWidth = "490px">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
