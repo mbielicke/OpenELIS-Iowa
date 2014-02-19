@@ -46,7 +46,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Field;
-import org.openelis.gwt.widget.FileLoad;
+import org.openelis.ui.widget.fileupload.FileLoad;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -141,7 +141,8 @@ public class DataViewScreen extends Screen {
 //            fileLoad.setAction("upload");
 //        else
             // used for hosted mode
-            fileLoad.setAction("openelis/upload");
+        fileLoad.setAction("openelis/upload");
+            
 
         fileLoad.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             public void onSubmitComplete(SubmitCompleteEvent event) {

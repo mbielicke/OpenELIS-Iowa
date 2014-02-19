@@ -37,10 +37,12 @@ UIRF Software License are applicable instead of those above.
     <inherits name="com.google.gwt.user.Debug"/>
     
     <!--  Inherit Screen modules to compile for development -->
-    <inherits name="org.openelis.modules.Screens"/>
+    <!-- <inherits name="org.openelis.modules.Screens"/>-->
+    <inherits name="org.openelis.modules.organization.Organization"/>
     
-    <!--  Only compile single browser permutation -->
+    <!--  Only compile single browser permutation --> 
     <set-property name="user.agent" value="gecko1_8" />
+   
     
     <!--  Leaves CSS injections in human readable for testing and developing -->
     <set-configuration-property name="CssResource.style" value="pretty"/>

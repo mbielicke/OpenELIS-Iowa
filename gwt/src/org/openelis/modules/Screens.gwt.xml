@@ -29,7 +29,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
     <inherits name="org.openelis.modules.analyteParameter.AnalyteParameter"/>
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
-    <inherits name="org.openelis.modules.completeRelease.CompleteRelease"/>
+    <inherits name="org.openelis.modules.completeRelease.CompleteRelease1"/>
     <inherits name="org.openelis.modules.cron.Cron"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.exchangeVocabularyMap.ExchangeVocabularyMap"/>
