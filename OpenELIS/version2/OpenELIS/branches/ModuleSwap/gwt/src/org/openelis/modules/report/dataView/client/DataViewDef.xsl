@@ -47,7 +47,7 @@ UIRF Software License are applicable instead of those above.
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
          <HorizontalPanel>
           <fileUpload key="fileUpload" service="org.openelis.modules.dataDump.server.DataDumpService">
-          <appButton key="chooseQueryButton" style="ButtonPanelButton">
+          <appButton key="chooseQueryButton" style="ButtonPanelButton" enabled="true">
             <HorizontalPanel>
              <AbsolutePanel style="OpenButtonImage" />
               <text>
