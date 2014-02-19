@@ -49,11 +49,10 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class OrderItemBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
+    private EntityManager manager;
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrderItemViewDO> fetchByOrderId(Integer id) throws Exception {
@@ -69,7 +68,7 @@ public class OrderItemBean {
 
         return DataBaseUtil.toArrayList(list);
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<OrderItemViewDO> fetchByOrderIds(ArrayList<Integer> ids) throws Exception {
         Query query;
@@ -79,15 +78,15 @@ public class OrderItemBean {
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public OrderItemViewDO fetchById(Integer id) throws Exception {
         Query query;
         OrderItemViewDO data;
-        
+
         query = manager.createNamedQuery("OrderItem.FetchById");
         query.setParameter("id", id);
         try {
-            data = (OrderItemViewDO)query.getSingleResult();          
+            data = (OrderItemViewDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -131,12 +130,11 @@ public class OrderItemBean {
 
         return data;
     }
-    
-    public ArrayList<OrderItemViewDO> add(OrderViewDO order, 
-                                          ArrayList<OrderItemViewDO> items) throws Exception {
-        for (int i = 0; i < items.size(); i++)                    
+
+    public ArrayList<OrderItemViewDO> add(OrderViewDO order, ArrayList<OrderItemViewDO> items) throws Exception {
+        for (int i = 0; i < items.size(); i++ )
             add(items.get(i));
-        
+
         return items;
     }
 
@@ -151,13 +149,23 @@ public class OrderItemBean {
     }
 
     public void validate(OrderItemDO data) throws Exception {
+        Integer orderId;
         ValidationErrorsList list;
+
+        /*
+         * for display
+         */
+        orderId = data.getOrderId();
+        if (orderId == null)
+            orderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getInventoryItemId()))
-            list.add(new FormErrorException(Messages.get().order_inventoryItemRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+            list.add(new FormErrorException(Messages.get()
+                                                    .order_inventoryItemRequiredException(orderId)));
         if (DataBaseUtil.isEmpty(data.getQuantity()))
-            list.add(new FormErrorException(Messages.get().order_inventoryQuantityRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+            list.add(new FormErrorException(Messages.get()
+                                                    .order_inventoryQuantityRequiredException(orderId)));
         if (list.size() > 0)
             throw list;
     }

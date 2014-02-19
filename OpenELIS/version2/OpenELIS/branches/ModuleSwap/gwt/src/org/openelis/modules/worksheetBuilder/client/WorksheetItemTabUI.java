@@ -834,7 +834,7 @@ public class WorksheetItemTabUI extends Screen {
 
         win = new org.openelis.ui.widget.Window();
         win.setName(Messages.get().worksheet_worksheetBuilderLookup());
-        win.setSize("1060px", "498px");
+        win.setSize("1053px", "522px");
         wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
         try {
@@ -1019,7 +1019,7 @@ public class WorksheetItemTabUI extends Screen {
                                     modal2 = new ModalWindow();
                                     modal2.setName(Messages.get().worksheet_worksheetAnalysisSelection() + " (#" + wVDO.getId().toString() + ")");
                                     modal2.setContent(waSelectionScreen);
-                                    modal2.setSize("502px", "365px");
+                                    modal2.setSize("502px", "395px");
                                     waSelectionScreen.setWindow(modal2);
                                     waSelectionScreen.setWorksheetId(wVDO.getId());
                                     waSelectionScreen.initialize();

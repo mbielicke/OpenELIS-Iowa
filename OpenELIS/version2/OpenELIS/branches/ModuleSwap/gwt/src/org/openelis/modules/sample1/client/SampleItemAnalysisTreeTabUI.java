@@ -507,7 +507,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     @UiHandler("removeRowButton")
     protected void removeRow(ClickEvent event) {
-        final String uid;
+        String uid;
         Node node;
         AnalysisViewDO ana;
 
@@ -537,9 +537,22 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                     cancelAnalysisConfirm.setHeight("150px");
                     cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                         public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                            switch (event.getSelectedItem().intValue()) {
+                            String uid;
+                            Node node;
 
+                            switch (event.getSelectedItem().intValue()) {
                                 case 1:
+                                    /*
+                                     * the uid is obtained here again to make
+                                     * sure that the event fired below has the
+                                     * uid of the currently selected analysis
+                                     * and not of the analysis for which the
+                                     * event was fired for the first time after
+                                     * creating this popup
+                                     */
+                                    node = tree.getNodeAt(tree.getSelectedNode());
+                                    uid = (String)node.getData();
+
                                     parentBus.fireEvent(new AnalysisChangeEvent(uid,
                                                                                 Constants.dictionary().ANALYSIS_CANCELLED,
                                                                                 AnalysisChangeEvent.Action.STATUS_CHANGED));
