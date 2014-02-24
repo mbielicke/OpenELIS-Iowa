@@ -254,6 +254,7 @@ public class SampleMeta implements Meta, MetaMap {
                     SAMPLE_ORG_ID = "_sampleOrganization.id",
                     SAMPLE_ORG_SAMPLE_ID = "_sampleOrganization.sampleId",
                     SAMPLE_ORG_ORGANIZATION_ID = "_sampleOrganization.organizationId",
+                    SAMPLE_ORG_ORGANIZATION_ATTENTION = "_sampleOrganization.organizationAttention",
                     SAMPLE_ORG_TYPE_ID = "_sampleOrganization.typeId",
 
                     ORG_ID = "_organization.id",
@@ -405,7 +406,8 @@ public class SampleMeta implements Meta, MetaMap {
                                                   SAMPLESUBQA_TYPE_ID, SAMPLESUBQA_IS_BILLABLE,
                                                   SAMPLESUBQA_REPORTING_SEQUENCE,
                                                   SAMPLESUBQA_REPORTING_TEXT, SAMPLE_ORG_ID,
-                                                  SAMPLE_ORG_SAMPLE_ID, SAMPLE_ORG_ORGANIZATION_ID,
+                                                  SAMPLE_ORG_SAMPLE_ID, SAMPLE_ORG_ORGANIZATION_ID, 
+                                                  SAMPLE_ORG_ORGANIZATION_ATTENTION,
                                                   SAMPLE_ORG_TYPE_ID, ORG_ID,
                                                   ORG_PARENT_ORGANIZATION_ID, ORG_NAME,
                                                   ORG_IS_ACTIVE, ORG_ADDRESS_ID, 
@@ -1211,6 +1213,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getSampleOrgOrganizationId() {
         return SAMPLE_ORG_ORGANIZATION_ID;
+    }
+    
+    public static String getSampleOrgOrganizationAttention() {
+        return SAMPLE_ORG_ORGANIZATION_ATTENTION;
     }
 
     public static String getSampleOrgTypeId() {
