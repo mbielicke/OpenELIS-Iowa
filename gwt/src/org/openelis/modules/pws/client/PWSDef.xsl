@@ -120,8 +120,8 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <menuItem key="parse" description="" enable="true" icon="historyIcon" label="Parse" />
-                    <menuItem key="violationScan" description="" enable="true" icon="historyIcon" label="violationScan" />
-                    <menuItem key="additionalScan" description="" enable="true" icon="historyIcon" label="additionalScan" />
+                    <menuItem key="violationScan" description="" enable="false" icon="historyIcon" label="violationScan" />
+                    <menuItem key="additionalScan" description="" enable="false" icon="historyIcon" label="additionalScan" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
