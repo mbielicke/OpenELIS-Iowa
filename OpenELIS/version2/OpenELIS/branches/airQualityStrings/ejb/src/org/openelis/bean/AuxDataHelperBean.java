@@ -116,7 +116,13 @@ public class AuxDataHelperBean {
                     SAMPLE_CAT = "sample_cat", SAMPLE_PT_ID = "sample_pt_id", YES = "yes",
                     STATE = "state", COUNTRY = "country", SDWIS_SAMPLE_TYPE = "sdwis_sample_type",
                     SDWIS_SAMPLE_CATEGORY = "sdwis_sample_category",
-                    ORG_HOLD_SAMPLE = "org_hold_sample", ORIG_SAMPLE_NUMBER = "orig_sample_number";
+                    ORG_HOLD_SAMPLE = "org_hold_sample", ORIG_SAMPLE_NUMBER = "orig_sample_number",
+                    TEMPERATURE = "temperature", VOLUME = "volume", PRESSURE = "pressure",
+                    NULL_DATA_CODE = "null_data_code", FILTER_LOT_BLANK = "filter_lot_blank",
+                    STRIPS_PER_FILTER = "strips_per_filter",
+                    BLANK_SAMLE_NUMBER = "blank_samle_number", STATE_CODE = "state_code",
+                    COUNTY_CODE = "county_code", SITE_ID = "site_id", POC = "poc",
+                    COLLECTION_FREQUENCY = "collection_frequency";
 
     /**
      * Adds aux groups specified by the list of ids to the list of aux data, if
@@ -822,6 +828,48 @@ public class AuxDataHelperBean {
             } else if (ORIG_SAMPLE_NUMBER.equals(extId)) {
                 data.setTypeId(Constants.dictionary().AUX_NUMERIC);
                 data.setValue(sample.getAccessionNumber().toString());
+            }
+        }
+    }
+
+    public static void fillAirQualityAuxData(SampleManager1 sm, String originalSampleNum,
+                                             String temperature, String volume, String pressure,
+                                             String nullDataCd, String filterLotBlank,
+                                             String stripsPerFilter, String blankSampleNum,
+                                             String stateCd, String countyCd, String siteId,
+                                             String poc, String collectionFreq) {
+        String extId;
+        AuxDataViewDO data;
+
+        for (int i = 0; i < sm.auxData.count(); i++ ) {
+            data = sm.auxData.get(i);
+            extId = data.getAnalyteExternalId();
+            if (ORIG_SAMPLE_NUMBER.equals(extId)) {
+                originalSampleNum = data.getValue();
+            } else if (TEMPERATURE.equals(extId)) {
+                temperature = data.getValue();
+            } else if (VOLUME.equals(extId)) {
+                volume = data.getValue();
+            } else if (PRESSURE.equals(extId)) {
+                pressure = data.getValue();
+            } else if (NULL_DATA_CODE.equals(extId)) {
+                nullDataCd = data.getValue();
+            } else if (FILTER_LOT_BLANK.equals(extId)) {
+                filterLotBlank = data.getValue();
+            } else if (STRIPS_PER_FILTER.equals(extId)) {
+                stripsPerFilter = data.getValue();
+            } else if (BLANK_SAMLE_NUMBER.equals(extId)) {
+                blankSampleNum = data.getValue();
+            } else if (STATE_CODE.equals(extId)) {
+                stateCd = data.getValue();
+            } else if (COUNTY_CODE.equals(extId)) {
+                countyCd = data.getValue();
+            } else if (SITE_ID.equals(extId)) {
+                siteId = data.getValue();
+            } else if (POC.equals(extId)) {
+                poc = data.getValue();
+            } else if (COLLECTION_FREQUENCY.equals(extId)) {
+                collectionFreq = data.getValue();
             }
         }
     }
