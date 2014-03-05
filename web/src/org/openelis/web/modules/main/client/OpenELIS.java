@@ -252,7 +252,7 @@ public class OpenELIS extends ResizeComposite {
         link.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
-                    Window.open("https://www.shl.uiowa.edu/ldap/loginView.jsp", "password", null);
+                    Window.open("https://www.shl.uiowa.edu/pwm", "password", null);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
