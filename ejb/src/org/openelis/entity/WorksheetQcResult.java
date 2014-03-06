@@ -21,7 +21,7 @@ import org.openelis.ui.common.DataBaseUtil;
 @NamedQueries({
     @NamedQuery( name = "WorksheetQcResult.FetchByWorksheetAnalysisId",
                 query = "select new org.openelis.domain.WorksheetQcResultViewDO(wqr.id,wqr.worksheetAnalysisId," +
-                		"wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value1,wqr.value2," +
+                		"wqr.sortOrder,wqr.qcAnalyteId,wqr.value1,wqr.value2," +
                 		"wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                 		"wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                 		"wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
@@ -32,7 +32,7 @@ import org.openelis.ui.common.DataBaseUtil;
                         " where wqr.worksheetAnalysisId = :id order by wqr.sortOrder"),
     @NamedQuery( name = "WorksheetQcResult.FetchByWorksheetAnalysisIds",
                 query = "select new org.openelis.domain.WorksheetQcResultViewDO(wqr.id,wqr.worksheetAnalysisId," +
-                        "wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value1,wqr.value2," +
+                        "wqr.sortOrder,wqr.qcAnalyteId,wqr.value1,wqr.value2," +
                         "wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         "wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         "wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
@@ -58,9 +58,6 @@ public class WorksheetQcResult {
 
     @Column(name = "qc_analyte_id")
     private Integer           qcAnalyteId;
-
-    @Column(name = "type_id")
-    private Integer           typeId;
 
     @Column(name = "value_1")
     private String            value1;
@@ -190,15 +187,6 @@ public class WorksheetQcResult {
     public void setQcAnalyteId(Integer qcAnalyteId) {
         if (DataBaseUtil.isDifferent(qcAnalyteId, this.qcAnalyteId))
             this.qcAnalyteId = qcAnalyteId;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId, this.typeId))
-            this.typeId = typeId;
     }
 
     public String getValue1() {
