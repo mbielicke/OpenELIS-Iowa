@@ -9412,22 +9412,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_catalogNum();
 
   /**
-   * Translated "Order # \"{0}\": Container Item Sequence is required".
+   * Translated "Order # \"{0,number}\": Container Item Sequence is required".
    * 
-   * @return translated "Order # \"{0}\": Container Item Sequence is required"
+   * @return translated "Order # \"{0,number}\": Container Item Sequence is required"
    */
-  @DefaultMessage("Order # \"{0}\": Container Item Sequence is required")
+  @DefaultMessage("Order # \"{0,number}\": Container Item Sequence is required")
   @Key("order.containerItemSequenceRequiredException")
-  String order_containerItemSequenceRequiredException(String arg0);
+  String order_containerItemSequenceRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Container is required".
+   * Translated "Order # \"{0,number}\": Container is required".
    * 
-   * @return translated "Order # \"{0}\": Container is required"
+   * @return translated "Order # \"{0,number}\": Container is required"
    */
-  @DefaultMessage("Order # \"{0}\": Container is required")
+  @DefaultMessage("Order # \"{0,number}\": Container is required")
   @Key("order.containerRequiredException")
-  String order_containerRequiredException(String arg0);
+  String order_containerRequiredException(Integer arg0);
 
   /**
    * Translated "Cost Center".
@@ -9439,13 +9439,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_costCenter();
 
   /**
-   * Translated "Order # \"{0}\": Cost Center is required".
+   * Translated "Order # \"{0,number}\": Cost Center is required".
    * 
-   * @return translated "Order # \"{0}\": Cost Center is required"
+   * @return translated "Order # \"{0,number}\": Cost Center is required"
    */
-  @DefaultMessage("Order # \"{0}\": Cost Center is required")
+  @DefaultMessage("Order # \"{0,number}\": Cost Center is required")
   @Key("order.costCenterRequiredException")
-  String order_costCenterRequiredException(String arg0);
+  String order_costCenterRequiredException(Integer arg0);
 
   /**
    * Translated "Customer".
@@ -9466,22 +9466,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_datesFreqUnitNotSpec();
 
   /**
-   * Translated "Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once".
+   * Translated "Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once".
    * 
-   * @return translated "Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once"
+   * @return translated "Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once"
    */
-  @DefaultMessage("Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once")
+  @DefaultMessage("Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once")
   @Key("order.duplicateInvItemVendorOrderException")
-  String order_duplicateInvItemVendorOrderException(String arg0,  String arg1);
+  String order_duplicateInvItemVendorOrderException(Integer arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0}\": End date must not be before begin date".
+   * Translated "Order # \"{0,number}\": End date must not be before begin date".
    * 
-   * @return translated "Order # \"{0}\": End date must not be before begin date"
+   * @return translated "Order # \"{0,number}\": End date must not be before begin date"
    */
-  @DefaultMessage("Order # \"{0}\": End date must not be before begin date")
+  @DefaultMessage("Order # \"{0,number}\": End date must not be before begin date")
   @Key("order.endDateAfterBeginDateException")
-  String order_endDateAfterBeginDateException(String arg0);
+  String order_endDateAfterBeginDateException(Integer arg0);
 
   /**
    * Translated "Ext Order #".
@@ -9502,40 +9502,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_filled();
 
   /**
-   * Translated "Order # \"{0}\": Frequency must be greater than zero".
+   * Translated "Order # \"{0,number}\": Frequency must be greater than zero".
    * 
-   * @return translated "Order # \"{0}\": Frequency must be greater than zero"
+   * @return translated "Order # \"{0,number}\": Frequency must be greater than zero"
    */
-  @DefaultMessage("Order # \"{0}\": Frequency must be greater than zero")
+  @DefaultMessage("Order # \"{0,number}\": Frequency must be greater than zero")
   @Key("order.freqInvalidException")
-  String order_freqInvalidException(String arg0);
+  String order_freqInvalidException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
+   * Translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
    * 
-   * @return translated "Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  "
+   * @return translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  "
    */
-  @DefaultMessage("Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ")
+  @DefaultMessage("Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ")
   @Key("order.invalidSampleTypeForTestWarning")
-  String order_invalidSampleTypeForTestWarning(String arg0,  String arg1,  String arg2);
+  String order_invalidSampleTypeForTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Order # \"{0}\": Inventory Item is required".
+   * Translated "Order # \"{0,number}\": Inventory Item is required".
    * 
-   * @return translated "Order # \"{0}\": Inventory Item is required"
+   * @return translated "Order # \"{0,number}\": Inventory Item is required"
    */
-  @DefaultMessage("Order # \"{0}\": Inventory Item is required")
+  @DefaultMessage("Order # \"{0,number}\": Inventory Item is required")
   @Key("order.inventoryItemRequiredException")
-  String order_inventoryItemRequiredException(String arg0);
+  String order_inventoryItemRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Inventory Quantity is required".
+   * Translated "Order # \"{0,number}\": Inventory Quantity is required".
    * 
-   * @return translated "Order # \"{0}\": Inventory Quantity is required"
+   * @return translated "Order # \"{0,number}\": Inventory Quantity is required"
    */
-  @DefaultMessage("Order # \"{0}\": Inventory Quantity is required")
+  @DefaultMessage("Order # \"{0,number}\": Inventory Quantity is required")
   @Key("order.inventoryQuantityRequiredException")
-  String order_inventoryQuantityRequiredException(String arg0);
+  String order_inventoryQuantityRequiredException(Integer arg0);
 
   /**
    * Translated "Item #".
@@ -9556,49 +9556,49 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_items();
 
   /**
-   * Translated "Order # \"{0}\": Duplicating more than one container is not allowed".
+   * Translated "Order # \"{0,number}\": Duplicating more than one container is not allowed".
    * 
-   * @return translated "Order # \"{0}\": Duplicating more than one container is not allowed"
+   * @return translated "Order # \"{0,number}\": Duplicating more than one container is not allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Duplicating more than one container is not allowed")
+  @DefaultMessage("Order # \"{0,number}\": Duplicating more than one container is not allowed")
   @Key("order.multiRowDuplicateNotAllowed")
-  String order_multiRowDuplicateNotAllowed(String arg0);
+  String order_multiRowDuplicateNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Moving up/down more than one container is not allowed".
+   * Translated "Order # \"{0,number}\": Moving up/down more than one container is not allowed".
    * 
-   * @return translated "Order # \"{0}\": Moving up/down more than one container is not allowed"
+   * @return translated "Order # \"{0,number}\": Moving up/down more than one container is not allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Moving up/down more than one container is not allowed")
+  @DefaultMessage("Order # \"{0,number}\": Moving up/down more than one container is not allowed")
   @Key("order.multiRowMoveNotAllowed")
-  String order_multiRowMoveNotAllowed(String arg0);
+  String order_multiRowMoveNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed".
+   * Translated "Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed".
    * 
-   * @return translated "Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed"
+   * @return translated "Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed")
+  @DefaultMessage("Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed")
   @Key("order.multiTestCheckNotAllowed")
-  String order_multiTestCheckNotAllowed(String arg0);
+  String order_multiTestCheckNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Only one record with the type Bill To is allowed".
+   * Translated "Order # \"{0,number}\": Only one record with the type Bill To is allowed".
    * 
-   * @return translated "Order # \"{0}\": Only one record with the type Bill To is allowed"
+   * @return translated "Order # \"{0,number}\": Only one record with the type Bill To is allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Only one record with the type Bill To is allowed")
+  @DefaultMessage("Order # \"{0,number}\": Only one record with the type Bill To is allowed")
   @Key("order.multipleBillToException")
-  String order_multipleBillToException(String arg0);
+  String order_multipleBillToException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Only one record with the type Report To is allowed ".
+   * Translated "Order # \"{0,number}\": Only one record with the type Report To is allowed ".
    * 
-   * @return translated "Order # \"{0}\": Only one record with the type Report To is allowed "
+   * @return translated "Order # \"{0,number}\": Only one record with the type Report To is allowed "
    */
-  @DefaultMessage("Order # \"{0}\": Only one record with the type Report To is allowed ")
+  @DefaultMessage("Order # \"{0,number}\": Only one record with the type Report To is allowed ")
   @Key("order.multipleReportToException")
-  String order_multipleReportToException(String arg0);
+  String order_multipleReportToException(Integer arg0);
 
   /**
    * Translated "Needed In Days".
@@ -9610,40 +9610,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_neededDays();
 
   /**
-   * Translated "Order # \"{0}\": Needed In Days is required".
+   * Translated "Order # \"{0,number}\": Needed In Days is required".
    * 
-   * @return translated "Order # \"{0}\": Needed In Days is required"
+   * @return translated "Order # \"{0,number}\": Needed In Days is required"
    */
-  @DefaultMessage("Order # \"{0}\": Needed In Days is required")
+  @DefaultMessage("Order # \"{0,number}\": Needed In Days is required")
   @Key("order.neededInDaysRequiredException")
-  String order_neededInDaysRequiredException(String arg0);
+  String order_neededInDaysRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' ".
+   * Translated "Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' ".
    * 
-   * @return translated "Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' "
+   * @return translated "Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' "
    */
-  @DefaultMessage("Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' ")
+  @DefaultMessage("Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' ")
   @Key("order.noContainerWithItemNumWarning")
-  String order_noContainerWithItemNumWarning(String arg0,  String arg1,  String arg2);
+  String order_noContainerWithItemNumWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Order # \"{0}\": No sample type specified for the container with Item # {1}  ".
+   * Translated "Order # \"{0,number}\": No sample type specified for the container with Item # {1}  ".
    * 
-   * @return translated "Order # \"{0}\": No sample type specified for the container with Item # {1}  "
+   * @return translated "Order # \"{0,number}\": No sample type specified for the container with Item # {1}  "
    */
-  @DefaultMessage("Order # \"{0}\": No sample type specified for the container with Item # {1}  ")
+  @DefaultMessage("Order # \"{0,number}\": No sample type specified for the container with Item # {1}  ")
   @Key("order.noSampleTypeForContainerWarning")
-  String order_noSampleTypeForContainerWarning(String arg0,  String arg1);
+  String order_noSampleTypeForContainerWarning(Integer arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0}\": Not all dates generated with this frequency are valid".
+   * Translated "Order # \"{0,number}\": Not all dates generated with this frequency are valid".
    * 
-   * @return translated "Order # \"{0}\": Not all dates generated with this frequency are valid"
+   * @return translated "Order # \"{0,number}\": Not all dates generated with this frequency are valid"
    */
-  @DefaultMessage("Order # \"{0}\": Not all dates generated with this frequency are valid")
+  @DefaultMessage("Order # \"{0,number}\": Not all dates generated with this frequency are valid")
   @Key("order.notAllDatesValid")
-  String order_notAllDatesValid(String arg0);
+  String order_notAllDatesValid(Integer arg0);
 
   /**
    * Translated "# Forms".
@@ -9655,13 +9655,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_numForms();
 
   /**
-   * Translated "Order # \"{0}\": # Forms is required".
+   * Translated "Order # \"{0,number}\": # Forms is required".
    * 
-   * @return translated "Order # \"{0}\": # Forms is required"
+   * @return translated "Order # \"{0,number}\": # Forms is required"
    */
-  @DefaultMessage("Order # \"{0}\": # Forms is required")
+  @DefaultMessage("Order # \"{0,number}\": # Forms is required")
   @Key("order.numFormsRequiredException")
-  String order_numFormsRequiredException(String arg0);
+  String order_numFormsRequiredException(Integer arg0);
 
   /**
    * Translated "Order".
@@ -9754,22 +9754,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_orderTestHistory();
 
   /**
-   * Translated "Order # \"{0}\": Organization is required".
+   * Translated "Order # \"{0,number}\": Organization is required".
    * 
-   * @return translated "Order # \"{0}\": Organization is required"
+   * @return translated "Order # \"{0,number}\": Organization is required"
    */
-  @DefaultMessage("Order # \"{0}\": Organization is required")
+  @DefaultMessage("Order # \"{0,number}\": Organization is required")
   @Key("order.organizationRequiredException")
-  String order_organizationRequiredException(String arg0);
+  String order_organizationRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Organization Type is required".
+   * Translated "Order # \"{0,number}\": Organization Type is required".
    * 
-   * @return translated "Order # \"{0}\": Organization Type is required"
+   * @return translated "Order # \"{0,number}\": Organization Type is required"
    */
-  @DefaultMessage("Order # \"{0}\": Organization Type is required")
+  @DefaultMessage("Order # \"{0,number}\": Organization Type is required")
   @Key("order.organizationTypeRequiredException")
-  String order_organizationTypeRequiredException(String arg0);
+  String order_organizationTypeRequiredException(Integer arg0);
 
   /**
    * Translated "Parent Order #".
@@ -9781,13 +9781,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_parentOrderNum();
 
   /**
-   * Translated "Order # \"{0}\": This value must not exceed {1}".
+   * Translated "Order # \"{0,number}\": This value must not exceed {1}".
    * 
-   * @return translated "Order # \"{0}\": This value must not exceed {1}"
+   * @return translated "Order # \"{0,number}\": This value must not exceed {1}"
    */
-  @DefaultMessage("Order # \"{0}\": This value must not exceed {1}")
+  @DefaultMessage("Order # \"{0,number}\": This value must not exceed {1}")
   @Key("order.qtyNotMoreThanMaxException")
-  String order_qtyNotMoreThanMaxException(String arg0,  String arg1);
+  String order_qtyNotMoreThanMaxException(Integer arg0,  String arg1);
 
   /**
    * Translated "Recur".
@@ -9799,40 +9799,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_recur();
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Active Begin is required".
+   * Translated "Order # \"{0,number}\": Recurrence Active Begin is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Active Begin is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Active Begin is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Active Begin is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Active Begin is required")
   @Key("order.recurrenceActiveBeginRequiredException")
-  String order_recurrenceActiveBeginRequiredException(String arg0);
+  String order_recurrenceActiveBeginRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Active End is required".
+   * Translated "Order # \"{0,number}\": Recurrence Active End is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Active End is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Active End is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Active End is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Active End is required")
   @Key("order.recurrenceActiveEndRequiredException")
-  String order_recurrenceActiveEndRequiredException(String arg0);
+  String order_recurrenceActiveEndRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Frequency is required".
+   * Translated "Order # \"{0,number}\": Recurrence Frequency is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Frequency is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Frequency is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Frequency is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Frequency is required")
   @Key("order.recurrenceFrequencyRequiredException")
-  String order_recurrenceFrequencyRequiredException(String arg0);
+  String order_recurrenceFrequencyRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Unit is required".
+   * Translated "Order # \"{0,number}\": Recurrence Unit is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Unit is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Unit is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Unit is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Unit is required")
   @Key("order.recurrenceUnitRequiredException")
-  String order_recurrenceUnitRequiredException(String arg0);
+  String order_recurrenceUnitRequiredException(Integer arg0);
 
   /**
    * Translated "Remove Test".
@@ -9880,13 +9880,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_shipFrom();
 
   /**
-   * Translated "Order # \"{0}\": Ship From is required".
+   * Translated "Order # \"{0,number}\": Ship From is required".
    * 
-   * @return translated "Order # \"{0}\": Ship From is required"
+   * @return translated "Order # \"{0,number}\": Ship From is required"
    */
-  @DefaultMessage("Order # \"{0}\": Ship From is required")
+  @DefaultMessage("Order # \"{0,number}\": Ship From is required")
   @Key("order.shipFromRequiredException")
-  String order_shipFromRequiredException(String arg0);
+  String order_shipFromRequiredException(Integer arg0);
 
   /**
    * Translated "Ship To".
@@ -9916,13 +9916,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_showDates();
 
   /**
-   * Translated "Order # \"{0}\": Status is required".
+   * Translated "Order # \"{0,number}\": Status is required".
    * 
-   * @return translated "Order # \"{0}\": Status is required"
+   * @return translated "Order # \"{0,number}\": Status is required"
    */
-  @DefaultMessage("Order # \"{0}\": Status is required")
+  @DefaultMessage("Order # \"{0,number}\": Status is required")
   @Key("order.statusRequiredException")
-  String order_statusRequiredException(String arg0);
+  String order_statusRequiredException(Integer arg0);
 
   /**
    * Translated "Test by Method, Description".
