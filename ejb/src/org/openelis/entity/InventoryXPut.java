@@ -66,12 +66,12 @@ import org.openelis.utils.Auditable;
                            query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
                                    + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
                                    + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.orderId)"
-                                   + " from InventoryXPut tr left join tr.inventoryReceipt ir left join ir.orderItem oi left join tr.inventoryLocation il left join il.inventoryItem ii left join il.storageLocation s left join s.storageUnit su where oi.orderId = :id"),
+                                   + " from InventoryXPut tr join tr.inventoryReceipt ir join ir.orderItem oi join tr.inventoryLocation il join il.inventoryItem ii join il.storageLocation s join s.storageUnit su where oi.orderId = :id"),
                @NamedQuery(name = "InventoryXPut.FetchByOrderIds",
                            query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
                                    + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
                                    + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.orderId)"
-                                   + " from InventoryXPut tr left join tr.inventoryReceipt ir left join ir.orderItem oi left join tr.inventoryLocation il left join il.inventoryItem ii left join il.storageLocation s left join s.storageUnit su where oi.orderId in ( :ids )")})
+                                   + " from InventoryXPut tr join tr.inventoryReceipt ir join ir.orderItem oi join tr.inventoryLocation il join il.inventoryItem ii join il.storageLocation s join s.storageUnit su where oi.orderId in ( :ids )")})
 @Entity
 @Table(name = "inventory_x_put")
 @EntityListeners({AuditUtil.class})
