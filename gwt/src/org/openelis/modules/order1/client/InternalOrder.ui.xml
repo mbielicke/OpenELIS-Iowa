@@ -160,7 +160,7 @@
 					</g:HTMLPanel>
 				</g:layer>
 				<g:layer top="140px" bottom="0px">
-					<w:TabLayoutPanel ui:field="tabPanel" barHeight="18"
+					<w:TabLayoutPanel ui:field="tabPanel" barHeight="25"
 						barUnit="PX">
 						<w:tab>
 							<w:customHeader>

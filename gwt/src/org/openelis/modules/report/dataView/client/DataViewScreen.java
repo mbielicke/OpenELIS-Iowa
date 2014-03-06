@@ -46,7 +46,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Field;
-import org.openelis.gwt.widget.FileLoad;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -58,6 +57,7 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.fileupload.FileLoad;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
