@@ -97,7 +97,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'test')" />:
               </text>
               <widget colspan="4">
-                <dropdown field="Integer" key="test" width="180" tab = "excludePTSample,section"/>
+                <dropdown field="Integer" key="test" width="250" tab="excludePTSample,section"/>
               </widget> 
              </row>
              <row>
