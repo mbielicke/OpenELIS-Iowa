@@ -67,6 +67,7 @@ import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.SectionPermission;
@@ -373,8 +374,10 @@ public class WorksheetItemTabUI extends Screen {
                     model = new ArrayList<Item<Integer>>();
                     data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
                                                                                                 .getData());
-                    list = WorksheetBuilderService.get().fetchUnitsForWorksheetAutocomplete(data.getAnalysisId(), 
-                                                                                            QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
+                    list = WorksheetService1.get()
+                                            .fetchUnitsForWorksheetAutocomplete(data.getAnalysisId(),
+                                                                                QueryFieldUtil.parseAutocomplete(event.getMatch()) +
+                                                                                                "%");
                     for (IdNameVO unitVO : list)
                         model.add(new Item<Integer>(unitVO.getId(), unitVO.getName()));
                     unitOfMeasureId.showAutoMatches(model);
@@ -617,7 +620,7 @@ public class WorksheetItemTabUI extends Screen {
                     }
                     
                     try {
-                        manager = WorksheetBuilderService.get().initializeResults(manager, newData);
+                        manager = WorksheetService1.get().initializeResults(manager, newData);
                         bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
                     } catch (Exception anyE) {
                         Window.alert(anyE.getMessage());
@@ -834,7 +837,7 @@ public class WorksheetItemTabUI extends Screen {
 
         win = new org.openelis.ui.widget.Window();
         win.setName(Messages.get().worksheet_worksheetBuilderLookup());
-        win.setSize("1060px", "498px");
+        win.setSize("1053px", "522px");
         wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
         try {
@@ -862,7 +865,7 @@ public class WorksheetItemTabUI extends Screen {
         }
 
         try {
-            wqcVO = WorksheetBuilderService.get().loadTemplate(manager, testId);
+            wqcVO = WorksheetService1.get().loadTemplate(manager, testId);
             
             if (wqcVO.getNewAnalyses() != null) {
                 if (templateAnalysisUids == null)
@@ -1004,7 +1007,7 @@ public class WorksheetItemTabUI extends Screen {
                                                         }
                                                         
                                                         try {
-                                                            manager = WorksheetBuilderService.get().initializeResultsFromOther(manager, list, newData, fromWorksheetId);
+                                                            manager = WorksheetService1.get().initializeResultsFromOther(manager, list, newData, fromWorksheetId);
                                                             bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
                                                         } catch (Exception anyE) {
                                                             Window.alert(anyE.getMessage());
@@ -1019,7 +1022,7 @@ public class WorksheetItemTabUI extends Screen {
                                     modal2 = new ModalWindow();
                                     modal2.setName(Messages.get().worksheet_worksheetAnalysisSelection() + " (#" + wVDO.getId().toString() + ")");
                                     modal2.setContent(waSelectionScreen);
-                                    modal2.setSize("502px", "365px");
+                                    modal2.setSize("502px", "395px");
                                     waSelectionScreen.setWindow(modal2);
                                     waSelectionScreen.setWorksheetId(wVDO.getId());
                                     waSelectionScreen.initialize();
@@ -1121,7 +1124,7 @@ public class WorksheetItemTabUI extends Screen {
                                 }
                                 
                                 try {
-                                    manager = WorksheetBuilderService.get().initializeResults(manager, newData);
+                                    manager = WorksheetService1.get().initializeResults(manager, newData);
                                     bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
                                     enableUndoQcsMenu(true);
                                 } catch (Exception anyE) {
@@ -1473,8 +1476,10 @@ public class WorksheetItemTabUI extends Screen {
         toDO.setAccessionNumber(fromDO.getAccessionNumber().toString());
         toDO.setAnalysisId(fromDO.getAnalysisId());
         toDO.setQcLotId(fromDO.getQcLotId());
-        toDO.setQcSystemUserId(fromDO.getQcSystemUserId());
-        toDO.setQcStartedDate(fromDO.getQcStartedDate());
+        toDO.setQcId(fromDO.getQcId());
+        toDO.setSystemUsers(fromDO.getSystemUsers());
+        toDO.setStartedDate(fromDO.getStartedDate());
+        toDO.setCompletedDate(fromDO.getCompletedDate());
         toDO.setDescription(fromDO.getDescription());
         toDO.setTestId(fromDO.getTestId());
         toDO.setTestName(fromDO.getTestName());
@@ -1557,7 +1562,7 @@ public class WorksheetItemTabUI extends Screen {
     
     private void sortItems(int col, int dir) {
         try {
-            manager = WorksheetBuilderService.get().sortItems(manager, col, dir);
+            manager = WorksheetService1.get().sortItems(manager, col, dir);
             bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
         } catch (Exception anyE) {
             anyE.printStackTrace();

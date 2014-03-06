@@ -84,6 +84,18 @@ public class UserCacheService implements UserCacheServiceInt, UserCacheServiceIn
         service.getPermission(callback);
         return callback.getResult();
     }
-    
-    
+
+    @Override
+    public void validateSystemUsers(ArrayList<String> names, AsyncCallback<ArrayList<SystemUserVO>> callback) {
+        service.validateSystemUsers(names, callback);
+    }
+
+    @Override
+    public ArrayList<SystemUserVO> validateSystemUsers(ArrayList<String> names) throws Exception {
+        Callback<ArrayList<SystemUserVO>> callback;
+        
+        callback = new Callback<ArrayList<SystemUserVO>>();
+        service.validateSystemUsers(names, callback);
+        return callback.getResult();
+    }
 }

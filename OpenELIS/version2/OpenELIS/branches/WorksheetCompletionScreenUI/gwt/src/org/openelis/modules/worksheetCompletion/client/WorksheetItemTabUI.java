@@ -44,6 +44,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcLotViewDO;
@@ -55,13 +56,10 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.sample1.client.SelectedType;
-import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.SectionPermission;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
@@ -71,11 +69,12 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
+import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -91,15 +90,17 @@ public class WorksheetItemTabUI extends Screen {
     
     private static WorksheetItemTabUiBinder             uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
-    private boolean                                     canEdit,
-                                                        isVisible;
+    private boolean                                     canEdit, isVisible;
+    private int                                         maxColumn;
     private WorksheetItemTabUI                          screen;
     private WorksheetManager1                           manager, displayedManager;
 
-//    @UiField
-//    protected AutoComplete                              unitOfMeasureId;
+    @UiField
+    protected AutoComplete                              unitOfMeasureId;
     @UiField
     protected Button                                    editMultipleButton;
+    @UiField
+    protected CheckBox                                  resultIsReportable;
     @UiField
     protected Dropdown<Integer>                         analysisStatusId, qcLink;
     @UiField
@@ -176,31 +177,43 @@ public class WorksheetItemTabUI extends Screen {
         
         worksheetItemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                DataObject data;
                 SectionPermission perm;
-                WorksheetAnalysisViewDO data;
+                String accessionNumber;
+                WorksheetAnalysisViewDO waVDO;
                 
-                //
-                // The only columns that can be edited are Description if there
-                // is more than one QC choice for the selected row, QC Link, and
-                // Unit of Measure if the row is linked to an editable analysis
-                //
-                if (!isState(ADD, UPDATE) || !canEdit || (event.getCol() != 2 && event.getCol() != 3 && event.getCol() != 6)) {
+                if (!isState(UPDATE) || !canEdit || event.getCol() == 1 || event.getCol() == 2 ||
+                    event.getCol() == 3 || event.getCol() == 4 || event.getCol() == 5 ||
+                    event.getCol() == 6 || event.getCol() == 9 || event.getCol() > maxColumn) {
                     event.cancel();
-                } else if (event.getCol() == 2 &&
-                           (qcChoices == null || qcChoices.get(worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow()).getData()) == null)) {
+                } else if (!getUpdatePushMode() && (event.getCol() == 0 || event.getCol() == 7 || event.getCol() == 8 || event.getCol() == 10)) {
                     event.cancel();
-                } else if (event.getCol() == 6) {
-                    data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
-                                                                                                .getData());
-                    perm = UserCache.getPermission().getSection(data.getSectionName());
-                    if (data.getQcLotId() != null ||
-                        Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
-                        Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
+                } else if (getUpdatePushMode() && event.getCol() != 0 && event.getCol() != 7 && event.getCol() != 8 && event.getCol() != 10) {
+                    event.cancel();
+                } else {
+                    data = manager.getObject((String)worksheetItemTable.getRowAt(event.getRow()).getData());
+                    accessionNumber = worksheetItemTable.getValueAt(event.getRow(), 2);
+                    if (data instanceof WorksheetItemDO) {
                         event.cancel();
-                    } else if (perm == null || !perm.hasCompletePermission()) {
-                        Window.alert(Messages.get().worksheet_completePermissionRequiredForOperation(data.getSectionName(),
-                                                                                                     Messages.get().edit()));
+                    } else if ((accessionNumber == null || accessionNumber.length() <= 0) && event.getCol() < 10) {
                         event.cancel();
+                    } else if (data instanceof WorksheetQcResultViewDO && event.getCol() < 11) {
+                        event.cancel();
+                    } else {
+                        if (data instanceof WorksheetResultViewDO)
+                            waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(((WorksheetResultViewDO)data).getWorksheetAnalysisId()));
+                        else
+                            waVDO = (WorksheetAnalysisViewDO)data;
+                        perm = UserCache.getPermission().getSection(waVDO.getSectionName());
+                        if (waVDO.getQcLotId() != null || waVDO.getFromOtherId() != null ||
+                            Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
+                            Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
+                            event.cancel();
+                        } else if (perm == null || !perm.hasCompletePermission()) {
+                            Window.alert(Messages.get().worksheet_completePermissionRequiredForOperation(waVDO.getSectionName(),
+                                                                                                         Messages.get().edit()));
+                            event.cancel();
+                        }
                     }
                 }
             }
@@ -209,9 +222,12 @@ public class WorksheetItemTabUI extends Screen {
         worksheetItemTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
+                DataObject data;
                 Object val;
                 Row row;
                 WorksheetAnalysisViewDO waVDO;
+                WorksheetResultViewDO wrVDO;
+                WorksheetQcResultViewDO wqrVDO;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -219,23 +235,94 @@ public class WorksheetItemTabUI extends Screen {
                 row = worksheetItemTable.getRowAt(r);
                 val = worksheetItemTable.getValueAt(r,c);
 
-                waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)row.getData());
+                data = manager.getObject((String)row.getData());
+                if (data instanceof WorksheetAnalysisViewDO) {
+                    waVDO = (WorksheetAnalysisViewDO)data;
+                    wrVDO = null;
+                    wqrVDO = null;
+                } else if (data instanceof WorksheetResultViewDO) {
+                    wqrVDO = null;
+                    wrVDO = (WorksheetResultViewDO)data;
+                    waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wrVDO.getWorksheetAnalysisId()));
+                } else if (data instanceof WorksheetQcResultViewDO) {
+                    wrVDO = null;
+                    wqrVDO = (WorksheetQcResultViewDO)data;
+                    waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wqrVDO.getWorksheetAnalysisId()));
+                } else {
+                    return;
+                }
+                
                 switch (c) {
-                    case 2:
-                        if (val != null)
-                            waVDO.setQcLotId(((AutoCompleteValue)val).getId());
-                        else
-                            waVDO.setQcLotId(null);
-                        break;
-                    case 3:
-                        waVDO.setWorksheetAnalysisId((Integer)val);
-                        break;
-                    case 6:
+                    case 7:
                         if (val != null)
                             waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
                         else
                             waVDO.setUnitOfMeasureId(null);
                         break;
+                    case 8:
+                        waVDO.setStatusId((Integer)val);
+                        break;
+                    case 10:
+                        wrVDO.setIsReportable((String)val);
+                        break;
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                    case 18:
+                    case 19:
+                    case 20:
+                    case 21:
+                    case 22:
+                    case 23:
+                    case 24:
+                    case 25:
+                    case 26:
+                    case 27:
+                    case 28:
+                    case 29:
+                    case 30:
+                    case 31:
+                    case 32:
+                    case 33:
+                    case 34:
+                    case 35:
+                    case 36:
+                    case 37:
+                    case 38:
+                    case 39:
+                    case 40:
+                        if (wrVDO != null)
+                            wrVDO.setValueAt(c - 11, (String)val);
+                        else if (wqrVDO != null)
+                            wqrVDO.setValueAt(c - 11, (String)val);
+                        break;
+                }
+            }
+        });
+
+        unitOfMeasureId.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<Item<Integer>> model;
+                ArrayList<IdNameVO> list;
+                WorksheetAnalysisViewDO data;
+
+                try {
+                    model = new ArrayList<Item<Integer>>();
+                    data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
+                                                                                                .getData());
+                    list = WorksheetService1.get()
+                                            .fetchUnitsForWorksheetAutocomplete(data.getAnalysisId(),
+                                                                                QueryFieldUtil.parseAutocomplete(event.getMatch()) +
+                                                                                                "%");
+                    for (IdNameVO unitVO : list)
+                        model.add(new Item<Integer>(unitVO.getId(), unitVO.getName()));
+                    unitOfMeasureId.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
         });
@@ -281,10 +368,15 @@ public class WorksheetItemTabUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
+//        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         analysisStatusId.setModel(model);
+        
+        //
+        // Set the reportable column to query mode so that it has three states
+        //
+        resultIsReportable.setQueryMode(true);
     }
     
     public void setData(WorksheetManager1 manager) {
@@ -293,6 +385,10 @@ public class WorksheetItemTabUI extends Screen {
             this.manager = manager;
             evaluateEdit();
         }
+    }
+    
+    private boolean getUpdatePushMode() {
+        return ((WorksheetCompletionScreenUI)parentScreen).updatePushMode;
     }
 
     private void evaluateEdit() {
@@ -381,7 +477,7 @@ public class WorksheetItemTabUI extends Screen {
         WorksheetItemDO wiDO;
         WorksheetQcResultViewDO wqrVDO;
         WorksheetResultViewDO wrVDO;
-        
+
         qcLinkModel.clear();
         qcLinkModel.add(new Item<Integer>(null, ""));
 
@@ -390,24 +486,26 @@ public class WorksheetItemTabUI extends Screen {
             try {
                 headers = new ArrayList<IdNameVO>();
                 try {
-                    headers = WorksheetCompletionService.get().getHeaderLabelsForScreen(manager);
+                    headers = WorksheetService1.get().getHeaderLabelsForScreen(manager);
                 } catch (Exception anyE) {
                     Window.alert("Error loading headers for format; " + anyE.getMessage());
                     anyE.printStackTrace();
                 }
 
+                maxColumn = 10 + headers.size();
                 for (i = 0; i < 30; i++) {
                     if (i < headers.size())
-                        worksheetItemTable.getColumnAt(i + 9).setLabel(headers.get(i).getName());
+                        worksheetItemTable.getColumnAt(i + 11).setLabel(headers.get(i).getName());
                     else
-                        worksheetItemTable.getColumnAt(i + 9).setLabel("");
+                        worksheetItemTable.getColumnAt(i + 11).setLabel("");
                 }
 
                 for (i = 0; i < manager.item.count(); i++) {
                     wiDO = (WorksheetItemDO)manager.item.get(i);
     
-                    row = new Row(39);
-                    row.setCell(0, wiDO.getPosition());
+                    row = new Row(41);
+                    row.setCell(0, "N");
+                    row.setCell(1, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
                         waDO = manager.analysis.get(wiDO, j);
                         qcLinkModel.add(new Item<Integer>(waDO.getId(), waDO.getAccessionNumber() +
@@ -415,74 +513,88 @@ public class WorksheetItemTabUI extends Screen {
                                                                         ")"));
     
                         if (j > 0) {
-                            row = new Row(39);
-                            row.setCell(0, wiDO.getPosition());
+                            row = new Row(41);
+                            row.setCell(0, "N");
+                            row.setCell(1, wiDO.getPosition());
                         }
-                        row.setCell(1, waDO.getAccessionNumber());
+                        row.setCell(2, waDO.getAccessionNumber());
                         
                         if (waDO.getAnalysisId() != null) {
-                            row.setCell(2, new AutoCompleteValue(null, waDO.getDescription()));
-                            row.setCell(3, waDO.getWorksheetAnalysisId());
-                            row.setCell(4, waDO.getTestName());
-                            row.setCell(5, waDO.getMethodName());
-                            row.setCell(6, waDO.getStatusId());
+                            row.setCell(3, new AutoCompleteValue(null, waDO.getDescription()));
+                            row.setCell(4, waDO.getWorksheetAnalysisId());
+                            row.setCell(5, waDO.getTestName());
+                            row.setCell(6, waDO.getMethodName());
+                            if (waDO.getUnitOfMeasureId() != null) {
+                                row.setCell(7, new AutoCompleteValue(waDO.getUnitOfMeasureId(),
+                                                                     waDO.getUnitOfMeasure()));
+                            } else {
+                                row.setCell(7, new AutoCompleteValue());
+                            }
+                            row.setCell(8, waDO.getStatusId());
                             
                             for (k = 0; k < manager.result.count(waDO); k++) {
                                 wrVDO = manager.result.get(waDO, k);
                                 if (k > 0) {
-                                    row = new Row(39);
-                                    row.setCell(0, "");
+                                    row = new Row(41);
+                                    row.setCell(0, "N");
                                     row.setCell(1, "");
-                                    row.setCell(2, new AutoCompleteValue());
-                                    row.setCell(3, "");
+                                    row.setCell(2, "");
+                                    row.setCell(3, new AutoCompleteValue());
                                     row.setCell(4, "");
                                     row.setCell(5, "");
                                     row.setCell(6, "");
+                                    row.setCell(7, new AutoCompleteValue());
+                                    row.setCell(8, "");
                                 }
-                                row.setCell(7, wrVDO.getAnalyteName());
-                                row.setCell(8, "N");    // TODO: Get reportable flag from result record
+                                row.setCell(9, wrVDO.getAnalyteName());
+                                row.setCell(10, wrVDO.getIsReportable());
                                 for (l = 0; l < 30; l++)
-                                    row.setCell(9 + l, wrVDO.getValueAt(l));
+                                    row.setCell(11 + l, wrVDO.getValueAt(l));
                                 row.setData(manager.getUid(wrVDO)); 
                                 model.add(row);
                             }
                             if (k == 0) {
-                                row.setCell(7, "NO ANAlYTES FOOUND");
-                                for (l = 8; l < 39; l++)
+                                row.setCell(9, "NO ANAlYTES FOOUND");
+                                row.setCell(10, null);
+                                for (l = 11; l < 40; l++)
                                     row.setCell(l, "");
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
                             }
                         } else if (waDO.getQcLotId() != null) {
-                            row.setCell(2, new AutoCompleteValue(waDO.getQcLotId(),
+                            row.setCell(3, new AutoCompleteValue(waDO.getQcLotId(),
                                                                  waDO.getDescription()));
-                            row.setCell(3, waDO.getWorksheetAnalysisId());
-                            row.setCell(4, "");
+                            row.setCell(4, waDO.getWorksheetAnalysisId());
                             row.setCell(5, "");
                             row.setCell(6, "");
+                            row.setCell(7, new AutoCompleteValue());
+                            row.setCell(8, "");
                             
                             for (k = 0; k < manager.qcResult.count(waDO); k++) {
                                 wqrVDO = manager.qcResult.get(waDO, k);
                                 if (k > 0) {
-                                    row = new Row(39);
-                                    row.setCell(0, "");
+                                    row = new Row(41);
+                                    row.setCell(0, "N");
                                     row.setCell(1, "");
-                                    row.setCell(2, new AutoCompleteValue());
-                                    row.setCell(3, "");
+                                    row.setCell(2, "");
+                                    row.setCell(3, new AutoCompleteValue());
                                     row.setCell(4, "");
                                     row.setCell(5, "");
                                     row.setCell(6, "");
+                                    row.setCell(7, new AutoCompleteValue());
+                                    row.setCell(8, "");
                                 }
-                                row.setCell(7, wqrVDO.getAnalyteName());
-                                row.setCell(8, "N");
+                                row.setCell(9, wqrVDO.getAnalyteName());
+                                row.setCell(10, null);
                                 for (l = 0; l < 30; l++)
-                                    row.setCell(9 + l, wqrVDO.getValueAt(l));
+                                    row.setCell(11 + l, wqrVDO.getValueAt(l));
                                 row.setData(manager.getUid(wqrVDO)); 
                                 model.add(row);
                             }
                             if (k == 0) {
-                                row.setCell(7, "NO ANAlYTES FOOUND");
-                                for (l = 8; l < 39; l++)
+                                row.setCell(9, "NO ANAlYTES FOOUND");
+                                row.setCell(10, null);
+                                for (l = 11; l < 40; l++)
                                     row.setCell(l, "");
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
@@ -490,8 +602,8 @@ public class WorksheetItemTabUI extends Screen {
                         }
                     }
                     if (j == 0) {
-                        row.setCell(2, new AutoCompleteValue(null, "ERROR: Item with no analyses"));
-                        row.setData(wiDO);
+                        row.setCell(3, new AutoCompleteValue(null, "ERROR: Item with no analyses"));
+                        row.setData(manager.getUid(wiDO));
                         model.add(row);
                     }
                 }

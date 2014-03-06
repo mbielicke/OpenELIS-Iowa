@@ -75,4 +75,12 @@ public class UserCacheServlet extends RemoteServlet implements UserCacheServiceI
             throw serializeForGWT(anyE);
         }
     }        
+    
+    public ArrayList<SystemUserVO> validateSystemUsers(ArrayList<String> names) throws Exception {
+        try {
+            return userCache.validateSystemUsers(names);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 }

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.manager.WorksheetManager;
-import org.openelis.manager.WorksheetManager1;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
@@ -42,7 +41,5 @@ public interface WorksheetCompletionServiceInt extends XsrfProtectedService {
     WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception;
 
     ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception;
-
-    ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager1 manager) throws Exception;
 
 }
