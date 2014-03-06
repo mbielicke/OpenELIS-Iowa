@@ -6784,6 +6784,69 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String instrumentHistory();
 
   /**
+   * Translated "Invalid file name for instrument import file.".
+   * 
+   * @return translated "Invalid file name for instrument import file."
+   */
+  @DefaultMessage("Invalid file name for instrument import file.")
+  @Key("instrumentInterface.invalidFileName")
+  String instrumentInterface_invalidFileName();
+
+  /**
+   * Translated "Path to instrument file directory is missing. Please contact the system administrator.".
+   * 
+   * @return translated "Path to instrument file directory is missing. Please contact the system administrator."
+   */
+  @DefaultMessage("Path to instrument file directory is missing. Please contact the system administrator.")
+  @Key("instrumentInterface.missingPath")
+  String instrumentInterface_missingPath();
+
+  /**
+   * Translated "Missing required column ''{0}''.".
+   * 
+   * @return translated "Missing required column ''{0}''."
+   */
+  @DefaultMessage("Missing required column ''{0}''.")
+  @Key("instrumentInterface.missingRequiredColumn")
+  String instrumentInterface_missingRequiredColumn(String arg0);
+
+  /**
+   * Translated "Worksheet #{0,number} has no analyses at position #{1,number}.".
+   * 
+   * @return translated "Worksheet #{0,number} has no analyses at position #{1,number}."
+   */
+  @DefaultMessage("Worksheet #{0,number} has no analyses at position #{1,number}.")
+  @Key("instrumentInterface.worksheetHasNoAnalysesAtPosition")
+  String instrumentInterface_worksheetHasNoAnalysesAtPosition(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Worksheet #{0,number} has no items.".
+   * 
+   * @return translated "Worksheet #{0,number} has no items."
+   */
+  @DefaultMessage("Worksheet #{0,number} has no items.")
+  @Key("instrumentInterface.worksheetHasNoItems")
+  String instrumentInterface_worksheetHasNoItems(Integer arg0);
+
+  /**
+   * Translated "Worksheet #{0,number} not found for instrument import file.".
+   * 
+   * @return translated "Worksheet #{0,number} not found for instrument import file."
+   */
+  @DefaultMessage("Worksheet #{0,number} not found for instrument import file.")
+  @Key("instrumentInterface.worksheetNotFound")
+  String instrumentInterface_worksheetNotFound(Integer arg0);
+
+  /**
+   * Translated "Worksheet #{0,number} it not in ''Working'' status.".
+   * 
+   * @return translated "Worksheet #{0,number} it not in ''Working'' status."
+   */
+  @DefaultMessage("Worksheet #{0,number} it not in ''Working'' status.")
+  @Key("instrumentInterface.worksheetWrongStatus")
+  String instrumentInterface_worksheetWrongStatus(Integer arg0);
+
+  /**
    * Translated "History - Instrument Log".
    * 
    * @return translated "History - Instrument Log"
@@ -16747,6 +16810,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_createdDate();
 
   /**
+   * Translated "Error fetching worksheet display directory system variable".
+   * 
+   * @return translated "Error fetching worksheet display directory system variable"
+   */
+  @DefaultMessage("Error fetching worksheet display directory system variable")
+  @Key("worksheet.displayDirectoryLookupException")
+  String worksheet_displayDirectoryLookupException();
+
+  /**
    * Translated "Edit Multiple".
    * 
    * @return translated "Edit Multiple"
@@ -16765,6 +16837,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_exportToExcel();
 
   /**
+   * Translated "Worksheet was exported to".
+   * 
+   * @return translated "Worksheet was exported to"
+   */
+  @DefaultMessage("Worksheet was exported to")
+  @Key("worksheet.exportedToExcelFile")
+  String worksheet_exportedToExcelFile();
+
+  /**
    * Translated "Format".
    * 
    * @return translated "Format"
@@ -16772,6 +16853,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Format")
   @Key("worksheet.format")
   String worksheet_format();
+
+  /**
+   * Translated "Invalid user for position {0} analysis {1}".
+   * 
+   * @return translated "Invalid user for position {0} analysis {1}"
+   */
+  @DefaultMessage("Invalid user for position {0} analysis {1}")
+  @Key("worksheet.illegalWorksheetUserFormException")
+  String worksheet_illegalWorksheetUserFormException(String arg0,  String arg1);
 
   /**
    * Translated "Import From Excel".
@@ -16846,6 +16936,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_instrumentName();
 
   /**
+   * Translated "Invalid override user(s) specified: {0}".
+   * 
+   * @return translated "Invalid override user(s) specified: {0}"
+   */
+  @DefaultMessage("Invalid override user(s) specified: {0}")
+  @Key("worksheet.invalidUsersException")
+  String worksheet_invalidUsersException(String arg0);
+
+  /**
    * Translated "The following Analyses have not been added because of permission, status, or QA Event".
    * 
    * @return translated "The following Analyses have not been added because of permission, status, or QA Event"
@@ -16882,6 +16981,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_oneOrMoreQcLinkOnRemove();
 
   /**
+   * Translated "User(s)".
+   * 
+   * @return translated "User(s)"
+   */
+  @DefaultMessage("User(s)")
+  @Key("worksheet.overrideUsers")
+  String worksheet_overrideUsers();
+
+  /**
+   * Translated "Error validating override user(s)".
+   * 
+   * @return translated "Error validating override user(s)"
+   */
+  @DefaultMessage("Error validating override user(s)")
+  @Key("worksheet.overrideUsersValidationException")
+  String worksheet_overrideUsersValidationException();
+
+  /**
+   * Translated "Overrides".
+   * 
+   * @return translated "Overrides"
+   */
+  @DefaultMessage("Overrides")
+  @Key("worksheet.overrides")
+  String worksheet_overrides();
+
+  /**
    * Translated "Position".
    * 
    * @return translated "Position"
@@ -16889,15 +17015,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Position")
   @Key("worksheet.position")
   String worksheet_position();
-
-  /**
-   * Translated "Push Results to Sample(s)".
-   * 
-   * @return translated "Push Results to Sample(s)"
-   */
-  @DefaultMessage("Push Results to Sample(s)")
-  @Key("worksheet.pushResultsToSamples")
-  String worksheet_pushResultsToSamples();
 
   /**
    * Translated "QC Link".
@@ -16916,6 +17033,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Related Worksheet #")
   @Key("worksheet.relatedWorksheetNumber")
   String worksheet_relatedWorksheetNumber();
+
+  /**
+   * Translated "Transfer Results".
+   * 
+   * @return translated "Transfer Results"
+   */
+  @DefaultMessage("Transfer Results")
+  @Key("worksheet.transferResults")
+  String worksheet_transferResults();
 
   /**
    * Translated "All".
