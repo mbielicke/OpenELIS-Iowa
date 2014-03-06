@@ -25,9 +25,9 @@
 */
 package org.openelis.modules.worksheetBuilder.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +60,7 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.meta.AnalysisViewMeta;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -410,7 +411,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
             window.setBusy(Messages.get().querying());
     
             query.setRowsPerPage(500);
-            WorksheetBuilderService.get().fetchAnalysesByView(query, new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+            WorksheetService1.get().fetchAnalysesByView(query, new AsyncCallback<ArrayList<AnalysisViewVO>>() {
                 public void onSuccess(ArrayList<AnalysisViewVO> list) {
                     setQueryResult(list);
                 }

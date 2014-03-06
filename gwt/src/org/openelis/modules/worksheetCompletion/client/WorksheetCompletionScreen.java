@@ -119,14 +119,13 @@ import org.openelis.ui.widget.WindowInt;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean           closeWindow, isPopup, successfulLoad, tableLoaded;//, commitDone;
+    private boolean           closeWindow, isPopup, successfulLoad, tableLoaded;
     private Integer           origStatus;
     private ModulePermission  userPermission;
     private WorksheetManager  manager;
 
     private AppButton         lookupWorksheetButton, updateButton, commitButton,
-                              abortButton, editWorksheetButton, loadFromEditButton,
-                              loadFilePopupButton;
+                              abortButton, editWorksheetButton, loadFromEditButton;
     private NotesTab          noteTab;
     private TestPrepUtility   testPrepUtil;
     private TestReflexUtility testReflexUtil;
@@ -144,7 +143,6 @@ public class WorksheetCompletionScreen extends Screen {
     protected MenuItem                  worksheetHistory;
     protected NoteViewDO                failedRunNote;
     protected TextBox<Integer>          worksheetId, relatedWorksheetId;
-    protected WorksheetFileUploadScreen wFileUploadScreen;
     protected WorksheetLookupScreen     wLookupScreen, wrLookupScreen;
 
     private enum Tabs {
@@ -432,25 +430,6 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
 
-        loadFilePopupButton = (AppButton)def.getWidget("loadFilePopupButton");
-        addScreenHandler(loadFilePopupButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                openWorksheetFileUpload();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-//                Integer statusId;
-//                
-//                if (manager != null && manager.getWorksheet() != null) {
-//                    statusId = manager.getWorksheet().getStatusId();
-//                    loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-//                                               statusWorking.equals(statusId));
-//                } else {
-                    loadFilePopupButton.enable(Boolean.FALSE);
-//                }
-            }
-        });
-
         //
         // tabs
         //
@@ -552,7 +531,6 @@ public class WorksheetCompletionScreen extends Screen {
         } else {
             window.setBusy(Messages.get().fetching());
             final WorksheetCompletionScreen wcs = this;
-//            worksheetService.call("fetchWithItemsAndNotes", id, new AsyncCallback<WorksheetManager>() {
             WorksheetService.get().fetchWithAllData(id, new AsyncCallback<WorksheetManager>() {
                 public void onSuccess(WorksheetManager newMan) {
                     manager = newMan;
@@ -854,31 +832,6 @@ public class WorksheetCompletionScreen extends Screen {
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(Messages.get().worksheetLookup());
             modal.setContent(wrLookupScreen);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
-            return;
-        }
-    }
-
-    protected void openWorksheetFileUpload() {
-        ScreenWindow modal;
-
-        try {
-            if (wFileUploadScreen == null) {
-                final WorksheetCompletionScreen wcs = this;
-                wFileUploadScreen = new WorksheetFileUploadScreen();
-                wFileUploadScreen.addActionHandler(new ActionHandler<WorksheetFileUploadScreen.Action>() {
-                    public void onAction(ActionEvent<WorksheetFileUploadScreen.Action> event) {
-                        if (event.getAction() == WorksheetFileUploadScreen.Action.OK) {
-                        }
-                    }
-                });
-            }
-
-            modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(Messages.get().worksheetFileUpload());
-            modal.setContent(wFileUploadScreen);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());

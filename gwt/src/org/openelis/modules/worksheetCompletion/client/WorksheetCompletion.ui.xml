@@ -97,16 +97,16 @@
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
                            width="100%">
             <g:HorizontalPanel>
-              <w:Button css="{res.buttonPanel}" ui:field="exportToExcelButton" leftIcon="{res.icon.fieldLookupIcon}"
-                        text="{msg.worksheet_exportToExcel}" toggles="false"/>
-              <w:Button css="{res.buttonPanel}" ui:field="importFromExcelButton" leftIcon="{res.icon.fieldLookupIcon}"
-                        text="{msg.worksheet_importFromExcel}" toggles="false"/>
-              <w:Button css="{res.buttonPanel}" ui:field="pushResultsButton" leftIcon="{res.icon.fieldLookupIcon}"
-                        text="{msg.worksheet_pushResultsToSamples}" toggles="false"/>
+              <w:Button css="{res.buttonPanel}" ui:field="exportToExcelButton" leftIcon="{res.icon.NextPageButtonImage}"
+                        text="{msg.worksheet_exportToExcel}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="importFromExcelButton" leftIcon="{res.icon.PreviousPageButtonImage}"
+                        text="{msg.worksheet_importFromExcel}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="transferResultsButton" leftIcon="{res.icon.NextPageButtonImage}"
+                        text="{msg.worksheet_transferResults}" toggles="true"/>
             </g:HorizontalPanel>
           </g:AbsolutePanel>
         </g:layer>
-        <g:layer top="54px" height="76px">
+        <g:layer top="54px" height="80px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
@@ -194,8 +194,8 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="131px" bottom="0px">
-          <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
+        <g:layer top="124px" bottom="0px">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="25" barUnit="PX">
             <w:tab>
               <w:customHeader>
                 <w:TabWidget text="{msg.gen_worksheet}"/>
@@ -203,6 +203,16 @@
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <wc:WorksheetItemTabUI ui:field="worksheetItemTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.worksheet_overrides}"/>
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <wc:OverridesTabUI ui:field="overridesTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>

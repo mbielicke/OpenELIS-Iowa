@@ -31,7 +31,7 @@
         field="res"/>
 
     <g:LayoutPanel>
-        <g:layer top="0px" bottom="30px">
+        <g:layer top="0px" bottom="25px">
             <w:NotesPanel ui:field="notesPanel"/>
         </g:layer>
         <g:layer bottom="0px" height="25px">

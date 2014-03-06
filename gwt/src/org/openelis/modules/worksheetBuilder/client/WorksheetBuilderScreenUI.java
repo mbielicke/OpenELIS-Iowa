@@ -27,8 +27,8 @@ package org.openelis.modules.worksheetBuilder.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.*;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1109,9 +1109,10 @@ public class WorksheetBuilderScreenUI extends Screen {
                 if (data.getAnalysisId() != null) {
                     perm = UserCache.getPermission().getSection(data.getSectionName());
                     if (isState(ADD, UPDATE) && perm.hasCompletePermission()) {
-                        WorksheetBuilderService.get().fetchAnalytesByAnalysis(data.getAnalysisId(),
-                                                                              data.getTestId(),
-                                                                              new AsyncCallback<ArrayList<ResultViewDO>>() {
+                        WorksheetService1.get()
+                                         .fetchAnalytesByAnalysis(data.getAnalysisId(),
+                                                                  data.getTestId(),
+                                                                  new AsyncCallback<ArrayList<ResultViewDO>>() {
                             public void onSuccess(ArrayList<ResultViewDO> analytes) {
                                 ArrayList<Object> analyteList;
                                 ArrayList<Row> model;

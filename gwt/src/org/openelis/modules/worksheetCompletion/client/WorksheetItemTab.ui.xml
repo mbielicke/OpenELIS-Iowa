@@ -34,6 +34,9 @@
     <g:layer top="0px" bottom="24px">
       <t:Table ui:field="worksheetItemTable" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
+        <t:Column width="20">
+          <t:CheckBoxCell/>
+        </t:Column>
         <t:Column width="50" label="{msg.worksheet_position}">
           <t:LabelCell/>
         </t:Column>
@@ -64,6 +67,19 @@
         <t:Column width="100" label="{msg.gen_method}">
           <t:LabelCell/>
         </t:Column>
+        <t:Column width="100" label="{msg.gen_unit}">
+          <t:AutoCompleteCell>
+            <w:AutoComplete ui:field="unitOfMeasureId" width="120px" case="MIXED">
+              <w:popup>
+                <t:Table visibleRows="10">
+                  <t:Column>
+                    <t:LabelCell/>
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:AutoComplete>
+          </t:AutoCompleteCell>
+        </t:Column>
         <t:Column width="75" label="{msg.gen_status}">
           <t:DropdownCell>
             <w:Dropdown ui:field="analysisStatusId" width="75px" field="Integer"/>
@@ -73,7 +89,9 @@
           <t:LabelCell/>
         </t:Column>
         <t:Column width="70" label="{msg.gen_reportable}">
-          <t:CheckBoxCell/>
+          <t:CheckBoxCell>
+            <w:CheckBox ui:field="resultIsReportable"/>
+          </t:CheckBoxCell>
         </t:Column>
         <t:Column width="100" label="A">
           <t:LabelCell/>
