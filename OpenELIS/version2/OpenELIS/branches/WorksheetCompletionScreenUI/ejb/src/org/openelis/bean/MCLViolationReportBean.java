@@ -439,6 +439,11 @@ public class MCLViolationReportBean {
             return;
         
         positive = false;
+        if (Constants.dictionary().SMPL_TYPE_RP.equals(analysis.getSampleTypeId()) ||
+            "TG".equals(analysis.getSamplePointId()) || "AD".equals(analysis.getSamplePointId()) ||
+            "AS".equals(analysis.getSamplePointId()))
+            positive = true;
+
         resultLines = new StringBuilder();
         for (ArrayList<ResultViewDO> resultRow : results) {
             rowResult = resultRow.get(0);

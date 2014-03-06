@@ -206,7 +206,7 @@ public class TurnaroundStatisticReportBean {
                           SampleMeta.getAnalysisAvailableDate() + "," +
                           SampleMeta.getAnalysisCompletedDate() + "," +
                           SampleMeta.getAnalysisStartedDate() + "," + SampleMeta.getId());
-        builder.addWhere(SampleMeta.getAnalysisTestIsActive() + "=" + "'Y'");
+//        builder.addWhere(SampleMeta.getAnalysisTestIsActive() + "=" + "'Y'");
         builder.addWhere(SampleMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleMeta.getAnalysisTestMethodId() + "=" +
