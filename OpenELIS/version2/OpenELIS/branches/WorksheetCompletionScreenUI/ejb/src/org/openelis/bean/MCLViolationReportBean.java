@@ -537,7 +537,7 @@ public class MCLViolationReportBean {
             body.append(" ").append(freeChlorine);
 
         body.append("<br>\r\n")
-            .append("Total Chlorine, mg/L");
+            .append("Total Chlorine, in mg/L");
         
         if (!"".equals(totalChlorine))
             body.append(" ").append(totalChlorine);
