@@ -99,7 +99,7 @@ public class AuxDataHelperBean {
 
     private static final Logger      log = Logger.getLogger("openelis");
 
-    private static final String      SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
+    public static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
                     SAMPLE_WELL_AUX_DATA = "sample_well_aux_data",
                     SAMPLE_SDWIS_AUX_DATA = "sample_sdwis_aux_data",
                     SMPL_COLLECTED_DATE = "smpl_collected_date",
