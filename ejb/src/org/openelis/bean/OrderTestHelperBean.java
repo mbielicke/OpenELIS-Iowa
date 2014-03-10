@@ -201,7 +201,7 @@ public class OrderTestHelperBean {
                                ArrayList<TestAnalyteViewDO> tas) {
         String reportable;
         OrderTestAnalyteViewDO ota;
-        HashMap<Integer, OrderTestAnalyteViewDO> map;
+        HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> map;
 
         /*
          * Since the list of analytes for a test is assumed to not change, if
@@ -216,9 +216,12 @@ public class OrderTestHelperBean {
             /*
              * some analytes were added to the order from this test previously
              */
-            map = new HashMap<Integer, OrderTestAnalyteViewDO>();
-            for (OrderTestAnalyteViewDO d1 : otas)
-                map.put(d1.getAnalyteId(), d1);
+            map = new HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>>();
+            for (OrderTestAnalyteViewDO d1 : otas) {
+                if (map.get(d1.getAnalyteId()) == null)
+                    map.put(d1.getAnalyteId(), new ArrayList<OrderTestAnalyteViewDO>());
+                map.get(d1.getAnalyteId()).add(d1);
+            }
         }
         for (TestAnalyteViewDO ta : tas) {
             reportable = "N";
@@ -230,10 +233,19 @@ public class OrderTestHelperBean {
              * analytes added to the order test are checked.
              */
             if (map != null) {
-                ota = map.get(ta.getAnalyteId());
-                if (ota != null) {
-                    addAnalyte(om, ota);
-                    continue;
+                if (map.get(ta.getAnalyteId()) != null) {
+                    ota = null;
+                    for (int i = 0; i < map.get(ta.getAnalyteId()).size(); i++ ) {
+                        if (map.get(ta.getAnalyteId()).get(i) != null) {
+                            ota = map.get(ta.getAnalyteId()).get(i);
+                            map.get(ta.getAnalyteId()).set(i, null);
+                            break;
+                        }
+                    }
+                    if (ota != null) {
+                        addAnalyte(om, ota);
+                        continue;
+                    }
                 }
             } else if ( !Constants.dictionary().TEST_ANALYTE_SUPLMTL.equals(ta.getTypeId())) {
                 reportable = ta.getIsReportable();
