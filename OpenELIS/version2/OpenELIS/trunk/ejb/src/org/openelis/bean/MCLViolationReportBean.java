@@ -137,6 +137,7 @@ public class MCLViolationReportBean {
         AuxDataManager adMan;
         Calendar cal;
         Date lastRunDate, currentRunDate, now;
+        Integer lastSectionId;
         MCLViolationReportVO analysis;
         ReportStatus status;
         ResultViewDO rowResult, colResult;
@@ -176,6 +177,7 @@ public class MCLViolationReportBean {
             }
 
             lastPWSId = "xyzzy";
+            lastSectionId = -1;
             bactPosBody = new StringBuilder();
             dnrMCLBody = new StringBuilder();
             shlMCLBody = new StringBuilder();
@@ -201,21 +203,6 @@ public class MCLViolationReportBean {
                     // ignore not found
                 }
 
-                toEmail = "";
-                try {
-                    emailList = sectParamBean.fetchBySectionIdAndTypeId(analysis.getSectionId(),
-                                                                        Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL);
-                    for (j = 0; j < emailList.size(); j++ ) {
-                        if (toEmail.length() > 0)
-                            toEmail += ",";
-                        toEmail += emailList.get(j).getValue().trim();
-                    }
-                } catch (NotFoundException nfE) {
-                    log.fine("No MCL Violation Email Address(es) for Section (" +
-                             analysis.getSectionId() + ").");
-                    continue;
-                }
-
                 adMan = AuxDataManager.fetchById(analysis.getSampleId(),
                                                  Constants.table().SAMPLE);
 
@@ -229,18 +216,41 @@ public class MCLViolationReportBean {
                     continue;
                 }
                 
-                if (!lastPWSId.equals(analysis.getPwsId())) {
+                if (!lastPWSId.equals(analysis.getPwsId()) || !lastSectionId.equals(analysis.getSectionId())) {
                     if (!"xyzzy".equals(lastPWSId) && bactPosBody.length() > 0) {
                         sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                                  "\r\nThis is an automatic notification for Bacterial Positive. " +
+                                  "\r\n=====================================================================<br>\r\n" +
+                                  "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
+                                  "=====================================================================<br>\r\n" +
+                                  "<br>\r\nThis is an automatic notification for Bacterial Positive. " +
                                   "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
                                   bactPosBody.toString());
                         sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                                  "\r\n" + bactPosBody.toString());
+                                  "\r\n=====================================================================<br>\r\n" +
+                                  "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
+                                  "=====================================================================<br>\r\n" +
+                                  "<br>\r\n" + bactPosBody.toString());
                         log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
                         bactPosBody.setLength(0);
                     }
+                    
+                    toEmail = "";
+                    try {
+                        emailList = sectParamBean.fetchBySectionIdAndTypeId(analysis.getSectionId(),
+                                                                            Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL);
+                        for (j = 0; j < emailList.size(); j++ ) {
+                            if (toEmail.length() > 0)
+                                toEmail += ",";
+                            toEmail += emailList.get(j).getValue().trim();
+                        }
+                    } catch (NotFoundException nfE) {
+                        log.fine("No MCL Violation Email Address(es) for Section (" +
+                                 analysis.getSectionId() + ").");
+                        continue;
+                    }
+
                     lastPWSId = analysis.getPwsId();
+                    lastSectionId = analysis.getSectionId();
                 }
                 printBactPosBody(bactPosBody, analysis, adMan, results);
                 
@@ -299,11 +309,17 @@ public class MCLViolationReportBean {
 
             if (bactPosBody.length() > 0) {
                 sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                          "\r\nThis is an automatic notification for Bacterial Positive. " +
+                          "\r\n=====================================================================<br>\r\n" +
+                          "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
+                          "=====================================================================<br>\r\n" +
+                          "<br>\r\nThis is an automatic notification for Bacterial Positive. " +
                           "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
                           bactPosBody.toString());
                 sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                          "\r\n" + bactPosBody.toString());
+                          "\r\n=====================================================================<br>\r\n" +
+                          "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
+                          "=====================================================================<br>\r\n" +
+                          "<br>\r\n" + bactPosBody.toString());
                 log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
             }
 
@@ -321,6 +337,10 @@ public class MCLViolationReportBean {
 
     protected void printSHLMCLHeader(StringBuilder body, MCLViolationReportVO analysis) {
         body.append("\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("<br>\r\n")
             .append("This is an automatic notification for MCL violation. NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n")
             .append("The following analyte(s) exceed the MCL specified by the test and IDNR has been notified.<br>\r\n")
             .append("<br>\r\n")
@@ -379,6 +399,10 @@ public class MCLViolationReportBean {
         }
 
         body.append("\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("<br>\r\n")
             .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
             .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
             .append("Lab ID ");
@@ -542,7 +566,7 @@ public class MCLViolationReportBean {
             body.append(" ").append(freeChlorine);
 
         body.append("<br>\r\n")
-            .append("Total Chlorine, mg/L");
+            .append("Total Chlorine, in mg/L");
         
         if (!"".equals(totalChlorine))
             body.append(" ").append(totalChlorine);
