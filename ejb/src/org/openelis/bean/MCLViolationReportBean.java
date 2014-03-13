@@ -219,17 +219,11 @@ public class MCLViolationReportBean {
                 if (!lastPWSId.equals(analysis.getPwsId()) || !lastSectionId.equals(analysis.getSectionId())) {
                     if (!"xyzzy".equals(lastPWSId) && bactPosBody.length() > 0) {
                         sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                                  "\r\n=====================================================================<br>\r\n" +
-                                  "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
-                                  "=====================================================================<br>\r\n" +
-                                  "<br>\r\nThis is an automatic notification for Bacterial Positive. " +
+                                  "\r\nThis is an automatic notification for Bacterial Positive. " +
                                   "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
                                   bactPosBody.toString());
                         sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                                  "\r\n=====================================================================<br>\r\n" +
-                                  "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
-                                  "=====================================================================<br>\r\n" +
-                                  "<br>\r\n" + bactPosBody.toString());
+                                  "\r\n" + bactPosBody.toString());
                         log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
                         bactPosBody.setLength(0);
                     }
@@ -309,17 +303,11 @@ public class MCLViolationReportBean {
 
             if (bactPosBody.length() > 0) {
                 sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                          "\r\n=====================================================================<br>\r\n" +
-                          "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
-                          "=====================================================================<br>\r\n" +
-                          "<br>\r\nThis is an automatic notification for Bacterial Positive. " +
+                          "\r\nThis is an automatic notification for Bacterial Positive. " +
                           "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
                           bactPosBody.toString());
                 sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
-                          "\r\n=====================================================================<br>\r\n" +
-                          "THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n" +
-                          "=====================================================================<br>\r\n" +
-                          "<br>\r\n" + bactPosBody.toString());
+                          "\r\n" + bactPosBody.toString());
                 log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
             }
 
@@ -337,10 +325,6 @@ public class MCLViolationReportBean {
 
     protected void printSHLMCLHeader(StringBuilder body, MCLViolationReportVO analysis) {
         body.append("\r\n")
-            .append("=====================================================================<br>\r\n")
-            .append("THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n")
-            .append("=====================================================================<br>\r\n")
-            .append("<br>\r\n")
             .append("This is an automatic notification for MCL violation. NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n")
             .append("The following analyte(s) exceed the MCL specified by the test and IDNR has been notified.<br>\r\n")
             .append("<br>\r\n")
@@ -399,10 +383,6 @@ public class MCLViolationReportBean {
         }
 
         body.append("\r\n")
-            .append("=====================================================================<br>\r\n")
-            .append("THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n")
-            .append("=====================================================================<br>\r\n")
-            .append("<br>\r\n")
             .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
             .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
             .append("Lab ID ");
