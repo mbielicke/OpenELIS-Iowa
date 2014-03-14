@@ -29,13 +29,16 @@ UIRF Software License are applicable instead of those above.
  <display-name>OpenELIS Application V2</display-name>
  <description>OpenELIS Application for Laboratory</description>
 
+ 
    <security-constraint>
    <web-resource-collection>
      <web-resource-name>HtmlAuth</web-resource-name>
      <url-pattern>*.html</url-pattern>
      <url-pattern>/openelis/*</url-pattern>
+     <!-- 
      <http-method>GET</http-method>
      <http-method>POST</http-method>
+     -->
    </web-resource-collection>
    <auth-constraint>
      <role-name>openelis-select</role-name>
@@ -124,11 +127,7 @@ UIRF Software License are applicable instead of those above.
     <session-timeout>300</session-timeout>
   </session-config>
 
-  <error-page>
-    <error-code>404</error-code>
-    <location>/.no_file.html</location>
-  </error-page>  
-
+   
   <welcome-file-list>
      <welcome-file>OpenELIS.html</welcome-file>
   </welcome-file-list>

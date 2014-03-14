@@ -100,6 +100,13 @@ public class LoginServlet extends HttpServlet {
             ((HttpServletResponse)response).setContentType("text/html");
             ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
             
+            
+            response.setHeader("pragma", "no-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Cache-Control", "no-store");
+            response.setDateHeader("Expires", 0);
+            
+            
             response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") +
                                                        "/jbosslogin.xsl", doc,(String)hreq.getSession().getAttribute("locale")));
         } catch (Exception e) {

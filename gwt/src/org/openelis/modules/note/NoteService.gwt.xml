@@ -26,4 +26,5 @@ UIRF Software License are applicable instead of those above.
 -->
 
 <module>
+<inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
 </module>

@@ -74,10 +74,11 @@ public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt
             userCache.logout();
             session = getThreadLocalRequest().getSession();
             if (session != null) {
+                System.out.println("invalidating session");
                 session.invalidate();
             }
         } catch (Exception e) {
-            // ignore
+            e.printStackTrace();
         }
     }
 }
