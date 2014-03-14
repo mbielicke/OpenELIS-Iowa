@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/bin/client/jboss-client.jar"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="/usr/local/java/wildfly-8.0.0.Final/bin/client/jboss-client.jar"/>
+	<classpathentry kind="lib" path="/usr/local/java/wildfly-8.0.0.Final/modules/system/layers/base/javax/servlet/api/main/jboss-servlet-api_3.1_spec-1.0.0.Final.jar"/>
 	<classpathentry kind="lib" path="/OpenELIS-UI/lib/gwt-i18n-server-0.17.jar"/>
 	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/gwt-visualization-noredist.jar"/>
 	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/gwt-ajaxloader.jar"/>
@@ -12,8 +12,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry kind="lib" path="/OpenELIS-EJB/bin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Selenium"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>

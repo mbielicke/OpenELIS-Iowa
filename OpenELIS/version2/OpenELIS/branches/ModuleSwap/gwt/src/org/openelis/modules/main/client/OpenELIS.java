@@ -601,7 +601,8 @@ public class OpenELIS extends Screen {
             public void onFailure(Throwable caught) {
             }
         });
-        Window.open("/openelis/OpenELIS.html", "_self", null);
+        Window.open("/openelis/", "_self", null);
+       
     }
 
     /**
