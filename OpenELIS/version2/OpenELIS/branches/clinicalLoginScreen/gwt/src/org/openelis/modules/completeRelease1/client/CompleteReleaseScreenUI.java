@@ -24,6 +24,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
@@ -42,6 +43,7 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
+import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample1.client.AccessionChangeEvent;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
@@ -49,6 +51,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
@@ -170,6 +173,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected NeonatalTabUI                    neonatalTab;
 
     @UiField(provided = true)
+    protected ClinicalTabUI                    clinicalTab;
+
+    @UiField(provided = true)
     protected QuickEntryTabUI                  quickEntryTab;
 
     @UiField(provided = true)
@@ -232,8 +238,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.WORKSHEET                   };
 
     protected enum Tabs {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, QUICK_ENTRY, SAMPLE_ITEM, ANALYSIS,
-        TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
+        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
     };
 
     /**
@@ -249,6 +255,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         try {
             CategoryCache.getBySystemNames("sample_status",
+                                           "gender",
+                                           "race",
+                                           "ethnicity",
+                                           "state",
+                                           "country",
                                            "analysis_status",
                                            "type_of_sample",
                                            "source_of_sample",
@@ -269,6 +280,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         privateWellTab = new PrivateWellTabUI(this);
         sdwisTab = new SDWISTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
+        clinicalTab = new ClinicalTabUI(this);
         quickEntryTab = new QuickEntryTabUI(this);
         sampleItemTab = new SampleItemTabUI(this);
         analysisTab = new AnalysisTabUI(this);
@@ -474,6 +486,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.sdwis(manager);
                 else if (Constants.domain().NEONATAL.equals(domain))
                     SampleHistoryUtility1.neonatal(manager);
+                else if (Constants.domain().CLINICAL.equals(domain))
+                    SampleHistoryUtility1.clinical(manager);
             }
         });
 
@@ -742,6 +756,26 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
             public Object getQuery() {
                 return null;
+            }
+        });
+
+        addScreenHandler(clinicalTab, "clinicalTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                clinicalTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                clinicalTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+
+            public void isValid(Validation validation) {
+                super.isValid(validation);
+                if (clinicalTab.getIsBusy())
+                    validation.setStatus(FLAGGED);
             }
         });
 
@@ -1143,7 +1177,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 managers.put(data.sampleId, sm);
                 refreshRow(selRows[i]);
                 /*
-                 * this sample needs to be updated because at least on of its
+                 * this sample needs to be updated because at least one of its
                  * analyses was successfully released
                  */
                 selectedSams.put(data.sampleId, true);
@@ -1305,12 +1339,33 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Commits the data on the screen, to the database. Shows any
+     * Commits the data on the screen to the database. Shows any
      * errors/warnings encountered during the commit, otherwise loads the screen
      * with the committed data.
      */
     protected void commitUpdate(final boolean ignoreWarning) {
+        PatientDO data;
+
         setBusy(Messages.get().gen_updating());
+
+        /*
+         * update the patient if it's locked
+         */
+        if (manager.getSampleClinical() != null && clinicalTab.getIsPatientLocked()) {
+            try {
+                data = PatientService.get().update(manager.getSampleClinical().getPatient());
+                manager.getSampleClinical().setPatient(data);
+                clinicalTab.setIsPatientLocked(false);
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+                return;
+            } catch (Exception e) {
+                Window.alert("commitUpdate(): " + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                clearStatus();
+                return;
+            }
+        }
 
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
@@ -1360,11 +1415,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("abort")
     protected void abort(ClickEvent event) {
+        PatientDO data;
+
         finishEditing();
         clearErrors();
         setBusy(Messages.get().gen_cancelChanges());
 
-        if (state == QUERY) {
+        if (isState(QUERY)) {
             manager = null;
             showTabs(Tabs.BLANK);
             setData();
@@ -1374,7 +1431,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
                                                                                  null));
             setDone(Messages.get().gen_queryAborted());
-        } else if (state == UPDATE) {
+        } else if (isState(UPDATE)) {
+            /*
+             * unlock the patient if it's locked
+             */
+            if (manager.getSampleClinical() != null && clinicalTab.getIsPatientLocked()) {
+                try {
+                    data = PatientService.get().abortUpdate(manager.getSampleClinical()
+                                                                   .getPatientId());
+                    manager.getSampleClinical().setPatient(data);
+                    clinicalTab.setIsPatientLocked(false);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    return;
+                }
+            }
+
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
                     public void success(ArrayList<SampleManager1> result) {
@@ -1699,6 +1772,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         privateWellTab.setData(manager);
         sdwisTab.setData(manager);
         neonatalTab.setData(manager);
+        clinicalTab.setData(manager);
         quickEntryTab.setData(manager);
         sampleItemTab.setData(manager);
         analysisTab.setData(manager);
@@ -1943,6 +2017,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 domainTab = Tabs.SDWIS;
             else if (Constants.domain().NEONATAL.equals(domain))
                 domainTab = Tabs.NEONATAL;
+            else if (Constants.domain().CLINICAL.equals(domain))
+                domainTab = Tabs.CLINICAL;
             else if (Constants.domain().QUICKENTRY.equals(domain))
                 domainTab = Tabs.QUICK_ENTRY;
 

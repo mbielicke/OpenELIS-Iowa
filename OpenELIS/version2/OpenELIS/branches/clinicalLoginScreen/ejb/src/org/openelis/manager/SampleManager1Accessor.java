@@ -35,6 +35,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -92,6 +93,14 @@ public class SampleManager1Accessor {
     
     public static void setSampleNeonatal(SampleManager1 sm, SampleNeonatalDO sampleNeonatal) {
         sm.sampleNeonatal = sampleNeonatal;
+    }
+    
+    public static SampleClinicalDO getSampleClinical(SampleManager1 sm) {
+        return sm.sampleClinical;
+    }
+    
+    public static void setSampleClinical(SampleManager1 sm, SampleClinicalDO sampleClinical) {
+        sm.sampleClinical = sampleClinical;
     }
     
     public static ArrayList<SampleOrganizationViewDO> getOrganizations(SampleManager1 sm) {

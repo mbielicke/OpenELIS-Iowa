@@ -146,11 +146,21 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sampleNeonatal_neonatal}" tabVisible="false" />
+            <w:TabWidget text="{msg.sample_neonatal}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:NeonatalTabUI ui:field="neonatalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_clinical}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:ClinicalTabUI ui:field="clinicalTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

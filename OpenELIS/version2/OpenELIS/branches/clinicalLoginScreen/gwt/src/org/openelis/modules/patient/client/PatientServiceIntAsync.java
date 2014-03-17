@@ -34,6 +34,9 @@ import org.openelis.domain.PatientRelationVO;
 import org.openelis.ui.common.data.Query;
 
 public interface PatientServiceIntAsync {
-    public void query(Query query, AsyncCallback<ArrayList<PatientDO>> callback);
     public void fetchByRelatedPatientId(Integer patientId, AsyncCallback<ArrayList<PatientRelationVO>> callback);
+    public void fetchForUpdate(Integer patientId, AsyncCallback<PatientDO> callback);
+    public void query(Query query, AsyncCallback<ArrayList<PatientDO>> callback);
+    public void update(PatientDO data, AsyncCallback<PatientDO> callback);
+    public void abortUpdate(Integer patientId, AsyncCallback<PatientDO> callback);    
 }

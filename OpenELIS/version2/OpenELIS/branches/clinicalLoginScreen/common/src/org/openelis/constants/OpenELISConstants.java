@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace-production/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -754,6 +754,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantChangeStatusException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
+   * Translated "Accession # ''{0,number}'': Cannot complete {1}, {2}  ".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot complete {1}, {2}  "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot complete {1}, {2}  ")
+  @Key("analysis.cantCompleteException")
+  String analysis_cantCompleteException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Cannot copy blank section".
    * 
    * @return translated "Cannot copy blank section"
@@ -761,6 +770,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Cannot copy blank section")
   @Key("analysis.cantCopyBlankSect")
   String analysis_cantCopyBlankSect();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Sample is not verified".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Sample is not verified"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot release {1} : {2} - Sample is not verified")
+  @Key("analysis.cantReleaseSampleNotVerifiedException")
+  String analysis_cantReleaseSampleNotVerifiedException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system ".
@@ -808,6 +826,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_circularReference();
 
   /**
+   * Translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Status needs to be Completed".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Status needs to be Completed"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot release {1} : {2} - Status needs to be Completed")
+  @Key("analysis.completeStatusRequiredToRelease")
+  String analysis_completeStatusRequiredToRelease(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Completed".
    * 
    * @return translated "Completed"
@@ -844,6 +871,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_insufficientPrivilegesCancelException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to complete {1}, {2}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to complete {1}, {2}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to complete {1}, {2}")
+  @Key("analysis.insufficientPrivilegesCompleteException")
+  String analysis_insufficientPrivilegesCompleteException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}".
    * 
    * @return translated "Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}"
@@ -851,6 +887,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}")
   @Key("analysis.insufficientPrivilegesInitiateException")
   String analysis_insufficientPrivilegesInitiateException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to release {1}, {2}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to release {1}, {2}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to release {1}, {2}")
+  @Key("analysis.insufficientPrivilegesReleaseException")
+  String analysis_insufficientPrivilegesReleaseException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to unrelease {1}, {2}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to unrelease {1}, {2}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to unrelease {1}, {2}")
+  @Key("analysis.insufficientPrivilegesUnreleaseException")
+  String analysis_insufficientPrivilegesUnreleaseException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position".
@@ -1004,6 +1058,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed")
   @Key("analysis.startedDateInvalidException")
   String analysis_startedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Analysis Status".
+   * 
+   * @return translated "Analysis Status"
+   */
+  @DefaultMessage("Analysis Status")
+  @Key("analysis.status")
+  String analysis_status();
 
   /**
    * Translated "Accession # ''{0,number}'': Item {1,number} - One or more tests are missing".
@@ -2374,6 +2437,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String cantUpdateSampleQAEvent();
 
   /**
+   * Translated "The sample must be fully logged in".
+   * 
+   * @return translated "The sample must be fully logged in"
+   */
+  @DefaultMessage("The sample must be fully logged in")
+  @Key("cantVerifyQuickEntry")
+  String cantVerifyQuickEntry();
+
+  /**
    * Translated "Category Name".
    * 
    * @return translated "Category Name"
@@ -2786,6 +2858,105 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Complete")
   @Key("complete")
   String complete();
+
+  /**
+   * Translated "Accession # ''{0,number}'' : {1}, {2} has already been released".
+   * 
+   * @return translated "Accession # ''{0,number}'' : {1}, {2} has already been released"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} has already been released")
+  @Key("completeRelease.alreadyReleased")
+  String completeRelease_alreadyReleased(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "You can only update 1 row at a time".
+   * 
+   * @return translated "You can only update 1 row at a time"
+   */
+  @DefaultMessage("You can only update 1 row at a time")
+  @Key("completeRelease.cantUpdateMultiple")
+  String completeRelease_cantUpdateMultiple();
+
+  /**
+   * Translated "Complete and Release".
+   * 
+   * @return translated "Complete and Release"
+   */
+  @DefaultMessage("Complete and Release")
+  @Key("completeRelease.completeAndRelease")
+  String completeRelease_completeAndRelease();
+
+  /**
+   * Translated "You are about to complete {0,number} records.\n\nPress OK to continue or Cancel to abort.".
+   * 
+   * @return translated "You are about to complete {0,number} records.\n\nPress OK to continue or Cancel to abort."
+   */
+  @DefaultMessage("You are about to complete {0,number} records.\n\nPress OK to continue or Cancel to abort.")
+  @Key("completeRelease.completeMultipleWarning")
+  String completeRelease_completeMultipleWarning(Integer arg0);
+
+  /**
+   * Translated "Perform final review and release of analyses.".
+   * 
+   * @return translated "Perform final review and release of analyses."
+   */
+  @DefaultMessage("Perform final review and release of analyses.")
+  @Key("completeRelease.description")
+  String completeRelease_description();
+
+  /**
+   * Translated "This analysis has a status of ''{0}'', press Ok to complete or Cancel to abort.".
+   * 
+   * @return translated "This analysis has a status of ''{0}'', press Ok to complete or Cancel to abort."
+   */
+  @DefaultMessage("This analysis has a status of ''{0}'', press Ok to complete or Cancel to abort.")
+  @Key("completeRelease.onHoldWarning")
+  String completeRelease_onHoldWarning(String arg0);
+
+  /**
+   * Translated "Query By Worksheet".
+   * 
+   * @return translated "Query By Worksheet"
+   */
+  @DefaultMessage("Query By Worksheet")
+  @Key("completeRelease.queryByWorksheet")
+  String completeRelease_queryByWorksheet();
+
+  /**
+   * Translated "You are about to release {0,number} records.\n\nPress OK to continue or Cancel to abort.".
+   * 
+   * @return translated "You are about to release {0,number} records.\n\nPress OK to continue or Cancel to abort."
+   */
+  @DefaultMessage("You are about to release {0,number} records.\n\nPress OK to continue or Cancel to abort.")
+  @Key("completeRelease.releaseMultipleWarning")
+  String completeRelease_releaseMultipleWarning(Integer arg0);
+
+  /**
+   * Translated "Unrelease Analysis".
+   * 
+   * @return translated "Unrelease Analysis"
+   */
+  @DefaultMessage("Unrelease Analysis")
+  @Key("completeRelease.unrelease")
+  String completeRelease_unrelease();
+
+  /**
+   * Translated "You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.".
+   * 
+   * @return translated "You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort."
+   */
+  @DefaultMessage("You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.")
+  @Key("completeRelease.unreleaseMessage")
+  String completeRelease_unreleaseMessage();
+
+  /**
+   * Translated "Status needs to be ''{0}'' to unrelease".
+   * 
+   * @return translated "Status needs to be ''{0}'' to unrelease"
+   */
+  @DefaultMessage("Status needs to be ''{0}'' to unrelease")
+  @Key("completeRelease.wrongStatusUnrelease")
+  String completeRelease_wrongStatusUnrelease(String arg0);
 
   /**
    * Translated "Unable to set {0} : {1} to completed - result for {2} : {3} is invalid ".
@@ -4633,13 +4804,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String finalReportSingleReprint();
 
   /**
-   * Translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''  ".
+   * Translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''".
    * 
-   * @return translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''  "
+   * @return translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''"
    */
-  @DefaultMessage("Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''  ")
+  @DefaultMessage("Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''")
   @Key("finalreport.attachmentEsaveDescription")
   String finalreport_attachmentEsaveDescription(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Preview Final Report".
+   * 
+   * @return translated "Preview Final Report"
+   */
+  @DefaultMessage("Preview Final Report")
+  @Key("finalreport.preview")
+  String finalreport_preview();
 
   /**
    * Translated "Find".
@@ -5011,6 +5191,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_commit();
 
   /**
+   * Translated "Complete".
+   * 
+   * @return translated "Complete"
+   */
+  @DefaultMessage("Complete")
+  @Key("gen.complete")
+  String gen_complete();
+
+  /**
    * Translated "Container".
    * 
    * @return translated "Container"
@@ -5056,6 +5245,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_dateRec();
 
   /**
+   * Translated "Desc".
+   * 
+   * @return translated "Desc"
+   */
+  @DefaultMessage("Desc")
+  @Key("gen.desc")
+  String gen_desc();
+
+  /**
    * Translated "Description".
    * 
    * @return translated "Description"
@@ -5063,6 +5261,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Description")
   @Key("gen.description")
   String gen_description();
+
+  /**
+   * Translated "Details".
+   * 
+   * @return translated "Details"
+   */
+  @DefaultMessage("Details")
+  @Key("gen.details")
+  String gen_details();
 
   /**
    * Translated "Dispensed Units".
@@ -5380,6 +5587,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_method();
 
   /**
+   * Translated "Middle".
+   * 
+   * @return translated "Middle"
+   */
+  @DefaultMessage("Middle")
+  @Key("gen.middle")
+  String gen_middle();
+
+  /**
    * Translated "Middle Name".
    * 
    * @return translated "Middle Name"
@@ -5569,6 +5785,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_parent();
 
   /**
+   * Translated "999/999-9999".
+   * 
+   * @return translated "999/999-9999"
+   */
+  @DefaultMessage("999/999-9999")
+  @Key("gen.phonePattern")
+  String gen_phonePattern();
+
+  /**
+   * Translated "999/999-9999.9999".
+   * 
+   * @return translated "999/999-9999.9999"
+   */
+  @DefaultMessage("999/999-9999.9999")
+  @Key("gen.phoneWithExtensionPattern")
+  String gen_phoneWithExtensionPattern();
+
+  /**
    * Translated "Pop-out".
    * 
    * @return translated "Pop-out"
@@ -5702,6 +5936,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Received Date")
   @Key("gen.receivedDate")
   String gen_receivedDate();
+
+  /**
+   * Translated "Release".
+   * 
+   * @return translated "Release"
+   */
+  @DefaultMessage("Release")
+  @Key("gen.release")
+  String gen_release();
 
   /**
    * Translated "Remove".
@@ -5983,6 +6226,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_yes();
 
   /**
+   * Translated "99999-9999".
+   * 
+   * @return translated "99999-9999"
+   */
+  @DefaultMessage("99999-9999")
+  @Key("gen.zipcodePattern")
+  String gen_zipcodePattern();
+
+  /**
    * Translated "Generating report....".
    * 
    * @return translated "Generating report...."
@@ -6181,6 +6433,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String history_sample();
 
   /**
+   * Translated "Sample Clinical".
+   * 
+   * @return translated "Sample Clinical"
+   */
+  @DefaultMessage("Sample Clinical")
+  @Key("history.sampleClinical")
+  String history_sampleClinical();
+
+  /**
    * Translated "History - Sample Environmental".
    * 
    * @return translated "History - Sample Environmental"
@@ -6199,11 +6460,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String history_sampleItem();
 
   /**
-   * Translated "History - Sample Neonatal".
+   * Translated "Sample Neonatal".
    * 
-   * @return translated "History - Sample Neonatal"
+   * @return translated "Sample Neonatal"
    */
-  @DefaultMessage("History - Sample Neonatal")
+  @DefaultMessage("Sample Neonatal")
   @Key("history.sampleNeonatal")
   String history_sampleNeonatal();
 
@@ -9349,22 +9610,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_catalogNum();
 
   /**
-   * Translated "Order # \"{0}\": Container Item Sequence is required".
+   * Translated "Order # \"{0,number}\": Container Item Sequence is required".
    * 
-   * @return translated "Order # \"{0}\": Container Item Sequence is required"
+   * @return translated "Order # \"{0,number}\": Container Item Sequence is required"
    */
-  @DefaultMessage("Order # \"{0}\": Container Item Sequence is required")
+  @DefaultMessage("Order # \"{0,number}\": Container Item Sequence is required")
   @Key("order.containerItemSequenceRequiredException")
-  String order_containerItemSequenceRequiredException(String arg0);
+  String order_containerItemSequenceRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Container is required".
+   * Translated "Order # \"{0,number}\": Container is required".
    * 
-   * @return translated "Order # \"{0}\": Container is required"
+   * @return translated "Order # \"{0,number}\": Container is required"
    */
-  @DefaultMessage("Order # \"{0}\": Container is required")
+  @DefaultMessage("Order # \"{0,number}\": Container is required")
   @Key("order.containerRequiredException")
-  String order_containerRequiredException(String arg0);
+  String order_containerRequiredException(Integer arg0);
 
   /**
    * Translated "Cost Center".
@@ -9376,13 +9637,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_costCenter();
 
   /**
-   * Translated "Order # \"{0}\": Cost Center is required".
+   * Translated "Order # \"{0,number}\": Cost Center is required".
    * 
-   * @return translated "Order # \"{0}\": Cost Center is required"
+   * @return translated "Order # \"{0,number}\": Cost Center is required"
    */
-  @DefaultMessage("Order # \"{0}\": Cost Center is required")
+  @DefaultMessage("Order # \"{0,number}\": Cost Center is required")
   @Key("order.costCenterRequiredException")
-  String order_costCenterRequiredException(String arg0);
+  String order_costCenterRequiredException(Integer arg0);
 
   /**
    * Translated "Customer".
@@ -9403,22 +9664,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_datesFreqUnitNotSpec();
 
   /**
-   * Translated "Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once".
+   * Translated "Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once".
    * 
-   * @return translated "Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once"
+   * @return translated "Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once"
    */
-  @DefaultMessage("Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once")
+  @DefaultMessage("Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once")
   @Key("order.duplicateInvItemVendorOrderException")
-  String order_duplicateInvItemVendorOrderException(String arg0,  String arg1);
+  String order_duplicateInvItemVendorOrderException(Integer arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0}\": End date must not be before begin date".
+   * Translated "Order # \"{0,number}\": End date must not be before begin date".
    * 
-   * @return translated "Order # \"{0}\": End date must not be before begin date"
+   * @return translated "Order # \"{0,number}\": End date must not be before begin date"
    */
-  @DefaultMessage("Order # \"{0}\": End date must not be before begin date")
+  @DefaultMessage("Order # \"{0,number}\": End date must not be before begin date")
   @Key("order.endDateAfterBeginDateException")
-  String order_endDateAfterBeginDateException(String arg0);
+  String order_endDateAfterBeginDateException(Integer arg0);
 
   /**
    * Translated "Ext Order #".
@@ -9439,40 +9700,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_filled();
 
   /**
-   * Translated "Order # \"{0}\": Frequency must be greater than zero".
+   * Translated "Order # \"{0,number}\": Frequency must be greater than zero".
    * 
-   * @return translated "Order # \"{0}\": Frequency must be greater than zero"
+   * @return translated "Order # \"{0,number}\": Frequency must be greater than zero"
    */
-  @DefaultMessage("Order # \"{0}\": Frequency must be greater than zero")
+  @DefaultMessage("Order # \"{0,number}\": Frequency must be greater than zero")
   @Key("order.freqInvalidException")
-  String order_freqInvalidException(String arg0);
+  String order_freqInvalidException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
+   * Translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
    * 
-   * @return translated "Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  "
+   * @return translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  "
    */
-  @DefaultMessage("Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ")
+  @DefaultMessage("Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ")
   @Key("order.invalidSampleTypeForTestWarning")
-  String order_invalidSampleTypeForTestWarning(String arg0,  String arg1,  String arg2);
+  String order_invalidSampleTypeForTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Order # \"{0}\": Inventory Item is required".
+   * Translated "Order # \"{0,number}\": Inventory Item is required".
    * 
-   * @return translated "Order # \"{0}\": Inventory Item is required"
+   * @return translated "Order # \"{0,number}\": Inventory Item is required"
    */
-  @DefaultMessage("Order # \"{0}\": Inventory Item is required")
+  @DefaultMessage("Order # \"{0,number}\": Inventory Item is required")
   @Key("order.inventoryItemRequiredException")
-  String order_inventoryItemRequiredException(String arg0);
+  String order_inventoryItemRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Inventory Quantity is required".
+   * Translated "Order # \"{0,number}\": Inventory Quantity is required".
    * 
-   * @return translated "Order # \"{0}\": Inventory Quantity is required"
+   * @return translated "Order # \"{0,number}\": Inventory Quantity is required"
    */
-  @DefaultMessage("Order # \"{0}\": Inventory Quantity is required")
+  @DefaultMessage("Order # \"{0,number}\": Inventory Quantity is required")
   @Key("order.inventoryQuantityRequiredException")
-  String order_inventoryQuantityRequiredException(String arg0);
+  String order_inventoryQuantityRequiredException(Integer arg0);
 
   /**
    * Translated "Item #".
@@ -9493,49 +9754,49 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_items();
 
   /**
-   * Translated "Order # \"{0}\": Duplicating more than one container is not allowed".
+   * Translated "Order # \"{0,number}\": Duplicating more than one container is not allowed".
    * 
-   * @return translated "Order # \"{0}\": Duplicating more than one container is not allowed"
+   * @return translated "Order # \"{0,number}\": Duplicating more than one container is not allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Duplicating more than one container is not allowed")
+  @DefaultMessage("Order # \"{0,number}\": Duplicating more than one container is not allowed")
   @Key("order.multiRowDuplicateNotAllowed")
-  String order_multiRowDuplicateNotAllowed(String arg0);
+  String order_multiRowDuplicateNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Moving up/down more than one container is not allowed".
+   * Translated "Order # \"{0,number}\": Moving up/down more than one container is not allowed".
    * 
-   * @return translated "Order # \"{0}\": Moving up/down more than one container is not allowed"
+   * @return translated "Order # \"{0,number}\": Moving up/down more than one container is not allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Moving up/down more than one container is not allowed")
+  @DefaultMessage("Order # \"{0,number}\": Moving up/down more than one container is not allowed")
   @Key("order.multiRowMoveNotAllowed")
-  String order_multiRowMoveNotAllowed(String arg0);
+  String order_multiRowMoveNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed".
+   * Translated "Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed".
    * 
-   * @return translated "Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed"
+   * @return translated "Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed")
+  @DefaultMessage("Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed")
   @Key("order.multiTestCheckNotAllowed")
-  String order_multiTestCheckNotAllowed(String arg0);
+  String order_multiTestCheckNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Only one record with the type Bill To is allowed".
+   * Translated "Order # \"{0,number}\": Only one record with the type Bill To is allowed".
    * 
-   * @return translated "Order # \"{0}\": Only one record with the type Bill To is allowed"
+   * @return translated "Order # \"{0,number}\": Only one record with the type Bill To is allowed"
    */
-  @DefaultMessage("Order # \"{0}\": Only one record with the type Bill To is allowed")
+  @DefaultMessage("Order # \"{0,number}\": Only one record with the type Bill To is allowed")
   @Key("order.multipleBillToException")
-  String order_multipleBillToException(String arg0);
+  String order_multipleBillToException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Only one record with the type Report To is allowed ".
+   * Translated "Order # \"{0,number}\": Only one record with the type Report To is allowed ".
    * 
-   * @return translated "Order # \"{0}\": Only one record with the type Report To is allowed "
+   * @return translated "Order # \"{0,number}\": Only one record with the type Report To is allowed "
    */
-  @DefaultMessage("Order # \"{0}\": Only one record with the type Report To is allowed ")
+  @DefaultMessage("Order # \"{0,number}\": Only one record with the type Report To is allowed ")
   @Key("order.multipleReportToException")
-  String order_multipleReportToException(String arg0);
+  String order_multipleReportToException(Integer arg0);
 
   /**
    * Translated "Needed In Days".
@@ -9547,40 +9808,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_neededDays();
 
   /**
-   * Translated "Order # \"{0}\": Needed In Days is required".
+   * Translated "Order # \"{0,number}\": Needed In Days is required".
    * 
-   * @return translated "Order # \"{0}\": Needed In Days is required"
+   * @return translated "Order # \"{0,number}\": Needed In Days is required"
    */
-  @DefaultMessage("Order # \"{0}\": Needed In Days is required")
+  @DefaultMessage("Order # \"{0,number}\": Needed In Days is required")
   @Key("order.neededInDaysRequiredException")
-  String order_neededInDaysRequiredException(String arg0);
+  String order_neededInDaysRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' ".
+   * Translated "Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' ".
    * 
-   * @return translated "Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' "
+   * @return translated "Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' "
    */
-  @DefaultMessage("Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' ")
+  @DefaultMessage("Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' ")
   @Key("order.noContainerWithItemNumWarning")
-  String order_noContainerWithItemNumWarning(String arg0,  String arg1,  String arg2);
+  String order_noContainerWithItemNumWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Order # \"{0}\": No sample type specified for the container with Item # {1}  ".
+   * Translated "Order # \"{0,number}\": No sample type specified for the container with Item # {1}  ".
    * 
-   * @return translated "Order # \"{0}\": No sample type specified for the container with Item # {1}  "
+   * @return translated "Order # \"{0,number}\": No sample type specified for the container with Item # {1}  "
    */
-  @DefaultMessage("Order # \"{0}\": No sample type specified for the container with Item # {1}  ")
+  @DefaultMessage("Order # \"{0,number}\": No sample type specified for the container with Item # {1}  ")
   @Key("order.noSampleTypeForContainerWarning")
-  String order_noSampleTypeForContainerWarning(String arg0,  String arg1);
+  String order_noSampleTypeForContainerWarning(Integer arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0}\": Not all dates generated with this frequency are valid".
+   * Translated "Order # \"{0,number}\": Not all dates generated with this frequency are valid".
    * 
-   * @return translated "Order # \"{0}\": Not all dates generated with this frequency are valid"
+   * @return translated "Order # \"{0,number}\": Not all dates generated with this frequency are valid"
    */
-  @DefaultMessage("Order # \"{0}\": Not all dates generated with this frequency are valid")
+  @DefaultMessage("Order # \"{0,number}\": Not all dates generated with this frequency are valid")
   @Key("order.notAllDatesValid")
-  String order_notAllDatesValid(String arg0);
+  String order_notAllDatesValid(Integer arg0);
 
   /**
    * Translated "# Forms".
@@ -9592,13 +9853,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_numForms();
 
   /**
-   * Translated "Order # \"{0}\": # Forms is required".
+   * Translated "Order # \"{0,number}\": # Forms is required".
    * 
-   * @return translated "Order # \"{0}\": # Forms is required"
+   * @return translated "Order # \"{0,number}\": # Forms is required"
    */
-  @DefaultMessage("Order # \"{0}\": # Forms is required")
+  @DefaultMessage("Order # \"{0,number}\": # Forms is required")
   @Key("order.numFormsRequiredException")
-  String order_numFormsRequiredException(String arg0);
+  String order_numFormsRequiredException(Integer arg0);
 
   /**
    * Translated "Order".
@@ -9691,22 +9952,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_orderTestHistory();
 
   /**
-   * Translated "Order # \"{0}\": Organization is required".
+   * Translated "Order # \"{0,number}\": Organization is required".
    * 
-   * @return translated "Order # \"{0}\": Organization is required"
+   * @return translated "Order # \"{0,number}\": Organization is required"
    */
-  @DefaultMessage("Order # \"{0}\": Organization is required")
+  @DefaultMessage("Order # \"{0,number}\": Organization is required")
   @Key("order.organizationRequiredException")
-  String order_organizationRequiredException(String arg0);
+  String order_organizationRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Organization Type is required".
+   * Translated "Order # \"{0,number}\": Organization Type is required".
    * 
-   * @return translated "Order # \"{0}\": Organization Type is required"
+   * @return translated "Order # \"{0,number}\": Organization Type is required"
    */
-  @DefaultMessage("Order # \"{0}\": Organization Type is required")
+  @DefaultMessage("Order # \"{0,number}\": Organization Type is required")
   @Key("order.organizationTypeRequiredException")
-  String order_organizationTypeRequiredException(String arg0);
+  String order_organizationTypeRequiredException(Integer arg0);
 
   /**
    * Translated "Parent Order #".
@@ -9718,13 +9979,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_parentOrderNum();
 
   /**
-   * Translated "Order # \"{0}\": This value must not exceed {1}".
+   * Translated "Order # \"{0,number}\": This value must not exceed {1}".
    * 
-   * @return translated "Order # \"{0}\": This value must not exceed {1}"
+   * @return translated "Order # \"{0,number}\": This value must not exceed {1}"
    */
-  @DefaultMessage("Order # \"{0}\": This value must not exceed {1}")
+  @DefaultMessage("Order # \"{0,number}\": This value must not exceed {1}")
   @Key("order.qtyNotMoreThanMaxException")
-  String order_qtyNotMoreThanMaxException(String arg0,  String arg1);
+  String order_qtyNotMoreThanMaxException(Integer arg0,  String arg1);
 
   /**
    * Translated "Recur".
@@ -9736,40 +9997,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_recur();
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Active Begin is required".
+   * Translated "Order # \"{0,number}\": Recurrence Active Begin is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Active Begin is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Active Begin is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Active Begin is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Active Begin is required")
   @Key("order.recurrenceActiveBeginRequiredException")
-  String order_recurrenceActiveBeginRequiredException(String arg0);
+  String order_recurrenceActiveBeginRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Active End is required".
+   * Translated "Order # \"{0,number}\": Recurrence Active End is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Active End is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Active End is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Active End is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Active End is required")
   @Key("order.recurrenceActiveEndRequiredException")
-  String order_recurrenceActiveEndRequiredException(String arg0);
+  String order_recurrenceActiveEndRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Frequency is required".
+   * Translated "Order # \"{0,number}\": Recurrence Frequency is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Frequency is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Frequency is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Frequency is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Frequency is required")
   @Key("order.recurrenceFrequencyRequiredException")
-  String order_recurrenceFrequencyRequiredException(String arg0);
+  String order_recurrenceFrequencyRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0}\": Recurrence Unit is required".
+   * Translated "Order # \"{0,number}\": Recurrence Unit is required".
    * 
-   * @return translated "Order # \"{0}\": Recurrence Unit is required"
+   * @return translated "Order # \"{0,number}\": Recurrence Unit is required"
    */
-  @DefaultMessage("Order # \"{0}\": Recurrence Unit is required")
+  @DefaultMessage("Order # \"{0,number}\": Recurrence Unit is required")
   @Key("order.recurrenceUnitRequiredException")
-  String order_recurrenceUnitRequiredException(String arg0);
+  String order_recurrenceUnitRequiredException(Integer arg0);
 
   /**
    * Translated "Remove Test".
@@ -9817,13 +10078,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_shipFrom();
 
   /**
-   * Translated "Order # \"{0}\": Ship From is required".
+   * Translated "Order # \"{0,number}\": Ship From is required".
    * 
-   * @return translated "Order # \"{0}\": Ship From is required"
+   * @return translated "Order # \"{0,number}\": Ship From is required"
    */
-  @DefaultMessage("Order # \"{0}\": Ship From is required")
+  @DefaultMessage("Order # \"{0,number}\": Ship From is required")
   @Key("order.shipFromRequiredException")
-  String order_shipFromRequiredException(String arg0);
+  String order_shipFromRequiredException(Integer arg0);
 
   /**
    * Translated "Ship To".
@@ -9853,13 +10114,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_showDates();
 
   /**
-   * Translated "Order # \"{0}\": Status is required".
+   * Translated "Order # \"{0,number}\": Status is required".
    * 
-   * @return translated "Order # \"{0}\": Status is required"
+   * @return translated "Order # \"{0,number}\": Status is required"
    */
-  @DefaultMessage("Order # \"{0}\": Status is required")
+  @DefaultMessage("Order # \"{0,number}\": Status is required")
   @Key("order.statusRequiredException")
-  String order_statusRequiredException(String arg0);
+  String order_statusRequiredException(Integer arg0);
 
   /**
    * Translated "Test by Method, Description".
@@ -10049,24 +10310,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("History - Test")
   @Key("orderTestHistory")
   String orderTestHistory();
-
-  /**
-   * Translated "Birth Hospital".
-   * 
-   * @return translated "Birth Hospital"
-   */
-  @DefaultMessage("Birth Hospital")
-  @Key("org.birthHospital")
-  String org_birthHospital();
-
-  /**
-   * Translated "Report To".
-   * 
-   * @return translated "Report To"
-   */
-  @DefaultMessage("Report To")
-  @Key("org.reportTo")
-  String org_reportTo();
 
   /**
    * Translated "History - Organization Address ".
@@ -10546,6 +10789,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_maiden();
 
   /**
+   * Translated "NID".
+   * 
+   * @return translated "NID"
+   */
+  @DefaultMessage("NID")
+  @Key("patient.nationalId")
+  String patient_nationalId();
+
+  /**
    * Translated "Next Of Kin".
    * 
    * @return translated "Next Of Kin"
@@ -10589,6 +10841,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Patient description")
   @Key("patientDescription")
   String patientDescription();
+
+  /**
+   * Translated "Patient Lookup ".
+   * 
+   * @return translated "Patient Lookup "
+   */
+  @DefaultMessage("Patient Lookup ")
+  @Key("patientLookup.patientLookup")
+  String patientLookup_patientLookup();
 
   /**
    * Translated "Period ".
@@ -11273,6 +11534,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Provider (L,F)")
   @Key("provider.lf")
   String provider_lf();
+
+  /**
+   * Translated "NPI".
+   * 
+   * @return translated "NPI"
+   */
+  @DefaultMessage("NPI")
+  @Key("provider.npi")
+  String provider_npi();
 
   /**
    * Translated "Enter health care professionals and their contact information.".
@@ -12481,6 +12751,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_valueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} is required to have a value".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} is required to have a value"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} is required to have a value")
+  @Key("result.valueRequiredException")
+  String result_valueRequiredException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
    * Translated "Results of type \"Default\" must not be selected for reflex tests".
    * 
    * @return translated "Results of type \"Default\" must not be selected for reflex tests"
@@ -12823,6 +13102,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_chooseTestOrPanel();
 
   /**
+   * Translated "Clinical".
+   * 
+   * @return translated "Clinical"
+   */
+  @DefaultMessage("Clinical")
+  @Key("sample.clinical")
+  String sample_clinical();
+
+  /**
    * Translated "Client Reference".
    * 
    * @return translated "Client Reference"
@@ -12857,6 +13145,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date")
   @Key("sample.collectedTooOldWarning")
   String sample_collectedTooOldWarning(Integer arg0);
+
+  /**
+   * Translated "Collector".
+   * 
+   * @return translated "Collector"
+   */
+  @DefaultMessage("Collector")
+  @Key("sample.collector")
+  String sample_collector();
 
   /**
    * Translated "Accession # ''{0,number}'' : Specified domain is invalid".
@@ -12958,20 +13255,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_multipleReportToException(String arg0);
 
   /**
-   * Translated "National ID".
+   * Translated "Neonatal".
    * 
-   * @return translated "National ID"
+   * @return translated "Neonatal"
    */
-  @DefaultMessage("National ID")
-  @Key("sample.nationalId")
-  String sample_nationalId();
-
-  /**
-   * Translated "Sample Neonatal".
-   * 
-   * @return translated "Sample Neonatal"
-   */
-  @DefaultMessage("Sample Neonatal")
+  @DefaultMessage("Neonatal")
   @Key("sample.neonatal")
   String sample_neonatal();
 
@@ -12994,11 +13282,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_notBillable();
 
   /**
-   * Translated "Accession # ''{0,number}'': Not a Quick Entry sample ".
+   * Translated "Accession # ''{0,number}'': Not a Quick Entry sample".
    * 
-   * @return translated "Accession # ''{0,number}'': Not a Quick Entry sample "
+   * @return translated "Accession # ''{0,number}'': Not a Quick Entry sample"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Not a Quick Entry sample ")
+  @DefaultMessage("Accession # ''{0,number}'': Not a Quick Entry sample")
   @Key("sample.notQuickEntryException")
   String sample_notQuickEntryException(Integer arg0);
 
@@ -13037,6 +13325,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Organization")
   @Key("sample.organization")
   String sample_organization();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Last name is required for a patient".
+   * 
+   * @return translated "Accession # ''{0,number}'': Last name is required for a patient"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Last name is required for a patient")
+  @Key("sample.patientLastNameRequiredException")
+  String sample_patientLastNameRequiredException(Integer arg0);
 
   /**
    * Translated "Sample Project".
@@ -13120,6 +13417,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_sampleItemTypeRequired();
 
   /**
+   * Translated "Sample Specific".
+   * 
+   * @return translated "Sample Specific"
+   */
+  @DefaultMessage("Sample Specific")
+  @Key("sample.specific")
+  String sample_specific();
+
+  /**
+   * Translated "Sample Status".
+   * 
+   * @return translated "Sample Status"
+   */
+  @DefaultMessage("Sample Status")
+  @Key("sample.status")
+  String sample_status();
+
+  /**
    * Translated "Test Lookup".
    * 
    * @return translated "Test Lookup"
@@ -13127,6 +13442,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test Lookup")
   @Key("sample.testLookup")
   String sample_testLookup();
+
+  /**
+   * Translated "Tracking".
+   * 
+   * @return translated "Tracking"
+   */
+  @DefaultMessage("Tracking")
+  @Key("sample.tracking")
+  String sample_tracking();
 
   /**
    * Translated "Sample Type".
@@ -13147,13 +13471,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_typeStatus();
 
   /**
-   * Translated "Accession # ''{0}'': You must add an internal note when sample/analysis is unreleased".
+   * Translated "Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased".
    * 
-   * @return translated "Accession # ''{0}'': You must add an internal note when sample/analysis is unreleased"
+   * @return translated "Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased"
    */
-  @DefaultMessage("Accession # ''{0}'': You must add an internal note when sample/analysis is unreleased")
+  @DefaultMessage("Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased")
   @Key("sample.unreleaseNoNoteException")
-  String sample_unreleaseNoNoteException(String arg0);
+  String sample_unreleaseNoNoteException(Integer arg0);
 
   /**
    * Translated "Sample Cat".
@@ -13172,6 +13496,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Category is required")
   @Key("sampleCatRequiredException")
   String sampleCatRequiredException();
+
+  /**
+   * Translated "Clinical Info".
+   * 
+   * @return translated "Clinical Info"
+   */
+  @DefaultMessage("Clinical Info")
+  @Key("sampleClinical.clinicalInfo")
+  String sampleClinical_clinicalInfo();
+
+  /**
+   * Translated "Clinical Sample Login".
+   * 
+   * @return translated "Clinical Sample Login"
+   */
+  @DefaultMessage("Clinical Sample Login")
+  @Key("sampleClinical.login")
+  String sampleClinical_login();
+
+  /**
+   * Translated "Fully login clinical sample and analysis related information.".
+   * 
+   * @return translated "Fully login clinical sample and analysis related information."
+   */
+  @DefaultMessage("Fully login clinical sample and analysis related information.")
+  @Key("sampleClinical.loginDescription")
+  String sampleClinical_loginDescription();
+
+  /**
+   * Translated "Provider/Organization Info".
+   * 
+   * @return translated "Provider/Organization Info"
+   */
+  @DefaultMessage("Provider/Organization Info")
+  @Key("sampleClinical.providerOrganizationInfo")
+  String sampleClinical_providerOrganizationInfo();
 
   /**
    * Translated "Since there are containers already present in the sample, the \ntests and sample types may not get assigned as defined in the order.\nWould you still like to load the order?".
@@ -13199,6 +13559,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("The domain of this sample has changed")
   @Key("sampleDomainChangedException")
   String sampleDomainChangedException();
+
+  /**
+   * Translated "Hazardous".
+   * 
+   * @return translated "Hazardous"
+   */
+  @DefaultMessage("Hazardous")
+  @Key("sampleEnvironmental.hazardous")
+  String sampleEnvironmental_hazardous();
 
   /**
    * Translated "Smp Ext Comment".
@@ -13417,6 +13786,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleNeonatal_gestAge();
 
   /**
+   * Translated "Neonatal Screening Sample Login".
+   * 
+   * @return translated "Neonatal Screening Sample Login"
+   */
+  @DefaultMessage("Neonatal Screening Sample Login")
+  @Key("sampleNeonatal.login")
+  String sampleNeonatal_login();
+
+  /**
+   * Translated "Fully login neonatal sample and analysis related information.".
+   * 
+   * @return translated "Fully login neonatal sample and analysis related information."
+   */
+  @DefaultMessage("Fully login neonatal sample and analysis related information.")
+  @Key("sampleNeonatal.loginDescription")
+  String sampleNeonatal_loginDescription();
+
+  /**
    * Translated "NICU".
    * 
    * @return translated "NICU"
@@ -13498,6 +13885,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleOrganization();
 
   /**
+   * Translated "Bill To".
+   * 
+   * @return translated "Bill To"
+   */
+  @DefaultMessage("Bill To")
+  @Key("sampleOrganization.billTo")
+  String sampleOrganization_billTo();
+
+  /**
+   * Translated "Birth Hospital".
+   * 
+   * @return translated "Birth Hospital"
+   */
+  @DefaultMessage("Birth Hospital")
+  @Key("sampleOrganization.birthHospital")
+  String sampleOrganization_birthHospital();
+
+  /**
+   * Translated "Querying for more than one type of organization is not allowed".
+   * 
+   * @return translated "Querying for more than one type of organization is not allowed"
+   */
+  @DefaultMessage("Querying for more than one type of organization is not allowed")
+  @Key("sampleOrganization.cantQueryByMultipleTypeException")
+  String sampleOrganization_cantQueryByMultipleTypeException();
+
+  /**
+   * Translated "Report To".
+   * 
+   * @return translated "Report To"
+   */
+  @DefaultMessage("Report To")
+  @Key("sampleOrganization.reportTo")
+  String sampleOrganization_reportTo();
+
+  /**
    * Translated "Sample Prep".
    * 
    * @return translated "Sample Prep"
@@ -13568,6 +13991,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Qty")
   @Key("sampleQty")
   String sampleQty();
+
+  /**
+   * Translated "Quick Entry".
+   * 
+   * @return translated "Quick Entry"
+   */
+  @DefaultMessage("Quick Entry")
+  @Key("sampleQuickEntry.quickEntry")
+  String sampleQuickEntry_quickEntry();
 
   /**
    * Translated "Sample Revision".
