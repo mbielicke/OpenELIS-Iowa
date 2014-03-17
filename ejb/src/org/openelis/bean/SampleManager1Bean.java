@@ -55,6 +55,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -180,9 +181,12 @@ public class SampleManager1Bean {
 
     @EJB
     private WorksheetBean                worksheet;
-    
+
     @EJB
     private FinalReportBean              finalReport;
+
+    @EJB
+    private SampleClinicalBean           sampleClinical;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -239,6 +243,13 @@ public class SampleManager1Bean {
             snn.setIsTransfused("N");
             snn.setIsCollectionValid("N");
             setSampleNeonatal(sm, snn);
+
+            s.setDomain(domain);
+        } else if (Constants.domain().CLINICAL.equals(domain)) {
+            SampleClinicalDO sc;
+
+            sc = new SampleClinicalDO();
+            setSampleClinical(sm, sc);
 
             s.setDomain(domain);
         } else {
@@ -321,6 +332,11 @@ public class SampleManager1Bean {
         for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
+        }
+
+        for (SampleClinicalDO data : sampleClinical.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleClinical(sm, data);
         }
 
         /*
@@ -526,6 +542,11 @@ public class SampleManager1Bean {
         for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
+        }
+
+        for (SampleClinicalDO data : sampleClinical.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleClinical(sm, data);
         }
 
         /*
@@ -975,7 +996,6 @@ public class SampleManager1Bean {
         if (e.size() > 0)
             throw e;
 
-        ids1 = null;
         tms = null;
         ams = null;
 
@@ -983,6 +1003,7 @@ public class SampleManager1Bean {
          * check all the locks
          */
         ids.clear();
+        ids1.clear();
         for (SampleManager1 sm : sms) {
             if (getSample(sm).getId() != null)
                 ids.add(getSample(sm).getId());
@@ -1036,6 +1057,8 @@ public class SampleManager1Bean {
                         samplePrivate.delete( ((SamplePrivateWellViewDO)data));
                     else if (data instanceof SampleNeonatalDO)
                         sampleNeonatal.delete( ((SampleNeonatalDO)data));
+                    else if (data instanceof SampleClinicalDO)
+                        sampleClinical.delete( ((SampleClinicalDO)data));
                     else if (data instanceof SampleOrganizationViewDO)
                         sampleOrganization.delete( ((SampleOrganizationViewDO)data));
                     else if (data instanceof SampleProjectViewDO)
@@ -1123,6 +1146,24 @@ public class SampleManager1Bean {
                     sampleNeonatal.add(getSampleNeonatal(sm));
                 } else {
                     sampleNeonatal.update(getSampleNeonatal(sm));
+                }
+            } else if (getSampleClinical(sm) != null) {
+                /*
+                 * add patient; since the patient is locked and unlocked
+                 * separately from the sample, it's updated before the sample
+                 */
+                if (getSampleClinical(sm).getPatient() != null) {
+                    if (getSampleClinical(sm).getPatient().getId() == null) {
+                        pat = patient.add(getSampleClinical(sm).getPatient());
+                        getSampleClinical(sm).getPatient().setId(pat.getId());
+                    }
+                }
+
+                if (getSampleClinical(sm).getId() == null) {
+                    getSampleClinical(sm).setSampleId(getSample(sm).getId());
+                    sampleClinical.add(getSampleClinical(sm));
+                } else {
+                    sampleClinical.update(getSampleClinical(sm));
                 }
             }
 
@@ -1388,88 +1429,6 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Changes the sample's status to the passed value or the lowest status of
-     * the analyses
-     */
-    public void changeSampleStatus(SampleManager1 sm, Integer statusId) {
-        boolean isError, isLoggedIn, isCompleted, isReleased;
-        Integer currStatusId, nextStatusId;
-        SampleDO data;
-
-        data = getSample(sm);
-
-        currStatusId = data.getStatusId();
-        nextStatusId = currStatusId;
-
-        if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(currStatusId)) {
-            if (Constants.dictionary().SAMPLE_LOGGED_IN.equals(statusId))
-                /*
-                 * the sample was verified
-                 */
-                nextStatusId = statusId;
-        } else if (Constants.dictionary().SAMPLE_ERROR.equals(statusId)) {
-            nextStatusId = statusId;
-        } else if (Constants.dictionary().SAMPLE_COMPLETED.equals(statusId) &&
-                   Constants.dictionary().SAMPLE_RELEASED.equals(currStatusId)) {
-            /*
-             * the sample was unreleased
-             */
-            nextStatusId = statusId;
-        } else {
-            if (getAnalyses(sm) != null) {
-                isError = false;
-                isLoggedIn = false;
-                isCompleted = false;
-                isReleased = false;
-
-                for (AnalysisViewDO ana : getAnalyses(sm)) {
-                    if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
-                        Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) ||
-                        Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
-                        Constants.dictionary().ANALYSIS_REQUEUE.equals(ana.getStatusId()))
-                        isLoggedIn = true;
-                    else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) ||
-                             Constants.dictionary().ANALYSIS_ON_HOLD.equals(ana.getStatusId()))
-                        isCompleted = true;
-                    else if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
-                             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
-                        isReleased = true;
-                    else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) ||
-                             Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(ana.getStatusId()) ||
-                             Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()) ||
-                             Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId()))
-                        isError = true;
-                }
-
-                /*
-                 * change the sample status to lowest
-                 */
-                if (isError)
-                    nextStatusId = Constants.dictionary().SAMPLE_ERROR;
-                else if (isLoggedIn)
-                    nextStatusId = Constants.dictionary().SAMPLE_LOGGED_IN;
-                else if (isCompleted)
-                    nextStatusId = Constants.dictionary().SAMPLE_COMPLETED;
-                else if (isReleased)
-                    nextStatusId = Constants.dictionary().SAMPLE_RELEASED;
-            }
-        }
-
-        if ( !currStatusId.equals(nextStatusId)) {
-            if (Constants.dictionary().SAMPLE_RELEASED.equals(nextStatusId)) {
-                /*
-                 * the sample was released
-                 */
-                if (data.getReleasedDate() == null)
-                    data.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-            } else if (data.getReleasedDate() != null) {
-                data.setReleasedDate(null);
-            }
-            data.setStatusId(nextStatusId);
-        }
-    }
-
-    /**
      * Unlocks and returns a sample manager with specified sample id and
      * requested load elements
      */
@@ -1598,6 +1557,7 @@ public class SampleManager1Bean {
         setSamplePrivateWell(qsm, getSamplePrivateWell(sm));
         setSampleSDWIS(qsm, getSampleSDWIS(sm));
         setSampleNeonatal(qsm, getSampleNeonatal(sm));
+        setSampleClinical(qsm, getSampleClinical(sm));
 
         return qsm;
     }
@@ -1689,6 +1649,9 @@ public class SampleManager1Bean {
         } else if (getSampleNeonatal(sm) != null) {
             getSampleNeonatal(sm).setId(null);
             getSampleNeonatal(sm).setSampleId(null);
+        } else if (getSampleClinical(sm) != null) {
+            getSampleClinical(sm).setId(null);
+            getSampleClinical(sm).setSampleId(null);
         }
 
         if (getOrganizations(sm) != null) {
@@ -1841,6 +1804,88 @@ public class SampleManager1Bean {
         }
 
         return sm;
+    }
+    
+    /**
+     * Changes the sample's status to the passed value or the lowest status of
+     * the analyses
+     */
+    public void changeSampleStatus(SampleManager1 sm, Integer statusId) {
+        boolean isError, isLoggedIn, isCompleted, isReleased;
+        Integer currStatusId, nextStatusId;
+        SampleDO data;
+
+        data = getSample(sm);
+
+        currStatusId = data.getStatusId();
+        nextStatusId = currStatusId;
+
+        if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(currStatusId)) {
+            if (Constants.dictionary().SAMPLE_LOGGED_IN.equals(statusId))
+                /*
+                 * the sample was verified
+                 */
+                nextStatusId = statusId;
+        } else if (Constants.dictionary().SAMPLE_ERROR.equals(statusId)) {
+            nextStatusId = statusId;
+        } else if (Constants.dictionary().SAMPLE_COMPLETED.equals(statusId) &&
+                   Constants.dictionary().SAMPLE_RELEASED.equals(currStatusId)) {
+            /*
+             * the sample was unreleased
+             */
+            nextStatusId = statusId;
+        } else {
+            if (getAnalyses(sm) != null) {
+                isError = false;
+                isLoggedIn = false;
+                isCompleted = false;
+                isReleased = false;
+
+                for (AnalysisViewDO ana : getAnalyses(sm)) {
+                    if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_REQUEUE.equals(ana.getStatusId()))
+                        isLoggedIn = true;
+                    else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ON_HOLD.equals(ana.getStatusId()))
+                        isCompleted = true;
+                    else if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                        isReleased = true;
+                    else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId()))
+                        isError = true;
+                }
+
+                /*
+                 * change the sample status to lowest
+                 */
+                if (isError)
+                    nextStatusId = Constants.dictionary().SAMPLE_ERROR;
+                else if (isLoggedIn)
+                    nextStatusId = Constants.dictionary().SAMPLE_LOGGED_IN;
+                else if (isCompleted)
+                    nextStatusId = Constants.dictionary().SAMPLE_COMPLETED;
+                else if (isReleased)
+                    nextStatusId = Constants.dictionary().SAMPLE_RELEASED;
+            }
+        }
+
+        if ( !currStatusId.equals(nextStatusId)) {
+            if (Constants.dictionary().SAMPLE_RELEASED.equals(nextStatusId)) {
+                /*
+                 * the sample was released
+                 */
+                if (data.getReleasedDate() == null)
+                    data.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            } else if (data.getReleasedDate() != null) {
+                data.setReleasedDate(null);
+            }
+            data.setStatusId(nextStatusId);
+        }
     }
 
     /**

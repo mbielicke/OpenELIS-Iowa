@@ -603,6 +603,7 @@ public class MethodScreenUI extends Screen {
         if (id == null) {
             data = new MethodDO();
             setState(DEFAULT);
+            fireDataChange();
         } else {
             setBusy(Messages.get().fetching());
             if(fetchCall == null) {

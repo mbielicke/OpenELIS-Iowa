@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -13,14 +14,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
 import org.openelis.entity.Patient;
 import org.openelis.meta.PatientMeta;
-import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.util.QueryBuilderV2;
 
@@ -34,6 +37,12 @@ public class PatientBean {
     
     @EJB
     private AddressBean   address;
+    
+    @EJB
+    private LockBean               lock;
+    
+    @EJB
+    private UserCacheBean           userCache;
    
     private static final PatientMeta meta = new PatientMeta();
 
@@ -158,8 +167,16 @@ public class PatientBean {
     public PatientDO update(PatientDO data) throws Exception {
         Patient entity;
         
-        if (!data.isChanged() && !data.getAddress().isChanged())
+        if (!data.isChanged() && !data.getAddress().isChanged()) {
+            lock.unlock(Constants.table().PATIENT, data.getId());
             return data;
+        }
+        
+        checkSecurity(ModuleFlags.UPDATE);
+
+        validate(data);
+
+        lock.validateLock(Constants.table().PATIENT, data.getId());
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Patient.class, data.getId());
@@ -176,10 +193,30 @@ public class PatientBean {
         if (data.getAddress().isChanged())
             address.update(data.getAddress());
 
+        lock.unlock(Constants.table().PATIENT, data.getId());
+        
         return data;
+    }
+    
+    public PatientDO fetchForUpdate(Integer id) throws Exception {
+        try {
+            lock.lock(Constants.table().PATIENT, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public PatientDO abortUpdate(Integer id) throws Exception {
+        lock.unlock(Constants.table().PATIENT, id);
+        return fetchById(id);
     }
     
     public void validate(PatientDO data) throws Exception {
         //TODO add logic for validation
+    }
+    
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        userCache.applyPermission("patient", flag);
     }
 }

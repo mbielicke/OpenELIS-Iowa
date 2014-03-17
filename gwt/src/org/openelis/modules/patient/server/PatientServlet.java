@@ -44,7 +44,23 @@ public class PatientServlet extends RemoteServlet implements PatientServiceInt {
     
     @EJB
     PatientBean patient;
-
+    
+    public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception {
+        try {
+            return patient.fetchByRelatedPatientId(patientId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public PatientDO fetchForUpdate(Integer patientId) throws Exception {
+        try {
+            return patient.fetchForUpdate(patientId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public ArrayList<PatientDO> query(Query query) throws Exception {
         try {
             return patient.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
@@ -53,9 +69,17 @@ public class PatientServlet extends RemoteServlet implements PatientServiceInt {
         }
     }
     
-    public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception {
+    public PatientDO update(PatientDO data) throws Exception {
         try {
-            return patient.fetchByRelatedPatientId(patientId);
+            return patient.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public PatientDO abortUpdate(Integer patientId) throws Exception {
+        try {
+            return patient.abortUpdate(patientId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

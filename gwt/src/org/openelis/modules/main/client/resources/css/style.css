@@ -56,3 +56,10 @@
 .favoritesMenuContainer {
 	
 }
+
+.Title {
+    -moz-user-select: none;
+    color:gray;
+    padding:2px;
+    padding-left:4px;
+}

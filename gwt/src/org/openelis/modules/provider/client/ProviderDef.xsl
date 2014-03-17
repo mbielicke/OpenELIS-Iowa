@@ -163,7 +163,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'npi')" />:
                 </text>
-                <textbox key="{meta:getNpi()}" width="145" max="20" tab="{meta:getId()},{meta:getTypeId()}" field="String" />
+                <textbox key="{meta:getNpi()}" width="145" max="20" tab="{meta:getId()},{meta:getTypeId()}" field="String" case="UPPER"/>
               </row>
               <row>
                 <text style="Prompt">
@@ -183,7 +183,7 @@ UIRF Software License are applicable instead of those above.
                         <textbox max="50" field="String" required="true" />
                       </col>
                       <col key="{meta:getProviderLocationExternalId()}" width="130" header="{resource:getString($constants,'externalId')}">
-                        <textbox max="10" field="String" />
+                        <textbox max="10" field="String" case="UPPER"/>
                       </col>
                       <col key="{meta:getProviderLocationAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
                         <textbox case="UPPER" max="30" field="String" />

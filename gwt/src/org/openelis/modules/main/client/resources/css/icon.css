@@ -230,3 +230,10 @@
     gwt-image: 'fieldLookupDisabledIcon';
 }
 
+@sprite .redoIcon {
+    gwt-image:'redoIcon';
+}
+
+@sprite .deleteIcon {
+    gwt-image:'deleteIcon';
+}

@@ -37,6 +37,7 @@ import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
+import org.openelis.modules.clinicalSampleLogin1.client.ClinicalSampleLoginScreenUI;
 import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
 import org.openelis.modules.completeRelease1.client.CompleteReleaseScreenUI;
 import org.openelis.modules.cron.client.CronScreen;
@@ -329,8 +330,11 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            // browser.addScreen(new
-                            // ClinicalSampleLoginScreen());
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.clinicalSampleLogin());
+                            window.setSize("750px", "740px");
+                            window.setContent(new ClinicalSampleLoginScreenUI(window));
+                            browser.addWindow(window, "clinicalSampleLogin");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());

@@ -19,12 +19,12 @@
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="0px">
       <g:LayoutPanel>
-        <g:layer width="50%" left="0px" top="0px" bottom="0px">
+        <g:layer width="49%" left="0px" top="0px" bottom="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="30px">
               <g:LayoutPanel>
                 <g:layer top="0px" height="15px">
-                  <g:Label text="{msg.gen_external}:" />
+                  <g:Label text="{msg.gen_external}:" styleName="{res.style.Title}"/>
                 </g:layer>
                 <g:layer top="15px" bottom="0px">
                   <w:NotesPanel ui:field="externalNotePanel" />
@@ -39,12 +39,12 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer width="50%" right="0px" top="0px" bottom="0px">
+        <g:layer width="49%" right="0px" top="0px" bottom="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="30px">
               <g:LayoutPanel>
                 <g:layer top="0px" height="15px">
-                  <g:Label text="{msg.gen_internal}:" />
+                  <g:Label text="{msg.gen_internal}:" styleName="{res.style.Title}"/>
                 </g:layer>
                 <g:layer top="15px" bottom="0px">
                   <w:NotesPanel ui:field="internalNotePanel" />

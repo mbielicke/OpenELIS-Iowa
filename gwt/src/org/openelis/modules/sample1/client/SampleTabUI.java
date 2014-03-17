@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
@@ -20,8 +21,6 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.InconsistencyException;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
@@ -286,8 +285,13 @@ public class SampleTabUI extends Screen {
                                   * this sample's domain
                                   */
                                  if (manager != null) {
-                                     for (Item<Integer> row : type.getModel())
-                                         row.setEnabled(canAddOrganizationType(row.getKey()));
+                                     try {
+                                         for (Item<Integer> row : type.getModel())
+                                             row.setEnabled(canAddOrganizationType(row.getKey()));
+                                     } catch (Exception e) {
+                                         Window.alert(e.getMessage());
+                                         logger.log(Level.SEVERE, e.getMessage(), e);
+                                     }
                                  }
                              }
 
@@ -637,8 +641,8 @@ public class SampleTabUI extends Screen {
             public void onAccessionChange(AccessionChangeEvent event) {
                 if (screen == event.getSource())
                     return;
-                
-                redraw = true;   
+
+                redraw = true;
                 displaySample();
                 if (event.getError() != null)
                     accessionNumber.addException(event.getError());
@@ -675,7 +679,6 @@ public class SampleTabUI extends Screen {
         type.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("state")) {
             srow = new Item<String>(d.getEntry(), d.getEntry());
             srow.setEnabled("Y".equals(d.getIsActive()));
@@ -684,7 +687,6 @@ public class SampleTabUI extends Screen {
         orgState.setModel(smodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("country")) {
             srow = new Item<String>(d.getEntry(), d.getEntry());
             srow.setEnabled("Y".equals(d.getIsActive()));
@@ -702,7 +704,7 @@ public class SampleTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     /**
      * returns true if some operation performed by the tab needs to be completed
      * before the data can be committed
@@ -778,7 +780,7 @@ public class SampleTabUI extends Screen {
          * remove any exceptions added because of the previous value
          */
         accessionNumber.clearExceptions();
-        
+
         /*
          * notify the main screen that the accession number is to be changed
          */
@@ -952,15 +954,15 @@ public class SampleTabUI extends Screen {
         return model;
     }
 
-    private boolean canAddOrganizationType(Integer typeId) {
-        String domain;
+    private boolean canAddOrganizationType(Integer typeId) throws Exception {
+        DictionaryDO data;
 
-        domain = manager.getSample().getDomain();
-
-        return (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(typeId) ||
-                Constants.dictionary().ORG_REPORT_TO.equals(typeId) || (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(typeId) && Constants.domain().NEONATAL.equals(domain)));
-        // Constants.dictionary().ORG_BILL_TO.equals(typeId) &&
-        // !Constants.domain().NEONATAL.equals(domain))
+        data = DictionaryCache.getById(typeId);
+        /*
+         * the code contains the list of domains that are allowed to have an
+         * orgnaization of this type; so only those types are enabled
+         */
+        return data.getCode().contains(manager.getSample().getDomain());
     }
 
     private ArrayList<Row> getProjectTableModel() {

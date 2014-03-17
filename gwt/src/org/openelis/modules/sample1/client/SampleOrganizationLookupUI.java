@@ -25,12 +25,15 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
@@ -281,8 +284,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-
         list = CategoryCache.getBySystemName("organization_type");
         for (DictionaryDO d : list) {
             item = new Item<Integer>(d.getId(), d.getEntry());
@@ -292,7 +293,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         type.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             sitem = new Item<String>(d.getEntry(), d.getEntry());
@@ -302,7 +302,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         orgState.setModel(smodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {
             sitem = new Item<String>(d.getEntry(), d.getEntry());
@@ -317,12 +316,26 @@ public abstract class SampleOrganizationLookupUI extends Screen {
      * the widgets
      */
     public void setData(SampleManager1 manager, State state) {
+        String domain;
+        DictionaryDO data;
+
         this.manager = manager;
-        /*
-         * disable the types that are not allowed for this sample's domain
-         */
-        for (Item<Integer> row : type.getModel())
-            row.setEnabled(canAddOrganizationType(row.getKey()));
+        domain = manager.getSample().getDomain();
+        try {
+            for (Item<Integer> row : type.getModel()) {
+                data = DictionaryCache.getById(row.getKey());
+                /*
+                 * the code contains the list of domains that are allowed to
+                 * have an orgnaization of this type; so only those types are
+                 * enabled
+                 */
+                row.setEnabled(data.getCode().contains(domain));
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
 
         setState(state);
         fireDataChange();
@@ -370,7 +383,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         Validation validation;
 
         table.finishEditing();
-        
+
         validation = validate();
 
         if (validation.getStatus() != VALID) {
@@ -443,16 +456,5 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         }
 
         return model;
-    }
-
-    private boolean canAddOrganizationType(Integer typeId) {
-        String domain;
-
-        domain = manager.getSample().getDomain();
-
-        return (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(typeId) ||
-                Constants.dictionary().ORG_REPORT_TO.equals(typeId) ||
-                (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(typeId) && Constants.domain().NEONATAL.equals(domain)));
-        //Constants.dictionary().ORG_BILL_TO.equals(typeId) && !Constants.domain().NEONATAL.equals(domain))
     }
 }
