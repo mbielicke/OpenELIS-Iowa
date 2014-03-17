@@ -43,8 +43,8 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
     }
 
     @Override
-    public void getAccessions(ExchangeCriteriaManager man, AsyncCallback<ArrayList<Integer>> callback) {
-        service.getAccessions(man, callback);
+    public void getSamples(ExchangeCriteriaManager man, AsyncCallback<ArrayList<Integer>> callback) {
+        service.getSamples(man, callback);
     }
 
     @Override
@@ -149,11 +149,11 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
     }
 
     @Override
-    public ArrayList<Integer> getAccessions(ExchangeCriteriaManager man) throws Exception {
+    public ArrayList<Integer> getSamples(ExchangeCriteriaManager man) throws Exception {
         Callback<ArrayList<Integer>> callback;
         
         callback = new Callback<ArrayList<Integer>>();
-        service.getAccessions(man, callback);
+        service.getSamples(man, callback);
         return callback.getResult();
     }
 
