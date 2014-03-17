@@ -34,25 +34,25 @@
 				<t:Column width="220" label="{msg.gen_inventoryItem}">
 					<t:AutoCompleteCell>
 						<w:AutoComplete ui:field="inventoryItem" required="true"
-							width="275" dropWidth="600px">
+							width="275" dropWidth="660px">
 							<w:popup>
 								<t:Table visibleRows="11" header="true">
-									<t:Column width="155" label="{msg.gen_name}">
+									<t:Column width="175" label="{msg.gen_name}">
 										<t:LabelCell />
 									</t:Column>
-									<t:Column width="200" label="{msg.gen_description}">
+									<t:Column width="290" label="{msg.gen_description}">
 										<t:LabelCell />
 									</t:Column>
-									<t:Column width="110" label="{msg.gen_store}">
+									<t:Column width="70" label="{msg.gen_store}">
 										<t:LabelCell />
 										<t:DropdownCell>
-											<w:Dropdown width="110" field="Integer" ui:field="autocompleteStore" />
+											<w:Dropdown width="80" field="Integer" ui:field="autocompleteStore" />
 										</t:DropdownCell>
 									</t:Column>
-									<t:Column width="110" label="{msg.gen_dispensedUnits}">
+									<t:Column width="90" label="{msg.gen_dispensedUnits}">
 										<t:LabelCell />
 										<t:DropdownCell>
-											<w:Dropdown width="110" field="Integer" ui:field="dispensedUnits" />
+											<w:Dropdown width="90" field="Integer" ui:field="dispensedUnits" />
 										</t:DropdownCell>
 									</t:Column>
 								</t:Table>

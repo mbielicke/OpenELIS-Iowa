@@ -147,7 +147,7 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     //
     // support 
     //
-    public ArrayList<Integer> getAccessions(ExchangeCriteriaManager man) throws Exception {          
+    public ArrayList<Integer> getSamples(ExchangeCriteriaManager man) throws Exception {          
         try {        
             return dataExchangeReport.getSamples(man);
         } catch (Exception anyE) {
