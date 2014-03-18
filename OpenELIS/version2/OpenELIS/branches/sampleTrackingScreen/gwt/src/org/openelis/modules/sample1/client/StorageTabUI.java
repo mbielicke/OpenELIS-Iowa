@@ -327,7 +327,7 @@ public class StorageTabUI extends Screen {
                     else if (obj instanceof SampleItemViewDO)
                         sampleItem = (SampleItemViewDO)obj;
                 }
-
+                
                 if (analysis != null) {
                     /*
                      * compare analysis storages
@@ -365,7 +365,7 @@ public class StorageTabUI extends Screen {
                      */
                     redraw = true;
                 }
-
+                setState(state);
                 displayStorages();
             }
         });
@@ -388,8 +388,7 @@ public class StorageTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -460,7 +459,7 @@ public class StorageTabUI extends Screen {
                               perm != null &&
                               (perm.hasAssignPermission() || perm.hasCompletePermission());
                 } catch (Exception e) {
-                    Window.alert("storageTab evaluateEdit: " + e.getMessage());
+                    Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             } else if (sampleItem != null) {
@@ -474,11 +473,7 @@ public class StorageTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
-            setState(state);
             fireDataChange();
         }
     }
@@ -532,24 +527,7 @@ public class StorageTabUI extends Screen {
     }
 
     private String getLocationDisplay(String name, String description, String location) {
-        StringBuilder sb;
-
-        sb = new StringBuilder();
-
-        if ( !DataBaseUtil.isEmpty(name)) {
-            sb.append(name);
-            sb.append(", ");
-        }
-
-        if ( !DataBaseUtil.isEmpty(description)) {
-            sb.append(description);
-            sb.append(" ");
-        }
-
-        if ( !DataBaseUtil.isEmpty(location))
-            sb.append(location);
-
-        return sb.toString();
+        return DataBaseUtil.concatWithSeparator(name, ", ", DataBaseUtil.concatWithSeparator(description, " ", location));
     }
 
     /**

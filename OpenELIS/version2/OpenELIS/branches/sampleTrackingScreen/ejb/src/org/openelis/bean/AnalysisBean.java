@@ -43,25 +43,65 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.entity.Analysis;
 import org.openelis.manager.TestManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 public class AnalysisBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager           manager;
+
+    private static final SampleMeta meta = new SampleMeta();
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdVO(" + SampleMeta.getAnalysisId() +
+                          ") ");
+        builder.constructWhere(fields);
+        /*
+         * the following is done to provide necessary links between the aliases
+         * for sample and analysis in the query, so that it's well-formed even
+         * if the passed list doesn't contain any analysis field, since only
+         * analysis id is getting fetched
+         */
+        builder.addWhere(SampleMeta.getItemId() + "=" + SampleMeta.getAnalysisSampleItemId());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdVO>)list;
+    }
 
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception {
         List returnList;
@@ -296,19 +336,17 @@ public class AnalysisBean {
              */
             if (data.getUnitOfMeasureId() != null && item != null &&
                 !tm.getSampleTypes().hasUnit(data.getUnitOfMeasureId(), item.getTypeOfSampleId()))
-                e.add(new FormErrorWarning(Messages.get()
-                                                   .analysis_unitInvalidWarning(accession,
-                                                                                sequence,
-                                                                                test,
-                                                                                method)));
+                e.add(new FormErrorWarning(Messages.get().analysis_unitInvalidWarning(accession,
+                                                                                      sequence,
+                                                                                      test,
+                                                                                      method)));
         } else {
             test = null;
             method = null;
         }
         if (data.getTestId() == null)
-            e.add(new FormErrorException(Messages.get()
-                                                 .analysis_testIdMissingException(accession,
-                                                                                  sequence)));
+            e.add(new FormErrorException(Messages.get().analysis_testIdMissingException(accession,
+                                                                                        sequence)));
 
         if (data.getSectionId() == null)
             e.add(new FormErrorException(Messages.get()

@@ -53,12 +53,6 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "SampleNeonatal.FetchBySampleId",
-                query = "select new org.openelis.domain.SampleNeonatalDO(s.id, s.sampleId, s.patientId," +
-                		"s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId," +
-                		"s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused," +
-                		"s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
-                      + " from SampleNeonatal s where s.sampleId = :id"),
     @NamedQuery( name = "SampleNeonatal.FetchBySampleIds",
                 query = "select distinct new org.openelis.domain.SampleNeonatalDO(s.id, s.sampleId, s.patientId," +
                         "s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId," +
