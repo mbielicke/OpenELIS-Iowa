@@ -63,7 +63,7 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
-import org.openelis.modules.patient.client.PatientLookupScreenUI;
+import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.provider.client.ProviderService;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
@@ -139,9 +139,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                   extends
                                                   UiBinder<Widget, NeonatalScreeningSampleLoginScreenUI> {
     };
-
-
-
 
     private static NeonatalScreeningSampleLoginUiBinder uiBinder   = GWT.create(NeonatalScreeningSampleLoginUiBinder.class);
 
@@ -233,24 +230,24 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected NeonatalScreeningSampleLoginScreenUI      screen;
 
-    protected HashMap<String, Object>                   cache;
-
     protected TestSelectionLookupUI                     testSelectionLookup;
 
     protected SampleProjectLookupUI                     sampleprojectLookUp;
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected PatientLookupScreenUI                     pLookupScreen;
+    protected PatientLookupUI                     pLookupScreen;
+    
+    protected HashMap<String, Object>                   cache;
 
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall, 
-                                                         updateCall, fetchByIdCall, unlockCall,
+                                                         commitUpdateCall, fetchByIdCall, unlockCall,
                                                          duplicateCall;   
     
     // @formatter:off
-    protected SampleManager1.Load                       elements[] = {
+    protected static final SampleManager1.Load        elements[] = {
                                                                         SampleManager1.Load.ANALYSISUSER,
                                                                         SampleManager1.Load.AUXDATA,
                                                                         SampleManager1.Load.NOTE,
@@ -305,7 +302,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleNotesTab = new SampleNotesTabUI(this);
         storageTab = new StorageTabUI(this);
         qaEventTab = new QAEventTabUI(this);
-
         auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
@@ -366,12 +362,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         //
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
+                                 userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
-                    query.setPressed(true);
                     query.lock();
-                } else
-                    query.setPressed(false);
+                    query.setPressed(true);
+                }
             }
         });
         addShortcut(query, 'q', CTRL);
@@ -392,12 +388,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
                 if (isState(ADD)) {
-                    add.setPressed(true);
                     add.lock();
-                } else {
-                    add.setPressed(false);
+                    add.setPressed(true);
                 }
             }
         });
@@ -405,12 +399,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
-                    update.setPressed(true);
                     update.lock();
-                } else {
-                    update.setPressed(false);
+                    update.setPressed(true);
                 }
             }
         });
@@ -631,6 +623,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 historySampleQA.setEnabled(isState(DISPLAY));
             }
         });
+        
         historySampleQA.addCommand(new Command() {
             @Override
             public void execute() {
@@ -702,9 +695,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * disabled until the functionality for the orders for this
                  * domain has been implemented
                  */
-                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                orderId.setQueryMode(isState(QUERY));
-                // orderId.setEnabled(false);
+                //orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                //orderId.setQueryMode(isState(QUERY));
+                orderId.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
@@ -828,7 +821,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientLastName,
-                         SampleMeta.getNeoPatientLastName(),
+                         SampleMeta.getNeonatalPatientLastName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientLastName.setValue(getPatientLastName());
@@ -847,7 +840,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientFirstName,
-                         SampleMeta.getNeoPatientFirstName(),
+                         SampleMeta.getNeonatalPatientFirstName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientFirstName.setValue(getPatientFirstName());
@@ -866,7 +859,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientGenderId,
-                         SampleMeta.getNeoPatientGenderId(),
+                         SampleMeta.getNeonatalPatientGenderId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientGenderId.setValue(getPatientGenderId());
@@ -884,7 +877,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientRaceId,
-                         SampleMeta.getNeoPatientRaceId(),
+                         SampleMeta.getNeonatalPatientRaceId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientRaceId.setValue(getPatientRaceId());
@@ -902,7 +895,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientEthnicityId,
-                         SampleMeta.getNeoPatientEthnicityId(),
+                         SampleMeta.getNeonatalPatientEthnicityId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientEthnicityId.setValue(getPatientEthnicityId());
@@ -920,7 +913,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientBirthDate,
-                         SampleMeta.getNeoPatientBirthDate(),
+                         SampleMeta.getNeonatalPatientBirthDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientBirthDate.setValue(getPatientBirthDate());
@@ -938,7 +931,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientBirthTime,
-                         SampleMeta.getNeoPatientBirthTime(),
+                         SampleMeta.getNeonatalPatientBirthTime(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientBirthTime.setValue(getPatientBirthTime());
@@ -956,7 +949,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientAddrMultipleUnit,
-                         SampleMeta.getNeoPatientAddrMultipleUnit(),
+                         SampleMeta.getNeonatalPatientAddrMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
@@ -974,7 +967,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientAddrStreetAddress,
-                         SampleMeta.getNeoPatientAddrStreetAddress(),
+                         SampleMeta.getNeonatalPatientAddrStreetAddress(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
@@ -993,7 +986,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientAddrCity,
-                         SampleMeta.getNeoPatientAddrCity(),
+                         SampleMeta.getNeonatalPatientAddrCity(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientAddrCity.setValue(getPatientAddressCity());
@@ -1011,7 +1004,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientAddrState,
-                         SampleMeta.getNeoPatientAddrState(),
+                         SampleMeta.getNeonatalPatientAddrState(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientAddrState.setValue(getPatientAddressState());
@@ -1029,7 +1022,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(patientAddrZipCode,
-                         SampleMeta.getNeoPatientAddrZipCode(),
+                         SampleMeta.getNeonatalPatientAddrZipCode(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientAddrZipCode.setValue(getPatientAddressZipCode());
@@ -1047,7 +1040,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinLastName,
-                         SampleMeta.getNeoNextOfKinLastName(),
+                         SampleMeta.getNeonatalNextOfKinLastName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinLastName.setValue(getNextOfKinLastName());
@@ -1065,7 +1058,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinMiddleName,
-                         SampleMeta.getNeoNextOfKinMiddleName(),
+                         SampleMeta.getNeonatalNextOfKinMiddleName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinMiddleName.setValue(getNextOfKinMiddleName());
@@ -1083,7 +1076,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinFirstName,
-                         SampleMeta.getNeoNextOfKinFirstName(),
+                         SampleMeta.getNeonatalNextOfKinFirstName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinFirstName.setValue(getNextOfKinFirstName());
@@ -1101,7 +1094,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinRelationId,
-                         SampleMeta.getNeoNextOfKinRelationId(),
+                         SampleMeta.getNeonatalNextOfKinRelationId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinRelationId.setValue(getNeonatalNextOfKinRelationId());
@@ -1119,7 +1112,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinGenderId,
-                         SampleMeta.getNeoNextOfKinGenderId(),
+                         SampleMeta.getNeonatalNextOfKinGenderId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinGenderId.setValue(getNextOfKinGenderId());
@@ -1137,7 +1130,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinRaceId,
-                         SampleMeta.getNeoNextOfKinRaceId(),
+                         SampleMeta.getNeonatalNextOfKinRaceId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinRaceId.setValue(getNextOfKinRaceId());
@@ -1155,7 +1148,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinEthnicityId,
-                         SampleMeta.getNeoNextOfKinEthnicityId(),
+                         SampleMeta.getNeonatalNextOfKinEthnicityId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinEthnicityId.setValue(getNextOfKinEthnicityId());
@@ -1173,7 +1166,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinBirthDate,
-                         SampleMeta.getNeoNextOfKinBirthDate(),
+                         SampleMeta.getNeonatalNextOfKinBirthDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinBirthDate.setValue(getNextOfKinBirthDate());
@@ -1191,7 +1184,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinAddrHomePhone,
-                         SampleMeta.getNeoNextOfKinAddrHomePhone(),
+                         SampleMeta.getNeonatalNextOfKinAddrHomePhone(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinAddrHomePhone.setValue(getNextOfKinAddressHomePhone());
@@ -1209,7 +1202,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinAddrMultipleUnit,
-                         SampleMeta.getNeoNextOfKinAddrMultipleUnit(),
+                         SampleMeta.getNeonatalNextOfKinAddrMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinAddrMultipleUnit.setValue(getNextOfKinAddressMultipleUnit());
@@ -1228,7 +1221,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinAddrStreetAddress,
-                         SampleMeta.getNeoNextOfKinAddrStreetAddress(),
+                         SampleMeta.getNeonatalNextOfKinAddrStreetAddress(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinAddrStreetAddress.setValue(getNextOfKinAddressStreetAddress());
@@ -1247,7 +1240,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinAddrCity,
-                         SampleMeta.getNeoNextOfKinAddrCity(),
+                         SampleMeta.getNeonatalNextOfKinAddrCity(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinAddrCity.setValue(getNextOfKinAddressCity());
@@ -1265,7 +1258,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinAddrState,
-                         SampleMeta.getNeoNextOfKinAddrState(),
+                         SampleMeta.getNeonatalNextOfKinAddrState(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinAddrState.setValue(getNextOfKinAddressState());
@@ -1283,7 +1276,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(nextOfKinAddrZipCode,
-                         SampleMeta.getNeoNextOfKinAddrZipCode(),
+                         SampleMeta.getNeonatalNextOfKinAddrZipCode(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  nextOfKinAddrZipCode.setValue(getNextOfKinAddressZipCode());
@@ -1300,7 +1293,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
                          });
 
-        addScreenHandler(isNicu, SampleMeta.getNeoIsNicu(), new ScreenHandler<String>() {
+        addScreenHandler(isNicu, SampleMeta.getNeonatalIsNicu(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isNicu.setValue(getIsNicu());
             }
@@ -1315,7 +1308,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        addScreenHandler(birthOrder, SampleMeta.getNeoBirthOrder(), new ScreenHandler<Integer>() {
+        addScreenHandler(birthOrder, SampleMeta.getNeonatalBirthOrder(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 birthOrder.setValue(getBirthOrder());
             }
@@ -1331,7 +1324,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(gestationalAge,
-                         SampleMeta.getNeoGestationalAge(),
+                         SampleMeta.getNeonatalGestationalAge(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  gestationalAge.setValue(getGestationalAge());
@@ -1348,7 +1341,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
                          });
 
-        addScreenHandler(feedingId, SampleMeta.getNeoFeedingId(), new ScreenHandler<Integer>() {
+        addScreenHandler(feedingId, SampleMeta.getNeonatalFeedingId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 feedingId.setValue(getFeedingId());
             }
@@ -1363,7 +1356,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        addScreenHandler(weight, SampleMeta.getNeoWeight(), new ScreenHandler<Integer>() {
+        addScreenHandler(weight, SampleMeta.getNeonatalWeight(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 weight.setValue(getWeight());
             }
@@ -1379,7 +1372,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(isTransfused,
-                         SampleMeta.getNeoIsTransfused(),
+                         SampleMeta.getNeonatalIsTransfused(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  isTransfused.setValue(getIsTransfused());
@@ -1397,7 +1390,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(transfusionDate,
-                         SampleMeta.getNeoTransfusionDate(),
+                         SampleMeta.getNeonatalTransfusionDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  transfusionDate.setValue(getTransfusionDate());
@@ -1425,7 +1418,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        addScreenHandler(isRepeat, SampleMeta.getNeoIsRepeat(), new ScreenHandler<String>() {
+        addScreenHandler(isRepeat, SampleMeta.getNeonatalIsRepeat(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isRepeat.setValue(getIsRepeat());
             }
@@ -1441,7 +1434,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(collectionAge,
-                         SampleMeta.getNeoCollectionAge(),
+                         SampleMeta.getNeonatalCollectionAge(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  collectionAge.setValue(getNeonatalCollectionAge());
@@ -1459,7 +1452,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(isCollectionValid,
-                         SampleMeta.getNeoIsCollectionValid(),
+                         SampleMeta.getNeonatalIsCollectionValid(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  isCollectionValid.setValue(getIsCollectionValid());
@@ -1477,7 +1470,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          });
 
         addScreenHandler(providerLastName,
-                         SampleMeta.getNeoProviderLastName(),
+                         SampleMeta.getNeonatalProviderLastName(),
                          new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
                                  providerLastName.setValue(getProviderId(), getProviderLastName());
@@ -1509,10 +1502,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 setBusy();
                 try {
                     list = ProviderService.get()
-                                          .fetchByLastName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                                          .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(3);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
                         row.setKey(data.getId());
@@ -1520,6 +1513,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         row.setCell(0, data.getLastName());
                         row.setCell(1, data.getFirstName());
                         row.setCell(2, data.getMiddleName());
+                        row.setCell(3, data.getNpi());
 
                         model.add(row);
                     }
@@ -1533,7 +1527,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(providerFirstName,
-                         SampleMeta.getNeoProviderFirstName(),
+                         SampleMeta.getNeonatalProviderFirstName(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  providerFirstName.setValue(getProviderFirstName());
@@ -1698,7 +1692,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        addScreenHandler(formNumber, SampleMeta.getNeoFormNumber(), new ScreenHandler<String>() {
+        addScreenHandler(formNumber, SampleMeta.getNeonatalFormNumber(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 formNumber.setValue(getFormNumber());
             }
@@ -2013,6 +2007,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                                               ana.getId(),
                                                                               event.getChangeId());
                             break;
+                         default:
+                             clearStatus();
+                             return;
+                             
                     }
 
                     setData();
@@ -2028,7 +2026,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     bus.fireEvent(new ResultChangeEvent(event.getUid()));
 
                     clearStatus();
-                    showErrorsOrTests(ret);
+                    if (ret != null)
+                        showErrorsOrTests(ret);
+                    else 
+                        isBusy = false;
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2196,60 +2197,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         feedingId.setModel(model);
-    }
-
-    /**
-     * validates the screen and sets the status of validation to "Flagged" if
-     * some operation needs to be completed before committing
-     */
-    public Validation validate() {
-        Validation validation;
-
-        validation = super.validate();
-        if (isBusy)
-            validation.setStatus(FLAGGED);
-
-        return validation;
-    }
-
-    /**
-     * returns from the cache, the object that has the specified key and is of
-     * the specified class
-     */
-    @Override
-    public <T> T get(Object key, Class<?> c) {
-        String cacheKey;
-        Object obj;
-
-        if (cache == null)
-            return null;
-
-        cacheKey = null;
-        if (c == TestManager.class)
-            cacheKey = Constants.uid().getTest((Integer)key);
-        else if (c == AuxFieldGroupManager.class)
-            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
-
-        obj = cache.get(cacheKey);
-        if (obj != null)
-            return (T)obj;
-
-        /*
-         * if the requested object is not in the cache then obtain it and put it
-         * in the cache
-         */
-        try {
-            if (c == TestManager.class)
-                obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);
-
-            cache.put(cacheKey, obj);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return (T)obj;
     }
 
     /*
@@ -2432,8 +2379,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         else
             setBusy(Messages.get().updating());
 
-        if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<SampleManager1>() {
+        if (commitUpdateCall == null) {
+            commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
                     manager = result;
                     evaluateEdit();
@@ -2468,7 +2415,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             };
         }
 
-        SampleService1.get().update(manager, ignoreWarning, updateCall);
+        SampleService1.get().update(manager, ignoreWarning, commitUpdateCall);
     }
 
     /**
@@ -2533,6 +2480,60 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             SampleService1.get().unlock(manager.getSample().getId(), elements, unlockCall);
         }
+    }
+    
+    /**
+     * validates the screen and sets the status of validation to "Flagged" if
+     * some operation needs to be completed before committing
+     */
+    public Validation validate() {
+        Validation validation;
+
+        validation = super.validate();
+        if (isBusy)
+            validation.setStatus(FLAGGED);
+
+        return validation;
+    }
+
+    /**
+     * returns from the cache, the object that has the specified key and is of
+     * the specified class
+     */
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
+        Object obj;
+
+        if (cache == null)
+            return null;
+
+        cacheKey = null;
+        if (c == TestManager.class)
+            cacheKey = Constants.uid().getTest((Integer)key);
+        else if (c == AuxFieldGroupManager.class)
+            cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
+
+        obj = cache.get(cacheKey);
+        if (obj != null)
+            return (T)obj;
+
+        /*
+         * if the requested object is not in the cache then obtain it and put it
+         * in the cache
+         */
+        try {
+            if (c == TestManager.class)
+                obj = TestService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager.class)
+                obj = AuxiliaryService.get().fetchById((Integer)key);
+
+            cache.put(cacheKey, obj);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return (T)obj;
     }
 
     /**
@@ -3643,7 +3644,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         try {
             if (pLookupScreen == null) {
-                pLookupScreen = new PatientLookupScreenUI() {
+                pLookupScreen = new PatientLookupUI() {
                     public void select() {
                         PatientDO pDO;
                         PatientRelationVO prVO;
@@ -3667,9 +3668,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             modal.setContent(pLookupScreen);
             modal.setSize("880px", "355px");
             pLookupScreen.setWindow(modal);
-            pLookupScreen.initialize();
-            if (fromField)
-                pLookupScreen.search(pat);
+            //pLookupScreen.initialize();
+            //if (fromField)
+              //  pLookupScreen.search(pat);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
@@ -3760,45 +3761,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSampleNeonatal().setFormNumber(formNumber);
     }
 
-    private AsyncCallbackUI<SampleManager1> getChangeAnalysisCall(final AnalysisChangeEvent event) {
-        AsyncCallbackUI<SampleManager1> callBack;
-
-        callBack = new AsyncCallbackUI<SampleManager1>() {
-            public void success(SampleManager1 result) {
-                analysisChanged(event, result, null);
-            }
-
-            public void failure(Throwable error) {
-                Window.alert(error.getMessage());
-                logger.log(Level.SEVERE, error.getMessage(), error);
-                clearStatus();
-            }
-        };
-
-        return callBack;
-    }
-
-    private void analysisChanged(AnalysisChangeEvent event, SampleManager1 man,
-                                 SampleTestReturnVO ret) {
-        manager = man;
-        setData();
-        setState(state);
-        /*
-         * notify all tabs that need to refresh themselves because of the change
-         * in the analysis
-         */
-        bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                        event.getChangeId(),
-                                                        event.getAction()), screen);
-        bus.fireEvent(new ResultChangeEvent(event.getUid()));
-
-        clearStatus();
-        if (ret != null)
-            showErrorsOrTests(ret);
-        else
-            isBusy = false;
-    }
-
     /**
      * warn the user if samples from this organization are to held or refused
      */
@@ -3844,7 +3806,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         modal = new ModalWindow();
         modal.setSize("800px", "400px");
-        modal.setName(Messages.get().sampleOrganization());
+        modal.setName(Messages.get().sample_organization());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(sampleOrganizationLookup);
 
@@ -3940,9 +3902,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void showErrorsOrTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret == null)
-            return;
-
+        isBusy = false;
         if (ret.getErrors() != null && ret.getErrors().size() > 0) {
             showErrors(ret.getErrors());
         } else if (ret.getTests() != null && ret.getTests().size() > 0) {

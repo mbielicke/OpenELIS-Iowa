@@ -192,6 +192,7 @@ public class AnalysisNotesTabUI extends Screen {
                     redraw = DataBaseUtil.isDifferent(id1, id2);
                 }
 
+                setState(state);
                 displayNotes();
             }
         });
@@ -213,8 +214,7 @@ public class AnalysisNotesTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -238,20 +238,14 @@ public class AnalysisNotesTabUI extends Screen {
             return;
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
-            redraw = false;
+            displayedExtNote = null;
+            displayedIntNote = null;
             if (manager != null && analysis != null) {
                 displayedExtNote = manager.analysisExternalNote.get(analysis);
                 if (manager.analysisInternalNote.count(analysis) > 0)
                     displayedIntNote = manager.analysisInternalNote.get(analysis, 0);
-            } else {
-                displayedExtNote = null;
-                displayedIntNote = null;
             }
-
-            setState(state);
+            redraw = false;
             fireDataChange();
         }
     }
@@ -305,7 +299,7 @@ public class AnalysisNotesTabUI extends Screen {
                           perm != null &&
                           (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception e) {
-                Window.alert("canEdit:" + e.getMessage());
+                Window.alert("evaluateEdit:" + e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
@@ -365,7 +359,7 @@ public class AnalysisNotesTabUI extends Screen {
             if (manager.analysisInternalNote.count(analysis) > 0)
                 note = manager.analysisInternalNote.get(analysis, 0);
 
-            if (note != null && note.getId() == null) {
+            if (note != null && note.getId() < 0) {
                 subject = note.getSubject();
                 text = note.getText();
             }
@@ -373,7 +367,7 @@ public class AnalysisNotesTabUI extends Screen {
 
         modal = new ModalWindow();
         modal.setSize("620px", "550px");
-        modal.setName(Messages.get().noteEditor());
+        modal.setName(Messages.get().gen_noteEditor());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(editNoteLookup);
 

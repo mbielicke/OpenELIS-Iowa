@@ -34,6 +34,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalDO;
@@ -45,7 +46,6 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.ui.widget.WindowInt;
 
 /**
  * This class is used to show the history of the various parts of the sample
@@ -108,7 +108,7 @@ public class SampleHistoryUtility1 {
                                   Constants.table().SAMPLE_SDWIS,
                                   hist);
     }
-    
+
     /**
      * shows the history of sample neonatal
      */
@@ -122,35 +122,51 @@ public class SampleHistoryUtility1 {
                                   Constants.table().SAMPLE_NEONATAL,
                                   hist);
     }
-    
+
+    /**
+     * shows the history of sample neonatal
+     */
+    public static void clinical(SampleManager1 manager) {
+        IdNameVO hist;
+        SampleNeonatalDO data;
+
+        data = manager.getSampleNeonatal();
+        hist = new IdNameVO(data.getId(), "");
+        HistoryScreen.showHistory(Messages.get().history_sampleNeonatal(),
+                                  Constants.table().SAMPLE_CLINICAL,
+                                  hist);
+    }
+
     /**
      * shows the history of sample neonatal's patient
      */
     public static void neonatalPatient(SampleManager1 manager) {
-        IdNameVO hist;
         SampleNeonatalDO data;
 
         data = manager.getSampleNeonatal();
-        hist = new IdNameVO(data.getPatient().getId(), "");
-        HistoryScreen.showHistory(Messages.get().history_patient(),
-                                  Constants.table().PATIENT,
-                                  hist);
+        patient(data.getPatient().getId(), Messages.get().history_patient());
     }
-    
+
     /**
      * shows the history of sample neonatal's next of kin
      */
     public static void neonatalNextOfKin(SampleManager1 manager) {
-        IdNameVO hist;
         SampleNeonatalDO data;
 
         data = manager.getSampleNeonatal();
-        hist = new IdNameVO(data.getNextOfKin().getId(), "");
-        HistoryScreen.showHistory(Messages.get().history_nextOfKin(),
-                                  Constants.table().PATIENT,
-                                  hist);
+        patient(data.getNextOfKin().getId(), Messages.get().history_nextOfKin());
     }
     
+    /**
+     * shows the history of sample clinical's patient
+     */
+    public static void clinicalPatient(SampleManager1 manager) {
+        SampleClinicalDO data;
+
+        data = manager.getSampleClinical();
+        patient(data.getPatient().getId(), Messages.get().history_patient());
+    }
+
     /**
      * shows the history of sample projects
      */
@@ -363,6 +379,18 @@ public class SampleHistoryUtility1 {
             list.add(new IdNameVO(data.getId(), data.getAnalyteName()));
         }
 
-        HistoryScreen.showHistory(Messages.get().history_auxData(), Constants.table().AUX_DATA, list);
+        HistoryScreen.showHistory(Messages.get().history_auxData(),
+                                  Constants.table().AUX_DATA,
+                                  list);
+    }
+
+    /**
+     * shows the history of the patient with this id
+     */
+    private static void patient(Integer patientId, String title) {
+        IdNameVO hist;
+
+        hist = new IdNameVO(patientId, "");
+        HistoryScreen.showHistory(title, Constants.table().PATIENT, hist);
     }
 }

@@ -47,16 +47,16 @@ public class ProviderService implements ProviderServiceInt, ProviderServiceIntAs
     }
 
     @Override
-    public void fetchByLastName(String lastName, AsyncCallback<ArrayList<ProviderDO>> callback) {
-        service.fetchByLastName(lastName, callback);    
+    public void fetchByLastNameNpiExternalId(String search, AsyncCallback<ArrayList<ProviderDO>> callback) {
+        service.fetchByLastNameNpiExternalId(search, callback);    
     }
 
     @Override
-    public ArrayList<ProviderDO> fetchByLastName(String lastName) throws Exception {
+    public ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search) throws Exception {
         Callback<ArrayList<ProviderDO>> callback;
         
         callback = new Callback<ArrayList<ProviderDO>>();
-        service.fetchByLastName(lastName, callback);
+        service.fetchByLastNameNpiExternalId(search, callback);
         return callback.getResult();
     }
 

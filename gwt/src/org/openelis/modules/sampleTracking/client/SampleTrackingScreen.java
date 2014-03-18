@@ -2,6 +2,7 @@ package org.openelis.modules.sampleTracking.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -1335,16 +1336,23 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         window.setDone(Messages.get().enterFieldsToQuery());
     }
 
-    public void query(Integer id) {
+    public void query(Collection<Integer> ids) {
+        StringBuilder sb;
         Query query;
         QueryData field;
 
-        if (id != null) {
+        if (ids != null) {
             if (state == State.DISPLAY || state == State.DEFAULT) {
                 query = new Query();
                 field = new QueryData();
                 field.setKey(SampleMeta.getId());
-                field.setQuery(id.toString());
+                sb = new StringBuilder();
+                for (Integer id : ids) {
+                    if (sb.length() > 0)
+                        sb.append("|");
+                    sb.append(id);
+                }
+                field.setQuery(sb.toString());
                 field.setType(QueryData.Type.INTEGER);
                 query.setFields(field);
                 executeQuery(query);

@@ -28,26 +28,32 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * Class represents the fields in database table sample_human.  
+ * Class represents the fields in database table sample_clinical.
  */
 
-public class SampleHumanDO extends DataObject {
+public class SampleClinicalDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, sampleId, patientId, providerId;
+
     protected String          providerPhone;
 
-    public SampleHumanDO() {
+    protected PatientDO       patient;
+
+    protected ProviderDO      provider;
+
+    public SampleClinicalDO() {
     }
 
-    public SampleHumanDO(Integer id, Integer sampleId, Integer patientId, Integer providerId,
-                         String providerPhone) {
+    public SampleClinicalDO(Integer id, Integer sampleId, Integer patientId, Integer providerId,
+                            String providerPhone) {
         setId(id);
         setSampleId(sampleId);
         setPatientId(patientId);
         setProviderId(providerId);
         setProviderPhone(providerPhone);
+
         _changed = false;
     }
 
@@ -94,5 +100,21 @@ public class SampleHumanDO extends DataObject {
     public void setProviderPhone(String providerPhone) {
         this.providerPhone = DataBaseUtil.trim(providerPhone);
         _changed = true;
+    }
+
+    public PatientDO getPatient() {
+        return patient;
+    }
+
+    public void setPatient(PatientDO patient) {
+        this.patient = patient;
+    }
+
+    public ProviderDO getProvider() {
+        return provider;
+    }
+
+    public void setProvider(ProviderDO provider) {
+        this.provider = provider;
     }
 }

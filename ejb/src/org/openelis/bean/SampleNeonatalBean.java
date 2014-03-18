@@ -27,14 +27,12 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -44,8 +42,6 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.entity.SampleNeonatal;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -59,40 +55,6 @@ public class SampleNeonatalBean {
 
     @EJB
     private ProviderBean  provider;
-
-    public SampleNeonatalDO fetchBySampleId(Integer id) throws Exception {
-        Query query;
-        SampleNeonatalDO data;
-        HashSet<Integer> ids;
-
-        query = manager.createNamedQuery("SampleNeonatal.FetchBySampleId");
-        query.setParameter("id", id);
-        try {
-            data = (SampleNeonatalDO)query.getSingleResult();
-
-            ids = new HashSet<Integer>();
-            ids.add(data.getPatientId());
-            ids.add(data.getNextOfKinId());
-            ids.remove(null);
-            if (ids.size() > 0) {
-                for (PatientDO p : patient.fetchByIds(ids)) {
-                    if (p.getId().equals(data.getPatientId()))
-                        data.setPatient(p);
-                    if (p.getId().equals(data.getNextOfKinId()))
-                        data.setNextOfKin(p);
-                }
-            }
-
-            if (data.getProviderId() != null)
-                data.setProvider(provider.fetchById(data.getProviderId()));
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-
-        return data;
-    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<SampleNeonatalDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
