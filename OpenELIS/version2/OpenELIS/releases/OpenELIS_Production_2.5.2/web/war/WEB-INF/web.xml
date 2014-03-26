@@ -1,0 +1,116 @@
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is OpenELIS code.
+
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+
+Contributor(s): ______________________________________.
+
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+-->
+
+<web-app>
+ <display-name>OpenELIS Application V2</display-name>
+ <description>OpenELIS Application for Laboratory</description>
+
+   <security-constraint>
+   <web-resource-collection>
+     <web-resource-name>HtmlAuth</web-resource-name>
+     <url-pattern>*.html</url-pattern>
+     <url-pattern>/openelisweb/*</url-pattern>
+     <http-method>GET</http-method>
+     <http-method>POST</http-method>
+   </web-resource-collection>
+   <auth-constraint>
+     <role-name>openelisweb-select</role-name>
+   </auth-constraint>
+ </security-constraint>
+ 
+ <login-config>
+   <auth-method>FORM</auth-method>
+   <form-login-config>
+     <form-login-page>/login</form-login-page>
+     <form-error-page>/login?error=true</form-error-page>
+   </form-login-config>
+ </login-config>
+  
+  <servlet>
+    <servlet-name>FileServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.FileServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>ReportServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>CalendarServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.CalendarServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>xsrf</servlet-name>
+    <servlet-class>com.google.gwt.user.server.rpc.XsrfTokenServiceServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>xsrf</servlet-name>
+    <url-pattern>/openelisweb/xsrf</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>FileServlet</servlet-name>
+    <url-pattern>/openelisweb/upload</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <!-- we need to define this again because FF uses "/report" and GC uses "/openelis/report" -->
+    <servlet-name>ReportServlet</servlet-name>
+    <url-pattern>/openelisweb/report</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>CalendarServlet</servlet-name>
+    <url-pattern>/openelisweb/calendar</url-pattern>
+  </servlet-mapping>
+  
+  
+  
+  <session-config>
+    <session-timeout>300</session-timeout>
+  </session-config>
+
+  <error-page>
+    <error-code>404</error-code>
+    <location>/.no_file.html</location>
+  </error-page>  
+
+  <welcome-file-list>
+     <welcome-file>OpenELISWeb.html</welcome-file>
+  </welcome-file-list>
+  
+  <context-param>
+    <param-name>gwt.xsrf.session_cookie_name</param-name>
+    <param-value>JSESSIONID</param-value>
+  </context-param>
+</web-app>
