@@ -70,6 +70,8 @@
 	<ear destfile="build/openelis.ear" appxml="src/resources/META-INF/application.xml">
 	    <fileset dir="src/resources/">
 	       <include name="META-INF/jboss-app.xml"/>
+	       <include name="META-INF/jboss-all.xml"/>
+	       <include name="META-INF/beans.xml"/> 
 	    </fileset>
 		<fileset dir="build">
 			<include name="openelis.jar" />
@@ -109,7 +111,7 @@
 		</fileset>
 	</ear>
 	
-	<copy file="build/openelis.ear" todir="/usr/local/java/jboss-as-7.1.1.Final/standalone/deployments"/>
+	<copy file="build/openelis.ear" todir="/usr/local/java/wildfly-8.0.0.Final/standalone/deployments"/>
 
 </project>
 
