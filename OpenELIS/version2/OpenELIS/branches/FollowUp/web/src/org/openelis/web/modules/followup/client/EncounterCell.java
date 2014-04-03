@@ -7,6 +7,8 @@ import org.openelis.domain.EncounterDO;
 import org.openelis.ui.widget.table.CellRenderer;
 import org.openelis.ui.widget.table.ColumnInt;
 
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -143,6 +145,29 @@ public class EncounterCell implements CellRenderer, IsWidget, HasWidgets.ForIsWi
     public void setColumn(ColumnInt col) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public SafeHtml bulkRender(Object value) {
+        EncounterDO enc = (EncounterDO)value;
+        SafeHtmlBuilder builder = new SafeHtmlBuilder();
+        builder.appendHtmlConstant("<td>");
+        
+        FlexTable grid;
+        grid = new FlexTable();
+        
+        grid.setWidget(0, 0, new Label("Contact"));
+        grid.setText(1, 0, "By:"+enc.getEnteredBy());
+        grid.setText(2, 0, "Initiator:"+enc.getContact1());
+        grid.setText(3, 0, "Organiztion:"+enc.getContact2());
+        grid.setText(4, 0, "Occurred:"+enc.getOccurred());
+        grid.setText(5, 0, "Method:"+enc.getContactMethod());
+
+        builder.appendHtmlConstant(grid.getElement().toString());
+        
+        builder.appendHtmlConstant("<td>");
+        
+        return builder.toSafeHtml();
     }
 
 }
