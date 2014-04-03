@@ -32,7 +32,7 @@
           <tr>
             <td class="{res.style.Prompt}">Organization:</td>
             <td>
-              <w:AutoComplete ui:field="organiation"/>
+              <w:AutoComplete ui:field="organization"/>
             </td>
           </tr>
           <tr>
