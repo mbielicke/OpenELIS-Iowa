@@ -282,7 +282,7 @@ public class OpenELIS extends ResizeComposite {
             public void onFailure(Throwable caught) {
             }
         });
-        Window.open("/openelisweb/OpenELIS.html", "_self", null);
+        Window.open("/openelisweb", "_self", null);
     }
 
     /**
