@@ -45,6 +45,7 @@ public class Constants implements Serializable {
     protected Order           order            = new Order();
     protected SystemProperty  systemProperty   = new SystemProperty();
     protected UID             uid              = new UID();
+    
 
     /**
      * This method is used to set a serialized instance of this class for the
@@ -152,6 +153,8 @@ public class Constants implements Serializable {
                         EXCHANGE_CRITERIA = 115, EXCHANGE_PROFILE = 116, EVENT_LOG = 117,
                         QC_LOT = 118, SAMPLE_NEONATAL = 119;
     }
+    
+    public final static String ADDRESS = "address";
 
     /**
      * The class represents all the sample domains that can be used in sample
