@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="OpenELIS" default="javac" basedir=".">
+<project name="OpenELIS" default="gwtc" basedir=".">
 	<!-- Arguments to gwtc and devmode targets -->
 	<property name="gwt.args" value="" />
 
@@ -117,17 +117,74 @@
         		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
             </classpath>
 	    </javac>
-		<!--
-		<mkdir dir="../OpenELIS-EJB/bin"/>
-		<javac includeantruntime="false" srcdir="../OpenELIS-EJB/src" includes="**" encoding="utf-8" destdir="../OpenELIS-EJB/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
-            <classpath refid="project.class.path"/>
-	    </javac>
 		
-		<mkdir dir="war/WEB-INF/classes" />
-		<javac includeantruntime="false" srcdir="src" includes="**" encoding="utf-8" destdir="war/WEB-INF/classes" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
-			<classpath refid="project.class.path" />
-		</javac>
-		-->
+		<mkdir dir="../OpenELIS-Web/war/WEB-INF/classes"/>
+		<javac includeantruntime="false" srcdir="../OpenELIS-Web/src" includes="**" encoding="utf-8" destdir="../OpenELIS-Web/war/WEB-INF/classes" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+            <classpath>
+				<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		    	<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+        		<pathelement location="../OpenELIS-UI/bin"/>
+            	<pathelement location="../OpenELIS-Common/bin"/>
+            	<pathelement location="../OpenELIS-EJB/bin"/>
+            	<pathelement location="../OpenELIS-Lib/bin"/>
+            	<pathelement location="bin"/>
+            	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+            	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/annotation/api/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/validation/api/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
+            </classpath>
+	    </javac>
+	</target>
+	
+	<target name="gwtc" depends="javac" description="GWT compile to JavaScript (production mode)">
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath>
+				<pathelement location="src" />
+				<pathelement location="../OpenELIS-Common/src" />
+				<pathelement location="../OpenELIS-UI/src" />
+				<pathelement location="../OpenELIS-Lib/src"/>
+				<path refid="project.class.path" />
+				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+			</classpath>
+			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+			<jvmarg value="-Xmx2048M" />
+			<jvmarg value="-DIMPORT=/home/tschmidt/juno/workspace/OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<jvmarg value="-DOPENELIS=/home/tschmidt/juno/workspace/OpenELIS-GWT/src"/>
+			<arg line="-war" />
+			<arg value="war" />
+			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg line="${gwt.args}" />
+			<arg value="org.openelis.OpenELIS" />
+		</java>
+		
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath>
+				<pathelement location="../OpenELIS-Web/src"/>
+				<pathelement location="src" />
+				<pathelement location="../OpenELIS-Common/src" />
+				<pathelement location="../OpenELIS-UI/src" />
+				<pathelement location="../OpenELIS-Lib/src"/>
+				<path refid="project.class.path" />
+				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+			</classpath>
+			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+			<jvmarg value="-Xmx2048M" />
+			<jvmarg value="-DIMPORT=/home/tschmidt/juno/workspace/OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<jvmarg value="-DOPENELIS=/home/tschmidt/juno/workspace/OpenELIS-GWT/src"/>
+			<arg line="-war" />
+			<arg value="war" />
+			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg line="${gwt.args}" />
+			<arg value="org.openelis.web.OpenELISWeb"/>
+		</java>
 	</target>
 
 	<target name="clean" description="Cleans this project">
@@ -136,6 +193,7 @@
 		<delete dir="../OpenELIS-Common/bin" failonerror="false"/>
 		<delete dir="../OpenELIS-EJB/bin" failonerror="false"/>
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
+		<delete dir="../OpenELIS-Web/war/WEB-INF/classes" failonerror="false"/>
 		
 	</target>
 
