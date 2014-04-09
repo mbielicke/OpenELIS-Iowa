@@ -47,6 +47,7 @@
             	<fileset dir="../OpenELIS-UI/lib/" includes="*.jar"/>
             </classpath>
 	    </javac>
+		
 		<mkdir dir="../OpenELIS-Lib/bin"/>
 		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="../OpenELIS-Lib/src" includes="**" encoding="utf-8" destdir="../OpenELIS-Lib/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
 		    <classpath>
@@ -59,7 +60,25 @@
 		    </classpath>	
 	    </javac>
 		
-
+		<mkdir dir="../Security/bin"/>
+		<javac includeantruntime="false" srcdir="../Security/shared:../Security/ejb" includes="**" encoding="utf-8" destdir="../Security/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		    <classpath>
+				<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		    	<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+		    	<pathelement location="../OpenELIS-UI/bin"/>
+		    	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar" />
+		    	<fileset dir="../Security/lib" includes="*.jar"/>
+				<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
+				<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
+				<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
+				<fileset dir="${jboss.home}/modules/system/layers/base/javax/annotation/api/main" includes="*.jar"/>
+				<fileset dir="${jboss.home}/modules/system/layers/base/javax/validation/api/main" includes="*.jar"/>
+				<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
+				<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
+				<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
+		    </classpath>	
+	    </javac>
+		
 		<mkdir dir="../OpenELIS-Common/bin"/>
 		<mkdir dir="war/WEB-INF/classes"/>
 		<mkdir dir="../OpenELIS-EJB/bin"/>
@@ -191,6 +210,7 @@
 		<delete dir="../OpenELIS-UI/bin" failonerror="false"/>
 		<delete dir="../OpenELIS-Common/bin" failonerror="false"/>
 		<delete dir="../OpenELIS-EJB/bin" failonerror="false"/>
+		<delete dir="../Security/bin" failonerror="false"/>
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
 		<delete dir="../OpenELIS-Web/war/WEB-INF/classes" failonerror="false"/>
 		
