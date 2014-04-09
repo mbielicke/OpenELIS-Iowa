@@ -1432,7 +1432,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
     
     private void showOrder(OrderManager orderManager) {
