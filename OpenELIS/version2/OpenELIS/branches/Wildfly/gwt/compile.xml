@@ -155,8 +155,8 @@
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
 			<jvmarg value="-Xmx2048M" />
-			<jvmarg value="-DIMPORT=/home/tschmidt/juno/workspace/OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
-			<jvmarg value="-DOPENELIS=/home/tschmidt/juno/workspace/OpenELIS-GWT/src"/>
+			<jvmarg value="-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
+			<jvmarg value="-DOPENELIS=../OpenELIS-GWT/src"/>
 			<arg line="-war" />
 			<arg value="war" />
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
@@ -177,8 +177,7 @@
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
 			<jvmarg value="-Xmx2048M" />
-			<jvmarg value="-DIMPORT=/home/tschmidt/juno/workspace/OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
-			<jvmarg value="-DOPENELIS=/home/tschmidt/juno/workspace/OpenELIS-GWT/src"/>
+			<jvmarg value="-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
 			<arg line="-war" />
 			<arg value="war" />
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
