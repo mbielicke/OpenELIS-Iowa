@@ -57,7 +57,7 @@ import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.order1.client.VendorOrderScreenUI;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
-//import org.openelis.modules.organization.client.OrganizationScreenUI;
+// import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.preferences.client.PreferencesScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -67,6 +67,7 @@ import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreenUI;
+import org.openelis.modules.report.client.AirQualityReportScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
@@ -145,16 +146,16 @@ public class OpenELIS extends Screen {
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
                     sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
-                    turnAroundStatisticReport, kitTrackingReport, sdwisUnloadReport, dataView,
-                    qcChart, finalReport, finalReportBatch, finalReportBatchReprint, test, method,
-                    panel, QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
-                    exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
-                    trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
-                    systemVariable, pws, cron, logs;
+                    turnAroundStatisticReport, kitTrackingReport, airQualityReport,
+                    sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
+                    finalReportBatchReprint, test, method, panel, QAEvent, labSection, analyte,
+                    dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
+                    label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
+                    scriptlet, systemVariable, pws, cron, logs;
 
     public OpenELIS() throws Exception {
         Exception loadError;
-        
+
         try {
             loadError = null;
             Constants.setConstants(OpenELISService.get().getConstants());
@@ -171,9 +172,9 @@ public class OpenELIS extends Screen {
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
         initialize();
-        
+
         if (loadError != null)
-            Window.alert("FATAL ERROR: "+loadError.getMessage()+"; Please contact IT support");
+            Window.alert("FATAL ERROR: " + loadError.getMessage() + "; Please contact IT support");
     }
 
     protected void initialize() {
@@ -511,12 +512,14 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            // org.openelis.ui.widget.Window window = new
+                            // org.openelis.ui.widget.Window();
                             window.setName(msg.organization());
-//                            window.setSize("877px", "631px");
+                            // window.setSize("877px", "631px");
                             window.setSize("20px", "20px");
                             window.setContent(new OrganizationScreen(window));
-//                            window.setContent(new OrganizationScreenUI(window));
+                            // window.setContent(new
+                            // OrganizationScreenUI(window));
                             browser.addWindow(window, "organization");
                         } catch (Throwable e) {
                             e.printStackTrace();
@@ -564,7 +567,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         WorksheetBuilderScreenUI screen;
-                        
+
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.worksheetBuilder());
@@ -1378,21 +1381,21 @@ public class OpenELIS extends Screen {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
-                       try {
-                           org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                           window.setName(msg.scriptlet());
-                           window.setSize("862px", "432px");
-                           window.setContent(new ScriptletScreen(window));
-                           browser.addWindow(window,"scriptlet");
-                       }catch(Exception e) {
-                           remote().log(Level.SEVERE, e.getMessage(), e);
-                           Window.alert(e.getMessage());
-                       }
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.scriptlet());
+                            window.setSize("862px", "432px");
+                            window.setContent(new ScriptletScreen(window));
+                            browser.addWindow(window, "scriptlet");
+                        } catch (Exception e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
                     }
-                    
+
                     public void onFailure(Throwable caught) {
-                       remote().log(Level.SEVERE, caught.getMessage(), caught);
-                       Window.alert(caught.getMessage());
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
                     }
                 });
             }
@@ -1891,6 +1894,30 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new KitTrackingReportScreen(window));
                             browser.addWindow(window, "kitTrackingReport");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(airQualityReport, "sampletracking", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.airQuality_airQualityReport());
+                            window.setSize("20px", "20px");
+                            window.setContent(new AirQualityReportScreen(window));
+                            browser.addWindow(window, "airQualityReport");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());

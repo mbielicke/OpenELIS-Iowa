@@ -120,7 +120,7 @@ public class AuxDataHelperBean {
                     TEMPERATURE = "temperature", VOLUME = "volume", PRESSURE = "pressure",
                     NULL_DATA_CODE = "null_data_code", FILTER_LOT_BLANK = "filter_lot_blank",
                     STRIPS_PER_FILTER = "strips_per_filter",
-                    BLANK_SAMLE_NUMBER = "blank_samle_number", STATE_CODE = "state_code",
+                    BLANK_SAMPLE_NUMBER = "blank_sample_number", STATE_CODE = "state_code",
                     COUNTY_CODE = "county_code", SITE_ID = "site_id", POC = "poc",
                     COLLECTION_FREQUENCY = "collection_frequency";
 
@@ -832,45 +832,25 @@ public class AuxDataHelperBean {
         }
     }
 
-    public static void fillAirQualityAuxData(SampleManager1 sm, String originalSampleNum,
-                                             String temperature, String volume, String pressure,
-                                             String nullDataCd, String filterLotBlank,
-                                             String stripsPerFilter, String blankSampleNum,
-                                             String stateCd, String countyCd, String siteId,
-                                             String poc, String collectionFreq) {
-        String extId;
+    public HashMap<String, String> fillAirQualityAuxData(SampleManager1 sm) throws Exception {
         AuxDataViewDO data;
+        HashMap<String, String> auxDataValues;
 
+        auxDataValues = new HashMap<String, String>();
         for (int i = 0; i < sm.auxData.count(); i++ ) {
             data = sm.auxData.get(i);
-            extId = data.getAnalyteExternalId();
-            if (ORIG_SAMPLE_NUMBER.equals(extId)) {
-                originalSampleNum = data.getValue();
-            } else if (TEMPERATURE.equals(extId)) {
-                temperature = data.getValue();
-            } else if (VOLUME.equals(extId)) {
-                volume = data.getValue();
-            } else if (PRESSURE.equals(extId)) {
-                pressure = data.getValue();
-            } else if (NULL_DATA_CODE.equals(extId)) {
-                nullDataCd = data.getValue();
-            } else if (FILTER_LOT_BLANK.equals(extId)) {
-                filterLotBlank = data.getValue();
-            } else if (STRIPS_PER_FILTER.equals(extId)) {
-                stripsPerFilter = data.getValue();
-            } else if (BLANK_SAMLE_NUMBER.equals(extId)) {
-                blankSampleNum = data.getValue();
-            } else if (STATE_CODE.equals(extId)) {
-                stateCd = data.getValue();
-            } else if (COUNTY_CODE.equals(extId)) {
-                countyCd = data.getValue();
-            } else if (SITE_ID.equals(extId)) {
-                siteId = data.getValue();
-            } else if (POC.equals(extId)) {
-                poc = data.getValue();
-            } else if (COLLECTION_FREQUENCY.equals(extId)) {
-                collectionFreq = data.getValue();
+            if (data.getDictionary() != null) {
+                if ( !NULL_DATA_CODE.equals(data.getAnalyteExternalId())) {
+                    auxDataValues.put(data.getAnalyteExternalId(), data.getDictionary());
+                } else {
+                    auxDataValues.put(data.getAnalyteExternalId(),
+                                      dictionaryCache.getById(Integer.parseInt(data.getValue()))
+                                                     .getCode());
+                }
+            } else {
+                auxDataValues.put(data.getAnalyteExternalId(), data.getValue());
             }
         }
+        return auxDataValues;
     }
 }

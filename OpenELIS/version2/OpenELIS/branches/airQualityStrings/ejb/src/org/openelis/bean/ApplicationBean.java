@@ -90,7 +90,7 @@ public class ApplicationBean {
                         "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
                         "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
                         "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
-                        "org_test_epartner_url", "org_epartner_aggr", "reflex_auto",
+                        "org_test_epartner_url", "org_epartner_aggr", "profile_air_string", "reflex_auto",
                         "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "rf_a", "rf_ac",
                         "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int", "round_int_sig_fig",
                         "round_int_sig_fig_noe", "round_sig_fig", "round_sig_fig_noe",
@@ -204,6 +204,7 @@ public class ApplicationBean {
         Constants.dictionary().POS_LAST_OF_RUN = dictId(map, "pos_last_of_run");
         Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map,
                                                                    "pos_last_of_subset_and_run");
+        Constants.dictionary().PROFILE_AIR_STRING = dictId(map, "profile_air_string");
         Constants.dictionary().PT_SAMPLE = dictId(map, "pt_sample");
         Constants.dictionary().QAEVENT_INTERNAL = dictId(map, "qaevent_internal");
         Constants.dictionary().QAEVENT_OVERRIDE = dictId(map, "qaevent_override");
