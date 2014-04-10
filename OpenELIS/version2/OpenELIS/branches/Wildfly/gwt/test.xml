@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="TestWidget" default="test.dev" basedir=".">
+<project name="TestWidget" default="checkstyle" basedir=".">
 	<!-- Arguments to gwtc and devmode targets -->
 	<property name="gwt.args" value="" />
 
@@ -63,12 +63,35 @@
 		<mkdir dir="reports/findbugs" />
 
 		<findbugs home="${findbugs.home}" output="xml" outputFile="reports/findbugs/fb.xml">
-			<sourcePath path="src" />
-			<class location="bin" />
+			<sourcePath path="src"/>
+			<sourcePath path="../OpenELIS-EJB/src"/>
+			<sourcePath path="../OpenELIS-Common/src"/>
+		    <sourcePath path="../OpenELIS-Web/src"/>
+			<class location="war/WEB-INF/classes" />
+			<class location="../OpenELIS-EJB/bin"/>
+			<class location="../OpenELIS-Common/bin"/>
+			<class location="../OpenELIS-Web/war/WEB-INF/classes" />
+			<class location="${gwt.sdk}/gwt-user.jar"/>
+	    	<class location="${gwt.sdk}/gwt-dev.jar" />
+        	<class location="../OpenELIS-UI/bin"/>
+            <class location="../OpenELIS-Lib/bin"/>
+            <fileset dir="../OpenELIS-UI/lib/" includes="*.jar"/>
+            <fileset dir="../OpenELIS-Lib/lib/" includes="*.jar"/>
+        	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+        	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+    		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
+    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
+    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
+    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/annotation/api/main" includes="*.jar"/>
+    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/validation/api/main" includes="*.jar"/>
+    		<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
+    		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
+    		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
+    		
 		</findbugs>
 	</target>
 
-	<target name="checkstyle" description="Generate a report of code convention violations.">
+	<target name="checkstyle" depends="findbugs" description="Generate a report of code convention violations.">
 		<taskdef resource="checkstyletask.properties" classpath="${checkstyle.home}/checkstyle-5.7-all.jar" />
 
 		<mkdir dir="reports/checkstyle" />
@@ -76,6 +99,9 @@
 		<checkstyle config="${checkstyle.home}/sun_checks.xml" failureProperty="checkstyle.failure" failOnViolation="false">
 			<formatter type="xml" tofile="reports/checkstyle/checkstyle_report.xml" />
 			<fileset dir="src" includes="**/*.java" />
+			<fileset dir="../OpenELIS-EJB/src" includes="**/*.java"/>
+			<fileset dir="../OpenELIS-Common/src" includes="**/*.java"/>
+			<fileset dir="../OpenELIS-Web/src" includes="**/*.java"/>
 		</checkstyle>
 
 		<style in="reports/checkstyle/checkstyle_report.xml" out="reports/checkstyle/checkstyle_report.html" style="${checkstyle.home}/contrib/checkstyle-noframes.xsl" />
