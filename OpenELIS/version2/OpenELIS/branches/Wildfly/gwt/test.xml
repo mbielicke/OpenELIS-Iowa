@@ -71,23 +71,6 @@
 			<class location="../OpenELIS-EJB/bin"/>
 			<class location="../OpenELIS-Common/bin"/>
 			<class location="../OpenELIS-Web/war/WEB-INF/classes" />
-			<class location="${gwt.sdk}/gwt-user.jar"/>
-	    	<class location="${gwt.sdk}/gwt-dev.jar" />
-        	<class location="../OpenELIS-UI/bin"/>
-            <class location="../OpenELIS-Lib/bin"/>
-            <fileset dir="../OpenELIS-UI/lib/" includes="*.jar"/>
-            <fileset dir="../OpenELIS-Lib/lib/" includes="*.jar"/>
-        	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
-        	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
-    		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
-    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
-    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
-    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/annotation/api/main" includes="*.jar"/>
-    		<fileset dir="${jboss.home}/modules/system/layers/base/javax/validation/api/main" includes="*.jar"/>
-    		<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
-    		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
-    		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
-    		
 		</findbugs>
 	</target>
 
