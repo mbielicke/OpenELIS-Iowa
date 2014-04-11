@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
-import static org.openelis.manager.SampleManager1Accessor.getAuxilliary;
 import static org.openelis.manager.SampleManager1Accessor.getResults;
 
 import java.io.BufferedWriter;
@@ -51,7 +50,6 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteParameterViewDO;
-import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ExchangeExternalTermViewDO;
@@ -101,10 +99,11 @@ public class AirQualityReportBean {
     private AuxDataHelperBean                        auxDataHelper;
 
     private static final String                      delim           = "|", escape = "\\",
-                    rawDataType = "RD", precisionType = "RP", accuracyDataType = "RA",
-                    blanksDataType = "RB", time = "00:00", precisionId = "1", to11 = "to-11",
+                    rawDataType = "RD", precisionType = "QA", time = "00:00",
+                    assessmentType = "Duplicate", assessmentNumber = "1", to11 = "to-11",
                     to12 = "to-12", tolualdehyde = "Tolualdehyde", md = "MD", sq = "SQ", cb = "CB",
-                    da = "DA", fb = "FB", tripBlankType = "FIELD", fieldBlankType = "FIELD24HR";
+                    da = "DA", fb = "FB", primaryPOC = "01", secondaryPOC = "02",
+                    duplicatePOC = "03";
 
     private String                                   ttdsDurationCode, ttdsMethodCode, ttdsMDL,
                     ttdsParameterCode, tnmocDurationCode, tnmocMethodCode, tnmocMDL,
@@ -114,22 +113,22 @@ public class AirQualityReportBean {
 
     private static final Double                      nitrateConstant = 4.4;
 
-    private ArrayList<String>                        sulfateAnalytes, nitrateAnalytes;
+    private Double                                   metalLeadFilterLotBlank,
+                    metalManganeseFilterLotBlank;
 
-    private HashMap<Integer, SampleManager1>         originalSamples;
+    private ArrayList<String>                        sulfateAnalytes, nitrateAnalytes;
 
     private HashMap<Integer, String>                 analyteCodes, unitCodes;
 
     private HashMap<Integer, AnalyteParameterViewDO> analyteParameters;
 
     private HashMap<String, ArrayList<String>>       airToxicRawStrings, airToxicPrecisionStrings,
-                    pbRawStrings, pbAccuracyStrings, pbBlankStrings, mnRawStrings,
-                    mnAccuracyStrings, mnBlankStrings, pressureStrings, temperatureStrings;
+                    pbRawStrings, mnRawStrings, pressureStrings, temperatureStrings;
 
     private Integer                                  metalLeadTest, metalManganeseTest,
                     metalManganeseAccuracyTest;
 
-    private DecimalFormat                            df;
+    private boolean                                  replicate;
 
     private static final Logger                      log             = Logger.getLogger("openelis");
 
@@ -181,13 +180,15 @@ public class AirQualityReportBean {
         Integer analysisCount;
         ReportStatus status;
         String val, frDate, tDate, accession, action, reportTo, attention, tempArray[], analyteArray[], qualifierCode, airDir, metal;
+        Datetime d;
+        SimpleDateFormat dateTimeFormat;
         QueryData field;
         Query query;
         ArrayList<SampleManager1> sms;
         ArrayList<QueryData> fields;
         ArrayList<String> stringList, qualifierStrings;
         ArrayList<Integer> sulfateNitrateTests, airToxicsTests;
-        ArrayList<Integer> problemSamples;
+        HashMap<Integer, Datetime> problemSamples;
         HashMap<String, ArrayList<SampleManager1>> samples;
         HashMap<String, String> strings;
         HashMap<String, ArrayList<String>> sulfateStrings, nitrateStrings;
@@ -276,10 +277,12 @@ public class AirQualityReportBean {
 
         try {
             /*
-             * Test id for metal lead test.
+             * Test id and filter lot blank for metal lead test.
              */
-            metalLeadTest = Integer.parseInt(systemVariable.fetchByName("air_metal_lead_test")
-                                                           .getValue());
+            val = systemVariable.fetchByName("air_metal_lead_test").getValue();
+            tempArray = val.split(escape + delim);
+            metalLeadTest = Integer.parseInt(tempArray[0]);
+            metalLeadFilterLotBlank = Double.parseDouble(tempArray[1]);
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     Messages.get()
@@ -290,10 +293,12 @@ public class AirQualityReportBean {
 
         try {
             /*
-             * Test id for metal manganese test.
+             * Test id and filter lot blank for metal manganese test.
              */
-            metalManganeseTest = Integer.parseInt(systemVariable.fetchByName("air_metal_manganese_test")
-                                                                .getValue());
+            val = systemVariable.fetchByName("air_metal_manganese_test").getValue();
+            tempArray = val.split(escape + delim);
+            metalManganeseTest = Integer.parseInt(tempArray[0]);
+            metalManganeseFilterLotBlank = Double.parseDouble(tempArray[1]);
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     Messages.get()
@@ -462,7 +467,9 @@ public class AirQualityReportBean {
                 throw new InconsistencyException("You must specify From Date and To Date or accession number for this report");
 
             sms = new ArrayList<SampleManager1>();
-            sms.add(sample.fetchByAccession(Integer.parseInt(accession)));
+            sms.add(sample.fetchByAccession(Integer.parseInt(accession),
+                                            SampleManager1.Load.AUXDATA,
+                                            SampleManager1.Load.RESULT));
         } else if (accession == null) {
             fields = new ArrayList<QueryData>();
             field = new QueryData();
@@ -491,11 +498,16 @@ public class AirQualityReportBean {
 
             query = new Query();
             query.setFields(fields);
-            sms = sample.fetchByQuery(fields,
-                                      0,
-                                      -1,
-                                      SampleManager1.Load.AUXDATA,
-                                      SampleManager1.Load.RESULT);
+            try {
+                sms = sample.fetchByQuery(fields,
+                                          0,
+                                          -1,
+                                          SampleManager1.Load.AUXDATA,
+                                          SampleManager1.Load.RESULT);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage());
+                return status;
+            }
         } else {
             /*
              * This is the case where there is too much data to query for
@@ -506,13 +518,11 @@ public class AirQualityReportBean {
         }
 
         samples = new HashMap<String, ArrayList<SampleManager1>>();
-        originalSamples = new HashMap<Integer, SampleManager1>();
         analyteIds = new HashSet<Integer>();
         unitIds = new HashSet<Integer>();
         testIds = new HashSet<Integer>();
-        problemSamples = new ArrayList<Integer>();
-        df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(6);
+        problemSamples = new HashMap<Integer, Datetime>();
+        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
 
         /*
          * separate the samples for each site, find duplicate samples, and find
@@ -522,7 +532,8 @@ public class AirQualityReportBean {
             analysisCount = 0;
             if (DataBaseUtil.isDifferent(Constants.dictionary().SAMPLE_RELEASED, sm.getSample()
                                                                                    .getStatusId())) {
-                problemSamples.add(sm.getSample().getAccessionNumber());
+                problemSamples.put(sm.getSample().getAccessionNumber(), sm.getSample()
+                                                                          .getCollectionDate());
                 continue;
             }
 
@@ -537,22 +548,6 @@ public class AirQualityReportBean {
                         if (data.getUnitOfMeasureId() != null)
                             unitIds.add(data.getUnitOfMeasureId());
                         testIds.add(data.getTestId());
-                        if (airToxicsTests.contains(data.getTestId())) {
-                            if (getAuxilliary(sm) != null) {
-                                for (AuxDataViewDO aux : getAuxilliary(sm)) {
-                                    /*
-                                     * original sample number is only not empty
-                                     * when the sample is a duplicate
-                                     */
-                                    if (AuxDataHelperBean.ORIG_SAMPLE_NUMBER.equals(aux.getAnalyteExternalId()) &&
-                                        !DataBaseUtil.isEmpty(aux.getValue())) {
-                                        if (originalSamples.get(Integer.parseInt(aux.getValue())) == null)
-                                            originalSamples.put(Integer.parseInt(aux.getValue()),
-                                                                null);
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -562,7 +557,8 @@ public class AirQualityReportBean {
              * created from
              */
             if (analysisCount < 1) {
-                problemSamples.add(sm.getSample().getAccessionNumber());
+                problemSamples.put(sm.getSample().getAccessionNumber(), sm.getSample()
+                                                                          .getCollectionDate());
                 continue;
             }
 
@@ -591,24 +587,12 @@ public class AirQualityReportBean {
         getAirUnitCodes(unitIds);
         getAirAnalyteParameters(testIds);
 
-        /*
-         * create a list of original samples associated with the duplicates
-         */
-        if (originalSamples.size() > 1) {
-            for (SampleManager1 sm : sample.fetchByIds(new ArrayList<Integer>(originalSamples.keySet()))) {
-                originalSamples.put(sm.getSample().getAccessionNumber(), sm);
-            }
-        }
-
         sulfateStrings = new HashMap<String, ArrayList<String>>();
         nitrateStrings = new HashMap<String, ArrayList<String>>();
         pbRawStrings = new HashMap<String, ArrayList<String>>();
-        pbAccuracyStrings = new HashMap<String, ArrayList<String>>();
-        pbBlankStrings = new HashMap<String, ArrayList<String>>();
         mnRawStrings = new HashMap<String, ArrayList<String>>();
-        mnAccuracyStrings = new HashMap<String, ArrayList<String>>();
-        mnBlankStrings = new HashMap<String, ArrayList<String>>();
         airToxicRawStrings = new HashMap<String, ArrayList<String>>();
+        airToxicPrecisionStrings = new HashMap<String, ArrayList<String>>();
         pressureStrings = new HashMap<String, ArrayList<String>>();
         temperatureStrings = new HashMap<String, ArrayList<String>>();
         /*
@@ -626,11 +610,13 @@ public class AirQualityReportBean {
                             try {
                                 strings = getSulfateNitrateStrings(sm, action, data.getId());
                             } catch (Exception e) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             if (strings == null || strings.size() < 1) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             val = strings.get("sulfate");
@@ -655,22 +641,26 @@ public class AirQualityReportBean {
                                                                  data.getId(),
                                                                  key);
                             } catch (Exception e) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             if (stringList == null || stringList.size() < 1) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             if (airToxicRawStrings.get(key) == null)
                                 airToxicRawStrings.put(key, new ArrayList<String>());
                             airToxicRawStrings.get(key).addAll(stringList);
                             /*
-                             * there should only be one string created for an
-                             * air toxics sample, even if there is more than one
-                             * valid analysis
+                             * there should only be one set of raw data strings
+                             * for a replicate air toxics sample
                              */
-                            break;
+                            if (replicate) {
+                                replicate = false;
+                                break;
+                            }
                         } else if (metalLeadTest.equals(data.getTestId())) {
                             try {
                                 stringList = getMetalsStrings(sm,
@@ -679,11 +669,13 @@ public class AirQualityReportBean {
                                                               data.getId(),
                                                               pressureTempString);
                             } catch (Exception e) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             if (stringList == null || stringList.size() < 1) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
 
@@ -707,14 +699,6 @@ public class AirQualityReportBean {
                                     if (pbRawStrings.get(key) == null)
                                         pbRawStrings.put(key, new ArrayList<String>());
                                     pbRawStrings.get(key).add(metal);
-                                } else if (metal.substring(0, 2).equals(accuracyDataType)) {
-                                    if (pbAccuracyStrings.get(key) == null)
-                                        pbAccuracyStrings.put(key, new ArrayList<String>());
-                                    pbAccuracyStrings.get(key).add(metal);
-                                } else if (metal.substring(0, 2).equals(blanksDataType)) {
-                                    if (pbBlankStrings.get(key) == null)
-                                        pbBlankStrings.put(key, new ArrayList<String>());
-                                    pbBlankStrings.get(key).add(metal);
                                 }
                             }
                             pressureTempString = true;
@@ -726,11 +710,13 @@ public class AirQualityReportBean {
                                                               data.getId(),
                                                               pressureTempString);
                             } catch (Exception e) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             if (stringList == null) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             for (int i = 0; i < stringList.size(); i++ ) {
@@ -753,14 +739,6 @@ public class AirQualityReportBean {
                                     if (mnRawStrings.get(key) == null)
                                         mnRawStrings.put(key, new ArrayList<String>());
                                     mnRawStrings.get(key).add(metal);
-                                } else if (metal.substring(0, 2).equals(accuracyDataType)) {
-                                    if (mnAccuracyStrings.get(key) == null)
-                                        mnAccuracyStrings.put(key, new ArrayList<String>());
-                                    mnAccuracyStrings.get(key).add(metal);
-                                } else if (metal.substring(0, 2).equals(blanksDataType)) {
-                                    if (mnBlankStrings.get(key) == null)
-                                        mnBlankStrings.put(key, new ArrayList<String>());
-                                    mnBlankStrings.get(key).add(metal);
                                 }
                             }
                             pressureTempString = true;
@@ -772,11 +750,13 @@ public class AirQualityReportBean {
                                                               data.getId(),
                                                               pressureTempString);
                             } catch (Exception e) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             if (stringList == null) {
-                                problemSamples.add(sm.getSample().getAccessionNumber());
+                                problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                   sm.getSample().getCollectionDate());
                                 continue;
                             }
                             for (int i = 0; i < stringList.size(); i++ ) {
@@ -799,14 +779,6 @@ public class AirQualityReportBean {
                                     if (mnRawStrings.get(key) == null)
                                         mnRawStrings.put(key, new ArrayList<String>());
                                     mnRawStrings.get(key).add(metal);
-                                } else if (metal.substring(0, 2).equals(accuracyDataType)) {
-                                    if (mnAccuracyStrings.get(key) == null)
-                                        mnAccuracyStrings.put(key, new ArrayList<String>());
-                                    mnAccuracyStrings.get(key).add(metal);
-                                } else if (metal.substring(0, 2).equals(blanksDataType)) {
-                                    if (mnBlankStrings.get(key) == null)
-                                        mnBlankStrings.put(key, new ArrayList<String>());
-                                    mnBlankStrings.get(key).add(metal);
                                 }
                             }
                             pressureTempString = true;
@@ -816,7 +788,6 @@ public class AirQualityReportBean {
             }
         }
 
-        // TODO develop strings that are not raw data type
         /*
          * write strings out to text files
          */
@@ -847,15 +818,15 @@ public class AirQualityReportBean {
 
             writer.close();
         }
-        // for (String key : airToxicPrecisionStrings.keySet()) {
-        // File file = new File(key + "_precision_air_toxics.txt");
-        // BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        // for (String s : airToxicPrecisionStrings.get(key)) {
-        // writer.write(s + "\n");
-        // }
-        //
-        // writer.close();
-        // }
+        for (String key : airToxicPrecisionStrings.keySet()) {
+            File file = File.createTempFile(key + "_precision_air_toxics", ".txt", new File(airDir));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            for (String s : airToxicPrecisionStrings.get(key)) {
+                writer.write(s + "\n");
+            }
+
+            writer.close();
+        }
         for (String key : pbRawStrings.keySet()) {
             File file = File.createTempFile(key + "_raw_lead", ".txt", new File(airDir));
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -874,42 +845,6 @@ public class AirQualityReportBean {
 
             writer.close();
         }
-        // for (String key : pbAccuracyStrings.keySet()) {
-        // File file = new File(key + "_accuracy_metals.txt");
-        // BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        // for (String s : pbAccuracyStrings.get(key)) {
-        // writer.write(s + "\n");
-        // }
-        //
-        // writer.close();
-        // }
-        // for (String key : mnAccuracyStrings.keySet()) {
-        // File file = new File(key + "_accuracy_metals.txt");
-        // BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        // for (String s : mnAccuracyStrings.get(key)) {
-        // writer.write(s + "\n");
-        // }
-        //
-        // writer.close();
-        // }
-        // for (String key : pbBlankStrings.keySet()) {
-        // File file = new File(key + "_blank_metals.txt");
-        // BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        // for (String s : pbBlankStrings.get(key)) {
-        // writer.write(s + "\n");
-        // }
-        //
-        // writer.close();
-        // }
-        // for (String key : mnBlankStrings.keySet()) {
-        // File file = new File(key + "_blank_metals.txt");
-        // BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        // for (String s : mnBlankStrings.get(key)) {
-        // writer.write(s + "\n");
-        // }
-        //
-        // writer.close();
-        // }
         for (String key : pressureStrings.keySet()) {
             File file = File.createTempFile(key + "_pressure", ".txt", new File(airDir));
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -934,9 +869,10 @@ public class AirQualityReportBean {
          */
         if (problemSamples.size() > 0) {
             String errorMessage = "Strings were not created for the following samples:\n";
-            for (Integer i : problemSamples)
-                errorMessage += i + ", ";
-            errorMessage = errorMessage.substring(0, errorMessage.length() - 2);
+            for (Integer i : problemSamples.keySet()) {
+                d = problemSamples.get(i);
+                errorMessage += i + " (" + dateTimeFormat.format(d.getDate()) + ")\n";
+            }
             status.setMessage(errorMessage);
             throw new Exception(errorMessage);
         }
@@ -988,9 +924,11 @@ public class AirQualityReportBean {
                     if (DataBaseUtil.isEmpty(nullDataCd))
                         sulfateValue = getSulfateValue(data.getValue(), volume);
                     sulfateCode = analyteCodes.get(data.getAnalyteId());
-                    for (AnalysisViewDO a : getAnalyses(sm)) {
-                        if (a.getId().equals(data.getAnalysisId()))
-                            reportedUnit = unitCodes.get(a.getUnitOfMeasureId());
+                    if (reportedUnit == null) {
+                        for (AnalysisViewDO a : getAnalyses(sm)) {
+                            if (a.getId().equals(data.getAnalysisId()))
+                                reportedUnit = unitCodes.get(a.getUnitOfMeasureId());
+                        }
                     }
                 } else if (nitrateAnalytes.contains(data.getAnalyte()) &&
                            data.getAnalysisId().equals(analysisId) &&
@@ -1002,11 +940,20 @@ public class AirQualityReportBean {
                     if (DataBaseUtil.isEmpty(nullDataCd))
                         nitrateValue = getNitrateValue(data.getValue(), volume);
                     nitrateCode = analyteCodes.get(data.getAnalyteId());
+                    if (reportedUnit == null) {
+                        for (AnalysisViewDO a : getAnalyses(sm)) {
+                            if (a.getId().equals(data.getAnalysisId()))
+                                reportedUnit = unitCodes.get(a.getUnitOfMeasureId());
+                        }
+                    }
                 }
             }
         } else {
             return null;
         }
+
+        if (reportedUnit == null)
+            return null;
 
         /*
          * build the strings
@@ -1085,7 +1032,7 @@ public class AirQualityReportBean {
         int durationCode, methodCode;
         Integer analysisCount;
         Double ttds, tmnoc;
-        String airToxicsString, originalAccession, stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, analyte;
+        String airToxicsString, stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, analyte;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO ap;
         DecimalFormat threeDigits;
@@ -1102,6 +1049,20 @@ public class AirQualityReportBean {
         analysisCount = durationCode = methodCode = 0;
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
+
+        /*
+         * get auxiliary data from the sample
+         */
+        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
+        auxData = auxDataHelper.fillAirQualityAuxData(sm);
+        nullDataCd = auxData.get(AuxDataHelperBean.NULL_DATA_CODE);
+        stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
+        countyCode = auxData.get(AuxDataHelperBean.COUNTY_CODE);
+        siteId = auxData.get(AuxDataHelperBean.SITE_ID);
+        poc = auxData.get(AuxDataHelperBean.POC);
+        collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
+        date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
+
         if (getAnalyses(sm) != null) {
             for (AnalysisViewDO data : getAnalyses(sm)) {
                 if (data.getId().equals(analysisId)) {
@@ -1115,51 +1076,45 @@ public class AirQualityReportBean {
                     }
                 }
                 if (testId.equals(data.getTestId()) &&
-                    Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
+                    Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
                     analysisCount++ ;
+                    if (analysisCount > 1) {
+                        if (airToxicPrecisionStrings.get(location) == null)
+                            airToxicPrecisionStrings.put(location, new ArrayList<String>());
+
+                        airToxicPrecisionStrings.get(location)
+                                                .addAll(getAirToxicsPrecisionString(sm,
+                                                                                    testId,
+                                                                                    action,
+                                                                                    stateCode,
+                                                                                    countyCode,
+                                                                                    siteId,
+                                                                                    poc,
+                                                                                    reportedUnit,
+                                                                                    date,
+                                                                                    addAll,
+                                                                                    addTds,
+                                                                                    data.getId()));
+                        replicate = true;
+                    }
+                }
             }
         }
 
-        /*
-         * get auxiliary data from the sample
-         */
-        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
-        originalAccession = null;
-        auxData = auxDataHelper.fillAirQualityAuxData(sm);
-        nullDataCd = auxData.get(AuxDataHelperBean.NULL_DATA_CODE);
-        stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
-        countyCode = auxData.get(AuxDataHelperBean.COUNTY_CODE);
-        siteId = auxData.get(AuxDataHelperBean.SITE_ID);
-        poc = auxData.get(AuxDataHelperBean.POC);
-        collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
-        date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
-
-        /*
-         * if the original sample number is not empty or there is more than one
-         * released analysis with this test on this sample, then it is a
-         * replicate or duplicate and precision strings need to be created
-         * instead of raw data strings
-         */
-        if ( !DataBaseUtil.isEmpty(originalAccession) || analysisCount > 1) {
-            if (airToxicPrecisionStrings == null)
-                airToxicPrecisionStrings = new HashMap<String, ArrayList<String>>();
-            if (airToxicPrecisionStrings.get(location) == null)
-                airToxicPrecisionStrings.put(location, new ArrayList<String>());
-
-            airToxicPrecisionStrings.get(location)
-                                    .addAll(getAirToxicsPrecisionString(sm,
-                                                                        testId,
-                                                                        originalAccession,
-                                                                        action,
-                                                                        stateCode,
-                                                                        countyCode,
-                                                                        siteId,
-                                                                        poc,
-                                                                        reportedUnit,
-                                                                        date,
-                                                                        addAll,
-                                                                        addTds,
-                                                                        analysisId));
+        if ("duplicate".equals(sm.getSampleEnvironmental().getDescription()) &&
+            DataBaseUtil.isEmpty(nullDataCd)) {
+            airToxicPrecisionStrings.get(location).addAll(getAirToxicsPrecisionString(sm,
+                                                                                      testId,
+                                                                                      action,
+                                                                                      stateCode,
+                                                                                      countyCode,
+                                                                                      siteId,
+                                                                                      poc,
+                                                                                      reportedUnit,
+                                                                                      date,
+                                                                                      addAll,
+                                                                                      addTds,
+                                                                                      analysisId));
         }
 
         /*
@@ -1263,30 +1218,36 @@ public class AirQualityReportBean {
                         if (addAll)
                             tmnoc += Double.parseDouble(value);
                     }
+                    airToxicsString += collectionFreq + delim;
+                    /*
+                     * fields #16 and #18 through #26 and #28 are not used and
+                     * are empty
+                     */
+                    airToxicsString += delim;
+                    if (qualifierStrings.contains(qualifier))
+                        airToxicsString += qualifierCode;
+                    airToxicsString += delim + delim + delim + delim + delim + delim + delim +
+                                       delim + delim + delim;
+                    airToxicsString += mdl + delim;
+
                 } else {
                     /*
                      * there is a null data code, so the reported sample value
-                     * is left empty
+                     * and all fields after are left empty
                      */
                     airToxicsString += delim + nullDataCd + delim;
+                    airToxicsString += collectionFreq + delim + delim + delim + delim + delim +
+                                       delim + delim + delim + delim + delim + delim + delim +
+                                       delim;
                 }
-                airToxicsString += collectionFreq + delim;
-                /*
-                 * fields #16 and #18 through #26 and #28 are not used and are
-                 * empty
-                 */
-                airToxicsString += delim;
-                if (qualifierStrings.contains(qualifier))
-                    airToxicsString += qualifierCode + delim;
-                airToxicsString += delim + delim + delim + delim + delim + delim + delim + delim +
-                                   delim;
-                airToxicsString += mdl + delim;
+
                 airToxicsStrings.add(airToxicsString);
                 value = null;
                 mdl = null;
                 qualifier = null;
                 parameter = null;
                 analyte = null;
+                methodCode = 0;
             }
         }
 
@@ -1318,31 +1279,41 @@ public class AirQualityReportBean {
             airToxicsString += date + delim;
             airToxicsString += time + delim;
             if (DataBaseUtil.isEmpty(nullDataCd)) {
-                if (addAll)
-                    airToxicsString += tmnoc + delim;
-                else if (addTds)
-                    airToxicsString += ttds + delim;
+                if (addAll) {
+                    if (tmnoc == 0)
+                        airToxicsString += "0" + delim;
+                    else
+                        airToxicsString += truncateDecimal(tmnoc, 2) + delim;
+                } else if (addTds) {
+                    if (ttds == 0)
+                        airToxicsString += "0" + delim;
+                    else
+                        airToxicsString += truncateDecimal(ttds, 2) + delim;
+                }
                 /*
                  * null data code is empty
                  */
                 airToxicsString += delim;
+                airToxicsString += collectionFreq + delim;
+                /*
+                 * fields #16 through #26 and #28 are not used and are empty
+                 */
+                airToxicsString += delim + delim + delim + delim + delim + delim + delim + delim +
+                                   delim + delim + delim;
+                if (addAll)
+                    airToxicsString += tnmocMDL + delim;
+                else if (addTds)
+                    airToxicsString += ttdsMDL + delim;
             } else {
                 /*
                  * there is a null data code, so the reported sample value is
                  * left empty
                  */
                 airToxicsString += delim + nullDataCd + delim;
+                airToxicsString += collectionFreq + delim + delim + delim + delim + delim + delim +
+                                   delim + delim + delim + delim + delim + delim + delim;
             }
-            airToxicsString += collectionFreq + delim;
-            /*
-             * fields #16 through #26 and #28 are not used and are empty
-             */
-            airToxicsString += delim + delim + delim + delim + delim + delim + delim + delim +
-                               delim + delim + delim;
-            if (addAll)
-                airToxicsString += tnmocMDL + delim;
-            else if (addTds)
-                airToxicsString += ttdsMDL + delim;
+
             airToxicsStrings.add(airToxicsString);
         }
         return airToxicsStrings;
@@ -1352,146 +1323,102 @@ public class AirQualityReportBean {
      * creates air toxics precision strings from a duplicate or replicate sample
      */
     private ArrayList<String> getAirToxicsPrecisionString(SampleManager1 sm, Integer testId,
-                                                          String originalAccession, String action,
-                                                          String stateCode, String countyCode,
-                                                          String siteId, String poc,
-                                                          String reportedUnit, String date,
-                                                          boolean addAll, boolean addTds,
-                                                          Integer analysisId) throws Exception {
-        int durationCode, methodCode;
-        Double originalTtds, ttds, originalTmnoc, tmnoc;
-        Integer oaid;
-        ResultViewDO sr, osr;
-        SampleManager1 osm;
-        String precision, parameter;
+                                                          String action, String stateCode,
+                                                          String countyCode, String siteId,
+                                                          String poc, String reportedUnit,
+                                                          String date, boolean addAll,
+                                                          boolean addTds, Integer analysisId) throws Exception {
+        int methodCode;
+        Double ttds, tmnoc;
+        String precision, parameter, value, analyte;
         AnalyteParameterViewDO ap;
         DecimalFormat threeDigits;
         ArrayList<String> precisions;
-        HashMap<Integer, ResultViewDO> results, originalResults;
-        HashMap<Integer, Integer> analyses;
 
-        originalTmnoc = tmnoc = originalTtds = ttds = null;
+        tmnoc = ttds = null;
         if (addAll) {
-            originalTmnoc = 0.0;
             tmnoc = 0.0;
         } else if (addTds) {
-            originalTtds = 0.0;
             ttds = 0.0;
         }
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
 
-        /*
-         * find if the sample is a replicate or a duplicate
-         */
-        oaid = null;
-        analyses = new HashMap<Integer, Integer>();
-        for (AnalysisViewDO data : getAnalyses(sm)) {
-            analyses.put(data.getId(), data.getTestId());
-            if ( !data.getId().equals(analysisId) && testId.equals(data.getTestId()) &&
-                Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
-                oaid = data.getId();
-        }
-
-        /*
-         * get the original sample of a duplicate
-         */
-        osm = null;
-        if ( !DataBaseUtil.isEmpty(originalAccession)) {
-            osm = originalSamples.get(Integer.parseInt(originalAccession));
-            for (AnalysisViewDO data : getAnalyses(osm)) {
-                if (testId.equals(data.getTestId()) &&
-                    Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
-                    oaid = data.getId();
-            }
-        }
-
-        /*
-         * create a map of all results for the original sample and the
-         * duplicate/replicate sample
-         */
         precisions = new ArrayList<String>();
-        results = new HashMap<Integer, ResultViewDO>();
-        originalResults = new HashMap<Integer, ResultViewDO>();
-        for (ResultViewDO data : getResults(sm)) {
-            if (data.getIsColumn().equals("Y"))
-                continue;
-            if (data.getAnalysisId().equals(analysisId))
-                results.put(data.getTestAnalyteId(), data);
-            if (data.getAnalysisId().equals(oaid))
-                originalResults.put(data.getTestAnalyteId(), data);
-        }
-        if (osm != null) {
-            for (ResultViewDO data : getResults(osm)) {
-                if (data.getIsColumn().equals("Y"))
+        value = analyte = parameter = null;
+        methodCode = 0;
+        if (getResults(sm) != null) {
+            for (ResultViewDO data : getResults(sm)) {
+                /*
+                 * skip the result if it is not part of this analysis
+                 */
+                if ( !data.getAnalysisId().equals(analysisId))
                     continue;
-                if (data.getAnalysisId().equals(oaid))
-                    originalResults.put(data.getTestAnalyteId(), data);
-            }
-        }
+                /*
+                 * get all result data for this analyte before creating the
+                 * screen
+                 */
+                if (data.getIsColumn().equals("N")) {
+                    value = data.getValue();
+                    /*
+                     * if the value is insignificant, a string does not need to
+                     * be created
+                     */
+                    if (value == null || value.contains("<")) {
+                        value = null;
+                        continue;
+                    }
+                    parameter = analyteCodes.get(data.getAnalyteId());
+                    analyte = data.getAnalyte();
+                    ap = analyteParameters.get(data.getAnalyteId());
+                    if (ap.getP2() != null && ap.getP3() != null) {
+                        methodCode = ap.getP2().intValue();
+                    }
+                } else {
+                    continue;
+                }
 
-        durationCode = methodCode = 0;
-        /*
-         * create a string for each analyte
-         */
-        for (Integer key : results.keySet()) {
-            sr = results.get(key);
-            osr = originalResults.get(key);
-            if (osr == null)
-                continue;
-            parameter = analyteCodes.get(sr.getAnalyteId());
-            ap = analyteParameters.get(sr.getAnalyteId());
-            if (ap.getP2() != null && ap.getP3() != null) {
-                methodCode = ap.getP2().intValue();
-                durationCode = ap.getP3().intValue();
-            }
-            precision = buildSiteInfo(precisionType,
-                                      action,
-                                      stateCode,
-                                      countyCode,
-                                      siteId,
-                                      parameter,
-                                      poc) +
-                        precisionId +
-                        delim +
-                        durationCode +
-                        delim +
-                        reportedUnit +
-                        delim +
-                        threeDigits.format(methodCode) + delim + date + delim;
+                /*
+                 * we do not create a string for this analyte
+                 */
+                if (parameter == null) {
+                    /*
+                     * add the result value to the extra analyte values if
+                     * applicable
+                     */
+                    if (addTds && analyte.contains(tolualdehyde) && !value.contains("<"))
+                        ttds += Double.parseDouble(value);
+                    if (addAll && !value.contains("<"))
+                        tmnoc += Double.parseDouble(value);
+                    value = null;
+                    parameter = null;
+                    analyte = null;
+                    continue;
+                }
 
-            if (osr.getValue().contains("<")) {
-                precision += "0" + delim;
-            } else {
-                precision += osr.getValue() + delim;
+                /*
+                 * if the data isn't there, a string cannot be created
+                 */
+                if (methodCode == 0) {
+                    value = null;
+                    parameter = null;
+                    analyte = null;
+                    continue;
+                }
+
+                precision = precisionType + delim + action.substring(0, 1) + delim +
+                            assessmentType + delim + delim + stateCode + delim + countyCode +
+                            delim + siteId + delim + parameter + delim + poc + delim + date +
+                            delim + assessmentNumber + delim + methodCode + delim + reportedUnit +
+                            delim + value + delim + delim + delim + delim;
                 if (addAll)
-                    originalTmnoc += Double.parseDouble(osr.getValue());
-                if (addTds)
-                    originalTtds += Double.parseDouble(osr.getValue());
+                    tmnoc += Double.parseDouble(value);
+                precisions.add(precision);
+                value = null;
+                parameter = null;
+                analyte = null;
+                methodCode = 0;
             }
-            precision += methodCode + delim;
-            if (sr.getValue().contains("<")) {
-                precision += "0" + delim;
-            } else {
-                precision += sr.getValue() + delim;
-                if (addAll)
-                    tmnoc += Double.parseDouble(sr.getValue());
-                if (addTds)
-                    ttds += Double.parseDouble(sr.getValue());
-            }
-
-            /*
-             * if either of the values is zero, a string is not created, but the
-             * values are still added to the total for the extra analytes
-             */
-            if (osr.getValue().contains("<") || sr.getValue().contains("<"))
-                continue;
-            /*
-             * fields #16 through #18 are not used and are empty
-             */
-            precision += delim + delim + delim;
-
-            precisions.add(precision);
         }
 
         /*
@@ -1499,40 +1426,28 @@ public class AirQualityReportBean {
          */
         if (addAll || addTds) {
             parameter = null;
-            if (addAll)
+            if (addAll) {
+                if (tmnoc == 0)
+                    return precisions;
                 parameter = tnmocParameterCode;
-            else if (addTds)
+            } else if (addTds) {
+                if (ttds == 0)
+                    return precisions;
                 parameter = ttdsParameterCode;
-            precision = buildSiteInfo(precisionType,
-                                      action,
-                                      stateCode,
-                                      countyCode,
-                                      siteId,
-                                      parameter,
-                                      poc);
-            precision += precisionId + delim;
-            if (addAll)
-                precision += tnmocDurationCode + delim;
-            else if (addTds)
-                precision += ttdsDurationCode + delim;
-            precision += reportedUnit + delim;
+            }
+            precision = precisionType + delim + action.substring(0, 1) + delim + assessmentType +
+                        delim + delim + stateCode + delim + countyCode + delim + siteId + delim +
+                        parameter + delim + poc + delim + date + delim + assessmentNumber + delim;
             if (addAll)
                 precision += tnmocMethodCode + delim;
             else if (addTds)
                 precision += ttdsMethodCode + delim;
-            precision = date + delim;
+            precision += reportedUnit + delim;
             if (addAll)
-                precision += originalTmnoc + delim;
+                precision += truncateDecimal(tmnoc, 2);
             else if (addTds)
-                precision += originalTtds + delim;
-            if (addAll)
-                precision += tnmocMethodCode + delim + tmnoc + delim;
-            else if (addTds)
-                precision += ttdsMethodCode + delim + ttds + delim;
-            /*
-             * fields #16 through #18 are not used and are empty
-             */
-            precision += delim + delim + delim;
+                precision += truncateDecimal(ttds, 2);
+            precision += delim + delim + delim + delim;
             precisions.add(precision);
         }
         return precisions;
@@ -1543,7 +1458,7 @@ public class AirQualityReportBean {
      */
     private ArrayList<String> getMetalsStrings(SampleManager1 sm, Integer testId, String action,
                                                Integer analysisId, boolean pressureTempString) throws Exception {
-        String stateCode, countyCode, siteId, poc, volume, nullDataCode, filterLotBlank, stripsPerFilter, collectionFreq, date, reportedUnit, pressure, temperature;
+        String sampleType, stateCode, countyCode, siteId, poc, volume, nullDataCode, stripsPerFilter, collectionFreq, date, reportedUnit, pressure, temperature;
         SimpleDateFormat dateTimeFormat;
         ArrayList<String> metalsStrings;
         HashMap<String, String> auxData;
@@ -1553,9 +1468,22 @@ public class AirQualityReportBean {
         /*
          * replicate and performance evaluation samples do not produce strings
          */
-        if ("r".equalsIgnoreCase(sm.getSample().getClientReference().substring(2, 3)) ||
+        if (sm.getSample().getClientReference() == null ||
+            "r".equalsIgnoreCase(sm.getSample().getClientReference().substring(2, 3)) ||
             "pep".equalsIgnoreCase(sm.getSample().getClientReference().substring(0, 3)))
             return null;
+
+        /*
+         * The POC for metal strings is based on the client reference
+         */
+        poc = null;
+        sampleType = sm.getSample().getClientReference().substring(2, 3);
+        if ("p".equalsIgnoreCase(sampleType))
+            poc = primaryPOC;
+        else if ("s".equalsIgnoreCase(sampleType))
+            poc = secondaryPOC;
+        else if ("d".equalsIgnoreCase(sampleType))
+            poc = duplicatePOC;
 
         for (AnalysisViewDO data : getAnalyses(sm)) {
             if (data.getId().equals(analysisId))
@@ -1572,12 +1500,12 @@ public class AirQualityReportBean {
         pressure = auxData.get(AuxDataHelperBean.PRESSURE);
         temperature = auxData.get(AuxDataHelperBean.TEMPERATURE);
         nullDataCode = auxData.get(AuxDataHelperBean.NULL_DATA_CODE);
-        filterLotBlank = auxData.get(AuxDataHelperBean.FILTER_LOT_BLANK);
         stripsPerFilter = auxData.get(AuxDataHelperBean.STRIPS_PER_FILTER);
         stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
         countyCode = auxData.get(AuxDataHelperBean.COUNTY_CODE);
         siteId = auxData.get(AuxDataHelperBean.SITE_ID);
-        poc = auxData.get(AuxDataHelperBean.POC);
+        if (poc == null)
+            poc = auxData.get(AuxDataHelperBean.POC);
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
 
         date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
@@ -1598,7 +1526,6 @@ public class AirQualityReportBean {
                                                     testId,
                                                     stripsPerFilter,
                                                     volume,
-                                                    filterLotBlank,
                                                     action,
                                                     stateCode,
                                                     countyCode,
@@ -1609,36 +1536,11 @@ public class AirQualityReportBean {
                                                     nullDataCode,
                                                     collectionFreq,
                                                     analysisId));
-            metalsStrings.add(getMetalsBlankString(sm,
-                                                   testId,
-                                                   stripsPerFilter,
-                                                   volume,
-                                                   filterLotBlank,
-                                                   action,
-                                                   stateCode,
-                                                   countyCode,
-                                                   siteId,
-                                                   poc,
-                                                   reportedUnit,
-                                                   date,
-                                                   nullDataCode,
-                                                   analysisId));
-            metalsStrings.add(getMetalsAccuracyString(sm,
-                                                      testId,
-                                                      action,
-                                                      stateCode,
-                                                      countyCode,
-                                                      siteId,
-                                                      poc,
-                                                      reportedUnit,
-                                                      date,
-                                                      analysisId));
         } else if (testId.equals(metalManganeseTest)) {
             metalsStrings.add(getMetalsSampleString(sm,
                                                     testId,
                                                     stripsPerFilter,
                                                     volume,
-                                                    filterLotBlank,
                                                     action,
                                                     stateCode,
                                                     countyCode,
@@ -1649,31 +1551,6 @@ public class AirQualityReportBean {
                                                     nullDataCode,
                                                     collectionFreq,
                                                     analysisId));
-            metalsStrings.add(getMetalsBlankString(sm,
-                                                   testId,
-                                                   stripsPerFilter,
-                                                   volume,
-                                                   filterLotBlank,
-                                                   action,
-                                                   stateCode,
-                                                   countyCode,
-                                                   siteId,
-                                                   poc,
-                                                   reportedUnit,
-                                                   date,
-                                                   nullDataCode,
-                                                   analysisId));
-        } else if (testId.equals(metalManganeseAccuracyTest)) {
-            metalsStrings.add(getMetalsAccuracyString(sm,
-                                                      testId,
-                                                      action,
-                                                      stateCode,
-                                                      countyCode,
-                                                      siteId,
-                                                      poc,
-                                                      reportedUnit,
-                                                      date,
-                                                      analysisId));
         }
         return metalsStrings;
     }
@@ -1737,21 +1614,23 @@ public class AirQualityReportBean {
      * create a string for metal raw data
      */
     private String getMetalsSampleString(SampleManager1 sm, Integer testId, String stripsPerFilter,
-                                         String volume, String filterLotBlank, String action,
-                                         String stateCode, String countyCode, String siteId,
-                                         String poc, String reportedUnit, String date,
-                                         String nullDataCode, String collectionFreq,
-                                         Integer analysisId) {
+                                         String volume, String action, String stateCode,
+                                         String countyCode, String siteId, String poc,
+                                         String reportedUnit, String date, String nullDataCode,
+                                         String collectionFreq, Integer analysisId) {
         boolean lead, cbFlag;
         int durationCode, methodCode;
-        Double sampleMdl, filterMdl, sampleValue, sampleVolume, filterBlank;
+        Double sampleMdl, filterMdl, sampleValue, sampleVolume;
         Integer spf;
         String metalString, value, mdl, parameter, alternateMethodDetectableLimit;
         AnalyteParameterViewDO ap;
-        DecimalFormat threeDigits;
+        DecimalFormat threeDigits, df;
 
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
+        df = new DecimalFormat("#");
+        df.setMinimumIntegerDigits(1);
+        df.setMaximumFractionDigits(6);
 
         lead = false;
         cbFlag = false;
@@ -1781,12 +1660,11 @@ public class AirQualityReportBean {
                 continue;
 
             filterMdl = Double.parseDouble(mdl);
-            filterBlank = Double.parseDouble(filterLotBlank);
             sampleValue = Double.parseDouble(value);
             sampleVolume = Double.parseDouble(volume);
             spf = Integer.parseInt(stripsPerFilter);
 
-            if (filterBlank - filterMdl > 0)
+            if (metalManganeseFilterLotBlank - filterMdl > 0)
                 cbFlag = true;
             metalString = buildSiteInfo(rawDataType,
                                         action,
@@ -1799,199 +1677,63 @@ public class AirQualityReportBean {
                            threeDigits.format(methodCode) + delim + date + delim + time + delim;
             if (DataBaseUtil.isEmpty(nullDataCode)) {
                 if (lead) {
-                    metalString += formatLeadValue( (sampleValue * spf - filterBlank) /
+                    metalString += formatLeadValue( ( (sampleValue * spf) - metalLeadFilterLotBlank) /
                                                    sampleVolume) +
                                    delim + delim;
                 } else if (cbFlag) {
-                    metalString += formatManganseseValue(1000 * (sampleValue * spf - filterBlank) /
+                    metalString += formatManganseseValue(1000 *
+                                                         ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
                                                          sampleVolume) +
                                    delim + delim;
                 } else {
                     metalString += formatManganseseValue(1000 * sampleValue * spf / sampleVolume) +
                                    delim + delim;
                 }
-            } else {
-                metalString += delim + nullDataCode + delim;
-            }
-            metalString += collectionFreq + delim + delim;
+                metalString += collectionFreq + delim + delim;
 
-            if (lead) {
-                sampleMdl = filterMdl / sampleVolume;
-                if (sampleValue < filterMdl)
-                    metalString += md;
-                metalString += delim;
-                if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
-                    metalString += sq;
-                metalString += delim + delim + delim + delim;
-            } else {
-                sampleMdl = 1000 * (filterMdl / sampleVolume);
-                if (cbFlag)
-                    metalString += cb;
-                metalString += delim;
-                if (sampleValue < filterMdl)
-                    metalString += md;
-                metalString += delim;
-                if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
-                    metalString += sq;
-                metalString += delim;
-                if (sampleValue < 0 && Math.abs(sampleValue) > sampleMdl)
-                    metalString += da;
-                metalString += delim;
-                if (sampleValue > 10 * sampleMdl &&
-                    sm.getSample().getClientReference() != null &&
-                    (sm.getSample().getClientReference().contains("qtb") || sm.getSample()
-                                                                              .getClientReference()
-                                                                              .contains("qfb"))) {
-                    metalString += fb;
+                if (lead) {
+                    sampleMdl = filterMdl / sampleVolume;
+                    if (sampleValue < filterMdl)
+                        metalString += md;
+                    metalString += delim;
+                    if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
+                        metalString += sq;
+                    metalString += delim + delim + delim + delim;
+                } else {
+                    sampleMdl = 1000 * (filterMdl / sampleVolume);
+                    if (cbFlag)
+                        metalString += cb;
+                    metalString += delim;
+                    if (sampleValue < filterMdl)
+                        metalString += md;
+                    metalString += delim;
+                    if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
+                        metalString += sq;
+                    metalString += delim;
+                    if (sampleValue < 0 && Math.abs(sampleValue) > sampleMdl)
+                        metalString += da;
+                    metalString += delim;
+                    if (sampleValue > 10 * sampleMdl &&
+                        sm.getSample().getClientReference() != null &&
+                        (sm.getSample().getClientReference().contains("qtb") || sm.getSample()
+                                                                                  .getClientReference()
+                                                                                  .contains("qfb"))) {
+                        metalString += fb;
+                    }
+                    metalString += delim;
                 }
-                metalString += delim;
+                metalString += delim + delim + delim + delim + delim +
+                               alternateMethodDetectableLimit + delim;
+                if ( !lead) {
+                    metalString += truncateDecimal(1000 * metalManganeseFilterLotBlank /
+                                                   sampleVolume, 2);
+                }
+            } else {
+                metalString += delim + nullDataCode + delim + collectionFreq + delim + delim +
+                               delim + delim + delim + delim + delim + delim + delim + delim +
+                               delim + delim + delim;
             }
-            metalString += delim + delim + delim + delim + delim + alternateMethodDetectableLimit +
-                           delim;
-            if ( !lead) {
-                metalString += 1000 * filterBlank / sampleVolume;
-            }
-        }
-        return metalString;
-    }
 
-    /**
-     * create a string for metal blank data
-     */
-    private String getMetalsBlankString(SampleManager1 sm, Integer testId, String stripsPerFilter,
-                                        String volume, String filterLotBlank, String action,
-                                        String stateCode, String countyCode, String siteId,
-                                        String poc, String reportedUnit, String date,
-                                        String nullDataCode, Integer analysisId) {
-        boolean lead;
-        int durationCode, methodCode;
-        String metalString, value, mdl, parameter;
-        AnalyteParameterViewDO ap;
-
-        lead = false;
-        if (testId.equals(metalLeadTest)) {
-            lead = true;
-        } else if (testId.equals(metalManganeseAccuracyTest)) {
-            lead = false;
-        }
-
-        metalString = value = mdl = parameter = null;
-        durationCode = methodCode = 0;
-        for (ResultViewDO data : getResults(sm)) {
-            if ( !DataBaseUtil.isSame(data.getAnalysisId(), analysisId))
-                continue;
-            if (DataBaseUtil.isSame(data.getIsColumn(), "N")) {
-                value = data.getValue();
-                parameter = analyteCodes.get(data.getAnalyteId());
-                ap = analyteParameters.get(data.getAnalyteId());
-                methodCode = ap.getP2().intValue();
-                durationCode = ap.getP3().intValue();
-            } else if (DataBaseUtil.isSame(data.getAnalyte(), "MDL")) {
-                mdl = data.getValue();
-            }
-            if (value == null || mdl == null)
-                continue;
-
-            metalString = buildSiteInfo(blanksDataType,
-                                        action,
-                                        stateCode,
-                                        countyCode,
-                                        siteId,
-                                        parameter,
-                                        poc);
-            metalString += durationCode + delim + reportedUnit + delim + methodCode + delim;
-            if (sm.getSample().getClientReference() != null &&
-                sm.getSample().getClientReference().contains("qtb")) {
-                metalString += tripBlankType;
-            } else if (sm.getSample().getClientReference() != null &&
-                       sm.getSample().getClientReference().contains("qfb")) {
-                metalString += fieldBlankType;
-            }
-            metalString += delim + date + delim + time + delim + filterLotBlank + delim + delim;
-
-            metalString += cb + delim + md + delim + sq + delim + da + delim + fb + delim + delim +
-                           delim + delim + delim + delim + delim;
-        }
-        return metalString;
-    }
-
-    /**
-     * create a string for metal accuracy data
-     */
-    private String getMetalsAccuracyString(SampleManager1 sm, Integer testId, String action,
-                                           String stateCode, String countyCode, String siteId,
-                                           String poc, String reportedUnit, String date,
-                                           Integer analysisId) {
-        boolean lead, commercial;
-        int durationCode, methodCode;
-        String metalString, value, mdl, quarter, year, parameter;
-        Datetime d;
-        AnalyteParameterViewDO ap;
-
-        metalString = value = mdl = parameter = null;
-        durationCode = methodCode = 0;
-        commercial = lead = false;
-        if (testId.equals(metalLeadTest)) {
-            lead = true;
-        } else if (testId.equals(metalManganeseAccuracyTest)) {
-            lead = false;
-        }
-        d = sm.getSample().getCollectionDate();
-        year = DataBaseUtil.toString(d.get(Datetime.YEAR));
-        if (d.get(Datetime.MONTH) <= 3)
-            quarter = "Q1";
-        else if (d.get(Datetime.MONTH) <= 6)
-            quarter = "Q2";
-        else if (d.get(Datetime.MONTH) <= 9)
-            quarter = "Q3";
-        else
-            quarter = "Q4";
-
-        for (ResultViewDO data : getResults(sm)) {
-            if ( !DataBaseUtil.isSame(data.getAnalysisId(), analysisId))
-                continue;
-            if (DataBaseUtil.isSame(data.getIsColumn(), "N")) {
-                value = data.getValue();
-                parameter = analyteCodes.get(data.getAnalyteId());
-                ap = analyteParameters.get(data.getAnalyteId());
-                methodCode = ap.getP2().intValue();
-                durationCode = ap.getP3().intValue();
-            } else if (DataBaseUtil.isSame(data.getAnalyte(), "MDL")) {
-                mdl = data.getValue();
-            }
-            if (value == null || mdl == null)
-                continue;
-
-            metalString = buildSiteInfo(accuracyDataType,
-                                        action,
-                                        stateCode,
-                                        countyCode,
-                                        siteId,
-                                        parameter,
-                                        poc);
-            if (sm.getSample().getClientReference().startsWith("qfs") &&
-                !sm.getSample().getClientReference().startsWith("qfs rti")) {
-                commercial = true;
-                metalString += "1";
-            } else if (sm.getSample().getClientReference().startsWith("qfs rti") && lead) {
-                commercial = false;
-                metalString += "2";
-            }
-            metalString += delim + durationCode + delim + reportedUnit + delim + methodCode +
-                           delim + year + delim + quarter + delim + date + delim +
-                           "AUDIT ONLY BY RO" + delim;
-            if (commercial) {
-                metalString += "COMMERCIAL CRM";
-            } else if (lead) {
-                metalString += "OTHER CHEMICAL STANDARDS";
-            }
-            metalString += delim + "ANALYTICAL" + delim + "PE" + delim;
-            if (commercial)
-                metalString += "1";
-            else if (lead)
-                metalString += "2";
-            metalString += delim + delim + delim;
-            // TODO level 1 and level 2 actual value and indicated value
         }
         return metalString;
     }
@@ -2001,6 +1743,7 @@ public class AirQualityReportBean {
      */
     private String getSulfateValue(String result, String volume) {
         DecimalFormat df = new DecimalFormat("#.00");
+        df.setMinimumIntegerDigits(1);
         return DataBaseUtil.toString(df.format(Double.parseDouble(result) /
                                                Double.parseDouble(volume)));
     }
@@ -2010,6 +1753,7 @@ public class AirQualityReportBean {
      */
     private String getNitrateValue(String result, String volume) {
         DecimalFormat df = new DecimalFormat("#.00");
+        df.setMinimumIntegerDigits(1);
         return DataBaseUtil.toString(df.format( (Double.parseDouble(result) * nitrateConstant) /
                                                Double.parseDouble(volume)));
     }
@@ -2025,7 +1769,7 @@ public class AirQualityReportBean {
      * compute and format manganese air quality value
      */
     private String formatManganseseValue(Double value) {
-        DecimalFormat df = new DecimalFormat("###.0");
+        DecimalFormat df = new DecimalFormat("###.00");
         return DataBaseUtil.toString(df.format(value));
     }
 
