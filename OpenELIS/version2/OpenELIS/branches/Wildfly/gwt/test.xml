@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="TestWidget" default="checkstyle" basedir=".">
+<project name="TestWidget" default="test.dev" basedir=".">
 	<!-- Arguments to gwtc and devmode targets -->
 	<property name="gwt.args" value="" />
 
@@ -25,9 +25,26 @@
 	</path>
 
 	<target name="javac.tests" description="Compiles test code">
-		<javac srcdir="test" includes="**" encoding="utf-8" source="1.7" target="1.7" nowarn="true" destdir="bin" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="test" includes="**" encoding="utf-8" source="1.7" target="1.7" nowarn="true" destdir="war/WEB-INF/classes" debug="true" debuglevel="lines,vars,source">
 			<classpath location="${junit.home}/junit-4.11.jar" />
-			<classpath refid="project.class.path" />
+            <classpath>
+				<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		    	<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+        		<pathelement location="../OpenELIS-UI/bin"/>
+            	<pathelement location="../OpenELIS-Common/bin"/>
+            	<pathelement location="../OpenELIS-EJB/bin"/>
+            	<pathelement location="../OpenELIS-Lib/bin"/>
+            	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+            	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/annotation/api/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/validation/api/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
+            </classpath>
 		</javac>
 	</target>
 
@@ -36,22 +53,39 @@
 		<delete dir="reports"/>
 		<mkdir dir="reports/junit" />
 		<junit includeantruntime="true" fork="yes" showoutput="true" printsummary="withOutAndErr" haltonfailure="no">
-			<jvmarg line="-Xmx256m" />
+			<jvmarg line="-Xmx2048m" />
 			<sysproperty key="gwt.args" value="-standardsMode -logLevel WARN" />
 			<sysproperty key="java.awt.headless" value="true" />
 			<classpath>
 				<pathelement location="src" />
 				<pathelement location="test"/>
-				<pathelement location="bin" />
-				<path refid="project.class.path" />
+				<pathelement location="war/WEB-INF/classes" />
 				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
 				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
 				<pathelement location="${junit.home}/junit-4.11.jar" />
 				<fileset dir="${selenium.home}/libs/" includes="*.jar" />
 			</classpath>
+            <classpath>
+				<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		    	<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+        		<pathelement location="../OpenELIS-UI/bin"/>
+            	<pathelement location="../OpenELIS-Common/bin"/>
+            	<pathelement location="../OpenELIS-EJB/bin"/>
+            	<pathelement location="../OpenELIS-Lib/bin"/>
+            	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+            	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/annotation/api/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/javax/validation/api/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
+        		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
+            </classpath>
 			<batchtest todir="reports/junit">
 				<fileset dir="test">
-					<include name="**/Gwt*.java" />
+					<include name="**/Test*.java" />
 				</fileset>
 			</batchtest>
 			<formatter type="plain" />

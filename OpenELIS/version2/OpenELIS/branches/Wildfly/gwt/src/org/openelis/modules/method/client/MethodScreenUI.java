@@ -131,6 +131,20 @@ public class MethodScreenUI extends Screen {
         setState(DEFAULT);
         fireDataChange();
     }
+    
+    /**
+     * Package Protected constructor to set up unit test
+     * @param userPermission
+     */
+    protected MethodScreenUI(ModulePermission userPermission) {
+        this.userPermission = userPermission;
+        setWindow(new org.openelis.ui.widget.Window());
+        initWidget(uiBinder.createAndBindUi(this));
+        data = new MethodDO();
+        initialize();
+        setState(DEFAULT);
+        fireDataChange();
+    }
 
     private void initialize() {
         addStateChangeHandler(new StateChangeEvent.Handler() {
