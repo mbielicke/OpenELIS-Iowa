@@ -105,6 +105,7 @@ import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
@@ -151,6 +152,10 @@ public class OpenELIS extends Screen {
                     exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
                     trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
                     systemVariable, pws, cron, logs;
+    
+    @UiField
+    protected Menu maintenanceMenu;
+    
 
     public OpenELIS() throws Exception {
         Exception loadError;
@@ -163,6 +168,9 @@ public class OpenELIS extends Screen {
         }
 
         initWidget(uiBinder.createAndBindUi(this));
+        
+        maintenanceMenu.ensureDebugId("openelis.maintenanceMenu");
+        method.ensureDebugId("openelis.method");
 
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {

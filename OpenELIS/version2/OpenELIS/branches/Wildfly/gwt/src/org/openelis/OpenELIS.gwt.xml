@@ -34,6 +34,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
     <inherits name="org.openelis.ui.UI"/>
+    <inherits name="com.google.gwt.user.Debug"/>
     <!--  
     <inherits name="com.google.gwt.widgetideas.GWTCanvas"/>
     -->

@@ -122,6 +122,8 @@ public class MethodScreenUI extends Screen {
                 
         initWidget(uiBinder.createAndBindUi(this));
         
+        ensureDebugId("method");
+        
         userPermission = getUserCacheService().getPermission().getModule("method");
         if (userPermission == null)
             throw new PermissionException(getMessages().screenPermException("Method Screen"));
@@ -647,5 +649,32 @@ public class MethodScreenUI extends Screen {
     
     protected OpenELISConstants getMessages() {
         return Messages.get();
+    }
+    
+    @Override
+    protected void onEnsureDebugId(String baseID) {
+        super.onEnsureDebugId(baseID);
+        
+        activeBegin.ensureDebugId(baseID+"."+MethodMeta.getActiveBegin());
+        activeEnd.ensureDebugId(baseID+"."+MethodMeta.getActiveEnd());
+        name.ensureDebugId(baseID+"."+MethodMeta.getName());
+        description.ensureDebugId(baseID+"."+MethodMeta.getDescription());
+        reportingDescription.ensureDebugId(baseID+"."+MethodMeta.getReportingDescription());
+        isActive.ensureDebugId(baseID+"."+MethodMeta.getIsActive());
+        query.ensureDebugId(baseID+"."+"query");
+        previous.ensureDebugId(baseID+"."+"previous");
+        next.ensureDebugId(baseID+".next");
+        add.ensureDebugId(baseID+".add");
+        update.ensureDebugId(baseID+".update");
+        commit.ensureDebugId(baseID+".commit");
+        abort.ensureDebugId(baseID+".abort");
+        atozNext.ensureDebugId(baseID+".atozNext");
+        atozPrev.ensureDebugId(baseID+".atozPrev");
+        optionsButton.ensureDebugId(baseID+".optionsButton");
+        optionsMenu.ensureDebugId(baseID+".optionsMenu");
+        history.ensureDebugId(baseID+".history");
+        atozButtons.ensureDebugId(baseID+".atozButtons");
+        atozTable.ensureDebugId(baseID+".atozTable");
+        
     }
 }
