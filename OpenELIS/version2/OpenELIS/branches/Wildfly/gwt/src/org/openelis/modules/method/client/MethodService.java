@@ -52,8 +52,7 @@ public class MethodService implements MethodServiceInt, MethodServiceIntAsync {
     
     private MethodService() {
         service = (MethodServiceIntAsync)GWT.create(MethodServiceInt.class);
-        if(System.getProperty("mock") == null)
-            ((HasRpcToken)service).setRpcToken(TokenService.getToken());
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
     
     @Override
