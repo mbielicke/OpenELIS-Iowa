@@ -41,6 +41,7 @@
             	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
             	<fileset dir="${selenium.home}/libs/" includes="*.jar" />
+            	<fielset dir="${selenium.home}" includes="selenium-2.41.0.jar"/>
         		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
         		<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
         		<fileset dir="${jboss.home}/modules/system/layers/base/javax/persistence/api/main" includes="*.jar" />
