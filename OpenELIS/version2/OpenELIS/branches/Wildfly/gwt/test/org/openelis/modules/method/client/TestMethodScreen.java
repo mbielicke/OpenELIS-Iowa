@@ -23,7 +23,9 @@ import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.screen.AsyncCallbackUI;
+import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Window;
 
@@ -81,34 +83,7 @@ public class TestMethodScreen {
     
     @Test
     public void testDefault() {
-        verify(screen.query).setEnabled(true);
-        verify(screen.previous).setEnabled(false);
-        verify(screen.next).setEnabled(false);
-        verify(screen.add).setEnabled(true);
-        verify(screen.update).setEnabled(false);
-        verify(screen.commit).setEnabled(false);
-        verify(screen.abort).setEnabled(false);
-        verify(screen.optionsMenu).setEnabled(false);
-        verify(screen.optionsButton).setEnabled(false);
-        verify(screen.history).setEnabled(false);
-        
-        verify(screen.name).setEnabled(false);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(false);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(false);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(false);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(false);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(false);
+        verifyDefaultState();
         
         verify(screen.atozButtons).setEnabled(true);
         verify(screen.atozNext).setEnabled(false);
@@ -123,41 +98,14 @@ public class TestMethodScreen {
         
         screen.add(null);
        
-        verify(screen.query).setEnabled(false);
-        verify(screen.previous).setEnabled(false);
-        verify(screen.next).setEnabled(false);
-        verify(screen.add).setEnabled(true);
-        verify(screen.add).setPressed(true);
-        verify(screen.add).lock();
-        verify(screen.update).setEnabled(false);
-        verify(screen.commit).setEnabled(true);
-        verify(screen.abort).setEnabled(true);
-        verify(screen.optionsMenu).setEnabled(false);
-        verify(screen.optionsButton).setEnabled(false);
-        verify(screen.history).setEnabled(false);
-        
-        verify(screen.name).setEnabled(true);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(true);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(true);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(true);
-        verify(screen.isActive).setValue("Y");
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(true);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(true);
+        verifyAddState();
         
         verify(screen.atozButtons).setEnabled(false);
         verify(screen.atozNext).setEnabled(false);
         verify(screen.atozPrev).setEnabled(false);
         verify(screen.atozTable).setEnabled(false);
+        
+
     }
     
     @Test
@@ -166,42 +114,7 @@ public class TestMethodScreen {
         
         screen.query(null);
        
-        verify(screen.query).setEnabled(true);
-        verify(screen.query).setPressed(true);
-        verify(screen.query).lock();
-        verify(screen.previous).setEnabled(false);
-        verify(screen.next).setEnabled(false);
-        verify(screen.add).setEnabled(false);
-        verify(screen.update).setEnabled(false);
-        verify(screen.commit).setEnabled(true);
-        verify(screen.abort).setEnabled(true);
-        verify(screen.optionsMenu).setEnabled(false);
-        verify(screen.optionsButton).setEnabled(false);
-        verify(screen.history).setEnabled(false);
-        
-        verify(screen.name).setEnabled(true);
-        verify(screen.name).setQueryMode(true);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(true);
-        verify(screen.description).setQueryMode(true);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(true);
-        verify(screen.reportingDescription).setQueryMode(true);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(true);
-        verify(screen.isActive).setQueryMode(true);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setQueryMode(true);
-        verify(screen.activeBegin).setEnabled(true);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setQueryMode(true);
-        verify(screen.activeEnd).setEnabled(true);
+        verifyQueryState();
         
         verify(screen.atozButtons).setEnabled(false);
         verify(screen.atozNext).setEnabled(false);
@@ -242,34 +155,7 @@ public class TestMethodScreen {
         
         assertTrue(screen.isState(State.DISPLAY));
         
-        verify(screen.query).setEnabled(true);
-        verify(screen.previous).setEnabled(true);
-        verify(screen.next).setEnabled(true);
-        verify(screen.add).setEnabled(true);
-        verify(screen.update).setEnabled(true);
-        verify(screen.commit).setEnabled(false);
-        verify(screen.abort).setEnabled(false);
-        verify(screen.optionsMenu).setEnabled(true);
-        verify(screen.optionsButton).setEnabled(true);
-        verify(screen.history).setEnabled(true);
-        
-        verify(screen.name).setEnabled(false);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(false);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(false);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(false);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(false);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(false);
+        verifyDisplayState();
         
         verify(screen.atozButtons).setEnabled(true);
         verify(screen.atozNext, times(2)).setEnabled(true);
@@ -292,43 +178,15 @@ public class TestMethodScreen {
         resetCalls();
         
         screen.update(null);
-       
-        verify(screen.query).setEnabled(false);
-        verify(screen.previous).setEnabled(false);
-        verify(screen.next).setEnabled(false);
-        verify(screen.add).setEnabled(false);
-        verify(screen.update).setPressed(true);
-        verify(screen.update).lock();
-        verify(screen.update).setEnabled(true);
-        verify(screen.commit).setEnabled(true);
-        verify(screen.abort).setEnabled(true);
-        verify(screen.optionsMenu).setEnabled(false);
-        verify(screen.optionsButton).setEnabled(false);
-        verify(screen.history).setEnabled(false);
         
-        verify(screen.name).setEnabled(true);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(true);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(true);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(true);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(true);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(true);
+        verifyUpdateState();
         
         verify(screen.atozButtons).setEnabled(false);
         verify(screen.atozNext).setEnabled(false);
         verify(screen.atozPrev).setEnabled(false);
         verify(screen.atozTable).setEnabled(false);
     }
+
     
     @Test
     public void testCommitQuery() {
@@ -360,34 +218,7 @@ public class TestMethodScreen {
         
         assertTrue(screen.isState(State.DISPLAY));
         
-        verify(screen.query).setEnabled(true);
-        verify(screen.previous).setEnabled(true);
-        verify(screen.next).setEnabled(true);
-        verify(screen.add).setEnabled(true);
-        verify(screen.update).setEnabled(true);
-        verify(screen.commit).setEnabled(false);
-        verify(screen.abort).setEnabled(false);
-        verify(screen.optionsMenu).setEnabled(true);
-        verify(screen.optionsButton).setEnabled(true);
-        verify(screen.history).setEnabled(true);
-        
-        verify(screen.name).setEnabled(false);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(false);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(false);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(false);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(false);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(false);
+        verifyDisplayState();
         
         verify(screen.atozButtons).setEnabled(true);
         verify(screen.atozNext, times(2)).setEnabled(true);
@@ -413,39 +244,34 @@ public class TestMethodScreen {
         
         assertTrue(screen.isState(State.DISPLAY));
         
-        verify(screen.query).setEnabled(true);
-        verify(screen.previous).setEnabled(true);
-        verify(screen.next).setEnabled(true);
-        verify(screen.add).setEnabled(true);
-        verify(screen.update).setEnabled(true);
-        verify(screen.commit).setEnabled(false);
-        verify(screen.abort).setEnabled(false);
-        verify(screen.optionsMenu).setEnabled(true);
-        verify(screen.optionsButton).setEnabled(true);
-        verify(screen.history).setEnabled(true);
-        
-        verify(screen.name).setEnabled(false);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(false);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(false);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(false);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(false);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(false);
+        verifyDisplayState();
         
         verify(screen.atozButtons).setEnabled(true);
         verify(screen.atozNext).setEnabled(false);
         verify(screen.atozPrev).setEnabled(false);
         verify(screen.atozTable).setEnabled(true);
+        
+    }
+    
+    @Test
+    public void testCommitAddFailure() {
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                AsyncCallbackUI callback = (AsyncCallbackUI) invocation.getArguments()[1];
+                resetCalls();
+                callback.onFailure(new Exception("Error Message"));
+                return null;
+            }
+        }).when(methodService).add(Mockito.any(MethodDO.class),(AsyncCallbackUI)Mockito.any());
+        
+        screen.setState(State.ADD);
+        
+        screen.commit(null);
+        
+        assertTrue(screen.isState(State.ADD));
+        
+        
     }
     
     @Test
@@ -466,39 +292,89 @@ public class TestMethodScreen {
         
         assertTrue(screen.isState(State.DISPLAY));
         
-        verify(screen.query).setEnabled(true);
-        verify(screen.previous).setEnabled(true);
-        verify(screen.next).setEnabled(true);
-        verify(screen.add).setEnabled(true);
-        verify(screen.update).setEnabled(true);
-        verify(screen.commit).setEnabled(false);
-        verify(screen.abort).setEnabled(false);
-        verify(screen.optionsMenu).setEnabled(true);
-        verify(screen.optionsButton).setEnabled(true);
-        verify(screen.history).setEnabled(true);
-        
-        verify(screen.name).setEnabled(false);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(false);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(false);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(false);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(false);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(false);
+        verifyDisplayState();
         
         verify(screen.atozButtons).setEnabled(true);
         verify(screen.atozNext).setEnabled(false);
         verify(screen.atozPrev).setEnabled(false);
         verify(screen.atozTable).setEnabled(true);
+    }
+    
+    @Test
+    public void testCommitUpdateFailure() {
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                AsyncCallbackUI callback = (AsyncCallbackUI) invocation.getArguments()[1];
+                resetCalls();
+                callback.onFailure(new Exception("Error Message"));
+                return null;
+            }
+        }).when(methodService).update(Mockito.any(MethodDO.class),(AsyncCallbackUI)Mockito.any());
+        
+        screen.setState(State.UPDATE);
+        
+        screen.commit(null);
+        
+        assertTrue(screen.isState(State.UPDATE));
+        
+    }
+    
+    @Test
+    public void testValidationError() {
+    
+        screen.addScreenHandler(screen.name,"name", new ScreenHandler<String>() {
+            @Override
+            public void isValid(Validation validation) {
+                validation.addException(new Exception("Error"));
+            }
+        });
+        
+        screen.setState(State.ADD);
+        
+        screen.commit(null);
+        
+        assertTrue(screen.isState(State.ADD));
+    }
+    
+    private void verifyQueryState() {
+        verify(screen.query).setEnabled(true);
+        verify(screen.query).setPressed(true);
+        verify(screen.query).lock();
+        verify(screen.previous).setEnabled(false);
+        verify(screen.next).setEnabled(false);
+        verify(screen.add).setEnabled(false);
+        verify(screen.update).setEnabled(false);
+        verify(screen.commit).setEnabled(true);
+        verify(screen.abort).setEnabled(true);
+        verify(screen.optionsMenu).setEnabled(false);
+        verify(screen.optionsButton).setEnabled(false);
+        verify(screen.history).setEnabled(false);
+        
+        verify(screen.name).setEnabled(true);
+        verify(screen.name).setQueryMode(true);
+        verify(screen.name).setValue(null);
+        
+        verify(screen.description).setEnabled(true);
+        verify(screen.description).setQueryMode(true);
+        verify(screen.description).setValue(null);
+        
+        verify(screen.reportingDescription).setEnabled(true);
+        verify(screen.reportingDescription).setQueryMode(true);
+        verify(screen.reportingDescription).setValue(null);
+        
+        verify(screen.isActive).setEnabled(true);
+        verify(screen.isActive).setQueryMode(true);
+        verify(screen.isActive).setValue(null);
+        
+        verify(screen.activeBegin).setValue(null);
+        verify(screen.activeBegin).setQueryMode(true);
+        verify(screen.activeBegin).setEnabled(true);
+        
+        verify(screen.activeEnd).setValue(null);
+        verify(screen.activeEnd).setQueryMode(true);
+        verify(screen.activeEnd).setEnabled(true);
+       
     }
     
     @Test
@@ -540,40 +416,9 @@ public class TestMethodScreen {
         screen.abort(null);
         
         assertTrue(screen.isState(State.DISPLAY));
+
+        verifyDisplayState();
         
-        verify(screen.query).setEnabled(true);
-        verify(screen.previous).setEnabled(true);
-        verify(screen.next).setEnabled(true);
-        verify(screen.add).setEnabled(true);
-        verify(screen.update).setEnabled(true);
-        verify(screen.commit).setEnabled(false);
-        verify(screen.abort).setEnabled(false);
-        verify(screen.optionsMenu).setEnabled(true);
-        verify(screen.optionsButton).setEnabled(true);
-        verify(screen.history).setEnabled(true);
-        
-        verify(screen.name).setEnabled(false);
-        verify(screen.name).setValue(null);
-        
-        verify(screen.description).setEnabled(false);
-        verify(screen.description).setValue(null);
-        
-        verify(screen.reportingDescription).setEnabled(false);
-        verify(screen.reportingDescription).setValue(null);
-        
-        verify(screen.isActive).setEnabled(false);
-        verify(screen.isActive).setValue(null);
-        
-        verify(screen.activeBegin).setValue(null);
-        verify(screen.activeBegin).setEnabled(false);
-        
-        verify(screen.activeEnd).setValue(null);
-        verify(screen.activeEnd).setEnabled(false);
-        
-        verify(screen.atozButtons).setEnabled(true);
-        verify(screen.atozNext).setEnabled(false);
-        verify(screen.atozPrev).setEnabled(false);
-        verify(screen.atozTable).setEnabled(true);
     }
     
     @Test
@@ -617,6 +462,137 @@ public class TestMethodScreen {
         methodService = mock(MethodService.class);
         
         messages = GWT.create(OpenELISConstants.class);
+    }
+    
+    private void verifyDefaultState() {
+        verify(screen.query).setEnabled(true);
+        verify(screen.previous).setEnabled(false);
+        verify(screen.next).setEnabled(false);
+        verify(screen.add).setEnabled(true);
+        verify(screen.update).setEnabled(false);
+        verify(screen.commit).setEnabled(false);
+        verify(screen.abort).setEnabled(false);
+        verify(screen.optionsMenu).setEnabled(false);
+        verify(screen.optionsButton).setEnabled(false);
+        verify(screen.history).setEnabled(false);
+        
+        verify(screen.name).setEnabled(false);
+        verify(screen.name).setValue(null);
+        
+        verify(screen.description).setEnabled(false);
+        verify(screen.description).setValue(null);
+        
+        verify(screen.reportingDescription).setEnabled(false);
+        verify(screen.reportingDescription).setValue(null);
+        
+        verify(screen.isActive).setEnabled(false);
+        verify(screen.isActive).setValue(null);
+        
+        verify(screen.activeBegin).setValue(null);
+        verify(screen.activeBegin).setEnabled(false);
+        
+        verify(screen.activeEnd).setValue(null);
+        verify(screen.activeEnd).setEnabled(false);
+        
+    }
+    
+    private void verifyAddState() {
+        verify(screen.query).setEnabled(false);
+        verify(screen.previous).setEnabled(false);
+        verify(screen.next).setEnabled(false);
+        verify(screen.add).setEnabled(true);
+        verify(screen.add).setPressed(true);
+        verify(screen.add).lock();
+        verify(screen.update).setEnabled(false);
+        verify(screen.commit).setEnabled(true);
+        verify(screen.abort).setEnabled(true);
+        verify(screen.optionsMenu).setEnabled(false);
+        verify(screen.optionsButton).setEnabled(false);
+        verify(screen.history).setEnabled(false);
+        
+        verify(screen.name).setEnabled(true);
+        verify(screen.name).setValue(null);
+        
+        verify(screen.description).setEnabled(true);
+        verify(screen.description).setValue(null);
+        
+        verify(screen.reportingDescription).setEnabled(true);
+        verify(screen.reportingDescription).setValue(null);
+        
+        verify(screen.isActive).setEnabled(true);
+        verify(screen.isActive).setValue("Y");
+        
+        verify(screen.activeBegin).setValue(null);
+        verify(screen.activeBegin).setEnabled(true);
+        
+        verify(screen.activeEnd).setValue(null);
+        verify(screen.activeEnd).setEnabled(true);
+        
+    }
+    
+    private void verifyDisplayState() {
+        verify(screen.query).setEnabled(true);
+        verify(screen.previous).setEnabled(true);
+        verify(screen.next).setEnabled(true);
+        verify(screen.add).setEnabled(true);
+        verify(screen.update).setEnabled(true);
+        verify(screen.commit).setEnabled(false);
+        verify(screen.abort).setEnabled(false);
+        verify(screen.optionsMenu).setEnabled(true);
+        verify(screen.optionsButton).setEnabled(true);
+        verify(screen.history).setEnabled(true);
+        
+        verify(screen.name).setEnabled(false);
+        verify(screen.name).setValue(null);
+        
+        verify(screen.description).setEnabled(false);
+        verify(screen.description).setValue(null);
+        
+        verify(screen.reportingDescription).setEnabled(false);
+        verify(screen.reportingDescription).setValue(null);
+        
+        verify(screen.isActive).setEnabled(false);
+        verify(screen.isActive).setValue(null);
+        
+        verify(screen.activeBegin).setValue(null);
+        verify(screen.activeBegin).setEnabled(false);
+        
+        verify(screen.activeEnd).setValue(null);
+        verify(screen.activeEnd).setEnabled(false);
+        
+    }
+    
+    private void verifyUpdateState() {
+        verify(screen.query).setEnabled(false);
+        verify(screen.previous).setEnabled(false);
+        verify(screen.next).setEnabled(false);
+        verify(screen.add).setEnabled(false);
+        verify(screen.update).setPressed(true);
+        verify(screen.update).lock();
+        verify(screen.update).setEnabled(true);
+        verify(screen.commit).setEnabled(true);
+        verify(screen.abort).setEnabled(true);
+        verify(screen.optionsMenu).setEnabled(false);
+        verify(screen.optionsButton).setEnabled(false);
+        verify(screen.history).setEnabled(false);
+        
+        verify(screen.name).setEnabled(true);
+        verify(screen.name).setValue(null);
+        
+        verify(screen.description).setEnabled(true);
+        verify(screen.description).setValue(null);
+        
+        verify(screen.reportingDescription).setEnabled(true);
+        verify(screen.reportingDescription).setValue(null);
+        
+        verify(screen.isActive).setEnabled(true);
+        verify(screen.isActive).setValue(null);
+        
+        verify(screen.activeBegin).setValue(null);
+        verify(screen.activeBegin).setEnabled(true);
+        
+        verify(screen.activeEnd).setValue(null);
+        verify(screen.activeEnd).setEnabled(true);
     }
     
     private void resetCalls() {
