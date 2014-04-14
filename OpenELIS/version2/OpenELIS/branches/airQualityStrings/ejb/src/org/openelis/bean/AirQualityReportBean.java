@@ -66,6 +66,11 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
 
+/**
+ * This class is used for generating strings with a specific format for Air
+ * Quality samples. It retrieves all Air Quality samples within the specified
+ * date range, generates all relevant strings, and writes them to a new file.
+ */
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB",
@@ -455,7 +460,7 @@ public class AirQualityReportBean {
         action = dictionary.fetchById(Integer.parseInt(action)).getEntry();
 
         if (DataBaseUtil.isEmpty(action))
-            throw new InconsistencyException("You must specify Action for this report");
+            throw new InconsistencyException(Messages.get().airQuality_noActionException());
 
         if (frDate == null || tDate == null) {
             if (accession == null)
@@ -464,7 +469,7 @@ public class AirQualityReportBean {
                  * samples. One or both of the dates is missing, and the
                  * accession number is missing.
                  */
-                throw new InconsistencyException("You must specify From Date and To Date or accession number for this report");
+                throw new InconsistencyException(Messages.get().airQuality_noDataException());
 
             sms = new ArrayList<SampleManager1>();
             sms.add(sample.fetchByAccession(Integer.parseInt(accession),
@@ -514,7 +519,7 @@ public class AirQualityReportBean {
              * samples. Both dates are filled and the accession number is
              * filled.
              */
-            throw new InconsistencyException("You may only specify From Date and To Date or accession number for this report");
+            throw new InconsistencyException(Messages.get().airQuality_tooMuchDataException());
         }
 
         samples = new HashMap<String, ArrayList<SampleManager1>>();
