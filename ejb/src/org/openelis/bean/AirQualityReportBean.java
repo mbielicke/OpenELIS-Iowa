@@ -31,7 +31,7 @@ import static org.openelis.manager.SampleManager1Accessor.getResults;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,6 +70,36 @@ import org.openelis.utils.ReportUtil;
  * This class is used for generating strings with a specific format for Air
  * Quality samples. It retrieves all Air Quality samples within the specified
  * date range, generates all relevant strings, and writes them to a new file.
+ * 
+ * The following system variables and their formats are used in this class:
+ * air_metal_lead_test ("test id"|"lead filter lot blank")
+ * 
+ * air_metal_manganese_test ("test id"|"manganese filter lot blank")
+ * 
+ * air_metal_mn_accuracy_test ("test id")
+ * 
+ * air_pressure_constants
+ * ("parameter code"|"duration code"|"reported unit code"|"method code")
+ * 
+ * air_qualifier_code ("qualifier code"|"Qualifier result string",repeating)
+ * 
+ * air_report_directory ("directory location")
+ * 
+ * air_report_to ("organization id"|"organization attention")
+ * 
+ * air_sulfate_nitrate_tests
+ * ("test id";"sulfate analyte";"nitrate analyte"|repeat if necessary)
+ * 
+ * air_temperature_constants
+ * ("parameter code"|"duration code"|"reported unit code"|"method code")
+ * 
+ * air_tnmoc_speciated ("parameter code"|"duration code"|"method code"|"MDL")
+ * 
+ * air_total_tolualdehydes
+ * ("parameter code"|"duration code"|"method code"|"MDL")
+ * 
+ * air_toxics_tests ("test id"|"test id"|repeating)
+ * 
  */
 @Stateless
 @SecurityDomain("openelis")
@@ -108,7 +138,7 @@ public class AirQualityReportBean {
                     assessmentType = "Duplicate", assessmentNumber = "1", to11 = "to-11",
                     to12 = "to-12", tolualdehyde = "Tolualdehyde", md = "MD", sq = "SQ", cb = "CB",
                     da = "DA", fb = "FB", primaryPOC = "01", secondaryPOC = "02",
-                    duplicatePOC = "03";
+                    duplicatePOC = "03", mdlAnalyte = "MDL";
 
     private String                                   ttdsDurationCode, ttdsMethodCode, ttdsMDL,
                     ttdsParameterCode, tnmocDurationCode, tnmocMethodCode, tnmocMDL,
@@ -283,6 +313,8 @@ public class AirQualityReportBean {
         try {
             /*
              * Test id and filter lot blank for metal lead test.
+             * 
+             * Format: "test id"|"lead filter lot blank"
              */
             val = systemVariable.fetchByName("air_metal_lead_test").getValue();
             tempArray = val.split(escape + delim);
@@ -299,6 +331,8 @@ public class AirQualityReportBean {
         try {
             /*
              * Test id and filter lot blank for metal manganese test.
+             * 
+             * Format: "test id"|"manganese filter lot blank"
              */
             val = systemVariable.fetchByName("air_metal_manganese_test").getValue();
             tempArray = val.split(escape + delim);
@@ -588,9 +622,9 @@ public class AirQualityReportBean {
          * get the air quality codes corresponding with the analytes and units
          * that are used
          */
-        getAirAnalyteCodes(analyteIds);
-        getAirUnitCodes(unitIds);
-        getAirAnalyteParameters(testIds);
+        getAnalyteCodes(analyteIds);
+        getUnitCodes(unitIds);
+        getAnalyteParameters(testIds);
 
         sulfateStrings = new HashMap<String, ArrayList<String>>();
         nitrateStrings = new HashMap<String, ArrayList<String>>();
@@ -686,7 +720,7 @@ public class AirQualityReportBean {
 
                             for (int i = 0; i < stringList.size(); i++ ) {
                                 metal = stringList.get(i);
-                                if (metal == null)
+                                if (DataBaseUtil.isEmpty(metal))
                                     continue;
                                 if (pressureTempString == false && i == 0) {
                                     if (pressureStrings.get(key) == null)
@@ -726,7 +760,7 @@ public class AirQualityReportBean {
                             }
                             for (int i = 0; i < stringList.size(); i++ ) {
                                 metal = stringList.get(i);
-                                if (metal == null)
+                                if (DataBaseUtil.isEmpty(metal))
                                     continue;
                                 if (pressureTempString == false && i == 0) {
                                     if (pressureStrings.get(key) == null)
@@ -766,7 +800,7 @@ public class AirQualityReportBean {
                             }
                             for (int i = 0; i < stringList.size(); i++ ) {
                                 metal = stringList.get(i);
-                                if (metal == null)
+                                if (DataBaseUtil.isEmpty(metal))
                                     continue;
                                 if (pressureTempString == false && i == 0) {
                                     if (pressureStrings.get(key) == null)
@@ -890,14 +924,17 @@ public class AirQualityReportBean {
     private HashMap<String, String> getSulfateNitrateStrings(SampleManager1 sm, String action,
                                                              Integer analysisId) throws Exception {
         int sulfateDurationCd, nitrateDurationCd, sulfateMethodCd, nitrateMethodCd;
-        String sulfateString, nitrateString, sulfateValue, nitrateValue, sulfateCode, nitrateCode, stateCode, countyCode, siteId, poc, volume, nullDataCd, collectionFreq, date, reportedUnit, end, sulfateAlternateMethodDetectableLimit, nitrateAlternateMethodDetectableLimit;
+        String sulfateValue, nitrateValue, sulfateCode, nitrateCode, stateCode, countyCode, siteId, poc, volume, nullDataCd, collectionFreq, date, reportedUnit, sulfateAlternateMethodDetectableLimit, nitrateAlternateMethodDetectableLimit;
+        StringBuilder ssb, nsb;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO sulfateParameter, nitrateParameter;
-        DecimalFormat threeDigits;
+        DecimalFormat threeDigits, twoDecimals;
         HashMap<String, String> sulfateNitrateStrings, auxData;
 
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
+        twoDecimals = new DecimalFormat("#.00");
+        twoDecimals.setMinimumIntegerDigits(1);
         sulfateValue = nitrateValue = sulfateCode = nitrateCode = reportedUnit = sulfateAlternateMethodDetectableLimit = nitrateAlternateMethodDetectableLimit = null;
         sulfateDurationCd = nitrateDurationCd = sulfateMethodCd = nitrateMethodCd = 0;
         dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
@@ -927,7 +964,8 @@ public class AirQualityReportBean {
                     sulfateMethodCd = sulfateParameter.getP2().intValue();
                     sulfateDurationCd = sulfateParameter.getP3().intValue();
                     if (DataBaseUtil.isEmpty(nullDataCd))
-                        sulfateValue = getSulfateValue(data.getValue(), volume);
+                        sulfateValue = twoDecimals.format(Double.parseDouble(data.getValue()) /
+                                                          Double.parseDouble(volume));
                     sulfateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -943,7 +981,8 @@ public class AirQualityReportBean {
                     nitrateMethodCd = nitrateParameter.getP2().intValue();
                     nitrateDurationCd = nitrateParameter.getP3().intValue();
                     if (DataBaseUtil.isEmpty(nullDataCd))
-                        nitrateValue = getNitrateValue(data.getValue(), volume);
+                        nitrateValue = twoDecimals.format( (Double.parseDouble(data.getValue()) * nitrateConstant) /
+                                                          Double.parseDouble(volume));
                     nitrateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -963,66 +1002,87 @@ public class AirQualityReportBean {
         /*
          * build the strings
          */
-        sulfateString = buildSiteInfo(rawDataType,
-                                      action,
-                                      stateCode,
-                                      countyCode,
-                                      siteId,
-                                      sulfateCode,
-                                      poc);
+        ssb = new StringBuilder();
+        nsb = new StringBuilder();
+        buildSiteInfo(ssb, rawDataType, action, stateCode, countyCode, siteId, sulfateCode, poc);
+        buildSiteInfo(nsb, rawDataType, action, stateCode, countyCode, siteId, nitrateCode, poc);
 
-        nitrateString = buildSiteInfo(rawDataType,
-                                      action,
-                                      stateCode,
-                                      countyCode,
-                                      siteId,
-                                      nitrateCode,
-                                      poc);
-
-        sulfateString += sulfateDurationCd + delim;
-        nitrateString += nitrateDurationCd + delim;
-        sulfateString += reportedUnit + delim;
-        nitrateString += reportedUnit + delim;
-        sulfateString += threeDigits.format(sulfateMethodCd) + delim;
-        nitrateString += threeDigits.format(nitrateMethodCd) + delim;
         date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
-        sulfateString += date + delim;
-        nitrateString += date + delim;
-        sulfateString += time + delim;
-        nitrateString += time + delim;
+        ssb.append(sulfateDurationCd)
+           .append(delim)
+           .append(reportedUnit)
+           .append(delim)
+           .append(threeDigits.format(sulfateMethodCd))
+           .append(delim)
+           .append(date)
+           .append(delim)
+           .append(time)
+           .append(delim);
+        nsb.append(nitrateDurationCd)
+           .append(delim)
+           .append(reportedUnit)
+           .append(delim)
+           .append(threeDigits.format(nitrateMethodCd))
+           .append(delim)
+           .append(date)
+           .append(delim)
+           .append(time)
+           .append(delim);
+
         if (DataBaseUtil.isEmpty(nullDataCd)) {
             /*
              * the value is filled and the null data code is empty
              */
-            sulfateString += sulfateValue + delim + delim;
-            nitrateString += nitrateValue + delim + delim;
+            ssb.append(sulfateValue).append(delim).append(delim);
+            nsb.append(nitrateValue).append(delim).append(delim);
         } else {
             /*
              * the value is empty and the null data code is filled
              */
-            sulfateString += delim + nullDataCd + delim;
-            nitrateString += delim + nullDataCd + delim;
+            ssb.append(delim).append(nullDataCd).append(delim);
+            nsb.append(delim).append(nullDataCd).append(delim);
         }
 
-        end = collectionFreq + delim;
+        ssb.append(collectionFreq).append(delim);
+        nsb.append(collectionFreq).append(delim);
         /*
          * fields #16 through #26 and #28 are not used and are empty
          */
-        end += delim + delim + delim + delim + delim + delim + delim + delim + delim + delim +
-               delim;
-        sulfateString += end;
-        nitrateString += end;
-        sulfateString += sulfateAlternateMethodDetectableLimit + delim;
-        nitrateString += nitrateAlternateMethodDetectableLimit + delim;
+        ssb.append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(sulfateAlternateMethodDetectableLimit)
+           .append(delim);
+        nsb.append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(nitrateAlternateMethodDetectableLimit)
+           .append(delim);
 
         sulfateNitrateStrings = new HashMap<String, String>();
         /*
          * check if the strings are valid before returning them
          */
         if (sulfateValue != null || nullDataCd != null)
-            sulfateNitrateStrings.put("sulfate", sulfateString);
+            sulfateNitrateStrings.put("sulfate", ssb.toString());
         if (nitrateValue != null || nullDataCd != null)
-            sulfateNitrateStrings.put("nitrate", nitrateString);
+            sulfateNitrateStrings.put("nitrate", nsb.toString());
         return sulfateNitrateStrings;
     }
 
@@ -1037,7 +1097,8 @@ public class AirQualityReportBean {
         int durationCode, methodCode;
         Integer analysisCount;
         Double ttds, tmnoc;
-        String airToxicsString, stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, analyte;
+        String stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, analyte;
+        StringBuilder sb;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO ap;
         DecimalFormat threeDigits;
@@ -1127,6 +1188,7 @@ public class AirQualityReportBean {
          */
         airToxicsStrings = new ArrayList<String>();
         value = mdl = qualifier = analyte = null;
+        sb = new StringBuilder();
         if (getResults(sm) != null) {
             for (ResultViewDO data : getResults(sm)) {
                 /*
@@ -1190,63 +1252,84 @@ public class AirQualityReportBean {
                     analyte = null;
                     continue;
                 }
-                airToxicsString = buildSiteInfo(rawDataType,
-                                                action,
-                                                stateCode,
-                                                countyCode,
-                                                siteId,
-                                                parameter,
-                                                poc);
+                buildSiteInfo(sb,
+                              rawDataType,
+                              action,
+                              stateCode,
+                              countyCode,
+                              siteId,
+                              parameter,
+                              poc);
 
-                airToxicsString += durationCode + delim;
-                airToxicsString += reportedUnit + delim;
-                airToxicsString += threeDigits.format(methodCode) + delim;
-                airToxicsString += date + delim;
-                airToxicsString += time + delim;
+                sb.append(durationCode).append(delim);
+                sb.append(reportedUnit).append(delim);
+                sb.append(threeDigits.format(methodCode)).append(delim);
+                sb.append(date).append(delim);
+                sb.append(time).append(delim);
                 if (DataBaseUtil.isEmpty(nullDataCd)) {
                     if (value.contains("<")) {
                         /*
                          * the value is less than the minimum value, so we round
                          * down to zero
                          */
-                        airToxicsString += "0" + delim;
+                        sb.append("0").append(delim);
                         /*
                          * null data code is empty
                          */
-                        airToxicsString += delim;
+                        sb.append(delim);
                     } else {
-                        airToxicsString += value + delim;
+                        sb.append(value).append(delim);
                         /*
                          * null data code is empty
                          */
-                        airToxicsString += delim;
+                        sb.append(delim);
                         if (addAll)
                             tmnoc += Double.parseDouble(value);
                     }
-                    airToxicsString += collectionFreq + delim;
+                    sb.append(collectionFreq).append(delim);
                     /*
                      * fields #16 and #18 through #26 and #28 are not used and
                      * are empty
                      */
-                    airToxicsString += delim;
+                    sb.append(delim);
                     if (qualifierStrings.contains(qualifier))
-                        airToxicsString += qualifierCode;
-                    airToxicsString += delim + delim + delim + delim + delim + delim + delim +
-                                       delim + delim + delim;
-                    airToxicsString += mdl + delim;
+                        sb.append(qualifierCode);
+                    sb.append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim);
+                    sb.append(mdl).append(delim);
 
                 } else {
                     /*
                      * there is a null data code, so the reported sample value
                      * and all fields after are left empty
                      */
-                    airToxicsString += delim + nullDataCd + delim;
-                    airToxicsString += collectionFreq + delim + delim + delim + delim + delim +
-                                       delim + delim + delim + delim + delim + delim + delim +
-                                       delim;
+                    sb.append(delim).append(nullDataCd).append(delim);
+                    sb.append(collectionFreq)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim)
+                      .append(delim);
                 }
 
-                airToxicsStrings.add(airToxicsString);
+                airToxicsStrings.add(sb.toString());
+                sb.setLength(0);
                 value = null;
                 mdl = null;
                 qualifier = null;
@@ -1265,61 +1348,76 @@ public class AirQualityReportBean {
                 parameter = tnmocParameterCode;
             else if (addTds)
                 parameter = ttdsParameterCode;
-            airToxicsString = buildSiteInfo(rawDataType,
-                                            action,
-                                            stateCode,
-                                            countyCode,
-                                            siteId,
-                                            parameter,
-                                            poc);
+            buildSiteInfo(sb, rawDataType, action, stateCode, countyCode, siteId, parameter, poc);
             if (addAll)
-                airToxicsString += tnmocDurationCode + delim;
+                sb.append(tnmocDurationCode).append(delim);
             else if (addTds)
-                airToxicsString += ttdsDurationCode + delim;
-            airToxicsString += reportedUnit + delim;
+                sb.append(ttdsDurationCode).append(delim);
+            sb.append(reportedUnit).append(delim);
             if (addAll)
-                airToxicsString += tnmocMethodCode + delim;
+                sb.append(tnmocMethodCode).append(delim);
             else if (addTds)
-                airToxicsString += ttdsMethodCode + delim;
-            airToxicsString += date + delim;
-            airToxicsString += time + delim;
+                sb.append(ttdsMethodCode).append(delim);
+            sb.append(date).append(delim);
+            sb.append(time).append(delim);
             if (DataBaseUtil.isEmpty(nullDataCd)) {
                 if (addAll) {
                     if (tmnoc == 0)
-                        airToxicsString += "0" + delim;
+                        sb.append("0").append(delim);
                     else
-                        airToxicsString += truncateDecimal(tmnoc, 2) + delim;
+                        sb.append(truncateDecimal(tmnoc, 2)).append(delim);
                 } else if (addTds) {
                     if (ttds == 0)
-                        airToxicsString += "0" + delim;
+                        sb.append("0").append(delim);
                     else
-                        airToxicsString += truncateDecimal(ttds, 2) + delim;
+                        sb.append(truncateDecimal(ttds, 2)).append(delim);
                 }
                 /*
                  * null data code is empty
                  */
-                airToxicsString += delim;
-                airToxicsString += collectionFreq + delim;
+                sb.append(delim);
+                sb.append(collectionFreq).append(delim);
                 /*
                  * fields #16 through #26 and #28 are not used and are empty
                  */
-                airToxicsString += delim + delim + delim + delim + delim + delim + delim + delim +
-                                   delim + delim + delim;
+                sb.append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim);
                 if (addAll)
-                    airToxicsString += tnmocMDL + delim;
+                    sb.append(tnmocMDL).append(delim);
                 else if (addTds)
-                    airToxicsString += ttdsMDL + delim;
+                    sb.append(ttdsMDL).append(delim);
             } else {
                 /*
                  * there is a null data code, so the reported sample value is
                  * left empty
                  */
-                airToxicsString += delim + nullDataCd + delim;
-                airToxicsString += collectionFreq + delim + delim + delim + delim + delim + delim +
-                                   delim + delim + delim + delim + delim + delim + delim;
+                sb.append(delim).append(nullDataCd).append(delim);
+                sb.append(collectionFreq)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim);
             }
 
-            airToxicsStrings.add(airToxicsString);
+            airToxicsStrings.add(sb.toString());
         }
         return airToxicsStrings;
     }
@@ -1335,7 +1433,8 @@ public class AirQualityReportBean {
                                                           boolean addTds, Integer analysisId) throws Exception {
         int methodCode;
         Double ttds, tmnoc;
-        String precision, parameter, value, analyte;
+        String parameter, value, analyte;
+        StringBuilder sb;
         AnalyteParameterViewDO ap;
         DecimalFormat threeDigits;
         ArrayList<String> precisions;
@@ -1350,6 +1449,7 @@ public class AirQualityReportBean {
         threeDigits.setMinimumIntegerDigits(3);
 
         precisions = new ArrayList<String>();
+        sb = new StringBuilder();
         value = analyte = parameter = null;
         methodCode = 0;
         if (getResults(sm) != null) {
@@ -1411,14 +1511,40 @@ public class AirQualityReportBean {
                     continue;
                 }
 
-                precision = precisionType + delim + action.substring(0, 1) + delim +
-                            assessmentType + delim + delim + stateCode + delim + countyCode +
-                            delim + siteId + delim + parameter + delim + poc + delim + date +
-                            delim + assessmentNumber + delim + methodCode + delim + reportedUnit +
-                            delim + value + delim + delim + delim + delim;
+                sb.append(precisionType)
+                  .append(delim)
+                  .append(action.substring(0, 1))
+                  .append(delim)
+                  .append(assessmentType)
+                  .append(delim)
+                  .append(delim)
+                  .append(stateCode)
+                  .append(delim)
+                  .append(countyCode)
+                  .append(delim)
+                  .append(siteId)
+                  .append(delim)
+                  .append(parameter)
+                  .append(delim)
+                  .append(poc)
+                  .append(delim)
+                  .append(date)
+                  .append(delim)
+                  .append(assessmentNumber)
+                  .append(delim)
+                  .append(methodCode)
+                  .append(delim)
+                  .append(reportedUnit)
+                  .append(delim)
+                  .append(value)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim);
                 if (addAll)
                     tmnoc += Double.parseDouble(value);
-                precisions.add(precision);
+                precisions.add(sb.toString());
+                sb.setLength(0);
                 value = null;
                 parameter = null;
                 analyte = null;
@@ -1440,20 +1566,38 @@ public class AirQualityReportBean {
                     return precisions;
                 parameter = ttdsParameterCode;
             }
-            precision = precisionType + delim + action.substring(0, 1) + delim + assessmentType +
-                        delim + delim + stateCode + delim + countyCode + delim + siteId + delim +
-                        parameter + delim + poc + delim + date + delim + assessmentNumber + delim;
+            sb.append(precisionType)
+              .append(delim)
+              .append(action.substring(0, 1))
+              .append(delim)
+              .append(assessmentType)
+              .append(delim)
+              .append(delim)
+              .append(stateCode)
+              .append(delim)
+              .append(countyCode)
+              .append(delim)
+              .append(siteId)
+              .append(delim)
+              .append(parameter)
+              .append(delim)
+              .append(poc)
+              .append(delim)
+              .append(date)
+              .append(delim)
+              .append(assessmentNumber)
+              .append(delim);
             if (addAll)
-                precision += tnmocMethodCode + delim;
+                sb.append(tnmocMethodCode).append(delim);
             else if (addTds)
-                precision += ttdsMethodCode + delim;
-            precision += reportedUnit + delim;
+                sb.append(ttdsMethodCode).append(delim);
+            sb.append(reportedUnit).append(delim);
             if (addAll)
-                precision += truncateDecimal(tmnoc, 2);
+                sb.append(truncateDecimal(tmnoc, 2));
             else if (addTds)
-                precision += truncateDecimal(ttds, 2);
-            precision += delim + delim + delim + delim;
-            precisions.add(precision);
+                sb.append(truncateDecimal(ttds, 2));
+            sb.append(delim).append(delim).append(delim).append(delim);
+            precisions.add(sb.toString());
         }
         return precisions;
     }
@@ -1569,49 +1713,92 @@ public class AirQualityReportBean {
                                                             String nullDataCode,
                                                             String collectionFreq, String pressure,
                                                             String temperature) {
-        String pressureString, temperatureString;
+        StringBuilder psb, tsb;
         ArrayList<String> metalStrings;
 
         metalStrings = new ArrayList<String>();
-
-        pressureString = buildSiteInfo(rawDataType,
-                                       action,
-                                       stateCode,
-                                       countyCode,
-                                       siteId,
-                                       pressureParameter,
-                                       poc);
-        temperatureString = buildSiteInfo(rawDataType,
-                                          action,
-                                          stateCode,
-                                          countyCode,
-                                          siteId,
-                                          temperatureParameter,
-                                          poc);
-        pressureString += pressureDurationCode + delim + pressureReportedUnit + delim +
-                          pressureMethodCode + delim + date + delim + time + delim;
-        temperatureString += temperatureDurationCode + delim + temperatureReportedUnit + delim +
-                             temperatureMethodCode + delim + date + delim + time + delim;
+        psb = new StringBuilder();
+        tsb = new StringBuilder();
+        buildSiteInfo(psb,
+                      rawDataType,
+                      action,
+                      stateCode,
+                      countyCode,
+                      siteId,
+                      pressureParameter,
+                      poc);
+        buildSiteInfo(tsb,
+                      rawDataType,
+                      action,
+                      stateCode,
+                      countyCode,
+                      siteId,
+                      temperatureParameter,
+                      poc);
+        psb.append(pressureDurationCode)
+           .append(delim)
+           .append(pressureReportedUnit)
+           .append(delim)
+           .append(pressureMethodCode)
+           .append(delim)
+           .append(date)
+           .append(delim)
+           .append(time)
+           .append(delim);
+        tsb.append(temperatureDurationCode)
+           .append(delim)
+           .append(temperatureReportedUnit)
+           .append(delim)
+           .append(temperatureMethodCode)
+           .append(delim)
+           .append(date)
+           .append(delim)
+           .append(time)
+           .append(delim);
         if (DataBaseUtil.isEmpty(nullDataCode)) {
-            pressureString += pressure + delim + delim;
-            temperatureString += temperature + delim + delim;
+            psb.append(pressure).append(delim).append(delim);
+            tsb.append(temperature).append(delim).append(delim);
         } else {
-            pressureString += delim + nullDataCode + delim;
-            temperatureString += delim + nullDataCode + delim;
+            psb.append(delim).append(nullDataCode).append(delim);
+            tsb.append(delim).append(nullDataCode).append(delim);
         }
-        pressureString += collectionFreq + delim + delim + delim + delim + delim + delim + delim +
-                          delim + delim + delim + delim + delim + delim;
-        temperatureString += collectionFreq + delim + delim + delim + delim + delim + delim +
-                             delim + delim + delim + delim + delim + delim + delim;
+        psb.append(collectionFreq)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim);
+        tsb.append(collectionFreq)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim)
+           .append(delim);
 
         if (pressure == null)
             metalStrings.add(null);
         else
-            metalStrings.add(pressureString);
+            metalStrings.add(psb.toString());
         if (temperature == null)
             metalStrings.add(null);
         else
-            metalStrings.add(temperatureString);
+            metalStrings.add(tsb.toString());
         return metalStrings;
     }
 
@@ -1627,15 +1814,17 @@ public class AirQualityReportBean {
         int durationCode, methodCode;
         Double sampleMdl, filterMdl, sampleValue, sampleVolume;
         Integer spf;
-        String metalString, value, mdl, parameter, alternateMethodDetectableLimit;
+        String value, mdl, parameter, alternateMethodDetectableLimit;
+        StringBuilder sb;
         AnalyteParameterViewDO ap;
-        DecimalFormat threeDigits, df;
+        DecimalFormat threeDigits, df, mdf;
 
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
         df = new DecimalFormat("#");
         df.setMinimumIntegerDigits(1);
         df.setMaximumFractionDigits(6);
+        mdf = new DecimalFormat("###.00");
 
         lead = false;
         cbFlag = false;
@@ -1647,7 +1836,7 @@ public class AirQualityReportBean {
 
         value = mdl = parameter = alternateMethodDetectableLimit = null;
         durationCode = methodCode = 0;
-        metalString = null;
+        sb = new StringBuilder();
         for (ResultViewDO data : getResults(sm)) {
             if ( !DataBaseUtil.isSame(data.getAnalysisId(), analysisId))
                 continue;
@@ -1658,7 +1847,7 @@ public class AirQualityReportBean {
                 alternateMethodDetectableLimit = df.format(ap.getP1().doubleValue());
                 methodCode = ap.getP2().intValue();
                 durationCode = ap.getP3().intValue();
-            } else if (DataBaseUtil.isSame(data.getAnalyte(), "MDL")) {
+            } else if (DataBaseUtil.isSame(data.getAnalyte(), mdlAnalyte)) {
                 mdl = data.getValue();
             }
             if (value == null || mdl == null)
@@ -1671,124 +1860,106 @@ public class AirQualityReportBean {
 
             if (metalManganeseFilterLotBlank - filterMdl > 0)
                 cbFlag = true;
-            metalString = buildSiteInfo(rawDataType,
-                                        action,
-                                        stateCode,
-                                        countyCode,
-                                        siteId,
-                                        parameter,
-                                        poc);
-            metalString += durationCode + delim + reportedUnit + delim +
-                           threeDigits.format(methodCode) + delim + date + delim + time + delim;
+            buildSiteInfo(sb, rawDataType, action, stateCode, countyCode, siteId, parameter, poc);
+            sb.append(durationCode)
+              .append(delim)
+              .append(reportedUnit)
+              .append(delim)
+              .append(threeDigits.format(methodCode))
+              .append(delim)
+              .append(date)
+              .append(delim)
+              .append(time)
+              .append(delim);
             if (DataBaseUtil.isEmpty(nullDataCode)) {
                 if (lead) {
-                    metalString += formatLeadValue( ( (sampleValue * spf) - metalLeadFilterLotBlank) /
-                                                   sampleVolume) +
-                                   delim + delim;
+                    sb.append(truncateDecimal( ( (sampleValue * spf) - metalLeadFilterLotBlank) /
+                                              sampleVolume, 3)).append(delim).append(delim);
                 } else if (cbFlag) {
-                    metalString += formatManganseseValue(1000 *
-                                                         ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
-                                                         sampleVolume) +
-                                   delim + delim;
+                    sb.append(mdf.format(1000 *
+                                         ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
+                                         sampleVolume)).append(delim).append(delim);
                 } else {
-                    metalString += formatManganseseValue(1000 * sampleValue * spf / sampleVolume) +
-                                   delim + delim;
+                    sb.append(mdf.format(1000 * sampleValue * spf / sampleVolume))
+                      .append(delim)
+                      .append(delim);
                 }
-                metalString += collectionFreq + delim + delim;
+                sb.append(collectionFreq).append(delim).append(delim);
 
                 if (lead) {
                     sampleMdl = filterMdl / sampleVolume;
                     if (sampleValue < filterMdl)
-                        metalString += md;
-                    metalString += delim;
+                        sb.append(md);
+                    sb.append(delim);
                     if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
-                        metalString += sq;
-                    metalString += delim + delim + delim + delim;
+                        sb.append(sq);
+                    sb.append(delim).append(delim).append(delim).append(delim);
                 } else {
                     sampleMdl = 1000 * (filterMdl / sampleVolume);
                     if (cbFlag)
-                        metalString += cb;
-                    metalString += delim;
+                        sb.append(cb);
+                    sb.append(delim);
                     if (sampleValue < filterMdl)
-                        metalString += md;
-                    metalString += delim;
+                        sb.append(md);
+                    sb.append(delim);
                     if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
-                        metalString += sq;
-                    metalString += delim;
+                        sb.append(sq);
+                    sb.append(delim);
                     if (sampleValue < 0 && Math.abs(sampleValue) > sampleMdl)
-                        metalString += da;
-                    metalString += delim;
+                        sb.append(da);
+                    sb.append(delim);
                     if (sampleValue > 10 * sampleMdl &&
                         sm.getSample().getClientReference() != null &&
                         (sm.getSample().getClientReference().contains("qtb") || sm.getSample()
                                                                                   .getClientReference()
                                                                                   .contains("qfb"))) {
-                        metalString += fb;
+                        sb.append(fb);
                     }
-                    metalString += delim;
+                    sb.append(delim);
                 }
-                metalString += delim + delim + delim + delim + delim +
-                               alternateMethodDetectableLimit + delim;
+                sb.append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(alternateMethodDetectableLimit)
+                  .append(delim);
                 if ( !lead) {
-                    metalString += truncateDecimal(1000 * metalManganeseFilterLotBlank /
-                                                   sampleVolume, 2);
+                    sb.append(truncateDecimal(1000 * metalManganeseFilterLotBlank / sampleVolume, 2));
                 }
             } else {
-                metalString += delim + nullDataCode + delim + collectionFreq + delim + delim +
-                               delim + delim + delim + delim + delim + delim + delim + delim +
-                               delim + delim + delim;
+                sb.append(delim)
+                  .append(nullDataCode)
+                  .append(delim)
+                  .append(collectionFreq)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim)
+                  .append(delim);
             }
 
         }
-        return metalString;
-    }
-
-    /**
-     * compute and format sulfate air quality value
-     */
-    private String getSulfateValue(String result, String volume) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        df.setMinimumIntegerDigits(1);
-        return DataBaseUtil.toString(df.format(Double.parseDouble(result) /
-                                               Double.parseDouble(volume)));
-    }
-
-    /**
-     * compute and format nitrate air quality value
-     */
-    private String getNitrateValue(String result, String volume) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        df.setMinimumIntegerDigits(1);
-        return DataBaseUtil.toString(df.format( (Double.parseDouble(result) * nitrateConstant) /
-                                               Double.parseDouble(volume)));
-    }
-
-    /**
-     * compute and format lead air quality value
-     */
-    private String formatLeadValue(Double value) {
-        return truncateDecimal(value, 3);
-    }
-
-    /**
-     * compute and format manganese air quality value
-     */
-    private String formatManganseseValue(Double value) {
-        DecimalFormat df = new DecimalFormat("###.00");
-        return DataBaseUtil.toString(df.format(value));
+        return sb.toString();
     }
 
     /**
      * truncate a double to the given number of digits after the decimal
      */
     private static String truncateDecimal(double x, int numberofDecimals) {
-        if (x > 0) {
-            return new BigDecimal(String.valueOf(x)).setScale(numberofDecimals,
-                                                              BigDecimal.ROUND_FLOOR).toString();
-        } else {
-            return new BigDecimal(String.valueOf(x)).setScale(numberofDecimals,
-                                                              BigDecimal.ROUND_CEILING).toString();
-        }
+        DecimalFormat df;
+        df = new DecimalFormat();
+        df.setMaximumFractionDigits(numberofDecimals);
+        df.setRoundingMode(RoundingMode.DOWN);
+        return df.format(x);
     }
 
     /**
@@ -1816,7 +1987,7 @@ public class AirQualityReportBean {
     /**
      * get the external analyte codes for the valid analyses
      */
-    private void getAirAnalyteCodes(Set<Integer> analyteIds) throws Exception {
+    private void getAnalyteCodes(Set<Integer> analyteIds) throws Exception {
         ArrayList<Integer> profileIds;
 
         analyteCodes = new HashMap<Integer, String>();
@@ -1837,7 +2008,7 @@ public class AirQualityReportBean {
     /**
      * get the unit codes for the valid analyses
      */
-    private void getAirUnitCodes(Set<Integer> unitIds) throws Exception {
+    private void getUnitCodes(Set<Integer> unitIds) throws Exception {
         ArrayList<Integer> profileIds;
 
         unitCodes = new HashMap<Integer, String>();
@@ -1858,7 +2029,7 @@ public class AirQualityReportBean {
     /**
      * get the analyte parameters for the tests in the valid analyses
      */
-    private void getAirAnalyteParameters(Set<Integer> testIds) throws Exception {
+    private void getAnalyteParameters(Set<Integer> testIds) throws Exception {
         analyteParameters = new HashMap<Integer, AnalyteParameterViewDO>();
 
         if (testIds.size() < 1)
@@ -1876,9 +2047,21 @@ public class AirQualityReportBean {
      * creates a string for the beginning of an air quality string (all strings
      * have these fields)
      */
-    private String buildSiteInfo(String type, String action, String stateCode, String countyCode,
-                                 String siteId, String parameter, String poc) {
-        return type + delim + action.substring(0, 1) + delim + stateCode + delim + countyCode +
-               delim + siteId + delim + parameter + delim + poc + delim;
+    private void buildSiteInfo(StringBuilder sb, String type, String action, String stateCode,
+                               String countyCode, String siteId, String parameter, String poc) {
+        sb.append(type)
+          .append(delim)
+          .append(action.substring(0, 1))
+          .append(delim)
+          .append(stateCode)
+          .append(delim)
+          .append(countyCode)
+          .append(delim)
+          .append(siteId)
+          .append(delim)
+          .append(parameter)
+          .append(delim)
+          .append(poc)
+          .append(delim);
     }
 }
