@@ -29,7 +29,7 @@
 	</path>
 
 	<target name="javac.tests" description="Compiles test code">
-		<javac srcdir="test" includes="**" encoding="utf-8" source="1.7" target="1.7" nowarn="true" destdir="war/WEB-INF/classes" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="test:../OpenELIS-EJB/test" includes="**" encoding="utf-8" source="1.7" target="1.7" nowarn="true" destdir="war/WEB-INF/classes" debug="true" debuglevel="lines,vars,source">
 			<classpath location="${junit.home}/junit-4.11.jar" />
             <classpath>
 				<pathelement location="${gwt.sdk}/gwt-user.jar" />
@@ -38,6 +38,7 @@
             	<pathelement location="../OpenELIS-Common/bin"/>
             	<pathelement location="../OpenELIS-EJB/bin"/>
             	<pathelement location="../OpenELIS-Lib/bin"/>
+            	<pathelement location="../Security/shared"/>
             	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
             	<fileset dir="${selenium.home}/libs/" includes="*.jar" />
@@ -66,6 +67,9 @@
 			<classpath>
 				<pathelement location="src" />
 				<pathelement location="test"/>
+				<pathelement location="../OpenELIS-EJB/src"/>
+				<pathelement location="../OpenELIS-EJB/test"/>
+				<pathelement location="../Security/shared"/>
 				<pathelement location="war/WEB-INF/classes" />
 				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
 				<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
@@ -90,8 +94,12 @@
         		<fileset dir="${jboss.home}/modules/system/layers/base/org/picketbox/main" includes="*.jar"/>
         		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
         		<fileset dir="${jboss.home}/modules/system/layers/base/org/jboss/ejb3/main" includes="*.jar"/>
+            	<fileset dir="${jboss.home}/modules/system/layers/base/org/slf4j/main" includes="*.jar"/>
             </classpath>
 			<batchtest todir="reports/junit">
+				<fileset dir="../OpenELIS-EJB/test">
+				    <include name="**/Test*.java"/>
+			    </fileset>
 				<fileset dir="test">
 					<include name="**/Test*.java" />
 				</fileset>

@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openelis.modules.main.client.LoginPage;
-import org.openelis.modules.main.client.OpenELISPage;
 import org.openelis.modules.method.client.MethodPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;

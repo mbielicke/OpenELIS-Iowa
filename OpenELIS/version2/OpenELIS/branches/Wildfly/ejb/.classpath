@@ -21,5 +21,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/OpenELIS-UI/lib/mockito-all-1.9.5.jar" sourcepath="/home/tschmidt/.m2/repository/org/mockito/mockito-all/1.9.5/mockito-all-1.9.5-sources.jar"/>
+	<classpathentry kind="lib" path="/OpenELIS-UI/lib/gwtmockito-1.1.3.jar"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/local/java/wildfly-8.0.0.Final/modules/system/layers/base/org/slf4j/main/slf4j-api-1.7.2.jbossorg-1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
