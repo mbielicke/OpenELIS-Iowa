@@ -254,8 +254,22 @@ public class SampleMeta implements Meta, MetaMap {
                     SAMPLE_ORG_ID = "_sampleOrganization.id",
                     SAMPLE_ORG_SAMPLE_ID = "_sampleOrganization.sampleId",
                     SAMPLE_ORG_ORGANIZATION_ID = "_sampleOrganization.organizationId",
+                    SAMPLE_ORG_ORGANIZATION_ATTENTION = "_sampleOrganization.organizationAttention",
                     SAMPLE_ORG_TYPE_ID = "_sampleOrganization.typeId",
 
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_ID = "_sampleOrganizationOrganization.address.id",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_sampleOrganizationOrganization.address.multipleUnit",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS = "_sampleOrganizationOrganization.address.streetAddress",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_CITY = "_sampleOrganizationOrganization.address.city",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_STATE = "_sampleOrganizationOrganization.address.state",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_ZIP_CODE = "_sampleOrganizationOrganization.address.zipCode",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_WORK_PHONE = "_sampleOrganizationOrganization.address.workPhone",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_HOME_PHONE = "_sampleOrganizationOrganization.address.homePhone",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_CELL_PHONE = "_sampleOrganizationOrganization.address.cellPhone",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_FAX_PHONE = "_sampleOrganizationOrganization.address.faxPhone",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_EMAIL = "_sampleOrganizationOrganization.address.email",
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_COUNTRY = "_sampleOrganizationOrganization.address.country",   
+                    
                     ORG_ID = "_organization.id",
                     ORG_PARENT_ORGANIZATION_ID = "_organization.parentOrganizationId",
                     ORG_NAME = "_organization.name", 
@@ -296,6 +310,8 @@ public class SampleMeta implements Meta, MetaMap {
                     AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
                     AUX_DATA_TYPE_ID = "_auxData.typeId",
                     AUX_DATA_VALUE = "_auxData.value",
+                    
+                    SAMPLE_ORG_ORGANIZATION_NAME = "_sampleOrganizationOrganization.name",
                     
                     NEO_PROVIDER_LAST_NAME = "_neonatalProvider.lastName",
                     NEO_PROVIDER_FIRST_NAME = "_neonatalProvider.firstName",
@@ -405,8 +421,20 @@ public class SampleMeta implements Meta, MetaMap {
                                                   SAMPLESUBQA_TYPE_ID, SAMPLESUBQA_IS_BILLABLE,
                                                   SAMPLESUBQA_REPORTING_SEQUENCE,
                                                   SAMPLESUBQA_REPORTING_TEXT, SAMPLE_ORG_ID,
-                                                  SAMPLE_ORG_SAMPLE_ID, SAMPLE_ORG_ORGANIZATION_ID,
-                                                  SAMPLE_ORG_TYPE_ID, ORG_ID,
+                                                  SAMPLE_ORG_SAMPLE_ID, SAMPLE_ORG_ORGANIZATION_ID, 
+                                                  SAMPLE_ORG_ORGANIZATION_ATTENTION,
+                                                  SAMPLE_ORG_TYPE_ID, SAMPLE_ORG_ORGANIZATION_ADDRESS_ID,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_CITY,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_STATE,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_ZIP_CODE,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_WORK_PHONE,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_HOME_PHONE,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_CELL_PHONE,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_FAX_PHONE,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_EMAIL,
+                                                  SAMPLE_ORG_ORGANIZATION_ADDRESS_COUNTRY,ORG_ID,
                                                   ORG_PARENT_ORGANIZATION_ID, ORG_NAME,
                                                   ORG_IS_ACTIVE, ORG_ADDRESS_ID, 
                                                   ADDR_ID, ADDR_MULTIPLE_UNIT, ADDR_STREET_ADDRESS,
@@ -423,7 +451,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID,
                                                   AUX_DATA_REFERENCE_ID, AUX_DATA_REFERENCE_TABLE_ID,
                                                   AUX_DATA_IS_REPORTABLE, AUX_DATA_TYPE_ID,
-                                                  AUX_DATA_VALUE, NEO_PROVIDER_LAST_NAME,
+                                                  AUX_DATA_VALUE, SAMPLE_ORG_ORGANIZATION_NAME,NEO_PROVIDER_LAST_NAME,
                                                   NEO_PROVIDER_FIRST_NAME, ANALYSIS_TEST_NAME, 
                                                   ANALYSIS_TEST_METHOD_ID, ANALYSIS_METHOD_NAME, 
                                                   ANALYSIS_METHOD_ID, ANALYSIS_TEST_IS_ACTIVE,
@@ -1212,11 +1240,63 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getSampleOrgOrganizationId() {
         return SAMPLE_ORG_ORGANIZATION_ID;
     }
+    
+    public static String getSampleOrgOrganizationAttention() {
+        return SAMPLE_ORG_ORGANIZATION_ATTENTION;
+    }
 
     public static String getSampleOrgTypeId() {
         return SAMPLE_ORG_TYPE_ID;
     }
 
+	public static String getSampleOrgOrganizationAddressId() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_ID;
+    }
+
+    public static String getSampleOrgOrganizationAddressMultipleUnit() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT;
+    }
+
+    public static String getSampleOrgOrganizationAddressStreetAddress() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS;
+    }
+
+    public static String getSampleOrgOrganizationAddressCity() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_CITY;
+    }
+
+    public static String getSampleOrgOrganizationAddressState() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_STATE;
+    }
+
+    public static String getSampleOrgOrganizationAddressZipCode() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_ZIP_CODE;
+    }
+
+    public static String getSampleOrgOrganizationAddressWorkPhone() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_WORK_PHONE;
+    }
+
+    public static String getSampleOrgOrganizationAddressHomePhone() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_HOME_PHONE;
+    }
+
+    public static String getSampleOrgOrganizationAddressCellPhone() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_CELL_PHONE;
+    }
+
+    public static String getSampleOrgOrganizationAddressFaxPhone() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_FAX_PHONE;
+    }
+
+    public static String getSampleOrgOrganizationAddressEmail() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_EMAIL;
+    }
+
+    public static String getSampleOrgOrganizationAddressCountry() {
+        return SAMPLE_ORG_ORGANIZATION_ADDRESS_COUNTRY;
+    }
+    
     public static String getOrgId() {
         return ORG_ID;
     }
@@ -1368,6 +1448,10 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAuxDataValue(){
         return AUX_DATA_VALUE;
     }
+    
+    public static String getSampleOrgOrganizationName() {
+        return SAMPLE_ORG_ORGANIZATION_NAME;
+    }
 
     public static String getNeoProviderLastName() {
         return NEO_PROVIDER_LAST_NAME;
@@ -1458,13 +1542,23 @@ public class SampleMeta implements Meta, MetaMap {
             from += " LEFT JOIN (_sampleNeonatal.provider) _neonatalProvider ";        
             
         //common sample fields
+        if (where.indexOf("_sampleOrganization.") > -1)
+            from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
+
+        if (where.indexOf("_sampleOrganizationOrganization.") > -1) {
+            if (from.indexOf("sampleOrganization") < 0)
+                from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
+            from += ", IN (_sampleOrganization.organization) _sampleOrganizationOrganization ";
+        }
+        
         if (where.indexOf("project.") > -1){
             from += ", IN (_sample.sampleProject) _sampleProject ";
             from += ", IN (_sampleProject.project) _project ";
         }
         
         if (where.indexOf("_organization.") > -1 || where.indexOf("_organizationParameter.") > -1) {
-            from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
+            if (from.indexOf("sampleOrganization") < 0)
+                from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
             from += ", IN (_sampleOrganization.organization) _organization ";
         }
 
