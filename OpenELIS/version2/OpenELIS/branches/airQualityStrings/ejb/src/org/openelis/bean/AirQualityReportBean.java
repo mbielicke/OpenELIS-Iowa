@@ -928,13 +928,11 @@ public class AirQualityReportBean {
         StringBuilder ssb, nsb;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO sulfateParameter, nitrateParameter;
-        DecimalFormat threeDigits, twoDecimals;
+        DecimalFormat threeDigits;
         HashMap<String, String> sulfateNitrateStrings, auxData;
 
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
-        twoDecimals = new DecimalFormat("#.00");
-        twoDecimals.setMinimumIntegerDigits(1);
         sulfateValue = nitrateValue = sulfateCode = nitrateCode = reportedUnit = sulfateAlternateMethodDetectableLimit = nitrateAlternateMethodDetectableLimit = null;
         sulfateDurationCd = nitrateDurationCd = sulfateMethodCd = nitrateMethodCd = 0;
         dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
@@ -964,8 +962,8 @@ public class AirQualityReportBean {
                     sulfateMethodCd = sulfateParameter.getP2().intValue();
                     sulfateDurationCd = sulfateParameter.getP3().intValue();
                     if (DataBaseUtil.isEmpty(nullDataCd))
-                        sulfateValue = twoDecimals.format(Double.parseDouble(data.getValue()) /
-                                                          Double.parseDouble(volume));
+                        sulfateValue = truncateDecimal(Double.parseDouble(data.getValue()) /
+                                                       Double.parseDouble(volume), 2);
                     sulfateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -981,8 +979,9 @@ public class AirQualityReportBean {
                     nitrateMethodCd = nitrateParameter.getP2().intValue();
                     nitrateDurationCd = nitrateParameter.getP3().intValue();
                     if (DataBaseUtil.isEmpty(nullDataCd))
-                        nitrateValue = twoDecimals.format( (Double.parseDouble(data.getValue()) * nitrateConstant) /
-                                                          Double.parseDouble(volume));
+                        nitrateValue = truncateDecimal( (Double.parseDouble(data.getValue()) * nitrateConstant) /
+                                                                       Double.parseDouble(volume),
+                                                       2);
                     nitrateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -1814,17 +1813,19 @@ public class AirQualityReportBean {
         int durationCode, methodCode;
         Double sampleMdl, filterMdl, sampleValue, sampleVolume;
         Integer spf;
-        String value, mdl, parameter, alternateMethodDetectableLimit;
+        String value, mdl, parameter;
         StringBuilder sb;
         AnalyteParameterViewDO ap;
-        DecimalFormat threeDigits, df, mdf;
+        DecimalFormat threeDigits, twoDecimals, fourDecimals;
 
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
-        df = new DecimalFormat("#");
-        df.setMinimumIntegerDigits(1);
-        df.setMaximumFractionDigits(6);
-        mdf = new DecimalFormat("###.00");
+        twoDecimals = new DecimalFormat("#");
+        twoDecimals.setMaximumFractionDigits(2);
+        twoDecimals.setMinimumIntegerDigits(1);
+        fourDecimals = new DecimalFormat("#");
+        fourDecimals.setMaximumFractionDigits(4);
+        fourDecimals.setMinimumIntegerDigits(1);
 
         lead = false;
         cbFlag = false;
@@ -1834,7 +1835,7 @@ public class AirQualityReportBean {
             lead = false;
         }
 
-        value = mdl = parameter = alternateMethodDetectableLimit = null;
+        value = mdl = parameter = null;
         durationCode = methodCode = 0;
         sb = new StringBuilder();
         for (ResultViewDO data : getResults(sm)) {
@@ -1844,7 +1845,6 @@ public class AirQualityReportBean {
                 value = data.getValue();
                 parameter = analyteCodes.get(data.getAnalyteId());
                 ap = analyteParameters.get(data.getAnalyteId());
-                alternateMethodDetectableLimit = df.format(ap.getP1().doubleValue());
                 methodCode = ap.getP2().intValue();
                 durationCode = ap.getP3().intValue();
             } else if (DataBaseUtil.isSame(data.getAnalyte(), mdlAnalyte)) {
@@ -1876,22 +1876,25 @@ public class AirQualityReportBean {
                     sb.append(truncateDecimal( ( (sampleValue * spf) - metalLeadFilterLotBlank) /
                                               sampleVolume, 3)).append(delim).append(delim);
                 } else if (cbFlag) {
-                    sb.append(mdf.format(1000 *
-                                         ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
-                                         sampleVolume)).append(delim).append(delim);
+                    sb.append(truncateDecimal(1000 *
+                                                              ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
+                                                              sampleVolume,
+                                              2))
+                      .append(delim)
+                      .append(delim);
                 } else {
-                    sb.append(mdf.format(1000 * sampleValue * spf / sampleVolume))
+                    sb.append(truncateDecimal(1000 * sampleValue * spf / sampleVolume, 2))
                       .append(delim)
                       .append(delim);
                 }
                 sb.append(collectionFreq).append(delim).append(delim);
 
                 if (lead) {
-                    sampleMdl = filterMdl / sampleVolume;
+                    sampleMdl = filterMdl * spf / sampleVolume;
                     if (sampleValue < filterMdl)
                         sb.append(md);
                     sb.append(delim);
-                    if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
+                    if (filterMdl < sampleValue * spf && sampleValue * spf < (10 * filterMdl))
                         sb.append(sq);
                     sb.append(delim).append(delim).append(delim).append(delim);
                 } else {
@@ -1902,7 +1905,7 @@ public class AirQualityReportBean {
                     if (sampleValue < filterMdl)
                         sb.append(md);
                     sb.append(delim);
-                    if (filterMdl < sampleValue && sampleValue < (10 * filterMdl))
+                    if (filterMdl < sampleValue * spf && sampleValue * spf < (10 * filterMdl))
                         sb.append(sq);
                     sb.append(delim);
                     if (sampleValue < 0 && Math.abs(sampleValue) > sampleMdl)
@@ -1917,13 +1920,11 @@ public class AirQualityReportBean {
                     }
                     sb.append(delim);
                 }
-                sb.append(delim)
-                  .append(delim)
-                  .append(delim)
-                  .append(delim)
-                  .append(delim)
-                  .append(alternateMethodDetectableLimit)
-                  .append(delim);
+                sb.append(delim).append(delim).append(delim).append(delim).append(delim);
+                if (lead)
+                    sb.append(fourDecimals.format(sampleMdl)).append(delim);
+                else
+                    sb.append(twoDecimals.format(sampleMdl)).append(delim);
                 if ( !lead) {
                     sb.append(truncateDecimal(1000 * metalManganeseFilterLotBlank / sampleVolume, 2));
                 }
