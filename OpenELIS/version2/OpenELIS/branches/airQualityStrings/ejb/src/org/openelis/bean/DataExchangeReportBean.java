@@ -35,6 +35,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -259,6 +260,7 @@ public class DataExchangeReportBean {
         QueryFieldUtil qf;
         ArrayList<String> range;
         QueryBuilderV2 builder;
+        List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(new SampleMeta());
@@ -307,13 +309,13 @@ public class DataExchangeReportBean {
          */
         if (start != null && end != null) {
             builder.addWhere("(" + SampleMeta.getReleasedDate() + " between '" +
-                             ReportUtil.toString(start, Messages.get().dateTimePattern()) +
+                             ReportUtil.toString(start, Messages.get().dateTimeSecondPattern()) +
                              "' and '" +
-                             ReportUtil.toString(end, Messages.get().dateTimePattern()) + "' or " +
+                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) + "' or " +
                              SampleMeta.getAnalysisReleasedDate() + " between '" +
-                             ReportUtil.toString(start, Messages.get().dateTimePattern()) +
+                             ReportUtil.toString(start, Messages.get().dateTimeSecondPattern()) +
                              "' and '" +
-                             ReportUtil.toString(end, Messages.get().dateTimePattern()) + "')");
+                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) + "')");
         }
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
@@ -322,7 +324,12 @@ public class DataExchangeReportBean {
 
         query = manager.createQuery(builder.getEJBQL());
         QueryBuilderV2.setQueryParams(query, fields);
-        return DataBaseUtil.toArrayList(query.getResultList());
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+       
+        return DataBaseUtil.toArrayList(list);
     }
 
     /**

@@ -127,7 +127,7 @@ public class ShippingReportBean {
         Integer shippingId, orderId, prevOrderId, methodId;
         String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel,
                requestForm, instruction, dir, printstat, itemUri, uriPath, method,
-               costCenter,fromAptSuite, fromStreetAddr, toAptSuite, toStreetAddr, userName;
+               costCenter, userName;
         URL url;
         File tempFile;
         HashMap<String, Object> jparam;
@@ -257,16 +257,9 @@ public class ShippingReportBean {
                     method = methodId != null ? dictionaryCache.getById(methodId).getEntry() : "";
                     
                     shipFromAddr = shipFrom.getAddress();
-                    fromAptSuite = shipFromAddr.getMultipleUnit() != null ? shipFromAddr.getMultipleUnit() : "" ;
-                    fromStreetAddr = shipFromAddr.getStreetAddress() != null ? shipFromAddr.getStreetAddress() : "";
                     
                     shipTo = shipData.getShippedTo();
                     shipToAddr = shipTo.getAddress();
-                    toAptSuite = shipToAddr.getMultipleUnit();
-                    toStreetAddr = shipToAddr.getStreetAddress();
-                    
-                    if (toAptSuite != null)
-                        toStreetAddr = DataBaseUtil.concatWithSeparator(toAptSuite, " ", toStreetAddr);
                     
                     orderList = order.fetchByShippingId(shippingId);
                     orderIds = new ArrayList<Integer>();
@@ -285,12 +278,13 @@ public class ShippingReportBean {
                     ps = new PrintStream(tempFile);
                     for (int i = 0; i < numpkg; i++ ) {
                         labelReport.shippingAddressLabel(ps, shipFrom.getName(), method, costCenter,
-                                                         fromAptSuite, "SH" + shippingIdStr,
-                                                         fromStreetAddr, shipFromAddr.getCity(),
+                                                         shipFromAddr.getMultipleUnit(), "SH" + shippingIdStr,
+                                                         shipFromAddr.getStreetAddress(), shipFromAddr.getCity(),
                                                          shipFromAddr.getState(),
                                                          shipFromAddr.getZipCode(),
                                                          shipData.getShippedToAttention(),
-                                                         shipTo.getName(), toStreetAddr,
+                                                         shipTo.getName(), shipToAddr.getMultipleUnit(),
+                                                         shipToAddr.getStreetAddress(),
                                                          shipToAddr.getCity(),
                                                          shipToAddr.getState(), 
                                                          shipToAddr.getZipCode());
