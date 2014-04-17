@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 4.0.2-->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="volume" pageWidth="792" pageHeight="24" orientation="Landscape" columnWidth="792" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -19,23 +18,23 @@
 	<parameter name="FROM" class="java.lang.String"/>
 	<parameter name="TO" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT se.name se_name, se.id se_id, t.id t_id, t.description t_description, m.name m_name, d.id ana_id, d.entry as ana_status, d.system_name d_system_name
+		<![CDATA[SELECT se.name se_name, se.id se_id, t.id t_id, t.name t_name, t.description t_description, m.name m_name, d.id ana_id, d.entry as ana_status, d.system_name d_system_name
 FROM sample s, sample_item si, section se, test_section ts, test t,
      analysis a, method m, dictionary d
 WHERE  s.entered_date BETWEEN $P{FROM} AND $P{TO} and si.sample_id = s.id and a.sample_item_id = si.id and
-      a.test_id = t.id and t.is_active = 'Y' and
-      t.method_id = m.id and t.id = ts.test_id and
+      a.test_id = t.id and t.method_id = m.id and t.id = ts.test_id and
       ts.section_id = se.id and a.section_id = se.id and d.id = a.status_id $P!{SECTION}
-order by se_id, t_id]]>
+order by se_name, t_name, m_name]]>
 	</queryString>
 	<field name="se_name" class="java.lang.String"/>
+	<field name="se_id" class="java.lang.Integer"/>
+	<field name="t_id" class="java.lang.Integer"/>
+	<field name="t_name" class="java.lang.String"/>
 	<field name="t_description" class="java.lang.String"/>
 	<field name="m_name" class="java.lang.String"/>
-	<field name="ana_status" class="java.lang.String"/>
-	<field name="t_id" class="java.lang.Integer"/>
-	<field name="se_id" class="java.lang.Integer"/>
-	<field name="d_system_name" class="java.lang.String"/>
 	<field name="ana_id" class="java.lang.Integer"/>
+	<field name="ana_status" class="java.lang.String"/>
+	<field name="d_system_name" class="java.lang.String"/>
 	<variable name="status_cnt_test" class="org.openelis.utils.Counter" resetType="Group" resetGroup="test" calculation="System">
 		<variableExpression><![CDATA[$V{status_cnt_test}]]></variableExpression>
 		<initialValueExpression><![CDATA[new Counter()]]></initialValueExpression>
@@ -48,7 +47,7 @@ order by se_id, t_id]]>
 		<groupExpression><![CDATA[$F{se_id}]]></groupExpression>
 	</group>
 	<group name="test">
-		<groupExpression><![CDATA[$F{t_id}]]></groupExpression>
+		<groupExpression><![CDATA[$F{t_name} + ", " + $F{m_name}]]></groupExpression>
 		<groupFooter>
 			<band height="12" splitType="Stretch">
 				<textField>
