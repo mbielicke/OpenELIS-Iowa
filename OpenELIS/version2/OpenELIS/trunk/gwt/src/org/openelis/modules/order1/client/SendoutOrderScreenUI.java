@@ -128,6 +128,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
 
 
+
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
 
     protected OrderManager1                  manager;
@@ -645,7 +646,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                         continue;
                     }
                     if (Constants.dictionary().ORDER_STATUS_PENDING.equals(item.getKey()) ||
-                        Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(item.getKey()))
+                        Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(item.getKey()) ||
+                        Constants.dictionary().ORDER_STATUS_TEMPLATE.equals(item.getKey()))
                         item.setEnabled(true);
                     else if (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(item.getKey()) ||
                              Constants.dictionary().ORDER_STATUS_CANCELLED.equals(item.getKey()))
@@ -2126,7 +2128,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
         }
     }
-    
+
     /**
      * creates a string containing the message that there are warnings on the
      * screen, followed by all warning messages, followed by the question

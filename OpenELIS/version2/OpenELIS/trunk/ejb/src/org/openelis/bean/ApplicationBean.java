@@ -82,7 +82,7 @@ public class ApplicationBean {
                         "order_recurrence_unit_days", "order_recurrence_unit_months",
                         "order_recurrence_unit_years", "order_status_back_ordered",
                         "order_status_pending", "order_status_processed", "order_status_recurring",
-                        "order_status_on_hold", "order_status_cancelled",
+                        "order_status_on_hold", "order_status_cancelled", "order_status_template",
                         "org_finalrep_fax_number", "org_no_finalreport", "org_report_to",
                         "org_bill_to", "org_second_report_to", "org_birth_hospital",
                         "pos_duplicate", "pos_fixed", "pos_fixed_always", "pos_random",
@@ -90,13 +90,14 @@ public class ApplicationBean {
                         "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
                         "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
                         "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
-                        "org_test_epartner_url", "org_epartner_aggr", "profile_air_string", "reflex_auto",
-                        "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "rf_a", "rf_ac",
-                        "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int", "round_int_sig_fig",
-                        "round_int_sig_fig_noe", "round_sig_fig", "round_sig_fig_noe",
-                        "sample_completed", "sample_error", "sample_logged_in",
-                        "sample_not_verified", "sample_released", "sdwis_category_bacterial",
-                        "sdwis_category_chemical", "sdwis_category_lead", "sdwis_category_radchem",
+                        "org_test_epartner_url", "org_epartner_aggr", "profile_air_string",
+                        "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
+                        "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
+                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
+                        "round_sig_fig_noe", "sample_completed", "sample_error",
+                        "sample_logged_in", "sample_not_verified", "sample_released",
+                        "sdwis_category_bacterial", "sdwis_category_chemical",
+                        "sdwis_category_lead", "sdwis_category_radchem",
                         "section_mcl_violation_email", "shipping_status_processed",
                         "shipping_status_shipped", "smpl_type_rt", "smpl_type_rp", "smpl_type_sp",
                         "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only",
@@ -190,6 +191,7 @@ public class ApplicationBean {
         Constants.dictionary().ORDER_STATUS_RECURRING = dictId(map, "order_status_recurring");
         Constants.dictionary().ORDER_STATUS_ON_HOLD = dictId(map, "order_status_on_hold");
         Constants.dictionary().ORDER_STATUS_CANCELLED = dictId(map, "order_status_cancelled");
+        Constants.dictionary().ORDER_STATUS_TEMPLATE = dictId(map, "order_status_template");
         Constants.dictionary().ORG_FINALREP_FAX_NUMBER = dictId(map, "org_finalrep_fax_number");
         Constants.dictionary().ORG_NO_FINALREPORT = dictId(map, "org_no_finalreport");
         Constants.dictionary().ORG_REPORT_TO = dictId(map, "org_report_to");
