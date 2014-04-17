@@ -99,7 +99,7 @@ public class AuxDataHelperBean {
 
     private static final Logger      log = Logger.getLogger("openelis");
 
-    private static final String      SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
+    public static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
                     SAMPLE_WELL_AUX_DATA = "sample_well_aux_data",
                     SAMPLE_SDWIS_AUX_DATA = "sample_sdwis_aux_data",
                     SMPL_COLLECTED_DATE = "smpl_collected_date",
@@ -116,7 +116,13 @@ public class AuxDataHelperBean {
                     SAMPLE_CAT = "sample_cat", SAMPLE_PT_ID = "sample_pt_id", YES = "yes",
                     STATE = "state", COUNTRY = "country", SDWIS_SAMPLE_TYPE = "sdwis_sample_type",
                     SDWIS_SAMPLE_CATEGORY = "sdwis_sample_category",
-                    ORG_HOLD_SAMPLE = "org_hold_sample", ORIG_SAMPLE_NUMBER = "orig_sample_number";
+                    ORG_HOLD_SAMPLE = "org_hold_sample", ORIG_SAMPLE_NUMBER = "orig_sample_number",
+                    TEMPERATURE = "temperature", VOLUME = "volume", PRESSURE = "pressure",
+                    NULL_DATA_CODE = "null_data_code", FILTER_LOT_BLANK = "filter_lot_blank",
+                    STRIPS_PER_FILTER = "strips_per_filter",
+                    BLANK_SAMPLE_NUMBER = "blank_sample_number", STATE_CODE = "state_code",
+                    COUNTY_CODE = "county_code", SITE_ID = "site_id", POC = "poc",
+                    COLLECTION_FREQUENCY = "collection_frequency";
 
     /**
      * Adds aux groups specified by the list of ids to the list of aux data, if
@@ -824,5 +830,27 @@ public class AuxDataHelperBean {
                 data.setValue(sample.getAccessionNumber().toString());
             }
         }
+    }
+
+    public HashMap<String, String> fillAirQualityAuxData(SampleManager1 sm) throws Exception {
+        AuxDataViewDO data;
+        HashMap<String, String> auxDataValues;
+
+        auxDataValues = new HashMap<String, String>();
+        for (int i = 0; i < sm.auxData.count(); i++ ) {
+            data = sm.auxData.get(i);
+            if (data.getDictionary() != null) {
+                if ( !NULL_DATA_CODE.equals(data.getAnalyteExternalId())) {
+                    auxDataValues.put(data.getAnalyteExternalId(), data.getDictionary());
+                } else {
+                    auxDataValues.put(data.getAnalyteExternalId(),
+                                      dictionaryCache.getById(Integer.parseInt(data.getValue()))
+                                                     .getCode());
+                }
+            } else {
+                auxDataValues.put(data.getAnalyteExternalId(), data.getValue());
+            }
+        }
+        return auxDataValues;
     }
 }
