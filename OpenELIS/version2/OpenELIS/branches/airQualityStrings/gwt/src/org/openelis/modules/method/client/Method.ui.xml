@@ -100,13 +100,13 @@
               <tr>
                 <td class="{res.style.Prompt}"><ui:text from="{msg.beginDate}:" /></td>
                 <td>
-                  <c:Calendar ui:field="activeBegin" width="90" required="true" />
+                  <c:Calendar ui:field="activeBegin" width="90" required="true" begin="0" end="2"/>
                 </td>
               </tr>
               <tr>
                 <td class="{res.style.Prompt}"><ui:text from="{msg.endDate}:" /></td>
                 <td>
-                  <c:Calendar ui:field="activeEnd" width="90px" required="true" />
+                  <c:Calendar ui:field="activeEnd" width="90px" required="true" begin="0" end="2"/>
                 </td>
               </tr>
             </table>

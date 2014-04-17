@@ -1422,7 +1422,7 @@ public class ExchangeDataSelectionScreen extends Screen {
              * run the query, get the list of accessions and display
              */
             window.setBusy(Messages.get().fetching());
-            accessions = ExchangeDataSelectionService.get().getAccessions(manager);
+            accessions = ExchangeDataSelectionService.get().getSamples(manager);
             setQueryResults(DataBaseUtil.concatWithSeparator(accessions, ","));
             /*
              * this is done so that after the accession numbers fetched from the 
