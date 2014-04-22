@@ -15,7 +15,7 @@ public class OpenELISPage {
     
     public OpenELISPage(WebDriver driver) {
         this.driver = driver;
-        wait = new WebDriverWait(driver,10);
+        wait = new WebDriverWait(driver,30);
     }
     
     By maintenance = By.id(id+".maintenanceMenu");
