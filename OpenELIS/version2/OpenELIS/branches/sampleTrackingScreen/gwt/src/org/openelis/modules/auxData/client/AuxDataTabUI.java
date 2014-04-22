@@ -174,7 +174,7 @@ public abstract class AuxDataTabUI extends Screen {
                     } else if (c == 2) {
                         data = table.getRowAt(r).getData();
                         try {
-                            setDictionaryModel(c, data.getGroupId(), data.getAuxFieldId());
+                            setDictionaryModel(c, data.getAuxFieldGroupId(), data.getAuxFieldId());
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -244,7 +244,7 @@ public abstract class AuxDataTabUI extends Screen {
                              * validate the value entered by the user
                              */
                             try {
-                                agm = getAuxFieldGroupManager(data.getGroupId());
+                                agm = getAuxFieldGroupManager(data.getAuxFieldGroupId());
                                 rf = agm.getFormatter();
                                 ResultHelper.formatValue(data, value.getDisplay(), rf);
                             } catch (ParseException e) {
@@ -560,7 +560,7 @@ public abstract class AuxDataTabUI extends Screen {
         if (Window.confirm(Messages.get().aux_removeMessage())) {
             data = (AuxDataViewDO)table.getRowAt(r).getData();
             ids = new ArrayList<Integer>(1);
-            ids.add(data.getGroupId());
+            ids.add(data.getAuxFieldGroupId());
             parentBus.fireEventFromSource(new RemoveAuxGroupEvent(ids), this);
         }
         removeAuxButton.setEnabled(false);
@@ -629,10 +629,10 @@ public abstract class AuxDataTabUI extends Screen {
                 row.setCell(1, data.getAuxFieldId());
 
                 if (validateResults && data.getValue() != null && data.getTypeId() == null) {
-                    if ( !data.getGroupId().equals(groupId)) {
-                        afgm = getAuxFieldGroupManager(data.getGroupId());
+                    if ( !data.getAuxFieldGroupId().equals(groupId)) {
+                        afgm = getAuxFieldGroupManager(data.getAuxFieldGroupId());
                         rf = afgm.getFormatter();
-                        groupId = data.getGroupId();
+                        groupId = data.getAuxFieldGroupId();
                     }
 
                     /*
@@ -746,7 +746,7 @@ public abstract class AuxDataTabUI extends Screen {
              * and set the values in the non-editable widgets
              */
             try {
-                afgm = getAuxFieldGroupManager(data.getGroupId());
+                afgm = getAuxFieldGroupManager(data.getAuxFieldGroupId());
                 afm = afgm.getFields();
                 for (int i = 0; i < afm.count(); i++ ) {
                     af = afm.getAuxFieldAt(i);

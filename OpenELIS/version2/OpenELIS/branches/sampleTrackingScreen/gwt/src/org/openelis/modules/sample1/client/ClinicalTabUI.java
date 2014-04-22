@@ -39,7 +39,6 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.patient.client.PatientLookupUI;
-import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.provider.client.ProviderService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -87,9 +86,9 @@ public class ClinicalTabUI extends Screen {
     protected TextBox<Integer>         patientId;
 
     @UiField
-    protected TextBox<String>          patientLastName, patientMiddleName, patientFirstName,
-                    patientNationalId, patientAddrMultipleUnit, patientAddrStreetAddress,
-                    patientAddrCity, patientAddrZipCode, providerFirstName, providerPhone;
+    protected TextBox<String>          patientLastName, patientFirstName, patientNationalId,
+                    patientAddrMultipleUnit, patientAddrStreetAddress, patientAddrCity,
+                    patientAddrZipCode, providerFirstName, providerPhone;
 
     @UiField
     protected Dropdown<Integer>        patientGender, patientRace, patientEthnicity;
@@ -101,17 +100,19 @@ public class ClinicalTabUI extends Screen {
     protected AutoComplete             providerLastName;
 
     @UiField
-    protected Button                   fullSearchButton, nameSearchButton, unlinkPatientButton,
+    protected Button                   emptySearchButton, fieldSearchButton, unlinkPatientButton,
                     editPatientButton;
 
     protected Screen                   parentScreen;
+
+    protected ClinicalTabUI            screen;
 
     protected PatientLookupUI          patientLookup;
 
     protected EventBus                 parentBus;
 
     protected boolean                  canEditSample, canEditPatient, isBusy, isPatientLocked,
-                    isVisible, redraw;
+                    isVisible, redraw, unlinkPatient;
 
     public ClinicalTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -128,6 +129,8 @@ public class ClinicalTabUI extends Screen {
         Item<String> strow;
         ArrayList<Item<Integer>> model;
         ArrayList<Item<String>> stmodel;
+
+        screen = this;
 
         addScreenHandler(patientId,
                          SampleMeta.getClinicalPatientId(),
@@ -150,17 +153,17 @@ public class ClinicalTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(fullSearchButton, "fullSearchButton", new ScreenHandler<Object>() {
+        addScreenHandler(emptySearchButton, "fullSearchButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                fullSearchButton.setEnabled(canEditSample && !isPatientLocked &&
-                                            isState(ADD, UPDATE));
+                emptySearchButton.setEnabled(canEditSample && !isPatientLocked &&
+                                             isState(ADD, UPDATE));
             }
         });
 
-        addScreenHandler(nameSearchButton, "nameSearchButton", new ScreenHandler<Object>() {
+        addScreenHandler(fieldSearchButton, "nameSearchButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                nameSearchButton.setEnabled(canEditSample && !isPatientLocked &&
-                                            isState(ADD, UPDATE));
+                fieldSearchButton.setEnabled(canEditSample && !isPatientLocked &&
+                                             isState(ADD, UPDATE));
             }
         });
 
@@ -186,7 +189,7 @@ public class ClinicalTabUI extends Screen {
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientLastName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
-                                     patientQueryChanged(patientLastName);
+                                     patientQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -197,30 +200,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientMiddleName : patientId;
-                             }
-                         });
-
-        addScreenHandler(patientMiddleName,
-                         SampleMeta.getClinicalPatientMiddleName(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientMiddleName.setValue(getPatientMiddleName());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setPatientMiddleName(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientMiddleName.setEnabled(isState(QUERY) ||
-                                                              (canEditSample && canEditPatient && isState(ADD,
-                                                                                                          UPDATE)));
-                                 patientMiddleName.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? patientFirstName : patientLastName;
+                                 return forward ? patientFirstName : patientId;
                              }
                          });
 
@@ -234,7 +214,7 @@ public class ClinicalTabUI extends Screen {
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientFirstName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
-                                     patientQueryChanged(patientFirstName);
+                                     patientQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -245,76 +225,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientGender : patientMiddleName;
-                             }
-                         });
-
-        addScreenHandler(patientGender,
-                         SampleMeta.getClinicalPatientGenderId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientGender.setValue(getPatientGenderId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientGenderId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientGender.setEnabled(isState(QUERY) ||
-                                                          (canEditSample && canEditPatient && isState(ADD,
-                                                                                                      UPDATE)));
-                                 patientGender.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? patientRace : patientFirstName;
-                             }
-                         });
-
-        addScreenHandler(patientRace,
-                         SampleMeta.getClinicalPatientRaceId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientRace.setValue(getPatientRaceId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientRaceId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientRace.setEnabled(isState(QUERY) ||
-                                                        (canEditSample && canEditPatient && isState(ADD,
-                                                                                                    UPDATE)));
-                                 patientRace.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? patientEthnicity : patientGender;
-                             }
-                         });
-
-        addScreenHandler(patientEthnicity,
-                         SampleMeta.getClinicalPatientEthnicityId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientEthnicity.setValue(getPatientEthnicityId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientEthnicityId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientEthnicity.setEnabled(isState(QUERY) ||
-                                                             (canEditSample && canEditPatient && isState(ADD,
-                                                                                                         UPDATE)));
-                                 patientEthnicity.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? patientBirthDate : patientRace;
+                                 return forward ? patientBirthDate : patientLastName;
                              }
                          });
 
@@ -337,12 +248,12 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientNationalId : patientEthnicity;
+                                 return forward ? patientNationalId : patientFirstName;
                              }
                          });
 
         addScreenHandler(patientNationalId,
-                         SampleMeta.getClinicalPatientAddrMultipleUnit(),
+                         SampleMeta.getClinicalPatientNationalId(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientNationalId.setValue(getPatientNationalId());
@@ -351,7 +262,7 @@ public class ClinicalTabUI extends Screen {
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientNationalId(event.getValue());
                                  if (getPatientNationalId() != null)
-                                     patientQueryChanged(patientNationalId);
+                                     patientQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -479,7 +390,76 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? providerLastName : patientAddrState;
+                                 return forward ? patientGender : patientAddrState;
+                             }
+                         });
+
+        addScreenHandler(patientGender,
+                         SampleMeta.getClinicalPatientGenderId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientGender.setValue(getPatientGenderId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientGenderId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientGender.setEnabled(isState(QUERY) ||
+                                                          (canEditSample && canEditPatient && isState(ADD,
+                                                                                                      UPDATE)));
+                                 patientGender.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientRace : patientAddrZipCode;
+                             }
+                         });
+
+        addScreenHandler(patientRace,
+                         SampleMeta.getClinicalPatientRaceId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientRace.setValue(getPatientRaceId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientRaceId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientRace.setEnabled(isState(QUERY) ||
+                                                        (canEditSample && canEditPatient && isState(ADD,
+                                                                                                    UPDATE)));
+                                 patientRace.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientEthnicity : patientGender;
+                             }
+                         });
+
+        addScreenHandler(patientEthnicity,
+                         SampleMeta.getClinicalPatientEthnicityId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientEthnicity.setValue(getPatientEthnicityId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientEthnicityId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientEthnicity.setEnabled(isState(QUERY) ||
+                                                             (canEditSample && canEditPatient && isState(ADD,
+                                                                                                         UPDATE)));
+                                 patientEthnicity.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? providerLastName : patientRace;
                              }
                          });
 
@@ -506,7 +486,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? providerFirstName : patientAddrZipCode;
+                                 return forward ? providerFirstName : patientEthnicity;
                              }
                          });
 
@@ -584,6 +564,44 @@ public class ClinicalTabUI extends Screen {
                              }
                          });
 
+        parentBus.addHandler(PatientLockEvent.getType(), new PatientLockEvent.Handler() {
+            @Override
+            public void onPatientLock(PatientLockEvent event) {
+                if (screen == event.getSource())
+                    return;
+
+                if (event.getAction() == PatientLockEvent.Action.LOCK) {
+                    /*
+                     * the patient is now locked
+                     */
+                    manager.getSampleClinical().setPatientId(event.getPatient().getId());
+                    manager.getSampleClinical().setPatient(event.getPatient());
+                } else {
+                    /*
+                     * the patient is now unlocked
+                     */
+                    if (unlinkPatient) {
+                        /*
+                         * the patient was unlocked to unlink it from the sample
+                         */
+                        manager.getSampleClinical().setPatientId(null);
+                        manager.getSampleClinical().setPatient(new PatientDO());
+                        unlinkPatient = false;
+                    } else {
+                        manager.getSampleClinical().setPatientId(event.getPatient().getId());
+                        manager.getSampleClinical().setPatient(event.getPatient());
+                    }
+                }
+
+                isPatientLocked = (event.getAction() == PatientLockEvent.Action.LOCK);
+                setState(state);
+                fireDataChange();
+
+                if (patientLastName.isEnabled())
+                    patientLastName.setFocus(true);
+            }
+        });
+
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
@@ -652,21 +670,6 @@ public class ClinicalTabUI extends Screen {
     }
 
     /**
-     * returns true if the patient linked to the sample is locked
-     */
-    public boolean getIsPatientLocked() {
-        return isPatientLocked;
-    }
-
-    /**
-     * sets true if the patient was locked from outside the tab, false if it was
-     * unlocked
-     */
-    public void setIsPatientLocked(boolean isPatientLocked) {
-        this.isPatientLocked = isPatientLocked;
-    }
-
-    /**
      * notifies the tab that it may need to refresh the display in its widgets;
      * if the data currently showing in the widgets is the same as the data in
      * the latest manager then the widgets are not refreshed
@@ -679,7 +682,7 @@ public class ClinicalTabUI extends Screen {
     /**
      * shows the popup for patient lookup with no initial search specified
      */
-    @UiHandler("fullSearchButton")
+    @UiHandler("emptySearchButton")
     protected void fullSearch(ClickEvent event) {
         if ( !isBusy)
             lookupPatient(null, false);
@@ -689,7 +692,7 @@ public class ClinicalTabUI extends Screen {
      * shows the popup for patient lookup to search by the data in some of the
      * patient's fields
      */
-    @UiHandler("nameSearchButton")
+    @UiHandler("fieldSearchButton")
     protected void nameSearch(ClickEvent event) {
         if ( !isBusy)
             lookupPatient(manager.getSampleClinical().getPatient(), false);
@@ -701,19 +704,22 @@ public class ClinicalTabUI extends Screen {
      */
     @UiHandler("unlinkPatientButton")
     protected void unlinkPatient(ClickEvent event) {
-        try {
-            unlockPatient();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            return;
-        }
+        if (isPatientLocked) {
+            parentBus.fireEventFromSource(new PatientLockEvent(manager.getSampleClinical()
+                                                                      .getPatient(),
+                                                               PatientLockEvent.Action.UNLOCK),
+                                          this);
+            unlinkPatient = true;
+        } else {
+            manager.getSampleClinical().setPatientId(null);
+            manager.getSampleClinical().setPatient(new PatientDO());
+            isPatientLocked = false;
+            unlinkPatient = false;
 
-        manager.getSampleClinical().setPatientId(null);
-        manager.getSampleClinical().setPatient(new PatientDO());
-        setState(state);
-        fireDataChange();
-        patientLastName.setFocus(true);
+            setState(state);
+            fireDataChange();
+            patientLastName.setFocus(true);
+        }
     }
 
     /**
@@ -722,26 +728,14 @@ public class ClinicalTabUI extends Screen {
      */
     @UiHandler("editPatientButton")
     protected void editPatient(ClickEvent event) {
-        PatientDO data;
-
         if (isPatientLocked || manager.getSampleClinical().getPatientId() == null) {
             patientLastName.setFocus(true);
             return;
         }
 
-        try {
-            data = PatientService.get().fetchForUpdate(manager.getSampleClinical().getPatientId());
-            manager.getSampleClinical().setPatient(data);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            return;
-        }
-
-        isPatientLocked = true;
-        setState(state);
-        fireDataChange();
-        patientLastName.setFocus(true);
+        parentBus.fireEventFromSource(new PatientLockEvent(manager.getSampleClinical().getPatient(),
+                                                           PatientLockEvent.Action.LOCK),
+                                      this);
     }
 
     private void displaySampleClinical() {
@@ -751,19 +745,6 @@ public class ClinicalTabUI extends Screen {
         if (redraw) {
             redraw = false;
             fireDataChange();
-        }
-    }
-
-    /**
-     * unlocks the patient if it's locked
-     */
-    private void unlockPatient() throws Exception {
-        PatientDO data;
-
-        if (isPatientLocked) {
-            data = PatientService.get().abortUpdate(manager.getSampleClinical().getPatientId());
-            manager.getSampleClinical().setPatient(data);
-            isPatientLocked = false;
         }
     }
 
@@ -811,23 +792,6 @@ public class ClinicalTabUI extends Screen {
     }
 
     /**
-     * returns the patient's middle name or null if either the manager or the
-     * patient DO is null
-     */
-    private String getPatientMiddleName() {
-        if (manager == null || manager.getSampleClinical() == null)
-            return null;
-        return manager.getSampleClinical().getPatient().getMiddleName();
-    }
-
-    /**
-     * sets the patient's middle name
-     */
-    private void setPatientMiddleName(String name) {
-        manager.getSampleClinical().getPatient().setMiddleName(name);
-    }
-
-    /**
      * returns the patient's first name or null if either the manager or the
      * patient DO is null
      */
@@ -842,57 +806,6 @@ public class ClinicalTabUI extends Screen {
      */
     private void setPatientFirstName(String name) {
         manager.getSampleClinical().getPatient().setFirstName(name);
-    }
-
-    /**
-     * returns the patient's gender or null if either the manager or the patient
-     * DO is null
-     */
-    private Integer getPatientGenderId() {
-        if (manager == null || manager.getSampleClinical() == null)
-            return null;
-        return manager.getSampleClinical().getPatient().getGenderId();
-    }
-
-    /**
-     * sets the patient's gender
-     */
-    private void setPatientGenderId(Integer genderId) {
-        manager.getSampleClinical().getPatient().setGenderId(genderId);
-    }
-
-    /**
-     * returns the patient's race or null if either the manager or the patient
-     * DO is null
-     */
-    private Integer getPatientRaceId() {
-        if (manager == null || manager.getSampleClinical() == null)
-            return null;
-        return manager.getSampleClinical().getPatient().getRaceId();
-    }
-
-    /**
-     * sets the patient's race
-     */
-    private void setPatientRaceId(Integer raceId) {
-        manager.getSampleClinical().getPatient().setRaceId(raceId);
-    }
-
-    /**
-     * returns the patient's ethnicity or null if either the manager or the
-     * patient DO is null
-     */
-    private Integer getPatientEthnicityId() {
-        if (manager == null || manager.getSampleClinical() == null)
-            return null;
-        return manager.getSampleClinical().getPatient().getEthnicityId();
-    }
-
-    /**
-     * sets the patient's ethnicity
-     */
-    private void setPatientEthnicityId(Integer ethnicityId) {
-        manager.getSampleClinical().getPatient().setEthnicityId(ethnicityId);
     }
 
     /**
@@ -985,7 +898,7 @@ public class ClinicalTabUI extends Screen {
      * DO is null
      */
     private String getPatientAddressState() {
-        if (manager == null || manager.getSampleClinical()== null)
+        if (manager == null || manager.getSampleClinical() == null)
             return null;
         return manager.getSampleClinical().getPatient().getAddress().getState();
     }
@@ -1014,8 +927,59 @@ public class ClinicalTabUI extends Screen {
         manager.getSampleClinical().getPatient().getAddress().setZipCode(zipCode);
     }
 
+    /**
+     * returns the patient's gender or null if either the manager or the patient
+     * DO is null
+     */
+    private Integer getPatientGenderId() {
+        if (manager == null || manager.getSampleClinical() == null)
+            return null;
+        return manager.getSampleClinical().getPatient().getGenderId();
+    }
+
+    /**
+     * sets the patient's gender
+     */
+    private void setPatientGenderId(Integer genderId) {
+        manager.getSampleClinical().getPatient().setGenderId(genderId);
+    }
+
+    /**
+     * returns the patient's race or null if either the manager or the patient
+     * DO is null
+     */
+    private Integer getPatientRaceId() {
+        if (manager == null || manager.getSampleClinical() == null)
+            return null;
+        return manager.getSampleClinical().getPatient().getRaceId();
+    }
+
+    /**
+     * sets the patient's race
+     */
+    private void setPatientRaceId(Integer raceId) {
+        manager.getSampleClinical().getPatient().setRaceId(raceId);
+    }
+
+    /**
+     * returns the patient's ethnicity or null if either the manager or the
+     * patient DO is null
+     */
+    private Integer getPatientEthnicityId() {
+        if (manager == null || manager.getSampleClinical() == null)
+            return null;
+        return manager.getSampleClinical().getPatient().getEthnicityId();
+    }
+
+    /**
+     * sets the patient's ethnicity
+     */
+    private void setPatientEthnicityId(Integer ethnicityId) {
+        manager.getSampleClinical().getPatient().setEthnicityId(ethnicityId);
+    }
+
     private Integer getProviderId() {
-        if (manager == null)
+        if (manager == null || manager.getSampleClinical() == null)
             return null;
         return manager.getSampleClinical().getProviderId();
     }
@@ -1035,19 +999,22 @@ public class ClinicalTabUI extends Screen {
     }
 
     private String getProviderLastName() {
-        if (manager == null || manager.getSampleClinical().getProvider() == null)
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getProvider() == null)
             return null;
         return manager.getSampleClinical().getProvider().getLastName();
     }
 
     private String getProviderFirstName() {
-        if (manager == null || manager.getSampleClinical().getProvider() == null)
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getProvider() == null)
             return null;
         return manager.getSampleClinical().getProvider().getFirstName();
     }
 
     private String getProviderPhone() {
-        if (manager == null || manager.getSampleClinical() == null)
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getProvider() == null)
             return null;
         return manager.getSampleClinical().getProviderPhone();
     }
@@ -1076,16 +1043,15 @@ public class ClinicalTabUI extends Screen {
     }
 
     /**
-     * sets the busy flag and the passed widget as the current one with focus;
-     * looks up the patients matching the data entered in the patient's fields
+     * sets the busy flag and looks up the patients matching the data entered in
+     * the patient's fields
      */
-    private void patientQueryChanged(Widget queryWidget) {
+    private void patientQueryChanged() {
         /*
          * look up patients only if the current patient is not locked
          */
         if ( !isPatientLocked) {
             isBusy = true;
-            // patientQueryWidget = queryWidget;
             lookupPatient(manager.getSampleClinical().getPatient(), true);
         }
     }

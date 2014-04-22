@@ -69,6 +69,14 @@ public class PatientServlet extends RemoteServlet implements PatientServiceInt {
         }
     }
     
+    public PatientDO add(PatientDO data) throws Exception {
+        try {
+            return patient.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public PatientDO update(PatientDO data) throws Exception {
         try {
             return patient.update(data);
@@ -80,6 +88,14 @@ public class PatientServlet extends RemoteServlet implements PatientServiceInt {
     public PatientDO abortUpdate(Integer patientId) throws Exception {
         try {
             return patient.abortUpdate(patientId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public void validate(PatientDO data) throws Exception {
+        try {
+            patient.validate(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

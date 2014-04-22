@@ -142,7 +142,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() > 2)
+                if ( !isState(ADD, UPDATE) || event.getCol() == 2 || event.getCol() > 3)
                     event.cancel();
             }
         });
@@ -170,7 +170,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
                     case 1:
                         data.setOrganizationAttention((String)val);
                         break;
-                    case 2:
+                    case 3:
                         row = (AutoCompleteValue)val;
                         if (row != null) {
                             org = (OrganizationDO)row.getData();
@@ -195,12 +195,13 @@ public abstract class SampleOrganizationLookupUI extends Screen {
                             data.setOrganizationCountry(null);
                         }
 
-                        table.setValueAt(r, 3, data.getOrganizationMultipleUnit());
-                        table.setValueAt(r, 4, data.getOrganizationStreetAddress());
-                        table.setValueAt(r, 5, data.getOrganizationCity());
-                        table.setValueAt(r, 6, data.getOrganizationState());
-                        table.setValueAt(r, 7, data.getOrganizationZipCode());
-                        table.setValueAt(r, 8, data.getOrganizationCountry());
+                        table.setValueAt(r, 2, data.getOrganizationId());
+                        table.setValueAt(r, 4, data.getOrganizationMultipleUnit());
+                        table.setValueAt(r, 5, data.getOrganizationStreetAddress());
+                        table.setValueAt(r, 6, data.getOrganizationCity());
+                        table.setValueAt(r, 7, data.getOrganizationState());
+                        table.setValueAt(r, 8, data.getOrganizationZipCode());
+                        table.setValueAt(r, 9, data.getOrganizationCountry());
 
                         try {
                             if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(data.getOrganizationId()))
@@ -440,17 +441,18 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         for (int i = 0; i < manager.organization.count(); i++ ) {
             data = manager.organization.get(i);
 
-            row = new Row(9);
+            row = new Row(10);
             row.setCell(0, data.getTypeId());
             row.setCell(1, data.getOrganizationAttention());
-            row.setCell(2, new AutoCompleteValue(data.getOrganizationId(),
+            row.setCell(2, data.getOrganizationId());
+            row.setCell(3, new AutoCompleteValue(data.getOrganizationId(),
                                                  data.getOrganizationName()));
-            row.setCell(3, data.getOrganizationMultipleUnit());
-            row.setCell(4, data.getOrganizationStreetAddress());
-            row.setCell(5, data.getOrganizationCity());
-            row.setCell(6, data.getOrganizationState());
-            row.setCell(7, data.getOrganizationZipCode());
-            row.setCell(8, data.getOrganizationCountry());
+            row.setCell(4, data.getOrganizationMultipleUnit());
+            row.setCell(5, data.getOrganizationStreetAddress());
+            row.setCell(6, data.getOrganizationCity());
+            row.setCell(7, data.getOrganizationState());
+            row.setCell(8, data.getOrganizationZipCode());
+            row.setCell(9, data.getOrganizationCountry());
             row.setData(data);
             model.add(row);
         }

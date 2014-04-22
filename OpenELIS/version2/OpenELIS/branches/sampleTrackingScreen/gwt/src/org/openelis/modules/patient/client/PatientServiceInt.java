@@ -39,6 +39,8 @@ public interface PatientServiceInt extends XsrfProtectedService {
     public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception;
     public PatientDO fetchForUpdate(Integer patientId) throws Exception;
     public ArrayList<PatientDO> query(Query query) throws Exception;
+    public PatientDO add(PatientDO data) throws Exception;
     public PatientDO update(PatientDO data) throws Exception;
     public PatientDO abortUpdate(Integer patientId) throws Exception;
+    public void validate(PatientDO data) throws Exception;
 }

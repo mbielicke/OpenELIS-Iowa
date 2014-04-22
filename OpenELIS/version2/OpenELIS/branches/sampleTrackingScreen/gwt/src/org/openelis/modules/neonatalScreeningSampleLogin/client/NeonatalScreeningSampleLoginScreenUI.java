@@ -38,6 +38,7 @@ import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -45,7 +46,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PatientDO;
-import org.openelis.domain.PatientRelationVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -53,6 +53,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
@@ -64,6 +65,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.patient.client.PatientLookupUI;
+import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.provider.client.ProviderService;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
@@ -86,7 +88,9 @@ import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
@@ -112,6 +116,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.KeyCodes;
 import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
@@ -123,6 +128,8 @@ import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -130,6 +137,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class NeonatalScreeningSampleLoginScreenUI extends Screen implements CacheProvider {
@@ -142,7 +150,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private static NeonatalScreeningSampleLoginUiBinder uiBinder   = GWT.create(NeonatalScreeningSampleLoginUiBinder.class);
 
-    protected SampleManager1                            manager;
+    protected SampleManager1                            manager, previousManager;
 
     protected ScreenNavigator<IdAccessionVO>            nav;
 
@@ -152,21 +160,21 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     transfusionDate;
 
     @UiField
-    protected TextBox<Integer>                          accessionNumber, orderId, birthOrder,
-                    gestationalAge, weight, transfusionAge, collectionAge;
+    protected TextBox<Integer>                          accessionNumber, orderId, patientId,
+                    nextOfKinId, birthOrder, gestationalAge, weight, transfusionAge, collectionAge;
 
     @UiField
     protected TextBox<String>                           clientReference, patientLastName,
                     patientFirstName, patientAddrMultipleUnit, patientAddrStreetAddress,
-                    patientAddrCity, patientAddrZipCode, nextOfKinLastName, nextOfKinMiddleName,
-                    nextOfKinFirstName, nextOfKinAddrHomePhone, nextOfKinAddrMultipleUnit,
-                    nextOfKinAddrStreetAddress, nextOfKinAddrCity, nextOfKinAddrZipCode,
-                    providerFirstName, formNumber;
+                    patientAddrCity, patientAddrZipCode, nextOfKinNationalId, nextOfKinLastName,
+                    nextOfKinMiddleName, nextOfKinFirstName, nextOfKinAddrHomePhone,
+                    nextOfKinAddrMultipleUnit, nextOfKinAddrStreetAddress, nextOfKinAddrCity,
+                    nextOfKinAddrZipCode, providerFirstName, formNumber;
 
     @UiField
-    protected Dropdown<Integer>                         status, feedingId, patientGenderId,
-                    patientRaceId, patientEthnicityId, nextOfKinRelationId, nextOfKinGenderId,
-                    nextOfKinRaceId, nextOfKinEthnicityId;
+    protected Dropdown<Integer>                         status, feedingId, patientGender,
+                    patientRace, patientEthnicity, nextOfKinRelation, nextOfKinGender,
+                    nextOfKinRace, nextOfKinEthnicity;
 
     @UiField
     protected Dropdown<String>                          patientAddrState, nextOfKinAddrState;
@@ -181,8 +189,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, optionsButton, orderLookupButton, projectButton, reportToButton,
-                    birthHospitalButton;
+                    abort, optionsButton, orderLookupButton, patientEmptySearchButton,
+                    patientFieldSearchButton, unlinkPatientButton, editPatientButton,
+                    nextOfKinEmptySearchButton, nextOfKinFieldSearchButton, unlinkNextOfKinButton,
+                    editNextOfKinButton, projectButton, reportToButton, birthHospitalButton;
 
     @UiField
     protected Menu                                      optionsMenu, historyMenu;
@@ -224,7 +234,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     @UiField(provided = true)
     protected AuxDataTabUI                              auxDataTab;
 
-    protected boolean                                   canEdit, isBusy;
+    protected boolean                                   canEditSample, canEditPatient,
+                    isPatientLocked, canEditNextOfKin, isNextOfKinLocked, isBusy,
+                    setSelectedAsNextOfKin;
 
     protected ModulePermission                          userPermission;
 
@@ -236,29 +248,24 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected PatientLookupUI                     pLookupScreen;
-    
+    protected PatientLookupUI                           patientLookup;
+
     protected HashMap<String, Object>                   cache;
 
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
-    protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall, 
-                                                         commitUpdateCall, fetchByIdCall, unlockCall,
-                                                         duplicateCall;   
-    
-    // @formatter:off
-    protected static final SampleManager1.Load        elements[] = {
-                                                                        SampleManager1.Load.ANALYSISUSER,
-                                                                        SampleManager1.Load.AUXDATA,
-                                                                        SampleManager1.Load.NOTE,
-                                                                        SampleManager1.Load.ORGANIZATION,
-                                                                        SampleManager1.Load.PROJECT, 
-                                                                        SampleManager1.Load.QA,
-                                                                        SampleManager1.Load.RESULT,
-                                                                        SampleManager1.Load.STORAGE,
-                                                                        SampleManager1.Load.WORKSHEET
-                                                                };
-    // @formatter:on
+    protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall,
+                    commitUpdateCall, fetchByIdCall, unlockCall, duplicateCall;
+
+    protected static final SampleManager1.Load          elements[] = {
+                    SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
+                    SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
+                    SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
+                    SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
+                    SampleManager1.Load.WORKSHEET                  };
+
+    private static final String                         REPORT_TO_KEY = "reportTo",
+                    BIRTH_HOSPITAL_KEY = "birthHospital";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -350,6 +357,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        String r;
         Item<Integer> row;
         Item<String> strow;
         ArrayList<Item<Integer>> model;
@@ -441,34 +449,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         duplicate.addCommand(new Command() {
             public void execute() {
-                setBusy();
-
-                if (duplicateCall == null) {
-                    duplicateCall = new AsyncCallbackUI<SampleManager1>() {
-                        public void success(SampleManager1 result) {
-                            manager = result;
-                            if (manager.getSampleNeonatal().getPatient() == null)
-                                manager.getSampleNeonatal().setPatient(new PatientDO());
-                            if (manager.getSampleNeonatal().getNextOfKin() == null)
-                                manager.getSampleNeonatal().setNextOfKin(new PatientDO());
-                            buildCache();
-                            evaluateEdit();
-                            setData();
-                            setState(ADD);
-                            fireDataChange();
-                            accessionNumber.setFocus(true);
-                            setDone(Messages.get().gen_enterInformationPressCommit());
-                        }
-
-                        public void failure(Throwable e) {
-                            Window.alert(e.getMessage());
-                            logger.log(Level.SEVERE, e.getMessage(), e);
-                            clearStatus();
-                        }
-                    };
-                }
-
-                SampleService1.get().duplicate(manager.getSample().getId(), duplicateCall);
+                duplicate();
             }
         });
 
@@ -611,6 +592,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 historyStorage.setEnabled(isState(DISPLAY));
             }
         });
+
         historyStorage.addCommand(new Command() {
             @Override
             public void execute() {
@@ -623,7 +605,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 historySampleQA.setEnabled(isState(DISPLAY));
             }
         });
-        
+
         historySampleQA.addCommand(new Command() {
             @Override
             public void execute() {
@@ -672,12 +654,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  accessionNumber.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
+                                                            (canEditSample && isState(ADD, UPDATE)));
                                  accessionNumber.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : clientReference;
+                                 return forward ? orderId : formNumber;
                              }
                          });
 
@@ -695,8 +677,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * disabled until the functionality for the orders for this
                  * domain has been implemented
                  */
-                //orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                //orderId.setQueryMode(isState(QUERY));
+                // orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD,
+                // UPDATE)));
+                // orderId.setQueryMode(isState(QUERY));
                 orderId.setEnabled(false);
             }
 
@@ -730,7 +713,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  collectionDate.setEnabled(isState(QUERY) ||
-                                                           (canEdit && isState(ADD, UPDATE)));
+                                                           (canEditSample && isState(ADD, UPDATE)));
                                  collectionDate.setQueryMode(isState(QUERY));
                              }
 
@@ -738,6 +721,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  return forward ? collectionTime : orderId;
                              }
                          });
+
+        collectionDate.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                Datetime cd;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    cd = previousManager.getSample().getCollectionDate();
+                    setCollectionDate(cd);
+                    collectionDate.setValue(cd);
+                    screen.focusNextWidget((Focusable)collectionDate, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(collectionTime,
                          SampleMeta.getCollectionTime(),
@@ -751,7 +750,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 collectionTime.setEnabled(canEdit && isState(ADD, UPDATE));
+                                 collectionTime.setEnabled(canEditSample && isState(ADD, UPDATE));
                                  collectionTime.setQueryMode(isState(QUERY));
                              }
 
@@ -759,6 +758,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  return forward ? receivedDate : collectionDate;
                              }
                          });
+
+        collectionTime.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                Datetime ct;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    ct = previousManager.getSample().getCollectionTime();
+                    setCollectionTime(ct);
+                    collectionTime.setValue(ct);
+                    screen.focusNextWidget((Focusable)collectionTime, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -770,12 +785,28 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public void onStateChange(StateChangeEvent event) {
-                receivedDate.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                receivedDate.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
                 receivedDate.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
                 return forward ? status : collectionTime;
+            }
+        });
+
+        receivedDate.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                Datetime rd;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    rd = previousManager.getSample().getReceivedDate();
+                    setReceivedDate(rd);
+                    receivedDate.setValue(rd);
+                    screen.focusNextWidget((Focusable)receivedDate, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             }
         });
 
@@ -811,14 +842,83 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  clientReference.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
+                                                            (canEditSample && isState(ADD, UPDATE)));
                                  clientReference.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumber : status;
+                                 return forward ? patientId : status;
                              }
                          });
+
+        clientReference.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String cr;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    cr = previousManager.getSample().getClientReference();
+                    setClientReference(cr);
+                    clientReference.setValue(cr);
+                    screen.focusNextWidget((Focusable)clientReference, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(patientId,
+                         SampleMeta.getNeonatalPatientId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientId.setValue(getPatientId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientId.setEnabled(isState(QUERY));
+                                 patientId.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientLastName : clientReference;
+                             }
+                         });
+
+        addScreenHandler(patientEmptySearchButton,
+                         "patientEmptySearchButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientEmptySearchButton.setEnabled(canEditSample &&
+                                                                     !isPatientLocked &&
+                                                                     isState(ADD, UPDATE));
+                             }
+                         });
+
+        addScreenHandler(patientFieldSearchButton,
+                         "patientFieldSearchButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientFieldSearchButton.setEnabled(canEditSample &&
+                                                                     !isPatientLocked &&
+                                                                     isState(ADD, UPDATE));
+                             }
+                         });
+
+        addScreenHandler(unlinkPatientButton, "unlinkPatientButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                unlinkPatientButton.setEnabled(canEditSample && isState(ADD, UPDATE));
+            }
+        });
+
+        addScreenHandler(editPatientButton, "editPatientButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                editPatientButton.setEnabled(canEditSample && isState(ADD, UPDATE));
+            }
+        });
 
         addScreenHandler(patientLastName,
                          SampleMeta.getNeonatalPatientLastName(),
@@ -829,13 +929,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientLastName(event.getValue());
-                                 lookupPatient(true);
+                                 if (getPatientLastName() != null && getPatientFirstName() != null)
+                                     patientQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientLastName.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
-                                 patientLastName.setQueryMode(event.getState() == State.QUERY);
+                                                            (canEditSample && canEditPatient && isState(ADD,
+                                                                                                        UPDATE)));
+                                 patientLastName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientFirstName : patientId;
                              }
                          });
 
@@ -848,67 +954,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientFirstName(event.getValue());
-                                 lookupPatient(true);
+                                 if (getPatientLastName() != null && getPatientFirstName() != null)
+                                     patientQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientFirstName.setEnabled(isState(QUERY) ||
-                                                             (canEdit && isState(ADD, UPDATE)));
+                                                             (canEditSample && canEditPatient && isState(ADD,
+                                                                                                         UPDATE)));
                                  patientFirstName.setQueryMode(isState(QUERY));
                              }
-                         });
 
-        addScreenHandler(patientGenderId,
-                         SampleMeta.getNeonatalPatientGenderId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientGenderId.setValue(getPatientGenderId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientGenderId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientGenderId.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
-                                 patientGenderId.setQueryMode(isState(QUERY));
-                             }
-                         });
-
-        addScreenHandler(patientRaceId,
-                         SampleMeta.getNeonatalPatientRaceId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientRaceId.setValue(getPatientRaceId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientRaceId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientRaceId.setEnabled(isState(QUERY) ||
-                                                          (canEdit && isState(ADD, UPDATE)));
-                                 patientRaceId.setQueryMode(isState(QUERY));
-                             }
-                         });
-
-        addScreenHandler(patientEthnicityId,
-                         SampleMeta.getNeonatalPatientEthnicityId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientEthnicityId.setValue(getPatientEthnicityId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientEthnicityId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientEthnicityId.setEnabled(isState(QUERY) ||
-                                                               (canEdit && isState(ADD, UPDATE)));
-                                 patientEthnicityId.setQueryMode(isState(QUERY));
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientBirthDate : patientLastName;
                              }
                          });
 
@@ -925,8 +983,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientBirthDate.setEnabled(isState(QUERY) ||
-                                                             (canEdit && isState(ADD, UPDATE)));
+                                                             (canEditSample && canEditPatient && isState(ADD,
+                                                                                                         UPDATE)));
                                  patientBirthDate.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientBirthTime : patientFirstName;
                              }
                          });
 
@@ -943,8 +1006,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientBirthTime.setEnabled(isState(QUERY) ||
-                                                             (canEdit && isState(ADD, UPDATE)));
-                                 patientBirthTime.setQueryMode(event.getState() == State.QUERY);
+                                                             (canEditSample && canEditPatient && isState(ADD,
+                                                                                                         UPDATE)));
+                                 patientBirthTime.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientAddrMultipleUnit : patientBirthDate;
                              }
                          });
 
@@ -961,8 +1029,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientAddrMultipleUnit.setEnabled(isState(QUERY) ||
-                                                                    (canEdit && isState(ADD, UPDATE)));
+                                                                    (canEditSample &&
+                                                                     canEditPatient && isState(ADD,
+                                                                                               UPDATE)));
                                  patientAddrMultipleUnit.setQueryMode(event.getState() == State.QUERY);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientAddrStreetAddress : patientBirthTime;
                              }
                          });
 
@@ -979,9 +1053,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientAddrStreetAddress.setEnabled(isState(QUERY) ||
-                                                                     (canEdit && isState(ADD,
-                                                                                         UPDATE)));
+                                                                     (canEditSample &&
+                                                                      canEditPatient && isState(ADD,
+                                                                                                UPDATE)));
                                  patientAddrStreetAddress.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientAddrCity : patientAddrMultipleUnit;
                              }
                          });
 
@@ -998,8 +1077,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientAddrCity.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
+                                                            (canEditSample && canEditPatient && isState(ADD,
+                                                                                                        UPDATE)));
                                  patientAddrCity.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientAddrState : patientAddrStreetAddress;
                              }
                          });
 
@@ -1016,8 +1100,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientAddrState.setEnabled(isState(QUERY) ||
-                                                             (canEdit && isState(ADD, UPDATE)));
+                                                             (canEditSample && canEditPatient && isState(ADD,
+                                                                                                         UPDATE)));
                                  patientAddrState.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientAddrZipCode : patientAddrCity;
                              }
                          });
 
@@ -1034,10 +1123,140 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  patientAddrZipCode.setEnabled(isState(QUERY) ||
-                                                               (canEdit && isState(ADD, UPDATE)));
+                                                               (canEditSample && canEditPatient && isState(ADD,
+                                                                                                           UPDATE)));
                                  patientAddrZipCode.setQueryMode(isState(QUERY));
                              }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientGender : patientAddrState;
+                             }
                          });
+
+        addScreenHandler(patientGender,
+                         SampleMeta.getNeonatalPatientGenderId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientGender.setValue(getPatientGenderId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientGenderId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientGender.setEnabled(isState(QUERY) ||
+                                                          (canEditSample && canEditPatient && isState(ADD,
+                                                                                                      UPDATE)));
+                                 patientGender.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientRace : patientAddrZipCode;
+                             }
+                         });
+
+        addScreenHandler(patientRace,
+                         SampleMeta.getNeonatalPatientRaceId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientRace.setValue(getPatientRaceId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientRaceId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientRace.setEnabled(isState(QUERY) ||
+                                                        (canEditSample && canEditPatient && isState(ADD,
+                                                                                                    UPDATE)));
+                                 patientRace.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientEthnicity : patientGender;
+                             }
+                         });
+
+        addScreenHandler(patientEthnicity,
+                         SampleMeta.getNeonatalPatientEthnicityId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientEthnicity.setValue(getPatientEthnicityId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPatientEthnicityId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 patientEthnicity.setEnabled(isState(QUERY) ||
+                                                             (canEditSample && canEditPatient && isState(ADD,
+                                                                                                         UPDATE)));
+                                 patientEthnicity.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinId : patientRace;
+                             }
+                         });
+
+        addScreenHandler(nextOfKinId,
+                         SampleMeta.getNeonatalNextOfKinId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 nextOfKinId.setValue(getNextOfKinId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setNextOfKinId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinId.setEnabled(isState(QUERY));
+                                 nextOfKinId.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinLastName : patientEthnicity;
+                             }
+                         });
+
+        addScreenHandler(nextOfKinEmptySearchButton,
+                         "nextOfKinEmptySearchButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinEmptySearchButton.setEnabled(canEditSample &&
+                                                                       !isNextOfKinLocked &&
+                                                                       isState(ADD, UPDATE));
+                             }
+                         });
+
+        addScreenHandler(nextOfKinFieldSearchButton,
+                         "nextOfKinFieldSearchButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinFieldSearchButton.setEnabled(canEditSample &&
+                                                                       !isNextOfKinLocked &&
+                                                                       isState(ADD, UPDATE));
+                             }
+                         });
+
+        addScreenHandler(unlinkNextOfKinButton,
+                         "unlinkNextOfKinButton",
+                         new ScreenHandler<Object>() {
+                             public void onStateChange(StateChangeEvent event) {
+                                 unlinkNextOfKinButton.setEnabled(canEditSample &&
+                                                                  isState(ADD, UPDATE));
+                             }
+                         });
+
+        addScreenHandler(editNextOfKinButton, "editNextOfKinButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                editNextOfKinButton.setEnabled(canEditSample && isState(ADD, UPDATE));
+            }
+        });
 
         addScreenHandler(nextOfKinLastName,
                          SampleMeta.getNeonatalNextOfKinLastName(),
@@ -1048,12 +1267,20 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinLastName(event.getValue());
+                                 if (getNextOfKinLastName() != null &&
+                                     getNextOfKinFirstName() != null)
+                                     nextOfKinQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinLastName.setEnabled(isState(QUERY) ||
-                                                              (canEdit && isState(ADD, UPDATE)));
+                                                              (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                            UPDATE)));
                                  nextOfKinLastName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinMiddleName : nextOfKinId;
                              }
                          });
 
@@ -1070,8 +1297,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinMiddleName.setEnabled(isState(QUERY) ||
-                                                                (canEdit && isState(ADD, UPDATE)));
+                                                                (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                              UPDATE)));
                                  nextOfKinMiddleName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinFirstName : nextOfKinLastName;
                              }
                          });
 
@@ -1084,20 +1316,28 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinFirstName(event.getValue());
+                                 if (getNextOfKinLastName() != null &&
+                                     getNextOfKinFirstName() != null)
+                                     nextOfKinQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinFirstName.setEnabled(isState(QUERY) ||
-                                                               (canEdit && isState(ADD, UPDATE)));
+                                                               (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                             UPDATE)));
                                  nextOfKinFirstName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinRelation : nextOfKinMiddleName;
                              }
                          });
 
-        addScreenHandler(nextOfKinRelationId,
+        addScreenHandler(nextOfKinRelation,
                          SampleMeta.getNeonatalNextOfKinRelationId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinRelationId.setValue(getNeonatalNextOfKinRelationId());
+                                 nextOfKinRelation.setValue(getNeonatalNextOfKinRelationId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1105,63 +1345,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinRelationId.setEnabled(isState(QUERY) ||
-                                                                (canEdit && isState(ADD, UPDATE)));
-                                 nextOfKinRelationId.setQueryMode(isState(QUERY));
-                             }
-                         });
-
-        addScreenHandler(nextOfKinGenderId,
-                         SampleMeta.getNeonatalNextOfKinGenderId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinGenderId.setValue(getNextOfKinGenderId());
+                                 nextOfKinRelation.setEnabled(isState(QUERY) ||
+                                                              (canEditSample && isState(ADD, UPDATE)));
+                                 nextOfKinRelation.setQueryMode(isState(QUERY));
                              }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNextOfKinGenderId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinGenderId.setEnabled(isState(QUERY) ||
-                                                              (canEdit && isState(ADD, UPDATE)));
-                                 nextOfKinGenderId.setQueryMode(isState(QUERY));
-                             }
-                         });
-
-        addScreenHandler(nextOfKinRaceId,
-                         SampleMeta.getNeonatalNextOfKinRaceId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinRaceId.setValue(getNextOfKinRaceId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNextOfKinRaceId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinRaceId.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
-                                 nextOfKinRaceId.setQueryMode(isState(QUERY));
-                             }
-                         });
-
-        addScreenHandler(nextOfKinEthnicityId,
-                         SampleMeta.getNeonatalNextOfKinEthnicityId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinEthnicityId.setValue(getNextOfKinEthnicityId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNextOfKinEthnicityId(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinEthnicityId.setEnabled(isState(QUERY) ||
-                                                                 (canEdit && isState(ADD, UPDATE)));
-                                 nextOfKinEthnicityId.setQueryMode(isState(QUERY));
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinBirthDate : nextOfKinFirstName;
                              }
                          });
 
@@ -1178,26 +1368,38 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinBirthDate.setEnabled(isState(QUERY) ||
-                                                               (canEdit && isState(ADD, UPDATE)));
+                                                               (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                             UPDATE)));
                                  nextOfKinBirthDate.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinNationalId : nextOfKinRelation;
                              }
                          });
 
-        addScreenHandler(nextOfKinAddrHomePhone,
-                         SampleMeta.getNeonatalNextOfKinAddrHomePhone(),
+        addScreenHandler(nextOfKinNationalId,
+                         SampleMeta.getNeonatalNextOfKinNationalId(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinAddrHomePhone.setValue(getNextOfKinAddressHomePhone());
+                                 nextOfKinNationalId.setValue(getNextOfKinNationalId());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 setNextOfKinAddressHomePhone(event.getValue());
+                                 setNextOfKinNationalId(event.getValue());
+                                 if (getNextOfKinNationalId() != null)
+                                     nextOfKinQueryChanged();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinAddrHomePhone.setEnabled(isState(QUERY) ||
-                                                                   (canEdit && isState(ADD, UPDATE)));
-                                 nextOfKinAddrHomePhone.setQueryMode(isState(QUERY));
+                                 nextOfKinNationalId.setEnabled(isState(QUERY) ||
+                                                                (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                              UPDATE)));
+                                 nextOfKinNationalId.setQueryMode(event.getState() == State.QUERY);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinAddrMultipleUnit : nextOfKinBirthDate;
                              }
                          });
 
@@ -1214,9 +1416,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinAddrMultipleUnit.setEnabled(isState(QUERY) ||
-                                                                      (canEdit && isState(ADD,
-                                                                                          UPDATE)));
+                                                                      (canEditSample &&
+                                                                       canEditNextOfKin && isState(ADD,
+                                                                                                   UPDATE)));
                                  nextOfKinAddrMultipleUnit.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinAddrStreetAddress : nextOfKinNationalId;
                              }
                          });
 
@@ -1233,9 +1440,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinAddrStreetAddress.setEnabled(isState(QUERY) ||
-                                                                       (canEdit && isState(ADD,
-                                                                                           UPDATE)));
+                                                                       (canEditSample &&
+                                                                        canEditNextOfKin && isState(ADD,
+                                                                                                    UPDATE)));
                                  nextOfKinAddrStreetAddress.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinAddrCity : nextOfKinAddrMultipleUnit;
                              }
                          });
 
@@ -1252,8 +1464,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinAddrCity.setEnabled(isState(QUERY) ||
-                                                              (canEdit && isState(ADD, UPDATE)));
+                                                              (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                            UPDATE)));
                                  nextOfKinAddrCity.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinAddrState : nextOfKinAddrStreetAddress;
                              }
                          });
 
@@ -1270,8 +1487,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinAddrState.setEnabled(isState(QUERY) ||
-                                                               (canEdit && isState(ADD, UPDATE)));
+                                                               (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                             UPDATE)));
                                  nextOfKinAddrState.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinAddrZipCode : nextOfKinAddrCity;
                              }
                          });
 
@@ -1288,8 +1510,106 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  nextOfKinAddrZipCode.setEnabled(isState(QUERY) ||
-                                                                 (canEdit && isState(ADD, UPDATE)));
+                                                                 (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                               UPDATE)));
                                  nextOfKinAddrZipCode.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinAddrHomePhone : nextOfKinAddrState;
+                             }
+                         });
+
+        addScreenHandler(nextOfKinAddrHomePhone,
+                         SampleMeta.getNeonatalNextOfKinAddrHomePhone(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 nextOfKinAddrHomePhone.setValue(getNextOfKinAddressHomePhone());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setNextOfKinAddressHomePhone(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinAddrHomePhone.setEnabled(isState(QUERY) ||
+                                                                   (canEditSample &&
+                                                                    canEditNextOfKin && isState(ADD,
+                                                                                                UPDATE)));
+                                 nextOfKinAddrHomePhone.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinGender : nextOfKinAddrZipCode;
+                             }
+                         });
+
+        addScreenHandler(nextOfKinGender,
+                         SampleMeta.getNeonatalNextOfKinGenderId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 nextOfKinGender.setValue(getNextOfKinGenderId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setNextOfKinGenderId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinGender.setEnabled(isState(QUERY) ||
+                                                            (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                          UPDATE)));
+                                 nextOfKinGender.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinRace : nextOfKinAddrHomePhone;
+                             }
+                         });
+
+        addScreenHandler(nextOfKinRace,
+                         SampleMeta.getNeonatalNextOfKinRaceId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 nextOfKinRace.setValue(getNextOfKinRaceId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setNextOfKinRaceId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinRace.setEnabled(isState(QUERY) ||
+                                                          (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                        UPDATE)));
+                                 nextOfKinRace.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? nextOfKinEthnicity : nextOfKinGender;
+                             }
+                         });
+
+        addScreenHandler(nextOfKinEthnicity,
+                         SampleMeta.getNeonatalNextOfKinEthnicityId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 nextOfKinEthnicity.setValue(getNextOfKinEthnicityId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setNextOfKinEthnicityId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 nextOfKinEthnicity.setEnabled(isState(QUERY) ||
+                                                               (canEditSample && canEditNextOfKin && isState(ADD,
+                                                                                                             UPDATE)));
+                                 nextOfKinEthnicity.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isNicu : nextOfKinRace;
                              }
                          });
 
@@ -1303,25 +1623,36 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public void onStateChange(StateChangeEvent event) {
-                isNicu.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                isNicu.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
                 isNicu.setQueryMode(isState(QUERY));
             }
-        });
 
-        addScreenHandler(birthOrder, SampleMeta.getNeonatalBirthOrder(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                birthOrder.setValue(getBirthOrder());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setBirthOrder(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                birthOrder.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                birthOrder.setQueryMode(isState(QUERY));
+            public Widget onTab(boolean forward) {
+                return forward ? birthOrder : nextOfKinEthnicity;
             }
         });
+
+        addScreenHandler(birthOrder,
+                         SampleMeta.getNeonatalBirthOrder(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 birthOrder.setValue(getBirthOrder());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setBirthOrder(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 birthOrder.setEnabled(isState(QUERY) ||
+                                                       (canEditSample && isState(ADD, UPDATE)));
+                                 birthOrder.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? gestationalAge : isNicu;
+                             }
+                         });
 
         addScreenHandler(gestationalAge,
                          SampleMeta.getNeonatalGestationalAge(),
@@ -1336,25 +1667,36 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  gestationalAge.setEnabled(isState(QUERY) ||
-                                                           (canEdit && isState(ADD, UPDATE)));
+                                                           (canEditSample && isState(ADD, UPDATE)));
                                  gestationalAge.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? feedingId : birthOrder;
                              }
                          });
 
-        addScreenHandler(feedingId, SampleMeta.getNeonatalFeedingId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                feedingId.setValue(getFeedingId());
-            }
+        addScreenHandler(feedingId,
+                         SampleMeta.getNeonatalFeedingId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 feedingId.setValue(getFeedingId());
+                             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setFeedingId(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setFeedingId(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                feedingId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                feedingId.setQueryMode(isState(QUERY));
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 feedingId.setEnabled(isState(QUERY) ||
+                                                      (canEditSample && isState(ADD, UPDATE)));
+                                 feedingId.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? weight : gestationalAge;
+                             }
+                         });
 
         addScreenHandler(weight, SampleMeta.getNeonatalWeight(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1366,8 +1708,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public void onStateChange(StateChangeEvent event) {
-                weight.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                weight.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
                 weight.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? isTransfused : feedingId;
             }
         });
 
@@ -1384,8 +1730,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  isTransfused.setEnabled(isState(QUERY) ||
-                                                         (canEdit && isState(ADD, UPDATE)));
+                                                         (canEditSample && isState(ADD, UPDATE)));
                                  isTransfused.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? transfusionDate : weight;
                              }
                          });
 
@@ -1402,8 +1752,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  transfusionDate.setEnabled(isState(QUERY) ||
-                                                            (canEdit && isState(ADD, UPDATE)));
+                                                            (canEditSample && isState(ADD, UPDATE)));
                                  transfusionDate.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? transfusionAge : isTransfused;
                              }
                          });
 
@@ -1415,6 +1769,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             public void onStateChange(StateChangeEvent event) {
                 transfusionAge.setEnabled(isState(QUERY));
                 transfusionAge.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? isRepeat : transfusionDate;
             }
         });
 
@@ -1428,8 +1786,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public void onStateChange(StateChangeEvent event) {
-                isRepeat.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                isRepeat.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
                 isRepeat.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? collectionAge : transfusionAge;
             }
         });
 
@@ -1446,8 +1808,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  collectionAge.setEnabled(isState(QUERY) ||
-                                                          (canEdit && isState(ADD, UPDATE)));
+                                                          (canEditSample && isState(ADD, UPDATE)));
                                  collectionAge.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isCollectionValid : isRepeat;
                              }
                          });
 
@@ -1464,8 +1830,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  isCollectionValid.setEnabled(isState(QUERY) ||
-                                                              (canEdit && isState(ADD, UPDATE)));
+                                                              (canEditSample && isState(ADD, UPDATE)));
                                  isCollectionValid.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? providerLastName : collectionAge;
                              }
                          });
 
@@ -1487,10 +1857,26 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onStateChange(StateChangeEvent event) {
                                  providerLastName.setEnabled(isState(QUERY) ||
-                                                             (canEdit && isState(ADD, UPDATE)));
+                                                             (canEditSample && isState(ADD, UPDATE)));
                                  providerLastName.setQueryMode(isState(QUERY));
                              }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? providerFirstName : isCollectionValid;
+                             }
                          });
+
+        providerLastName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setProvider(previousManager.getSampleNeonatal().getProvider());
+                    screen.focusNextWidget((Focusable)providerLastName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         providerLastName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
@@ -1534,9 +1920,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 providerFirstName.setEnabled(isState(QUERY) ||
-                                                              (canEdit && isState(ADD, UPDATE)));
+                                 providerFirstName.setEnabled(isState(QUERY));
                                  providerFirstName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? projectName : providerLastName;
                              }
                          });
 
@@ -1544,14 +1933,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          SampleMeta.getProjectName(),
                          new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 SampleProjectViewDO data;
-
-                                 data = getFirstPermanentProject();
-                                 if (data != null)
-                                     projectName.setValue(data.getProjectId(),
-                                                          data.getProjectName());
-                                 else
-                                     projectName.setValue(null, "");
+                                 setProject(getFirstProject(manager));
                              }
 
                              public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
@@ -1560,15 +1942,31 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  data = null;
                                  if (event.getValue() != null)
                                      data = (ProjectDO)event.getValue().getData();
-                                 setProject(data);
+                                 changeProject(data);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  projectName.setEnabled(isState(QUERY) ||
-                                                        (canEdit && isState(ADD, UPDATE)));
+                                                        (canEditSample && isState(ADD, UPDATE)));
                                  projectName.setQueryMode(isState(QUERY));
                              }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToName : providerFirstName;
+                             }
                          });
+
+        projectName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setProject(getFirstProject(previousManager));
+                    screen.focusNextWidget((Focusable)projectName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         projectName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
@@ -1601,66 +1999,95 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(projectButton, "projectButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
-                projectButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+                projectButton.setEnabled(isState(DISPLAY) ||
+                                         (canEditSample && isState(ADD, UPDATE)));
             }
         });
 
-        addScreenHandler(reportToName,
-                         SampleMeta.getOrgName(),
-                         new ScreenHandler<AutoCompleteValue>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 SampleOrganizationViewDO data;
+        addScreenHandler(reportToName, REPORT_TO_KEY, new ScreenHandler<AutoCompleteValue>() {
+            public void onDataChange(DataChangeEvent event) {
+                setReportTo(getSampleOrganization(manager, Constants.dictionary().ORG_REPORT_TO));
+            }
 
-                                 data = getSampleOrganization(Constants.dictionary().ORG_REPORT_TO);
+            public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                OrganizationDO data;
 
-                                 if (data != null)
-                                     reportToName.setValue(data.getOrganizationId(),
-                                                           data.getOrganizationName());
-                                 else
-                                     reportToName.setValue(null, "");
-                             }
+                data = null;
+                if (event.getValue() != null)
+                    data = (OrganizationDO)event.getValue().getData();
+                changeOrganization(Constants.dictionary().ORG_REPORT_TO, data);
+            }
 
-                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                                 OrganizationDO data;
+            public void onStateChange(StateChangeEvent event) {
+                reportToName.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                reportToName.setQueryMode(isState(QUERY));
+            }
 
-                                 data = null;
-                                 if (event.getValue() != null)
-                                     data = (OrganizationDO)event.getValue().getData();
-                                 setOrganization(Constants.dictionary().ORG_REPORT_TO, data);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 reportToName.setEnabled(isState(QUERY) ||
-                                                         (canEdit && isState(ADD, UPDATE)));
-                                 reportToName.setQueryMode(isState(QUERY));
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? birthHospitalName : projectName;
+            }
+        });
 
         reportToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                showOrganizationMatches(event.getMatch(), reportToName);
+                Item<Integer> row;
+                OrganizationDO data;
+                ArrayList<OrganizationDO> list;
+                ArrayList<Item<Integer>> model;
+
+                setBusy();
+                try {
+                    list = OrganizationService.get()
+                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new Item<Integer>(4);
+                        data = list.get(i);
+
+                        row.setKey(data.getId());
+                        row.setData(data);
+                        row.setCell(0, data.getName());
+                        row.setCell(1, data.getAddress().getStreetAddress());
+                        row.setCell(2, data.getAddress().getCity());
+                        row.setCell(3, data.getAddress().getState());
+
+                        model.add(row);
+                    }
+                    reportToName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                clearStatus();
+            }
+        });
+
+        reportToName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setReportTo(getSampleOrganization(previousManager,
+                                                      Constants.dictionary().ORG_REPORT_TO));
+                    screen.focusNextWidget((Focusable)reportToName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             }
         });
 
         addScreenHandler(reportToButton, "reportToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
-                reportToButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+                reportToButton.setEnabled(isState(DISPLAY) ||
+                                          (canEditSample && isState(ADD, UPDATE)));
             }
         });
 
         addScreenHandler(birthHospitalName,
-                         SampleMeta.getBillTo(),
+                         BIRTH_HOSPITAL_KEY,
                          new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 SampleOrganizationViewDO data;
-
-                                 data = getSampleOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL);
-
-                                 if (data != null)
-                                     birthHospitalName.setValue(data.getOrganizationId(),
-                                                                data.getOrganizationName());
-                                 else
-                                     birthHospitalName.setValue(null, "");
+                                 setBirthHospital(getSampleOrganization(manager,
+                                                                        Constants.dictionary().ORG_BIRTH_HOSPITAL));
                              }
 
                              public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
@@ -1669,43 +2096,95 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  data = null;
                                  if (event.getValue() != null)
                                      data = (OrganizationDO)event.getValue().getData();
-                                 setOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL, data);
+                                 changeOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL, data);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
                                  birthHospitalName.setEnabled(isState(QUERY) ||
-                                                              (canEdit && isState(ADD, UPDATE)));
+                                                              (canEditSample && isState(ADD, UPDATE)));
                                  birthHospitalName.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? formNumber : reportToName;
                              }
                          });
 
         birthHospitalName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                showOrganizationMatches(event.getMatch(), birthHospitalName);
+                Item<Integer> row;
+                OrganizationDO data;
+                ArrayList<OrganizationDO> list;
+                ArrayList<Item<Integer>> model;
+
+                setBusy();
+                try {
+                    list = OrganizationService.get()
+                                              .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new Item<Integer>(4);
+                        data = list.get(i);
+
+                        row.setKey(data.getId());
+                        row.setData(data);
+                        row.setCell(0, data.getName());
+                        row.setCell(1, data.getAddress().getStreetAddress());
+                        row.setCell(2, data.getAddress().getCity());
+                        row.setCell(3, data.getAddress().getState());
+
+                        model.add(row);
+                    }
+                    birthHospitalName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                clearStatus();
+            }
+        });
+
+        birthHospitalName.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    setBirthHospital(getSampleOrganization(previousManager,
+                                                           Constants.dictionary().ORG_BIRTH_HOSPITAL));
+                    screen.focusNextWidget((Focusable)birthHospitalName, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             }
         });
 
         addScreenHandler(birthHospitalButton, "birthHospitalButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
                 birthHospitalButton.setEnabled(isState(DISPLAY) ||
-                                               (canEdit && isState(ADD, UPDATE)));
+                                               (canEditSample && isState(ADD, UPDATE)));
             }
         });
 
-        addScreenHandler(formNumber, SampleMeta.getNeonatalFormNumber(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                formNumber.setValue(getFormNumber());
-            }
+        addScreenHandler(formNumber,
+                         SampleMeta.getNeonatalFormNumber(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 formNumber.setValue(getFormNumber());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setFormNumber(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setFormNumber(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                formNumber.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                formNumber.setQueryMode(isState(QUERY));
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 formNumber.setEnabled(isState(QUERY) ||
+                                                       (canEditSample && isState(ADD, UPDATE)));
+                                 formNumber.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? accessionNumber : birthHospitalName;
+                             }
+                         });
 
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
@@ -1758,6 +2237,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             public Object getQuery() {
                 return analysisTab.getQueryFields();
+            }
+
+            public void isValid(Validation validation) {
+                super.isValid(validation);
+                if (analysisTab.getIsBusy())
+                    validation.setStatus(FLAGGED);
             }
         });
 
@@ -1886,10 +2371,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                             setError(Messages.get().gen_noMoreRecordInDir());
                         }
 
-                        public void failure(Throwable error) {
+                        public void failure(Throwable e) {
                             setQueryResult(null);
                             Window.alert("Error: Neonatal Login call query failed; " +
-                                         error.getMessage());
+                                         e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
                             setError(Messages.get().gen_queryFailed());
                         }
                     };
@@ -1938,7 +2424,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
-                if (event.getSource() != screen)
+                if (screen != event.getSource())
                     addAnalyses(event.getTests());
             }
         });
@@ -1969,71 +2455,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                AnalysisViewDO ana;
-                SampleTestReturnVO ret;
-
                 if (screen == event.getSource())
                     return;
 
-                ana = (AnalysisViewDO)manager.getObject(event.getUid());
-                ret = null;
-
-                /*
-                 * based on the field in the analysis being changed, call a
-                 * specific service method
-                 */
-                setBusy();
-                try {
-                    switch (event.getAction()) {
-                        case METHOD_CHANGED:
-                            ret = SampleService1.get().changeAnalysisMethod(manager,
-                                                                            ana.getId(),
-                                                                            event.getChangeId());
-                            manager = ret.getManager();
-                            break;
-                        case STATUS_CHANGED:
-                            manager = SampleService1.get()
-                                                    .changeAnalysisStatus(manager,
-                                                                          ana.getId(),
-                                                                          event.getChangeId());
-                            break;
-                        case UNIT_CHANGED:
-                            manager = SampleService1.get().changeAnalysisUnit(manager,
-                                                                              ana.getId(),
-                                                                              event.getChangeId());
-                            break;
-                        case PREP_CHANGED:
-                            manager = SampleService1.get().changeAnalysisPrep(manager,
-                                                                              ana.getId(),
-                                                                              event.getChangeId());
-                            break;
-                         default:
-                             clearStatus();
-                             return;
-                             
-                    }
-
-                    setData();
-                    setState(state);
-
-                    /*
-                     * notify all tabs that need to refresh themselves because
-                     * of the change in the analysis
-                     */
-                    bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                                    event.getChangeId(),
-                                                                    event.getAction()), screen);
-                    bus.fireEvent(new ResultChangeEvent(event.getUid()));
-
-                    clearStatus();
-                    if (ret != null)
-                        showErrorsOrTests(ret);
-                    else 
-                        isBusy = false;
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    clearStatus();
+                switch (event.getAction()) {
+                    case METHOD_CHANGED:
+                        changeAnalysisMethod(event.getUid(), event.getChangeId());
+                        break;
+                    case STATUS_CHANGED:
+                        changeAnalysisStatus(event.getUid(), event.getChangeId());
+                        break;
+                    case UNIT_CHANGED:
+                        changeAnalysisUnit(event.getUid(), event.getChangeId());
+                        break;
+                    case PREP_CHANGED:
+                        changeAnalysisPrep(event.getUid(), event.getChangeId());
+                        break;
                 }
             }
         });
@@ -2041,51 +2478,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AddRowAnalytesEvent.getType(), new AddRowAnalytesEvent.Handler() {
             @Override
             public void onAddRowAnalytes(AddRowAnalytesEvent event) {
-                AnalysisViewDO ana;
-                setBusy();
-                try {
-                    ana = event.getAnalysis();
-                    manager = SampleService1.get().addRowAnalytes(manager,
-                                                                  ana,
-                                                                  event.getAnalytes(),
-                                                                  event.getIndexes());
-                    setData();
-                    setState(state);
-                    bus.fireEvent(new ResultChangeEvent(Constants.uid().get(ana)));
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-                clearStatus();
+                addRowAnalytes(event.getAnalysis(), event.getAnalytes(), event.getIndexes());
             }
         });
 
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                SampleTestReturnVO ret;
-                ArrayList<Integer> ids;
-
-                if (screen == event.getSource())
-                    return;
-
-                ids = event.getGroupIds();
-                if (ids != null && ids.size() > 0) {
-                    setBusy();
-                    try {
-                        ret = SampleService1.get().addAuxGroups(manager, ids);
-                        manager = ret.getManager();
-                        setData();
-                        setState(state);
-                        bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
-                        clearStatus();
-                        showErrorsOrTests(ret);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                        clearStatus();
-                    }
-                }
+                if (screen != event.getSource())
+                    addAuxGroups(event.getGroupIds());
             }
         });
 
@@ -2093,22 +2494,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
-                    if (screen == event.getSource())
-                        return;
-
-                    setBusy();
-                    try {
-                        manager = SampleService1.get()
-                                                .removeAuxGroups(manager, event.getGroupIds());
-                        setData();
-                        setState(state);
-                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()),
-                                                screen);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                    clearStatus();
+                    if (screen != event.getSource())
+                        removeAuxGroups(event.getGroupIds());
                 }
             }
         });
@@ -2147,18 +2534,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             model.add(row);
         }
 
-        patientGenderId.setModel(model);
-        nextOfKinGenderId.setModel(model);
+        patientGender.setModel(model);
+        nextOfKinGender.setModel(model);
 
-        model = new ArrayList<Item<Integer>>();
+        /*
+         * show the combination of code (1,2,3 etc.) and entry("White", "Black")
+         * for each race
+         */
         for (DictionaryDO d : CategoryCache.getBySystemName("race")) {
-            row = new Item<Integer>(d.getId(), d.getEntry());
+            r = DataBaseUtil.concatWithSeparator(d.getCode(), " - ", d.getEntry());
+            row = new Item<Integer>(d.getId(), r);
             row.setEnabled( ("Y".equals(d.getIsActive())));
             model.add(row);
         }
 
-        patientRaceId.setModel(model);
-        nextOfKinRaceId.setModel(model);
+        patientRace.setModel(model);
+        nextOfKinRace.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("ethnicity")) {
@@ -2167,8 +2558,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             model.add(row);
         }
 
-        patientEthnicityId.setModel(model);
-        nextOfKinEthnicityId.setModel(model);
+        patientEthnicity.setModel(model);
+        nextOfKinEthnicity.setModel(model);
 
         stmodel = new ArrayList<Item<String>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("state")) {
@@ -2187,7 +2578,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             model.add(row);
         }
 
-        nextOfKinRelationId.setModel(model);
+        nextOfKinRelation.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("feeding")) {
@@ -2249,10 +2640,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
+                    previousManager = manager;
                     manager = result;
-                    manager.getSampleNeonatal().setPatient(new PatientDO());
-                    manager.getSampleNeonatal().setNextOfKin(new PatientDO());
+                    manager.getSampleNeonatal()
+                           .setNextOfKinRelationId(Constants.dictionary().PATIENT_RELATION_MOTHER);
                     cache = new HashMap<String, Object>();
+                    isPatientLocked = false;
+                    isNextOfKinLocked = false;
                     evaluateEdit();
                     setData();
                     setState(ADD);
@@ -2284,12 +2678,24 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
                     manager = result;
+                    if ( !Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
+                        /*
+                         * the sample's domain may have changed after it was
+                         * loaded on the screen, so the sample needs to be
+                         * unlocked because it can't be edited here
+                         */
+                        Window.alert(Messages.get().sample_domainChangedException());
+                        state = UPDATE;
+                        abort(null);
+                        return;
+                    }
+
                     buildCache();
                     evaluateEdit();
                     setData();
                     setState(UPDATE);
                     fireDataChange();
-                    orderId.setFocus(true);
+                    accessionNumber.setFocus(true);
                 }
 
                 public void failure(Throwable e) {
@@ -2314,10 +2720,29 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        AddressDO paddr, naddr;
         Validation validation;
 
         finishEditing();
 
+        if (isState(ADD, UPDATE)) {
+            /*
+             * if the patient's address has not been set, then set it from next
+             * of kin's address
+             */
+            paddr = manager.getSampleNeonatal().getPatient().getAddress();
+            naddr = manager.getSampleNeonatal().getNextOfKin().getAddress();
+
+            if (isEmpty(paddr) && !isEmpty(naddr)) {
+                paddr.setMultipleUnit(naddr.getMultipleUnit());
+                paddr.setStreetAddress(naddr.getStreetAddress());
+                paddr.setCity(naddr.getCity());
+                paddr.setState(naddr.getState());
+                paddr.setZipCode(naddr.getZipCode());
+                fireDataChange();
+            }
+        }
+        
         validation = validate();
 
         switch (validation.getStatus()) {
@@ -2374,10 +2799,83 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * otherwise loads the screen with the committed data.
      */
     protected void commitUpdate(final boolean ignoreWarning) {
+        Integer accession;
+        String prefix;
+        PatientDO data;
+        ValidationErrorsList e1;
+
         if (state == ADD)
             setBusy(Messages.get().adding());
         else
             setBusy(Messages.get().updating());
+
+        try {
+            /*
+             * add the patient if it's a new one; update it if it's locked
+             */
+            data = manager.getSampleNeonatal().getPatient();
+            if (data.getId() == null) {
+                PatientService.get().validate(data);
+                data = PatientService.get().add(data);
+                manager.getSampleNeonatal().setPatientId(data.getId());
+                manager.getSampleNeonatal().setPatient(data);
+            } else if (isPatientLocked) {
+                PatientService.get().validate(data);
+                data = PatientService.get().update(data);
+                manager.getSampleNeonatal().setPatient(data);
+                isPatientLocked = false;
+            }
+
+            /*
+             * add the next of kin if it's a new one; update it if it's locked
+             */
+            data = manager.getSampleNeonatal().getNextOfKin();
+            if (data.getId() == null) {
+                PatientService.get().validate(data);
+                data = PatientService.get().add(data);
+                manager.getSampleNeonatal().setNextOfKinId(data.getId());
+                manager.getSampleNeonatal().setNextOfKin(data);
+            } else if (isNextOfKinLocked) {
+                PatientService.get().validate(data);
+                data = PatientService.get().update(data);
+                manager.getSampleNeonatal().setNextOfKin(data);
+                isNextOfKinLocked = false;
+            }
+        } catch (ValidationErrorsList e) {
+            /*
+             * for display
+             */
+            accession = manager.getSample().getAccessionNumber();
+            if (accession == null)
+                accession = 0;
+
+            /*
+             * new FormErrorExceptions are created to prepend accession number
+             * to the messages of FormErrorExceptions returned by patient
+             * validation; other exceptions are shown as is
+             */
+            e1 = new ValidationErrorsList();
+            prefix = Messages.get().sample_accessionPrefix(accession);
+            for (Exception ex : e.getErrorList()) {
+                if (ex instanceof FormErrorException)
+                    e1.add(new FormErrorException(DataBaseUtil.concatWithSeparator(prefix,
+                                                                                   " ",
+                                                                                   ex.getMessage())));
+                else
+                    e1.add(ex);
+            }
+
+            showErrors(e1);
+            return;
+        } catch (Exception e) {
+            if (isState(ADD))
+                Window.alert("commitAdd(): " + e.getMessage());
+            else
+                Window.alert("commitUpdate(): " + e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+            return;
+        }
 
         if (commitUpdateCall == null) {
             commitUpdateCall = new AsyncCallbackUI<SampleManager1>() {
@@ -2437,6 +2935,26 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             fireDataChange();
             setDone(Messages.get().gen_queryAborted());
         } else if (state == ADD) {
+            /*
+             * unlock the patient if it's locked
+             */
+            try {
+                unlockPatient();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
+            /*
+             * unlock the next of kin if it's locked
+             */
+            try {
+                unlockNextOfKin();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
             manager = null;
             evaluateEdit();
             setData();
@@ -2444,6 +2962,26 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
         } else if (state == UPDATE) {
+            /*
+             * unlock the patient if it's locked
+             */
+            try {
+                unlockPatient();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
+            /*
+             * unlock the next of kin if it's locked
+             */
+            try {
+                unlockNextOfKin();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<SampleManager1>() {
                     public void success(SampleManager1 result) {
@@ -2481,7 +3019,71 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             SampleService1.get().unlock(manager.getSample().getId(), elements, unlockCall);
         }
     }
-    
+
+    /**
+     * Duplicates the manager loaded on the screen
+     */
+    protected void duplicate() {
+        setBusy();
+
+        if (duplicateCall == null) {
+            duplicateCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
+                    if ( !Constants.domain().NEONATAL.equals(result.getSample().getDomain())) {
+                        /*
+                         * the sample's domain may have changed after it was
+                         * loaded on the screen, so it can't be edited here
+                         */
+                        Window.alert(Messages.get().sample_domainChangedException());
+
+                        /*
+                         * the manager is set to null because the manager
+                         * returned from the back-end has null or negative ids
+                         * and the screen can't be loaded from such a manager in
+                         * a non-editing state
+                         */
+                        manager = null;
+                        evaluateEdit();
+                        setData();
+                        setState(DEFAULT);
+                        fireDataChange();
+                        clearStatus();
+                        return;
+                    }
+
+                    previousManager = manager;
+                    manager = result;
+
+                    buildCache();
+                    evaluateEdit();
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                    accessionNumber.setFocus(true);
+                    setDone(Messages.get().gen_enterInformationPressCommit());
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
+        }
+
+        SampleService1.get().duplicate(manager.getSample().getId(), duplicateCall);
+    }
+
+    /**
+     * Overridden because the patient/next of kin fields can be enabled or
+     * disabled several times in Add or Update states, based on factors such as
+     * whether the patient is locked
+     */
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
     /**
      * validates the screen and sets the status of validation to "Flagged" if
      * some operation needs to be completed before committing
@@ -2489,11 +3091,73 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     public Validation validate() {
         Validation validation;
 
+        if (isState(QUERY)) {
+            /*
+             * the user can't query for both report-to and birth hospital
+             */
+            if (reportToName.getQuery() != null && birthHospitalName.getQuery() != null) {
+                reportToName.addException(new Exception(Messages.get()
+                                                                .sampleOrganization_cantQueryByMultipleTypeException()));
+                birthHospitalName.addException(new Exception(Messages.get()
+                                                                     .sampleOrganization_cantQueryByMultipleTypeException()));
+            } else {
+                reportToName.clearExceptions();
+                birthHospitalName.clearExceptions();
+            }
+        }
+
         validation = super.validate();
         if (isBusy)
             validation.setStatus(FLAGGED);
 
         return validation;
+    }
+
+    /**
+     * Returns the list of fields that the user wants to query by
+     */
+    public ArrayList<QueryData> getQueryFields() {
+        String type;
+        QueryData nameField, typeField;
+        ArrayList<QueryData> fields;
+
+        fields = super.getQueryFields();
+        nameField = null;
+        type = null;
+
+        /*
+         * find the query field for sample organization
+         */
+        for (QueryData field : fields) {
+            if (REPORT_TO_KEY.equals(field.getKey())) {
+                nameField = field;
+                type = Constants.dictionary().ORG_REPORT_TO.toString();
+            } else if (BIRTH_HOSPITAL_KEY.equals(field.getKey())) {
+                nameField = field;
+                type = Constants.dictionary().ORG_BIRTH_HOSPITAL.toString();
+            }
+        }
+
+        if (nameField == null)
+            return fields;
+
+        /*
+         * the widgets for sample organization don't use keys from the meta, so
+         * the correct key needs to be set in their query field
+         */
+        nameField.setKey(SampleMeta.getSampleOrgOrganizationName());
+
+        /*
+         * this field is added to restrict the query by the type of organization
+         * queried for
+         */
+        typeField = new QueryData();
+        typeField.setKey(SampleMeta.getSampleOrgTypeId());
+        typeField.setQuery(type);
+        typeField.setType(QueryData.Type.INTEGER);
+        fields.add(typeField);
+
+        return fields;
     }
 
     /**
@@ -2537,6 +3201,158 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
+     * Shows the popup for patient lookup with no initial search specified
+     */
+    @UiHandler("patientEmptySearchButton")
+    protected void patientEmptySearch(ClickEvent event) {
+        if ( !isBusy) {
+            setSelectedAsNextOfKin = false;
+            lookupPatient(null, false);
+        }
+    }
+
+    /**
+     * Shows the popup for patient lookup to search by the patient's fields
+     */
+    @UiHandler("patientFieldSearchButton")
+    protected void patientFieldSearch(ClickEvent event) {
+        if ( !isBusy) {
+            setSelectedAsNextOfKin = false;
+            lookupPatient(manager.getSampleNeonatal().getPatient(), false);
+        }
+    }
+
+    /**
+     * Unlinks the current patient from the sample and unlocks the patient if
+     * it's an existing one
+     */
+    @UiHandler("unlinkPatientButton")
+    protected void unlinkPatient(ClickEvent event) {
+        try {
+            unlockPatient();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+
+        manager.getSampleNeonatal().setPatientId(null);
+        manager.getSampleNeonatal().setPatient(new PatientDO());
+        evaluateEdit();
+        setData();
+        setState(state);
+        fireDataChange();
+        patientLastName.setFocus(true);
+    }
+
+    /**
+     * If the patient is an existing one and not locked then locks it and
+     * enables the patient fields for editing
+     */
+    @UiHandler("editPatientButton")
+    protected void editPatient(ClickEvent event) {
+        PatientDO data;
+
+        if (isPatientLocked || manager.getSampleNeonatal().getPatientId() == null) {
+            patientLastName.setFocus(true);
+            return;
+        }
+
+        try {
+            data = PatientService.get().fetchForUpdate(manager.getSampleNeonatal().getPatientId());
+            manager.getSampleNeonatal().setPatient(data);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+
+        isPatientLocked = true;
+        evaluateEdit();
+        setData();
+        setState(state);
+        fireDataChange();
+        patientLastName.setFocus(true);
+    }
+
+    /**
+     * Shows the popup for patient lookup with no initial search specified
+     */
+    @UiHandler("nextOfKinEmptySearchButton")
+    protected void nextOfKinEmptySearch(ClickEvent event) {
+        if ( !isBusy) {
+            setSelectedAsNextOfKin = true;
+            lookupPatient(null, false);
+        }
+    }
+
+    /**
+     * Shows the popup for patient lookup to search by the patient's fields
+     */
+    @UiHandler("nextOfKinFieldSearchButton")
+    protected void nextOfKinFieldSearch(ClickEvent event) {
+        if ( !isBusy) {
+            setSelectedAsNextOfKin = true;
+            lookupPatient(manager.getSampleNeonatal().getNextOfKin(), false);
+        }
+    }
+
+    /**
+     * Unlinks the current next of kin from the sample and unlocks it if it's an
+     * existing patient
+     */
+    @UiHandler("unlinkNextOfKinButton")
+    protected void unlinkNextOfKin(ClickEvent event) {
+        try {
+            unlockNextOfKin();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+
+        manager.getSampleNeonatal().setNextOfKinId(null);
+        manager.getSampleNeonatal().setNextOfKin(new PatientDO());
+
+        evaluateEdit();
+        setData();
+        setState(state);
+        fireDataChange();
+        nextOfKinLastName.setFocus(true);
+    }
+
+    /**
+     * If the next of kin is an existing one and not locked then locks it and
+     * enables the next of kin fields for editing
+     */
+    @UiHandler("editNextOfKinButton")
+    protected void editNextOfKin(ClickEvent event) {
+        PatientDO data;
+
+        if (isNextOfKinLocked || manager.getSampleNeonatal().getNextOfKinId() == null) {
+            nextOfKinLastName.setFocus(true);
+            return;
+        }
+
+        try {
+            data = PatientService.get()
+                                 .fetchForUpdate(manager.getSampleNeonatal().getNextOfKinId());
+            manager.getSampleNeonatal().setNextOfKin(data);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+
+        isNextOfKinLocked = true;
+        evaluateEdit();
+        setData();
+        setState(state);
+        fireDataChange();
+        nextOfKinLastName.setFocus(true);
+    }
+
+    /**
      * shows the popup for the sample's projects
      */
     @UiHandler("projectButton")
@@ -2547,19 +3363,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             sampleprojectLookUp = new SampleProjectLookupUI() {
                 @Override
                 public void ok() {
-                    SampleProjectViewDO data;
-                    if (isState(ADD, UPDATE)) {
-                        /*
-                         * refresh the display of the autocomplete showing the
-                         * project because the list of projects may have been
-                         * changed through the popup
-                         */
-                        data = getFirstPermanentProject();
-                        if (data != null)
-                            projectName.setValue(data.getProjectId(), data.getProjectName());
-                        else
-                            projectName.setValue(null, "");
-                    }
+                    /*
+                     * refresh the display of the autocomplete showing the
+                     * project because the list of projects may have been
+                     * changed through the popup
+                     */
+                    if (isState(ADD, UPDATE))
+                        setProject(getFirstProject(manager));
                 }
             };
         }
@@ -2624,7 +3434,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         nav.clearSelection();
                     }
-                    
+
                     public void finish() {
                         fireDataChange();
                         clearStatus();
@@ -2654,8 +3464,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * determines if the fields on the screen can be edited based on the data
      */
     private void evaluateEdit() {
-        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                            .getStatusId()));
+        canEditSample = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                                  .getStatusId()));
+        canEditPatient = (getPatientId() == null || isPatientLocked);
+        canEditNextOfKin = (getNextOfKinId() == null || isNextOfKinLocked);
     }
 
     /**
@@ -2700,9 +3512,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             prevId = null;
             for (i = 0; i < manager.auxData.count(); i++ ) {
                 aux = manager.auxData.get(i);
-                if ( !aux.getGroupId().equals(prevId)) {
-                    ids.add(aux.getGroupId());
-                    prevId = aux.getGroupId();
+                if ( !aux.getAuxFieldGroupId().equals(prevId)) {
+                    ids.add(aux.getAuxFieldGroupId());
+                    prevId = aux.getAuxFieldGroupId();
                 }
             }
 
@@ -2734,6 +3546,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
         return b.toString();
+    }
+
+    /**
+     * Returns true if the data for a field can be copied from the previous
+     * manager that the screen was loaded with, based on the passed code
+     * representing the key pressed by the user
+     */
+    private boolean canCopyFromPrevious(int keyCode) {
+        return previousManager != null && KeyCodes.KEY_F2 == keyCode;
     }
 
     /*
@@ -2823,7 +3644,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void setOrderId(Integer ordId) {
         SampleTestReturnVO ret;
-        
+
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
             return;
@@ -2842,7 +3663,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setData();
             fireDataChange();
             clearStatus();
-            showErrorsOrTests(ret);
+            if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                showErrors(ret.getErrors());
+            else
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2932,11 +3756,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
+     * Returns the patient's id or null if either the manager or the patient DO
+     * is null
+     */
+    private Integer getPatientId() {
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getId();
+    }
+
+    /**
+     * Sets the patient's id
+     */
+    private void setPatientId(Integer id) {
+        manager.getSampleNeonatal().getPatient().setId(id);
+    }
+
+    /**
      * returns the patient's last name or null if either the manager or the
      * patient DO is null
      */
     private String getPatientLastName() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getLastName();
     }
@@ -2953,7 +3796,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * patient DO is null
      */
     private String getPatientFirstName() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getFirstName();
     }
@@ -2970,7 +3814,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private Integer getPatientGenderId() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getGenderId();
     }
@@ -2987,7 +3832,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private Integer getPatientRaceId() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getRaceId();
     }
@@ -3004,7 +3850,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * patient DO is null
      */
     private Integer getPatientEthnicityId() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getEthnicityId();
     }
@@ -3021,7 +3868,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * patient DO is null
      */
     private Datetime getPatientBirthDate() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getBirthDate();
     }
@@ -3038,7 +3886,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * patient DO is null
      */
     private Datetime getPatientBirthTime() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getBirthTime();
     }
@@ -3055,7 +3904,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * manager or the patient DO is null
      */
     private String getPatientAddressMultipleUnit() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getAddress().getMultipleUnit();
     }
@@ -3072,7 +3922,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * patient DO is null
      */
     private String getPatientAddressStreetAddress() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getAddress().getStreetAddress();
     }
@@ -3089,7 +3940,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private String getPatientAddressCity() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getAddress().getCity();
     }
@@ -3106,7 +3958,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private String getPatientAddressState() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getAddress().getState();
     }
@@ -3123,7 +3976,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * patient DO is null
      */
     private String getPatientAddressZipCode() {
-        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
             return null;
         return manager.getSampleNeonatal().getPatient().getAddress().getZipCode();
     }
@@ -3136,11 +3990,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
+     * Returns the next of kin's id or null if either the manager or the patient
+     * DO is null
+     */
+    private Integer getNextOfKinId() {
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getId();
+    }
+
+    /**
+     * Sets the next of kin's id
+     */
+    private void setNextOfKinId(Integer id) {
+        manager.getSampleNeonatal().getNextOfKin().setId(id);
+    }
+
+    /**
      * returns next of kin's last name or null if either the manager or next of
      * kin DO is null
      */
     private String getNextOfKinLastName() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getLastName();
     }
@@ -3157,7 +4030,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * of kin DO is null
      */
     private String getNextOfKinMiddleName() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getMiddleName();
     }
@@ -3175,7 +4049,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * kin DO is null
      */
     private String getNextOfKinFirstName() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getFirstName();
     }
@@ -3191,7 +4066,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns next of kin relation or null if the manager is null
      */
     private Integer getNeonatalNextOfKinRelationId() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKinRelationId();
     }
@@ -3208,7 +4083,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private Integer getNextOfKinGenderId() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getGenderId();
     }
@@ -3225,7 +4101,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private Integer getNextOfKinRaceId() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getRaceId();
     }
@@ -3242,7 +4119,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * kin DO is null
      */
     private Integer getNextOfKinEthnicityId() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getEthnicityId();
     }
@@ -3259,7 +4137,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * kin DO is null
      */
     private Datetime getNextOfKinBirthDate() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getBirthDate();
     }
@@ -3272,11 +4151,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
+     * Returns the next of kin' national id or null if either the manager or the
+     * next of kin DO is null
+     */
+    private String getNextOfKinNationalId() {
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getNationalId();
+    }
+
+    /**
+     * Sets the next of kin's national id
+     */
+    private void setNextOfKinNationalId(String nationalId) {
+        manager.getSampleNeonatal().getNextOfKin().setNationalId(nationalId);
+    }
+
+    /**
      * returns next of kin's home phone or null if either the manager or next of
      * kin DO is null
      */
     private String getNextOfKinAddressHomePhone() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getHomePhone();
     }
@@ -3293,7 +4191,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * manager or next of kin DO is null
      */
     private String getNextOfKinAddressMultipleUnit() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getMultipleUnit();
     }
@@ -3310,7 +4209,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * next of kin DO is null
      */
     private String getNextOfKinAddressStreetAddress() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getStreetAddress();
     }
@@ -3327,7 +4227,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private String getNextOfKinAddressCity() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getCity();
     }
@@ -3344,7 +4245,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * DO is null
      */
     private String getNextOfKinAddressState() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getState();
     }
@@ -3361,7 +4263,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * kin DO is null
      */
     private String getNextOfKinAddressZipCode() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getZipCode();
     }
@@ -3378,7 +4281,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * kin DO is null
      */
     private String getIsNicu() {
-        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getIsNicu();
     }
@@ -3391,7 +4295,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns the birth order or null if the manager is null
      */
     private Integer getBirthOrder() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getBirthOrder();
     }
@@ -3407,7 +4311,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns the gestational age or null if the manager is null
      */
     private Integer getGestationalAge() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getGestationalAge();
     }
@@ -3423,7 +4327,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns the type of feeding or null if the manager is null
      */
     private Integer getFeedingId() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getFeedingId();
     }
@@ -3439,7 +4343,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns the weight or null if the manager is null
      */
     private Integer getWeight() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getWeight();
     }
@@ -3455,7 +4359,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns whether the sample is tranfused or null if the manager is null
      */
     private String getIsTransfused() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getIsTransfused();
     }
@@ -3471,7 +4375,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns the tranfusion date or null if the manager is null
      */
     private Datetime getTransfusionDate() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getTransfusionDate();
     }
@@ -3511,7 +4415,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * null
      */
     private String getIsRepeat() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getIsRepeat();
     }
@@ -3527,7 +4431,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns the collection age or null if the manager is null
      */
     private Integer getNeonatalCollectionAge() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getCollectionAge();
     }
@@ -3543,7 +4447,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * returns whether the collection is valid or null if the manager is null
      */
     private String getIsCollectionValid() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getIsCollectionValid();
     }
@@ -3555,16 +4459,47 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSampleNeonatal().setIsCollectionValid(isCollectionValid);
     }
 
+    /**
+     * returns the provider's id or null if the manager is null
+     */
     private Integer getProviderId() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getProviderId();
     }
 
+    /**
+     * sets whether the provider's id
+     */
     private void setProviderId(Integer providerId) {
         manager.getSampleNeonatal().setProviderId(providerId);
     }
 
+    /**
+     * returns the provider's last name or null if the manager is null
+     */
+    private String getProviderLastName() {
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getProvider() == null)
+            return null;
+        return manager.getSampleNeonatal().getProvider().getLastName();
+    }
+
+    /**
+     * returns the provider's first name or null if the manager is null
+     */
+    private String getProviderFirstName() {
+        if (manager == null || manager.getSampleNeonatal() == null ||
+            manager.getSampleNeonatal().getProvider() == null)
+            return null;
+        return manager.getSampleNeonatal().getProvider().getFirstName();
+    }
+
+    /**
+     * If the passed provider is not null then sets it as the sample's provider,
+     * otherwise, blanks the provider. Refreshes the display of the autcomplete
+     * accordingly.
+     */
     private void setProvider(ProviderDO data) {
         if (data == null || data.getId() == null)
             setProviderId(null);
@@ -3575,174 +4510,37 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         providerFirstName.setValue(getProviderFirstName());
     }
 
-    private String getProviderLastName() {
-        if (manager == null || manager.getSampleNeonatal().getProvider() == null)
-            return null;
-        return manager.getSampleNeonatal().getProvider().getLastName();
-    }
-
-    private String getProviderFirstName() {
-        if (manager == null || manager.getSampleNeonatal().getProvider() == null)
-            return null;
-        return manager.getSampleNeonatal().getProvider().getFirstName();
-    }
-
     /**
-     * Adds or updates the first permanent project to the sample if the argument
-     * is not null, otherwise deletes the first permanent project. Also
-     * refreshes the display of the autocomplete.
+     * Sets the display of the autocomplete for project from the passed sample
+     * project
      */
-    private void setProject(ProjectDO proj) {
-        SampleProjectViewDO data;
-
-        data = getFirstPermanentProject();
-        if (proj == null) {
-            /*
-             * if a project was not selected and if there were permanent
-             * projects present then the first permanent project is deleted and
-             * the next permanent project is set as the first one
-             */
-            if (data != null)
-                manager.project.remove(data);
-        } else {
-            /*
-             * otherwise the first permanent project is modified or a new one is
-             * created if no project existed
-             */
-            if (data == null)
-                data = manager.project.add();
-            data.setProjectId(proj.getId());
-            data.setProjectName(proj.getName());
-            data.setProjectDescription(proj.getDescription());
-        }
-
-        if (proj != null)
-            projectName.setValue(proj.getId(), proj.getName());
+    private void setProject(SampleProjectViewDO data) {
+        if (data != null)
+            projectName.setValue(data.getProjectId(), data.getProjectName());
         else
             projectName.setValue(null, "");
     }
 
     /**
-     * returns the first permanent project from the manager, or null if the
-     * manager is null or it doesn't have any permanent projects
+     * Sets the display of the autocomplete for report-to from the passed sample
+     * organization
      */
-    private SampleProjectViewDO getFirstPermanentProject() {
-        ArrayList<SampleProjectViewDO> p;
-
-        if (manager == null)
-            return null;
-
-        p = manager.project.getByType("Y");
-        if (p != null && p.size() > 0)
-            return p.get(0);
-        return null;
-    }
-
-    private void lookupPatient(boolean fromField) {
-        ModalWindow modal;
-        PatientDO pat;
-
-        try {
-            if (pLookupScreen == null) {
-                pLookupScreen = new PatientLookupUI() {
-                    public void select() {
-                        PatientDO pDO;
-                        PatientRelationVO prVO;
-
-                        pDO = pLookupScreen.getSelectedPatient();
-                        prVO = pLookupScreen.getSelectedNextOfKin();
-                    }
-
-                    public void cancel() {
-                        // ignore
-                    }
-                };
-            }
-
-            pat = manager.getSampleNeonatal().getPatient();
-            if (fromField && (pat.getLastName() == null || pat.getFirstName() == null))
-                return;
-
-            modal = new ModalWindow();
-            modal.setName("Patient Lookup");
-            modal.setContent(pLookupScreen);
-            modal.setSize("880px", "355px");
-            pLookupScreen.setWindow(modal);
-            //pLookupScreen.initialize();
-            //if (fromField)
-              //  pLookupScreen.search(pat);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
-            return;
-        }
+    private void setReportTo(SampleOrganizationViewDO data) {
+        if (data != null)
+            reportToName.setValue(data.getOrganizationId(), data.getOrganizationName());
+        else
+            reportToName.setValue(null, "");
     }
 
     /**
-     * Adds or updates the sample organization of the specified type if the
-     * passed organization is not null, otherwise deletes the sample
-     * organization of this type. Also refreshes the display of the autocomplete
-     * showing the organization of this type.
+     * Sets the display of the autocomplete for birth hospital from the passed
+     * sample organization
      */
-    private void setOrganization(Integer type, OrganizationDO org) {
-        Integer id;
-        String name;
-        SampleOrganizationViewDO data;
-
-        data = getSampleOrganization(type);
-        if (org == null) {
-            /*
-             * this method is called only when the organization changes and if
-             * there isn't a sample organization of this type selected
-             * currently, then there must have been before, thus it needs to be
-             * removed from the manager
-             */
-            manager.organization.remove(data);
-        } else {
-            if (data == null) {
-                /*
-                 * an organization was selected by the user but there isn't one
-                 * present in the manager, thus it needs to be added
-                 */
-                data = manager.organization.add(org);
-                data.setTypeId(type);
-            } else {
-                /*
-                 * the organization was changed, thus the sample organization
-                 * needs to be updated
-                 */
-                data.setOrganizationId(org.getId());
-                data.setOrganizationName(org.getName());
-                data.setOrganizationMultipleUnit(org.getAddress().getMultipleUnit());
-                data.setOrganizationStreetAddress(org.getAddress().getStreetAddress());
-                data.setOrganizationCity(org.getAddress().getCity());
-                data.setOrganizationState(org.getAddress().getState());
-                data.setOrganizationZipCode(org.getAddress().getZipCode());
-                data.setOrganizationCountry(org.getAddress().getCountry());
-            }
-
-            id = null;
-            name = null;
-            if (org != null) {
-                id = org.getId();
-                name = org.getName();
-                /*
-                 * warn the user if samples from this organization are to held
-                 * or refused
-                 */
-                try {
-                    showHoldRefuseWarning(id, name);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
-            }
-
-            if (Constants.dictionary().ORG_REPORT_TO.equals(type))
-                reportToName.setValue(id, name);
-            else if (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(type))
-                birthHospitalName.setValue(id, name);
-        }
+    private void setBirthHospital(SampleOrganizationViewDO data) {
+        if (data != null)
+            birthHospitalName.setValue(data.getOrganizationId(), data.getOrganizationName());
+        else
+            birthHospitalName.setValue(null, "");
     }
 
     /**
@@ -3762,7 +4560,265 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * warn the user if samples from this organization are to held or refused
+     * Makes the patient lookup screen find patients matching the data in the
+     * DO. If the flag is true then the screen is not shown if one or no patient
+     * was found, otherwise the screen is shown regardless. Sets the patient
+     * selected after the query as the sample's patient.
+     */
+    private void lookupPatient(PatientDO data, boolean dontShowSinglePatient) {
+        if (patientLookup == null) {
+            patientLookup = new PatientLookupUI() {
+                public void select() {
+                    if (setSelectedAsNextOfKin) {
+                        /*
+                         * set the patient selected on the pop up as the next of
+                         * kin
+                         */
+                        setNextOfKin(patientLookup.getSelectedPatient(), null);
+                    } else {
+                        /*
+                         * set the patient selected on the pop up as the patient
+                         * and the patient relation as the next of kin, also set
+                         * the relation
+                         */
+                        setPatient(patientLookup.getSelectedPatient());
+                        if ( !isNextOfKinLocked && patientLookup.getSelectedNextOfKin() != null)
+                            setNextOfKin(patientLookup.getSelectedNextOfKin(),
+                                         patientLookup.getSelectedNextOfKin().getRelationId());
+                    }
+
+                    screen.evaluateEdit();
+                    screen.setData();
+                    screen.setState(screen.state);
+                    screen.fireDataChange();
+
+                    isBusy = false;
+                }
+
+                public void cancel() {
+                    isBusy = false;
+                }
+            };
+        }
+
+        patientLookup.query(data, dontShowSinglePatient);
+    }
+
+    /**
+     * Returns true if all the fields shown on the screen from the address are
+     * null, false otherwise
+     */
+    private boolean isEmpty(AddressDO addr) {
+        return addr.getMultipleUnit() == null && addr.getStreetAddress() == null &&
+               addr.getCity() == null && addr.getState() == null && addr.getZipCode() == null;
+    }
+
+    /**
+     * Unlocks the patient if it's locked
+     */
+    private void unlockPatient() throws Exception {
+        PatientDO data;
+
+        if (isPatientLocked) {
+            data = PatientService.get().abortUpdate(manager.getSampleNeonatal().getPatientId());
+            manager.getSampleNeonatal().setPatient(data);
+            isPatientLocked = false;
+        }
+    }
+
+    /**
+     * Unlocks the next of kin if it's locked
+     */
+    private void unlockNextOfKin() throws Exception {
+        PatientDO data;
+
+        if (isNextOfKinLocked) {
+            data = PatientService.get().abortUpdate(manager.getSampleNeonatal().getNextOfKinId());
+            manager.getSampleNeonatal().setNextOfKin(data);
+            isNextOfKinLocked = false;
+        }
+    }
+
+    /**
+     * Sets the busy flag and the passed widget as the current one with focus;
+     * looks up the patients matching the data entered in the patient's fields
+     */
+    private void patientQueryChanged() {
+        /*
+         * look up patients only if the current patient is not locked
+         */
+        if ( !isPatientLocked) {
+            isBusy = true;
+            setSelectedAsNextOfKin = false;
+            lookupPatient(manager.getSampleNeonatal().getPatient(), true);
+        }
+    }
+
+    /**
+     * Sets the busy flag and looks up the patients matching the data entered in
+     * the next of kin's fields
+     */
+    private void nextOfKinQueryChanged() {
+        /*
+         * look up patients only if the current next of kin is not locked
+         */
+        if ( !isNextOfKinLocked) {
+            isBusy = true;
+            setSelectedAsNextOfKin = true;
+            lookupPatient(manager.getSampleNeonatal().getNextOfKin(), true);
+        }
+    }
+
+    /**
+     * Sets the passed patient as the sample's patient and refreshes the screen
+     * to show its data
+     */
+    private void setPatient(PatientDO data) {
+        if (data == null)
+            return;
+
+        manager.getSampleNeonatal().setPatientId(data.getId());
+        manager.getSampleNeonatal().setPatient(data);
+
+        if (getPatientLastName() != null)
+            patientLastName.clearExceptions();
+
+        if (getPatientAddressStreetAddress() != null)
+            patientAddrStreetAddress.clearExceptions();
+    }
+
+    /**
+     * Sets the passed patient as the sample's next of kin and refreshes the
+     * screen to show its data
+     */
+    private void setNextOfKin(PatientDO data, Integer relationId) {
+        if (data == null)
+            return;
+
+        manager.getSampleNeonatal().setNextOfKinId(data.getId());
+        manager.getSampleNeonatal().setNextOfKin(data);
+        if (relationId != null)
+            manager.getSampleNeonatal().setNextOfKinRelationId(relationId);
+
+        if (getNextOfKinLastName() != null)
+            nextOfKinLastName.clearExceptions();
+
+        if (getNextOfKinAddressStreetAddress() != null)
+            nextOfKinAddrStreetAddress.clearExceptions();
+    }
+
+    /**
+     * Adds or updates the first project of the sample if the argument is not
+     * null, otherwise deletes the first project. Also refreshes the display of
+     * the autocomplete.
+     */
+    private void changeProject(ProjectDO proj) {
+        SampleProjectViewDO data;
+
+        data = getFirstProject(manager);
+        if (proj == null) {
+            /*
+             * if a project was not selected and if there were projects present
+             * then the first project is deleted and the next project is set as
+             * the first one
+             */
+            if (data != null) {
+                manager.project.remove(data);
+                data = getFirstProject(manager);
+            }
+        } else {
+            /*
+             * otherwise the first project is modified or a new one is created
+             * if no project existed
+             */
+            if (data == null) {
+                data = manager.project.add();
+                data.setIsPermanent("N");
+            }
+
+            data.setProjectId(proj.getId());
+            data.setProjectName(proj.getName());
+            data.setProjectDescription(proj.getDescription());
+        }
+
+        setProject(data);
+    }
+
+    /**
+     * Returns the first project from the manager, or null if the manager is
+     * null or it doesn't have any projects
+     */
+    private SampleProjectViewDO getFirstProject(SampleManager1 sm) {
+        if (sm == null)
+            return null;
+
+        if (sm.project.count() > 0)
+            return sm.project.get(0);
+
+        return null;
+    }
+
+    /**
+     * Adds or updates the sample organization of the specified type if the
+     * passed organization is not null, otherwise deletes the sample
+     * organization of this type. Also refreshes the display of the autocomplete
+     * showing the organization of this type.
+     */
+    private void changeOrganization(Integer type, OrganizationDO org) {
+        SampleOrganizationViewDO data;
+
+        data = getSampleOrganization(manager, type);
+        if (org == null) {
+            /*
+             * this method is called only when the organization changes and if
+             * there isn't a sample organization of this type selected
+             * currently, then there must have been before, thus it needs to be
+             * removed from the manager
+             */
+            manager.organization.remove(data);
+        } else {
+            if (data == null) {
+                /*
+                 * an organization was selected by the user but there isn't one
+                 * present in the manager, thus it needs to be added
+                 */
+                data = manager.organization.add(org);
+                data.setTypeId(type);
+            } else {
+                /*
+                 * the organization was changed, so the sample organization
+                 * needs to be updated
+                 */
+                data.setOrganizationId(org.getId());
+                data.setOrganizationName(org.getName());
+                data.setOrganizationMultipleUnit(org.getAddress().getMultipleUnit());
+                data.setOrganizationStreetAddress(org.getAddress().getStreetAddress());
+                data.setOrganizationCity(org.getAddress().getCity());
+                data.setOrganizationState(org.getAddress().getState());
+                data.setOrganizationZipCode(org.getAddress().getZipCode());
+                data.setOrganizationCountry(org.getAddress().getCountry());
+            }
+
+            /*
+             * warn the user if samples from this organization are to held or
+             * refused
+             */
+            try {
+                showHoldRefuseWarning(org.getId(), org.getName());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
+            if (Constants.dictionary().ORG_REPORT_TO.equals(type))
+                setReportTo(data);
+            else if (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(type))
+                setBirthHospital(data);
+        }
+    }
+
+    /**
+     * Warn the user if samples from this organization are to held or refused
      */
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(orgId))
@@ -3770,7 +4826,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * shows the popup for this sample's organizations
+     * Shows the popup for this sample's organizations
      */
     private void showOrganizationLookup() {
         ModalWindow modal;
@@ -3779,26 +4835,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             sampleOrganizationLookup = new SampleOrganizationLookupUI() {
                 @Override
                 public void ok() {
-                    SampleOrganizationViewDO data;
                     if (isState(ADD, UPDATE)) {
                         /*
                          * refresh the display of the autocompletes showing
                          * organizations because the list of organizations may
                          * have been changed through the popup
                          */
-                        data = getSampleOrganization(Constants.dictionary().ORG_REPORT_TO);
-                        if (data != null)
-                            reportToName.setValue(data.getOrganizationId(),
-                                                  data.getOrganizationName());
-                        else
-                            reportToName.setValue(null, "");
-
-                        data = getSampleOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL);
-                        if (data != null)
-                            birthHospitalName.setValue(data.getOrganizationId(),
-                                                       data.getOrganizationName());
-                        else
-                            birthHospitalName.setValue(null, "");
+                        setReportTo(getSampleOrganization(manager,
+                                                          Constants.dictionary().ORG_REPORT_TO));
+                        setBirthHospital(getSampleOrganization(manager,
+                                                               Constants.dictionary().ORG_BIRTH_HOSPITAL));
                     }
                 }
             };
@@ -3806,7 +4852,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         modal = new ModalWindow();
         modal.setSize("800px", "400px");
-        modal.setName(Messages.get().sample_organization());
+        modal.setName(Messages.get().sampleOrganization());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(sampleOrganizationLookup);
 
@@ -3815,51 +4861,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * shows the organizations whose name or id matches the string
-     */
-    private void showOrganizationMatches(String match, AutoComplete widget) {
-        Item<Integer> row;
-        OrganizationDO data;
-        ArrayList<OrganizationDO> list;
-        ArrayList<Item<Integer>> model;
-
-        setBusy();
-        try {
-            list = OrganizationService.get()
-                                      .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
-            model = new ArrayList<Item<Integer>>();
-            for (int i = 0; i < list.size(); i++ ) {
-                row = new Item<Integer>(4);
-                data = list.get(i);
-
-                row.setKey(data.getId());
-                row.setData(data);
-                row.setCell(0, data.getName());
-                row.setCell(1, data.getAddress().getStreetAddress());
-                row.setCell(2, data.getAddress().getCity());
-                row.setCell(3, data.getAddress().getState());
-
-                model.add(row);
-            }
-            widget.showAutoMatches(model);
-        } catch (Throwable e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        clearStatus();
-    }
-
-    /**
      * returns the organization of the specified type from the manager or null
      * if the manager is null or doesn't have an organization of this type
      */
-    private SampleOrganizationViewDO getSampleOrganization(Integer type) {
+    private SampleOrganizationViewDO getSampleOrganization(SampleManager1 sm, Integer type) {
         ArrayList<SampleOrganizationViewDO> orgs;
 
-        if (manager == null)
+        if (sm == null)
             return null;
 
-        orgs = manager.organization.getByType(type);
+        orgs = sm.organization.getByType(type);
         if (orgs != null && orgs.size() > 0)
             return orgs.get(0);
 
@@ -3867,10 +4878,50 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * Calls the service method to add the tests/panels in the list, to the
-     * sample. If there were any errors during the operation then shows them or
-     * shows the popup for selecting prep/reflex tests for the added tests. Also
-     * notifies the tabs to reload themselves.
+     * Adds the aux groups with the given ids to the manager; shows any errors
+     * found while adding the groups
+     */
+    private void addAuxGroups(ArrayList<Integer> ids) {
+        SampleTestReturnVO ret;
+
+        setBusy();
+        try {
+            ret = SampleService1.get().addAuxGroups(manager, ids);
+            manager = ret.getManager();
+            setData();
+            setState(state);
+            bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
+            clearStatus();
+            if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                showErrors(ret.getErrors());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+        }
+    }
+
+    /**
+     * removes the aux groups with the given ids from the manager
+     */
+    private void removeAuxGroups(ArrayList<Integer> ids) {
+        setBusy();
+        try {
+            manager = SampleService1.get().removeAuxGroups(manager, ids);
+            setData();
+            setState(state);
+            bus.fireEventFromSource(new RemoveAuxGroupEvent(ids), screen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
+     * Adds the tests/panels in the list to the sample; shows any errors found
+     * while adding the tests or the popup for selecting additional prep/reflex
+     * tests
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
@@ -3886,7 +4937,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
-            showErrorsOrTests(ret);
+            if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                showErrors(ret.getErrors());
+            else
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3895,59 +4949,209 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * Shows the errors in the VO or the popup for selecting the prep/reflex
-     * tests for the analyses in the VO because they were added/changed in the
-     * back-end.
+     * Changes the method of the analysis with this uid to the passed value;
+     * shows any errors found while making the change or the popup for selecting
+     * additional prep/reflex tests
      */
-    private void showErrorsOrTests(SampleTestReturnVO ret) {
+    private void changeAnalysisMethod(String uid, Integer methodId) {
+        AnalysisViewDO ana;
+        SampleTestReturnVO ret;
+
+        ana = (AnalysisViewDO)manager.getObject(uid);
+        try {
+            setBusy();
+            ret = SampleService1.get().changeAnalysisMethod(manager, ana.getId(), methodId);
+            manager = ret.getManager();
+            setData();
+            setState(state);
+
+            /*
+             * notify all tabs that need to refresh themselves because of the
+             * change in the analysis
+             */
+            bus.fireEventFromSource(new AnalysisChangeEvent(uid,
+                                                            methodId,
+                                                            AnalysisChangeEvent.Action.METHOD_CHANGED),
+                                    screen);
+            bus.fireEvent(new ResultChangeEvent(uid));
+            clearStatus();
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
+            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+                showErrors(ret.getErrors());
+                isBusy = false;
+            } else {
+                showTests(ret);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+        }
+    }
+
+    /**
+     * Changes the status of the analysis with this uid to the passed value
+     */
+    private void changeAnalysisStatus(String uid, Integer statusId) {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)manager.getObject(uid);
+        try {
+            setBusy();
+            manager = SampleService1.get().changeAnalysisStatus(manager, ana.getId(), statusId);
+            setData();
+            setState(state);
+
+            /*
+             * notify all tabs that need to refresh themselves because of the
+             * change in the analysis
+             */
+            bus.fireEventFromSource(new AnalysisChangeEvent(uid,
+                                                            statusId,
+                                                            AnalysisChangeEvent.Action.STATUS_CHANGED),
+                                    screen);
+            bus.fireEvent(new ResultChangeEvent(uid));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
+     * Changes the unit of the analysis with this uid to the passed value
+     */
+    private void changeAnalysisUnit(String uid, Integer unitId) {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)manager.getObject(uid);
+        try {
+            setBusy();
+            manager = SampleService1.get().changeAnalysisUnit(manager, ana.getId(), unitId);
+            setData();
+            setState(state);
+
+            /*
+             * notify all tabs that need to refresh themselves because of the
+             * change in the analysis
+             */
+            bus.fireEventFromSource(new AnalysisChangeEvent(uid,
+                                                            unitId,
+                                                            AnalysisChangeEvent.Action.UNIT_CHANGED),
+                                    screen);
+            bus.fireEvent(new ResultChangeEvent(uid));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
+     * Changes the prep analysis of the analysis with this uid to the passed
+     * value
+     */
+    private void changeAnalysisPrep(String uid, Integer preAnalysisId) {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)manager.getObject(uid);
+        try {
+            setBusy();
+            manager = SampleService1.get().changeAnalysisPrep(manager, ana.getId(), preAnalysisId);
+            setData();
+            setState(state);
+
+            /*
+             * notify all tabs that need to refresh themselves because of the
+             * change in the analysis
+             */
+            bus.fireEventFromSource(new AnalysisChangeEvent(uid,
+                                                            preAnalysisId,
+                                                            AnalysisChangeEvent.Action.PREP_CHANGED),
+                                    screen);
+            bus.fireEvent(new ResultChangeEvent(uid));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
+     * Adds to the analysis, at the given indexes, the result rows beginning
+     * with the specified row analytes
+     */
+    private void addRowAnalytes(AnalysisViewDO ana, ArrayList<TestAnalyteViewDO> analytes,
+                                ArrayList<Integer> indexes) {
+        setBusy();
+        try {
+            manager = SampleService1.get().addRowAnalytes(manager, ana, analytes, indexes);
+            setData();
+            setState(state);
+            bus.fireEvent(new ResultChangeEvent(Constants.uid().get(ana)));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        clearStatus();
+    }
+
+    /**
+     * Shows the popup for selecting the prep/reflex tests for the analyses in
+     * the VO
+     */
+    private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        isBusy = false;
-        if (ret.getErrors() != null && ret.getErrors().size() > 0) {
-            showErrors(ret.getErrors());
-        } else if (ret.getTests() != null && ret.getTests().size() > 0) {
-            /*
-             * show the pop for selecting prep/reflex tests
-             */
-            if (testSelectionLookup == null) {
-                testSelectionLookup = new TestSelectionLookupUI() {
-                    @Override
-                    public TestManager getTestManager(Integer testId) {
-                        return screen.get(testId, TestManager.class);
-                    }
-
-                    @Override
-                    public void ok() {
-                        ArrayList<SampleTestRequestVO> tests;
-
-                        tests = testSelectionLookup.getSelectedTests();
-                        /*
-                         * keep isBusy to be true if some tests were selected on
-                         * the popup because they need to be added to the
-                         * manager
-                         */
-                        if (tests != null && tests.size() > 0)
-                            addAnalyses(tests);
-                        else
-                            isBusy = false;
-                    }
-                };
-            }
-
-            /*
-             * make sure that the data can't be committed before the process of
-             * adding tests has completed
-             */
-            isBusy = true;
-
-            modal = new ModalWindow();
-            modal.setSize("520px", "350px");
-            modal.setName(Messages.get().testSelection_prepTestSelection());
-            modal.setCSS(UIResources.INSTANCE.popupWindow());
-            modal.setContent(testSelectionLookup);
-
-            testSelectionLookup.setData(manager, ret.getTests());
-            testSelectionLookup.setWindow(modal);
+        if (ret.getTests() == null || ret.getTests().size() > 0) {
+            isBusy = false;
+            return;
         }
+
+        /*
+         * show the pop for selecting prep/reflex tests
+         */
+        if (testSelectionLookup == null) {
+            testSelectionLookup = new TestSelectionLookupUI() {
+                @Override
+                public TestManager getTestManager(Integer testId) {
+                    return screen.get(testId, TestManager.class);
+                }
+
+                @Override
+                public void ok() {
+                    ArrayList<SampleTestRequestVO> tests;
+
+                    tests = testSelectionLookup.getSelectedTests();
+                    /*
+                     * keep isBusy to be true if some tests were selected on the
+                     * popup because they need to be added to the manager
+                     */
+                    if (tests != null && tests.size() > 0)
+                        addAnalyses(tests);
+                    else
+                        isBusy = false;
+                }
+            };
+        }
+
+        /*
+         * make sure that the data can't be committed before the process of
+         * adding tests has completed
+         */
+        isBusy = true;
+
+        modal = new ModalWindow();
+        modal.setSize("520px", "350px");
+        modal.setName(Messages.get().testSelection_prepTestSelection());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(testSelectionLookup);
+
+        testSelectionLookup.setData(manager, ret.getTests());
+        testSelectionLookup.setWindow(modal);
     }
 }

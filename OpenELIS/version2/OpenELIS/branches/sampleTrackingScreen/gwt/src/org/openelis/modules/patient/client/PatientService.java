@@ -98,6 +98,20 @@ public class PatientService implements PatientServiceInt, PatientServiceIntAsync
     }
 
     @Override
+    public PatientDO add(PatientDO data) throws Exception {
+        Callback<PatientDO> callback;
+        
+        callback = new Callback<PatientDO>();
+        service.add(data, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void add(PatientDO data, AsyncCallback<PatientDO> callback) {
+        service.add(data, callback);
+    }
+    
+    @Override
     public PatientDO update(PatientDO data) throws Exception {
         Callback<PatientDO> callback;
         
@@ -123,5 +137,19 @@ public class PatientService implements PatientServiceInt, PatientServiceIntAsync
     @Override
     public void abortUpdate(Integer patientId, AsyncCallback<PatientDO> callback) {
         service.abortUpdate(patientId, callback);
+    }
+
+    @Override
+    public void validate(PatientDO data) throws Exception {
+        Callback<Void> callback;
+        
+        callback = new Callback<Void>();
+        service.validate(data, callback);
+        callback.getResult();
+    }
+
+    @Override
+    public void validate(PatientDO data, AsyncCallback<Void> callback) {
+        service.validate(data, callback);
     }
 }

@@ -89,6 +89,7 @@ import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSi
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.scriptlet.client.ScriptletScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -282,10 +283,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.tracking());
-                            window.setSize("20px", "20px");
-                            window.setContent(new SampleTrackingScreen(window));
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.sampleTracking_tracking());
+                            window.setSize("1074px", "435px");
+                            window.setContent(new SampleTrackingScreenUI(window));
                             browser.addWindow(window, "tracking");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
@@ -356,7 +357,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.neonatalScreeningSampleLogin());
-                            window.setSize("890px", "850px");
+                            window.setSize("870px", "850px");
                             window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
                             browser.addWindow(window, "neonatalScreeningSampleLogin");
                         } catch (Throwable e) {

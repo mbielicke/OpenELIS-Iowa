@@ -1104,10 +1104,10 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             adVDO = man.auxData.get(i);
             if (adVDO.getValue() != null && adVDO.getTypeId() == null) {
                 try {
-                    if (!adVDO.getGroupId().equals(groupId)) {
-                        afgMan = get(adVDO.getGroupId(), AuxFieldGroupManager.class);
+                    if (!adVDO.getAuxFieldGroupId().equals(groupId)) {
+                        afgMan = get(adVDO.getAuxFieldGroupId(), AuxFieldGroupManager.class);
                         rf = afgMan.getFormatter();
-                        groupId = adVDO.getGroupId();
+                        groupId = adVDO.getAuxFieldGroupId();
                     }
                     ResultHelper.formatValue(adVDO, adVDO.getValue(), rf);
                 } catch (Exception anyE) {

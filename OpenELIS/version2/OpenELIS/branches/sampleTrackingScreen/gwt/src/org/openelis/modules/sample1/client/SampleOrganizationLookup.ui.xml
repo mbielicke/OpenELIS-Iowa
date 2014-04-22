@@ -15,13 +15,12 @@
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="60px">
       <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="125" label="{msg.gen_type}" required="true">
           <t:DropdownCell>
-            <w:Dropdown field="Integer"  ui:field="type" />
+            <w:Dropdown field="Integer" ui:field="type" />
           </t:DropdownCell>
         </t:Column>
         <t:Column width="180" label="{msg.order_attention}">
@@ -29,10 +28,16 @@
             <w:TextBox field="String" case="UPPER" />
           </t:TextBoxCell>
         </t:Column>
+        <t:Column width="50" label="{msg.gen_id}" required="true">
+          <t:TextBoxCell>
+            <w:TextBox field="Integer" />
+          </t:TextBoxCell>
+        </t:Column>
         <t:Column width="220" label="{msg.gen_name}" required="true">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="organization" case="UPPER" 
-              width="130" dropWidth = "490px">
+            <w:AutoComplete ui:field="organization" case="UPPER" width="130"
+              dropWidth="490px"
+            >
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="200" label="{msg.gen_name}">
@@ -79,7 +84,8 @@
     <g:layer bottom="30px" height="25px">
       <g:HorizontalPanel>
         <w:Button ui:field="addOrganizationButton" leftIcon="{res.icon.addRowIcon}" text="{msg.gen_addRow}" />
-        <w:Button ui:field="removeOrganizationButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
+        <w:Button ui:field="removeOrganizationButton" leftIcon="{res.icon.removeRowIcon}"
+          text="{msg.gen_removeRow}" />
       </g:HorizontalPanel>
     </g:layer>
     <g:layer bottom="0px" height="25px">

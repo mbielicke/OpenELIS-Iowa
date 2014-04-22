@@ -23,13 +23,19 @@
               <ui:text from="{msg.sample_accessionNum}:" />
             </td>
             <td>
-              <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"/>
+              <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.order_orderNum}:" />
             </td>
             <td>
-              <w:TextBox ui:field="orderId" width="75px" field="Integer" />
+              <g:HorizontalPanel>
+                <w:TextBox ui:field="orderId" width="75px" field="Integer" />
+                <g:AbsolutePanel>
+                  <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
+                    text="" css="{res.FormFieldButton}" />
+                </g:AbsolutePanel>
+              </g:HorizontalPanel>
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.sample_collected}:" />
@@ -55,7 +61,7 @@
               <ui:text from="{msg.gen_status}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="status" width="110px" field="Integer"/>
+              <w:Dropdown ui:field="status" width="110px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.sample_clntRef}:" />
@@ -70,9 +76,9 @@
     </g:layer>
     <g:layer top="55px" bottom="0px">
       <g:LayoutPanel>
-        <g:layer width="49%" left="0px">
+        <g:layer left="0px" right="0px" top="0px" height="49%">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="25px">
+            <g:layer top="0px" bottom="0px" left="0px" width="85%">
               <t:Table ui:field="organizationTable" header="true"
                 styleName="{res.table.ScreenTableWithSides}"
               >
@@ -86,10 +92,15 @@
                     <w:TextBox field="String" case="UPPER" maxLength="30" />
                   </t:TextBoxCell>
                 </t:Column>
+                <t:Column width="50" label="{msg.gen_id}" required="true">
+                  <t:TextBoxCell>
+                    <w:TextBox field="Integer"/>
+                  </t:TextBoxCell>
+                </t:Column>
                 <t:Column width="220" label="{msg.gen_organization}" required="true">
                   <t:AutoCompleteCell>
-                    <w:AutoComplete ui:field="organization" case="UPPER"
-                      width="130" dropWidth="490px"
+                    <w:AutoComplete ui:field="organization" case="UPPER" width="130"
+                      dropWidth="490px"
                     >
                       <w:popup>
                         <t:Table visibleRows="10" header="true">
@@ -142,24 +153,24 @@
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom="0px" height="25px">
-              <g:HorizontalPanel>
+            <g:layer top="0px" bottom="0px" right="0px" width="15%">
+              <g:VerticalPanel>
                 <w:Button ui:field="addOrganizationButton" leftIcon="{res.icon.addRowIcon}"
                   text="{msg.gen_addRow}" />
                 <w:Button ui:field="removeOrganizationButton" leftIcon="{res.icon.removeRowIcon}"
                   text="{msg.gen_removeRow}" />
-              </g:HorizontalPanel>
+              </g:VerticalPanel>
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer width="49%" right="0px">
+        <g:layer left="0px" right="0px" bottom="0px" height="49%">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="25px">
+            <g:layer top="0px" bottom="0px" left="0px" width="85%">
               <t:Table ui:field="projectTable" header="true" styleName="{res.table.ScreenTableWithSides}">
-                <t:Column width="100" label="{msg.project_project}"  required="true">
+                <t:Column width="145" label="{msg.project_project}" required="true">
                   <t:AutoCompleteCell>
-                    <w:AutoComplete ui:field="project" case="LOWER"
-                      width="100px" dropWidth="450px"
+                    <w:AutoComplete ui:field="project" case="LOWER" width="145px"
+                      dropWidth="450px"
                     >
                       <w:popup>
                         <t:Table visibleRows="10" header="true">
@@ -174,23 +185,23 @@
                     </w:AutoComplete>
                   </t:AutoCompleteCell>
                 </t:Column>
-                <t:Column width="200" label="{msg.gen_description}">
+                <t:Column width="405" label="{msg.gen_description}">
                   <t:TextBoxCell>
                     <w:TextBox field="String" />
                   </t:TextBoxCell>
                 </t:Column>
-                <t:Column width="50" label="{msg.sample_isPerm}">
+                <t:Column width="50" label="{msg.sampleProject_isPerm}">
                   <t:CheckBoxCell />
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom="0px" height="25px">
-              <g:HorizontalPanel>
+            <g:layer top="0px" bottom="0px" right="0px" width="15%">
+              <g:VerticalPanel>
                 <w:Button ui:field="addProjectButton" leftIcon="{res.icon.addRowIcon}"
                   text="{msg.gen_addRow}" />
                 <w:Button ui:field="removeProjectButton" leftIcon="{res.icon.removeRowIcon}"
                   text="{msg.gen_removeRow}" />
-              </g:HorizontalPanel>
+              </g:VerticalPanel>
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
