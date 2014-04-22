@@ -275,6 +275,7 @@ public class SampleManager1 implements Serializable {
         }
 
         public void remove(SampleOrganizationViewDO data) {
+            organizations.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
@@ -352,10 +353,12 @@ public class SampleManager1 implements Serializable {
             SampleProjectViewDO data;
 
             data = projects.get(i);
+            projects.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
         public void remove(SampleProjectViewDO data) {
+            projects.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 

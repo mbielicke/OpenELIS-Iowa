@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -14,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
@@ -21,9 +21,11 @@ import org.openelis.entity.Patient;
 import org.openelis.meta.PatientMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.util.QueryBuilderV2;
 
@@ -143,6 +145,8 @@ public class PatientBean {
     public PatientDO add(PatientDO data) throws Exception {
         Patient entity;
         
+        checkSecurity(ModuleFlags.ADD);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         address.add(data.getAddress());
@@ -173,9 +177,7 @@ public class PatientBean {
         }
         
         checkSecurity(ModuleFlags.UPDATE);
-
-        validate(data);
-
+        
         lock.validateLock(Constants.table().PATIENT, data.getId());
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -213,7 +215,23 @@ public class PatientBean {
     }
     
     public void validate(PatientDO data) throws Exception {
-        //TODO add logic for validation
+        ValidationErrorsList e;
+        
+        e = new ValidationErrorsList();
+        
+        if (data.getLastName() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .patient_lastnameRequiredException()));
+        
+        if (data.getAddress().getStreetAddress() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .patient_streetAddressRequiredException()));
+        
+        if (data.getAddress().getCity() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .patient_cityRequiredException()));
+        if (e.size() > 0)
+            throw e;
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {

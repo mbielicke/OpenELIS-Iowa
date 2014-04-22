@@ -643,10 +643,19 @@ public class AnalysisHelperBean {
                 ana.setRevision(ana.getRevision() + 1);
 
                 /*
-                 * increment the sample's revision if will be unreleased as well
+                 * increment the sample's revision and blank the released date
+                 * if the sample will be unreleased as well
                  */
-                if (Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId()))
+                if (Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId())) {
                     getSample(sm).setRevision(getSample(sm).getRevision() + 1);
+                    getSample(sm).setReleasedDate(null);
+                }
+
+                /*
+                 * mark the sample for extra processing e.g. e-save as a result
+                 * of the analysis getting unreleased
+                 */
+                setPostProcessing(sm, SampleManager1.PostProcessing.UNRELEASE);
             }
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
             if (ana.getSectionName() == null ||
