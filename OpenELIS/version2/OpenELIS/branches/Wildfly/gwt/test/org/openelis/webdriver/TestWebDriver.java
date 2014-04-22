@@ -21,7 +21,7 @@ public class TestWebDriver {
     
     @Before
     public void load() {
-        driver.get("http://ap-serv-j/openelis/OpenELIS.html");
+        driver.get("http://ap-serv-j/openelis");
     }
     
     @AfterClass
