@@ -18,8 +18,11 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -50,6 +53,8 @@ import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -72,10 +77,10 @@ public class SampleTabUI extends Screen {
     private static SampleTabUIBinder uiBinder = GWT.create(SampleTabUIBinder.class);
 
     @UiField
-    protected Calendar               collectionDate, collectionTime, receivedDate;
+    protected TextBox<Integer>       accessionNumber, orderId;
 
     @UiField
-    protected TextBox<Integer>       accessionNumber, orderId;
+    protected Calendar               collectionDate, collectionTime, receivedDate;
 
     @UiField
     protected TextBox<String>        clientReference;
@@ -93,8 +98,8 @@ public class SampleTabUI extends Screen {
     protected AutoComplete           organization, project;
 
     @UiField
-    protected Button                 addOrganizationButton, removeOrganizationButton,
-                    addProjectButton, removeProjectButton;
+    protected Button                 orderLookupButton, addOrganizationButton,
+                    removeOrganizationButton, addProjectButton, removeProjectButton;
 
     protected SampleManager1         manager;
 
@@ -105,8 +110,6 @@ public class SampleTabUI extends Screen {
     protected EventBus               parentBus;
 
     protected boolean                canEdit, isBusy, isVisible, redraw;
-
-    protected TestSelectionLookupUI  testSelectionLookup;
 
     public SampleTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -163,6 +166,12 @@ public class SampleTabUI extends Screen {
 
             public Widget onTab(boolean forward) {
                 return forward ? collectionDate : accessionNumber;
+            }
+        });
+
+        addScreenHandler(orderLookupButton, "orderLookupButton", new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                orderLookupButton.setEnabled(isState(DISPLAY, ADD, UPDATE));
             }
         });
 
@@ -311,24 +320,27 @@ public class SampleTabUI extends Screen {
                                                  qd.setKey(SampleMeta.getSampleOrgOrganizationAttention());
                                                  break;
                                              case 2:
-                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationName());
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationId());
                                                  break;
                                              case 3:
-                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressMultipleUnit());
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationName());
                                                  break;
                                              case 4:
-                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressStreetAddress());
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressMultipleUnit());
                                                  break;
                                              case 5:
-                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressCity());
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressStreetAddress());
                                                  break;
                                              case 6:
-                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressState());
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressCity());
                                                  break;
                                              case 7:
-                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressZipCode());
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressState());
                                                  break;
                                              case 8:
+                                                 qd.setKey(SampleMeta.getSampleOrgOrganizationAddressZipCode());
+                                                 break;
+                                             case 9:
                                                  qd.setKey(SampleMeta.getSampleOrgOrganizationAddressCountry());
                                                  break;
                                          }
@@ -343,14 +355,14 @@ public class SampleTabUI extends Screen {
         organizationTable.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
-                removeOrganizationButton.setEnabled(isState(ADD, UPDATE));
+                removeOrganizationButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
         organizationTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() > 2)
+                if ( ! (canEdit && isState(ADD, UPDATE)) || event.getCol() == 2 || event.getCol() > 3)
                     event.cancel();
             }
         });
@@ -378,7 +390,7 @@ public class SampleTabUI extends Screen {
                     case 1:
                         data.setOrganizationAttention((String)val);
                         break;
-                    case 2:
+                    case 3:
                         row = (AutoCompleteValue)val;
                         if (row != null) {
                             org = (OrganizationDO)row.getData();
@@ -402,13 +414,14 @@ public class SampleTabUI extends Screen {
                             data.setOrganizationZipCode(null);
                             data.setOrganizationCountry(null);
                         }
-
-                        organizationTable.setValueAt(r, 3, data.getOrganizationMultipleUnit());
-                        organizationTable.setValueAt(r, 4, data.getOrganizationStreetAddress());
-                        organizationTable.setValueAt(r, 5, data.getOrganizationCity());
-                        organizationTable.setValueAt(r, 6, data.getOrganizationState());
-                        organizationTable.setValueAt(r, 7, data.getOrganizationZipCode());
-                        organizationTable.setValueAt(r, 8, data.getOrganizationCountry());
+                        
+                        organizationTable.setValueAt(r, 2, data.getOrganizationId());
+                        organizationTable.setValueAt(r, 4, data.getOrganizationMultipleUnit());
+                        organizationTable.setValueAt(r, 5, data.getOrganizationStreetAddress());
+                        organizationTable.setValueAt(r, 6, data.getOrganizationCity());
+                        organizationTable.setValueAt(r, 7, data.getOrganizationState());
+                        organizationTable.setValueAt(r, 8, data.getOrganizationZipCode());
+                        organizationTable.setValueAt(r, 9, data.getOrganizationCountry());
 
                         try {
                             if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(data.getOrganizationId()))
@@ -474,7 +487,7 @@ public class SampleTabUI extends Screen {
                          "addOrganizationButton",
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
-                                 addOrganizationButton.setEnabled(isState(ADD, UPDATE));
+                                 addOrganizationButton.setEnabled(canEdit && isState(ADD, UPDATE));
                              }
                          });
 
@@ -526,14 +539,14 @@ public class SampleTabUI extends Screen {
 
         projectTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
-                removeProjectButton.setEnabled(isState(ADD, UPDATE));
+                removeProjectButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
         projectTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() == 1)
+                if ( ! (canEdit && isState(ADD, UPDATE)) || event.getCol() == 1)
                     event.cancel();
             }
         });
@@ -626,7 +639,7 @@ public class SampleTabUI extends Screen {
 
         addScreenHandler(addProjectButton, "addProjectButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                addProjectButton.setEnabled(isState(ADD, UPDATE));
+                addProjectButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
@@ -714,13 +727,93 @@ public class SampleTabUI extends Screen {
     }
 
     /**
-     * notifies the tab that it may need to refresh the display in its widgets;
+     * Notifies the tab that it may need to refresh the display in its widgets;
      * if the data currently showing in the widgets is the same as the data in
      * the latest manager then the widgets are not refreshed
      */
     public void onDataChange() {
         redraw = true;
         displaySample();
+    }
+
+    /**
+     * Shows the order linked to the sample on the screen corresponding to the
+     * type of order e.g. Send-out order screen for environmental samples
+     */
+    @UiHandler("orderLookupButton")
+    protected void orderLookup(ClickEvent event) {
+        String domain;
+        org.openelis.ui.widget.Window window;
+        final SendoutOrderScreenUI orderScreen;
+        ScheduledCommand cmd;
+
+        if (manager.getSample().getOrderId() == null)
+            return;
+
+        domain = manager.getSample().getDomain();
+
+        if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
+            Constants.domain().PRIVATEWELL.equals(domain) ||
+            Constants.domain().SDWIS.equals(domain)) {
+            try {
+                window = new org.openelis.ui.widget.Window();
+                window.setName(Messages.get().sendoutOrder());
+                window.setSize("1020px", "588px");
+                orderScreen = new SendoutOrderScreenUI(window);
+                window.setContent(orderScreen);
+                OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        orderScreen.query(manager.getSample().getOrderId());
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            } catch (Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+    }
+
+    @UiHandler("addOrganizationButton")
+    protected void addOrganization(ClickEvent event) {
+        int r;
+
+        organizationTable.addRow();
+        r = organizationTable.getRowCount() - 1;
+        organizationTable.selectRowAt(r);
+        organizationTable.scrollToVisible(r);
+        organizationTable.startEditing(r, 0);
+    }
+
+    @UiHandler("removeOrganizationButton")
+    protected void removeOrganization(ClickEvent event) {
+        int r;
+
+        r = organizationTable.getSelectedRow();
+        if (r > -1 && organizationTable.getRowCount() > 0)
+            organizationTable.removeRowAt(r);
+    }
+
+    @UiHandler("addProjectButton")
+    protected void addProject(ClickEvent event) {
+        int r;
+
+        projectTable.addRow();
+        r = projectTable.getRowCount() - 1;
+        projectTable.selectRowAt(r);
+        projectTable.scrollToVisible(r);
+        projectTable.startEditing(r, 0);
+    }
+
+    @UiHandler("removeProjectButton")
+    protected void removeProject(ClickEvent event) {
+        int r;
+
+        r = projectTable.getSelectedRow();
+        if (r > -1 && projectTable.getRowCount() > 0)
+            projectTable.removeRowAt(r);
     }
 
     /**
@@ -784,8 +877,7 @@ public class SampleTabUI extends Screen {
         /*
          * notify the main screen that the accession number is to be changed
          */
-        parentBus.fireEventFromSource(new AccessionChangeEvent(accession, manager.getSample()
-                                                                                 .getId()), screen);
+        parentBus.fireEventFromSource(new AccessionChangeEvent(accession), screen);
     }
 
     /**
@@ -884,46 +976,6 @@ public class SampleTabUI extends Screen {
         manager.getSample().setClientReference(clientReference);
     }
 
-    @UiHandler("addOrganizationButton")
-    protected void addOrganization(ClickEvent event) {
-        int r;
-
-        organizationTable.addRow();
-        r = organizationTable.getRowCount() - 1;
-        organizationTable.selectRowAt(r);
-        organizationTable.scrollToVisible(r);
-        organizationTable.startEditing(r, 0);
-    }
-
-    @UiHandler("removeOrganizationButton")
-    protected void removeOrganization(ClickEvent event) {
-        int r;
-
-        r = organizationTable.getSelectedRow();
-        if (r > -1 && organizationTable.getRowCount() > 0)
-            organizationTable.removeRowAt(r);
-    }
-
-    @UiHandler("addProjectButton")
-    protected void addProject(ClickEvent event) {
-        int r;
-
-        projectTable.addRow();
-        r = projectTable.getRowCount() - 1;
-        projectTable.selectRowAt(r);
-        projectTable.scrollToVisible(r);
-        projectTable.startEditing(r, 0);
-    }
-
-    @UiHandler("removeProjectButton")
-    protected void removeProject(ClickEvent event) {
-        int r;
-
-        r = projectTable.getSelectedRow();
-        if (r > -1 && projectTable.getRowCount() > 0)
-            projectTable.removeRowAt(r);
-    }
-
     private ArrayList<Row> getOrganizationTableModel() {
         ArrayList<Row> model;
         SampleOrganizationViewDO data;
@@ -936,17 +988,18 @@ public class SampleTabUI extends Screen {
         for (int i = 0; i < manager.organization.count(); i++ ) {
             data = manager.organization.get(i);
 
-            row = new Row(9);
+            row = new Row(10);
             row.setCell(0, data.getTypeId());
             row.setCell(1, data.getOrganizationAttention());
-            row.setCell(2, new AutoCompleteValue(data.getOrganizationId(),
+            row.setCell(2, data.getOrganizationId());
+            row.setCell(3, new AutoCompleteValue(data.getOrganizationId(),
                                                  data.getOrganizationName()));
-            row.setCell(3, data.getOrganizationMultipleUnit());
-            row.setCell(4, data.getOrganizationStreetAddress());
-            row.setCell(5, data.getOrganizationCity());
-            row.setCell(6, data.getOrganizationState());
-            row.setCell(7, data.getOrganizationZipCode());
-            row.setCell(8, data.getOrganizationCountry());
+            row.setCell(4, data.getOrganizationMultipleUnit());
+            row.setCell(5, data.getOrganizationStreetAddress());
+            row.setCell(6, data.getOrganizationCity());
+            row.setCell(7, data.getOrganizationState());
+            row.setCell(8, data.getOrganizationZipCode());
+            row.setCell(9, data.getOrganizationCountry());
             row.setData(data);
             model.add(row);
         }

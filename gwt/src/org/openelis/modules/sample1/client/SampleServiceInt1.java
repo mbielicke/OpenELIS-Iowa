@@ -91,6 +91,10 @@ public interface SampleServiceInt1 extends RemoteService {
     
     public SampleManager1 duplicate(Integer sampleId) throws Exception;
     
+    public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception;
+    
+    public SampleManager1 unrelease(SampleManager1 sm) throws Exception;
+    
     public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception;
     
     public SampleTestReturnVO addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception;

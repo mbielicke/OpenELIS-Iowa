@@ -53,8 +53,8 @@
               <w:MenuItem ui:field="historyPatient" display="{msg.patient_patient}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
-              <w:MenuItem ui:field="historySampleItem" display="{msg.sample_item}" />
-              <w:MenuItem ui:field="historyAnalysis" display="{msg.sample_analysis}" />
+              <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />
+              <w:MenuItem ui:field="historyAnalysis" display="{msg.analysis_analysis}" />
               <w:MenuItem ui:field="historyCurrentResult" display="{msg.result_current}" />
               <w:MenuItem ui:field="historyStorage" display="{msg.storage_storage}" />
               <w:MenuItem ui:field="historySampleQA" display="{msg.sample_qaEvents}" />
@@ -157,17 +157,8 @@
                         <ui:text from="{msg.gen_last}:" />
                       </td>
                       <td colspan="3">
-                        <w:TextBox ui:field="patientLastName" width="305px" field="String"
-                          maxLength="30" required="true" case="UPPER"/>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.gen_middle}:" />
-                      </td>
-                      <td colspan="3">
-                        <w:TextBox ui:field="patientMiddleName" width="305px" field="String"
-                          maxLength="20" case="UPPER" />
+                        <w:TextBox ui:field="patientLastName" width="290px" field="String"
+                          maxLength="30" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
@@ -175,40 +166,11 @@
                         <ui:text from="{msg.gen_first}:" />
                       </td>
                       <td colspan="3">
-                        <w:TextBox ui:field="patientFirstName" width="305px" field="String"
+                        <w:TextBox ui:field="patientFirstName" width="225px" field="String"
                           maxLength="20" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
-                      <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.patient_gender}:" />
-                      </td>
-                      <td>
-                        <w:Dropdown ui:field="patientGender" width="65px" dropHeight="100px"
-                          field="String" />
-                      </td>
-                      <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.patient_race}:" />
-                      </td>
-                      <td>
-                        <w:Dropdown ui:field="patientRace" width="210px" dropWidth="235px"
-                          field="String" />
-                      </td>
-                    </tr>
-                  </table>
-                </g:HTMLPanel>
-              </g:layer>
-              <g:layer top="0px" bottom="0px" right="0px" width="47%">
-                <g:HTMLPanel width="100%">
-                  <table class="{res.style.Form}">
-                    <tr>
-                      <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.patient_ethnicity}:" />
-                      </td>
-                      <td>
-                        <w:Dropdown ui:field="patientEthnicity" width="98px" field="String"
-                          dropHeight="120px" />
-                      </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_birth}:" />
                       </td>
@@ -216,14 +178,12 @@
                         <c:Calendar ui:field="patientBirthDate" width="90px" begin="0"
                           end="2" />
                       </td>
-                    </tr>
-                    <tr>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_nationalId}:" />
                       </td>
                       <td>
                         <w:TextBox ui:field="patientNationalId" width="75px" field="String"
-                          maxLength="9" mask="{msg.gen_nationalIdPattern}" case="UPPER"/>
+                          maxLength="9" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
@@ -235,13 +195,19 @@
                           width="222px" case="UPPER" />
                       </td>
                     </tr>
+                  </table>
+                </g:HTMLPanel>
+              </g:layer>
+              <g:layer top="0px" bottom="0px" right="0px" width="47%">
+                <g:HTMLPanel width="100%">
+                  <table class="{res.style.Form}">
                     <tr>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.address_address}:" />
                       </td>
                       <td colspan="5">
                         <w:TextBox ui:field="patientAddrStreetAddress" field="String"
-                          width="222px" required="true" case="UPPER" />
+                          width="222px" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
@@ -258,6 +224,33 @@
                           <w:TextBox ui:field="patientAddrZipCode" field="String" width="75px"
                             mask="{msg.gen_zipcodePattern}" case="UPPER" />
                         </g:HorizontalPanel>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.patient_gender}:" />
+                      </td>
+                      <td>
+                        <w:Dropdown ui:field="patientGender" width="65px" dropHeight="100px"
+                          field="String" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.patient_race}:" />
+                      </td>
+                      <td>
+                        <w:Dropdown ui:field="patientRace" width="230px" dropWidth="235px"
+                          field="String" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.patient_ethnicity}:" />
+                      </td>
+                      <td>
+                        <w:Dropdown ui:field="patientEthnicity" width="100px" field="String"
+                          dropHeight="120px" />
                       </td>
                     </tr>
                   </table>
@@ -420,7 +413,7 @@
       <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_item}" />
+            <w:TabWidget text="{msg.sampleItem_sampleItem}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -430,7 +423,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_analysis}" />
+            <w:TabWidget text="{msg.analysis_analysis}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -480,7 +473,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.gen_qaEvents}" />
+            <w:TabWidget text="{msg.qaEvent_qaEvents}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>

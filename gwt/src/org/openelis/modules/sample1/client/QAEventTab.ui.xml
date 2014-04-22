@@ -45,7 +45,7 @@
                   <w:Button ui:field="removeSampleQAButton" leftIcon="{res.icon.removeRowIcon}"
                     text="{msg.gen_removeRow}" />
                   <w:Button ui:field="sampleQALookupButton" leftIcon="{res.icon.fieldLookupIcon}"
-                    text="{msg.gen_qaEvents}" />
+                    text="{msg.qaEvent_qaEvents}" />
                 </g:HorizontalPanel>
                 <w:Label ui:field="sampleBillableLabel" styleName="{res.style.WarningLabel}" wordWrap = "true"/>
               </g:VerticalPanel>
@@ -77,7 +77,7 @@
                     <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.icon.removeRowIcon}"
                       text="{msg.gen_removeRow}" />
                     <w:Button ui:field="analysisQALookupButton" leftIcon="{res.icon.fieldLookupIcon}"
-                      text="{msg.gen_qaEvents}" />
+                      text="{msg.qaEvent_qaEvents}" />
                   </g:HorizontalPanel>
                   <w:Label ui:field="analysisBillableLabel" styleName="{res.style.WarningLabel}" wordWrap = "true"/>
                 </g:VerticalPanel>

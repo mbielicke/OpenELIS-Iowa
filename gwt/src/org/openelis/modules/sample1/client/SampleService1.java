@@ -346,7 +346,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback) {
         service.duplicate(sampleId, callback);
     }
-
+    
     @Override
     public SampleManager1 duplicate(Integer sampleId) throws Exception {
         Callback<SampleManager1> callback;
@@ -354,6 +354,35 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         callback = new Callback<SampleManager1>();
         service.duplicate(sampleId, callback);
         return callback.getResult();
+    }
+
+    @Override
+    public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.changeDomain(sm, domain, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void changeDomain(SampleManager1 sm, String domain,
+                             AsyncCallback<SampleManager1> callback) {
+        service.changeDomain(sm, domain, callback);
+    }
+
+    @Override
+    public SampleManager1 unrelease(SampleManager1 sm) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.unrelease(sm, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void unrelease(SampleManager1 sm, AsyncCallback<SampleManager1> callback) {
+        service.unrelease(sm, callback);
     }
 
     @Override

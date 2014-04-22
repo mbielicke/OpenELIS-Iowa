@@ -586,7 +586,7 @@ public class ResultTabUI extends Screen {
         if ( !isVisible)
             return;
 
-        if (analysis != null) {
+        if (analysis != null && manager.result.count(analysis) > 0) {
             table.setVisible(true);
             /*
              * Reset the table's view, so that if its model is changed, it shows

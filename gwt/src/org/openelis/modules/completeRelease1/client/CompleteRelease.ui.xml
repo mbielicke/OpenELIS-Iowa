@@ -12,7 +12,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-  xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"  
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -52,8 +52,8 @@
               <w:MenuItem ui:field="historySampleSpecific" display="{msg.sample_specific}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
-              <w:MenuItem ui:field="historySampleItem" display="{msg.sample_item}" />
-              <w:MenuItem ui:field="historyAnalysis" display="{msg.sample_analysis}" />
+              <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />
+              <w:MenuItem ui:field="historyAnalysis" display="{msg.analysis_analysis}" />
               <w:MenuItem ui:field="historyCurrentResult" display="{msg.result_current}" />
               <w:MenuItem ui:field="historyStorage" display="{msg.storage_storage}" />
               <w:MenuItem ui:field="historySampleQA" display="{msg.sample_qaEvents}" />
@@ -116,7 +116,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.environmental}" tabVisible="false" />
+            <w:TabWidget text="{msg.sample_environmental}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -126,7 +126,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.privateWell}" tabVisible="false" />
+            <w:TabWidget text="{msg.sample_privateWell}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -136,7 +136,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sdwis}" tabVisible="false" />
+            <w:TabWidget text="{msg.sample_sdwis}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -176,7 +176,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_item}" tabVisible="false" />
+            <w:TabWidget text="{msg.sampleItem_sampleItem}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -186,7 +186,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_analysis}" tabVisible="false" />
+            <w:TabWidget text="{msg.analysis_analysis}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -236,7 +236,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.gen_qaEvents}" tabVisible="false" />
+            <w:TabWidget text="{msg.qaEvent_qaEvents}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>

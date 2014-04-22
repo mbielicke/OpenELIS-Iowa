@@ -37,6 +37,8 @@ public interface PatientServiceIntAsync {
     public void fetchByRelatedPatientId(Integer patientId, AsyncCallback<ArrayList<PatientRelationVO>> callback);
     public void fetchForUpdate(Integer patientId, AsyncCallback<PatientDO> callback);
     public void query(Query query, AsyncCallback<ArrayList<PatientDO>> callback);
+    public void add(PatientDO data, AsyncCallback<PatientDO> callback);    
     public void update(PatientDO data, AsyncCallback<PatientDO> callback);
-    public void abortUpdate(Integer patientId, AsyncCallback<PatientDO> callback);    
+    public void abortUpdate(Integer patientId, AsyncCallback<PatientDO> callback);
+    public void validate(PatientDO data, AsyncCallback<Void> callback);
 }

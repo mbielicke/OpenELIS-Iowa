@@ -79,7 +79,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         for (int i = 0; i < auxDataList.size(); i++ ) {
             data = auxDataList.get(i);
             try {
-                if ( !data.getGroupId().equals(envAuxGroupId)) {
+                if ( !data.getAuxFieldGroupId().equals(envAuxGroupId)) {
                     saveAuxData(data, errors, manager);
                     continue;
                 }

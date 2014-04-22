@@ -75,6 +75,7 @@ import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
+import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
@@ -89,6 +90,7 @@ import org.openelis.ui.widget.table.event.RowAddedEvent;
 import org.openelis.ui.widget.table.event.RowAddedHandler;
 import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
+import org.openelis.ui.widget.tree.Node;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -142,6 +144,8 @@ public class AnalysisTabUI extends Screen {
 
     protected EventBus                 parentBus;
 
+    protected Confirm                  changeMethodConfirm;
+
     protected SampleManager1           manager;
 
     protected AnalysisViewDO           analysis;
@@ -150,7 +154,7 @@ public class AnalysisTabUI extends Screen {
 
     protected String                   displayedUid;
 
-    protected boolean                  canEdit, isVisible, redraw;
+    protected boolean                  canEdit, isVisible, redraw, isBusy;
 
     protected ArrayList<Item<Integer>> allUnitsModel, allSectionsModel;
 
@@ -213,9 +217,9 @@ public class AnalysisTabUI extends Screen {
 
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
+                Item<Integer> row;
                 ArrayList<Item<Integer>> model;
                 ArrayList<TestMethodVO> tests;
-                Item<Integer> row;
 
                 if (sampleItem.getTypeOfSampleId() == null) {
                     parentScreen.setError(Messages.get().sample_sampleItemTypeRequired());
@@ -897,6 +901,15 @@ public class AnalysisTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
+    
+    /**
+     * returns true if some operation performed by the tab needs to be completed
+     * before the data can be committed
+     */
+    public boolean getIsBusy() {
+        return isBusy;
+    }
+
 
     @UiHandler("selectWorksheetButton")
     protected void selectWorksheet(ClickEvent event) {
@@ -1008,22 +1021,49 @@ public class AnalysisTabUI extends Screen {
         return null;
     }
 
-    private void setMethod(AutoCompleteValue value) {
-        TestMethodVO data;
-
-        if (value != null) {
-            data = (TestMethodVO)value.getData();
-            parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
-                                                                  data.getMethodId(),
-                                                                  AnalysisChangeEvent.Action.METHOD_CHANGED),
-                                          this);
-        } else {
+    private void setMethod(final AutoCompleteValue value) {
+        if (value == null) {
             /*
              * if the user blanks the field, selecting nothing, the previous
              * method is put back in the autocomplete
              */
             method.setValue(getMethodId(), getMethodName());
+            return;
         }
+
+        /*
+         * let the user know that changing the method may make them lose results
+         * and change the method only if the user says yes
+         */
+        isBusy = true;
+        if (changeMethodConfirm == null) {
+            changeMethodConfirm = new Confirm(Confirm.Type.QUESTION,
+                                              Messages.get().analysis_loseResultsCaption(),
+                                              Messages.get().analysis_loseResultsWarning(),
+                                              Messages.get().gen_no(),
+                                              Messages.get().gen_yes());
+            changeMethodConfirm.setWidth("300px");
+            changeMethodConfirm.setHeight("150px");
+            changeMethodConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                    TestMethodVO data;
+
+                    switch (event.getSelectedItem().intValue()) {
+                        case 1:
+                            data = (TestMethodVO)value.getData();
+                            parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                                                  data.getMethodId(),
+                                                                                  AnalysisChangeEvent.Action.METHOD_CHANGED),
+                                                          this);
+                            break;
+                    }
+                    
+                    isBusy = false;
+                }
+            });
+        }
+
+        changeMethodConfirm.show();
     }
 
     private Integer getMethodId() {

@@ -34,6 +34,7 @@ import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -59,6 +60,7 @@ import org.openelis.manager.OrderManager1;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -125,6 +127,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiTemplate("SendoutOrder.ui.xml")
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
+
 
 
 
@@ -1683,6 +1686,28 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Executes a query to fetch the order whose id is the passed value
+     */
+    public void query(Integer id) {
+        Query query;
+        QueryData field;
+
+        if (id == null)
+            return;
+
+        query = new Query();
+        query.setRowsPerPage(25);
+        field = new QueryData();
+        field.setKey(OrderMeta.getId());               
+        field.setQuery(id.toString());
+        field.setType(QueryData.Type.INTEGER);
+        
+        query.setFields(field);
+        nav.setQuery(query);
+        cache = null;
+    }
+
+    /**
      * Returns from the cache, the object that has the specified key and is of
      * the specified class
      */
@@ -2114,9 +2139,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         prevId = null;
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
-            if ( !aux.getGroupId().equals(prevId)) {
-                ids.add(aux.getGroupId());
-                prevId = aux.getGroupId();
+            if ( !aux.getAuxFieldGroupId().equals(prevId)) {
+                ids.add(aux.getAuxFieldGroupId());
+                prevId = aux.getAuxFieldGroupId();
             }
         }
 
@@ -2126,7 +2151,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
         }
     }
-    
+
     /**
      * creates a string containing the message that there are warnings on the
      * screen, followed by all warning messages, followed by the question

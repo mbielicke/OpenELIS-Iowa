@@ -25,54 +25,59 @@
  */
 package org.openelis.modules.sample1.client;
 
+import org.openelis.domain.PatientDO;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The event used to inform the handler that the accession number of a sample is
- * to be changed. The new accession number is specified through accession.
+ * The event used to inform the handler to lock or unlock the patient based on
+ * whether isLock is true or false.
  */
-public class AccessionChangeEvent extends GwtEvent<AccessionChangeEvent.Handler> {
+public class PatientLockEvent extends GwtEvent<PatientLockEvent.Handler> {
 
-    private static Type<AccessionChangeEvent.Handler> TYPE;
-    private Integer                                   accession;
-    private Exception                                 error;
+    private static Type<PatientLockEvent.Handler> TYPE;
 
-    public AccessionChangeEvent(Integer accession) {
-        this.accession = accession;
+    public enum Action {
+        LOCK, UNLOCK
+    }
+
+    private PatientDO patient;
+
+    private Action    action;
+
+    public PatientLockEvent(PatientDO patient, Action action) {
+        this.patient = patient;
+        this.action = action;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AccessionChangeEvent.Handler> getAssociatedType() {
+    public Type<PatientLockEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AccessionChangeEvent.Handler> getType() {
+    public static Type<PatientLockEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AccessionChangeEvent.Handler>();
+            TYPE = new Type<PatientLockEvent.Handler>();
         }
         return TYPE;
     }
 
     public static interface Handler extends EventHandler {
-        public void onAccessionChange(AccessionChangeEvent event);
+        public void onPatientLock(PatientLockEvent event);
     }
 
-    public Integer getAccession() {
-        return accession;
+    public PatientDO getPatient() {
+        return patient;
     }
 
-    public Exception getError() {
-        return error;
-    }
-
-    public void setError(Exception error) {
-        this.error = error;
+    public Action getAction() {
+        return action;
     }
 
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAccessionChange(this);
+        handler.onPatientLock(this);
     }
 }

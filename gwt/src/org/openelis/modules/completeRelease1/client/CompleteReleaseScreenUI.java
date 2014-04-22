@@ -54,6 +54,7 @@ import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
+import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
@@ -64,15 +65,16 @@ import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
-import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
-import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.sample1.client.SampleTabUI;
+import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
@@ -89,7 +91,6 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.widget.Browser;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Confirm;
@@ -108,6 +109,8 @@ import org.openelis.ui.widget.table.event.UnselectionEvent;
 import org.openelis.ui.widget.table.event.UnselectionHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
@@ -119,7 +122,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -630,22 +632,22 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        table.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-                /*
-                 * no other row is allowed to be selected in Update state
-                 * because the selected row's manager is locked
-                 */
-                if (isState(UPDATE))
-                    event.cancel();
-            }
-        });
-
         table.addUnselectionHandler(new UnselectionHandler<Integer>() {
             public void onUnselection(UnselectionEvent<Integer> event) {
                 /*
                  * the selected row is not allowed to be unselected in Update
                  * state because its manager is locked
+                 */
+                if (isState(UPDATE))
+                    event.cancel();
+            }
+        });
+        
+        table.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                /*
+                 * no other row is allowed to be selected in Update state
+                 * because the selected row's manager is locked
                  */
                 if (isState(UPDATE))
                     event.cancel();
@@ -773,9 +775,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
 
             public void isValid(Validation validation) {
-                super.isValid(validation);
-                if (clinicalTab.getIsBusy())
-                    validation.setStatus(FLAGGED);
+                if (manager != null && manager.getSampleClinical() != null) {
+                    super.isValid(validation);
+                    if (clinicalTab.getIsBusy())
+                        validation.setStatus(FLAGGED);
+                }
             }
         });
 
@@ -822,6 +826,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
             public Object getQuery() {
                 return analysisTab.getQueryFields();
+            }
+            
+            public void isValid(Validation validation) {
+                super.isValid(validation);
+                if (analysisTab.getIsBusy())
+                    validation.setStatus(FLAGGED);
             }
         });
 
@@ -931,7 +941,29 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             @Override
             public void onAccessionChange(AccessionChangeEvent event) {
                 if (screen != event.getSource())
-                    changeAccession(event.getAccession(), event.getSampleId());
+                    changeAccession(event.getAccession());
+            }
+        });
+        
+        bus.addHandler(PatientLockEvent.getType(), new PatientLockEvent.Handler() {
+            @Override
+            public void onPatientLock(PatientLockEvent event) {
+                PatientDO data;
+
+                if (screen == event.getSource())
+                    return;
+
+                try {
+                    if (event.getAction() == PatientLockEvent.Action.LOCK)
+                        data = PatientService.get().fetchForUpdate(event.getPatient().getId());
+                    else
+                        data = PatientService.get().abortUpdate(event.getPatient().getId());
+
+                    bus.fireEventFromSource(new PatientLockEvent(data, event.getAction()), screen);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
 
@@ -1325,15 +1357,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     /**
      * creates query fields from the data on the screen and calls the service
-     * method for executing a query to return a list of samples. Loads the
-     * screen with the first sample's data if any samples were found otherwise
-     * notifies the user.
+     * method for executing a query to return a list of samples.
      */
     protected void commitQuery() {
         Query query;
+        ArrayList<QueryData> fields;
 
+        /*
+         * can't execute an empty query
+         */
+        fields = getQueryFields();
+        if (fields.size() == 0) { 
+            setError(Messages.get().gen_emptyQueryException());
+            return;
+        }
+        
         query = new Query();
-        query.setFields(getQueryFields());
+        query.setFields(fields);
         executeQuery(query);
         cache = null;
     }
@@ -1344,20 +1384,62 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * with the committed data.
      */
     protected void commitUpdate(final boolean ignoreWarning) {
+        Integer accession;
+        String prefix;
         PatientDO data;
+        ValidationErrorsList e1;
 
         setBusy(Messages.get().gen_updating());
 
         /*
-         * update the patient if it's locked
+         * add/update patient(s)
          */
-        if (manager.getSampleClinical() != null && clinicalTab.getIsPatientLocked()) {
+        if (manager.getSampleClinical() != null) {
+            data = manager.getSampleClinical().getPatient();
+
             try {
-                data = PatientService.get().update(manager.getSampleClinical().getPatient());
-                manager.getSampleClinical().setPatient(data);
-                clinicalTab.setIsPatientLocked(false);
+                /*
+                 * add the patient if it's a new one; otherwise update it
+                 * because it may be locked
+                 */
+                if (data.getId() == null) {
+                    PatientService.get().validate(data);
+                    data = PatientService.get().add(data);
+                    manager.getSampleClinical().setPatientId(data.getId());
+                    manager.getSampleClinical().setPatient(data);
+                } else {
+                    PatientService.get().validate(data);
+                    data = PatientService.get().update(data);
+                    manager.getSampleClinical().setPatient(data);
+                    bus.fireEventFromSource(new PatientLockEvent(data,
+                                                                 PatientLockEvent.Action.UNLOCK),
+                                            this);
+                }
             } catch (ValidationErrorsList e) {
-                showErrors(e);
+                /*
+                 * for display
+                 */
+                accession = manager.getSample().getAccessionNumber();
+                if (accession == null)
+                    accession = 0;
+
+                /*
+                 * new FormErrorExceptions are created to prepend accession
+                 * number to the messages of FormErrorExceptions returned by
+                 * patient validation; other exceptions are shown as is
+                 */
+                e1 = new ValidationErrorsList();
+                prefix = Messages.get().sample_accessionPrefix(accession);
+                for (Exception ex : e.getErrorList()) {
+                    if (ex instanceof FormErrorException)
+                        e1.add(new FormErrorException(DataBaseUtil.concatWithSeparator(prefix,
+                                                                                       " ",
+                                                                                       ex.getMessage())));
+                    else
+                        e1.add(ex);
+                }
+
+                showErrors(e1);
                 return;
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
@@ -1433,17 +1515,18 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             setDone(Messages.get().gen_queryAborted());
         } else if (isState(UPDATE)) {
             /*
-             * unlock the patient if it's locked
+             * unlock any locked or changed patient
              */
-            if (manager.getSampleClinical() != null && clinicalTab.getIsPatientLocked()) {
+            if (manager.getSampleClinical() != null &&
+                manager.getSampleClinical().getPatientId() != null) {
                 try {
                     data = PatientService.get().abortUpdate(manager.getSampleClinical()
                                                                    .getPatientId());
-                    manager.getSampleClinical().setPatient(data);
-                    clinicalTab.setIsPatientLocked(false);
+                    bus.fireEventFromSource(new PatientLockEvent(data, PatientLockEvent.Action.UNLOCK), this);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
                     return;
                 }
             }
@@ -1491,7 +1574,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         HashMap<Integer, Boolean> selectedSams;
 
         if (table.getSelectedRows().length != 1) {
-            Window.alert(Messages.get().selOneRowUnrelease());
+            Window.alert(Messages.get().completeRelease_selOneRowUnrelease());
             return;
         }
 
@@ -1513,7 +1596,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         ana = (AnalysisViewDO)sm.getObject(data.analysisUid);
         if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
             Window.alert(Messages.get()
-                                 .completeRelease_wrongStatusUnrelease(analysisStatuses.get(Constants.dictionary().ANALYSIS_RELEASED)));
+                                 .sample_wrongStatusUnrelease(analysisStatuses.get(Constants.dictionary().ANALYSIS_RELEASED)));
 
             selectedSams = new HashMap<Integer, Boolean>();
             /*
@@ -1552,7 +1635,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
-        window.setBusy(Messages.get().gen_generatingReport());
+        setBusy(Messages.get().gen_generatingReport());
 
         FinalReportService.get().runReportForPreview(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
@@ -1661,52 +1744,28 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("details")
     protected void details(ClickEvent event) {
-        Browser browser;
-        WindowInt window;
-        final SampleTrackingScreen trackingScreen;
-
-        browser = OpenELIS.getBrowser();
-        window = browser.getScreenByKey("tracking");
+        org.openelis.ui.widget.Window window;
+        final SampleTrackingScreenUI trackingScreen;
+        ScheduledCommand cmd;
 
         try {
-            if (window == null) {
-                window = new org.openelis.ui.widget.Window(false);
-                window.setName(Messages.get().sample_tracking());
-                trackingScreen = new SampleTrackingScreen(window);
-                window.setContent(trackingScreen);
-                browser.addWindow(window, "tracking");
-                DeferredCommand.addCommand(new Command() {
-                    public void execute() {
-                        trackingScreen.query(getSelectedSamples());
-                    }
-                });
-            } else {
-                trackingScreen = (SampleTrackingScreen)window.getContent();
-                trackingScreen.query(getSelectedSamples());
-            }
-        } catch (Exception e) {
+            window = new org.openelis.ui.widget.Window();
+            window.setName(Messages.get().sampleTracking_tracking());
+            window.setSize("1074px", "435px");
+            trackingScreen = new SampleTrackingScreenUI(window);
+            window.setContent(trackingScreen);
+            OpenELIS.getBrowser().addWindow(window, "tracking");
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    trackingScreen.query(getSelectedSamples());
+                }
+            };
+            Scheduler.get().scheduleDeferred(cmd);
+        } catch (Throwable e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-    }
-
-    /**
-     * returns the ids of the samples that contain the analyses selected in the
-     * table
-     */
-    private HashSet<Integer> getSelectedSamples() {
-        UUID data;
-        Integer rows[];
-        HashSet<Integer> ids;
-
-        rows = table.getSelectedRows();
-        ids = new HashSet<Integer>();
-        for (Integer i : rows) {
-            data = table.getRowAt(i).getData();
-            ids.add(data.sampleId);
-        }
-
-        return ids;
     }
 
     /**
@@ -1825,9 +1884,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             prevId = null;
             for (i = 0; i < manager.auxData.count(); i++ ) {
                 aux = manager.auxData.get(i);
-                if ( !aux.getGroupId().equals(prevId)) {
-                    ids.add(aux.getGroupId());
-                    prevId = aux.getGroupId();
+                if ( !aux.getAuxFieldGroupId().equals(prevId)) {
+                    ids.add(aux.getAuxFieldGroupId());
+                    prevId = aux.getAuxFieldGroupId();
                 }
             }
 
@@ -1867,9 +1926,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     private void executeQuery(final Query query) {
         setBusy(Messages.get().gen_querying());
 
-        /*
-         * don't query for quick-entry samples
-         */
         query.setRowsPerPage(500);
         SampleService1.get().fetchByAnalysisQuery(query, elements, getQueryCallBack());
     }
@@ -2161,25 +2217,21 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * returns the ids of all analyses in the table, belonging to the sample
-     * with this id
+     * returns the ids of the samples that contain the analyses selected in the
+     * table
      */
-    private ArrayList<Integer> getAnalyses(Integer sampleId) {
+    private HashSet<Integer> getSelectedSamples() {
         UUID data;
-        AnalysisViewDO ana;
-        ArrayList<Integer> ids;
-        SampleManager1 sm;
-
-        ids = new ArrayList<Integer>();
-        for (int i = 0; i < table.getRowCount(); i++ ) {
+        Integer rows[];
+        HashSet<Integer> ids;
+    
+        rows = table.getSelectedRows();
+        ids = new HashSet<Integer>();
+        for (Integer i : rows) {
             data = table.getRowAt(i).getData();
-            if ( !data.sampleId.equals(sampleId))
-                continue;
-            sm = managers.get(data.sampleId);
-            ana = (AnalysisViewDO)sm.getObject(data.analysisUid);
-            ids.add(ana.getId());
+            ids.add(data.sampleId);
         }
-
+    
         return ids;
     }
 
@@ -2196,7 +2248,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         ArrayList<Integer> anaIds;
         ArrayList<SampleManager1> sms;
         HashSet<Integer> samIds;
-
+    
         /*
          * find the samples that the selected analyses belong to
          */
@@ -2206,7 +2258,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             data = table.getRowAt(selRows[i]).getData();
             samIds.add(data.sampleId);
         }
-
+    
         /*
          * for locking and refetching samples, make a list of all analyses in
          * the table belonging to the samples that the selected analyses also
@@ -2219,10 +2271,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 continue;
             sm = managers.get(data.sampleId);
             ana = (AnalysisViewDO)sm.getObject(data.analysisUid);
-
+    
             anaIds.add(ana.getId());
         }
-
+    
         /*
          * lock and refetch the samples; update the screen's hash
          */
@@ -2466,7 +2518,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             refreshRow(table.getSelectedRow());
             /*
              * this sample needs to be updated because the analysis was
-             * unreleased; also, mark the sample as unreleased for e-save etc.
+             * unreleased
              */
             updateSams.put(sm.getSample().getId(), true);
             sm.setPostProcessing(PostProcessing.UNRELEASE);
@@ -2484,36 +2536,33 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * changes the accession number of the sample to the passed value if it is
      * valid for the sample, otherwise shows the validation error
      */
-    private void changeAccession(Integer accession, Integer sampleId) {
-        SampleManager1 sm;
+    private void changeAccession(Integer accession) {
         AccessionChangeEvent event;
         Exception error;
 
-        sm = managers.get(sampleId);
-        sm.getSample().setAccessionNumber(accession);
+        manager.getSample().setAccessionNumber(accession);
 
         setBusy();
 
         error = null;
         try {
-            SampleService1.get().validateAccessionNumber(sm);
+            SampleService1.get().validateAccessionNumber(manager);
         } catch (InconsistencyException e) {
             error = e;
         } catch (Exception e) {
             accession = null;
-            sm.getSample().setAccessionNumber(accession);
+            manager.getSample().setAccessionNumber(accession);
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
         clearStatus();
 
-        manager = sm;
-        managers.put(sampleId, manager);
-        refreshRows(sampleId);
+        managers.put(manager.getSample().getId(), manager);
+        refreshRows(manager.getSample().getId());
         setData();
 
-        event = new AccessionChangeEvent(accession, sampleId);
+        event = new AccessionChangeEvent(accession);
         event.setError(error);
         bus.fireEventFromSource(event, screen);
     }
@@ -2562,6 +2611,29 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * returns the ids of all analyses in the table, belonging to the sample
+     * with this id
+     */
+    private ArrayList<Integer> getAnalyses(Integer sampleId) {
+        UUID data;
+        AnalysisViewDO ana;
+        ArrayList<Integer> ids;
+        SampleManager1 sm;
+    
+        ids = new ArrayList<Integer>();
+        for (int i = 0; i < table.getRowCount(); i++ ) {
+            data = table.getRowAt(i).getData();
+            if ( !data.sampleId.equals(sampleId))
+                continue;
+            sm = managers.get(data.sampleId);
+            ana = (AnalysisViewDO)sm.getObject(data.analysisUid);
+            ids.add(ana.getId());
+        }
+    
+        return ids;
+    }
+
+    /**
      * adds the tests/panels in the list to the sample; shows any errors found
      * while adding the tests or the popup for selecting additional prep/reflex
      * tests
@@ -2576,10 +2648,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             managers.put(manager.getSample().getId(), manager);
             setData();
             setState(state);
-            /*
-             * notify the tabs that some new tests have been added
-             */
-            bus.fireEventFromSource(new AddTestEvent(tests), this);
+            
             clearStatus();
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());

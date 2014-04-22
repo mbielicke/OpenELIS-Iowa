@@ -96,6 +96,10 @@ public interface SampleServiceInt1Async {
                             AsyncCallback<SampleTestReturnVO> callback);
 
     public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback);
+    
+    public void changeDomain(SampleManager1 sm, String domain, AsyncCallback<SampleManager1> callback);
+    
+    public void unrelease(SampleManager1 sm, AsyncCallback<SampleManager1> callback);
 
     public void addAnalysis(SampleManager1 sm, SampleTestRequestVO test,
                             AsyncCallback<SampleTestReturnVO> callback);

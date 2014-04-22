@@ -236,8 +236,10 @@ public abstract class SampleProjectLookupUI extends Screen {
         setState(state);
         fireDataChange();
 
-        if (isState(ADD, UPDATE) && table.getRowCount() > 0)
+        if (isState(ADD, UPDATE) && table.getRowCount() > 0) {
             table.startEditing(0, 0);
+            removeProjectButton.setEnabled(true);
+        }
     }
 
     public void setState(State state) {
