@@ -159,6 +159,7 @@ public class SampleMeta implements Meta, MetaMap {
                     NEO_PATIENT_GENDER_ID = "_neonatalPatient.genderId",
                     NEO_PATIENT_RACE_ID = "_neonatalPatient.raceId",
                     NEO_PATIENT_ETHNICITY_ID = "_neonatalPatient.ethnicityId",
+                    NEO_PATIENT_NATIONAL_ID = "_neonatalPatient.nationalId",
 
                     NEO_PATIENT_ADDR_MULTIPLE_UNIT = "_neonatalPatientAddress.multipleUnit",
                     NEO_PATIENT_ADDR_STREET_ADDRESS = "_neonatalPatientAddress.streetAddress",
@@ -181,6 +182,7 @@ public class SampleMeta implements Meta, MetaMap {
                     NEO_NEXT_OF_KIN_GENDER_ID = "_neonatalNextOfKin.genderId",
                     NEO_NEXT_OF_KIN_RACE_ID = "_neonatalNextOfKin.raceId",
                     NEO_NEXT_OF_KIN_ETHNICITY_ID = "_neonatalNextOfKin.ethnicityId",
+                    NEO_NEXT_OF_KIN_NATIONAL_ID = "_neonatalNextOfKin.nationalId",
 
                     NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT = "_neonatalNextOfKinAddress.multipleUnit",
                     NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS = "_neonatalNextOfKinAddress.streetAddress",
@@ -210,6 +212,7 @@ public class SampleMeta implements Meta, MetaMap {
                     CLIN_PATIENT_GENDER_ID = "_clinicalPatient.genderId",
                     CLIN_PATIENT_RACE_ID = "_clinicalPatient.raceId",
                     CLIN_PATIENT_ETHNICITY_ID = "_clinicalPatient.ethnicityId",
+                    CLIN_PATIENT_NATIONAL_ID = "_clinicalPatient.nationalId",
 
                     CLIN_PATIENT_ADDR_MULTIPLE_UNIT = "_clinicalPatientAddress.multipleUnit",
                     CLIN_PATIENT_ADDR_STREET_ADDRESS = "_clinicalPatientAddress.streetAddress",
@@ -302,7 +305,7 @@ public class SampleMeta implements Meta, MetaMap {
                     SAMPLE_ORG_ORGANIZATION_ADDRESS_CELL_PHONE = "_sampleOrganizationOrganization.address.cellPhone",
                     SAMPLE_ORG_ORGANIZATION_ADDRESS_FAX_PHONE = "_sampleOrganizationOrganization.address.faxPhone",
                     SAMPLE_ORG_ORGANIZATION_ADDRESS_EMAIL = "_sampleOrganizationOrganization.address.email",
-                    SAMPLE_ORG_ORGANIZATION_ADDRESS_COUNTRY = "_sampleOrganizationOrganization.address.country",                   
+                    SAMPLE_ORG_ORGANIZATION_ADDRESS_COUNTRY = "_sampleOrganizationOrganization.address.country",
 
                     // TODO remove this after converting the login screens to
                     // the new framework
@@ -356,7 +359,7 @@ public class SampleMeta implements Meta, MetaMap {
 
                     NEO_PROVIDER_LAST_NAME = "_neonatalProvider.lastName",
                     NEO_PROVIDER_FIRST_NAME = "_neonatalProvider.firstName",
-                    
+
                     CLIN_PROVIDER_LAST_NAME = "_clinicalProvider.lastName",
                     CLIN_PROVIDER_FIRST_NAME = "_clinicalProvider.firstName",
 
@@ -479,6 +482,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   NEO_PATIENT_GENDER_ID,
                                                   NEO_PATIENT_RACE_ID,
                                                   NEO_PATIENT_ETHNICITY_ID,
+                                                  NEO_PATIENT_NATIONAL_ID,
                                                   NEO_PATIENT_ADDR_MULTIPLE_UNIT,
                                                   NEO_PATIENT_ADDR_STREET_ADDRESS,
                                                   NEO_PATIENT_ADDR_CITY,
@@ -499,6 +503,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   NEO_NEXT_OF_KIN_GENDER_ID,
                                                   NEO_NEXT_OF_KIN_RACE_ID,
                                                   NEO_NEXT_OF_KIN_ETHNICITY_ID,
+                                                  NEO_NEXT_OF_KIN_NATIONAL_ID,
                                                   NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT,
                                                   NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS,
                                                   NEO_NEXT_OF_KIN_ADDR_CITY,
@@ -524,6 +529,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   CLIN_PATIENT_GENDER_ID,
                                                   CLIN_PATIENT_RACE_ID,
                                                   CLIN_PATIENT_ETHNICITY_ID,
+                                                  CLIN_PATIENT_NATIONAL_ID,
                                                   CLIN_PATIENT_ADDR_MULTIPLE_UNIT,
                                                   CLIN_PATIENT_ADDR_STREET_ADDRESS,
                                                   CLIN_PATIENT_ADDR_CITY,
@@ -1092,6 +1098,10 @@ public class SampleMeta implements Meta, MetaMap {
         return NEO_PATIENT_ETHNICITY_ID;
     }
 
+    public static String getNeonatalPatientNationalId() {
+        return NEO_PATIENT_NATIONAL_ID;
+    }
+
     public static String getNeonatalPatientAddrMultipleUnit() {
         return NEO_PATIENT_ADDR_MULTIPLE_UNIT;
     }
@@ -1170,6 +1180,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getNeonatalNextOfKinEthnicityId() {
         return NEO_NEXT_OF_KIN_ETHNICITY_ID;
+    }
+
+    public static String getNeonatalNextOfKinNationalId() {
+        return NEO_NEXT_OF_KIN_NATIONAL_ID;
     }
 
     public static String getNeonatalNextOfKinAddrMultipleUnit() {
@@ -1266,6 +1280,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getClinicalPatientEthnicityId() {
         return CLIN_PATIENT_ETHNICITY_ID;
+    }
+    
+    public static String getClinicalPatientNationalId() {
+        return CLIN_PATIENT_NATIONAL_ID;
     }
 
     public static String getClinicalPatientAddrMultipleUnit() {
@@ -1771,7 +1789,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getNeonatalProviderFirstName() {
         return NEO_PROVIDER_FIRST_NAME;
     }
-    
+
     public static String getClinicalProviderLastName() {
         return CLIN_PROVIDER_LAST_NAME;
     }
@@ -1864,7 +1882,7 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("neonatalProvider.") > -1)
             from += " LEFT JOIN _sampleNeonatal.provider _neonatalProvider ";
-        
+
         // sample clinical
         if (where.indexOf("sampleClinical.") > -1 || where.indexOf("clinicalPatient.") > -1 ||
             where.indexOf("clinicalPatientAddress.") > -1 ||

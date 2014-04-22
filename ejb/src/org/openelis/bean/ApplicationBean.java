@@ -69,34 +69,38 @@ public class ApplicationBean {
                         "analysis_error_initiated", "analysis_error_inprep",
                         "analysis_error_logged_in", "analysis_initiated", "analysis_inprep",
                         "analysis_logged_in", "analysis_on_hold", "analysis_released",
-                        "analysis_requeue", "an_user_ac_completed", "an_user_ac_released",
-                        "aux_alpha_lower", "aux_alpha_mixed", "aux_alpha_upper", "aux_date",
-                        "aux_date_time", "aux_default", "aux_dictionary", "aux_numeric",
-                        "aux_time", "chart_type_dynamic", "chart_type_fixed",
-                        "cost_center_unknown", "instrument_log_completed",
-                        "instrument_log_pending", "laboratory_location_ic", "local_type_analyte",
-                        "local_type_dictionary", "local_type_method", "local_type_organization",
-                        "local_type_test", "local_type_test_analyte", "log_level_error",
-                        "log_level_info", "log_type_data_transmission", "micrograms_per_liter",
-                        "nanograms_per_liter", "nanograms_per_milliliter",
+                        "analysis_requeue", "animal", "an_user_ac_completed",
+                        "an_user_ac_released", "aux_alpha_lower", "aux_alpha_mixed",
+                        "aux_alpha_upper", "aux_date", "aux_date_time", "aux_default",
+                        "aux_dictionary", "aux_numeric", "aux_time", "chart_type_dynamic",
+                        "chart_type_fixed", "clinical", "cost_center_unknown", "environmental",
+                        "instrument_log_completed", "instrument_log_pending",
+                        "laboratory_location_ic", "local_type_analyte", "local_type_dictionary",
+                        "local_type_method", "local_type_organization", "local_type_test",
+                        "local_type_test_analyte", "log_level_error", "log_level_info",
+                        "log_type_data_transmission", "micrograms_per_liter",
+                        "nanograms_per_liter", "nanograms_per_milliliter", "newborn",
                         "order_recurrence_unit_days", "order_recurrence_unit_months",
                         "order_recurrence_unit_years", "order_status_back_ordered",
                         "order_status_pending", "order_status_processed", "order_status_recurring",
                         "order_status_on_hold", "order_status_cancelled",
                         "org_finalrep_fax_number", "org_no_finalreport", "org_report_to",
                         "org_bill_to", "org_second_report_to", "org_birth_hospital",
-                        "pos_duplicate", "pos_fixed", "pos_fixed_always", "pos_random",
-                        "pos_last_of_subset", "pos_last_of_run", "pos_last_of_subset_and_run",
+                        "patient_relation_father", "patient_relation_guardian",
+                        "patient_relation_mother", "patient_relation_self", "pos_duplicate",
+                        "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
+                        "pos_last_of_run", "pos_last_of_subset_and_run", "private_well", "pt",
                         "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
-                        "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
-                        "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
-                        "org_test_epartner_url", "org_epartner_aggr", "reflex_auto",
-                        "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "rf_a", "rf_ac",
-                        "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int", "round_int_sig_fig",
-                        "round_int_sig_fig_noe", "round_sig_fig", "round_sig_fig_noe",
-                        "sample_completed", "sample_error", "sample_logged_in",
-                        "sample_not_verified", "sample_released", "sdwis_category_bacterial",
-                        "sdwis_category_chemical", "sdwis_category_lead", "sdwis_category_radchem",
+                        "qc_blank", "qc_duplicate", "qc_spike", "quick_entry",
+                        "receivable_reportto_email", "released_reportto_email", "org_hold_sample",
+                        "org_prod_epartner_url", "org_test_epartner_url", "org_epartner_aggr",
+                        "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
+                        "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
+                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
+                        "round_sig_fig_noe", "sample_completed", "sample_error",
+                        "sample_logged_in", "sample_not_verified", "sample_released", "sdwis",
+                        "sdwis_category_bacterial", "sdwis_category_chemical",
+                        "sdwis_category_lead", "sdwis_category_radchem",
                         "section_mcl_violation_email", "shipping_status_processed",
                         "shipping_status_shipped", "smpl_type_rt", "smpl_type_rp", "smpl_type_sp",
                         "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only",
@@ -148,6 +152,7 @@ public class ApplicationBean {
         Constants.dictionary().ANALYSIS_ON_HOLD = dictId(map, "analysis_on_hold");
         Constants.dictionary().ANALYSIS_RELEASED = dictId(map, "analysis_released");
         Constants.dictionary().ANALYSIS_REQUEUE = dictId(map, "analysis_requeue");
+        Constants.dictionary().ANIMAL = dictId(map, "animal");
         Constants.dictionary().AN_USER_AC_COMPLETED = dictId(map, "an_user_ac_completed");
         Constants.dictionary().AN_USER_AC_RELEASED = dictId(map, "an_user_ac_released");
         Constants.dictionary().AUX_ALPHA_LOWER = dictId(map, "aux_alpha_lower");
@@ -161,7 +166,9 @@ public class ApplicationBean {
         Constants.dictionary().AUX_TIME = dictId(map, "aux_time");
         Constants.dictionary().CHART_TYPE_DYNAMIC = dictId(map, "chart_type_dynamic");
         Constants.dictionary().CHART_TYPE_FIXED = dictId(map, "chart_type_fixed");
+        Constants.dictionary().CLINICAL = dictId(map, "clinical");
         Constants.dictionary().COST_CENTER_UNKNOWN = dictId(map, "cost_center_unknown");
+        Constants.dictionary().ENVIRONMENTAL = dictId(map, "environmental");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
         Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
@@ -178,6 +185,7 @@ public class ApplicationBean {
         Constants.dictionary().MICROGRAMS_PER_LITER = dictId(map, "micrograms_per_liter");
         Constants.dictionary().NANOGRAMS_PER_LITER = dictId(map, "nanograms_per_liter");
         Constants.dictionary().NANOGRAMS_PER_MILLILITER = dictId(map, "nanograms_per_milliliter");
+        Constants.dictionary().NEWBORN = dictId(map, "newborn");
         Constants.dictionary().ORDER_RECURRENCE_UNIT_DAYS = dictId(map,
                                                                    "order_recurrence_unit_days");
         Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS = dictId(map,
@@ -204,6 +212,12 @@ public class ApplicationBean {
         Constants.dictionary().POS_LAST_OF_RUN = dictId(map, "pos_last_of_run");
         Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map,
                                                                    "pos_last_of_subset_and_run");
+        Constants.dictionary().PATIENT_RELATION_FATHER = dictId(map,"patient_relation_father");
+        Constants.dictionary().PATIENT_RELATION_GUARDIAN = dictId(map,"patient_relation_guardian");
+        Constants.dictionary().PATIENT_RELATION_MOTHER = dictId(map,"patient_relation_mother");
+        Constants.dictionary().PATIENT_RELATION_SELF = dictId(map,"patient_relation_self");
+        Constants.dictionary().PRIVATE_WELL = dictId(map, "private_well");
+        Constants.dictionary().PT = dictId(map, "pt");
         Constants.dictionary().PT_SAMPLE = dictId(map, "pt_sample");
         Constants.dictionary().QAEVENT_INTERNAL = dictId(map, "qaevent_internal");
         Constants.dictionary().QAEVENT_OVERRIDE = dictId(map, "qaevent_override");
@@ -211,6 +225,7 @@ public class ApplicationBean {
         Constants.dictionary().QC_BLANK = dictId(map, "qc_blank");
         Constants.dictionary().QC_DUPLICATE = dictId(map, "qc_duplicate");
         Constants.dictionary().QC_SPIKE = dictId(map, "qc_spike");
+        Constants.dictionary().QUICK_ENTRY = dictId(map, "quick_entry");
         Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL = dictId(map, "receivable_reportto_email");
         Constants.dictionary().RELEASED_REPORTTO_EMAIL = dictId(map, "released_reportto_email");
         Constants.dictionary().ORG_HOLD_SAMPLE = dictId(map, "org_hold_sample");
@@ -238,6 +253,7 @@ public class ApplicationBean {
         Constants.dictionary().SAMPLE_LOGGED_IN = dictId(map, "sample_logged_in");
         Constants.dictionary().SAMPLE_NOT_VERIFIED = dictId(map, "sample_not_verified");
         Constants.dictionary().SAMPLE_RELEASED = dictId(map, "sample_released");
+        Constants.dictionary().SDWIS = dictId(map, "sdwis");
         Constants.dictionary().SDWIS_CATEGORY_BACTERIAL = dictId(map, "sdwis_category_bacterial");
         Constants.dictionary().SDWIS_CATEGORY_CHEMICAL = dictId(map, "sdwis_category_chemical");
         Constants.dictionary().SDWIS_CATEGORY_LEAD = dictId(map, "sdwis_category_lead");

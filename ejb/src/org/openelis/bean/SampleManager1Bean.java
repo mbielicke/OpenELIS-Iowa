@@ -188,6 +188,9 @@ public class SampleManager1Bean {
     @EJB
     private SampleClinicalBean           sampleClinical;
 
+    @EJB
+    private DictionaryCacheBean          dictionaryCache;
+
     private static final Logger          log = Logger.getLogger("openelis");
 
     /**
@@ -209,53 +212,7 @@ public class SampleManager1Bean {
 
         setSample(sm, s);
 
-        // set the domain
-        if (Constants.domain().QUICKENTRY.equals(domain)) {
-            s.setDomain(domain);
-        } else if (Constants.domain().ENVIRONMENTAL.equals(domain)) {
-            SampleEnvironmentalDO se;
-
-            se = new SampleEnvironmentalDO();
-            se.setIsHazardous("N");
-            setSampleEnvironmental(sm, se);
-
-            s.setDomain(domain);
-        } else if (Constants.domain().PRIVATEWELL.equals(domain)) {
-            SamplePrivateWellViewDO spw;
-
-            spw = new SamplePrivateWellViewDO();
-            setSamplePrivateWell(sm, spw);
-
-            s.setDomain(domain);
-        } else if (Constants.domain().SDWIS.equals(domain)) {
-            SampleSDWISViewDO ssd;
-
-            ssd = new SampleSDWISViewDO();
-            setSampleSDWIS(sm, ssd);
-
-            s.setDomain(domain);
-        } else if (Constants.domain().NEONATAL.equals(domain)) {
-            SampleNeonatalDO snn;
-
-            snn = new SampleNeonatalDO();
-            snn.setIsRepeat("N");
-            snn.setIsNicu("N");
-            snn.setIsTransfused("N");
-            snn.setIsCollectionValid("N");
-            setSampleNeonatal(sm, snn);
-
-            s.setDomain(domain);
-        } else if (Constants.domain().CLINICAL.equals(domain)) {
-            SampleClinicalDO sc;
-
-            sc = new SampleClinicalDO();
-            setSampleClinical(sm, sc);
-
-            s.setDomain(domain);
-        } else {
-            throw new InconsistencyException(Messages.get()
-                                                     .sample_domainNotValid(s.getAccessionNumber()));
-        }
+        setDomain(sm, domain);
 
         return sm;
     }
@@ -702,7 +659,7 @@ public class SampleManager1Bean {
 
         ids = new ArrayList<Integer>();
 
-        for (IdVO vo : analysis.query(fields, first, max))
+        for (IdAccessionVO vo : analysis.query(fields, first, max))
             ids.add(vo.getId());
         return fetchByAnalyses(ids, elements);
     }
@@ -927,7 +884,7 @@ public class SampleManager1Bean {
                 ids.add(an.getTestId());
             if (getAuxilliary(sm) != null) {
                 for (AuxDataViewDO aux : getAuxilliary(sm))
-                    ids1.add(aux.getGroupId());
+                    ids1.add(aux.getAuxFieldGroupId());
             }
         }
 
@@ -1122,25 +1079,6 @@ public class SampleManager1Bean {
                     samplePrivate.update(getSamplePrivateWell(sm));
                 }
             } else if (getSampleNeonatal(sm) != null) {
-                /*
-                 * add/update patient and next of kin
-                 */
-                if (getSampleNeonatal(sm).getPatient() != null) {
-                    if (getSampleNeonatal(sm).getPatient().getId() == null)
-                        pat = patient.add(getSampleNeonatal(sm).getPatient());
-                    else
-                        pat = patient.update(getSampleNeonatal(sm).getPatient());
-                    getSampleNeonatal(sm).getPatient().setId(pat.getId());
-                }
-
-                if (getSampleNeonatal(sm).getNextOfKin() != null) {
-                    if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
-                        pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
-                    else
-                        pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
-                    getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
-                }
-
                 if (getSampleNeonatal(sm).getId() == null) {
                     getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
                     sampleNeonatal.add(getSampleNeonatal(sm));
@@ -1148,17 +1086,6 @@ public class SampleManager1Bean {
                     sampleNeonatal.update(getSampleNeonatal(sm));
                 }
             } else if (getSampleClinical(sm) != null) {
-                /*
-                 * add patient; since the patient is locked and unlocked
-                 * separately from the sample, it's updated before the sample
-                 */
-                if (getSampleClinical(sm).getPatient() != null) {
-                    if (getSampleClinical(sm).getPatient().getId() == null) {
-                        pat = patient.add(getSampleClinical(sm).getPatient());
-                        getSampleClinical(sm).getPatient().setId(pat.getId());
-                    }
-                }
-
                 if (getSampleClinical(sm).getId() == null) {
                     getSampleClinical(sm).setSampleId(getSample(sm).getId());
                     sampleClinical.add(getSampleClinical(sm));
@@ -1599,9 +1526,13 @@ public class SampleManager1Bean {
         SampleManager1 sm;
         AnalysisViewDO ana;
         ResultViewDO res;
+        NoteViewDO n;
+        AnalysisQaEventViewDO aqa;
         HashMap<Integer, Integer> imap, amap;
         ArrayList<AnalysisViewDO> analyses;
         ArrayList<ResultViewDO> results;
+        ArrayList<NoteViewDO> notes;
+        ArrayList<AnalysisQaEventViewDO> aqas;
 
         sm = fetchById(sampleId,
                        SampleManager1.Load.ORGANIZATION,
@@ -1783,29 +1714,121 @@ public class SampleManager1Bean {
             }
         }
 
-        /*
-         * duplicate only external notes
-         */
         if (getAnalysisExternalNotes(sm) != null) {
-            for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
-                data.setId(sm.getNextUID());
-                data.setReferenceId(amap.get(data.getReferenceId()));
-                data.setTimestamp(null);
+            /*
+             * remove the external notes whose analyses are no longer in the
+             * manager (cancelled analyses are removed); link the remaining
+             * external notes to their analysis using the negative ids
+             */
+            i = 0;
+            notes = getAnalysisExternalNotes(sm);
+            while (i < notes.size()) {
+                n = notes.get(i);
+                tmpId = amap.get(n.getReferenceId());
+                if (tmpId != null) {
+                    n.setId(sm.getNextUID());
+                    n.setReferenceId(tmpId);
+                    n.setTimestamp(null);
+                    i++ ;
+                } else {
+                    notes.remove(i);
+                }
             }
         }
 
         setAnalysisInternalNotes(sm, null);
 
         if (getAnalysisQAs(sm) != null) {
-            for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
-                data.setId(sm.getNextUID());
-                data.setAnalysisId(amap.get(data.getAnalysisId()));
+            /*
+             * remove the qa events whose analyses are no longer in the manager
+             * (cancelled analyses are removed); link the remaining qa events to
+             * their analysis using the negative ids
+             */
+            i = 0;
+            aqas = getAnalysisQAs(sm);
+            while (i < aqas.size()) {
+                aqa = aqas.get(i);
+                tmpId = amap.get(aqa.getAnalysisId());
+                if (tmpId != null) {
+                    aqa.setId(sm.getNextUID());
+                    aqa.setAnalysisId(tmpId);
+                    i++ ;
+                } else {
+                    aqas.remove(i);
+                }
             }
         }
 
         return sm;
     }
-    
+
+    /**
+     * Changes the sample's domain to the passed value if it's different from
+     * the sample's domain. Removes the old domain's data and initializes the
+     * new domain with the defaults for a new sample of this domain. Throws
+     * exception if the sample is released, is not an existing one or if the
+     * current or passed domain is Quick Entry.
+     */
+    public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception {
+        SampleDO data;
+
+        data = getSample(sm);
+        if (data.getDomain().equals(domain))
+            return sm;
+
+        /*
+         * can only change the domain of an existing sample and only if it's not
+         * released; can't change the domain to or from quick-entry
+         */
+        if (getSample(sm).getId() == null)
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantChangeDomainNewSampleException());
+        else if (Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId()))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantChangeDomainReleasedSampleException());
+        else if (Constants.domain().QUICKENTRY.equals(data.getDomain()))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantChangeDomainQuickEntryException());
+        else if (Constants.domain().QUICKENTRY.equals(domain))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantChangeDomainToQuickEntryException());
+
+        if (getRemoved(sm) == null)
+            setRemoved(sm, new ArrayList<DataObject>());
+
+        /*
+         * delete the existing domain
+         */
+        if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain())) {
+            if (getSampleEnvironmental(sm).getId() != null)
+                getRemoved(sm).add(getSampleEnvironmental(sm));
+            setSampleEnvironmental(sm, null);
+        } else if (Constants.domain().PRIVATEWELL.equals(data.getDomain())) {
+            if (getSamplePrivateWell(sm).getId() != null)
+                getRemoved(sm).add(getSamplePrivateWell(sm));
+            setSamplePrivateWell(sm, null);
+        } else if (Constants.domain().SDWIS.equals(data.getDomain())) {
+            if (getSampleSDWIS(sm).getId() != null)
+                getRemoved(sm).add(getSampleSDWIS(sm));
+            setSampleSDWIS(sm, null);
+        } else if (Constants.domain().NEONATAL.equals(data.getDomain())) {
+            if (getSampleNeonatal(sm).getId() != null)
+                getRemoved(sm).add(getSampleNeonatal(sm));
+            setSampleNeonatal(sm, null);
+        } else if (Constants.domain().CLINICAL.equals(data.getDomain())) {
+            if (getSampleClinical(sm).getId() != null)
+                getRemoved(sm).add(getSampleClinical(sm));
+            setSampleClinical(sm, null);
+        }
+
+        /*
+         * change the domain to the passed value and set the defaults
+         */
+        setDomain(sm, domain);
+
+        return sm;
+    }
+
     /**
      * Changes the sample's status to the passed value or the lowest status of
      * the analyses
@@ -1886,6 +1909,37 @@ public class SampleManager1Bean {
             }
             data.setStatusId(nextStatusId);
         }
+    }
+
+    /**
+     * Resets the sample's status, released date and revision to take it out of
+     * released status. Sets the flag for post-processing because of the sample
+     * getting unreleased. Throws an exception if the sample is not released.
+     */
+    public SampleManager1 unrelease(SampleManager1 sm) throws Exception {
+        String status;
+        SampleDO data;
+
+        data = getSample(sm);
+        /*
+         * the sample must be in Released status to unrelease it
+         */
+        if ( !Constants.dictionary().SAMPLE_RELEASED.equals(data.getStatusId())) {
+            status = dictionaryCache.getById(Constants.dictionary().SAMPLE_RELEASED).getEntry();
+            throw new InconsistencyException(Messages.get().sample_wrongStatusUnrelease(status));
+        }
+
+        data.setStatusId(Constants.dictionary().SAMPLE_COMPLETED);
+        data.setReleasedDate(null);
+        data.setRevision(data.getRevision() + 1);
+
+        /*
+         * mark the sample for post processing e.g. e-save as a result of it
+         * getting unreleased
+         */
+        setPostProcessing(sm, SampleManager1.PostProcessing.UNRELEASE);
+
+        return sm;
     }
 
     /**
@@ -2156,6 +2210,63 @@ public class SampleManager1Bean {
     }
 
     /**
+     * Sets the passed value as the sample's domain and initializes the domain
+     * with defaults. Throws an exception if the passed domain is not valid.
+     */
+    private void setDomain(SampleManager1 sm, String domain) throws Exception {
+        SampleDO s;
+
+        s = getSample(sm);
+        if (Constants.domain().QUICKENTRY.equals(domain)) {
+            s.setDomain(domain);
+        } else if (Constants.domain().ENVIRONMENTAL.equals(domain)) {
+            SampleEnvironmentalDO se;
+
+            se = new SampleEnvironmentalDO();
+            se.setIsHazardous("N");
+            setSampleEnvironmental(sm, se);
+
+            s.setDomain(domain);
+        } else if (Constants.domain().PRIVATEWELL.equals(domain)) {
+            SamplePrivateWellViewDO spw;
+
+            spw = new SamplePrivateWellViewDO();
+            setSamplePrivateWell(sm, spw);
+
+            s.setDomain(domain);
+        } else if (Constants.domain().SDWIS.equals(domain)) {
+            SampleSDWISViewDO ssd;
+
+            ssd = new SampleSDWISViewDO();
+            setSampleSDWIS(sm, ssd);
+
+            s.setDomain(domain);
+        } else if (Constants.domain().NEONATAL.equals(domain)) {
+            SampleNeonatalDO snn;
+
+            snn = new SampleNeonatalDO();
+            snn.setIsRepeat("N");
+            snn.setIsNicu("N");
+            snn.setIsTransfused("N");
+            snn.setIsCollectionValid("N");
+            snn.setPatient(new PatientDO());
+            snn.setNextOfKin(new PatientDO());
+            setSampleNeonatal(sm, snn);
+            s.setDomain(domain);
+        } else if (Constants.domain().CLINICAL.equals(domain)) {
+            SampleClinicalDO sc;
+
+            sc = new SampleClinicalDO();
+            sc.setPatient(new PatientDO());
+            setSampleClinical(sm, sc);
+            s.setDomain(domain);
+        } else {
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_domainNotValid(s.getAccessionNumber()));
+        }
+    }
+
+    /**
      * Validates the sample manager for add or update. The routine throws a list
      * of exceptions/warnings listing all the problems for each sample.
      */
@@ -2192,7 +2303,8 @@ public class SampleManager1Bean {
          * samples should go here after checking to see if the VO/DO has
          * changed.
          */
-        if (getSampleSDWIS(sm) != null && getSampleSDWIS(sm).isChanged()) {
+        if (getSampleSDWIS(sm) != null &&
+            (getSampleSDWIS(sm).getId() == null || getSampleSDWIS(sm).isChanged())) {
             try {
                 sampleSDWIS.validate(getSampleSDWIS(sm), accession);
             } catch (Exception err) {
@@ -2224,7 +2336,7 @@ public class SampleManager1Bean {
             for (AuxDataViewDO data : getAuxilliary(sm)) {
                 if (data.isChanged())
                     try {
-                        auxData.validate(data, ams.get(data.getGroupId()).getFormatter(), accession);
+                        auxData.validate(data, ams.get(data.getAuxFieldGroupId()).getFormatter(), accession);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }

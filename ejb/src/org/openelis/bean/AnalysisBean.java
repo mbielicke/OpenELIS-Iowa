@@ -43,7 +43,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisViewVO;
-import org.openelis.domain.IdVO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleItemDO;
@@ -71,16 +71,25 @@ public class AnalysisBean {
     private static final SampleMeta meta = new SampleMeta();
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<IdAccessionVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdVO(" + SampleMeta.getAnalysisId() +
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
+                          SampleMeta.getAnalysisId() + ", " + SampleMeta.getAccessionNumber() +
                           ") ");
         builder.constructWhere(fields);
+        /*
+         * this is done to make sure that some analyses belonging to a sample
+         * don't get excluded from the returned list; this can happen if the
+         * difference between the ids of the analyses of the same sample is
+         * greater than the max number of results
+         */
+        builder.setOrderBy(SampleMeta.getAccessionNumber());
+
         /*
          * the following is done to provide necessary links between the aliases
          * for sample and analysis in the query, so that it's well-formed even
@@ -96,11 +105,11 @@ public class AnalysisBean {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<IdVO>)DataBaseUtil.subList(list, first, max);
+        list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<IdVO>)list;
+        return (ArrayList<IdAccessionVO>)list;
     }
 
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception {

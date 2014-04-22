@@ -691,6 +691,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_action();
 
   /**
+   * Translated "Analysis".
+   * 
+   * @return translated "Analysis"
+   */
+  @DefaultMessage("Analysis")
+  @Key("analysis.analysis")
+  String analysis_analysis();
+
+  /**
    * Translated "Cancel Analysis?".
    * 
    * @return translated "Cancel Analysis?"
@@ -923,6 +932,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status")
   @Key("analysis.invalidStatusForInitiateException")
   String analysis_invalidStatusForInitiateException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Results may be lost".
+   * 
+   * @return translated "Results may be lost"
+   */
+  @DefaultMessage("Results may be lost")
+  @Key("analysis.loseResultsCaption")
+  String analysis_loseResultsCaption();
+
+  /**
+   * Translated "Changing the method may cause you to lose the results you have entered.  Are you sure you want to continue?".
+   * 
+   * @return translated "Changing the method may cause you to lose the results you have entered.  Are you sure you want to continue?"
+   */
+  @DefaultMessage("Changing the method may cause you to lose the results you have entered.  Are you sure you want to continue?")
+  @Key("analysis.loseResultsWarning")
+  String analysis_loseResultsWarning();
 
   /**
    * Translated "No Add permission for - {0} : {1}, {2}".
@@ -2509,6 +2536,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String changeDomain();
 
   /**
+   * Translated "Change Domain".
+   * 
+   * @return translated "Change Domain"
+   */
+  @DefaultMessage("Change Domain")
+  @Key("changeDomain.changeDomain")
+  String changeDomain_changeDomain();
+
+  /**
+   * Translated "Change To".
+   * 
+   * @return translated "Change To"
+   */
+  @DefaultMessage("Change To")
+  @Key("changeDomain.changeTo")
+  String changeDomain_changeTo();
+
+  /**
    * Translated "Change Password".
    * 
    * @return translated "Change Password"
@@ -2932,6 +2977,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String completeRelease_releaseMultipleWarning(Integer arg0);
 
   /**
+   * Translated "Please select exactly one row to unrelease".
+   * 
+   * @return translated "Please select exactly one row to unrelease"
+   */
+  @DefaultMessage("Please select exactly one row to unrelease")
+  @Key("completeRelease.selOneRowUnrelease")
+  String completeRelease_selOneRowUnrelease();
+
+  /**
    * Translated "Unrelease Analysis".
    * 
    * @return translated "Unrelease Analysis"
@@ -2948,15 +3002,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.")
   @Key("completeRelease.unreleaseMessage")
   String completeRelease_unreleaseMessage();
-
-  /**
-   * Translated "Status needs to be ''{0}'' to unrelease".
-   * 
-   * @return translated "Status needs to be ''{0}'' to unrelease"
-   */
-  @DefaultMessage("Status needs to be ''{0}'' to unrelease")
-  @Key("completeRelease.wrongStatusUnrelease")
-  String completeRelease_wrongStatusUnrelease(String arg0);
 
   /**
    * Translated "Unable to set {0} : {1} to completed - result for {2} : {3} is invalid ".
@@ -4822,6 +4867,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String finalreport_preview();
 
   /**
+   * Translated "View Final Report".
+   * 
+   * @return translated "View Final Report"
+   */
+  @DefaultMessage("View Final Report")
+  @Key("finalreport.view")
+  String finalreport_view();
+
+  /**
    * Translated "Find".
    * 
    * @return translated "Find"
@@ -5146,6 +5200,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_cancelChanges();
 
   /**
+   * Translated "Cancel Test".
+   * 
+   * @return translated "Cancel Test"
+   */
+  @DefaultMessage("Cancel Test")
+  @Key("gen.cancelTest")
+  String gen_cancelTest();
+
+  /**
    * Translated "Check All".
    * 
    * @return translated "Check All"
@@ -5171,6 +5234,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Check Out")
   @Key("gen.checkOut")
   String gen_checkOut();
+
+  /**
+   * Translated "Collapse".
+   * 
+   * @return translated "Collapse"
+   */
+  @DefaultMessage("Collapse")
+  @Key("gen.collapse")
+  String gen_collapse();
 
   /**
    * Translated "Standard Comment Library".
@@ -5360,6 +5432,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Exp Date")
   @Key("gen.expDate")
   String gen_expDate();
+
+  /**
+   * Translated "Expand".
+   * 
+   * @return translated "Expand"
+   */
+  @DefaultMessage("Expand")
+  @Key("gen.expand")
+  String gen_expand();
 
   /**
    * Translated "Expire".
@@ -5695,6 +5776,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_noRecordsFound();
 
   /**
+   * Translated "Not Reportable".
+   * 
+   * @return translated "Not Reportable"
+   */
+  @DefaultMessage("Not Reportable")
+  @Key("gen.notReportable")
+  String gen_notReportable();
+
+  /**
    * Translated "Note".
    * 
    * @return translated "Note"
@@ -5846,15 +5936,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Are you sure you want to change this?")
   @Key("gen.qaEventEditConfirm")
   String gen_qaEventEditConfirm();
-
-  /**
-   * Translated "QA Events".
-   * 
-   * @return translated "QA Events"
-   */
-  @DefaultMessage("QA Events")
-  @Key("gen.qaEvents")
-  String gen_qaEvents();
 
   /**
    * Translated "Qty".
@@ -6053,6 +6134,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Shipping")
   @Key("gen.shipping")
   String gen_shipping();
+
+  /**
+   * Translated "Similar".
+   * 
+   * @return translated "Similar"
+   */
+  @DefaultMessage("Similar")
+  @Key("gen.similar")
+  String gen_similar();
 
   /**
    * Translated "Status".
@@ -7900,15 +7990,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String labor();
 
   /**
-   * Translated "Last Name".
-   * 
-   * @return translated "Last Name"
-   */
-  @DefaultMessage("Last Name")
-  @Key("lastName")
-  String lastName();
-
-  /**
    * Translated "You have reached the last page of your query results".
    * 
    * @return translated "You have reached the last page of your query results"
@@ -9086,6 +9167,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Note")
   @Key("note")
   String note();
+
+  /**
+   * Translated "Notes".
+   * 
+   * @return translated "Notes"
+   */
+  @DefaultMessage("Notes")
+  @Key("note.notes")
+  String note_notes();
 
   /**
    * Translated "Note Editor".
@@ -10762,6 +10852,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_birthDT();
 
   /**
+   * Translated "City is required for a patient ".
+   * 
+   * @return translated "City is required for a patient "
+   */
+  @DefaultMessage("City is required for a patient ")
+  @Key("patient.cityRequiredException")
+  String patient_cityRequiredException();
+
+  /**
    * Translated "Ethnicity".
    * 
    * @return translated "Ethnicity"
@@ -10778,6 +10877,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Gender")
   @Key("patient.gender")
   String patient_gender();
+
+  /**
+   * Translated "Last name is required for a patient ".
+   * 
+   * @return translated "Last name is required for a patient "
+   */
+  @DefaultMessage("Last name is required for a patient ")
+  @Key("patient.lastnameRequiredException")
+  String patient_lastnameRequiredException();
 
   /**
    * Translated "Maiden".
@@ -10832,6 +10940,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Relation")
   @Key("patient.relation")
   String patient_relation();
+
+  /**
+   * Translated "Street Address is required for a patient ".
+   * 
+   * @return translated "Street Address is required for a patient "
+   */
+  @DefaultMessage("Street Address is required for a patient ")
+  @Key("patient.streetAddressRequiredException")
+  String patient_streetAddressRequiredException();
 
   /**
    * Translated "Patient description".
@@ -11687,6 +11804,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample ID")
   @Key("pwsViolationSampleId")
   String pwsViolationSampleId();
+
+  /**
+   * Translated "QA Events".
+   * 
+   * @return translated "QA Events"
+   */
+  @DefaultMessage("QA Events")
+  @Key("qaEvent.qaEvents")
+  String qaEvent_qaEvents();
 
   /**
    * Translated "Are you sure you want to change this?".
@@ -12697,11 +12823,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result();
 
   /**
-   * Translated "A row group must have at leat one result row".
+   * Translated "A row group must have at least one result row".
    * 
-   * @return translated "A row group must have at leat one result row"
+   * @return translated "A row group must have at least one result row"
    */
-  @DefaultMessage("A row group must have at leat one result row")
+  @DefaultMessage("A row group must have at least one result row")
   @Key("result.atleastOneResultInRowGroup")
   String result_atleastOneResultInRowGroup();
 
@@ -13012,13 +13138,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
-   * Translated "Analysis".
+   * Translated "Accession # ''{0,number}'':".
    * 
-   * @return translated "Analysis"
+   * @return translated "Accession # ''{0,number}'':"
    */
-  @DefaultMessage("Analysis")
-  @Key("sample.analysis")
-  String sample_analysis();
+  @DefaultMessage("Accession # ''{0,number}'':")
+  @Key("sample.accessionPrefix")
+  String sample_accessionPrefix(Integer arg0);
 
   /**
    * Translated "Sample is released. You cannot add an analysis.".
@@ -13046,6 +13172,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample is released. You cannot add non-internal QA events.")
   @Key("sample.cantAddQAEvent")
   String sample_cantAddQAEvent();
+
+  /**
+   * Translated "The domain cannot be changed because the sample does not exist in the system".
+   * 
+   * @return translated "The domain cannot be changed because the sample does not exist in the system"
+   */
+  @DefaultMessage("The domain cannot be changed because the sample does not exist in the system")
+  @Key("sample.cantChangeDomainNewSampleException")
+  String sample_cantChangeDomainNewSampleException();
+
+  /**
+   * Translated "The domain of a quick-entered sample cannot be changed through this option".
+   * 
+   * @return translated "The domain of a quick-entered sample cannot be changed through this option"
+   */
+  @DefaultMessage("The domain of a quick-entered sample cannot be changed through this option")
+  @Key("sample.cantChangeDomainQuickEntryException")
+  String sample_cantChangeDomainQuickEntryException();
+
+  /**
+   * Translated "The domain of a released sample cannot be changed".
+   * 
+   * @return translated "The domain of a released sample cannot be changed"
+   */
+  @DefaultMessage("The domain of a released sample cannot be changed")
+  @Key("sample.cantChangeDomainReleasedSampleException")
+  String sample_cantChangeDomainReleasedSampleException();
+
+  /**
+   * Translated "The domain cannot be changed to Quick Entry".
+   * 
+   * @return translated "The domain cannot be changed to Quick Entry"
+   */
+  @DefaultMessage("The domain cannot be changed to Quick Entry")
+  @Key("sample.cantChangeDomainToQuickEntryException")
+  String sample_cantChangeDomainToQuickEntryException();
 
   /**
    * Translated "Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in".
@@ -13156,6 +13318,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_collector();
 
   /**
+   * Translated "The domain of this sample has changed".
+   * 
+   * @return translated "The domain of this sample has changed"
+   */
+  @DefaultMessage("The domain of this sample has changed")
+  @Key("sample.domainChangedException")
+  String sample_domainChangedException();
+
+  /**
    * Translated "Accession # ''{0,number}'' : Specified domain is invalid".
    * 
    * @return translated "Accession # ''{0,number}'' : Specified domain is invalid"
@@ -13183,22 +13354,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_enteredDateRequiredException(Integer arg0);
 
   /**
-   * Translated "Is Perm".
+   * Translated "Environmental".
    * 
-   * @return translated "Is Perm"
+   * @return translated "Environmental"
    */
-  @DefaultMessage("Is Perm")
-  @Key("sample.isPerm")
-  String sample_isPerm();
-
-  /**
-   * Translated "Sample Item".
-   * 
-   * @return translated "Sample Item"
-   */
-  @DefaultMessage("Sample Item")
-  @Key("sample.item")
-  String sample_item();
+  @DefaultMessage("Environmental")
+  @Key("sample.environmental")
+  String sample_environmental();
 
   /**
    * Translated "Items/Analyses".
@@ -13336,6 +13498,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_patientLastNameRequiredException(Integer arg0);
 
   /**
+   * Translated "Private Well".
+   * 
+   * @return translated "Private Well"
+   */
+  @DefaultMessage("Private Well")
+  @Key("sample.privateWell")
+  String sample_privateWell();
+
+  /**
    * Translated "Sample Project".
    * 
    * @return translated "Sample Project"
@@ -13417,6 +13588,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_sampleItemTypeRequired();
 
   /**
+   * Translated "SDWIS".
+   * 
+   * @return translated "SDWIS"
+   */
+  @DefaultMessage("SDWIS")
+  @Key("sample.sdwis")
+  String sample_sdwis();
+
+  /**
    * Translated "Sample Specific".
    * 
    * @return translated "Sample Specific"
@@ -13478,6 +13658,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased")
   @Key("sample.unreleaseNoNoteException")
   String sample_unreleaseNoNoteException(Integer arg0);
+
+  /**
+   * Translated "Status needs to be ''{0}'' to unrelease".
+   * 
+   * @return translated "Status needs to be ''{0}'' to unrelease"
+   */
+  @DefaultMessage("Status needs to be ''{0}'' to unrelease")
+  @Key("sample.wrongStatusUnrelease")
+  String sample_wrongStatusUnrelease(String arg0);
 
   /**
    * Translated "Sample Cat".
@@ -13640,6 +13829,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Container Reference")
   @Key("sampleItem.containerReference")
   String sampleItem_containerReference();
+
+  /**
+   * Translated "Sample Item".
+   * 
+   * @return translated "Sample Item"
+   */
+  @DefaultMessage("Sample Item")
+  @Key("sampleItem.sampleItem")
+  String sampleItem_sampleItem();
 
   /**
    * Translated "Source".
@@ -13948,6 +14146,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleProject();
 
   /**
+   * Translated "Is Perm".
+   * 
+   * @return translated "Is Perm"
+   */
+  @DefaultMessage("Is Perm")
+  @Key("sampleProject.isPerm")
+  String sampleProject_isPerm();
+
+  /**
    * Translated "Sample Pt Id".
    * 
    * @return translated "Sample Pt Id"
@@ -14063,6 +14270,78 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Status")
   @Key("sampleStatus")
   String sampleStatus();
+
+  /**
+   * Translated "A sample''s domain can only be changed once during an update ".
+   * 
+   * @return translated "A sample''s domain can only be changed once during an update "
+   */
+  @DefaultMessage("A sample''s domain can only be changed once during an update ")
+  @Key("sampleTracking.canChangeDomainOnlyOnce")
+  String sampleTracking_canChangeDomainOnlyOnce();
+
+  /**
+   * Translated "Change Domain".
+   * 
+   * @return translated "Change Domain"
+   */
+  @DefaultMessage("Change Domain")
+  @Key("sampleTracking.changeDomain")
+  String sampleTracking_changeDomain();
+
+  /**
+   * Translated "Cannot lookup the sample requested because the screen is busy".
+   * 
+   * @return translated "Cannot lookup the sample requested because the screen is busy"
+   */
+  @DefaultMessage("Cannot lookup the sample requested because the screen is busy")
+  @Key("sampleTracking.notProperState")
+  String sampleTracking_notProperState();
+
+  /**
+   * Translated "Please query for only one domain at a time.".
+   * 
+   * @return translated "Please query for only one domain at a time."
+   */
+  @DefaultMessage("Please query for only one domain at a time.")
+  @Key("sampleTracking.queryDomainException")
+  String sampleTracking_queryDomainException();
+
+  /**
+   * Translated "Tracking".
+   * 
+   * @return translated "Tracking"
+   */
+  @DefaultMessage("Tracking")
+  @Key("sampleTracking.tracking")
+  String sampleTracking_tracking();
+
+  /**
+   * Translated "Type/Status".
+   * 
+   * @return translated "Type/Status"
+   */
+  @DefaultMessage("Type/Status")
+  @Key("sampleTracking.typeStatus")
+  String sampleTracking_typeStatus();
+
+  /**
+   * Translated "Unrelease Sample".
+   * 
+   * @return translated "Unrelease Sample"
+   */
+  @DefaultMessage("Unrelease Sample")
+  @Key("sampleTracking.unrelease")
+  String sampleTracking_unrelease();
+
+  /**
+   * Translated "Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort.".
+   * 
+   * @return translated "Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort."
+   */
+  @DefaultMessage("Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort.")
+  @Key("sampleTracking.unreleaseMessage")
+  String sampleTracking_unreleaseMessage();
 
   /**
    * Translated "Sample Type".
