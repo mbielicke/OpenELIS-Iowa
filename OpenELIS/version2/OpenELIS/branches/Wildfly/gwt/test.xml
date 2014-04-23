@@ -56,7 +56,7 @@
 	</target>
 
 	<target name="test.dev" depends="javac.tests" description="Run development mode tests">
-		<sleep seconds="5" />
+		<sleep seconds="15" />
 		<delete dir="reports"/>
 		<mkdir dir="reports/junit" />
 		<jacoco:coverage destfile="reports/jacoco/jacoco.exec">
