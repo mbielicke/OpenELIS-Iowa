@@ -16,6 +16,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
+import net.lightoze.gwt.i18n.client.LocaleFactory;
+import net.lightoze.gwt.i18n.server.LocaleProxy;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,10 +38,6 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.common.data.QueryData.Type;
-
-import com.teklabs.gwt.i18n.client.LocaleFactory;
-import com.teklabs.gwt.i18n.server.LocaleProxy;
-
 
 
 @RunWith(MockitoJUnitRunner.class)
