@@ -1,9 +1,10 @@
 package org.openelis.constants;
 
+import net.lightoze.gwt.i18n.client.LocaleFactory;
+
 import org.openelis.domain.Constants;
 
 import com.google.gwt.core.shared.GWT;
-import com.teklabs.gwt.i18n.client.LocaleFactory;
 
 /**
  * This class provides access to the OpenELIS constant properties for messages, labels, formats,
