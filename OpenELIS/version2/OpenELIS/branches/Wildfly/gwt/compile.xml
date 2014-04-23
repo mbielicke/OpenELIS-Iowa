@@ -66,7 +66,7 @@
 				<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		    	<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
 		    	<pathelement location="../OpenELIS-UI/bin"/>
-		    	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar" />
+		    	<fileset dir="../OpenELIS-UI/lib" includes="*.jar" />
 		    	<fileset dir="../Security/lib" includes="*.jar"/>
 				<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
 				<fileset dir="${jboss.home}/modules/system/layers/base/javax/websocket/api/main" includes="jboss-websocket-api_1.0_spec-1.0.0.Final.jar" />
