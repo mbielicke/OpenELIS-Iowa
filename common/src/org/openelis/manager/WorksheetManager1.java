@@ -49,10 +49,18 @@ public class WorksheetManager1 implements Serializable {
     private static final long                    serialVersionUID = 1L;
 
     /**
-     * Flags that specifies what optional data to load with the manager
+     * Flags that specify what optional data to load with the manager
      */
     public enum Load {
         DETAIL, NOTE
+    };
+
+    /**
+     * Flags that specify what type of updates need to be perform on the analyses
+     * associated with this worksheet
+     */
+    public enum ANALYSIS_UPDATE {
+        VOID, FAILED_RUN, UPDATE
     };
 
     protected WorksheetViewDO                     worksheet;

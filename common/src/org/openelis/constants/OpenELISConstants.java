@@ -16828,6 +16828,51 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_editMultiple();
 
   /**
+   * Translated "Error changing analysis status for position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Error changing analysis status for position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Error changing analysis status for position {0} analysis {1}: {2}")
+  @Key("worksheet.errorChangingAnalysisStatus")
+  String worksheet_errorChangingAnalysisStatus(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Error changing analysis unit for position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Error changing analysis unit for position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Error changing analysis unit for position {0} analysis {1}: {2}")
+  @Key("worksheet.errorChangingAnalysisUnit")
+  String worksheet_errorChangingAnalysisUnit(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Error loading additional analytes for position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Error loading additional analytes for position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Error loading additional analytes for position {0} analysis {1}: {2}")
+  @Key("worksheet.errorLoadingAdditionalAnalytes")
+  String worksheet_errorLoadingAdditionalAnalytes(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Error loading result formatter for {0}: {1}".
+   * 
+   * @return translated "Error loading result formatter for {0}: {1}"
+   */
+  @DefaultMessage("Error loading result formatter for {0}: {1}")
+  @Key("worksheet.errorLoadingResultFormatter")
+  String worksheet_errorLoadingResultFormatter(String arg0,  String arg1);
+
+  /**
+   * Translated "Position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Position {0} analysis {1}: {2}")
+  @Key("worksheet.errorPrefix")
+  String worksheet_errorPrefix(String arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Export to Excel".
    * 
    * @return translated "Export to Excel"
@@ -16855,13 +16900,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_format();
 
   /**
-   * Translated "Invalid user for position {0} analysis {1}".
+   * Translated "Invalid user ''{0}'' for position {1} analysis {2}".
    * 
-   * @return translated "Invalid user for position {0} analysis {1}"
+   * @return translated "Invalid user ''{0}'' for position {1} analysis {2}"
    */
-  @DefaultMessage("Invalid user for position {0} analysis {1}")
+  @DefaultMessage("Invalid user ''{0}'' for position {1} analysis {2}")
   @Key("worksheet.illegalWorksheetUserFormException")
-  String worksheet_illegalWorksheetUserFormException(String arg0,  String arg1);
+  String worksheet_illegalWorksheetUserFormException(String arg0,  String arg1,  String arg2);
 
   /**
    * Translated "Import From Excel".
@@ -17078,6 +17123,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Template")
   @Key("worksheet.undoTemplate")
   String worksheet_undoTemplate();
+
+  /**
+   * Translated "Unparseable completed date for position {0} analysis {1}".
+   * 
+   * @return translated "Unparseable completed date for position {0} analysis {1}"
+   */
+  @DefaultMessage("Unparseable completed date for position {0} analysis {1}")
+  @Key("worksheet.unparseableCompletedDate")
+  String worksheet_unparseableCompletedDate(String arg0,  String arg1);
+
+  /**
+   * Translated "Unparseable started date for position {0} analysis {1}".
+   * 
+   * @return translated "Unparseable started date for position {0} analysis {1}"
+   */
+  @DefaultMessage("Unparseable started date for position {0} analysis {1}")
+  @Key("worksheet.unparseableStartedDate")
+  String worksheet_unparseableStartedDate(String arg0,  String arg1);
 
   /**
    * Translated "No Analyses Found For Worksheet Id: {0}".
