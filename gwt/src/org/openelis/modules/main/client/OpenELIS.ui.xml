@@ -74,8 +74,8 @@
                   ui:field="organization" display="{msg.organization}" />
               </w:Menu>
               <w:Menu label="{msg.analysis}">
-                <w:MenuItem description="{msg.worksheetCreationDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}"
-                  ui:field="worksheetCreation" display="{msg.worksheetCreation}" />
+<!--                 <w:MenuItem description="{msg.worksheetCreationDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}" -->
+<!--                   ui:field="worksheetCreation" display="{msg.worksheetCreation}" /> -->
                 <w:MenuItem description="{msg.worksheetBuilderDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}" ui:field="worksheetBuilder"
                   display="{msg.worksheetBuilder}" />
                 <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
