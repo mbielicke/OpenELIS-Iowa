@@ -76,7 +76,7 @@ import org.openelis.utils.Auditable;
                         "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
                         "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
                         "p.address.country, pr.relationId)"
-                      + " from Patient p, PatientRelation pr where pr.fromPatientId = p.id and pr.toPatientId = :patientId")})
+                      + " from Patient p, PatientRelation pr where pr.toPatientId = p.id and pr.patientId = :patientId")})
 @Entity
 @Table(name = "patient")
 @EntityListeners( {AuditUtil.class})
