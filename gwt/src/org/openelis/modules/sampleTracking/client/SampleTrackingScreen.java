@@ -1520,7 +1520,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
 
     public ArrayList<QueryData> getQueryFields() {

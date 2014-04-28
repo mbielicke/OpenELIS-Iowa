@@ -1455,7 +1455,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
 
     private void setDefaults() throws Exception {
