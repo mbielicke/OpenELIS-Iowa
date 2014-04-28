@@ -86,6 +86,11 @@ public class SectionManagerProxy {
         return null;
     }
 
+    public SectionManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public SectionManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
