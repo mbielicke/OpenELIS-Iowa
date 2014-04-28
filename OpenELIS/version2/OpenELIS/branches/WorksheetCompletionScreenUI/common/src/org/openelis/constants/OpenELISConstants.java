@@ -17197,6 +17197,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_worksheetNumber();
 
   /**
+   * Translated "The following rows are in a status that does not allow edit: {0}".
+   * 
+   * @return translated "The following rows are in a status that does not allow edit: {0}"
+   */
+  @DefaultMessage("The following rows are in a status that does not allow edit: {0}")
+  @Key("worksheet.wrongStatusNoEditRows")
+  String worksheet_wrongStatusNoEditRows(String arg0);
+
+  /**
    * Translated "No Analyses Found For Worksheet Id: {0}".
    * 
    * @return translated "No Analyses Found For Worksheet Id: {0}"
