@@ -583,6 +583,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String adjustmentNum();
 
   /**
+   * Translated "Air Quality Report".
+   * 
+   * @return translated "Air Quality Report"
+   */
+  @DefaultMessage("Air Quality Report")
+  @Key("airQuality.airQualityReport")
+  String airQuality_airQualityReport();
+
+  /**
+   * Translated "You must specify Action for this report".
+   * 
+   * @return translated "You must specify Action for this report"
+   */
+  @DefaultMessage("You must specify Action for this report")
+  @Key("airQuality.noActionException")
+  String airQuality_noActionException();
+
+  /**
+   * Translated "You must specify From Date and To Date or accession number for this report".
+   * 
+   * @return translated "You must specify From Date and To Date or accession number for this report"
+   */
+  @DefaultMessage("You must specify From Date and To Date or accession number for this report")
+  @Key("airQuality.noDataException")
+  String airQuality_noDataException();
+
+  /**
+   * Translated "You may only specify From Date and To Date or accession number for this report".
+   * 
+   * @return translated "You may only specify From Date and To Date or accession number for this report"
+   */
+  @DefaultMessage("You may only specify From Date and To Date or accession number for this report")
+  @Key("airQuality.tooMuchDataException")
+  String airQuality_tooMuchDataException();
+
+  /**
    * Translated "Alias".
    * 
    * @return translated "Alias"
