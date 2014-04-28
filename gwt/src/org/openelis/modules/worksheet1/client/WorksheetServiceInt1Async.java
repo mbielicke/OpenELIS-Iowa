@@ -34,6 +34,8 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
+import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.ui.common.ReportStatus;
@@ -49,10 +51,16 @@ public interface WorksheetServiceInt1Async {
 
     public void fetchForUpdate(Integer worksheetId, AsyncCallback<WorksheetManager1> callback);
 
-    public void unlock(Integer worksheetId, Load elements[],
-                       AsyncCallback<WorksheetManager1> callback) throws Exception;
+    public void fetchForTransfer(Integer worksheetId, AsyncCallback<WorksheetResultsTransferVO> callback);
 
-    public void update(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) throws Exception;
+    public void unlock(Integer worksheetId, Load elements[],
+                       AsyncCallback<WorksheetManager1> callback);
+
+    public void update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag,
+                       AsyncCallback<WorksheetManager1> callback);
+
+    public void transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                ArrayList<SampleManager1> sampleMans, AsyncCallback<WorksheetManager1> callback);
 
     public void fetchAnalysesByView(Query query, AsyncCallback<ArrayList<AnalysisViewVO>> callback);
 
@@ -87,4 +95,6 @@ public interface WorksheetServiceInt1Async {
     public void importFromExcel(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback);
 
     void getExportToExcelStatus(AsyncCallback<ReportStatus> callback);
+
+    void getImportFromExcelStatus(AsyncCallback<ReportStatus> callback);
 }

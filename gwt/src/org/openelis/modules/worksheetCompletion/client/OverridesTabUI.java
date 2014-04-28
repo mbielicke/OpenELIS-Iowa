@@ -25,17 +25,21 @@
  */
 package org.openelis.modules.worksheetCompletion.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
@@ -53,10 +57,13 @@ import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -72,25 +79,25 @@ public class OverridesTabUI extends Screen {
     
     private static WorksheetItemTabUiBinder             uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
-    private boolean                                     canEdit, isVisible;
-    private WorksheetManager1                           manager, displayedManager;
+    private boolean                                     canEdit, isVisible, redraw;
+    private WorksheetManager1                           manager;
 
     @UiField
     protected Button                                    editMultipleButton;
     @UiField
     protected Table                                     overridesTable;
     
+    protected EventBus                                  parentBus;
+    protected OverridesEditMultiplePopupUI              editMultiplePopup;
     protected Screen                                    parentScreen;
     
-    public OverridesTabUI(Screen parentScreen, EventBus bus) {
+    public OverridesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        if (bus != null)
-            setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
         
         manager = null;
-        displayedManager = null;
     }
 
     /**
@@ -124,7 +131,7 @@ public class OverridesTabUI extends Screen {
                 SectionPermission perm;
                 WorksheetAnalysisViewDO waVDO;
 
-                if (!isState(UPDATE) || !canEdit || getUpdatePushMode() || event.getCol() < 5) {
+                if (!isState(UPDATE) || !canEdit || getUpdateTransferMode() || event.getCol() < 5) {
                     event.cancel();
                 } else {
                     data = manager.getObject((String)overridesTable.getRowAt(event.getRow())
@@ -219,91 +226,76 @@ public class OverridesTabUI extends Screen {
                 displayOverrideData();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                evaluateEdit();
-                setState(event.getState());
-            }
-        });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(), parentScreen, new DataChangeEvent.Handler() {
-            public void onDataChange(DataChangeEvent event) {
-                displayOverrideData();
-            }
-        });
     }
     
     public void setData(WorksheetManager1 manager) {
-        if (!DataBaseUtil.isSame(this.manager, manager)) {
-            displayedManager = this.manager;
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
+            if (manager != null)
+                canEdit = Constants.dictionary().WORKSHEET_WORKING.equals(manager.getWorksheet()
+                                                                                 .getStatusId());
+            else
+                canEdit = false;
         }
     }
     
-    private boolean getUpdatePushMode() {
-        return ((WorksheetCompletionScreenUI)parentScreen).updatePushMode;
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
-    private void evaluateEdit() {
-        canEdit = false;
-        if (manager != null)
-            canEdit = Constants.dictionary().WORKSHEET_WORKING.equals(manager.getWorksheet()
-                                                                             .getStatusId());
+    public void onDataChange() {
+        int i, a, rowIndex;
+        Row row;
+        WorksheetAnalysisViewDO waVDO;
+        WorksheetItemDO wiDO;
+
+        if ((overridesTable.getRowCount() > 0 && (manager == null || manager.item.count() == 0)) ||
+            (overridesTable.getRowCount() == 0 && manager != null && manager.item.count() > 0)) {
+            redraw = true;
+        } else if (manager != null) {
+            rowIndex = 0;
+            items:
+            for (i = 0; i < manager.item.count(); i++) {
+                wiDO = manager.item.get(i);
+                if (manager.analysis.count(wiDO) > 0) {
+                    for (a = 0; a < manager.analysis.count(wiDO); a++) {
+                        waVDO = manager.analysis.get(wiDO, a);
+                        row = overridesTable.getRowAt(rowIndex);
+                        if (!manager.getUid(waVDO).equals(row.getData()) || 
+                            DataBaseUtil.isDifferent(waVDO.getAccessionNumber(), row.getCell(1)) ||
+                            DataBaseUtil.isDifferent(waVDO.getDescription(), row.getCell(2)) ||
+                            DataBaseUtil.isDifferent(waVDO.getTestName(), row.getCell(3)) ||
+                            DataBaseUtil.isDifferent(waVDO.getMethodName(), row.getCell(4)) ||
+                            DataBaseUtil.isDifferent(waVDO.getSystemUsers(), row.getCell(5)) ||
+                            DataBaseUtil.isDifferent(waVDO.getStartedDate(), row.getCell(6)) ||
+                            DataBaseUtil.isDifferent(waVDO.getCompletedDate(), row.getCell(7))) {
+                            redraw = true;
+                            break items;
+                        }
+                        rowIndex++;
+                    }
+                } else {
+                    row = overridesTable.getRowAt(rowIndex);
+                    if (!manager.getUid(wiDO).equals(row.getData()) || 
+                        DataBaseUtil.isDifferent(wiDO.getPosition(), row.getCell(0))) {
+                        redraw = true;
+                        break;
+                    }
+                    rowIndex++;
+                }
+            }
+        }
+        
+        displayOverrideData();
     }
 
     private void displayOverrideData() {
-        int i, a, count1, count2, count3, count4;
-        boolean dataChanged;
-        WorksheetAnalysisViewDO waDO1, waDO2;
-        WorksheetItemDO wiDO1, wiDO2;
-
         if (!isVisible)
             return;
 
-        count1 = displayedManager == null ? 0 : displayedManager.item.count();
-        count2 = manager == null ? 0 : manager.item.count();
-
-        /*
-         * find out if there's any difference between the item data of the two
-         * managers
-         */
-        if (count1 == count2) {
-            dataChanged = false;
-            if (count1 != 0) {
-                items:
-                for (i = 0; i < count1; i++ ) {
-                    wiDO1 = displayedManager.item.get(i);
-                    wiDO2 = manager.item.get(i);
-                    count3 = displayedManager.analysis.count(wiDO1);
-                    count4 = manager.analysis.count(wiDO2);
-                    if (count3 == count4) {
-                        for (a = 0; a < count3; a++ ) {
-                            waDO1 = displayedManager.analysis.get(wiDO1, a);
-                            waDO2 = manager.analysis.get(wiDO2, a);
-                            if (DataBaseUtil.isDifferent(waDO1.getSystemUsers(), waDO2.getSystemUsers()) ||
-                                DataBaseUtil.isDifferent(waDO1.getStartedDate(), waDO2.getStartedDate()) ||
-                                DataBaseUtil.isDifferent(waDO1.getCompletedDate(), waDO2.getCompletedDate())) {
-                                dataChanged = true;
-                                break items;
-                            }
-                        }
-                    } else {
-                        dataChanged = true;
-                        break;
-                    }
-                }
-            }
-        } else {
-            dataChanged = true;
-        }
-
-        if (dataChanged) {
-            displayedManager = manager;
-            evaluateEdit();
+        if (redraw) {
+            redraw = false;
             setState(state);
             fireDataChange();
         }
@@ -355,10 +347,61 @@ public class OverridesTabUI extends Screen {
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
-                e.printStackTrace();
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }        
 
         return model;
+    }
+
+    private boolean getUpdateTransferMode() {
+        return ((WorksheetCompletionScreenUI)parentScreen).updateTransferMode;
+    }
+    
+    @SuppressWarnings("unused")
+    @UiHandler("editMultipleButton")
+    protected void editMultiple(ClickEvent event) {
+        ArrayList<WorksheetAnalysisViewDO> dataList;
+        DataObject data;
+        ModalWindow modal;
+        StringBuilder errorList;
+        WorksheetAnalysisViewDO waVDO;
+        
+        dataList = new ArrayList<WorksheetAnalysisViewDO>();
+        errorList = new StringBuilder();
+        for (Integer rowIndex : overridesTable.getSelectedRows()) {
+            data = (DataObject) manager.getObject((String)overridesTable.getRowAt(rowIndex).getData());
+            if (data instanceof WorksheetItemDO)
+                continue;
+            waVDO = (WorksheetAnalysisViewDO) data;
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId())) {
+                errorList.append("\n").append("\t").append("Row: ").append(rowIndex + 1);
+                continue;
+            }
+            dataList.add(waVDO);
+        }
+        
+        if (errorList.length() > 0) {
+            Window.alert(Messages.get().worksheet_wrongStatusNoEditRows(errorList.toString()));
+            return;
+        }
+
+        if (editMultiplePopup == null) {
+            editMultiplePopup = new OverridesEditMultiplePopupUI() {
+                @Override
+                public void ok() {
+                    fireDataChange();
+                }
+            };
+        }
+        
+        modal = new ModalWindow();
+        modal.setSize("600px", "300px");
+        modal.setName(Messages.get().worksheet_editMultiple());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        editMultiplePopup.initialize();
+        modal.setContent(editMultiplePopup);
+        editMultiplePopup.setData(dataList);
     }
 }

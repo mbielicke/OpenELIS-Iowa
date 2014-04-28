@@ -40,6 +40,8 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
+import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.modules.worksheet1.client.WorksheetServiceInt1;
@@ -99,6 +101,14 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
+    public WorksheetResultsTransferVO fetchForTransfer(Integer worksheetId) throws Exception {
+        try {
+            return worksheetManager1.fetchForTransfer(worksheetId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public WorksheetManager1 unlock(Integer worksheetId, Load... elements) throws Exception {
         try {
             return worksheetManager1.unlock(worksheetId, elements);
@@ -107,9 +117,18 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
-    public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
+    public WorksheetManager1 update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag) throws Exception {
         try {
-            return worksheetManager1.update(wm);
+            return worksheetManager1.update(wm, updateFlag);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                             ArrayList<SampleManager1> sampleMans) throws Exception {
+        try {
+            return worksheetManager1.transferResults(wm, waVDOs, sampleMans);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -141,7 +160,7 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
     
     public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
         try {
-            return worksheet.getColumnNames(formatId);
+            return worksheetManager1.getColumnNames(formatId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -208,5 +227,9 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
 
     public ReportStatus getExportToExcelStatus() throws Exception {
         return (ReportStatus)session.getAttribute("ExportToExcelStatus");
+    }
+
+    public ReportStatus getImportFromExcelStatus() throws Exception {
+        return (ReportStatus)session.getAttribute("ImportFromExcelStatus");
     }
 }

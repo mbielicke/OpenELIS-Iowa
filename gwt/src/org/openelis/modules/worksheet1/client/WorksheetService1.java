@@ -36,7 +36,9 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
+import org.openelis.domain.WorksheetResultsTransferVO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.ui.common.ReportStatus;
@@ -119,9 +121,17 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void unlock(Integer worksheetId, Load[] elements,
-                       AsyncCallback<WorksheetManager1> callback) throws Exception {
-        service.unlock(worksheetId, elements, callback);
+    public WorksheetResultsTransferVO fetchForTransfer(Integer worksheetId) throws Exception {
+        Callback<WorksheetResultsTransferVO> callback;
+
+        callback = new Callback<WorksheetResultsTransferVO>();
+        service.fetchForTransfer(worksheetId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchForTransfer(Integer worksheetId, AsyncCallback<WorksheetResultsTransferVO> callback) {
+        service.fetchForTransfer(worksheetId, callback);
     }
 
     @Override
@@ -134,22 +144,38 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
+    public void unlock(Integer worksheetId, Load[] elements,
+                       AsyncCallback<WorksheetManager1> callback) {
+        service.unlock(worksheetId, elements, callback);
+    }
+
+    @Override
+    public WorksheetManager1 update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag) throws Exception {
         Callback<WorksheetManager1> callback;
 
         callback = new Callback<WorksheetManager1>();
-        service.update(wm, callback);
+        service.update(wm, updateFlag, callback);
         return callback.getResult();
     }
 
     @Override
-    public void update(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) throws Exception {
-        service.update(wm, callback);
+    public void update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag,
+                       AsyncCallback<WorksheetManager1> callback) {
+        service.update(wm, updateFlag, callback);
     }
 
     @Override
-    public void fetchAnalysesByView(Query query, AsyncCallback<ArrayList<AnalysisViewVO>> callback) {
-        service.fetchAnalysesByView(query, callback);
+    public WorksheetManager1 transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs, ArrayList<SampleManager1> sampleMans) throws Exception {
+        Callback<WorksheetManager1> callback;
+
+        callback = new Callback<WorksheetManager1>();
+        service.transferResults(wm, waVDOs, sampleMans, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs, ArrayList<SampleManager1> sampleMans, AsyncCallback<WorksheetManager1> callback) {
+        service.transferResults(wm, waVDOs, sampleMans, callback);
     }
 
     @Override
@@ -162,9 +188,8 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void fetchUnitsForWorksheetAutocomplete(Integer analysisId, String unitOfMeasure,
-                                                   AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.fetchUnitsForWorksheetAutocomplete(analysisId, unitOfMeasure, callback);
+    public void fetchAnalysesByView(Query query, AsyncCallback<ArrayList<AnalysisViewVO>> callback) {
+        service.fetchAnalysesByView(query, callback);
     }
 
     @Override
@@ -178,9 +203,9 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void fetchAnalytesByAnalysis(Integer analysisId, Integer testId,
-                                        AsyncCallback<ArrayList<ResultViewDO>> callback) {
-        service.fetchAnalytesByAnalysis(analysisId, testId, callback);
+    public void fetchUnitsForWorksheetAutocomplete(Integer analysisId, String unitOfMeasure,
+                                                   AsyncCallback<ArrayList<IdNameVO>> callback) {
+        service.fetchUnitsForWorksheetAutocomplete(analysisId, unitOfMeasure, callback);
     }
 
     @Override
@@ -193,8 +218,9 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void getColumnNames(Integer formatId, AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.getColumnNames(formatId, callback);
+    public void fetchAnalytesByAnalysis(Integer analysisId, Integer testId,
+                                        AsyncCallback<ArrayList<ResultViewDO>> callback) {
+        service.fetchAnalytesByAnalysis(analysisId, testId, callback);
     }
 
     @Override
@@ -207,8 +233,8 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void getHeaderLabelsForScreen(WorksheetManager1 manager, AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.getHeaderLabelsForScreen(manager, callback);
+    public void getColumnNames(Integer formatId, AsyncCallback<ArrayList<IdNameVO>> callback) {
+        service.getColumnNames(formatId, callback);
     }
 
     @Override
@@ -221,9 +247,8 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void loadTemplate(WorksheetManager1 wm, Integer testId,
-                             AsyncCallback<WorksheetQcChoiceVO> callback) {
-        service.loadTemplate(wm, testId, callback);
+    public void getHeaderLabelsForScreen(WorksheetManager1 manager, AsyncCallback<ArrayList<IdNameVO>> callback) {
+        service.getHeaderLabelsForScreen(manager, callback);
     }
 
     @Override
@@ -236,10 +261,9 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void initializeResults(WorksheetManager1 wm,
-                                  ArrayList<WorksheetAnalysisViewDO> analyses,
-                                  AsyncCallback<WorksheetManager1> callback) {
-        service.initializeResults(wm, analyses, callback);
+    public void loadTemplate(WorksheetManager1 wm, Integer testId,
+                             AsyncCallback<WorksheetQcChoiceVO> callback) {
+        service.loadTemplate(wm, testId, callback);
     }
 
     @Override
@@ -253,12 +277,10 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void initializeResultsFromOther(WorksheetManager1 wm,
-                                           ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
-                                           ArrayList<WorksheetAnalysisViewDO> toAnalyses,
-                                           Integer fromWorksheetId,
-                                           AsyncCallback<WorksheetManager1> callback) {
-        service.initializeResultsFromOther(wm, fromAnalyses, toAnalyses, fromWorksheetId, callback);
+    public void initializeResults(WorksheetManager1 wm,
+                                  ArrayList<WorksheetAnalysisViewDO> analyses,
+                                  AsyncCallback<WorksheetManager1> callback) {
+        service.initializeResults(wm, analyses, callback);
     }
 
     @Override
@@ -274,9 +296,12 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void sortItems(WorksheetManager1 wm, int col, int dir,
-                          AsyncCallback<WorksheetManager1> callback) {
-        service.sortItems(wm, col, dir, callback);
+    public void initializeResultsFromOther(WorksheetManager1 wm,
+                                           ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                           ArrayList<WorksheetAnalysisViewDO> toAnalyses,
+                                           Integer fromWorksheetId,
+                                           AsyncCallback<WorksheetManager1> callback) {
+        service.initializeResultsFromOther(wm, fromAnalyses, toAnalyses, fromWorksheetId, callback);
     }
 
     @Override
@@ -289,8 +314,9 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void exportToExcel(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) {
-        service.exportToExcel(wm, callback);
+    public void sortItems(WorksheetManager1 wm, int col, int dir,
+                          AsyncCallback<WorksheetManager1> callback) {
+        service.sortItems(wm, col, dir, callback);
     }
 
     @Override
@@ -303,8 +329,8 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void importFromExcel(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) {
-        service.importFromExcel(wm, callback);
+    public void exportToExcel(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) {
+        service.exportToExcel(wm, callback);
     }
 
     @Override
@@ -317,8 +343,8 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public void getExportToExcelStatus(AsyncCallback<ReportStatus> callback) {
-        service.getExportToExcelStatus(callback);
+    public void importFromExcel(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) {
+        service.importFromExcel(wm, callback);
     }
 
     @Override
@@ -328,5 +354,24 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
         callback = new Callback<ReportStatus>();
         service.getExportToExcelStatus(callback);
         return callback.getResult();
+    }
+
+    @Override
+    public void getExportToExcelStatus(AsyncCallback<ReportStatus> callback) {
+        service.getExportToExcelStatus(callback);
+    }
+
+    @Override
+    public ReportStatus getImportFromExcelStatus() throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getImportFromExcelStatus(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void getImportFromExcelStatus(AsyncCallback<ReportStatus> callback) {
+        service.getImportFromExcelStatus(callback);
     }
 }
