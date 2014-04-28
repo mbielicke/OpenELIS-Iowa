@@ -37,7 +37,9 @@ import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 import java.util.ArrayList;
 
 import org.openelis.cache.UserCache;
+import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
@@ -118,12 +120,14 @@ public class MethodScreenUI extends Screen {
 
     public MethodScreenUI(WindowInt window) throws Exception {
         setWindow(window);
-        
+                
         initWidget(uiBinder.createAndBindUi(this));
         
-        userPermission = UserCache.getPermission().getModule("method");
+        ensureDebugId("method");
+        
+        userPermission = getUserCacheService().getPermission().getModule("method");
         if (userPermission == null)
-            throw new PermissionException(Messages.get().screenPermException("Method Screen"));
+            throw new PermissionException(getMessages().screenPermException("Method Screen"));
 
         data = new MethodDO();
 
@@ -132,7 +136,7 @@ public class MethodScreenUI extends Screen {
         fireDataChange();
     }
 
-    private void initialize() {
+    protected void initialize() {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY,DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
@@ -338,7 +342,7 @@ public class MethodScreenUI extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
             public void executeQuery(final Query query) {
-                setBusy(Messages.get().querying());
+                setBusy(getMessages().querying());
 
                 query.setRowsPerPage(16);
                 
@@ -352,23 +356,23 @@ public class MethodScreenUI extends Screen {
                         public void failure(Throwable error) {
                             setQueryResult(null);
                             Window.alert("Error: Method call query failed; " + error.getMessage());
-                            setError("Query Failed");//Messages.get().queryFailed());
+                            setError("Query Failed");//getMessages().queryFailed());
                         }
                     
                         public void notFound() {
-                            setDone(Messages.get().noRecordsFound());
+                            setDone(getMessages().noRecordsFound());
                             setQueryResult(null);
                             setState(DEFAULT);
                         }
                      
                         public void lastPage() {
                             setQueryResult(null);
-                            setError(Messages.get().noMoreRecordInDir());
+                            setError(getMessages().noMoreRecordInDir());
                         }
                     };
                 }
                 
-                MethodService.get().query(query,queryCall);
+                getMethodService().query(query,queryCall);
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -399,30 +403,29 @@ public class MethodScreenUI extends Screen {
             }
         });
 
-        atozButtons.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Query query;
-                QueryData field;
-
-                field = new QueryData();
-                field.setKey(MethodMeta.getName());
-                field.setQuery( ((Button)event.getSource()).getAction());
-                field.setType(QueryData.Type.STRING);
-
-                query = new Query();
-                query.setFields(field);
-                nav.setQuery(query);
-            }
-        });
-
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    setError(Messages.get().mustCommitOrAbort());
+                    setError(getMessages().mustCommitOrAbort());
                 }
             }
         });
+    }
+    
+    @UiHandler("atozButtons")
+    public void atozQuery(ClickEvent event) {
+        Query query;
+        QueryData field;
+
+        field = new QueryData();
+        field.setKey(MethodMeta.getName());
+        field.setQuery( ((Button)event.getSource()).getAction());
+        field.setType(QueryData.Type.STRING);
+
+        query = new Query();
+        query.setFields(field);
+        nav.setQuery(query);
     }
 
     @UiHandler("query")
@@ -432,7 +435,7 @@ public class MethodScreenUI extends Screen {
         fireDataChange();
 
         name.setFocus(true);
-        setDone(Messages.get().enterFieldsToQuery());
+        setDone(getMessages().enterFieldsToQuery());
     }
 
     @UiHandler("next")
@@ -453,12 +456,12 @@ public class MethodScreenUI extends Screen {
         fireDataChange();
 
         name.setFocus(true);
-        setDone(Messages.get().enterInformationPressCommit());
+        setDone(getMessages().enterInformationPressCommit());
     }
 
     @UiHandler("update")
     protected void update(ClickEvent event) {
-        setBusy(Messages.get().lockForUpdate());
+        setBusy(getMessages().lockForUpdate());
 
         if(fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<MethodDO>() {
@@ -479,7 +482,7 @@ public class MethodScreenUI extends Screen {
             };
         }
         
-        MethodService.get().fetchForUpdate(data.getId(),fetchForUpdateCall); 
+        getMethodService().fetchForUpdate(data.getId(),fetchForUpdateCall); 
     }
 
     @UiHandler("commit")
@@ -491,7 +494,7 @@ public class MethodScreenUI extends Screen {
         validation = validate();
 
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(getMessages().correctErrors());
             return;
         }
 
@@ -504,14 +507,14 @@ public class MethodScreenUI extends Screen {
                 nav.setQuery(query);
                 break;
             case ADD:
-                setBusy(Messages.get().adding());
+                setBusy(getMessages().adding());
                 if(addCall == null) {
                     addCall = new AsyncCallbackUI<MethodDO>() {
                         public void success(MethodDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
-                            setDone(Messages.get().addingComplete());
+                            setDone(getMessages().addingComplete());
                         }
                         public void validationErrors(ValidationErrorsList e) {
                             showErrors(e);
@@ -522,17 +525,17 @@ public class MethodScreenUI extends Screen {
                         }
                     };
                 }
-                MethodService.get().add(data, addCall);
+                getMethodService().add(data, addCall);
                 break;
             case UPDATE:
-                setBusy(Messages.get().updating());
+                setBusy(getMessages().updating());
                 if(updateCall == null) {
                     updateCall = new AsyncCallbackUI<MethodDO>() {
                         public void success(MethodDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
-                            setDone(Messages.get().updatingComplete());
+                            setDone(getMessages().updatingComplete());
                         }
                 
                         public void validationErrors(ValidationErrorsList e) {
@@ -545,7 +548,7 @@ public class MethodScreenUI extends Screen {
                         }
                     };
                 }
-                MethodService.get().update(data, updateCall);
+                getMethodService().update(data, updateCall);
             default :
                 clearStatus();
         }
@@ -555,16 +558,16 @@ public class MethodScreenUI extends Screen {
     protected void abort(ClickEvent event) {
         finishEditing();
         clearErrors();
-        setBusy(Messages.get().cancelChanges());
+        setBusy(getMessages().cancelChanges());
 
         switch (state) {
             case QUERY:
                 fetchById(null);
-                setDone(Messages.get().queryAborted());
+                setDone(getMessages().queryAborted());
                 break;
             case ADD:
                 fetchById(null);
-                setDone(Messages.get().addAborted());
+                setDone(getMessages().addAborted());
                 break;
             case UPDATE:
                 if(abortCall == null) {
@@ -581,11 +584,11 @@ public class MethodScreenUI extends Screen {
                         }
                     
                         public void finish() {
-                            setDone(Messages.get().updateAborted());
+                            setDone(getMessages().updateAborted());
                         }
                     };
                 }
-                MethodService.get().abortUpdate(data.getId(),abortCall);
+                getMethodService().abortUpdate(data.getId(),abortCall);
                 break;
             default:
                 clearStatus();
@@ -596,15 +599,16 @@ public class MethodScreenUI extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(Messages.get().methodHistory(), Constants.table().METHOD, hist);
+        HistoryScreen.showHistory(getMessages().methodHistory(), Constants.table().METHOD, hist);
     }
 
     protected void fetchById(Integer id) {
         if (id == null) {
             data = new MethodDO();
             setState(DEFAULT);
+            fireDataChange();
         } else {
-            setBusy(Messages.get().fetching());
+            setBusy(getMessages().fetching());
             if(fetchCall == null) {
                 fetchCall = new AsyncCallbackUI<MethodDO>() {
                     public void success(MethodDO result) {
@@ -614,14 +618,14 @@ public class MethodScreenUI extends Screen {
             
                     public void notFound() {
                         fetchById(null);
-                        setDone(Messages.get().noRecordsFound());
+                        setDone(getMessages().noRecordsFound());
                         nav.clearSelection();
                     }
                 
                     public void failure(Throwable e) {
                         fetchById(null);
                         e.printStackTrace();
-                        Window.alert(Messages.get().fetchFailed() + e.getMessage());
+                        Window.alert(getMessages().fetchFailed() + e.getMessage());
                         nav.clearSelection();
                     }
                 
@@ -631,9 +635,47 @@ public class MethodScreenUI extends Screen {
                     }
                 };
             }
-            MethodService.get().fetchById(id, fetchCall);
+            getMethodService().fetchById(id, fetchCall);
         }
 
     }
 
+    protected MethodService getMethodService() {
+        return MethodService.get();
+    }
+    
+    protected UserCacheService getUserCacheService() {
+        return UserCacheService.get();
+    }
+    
+    protected OpenELISConstants getMessages() {
+        return Messages.get();
+    }
+    
+    @Override
+    protected void onEnsureDebugId(String baseID) {
+        super.onEnsureDebugId(baseID);
+        
+        activeBegin.ensureDebugId(baseID+"."+MethodMeta.getActiveBegin());
+        activeEnd.ensureDebugId(baseID+"."+MethodMeta.getActiveEnd());
+        name.ensureDebugId(baseID+"."+MethodMeta.getName());
+        description.ensureDebugId(baseID+"."+MethodMeta.getDescription());
+        reportingDescription.ensureDebugId(baseID+"."+MethodMeta.getReportingDescription());
+        isActive.ensureDebugId(baseID+"."+MethodMeta.getIsActive());
+        query.ensureDebugId(baseID+"."+"query");
+        previous.ensureDebugId(baseID+"."+"previous");
+        next.ensureDebugId(baseID+".next");
+        add.ensureDebugId(baseID+".add");
+        update.ensureDebugId(baseID+".update");
+        commit.ensureDebugId(baseID+".commit");
+        abort.ensureDebugId(baseID+".abort");
+        atozNext.ensureDebugId(baseID+".atozNext");
+        atozPrev.ensureDebugId(baseID+".atozPrev");
+        optionsButton.ensureDebugId(baseID+".optionsButton");
+        optionsMenu.ensureDebugId(baseID+".optionsMenu");
+        history.ensureDebugId(baseID+".history");
+        atozButtons.ensureDebugId(baseID+".atozButtons");
+        atozTable.ensureDebugId(baseID+".atozTable");
+        
+    }
 }
