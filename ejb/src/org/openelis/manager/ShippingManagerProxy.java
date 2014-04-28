@@ -119,6 +119,11 @@ public class ShippingManagerProxy {
         return null;
     }
     
+    public ShippingManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public ShippingManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
