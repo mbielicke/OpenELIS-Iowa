@@ -36,6 +36,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,27 +53,38 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
+import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.utilcommon.ResultFormatter;
 
 @Stateless
 @SecurityDomain("openelis")
 public class InstrumentInterfaceImportBean {
     @EJB
-    LockBean                      lock;
+    LockBean                         lock;
     @EJB
-    private SystemVariableBean    systemVariable;
+    private SystemVariableBean       systemVariable;
     @EJB
-    private WorksheetBean         worksheet;
+    private TestAnalyteBean          testAnalyte;
     @EJB
-    WorksheetManager1Bean         worksheetManager;
+    private TestManagerBean          testManager;
+    @EJB
+    private TestWorksheetAnalyteBean twAnalyte;
+    @EJB
+    private WorksheetBean            worksheet;
+    @EJB
+    WorksheetManager1Bean            worksheetManager;
 
-    private static final Logger   log = Logger.getLogger("openelis");
+    private static final Logger      log = Logger.getLogger("openelis");
 
     /*
      * Parse files created by the instrument interface software and load the results
@@ -228,23 +240,44 @@ public class InstrumentInterfaceImportBean {
     private void importResults(Integer worksheetId, Integer position, BufferedReader file,
                                HashMap<Integer, String> formatColumnMap, HashMap<String, Integer> fileColumnMap) throws Exception {
         boolean update;
-        int i;
+        int i, j;
+        ArrayList<ArrayList<TestAnalyteViewDO>> taList;
+        ArrayList<Integer> excludedIds;
+        ArrayList<TestAnalyteViewDO> taRow;
         ArrayList<WorksheetResultViewDO> wrVDOs;
         ArrayList<WorksheetQcResultViewDO> wqrVDOs;
+        HashMap<Integer, ArrayList<ArrayList<TestAnalyteViewDO>>> testAnalyteMap;
+        HashMap<Integer, ArrayList<Integer>> excludedMap;
         HashMap<Integer, HashMap<String, ArrayList<WorksheetResultViewDO>>> wrMapsByAnalysisId;
         HashMap<Integer, HashMap<String, ArrayList<WorksheetQcResultViewDO>>> wqrMapsByAnalysisId;
+        HashMap<Integer, ResultFormatter> rfMap;
         HashMap<String, ArrayList<WorksheetResultViewDO>> wrMap;
         HashMap<String, ArrayList<WorksheetQcResultViewDO>> wqrMap;
+        HashMap<String, Integer> taColumnMap;
         HashMap<String, WorksheetAnalysisViewDO> waVDOsByAccessionNumber;
         HashSet<Integer> analysisIds;
+        Integer colNum;
+        ResultFormatter rf;
+        SimpleDateFormat format;
         String line, data[], columnName, value;
+        TestAnalyteViewDO taVDO;
+        TestManager tMan;
         WorksheetAnalysisViewDO waVDO;
         WorksheetManager1 manager;
         WorksheetQcResultViewDO wqrVDO;
         WorksheetResultViewDO wrVDO;
         
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        
+        taColumnMap = new HashMap<String, Integer>();
+        for (Integer col : formatColumnMap.keySet())
+            taColumnMap.put(formatColumnMap.get(col), col);
+
         update = false;
         manager = worksheetManager.fetchForUpdate(worksheetId);
+        excludedMap = new HashMap<Integer, ArrayList<Integer>>();
+        rfMap = new HashMap<Integer, ResultFormatter>();
+        testAnalyteMap = new HashMap<Integer, ArrayList<ArrayList<TestAnalyteViewDO>>>();
         waVDOsByAccessionNumber = new HashMap<String, WorksheetAnalysisViewDO>();
         wrMapsByAnalysisId = new HashMap<Integer, HashMap<String, ArrayList<WorksheetResultViewDO>>>();
         wqrMapsByAnalysisId = new HashMap<Integer, HashMap<String, ArrayList<WorksheetQcResultViewDO>>>();
@@ -313,6 +346,71 @@ public class InstrumentInterfaceImportBean {
                     wrMap = wrMapsByAnalysisId.get(waVDO.getId());
                     if (wrMap != null) {
                         wrVDOs = wrMap.get(data[fileColumnMap.get("Analyte")]);
+                        if (wrVDOs == null) {
+                            taList = testAnalyteMap.get(waVDO.getTestId());
+                            excludedIds = excludedMap.get(waVDO.getTestId());
+                            if (taList == null) {
+                                try {
+                                    taList = testAnalyte.fetchByTestId(waVDO.getTestId());
+                                    testAnalyteMap.put(waVDO.getTestId(), taList);
+                                } catch (Exception anyE) {
+                                    throw new Exception("Error loading analyte list for '" +
+                                                        waVDO.getTestName() + ", " +
+                                                        waVDO.getMethodName() + "' : " +
+                                                        anyE.getMessage());
+                                }
+                            }
+                            if (excludedIds == null) {
+                                excludedIds = new ArrayList<Integer>();
+                                try {
+                                    for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(waVDO.getTestId()))
+                                        excludedIds.add(twaVDO.getTestAnalyteId());
+                                } catch (Exception anyE) {
+                                    throw new Exception("Error loading excluded analytes for '" +
+                                                        waVDO.getTestName() + ", " +
+                                                        waVDO.getMethodName() + "' : " +
+                                                        anyE.getMessage());
+                                }
+                                excludedMap.put(waVDO.getTestId(), excludedIds);
+                            }
+                            for (i = 0; i < taList.size(); i++) {
+                                taRow = taList.get(i);
+                                taVDO = taRow.get(0);
+                                if (taVDO.getAnalyteName().equals(data[fileColumnMap.get("Analyte")]) &&
+                                    (excludedIds.size() == 0 || !excludedIds.contains(taVDO.getId()))) {
+                                    wrVDOs = new ArrayList<WorksheetResultViewDO>();
+                                    wrVDO = new WorksheetResultViewDO();
+                                    wrVDO.setId(manager.getNextUID());
+                                    wrVDO.setWorksheetAnalysisId(waVDO.getId());
+                                    wrVDO.setTestAnalyteId(taVDO.getId());
+                                    wrVDO.setResultRow(i);
+                                    wrVDO.setAnalyteId(taVDO.getAnalyteId());
+                                    wrVDO.setAnalyteName(taVDO.getAnalyteName());
+                                    addResult(manager, wrVDO);
+                                    wrVDOs.add(wrVDO);
+                                    for (j = 1; j < taRow.size(); j++) {
+                                        taVDO = taRow.get(j);
+                                        colNum = taColumnMap.get(taVDO.getAnalyteName());
+                                        if (colNum != null) {
+                                            rf = rfMap.get(taVDO.getTestId());
+                                            if (rf == null) {
+                                                try {
+                                                    tMan = testManager.fetchWithAnalytesAndResults(taVDO.getTestId());
+                                                    rfMap.put(taVDO.getTestId(), tMan.getFormatter());
+                                                } catch (Exception anyE) {
+                                                    throw new Exception("Error loading result formatter for '" +
+                                                                        waVDO.getTestName() + ", " +
+                                                                        waVDO.getMethodName() + "' : " +
+                                                                        anyE.getMessage());
+                                                }
+                                            }
+                                            wrVDO.setValueAt(colNum, rf.getDefault(taVDO.getResultGroup(), waVDO.getUnitOfMeasureId()));
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
                         if (wrVDOs != null) {
                             wrVDO = wrVDOs.get(0);
                             for (i = 0; i < 30; i++) {
@@ -352,11 +450,30 @@ public class InstrumentInterfaceImportBean {
                         }
                     }
                 }
+                
+                value = data[fileColumnMap.get("Analyst")];
+                if (value != null && value.length() > 0) {
+                    value.replaceAll(";", ",");
+                    waVDO.setSystemUsers(value);
+                }
+                
+                value = data[fileColumnMap.get("Start of Analysis")];
+                if (value != null && value.length() > 0) {
+                    waVDO.setStartedDate(new Datetime(Datetime.YEAR,
+                                                      Datetime.MINUTE,
+                                                      format.parse((String)value)));
+                }
+                value = data[fileColumnMap.get("Started Date/Time")];
+                if (value != null && value.length() > 0) {
+                    waVDO.setStartedDate(new Datetime(Datetime.YEAR,
+                                                      Datetime.MINUTE,
+                                                      format.parse((String)value)));
+                }
             }
         }
         
         if (update)
-            worksheetManager.update(manager);
+            worksheetManager.update(manager, null);
         else
             worksheetManager.unlock(worksheetId, WorksheetManager1.Load.NOTE);
     }
