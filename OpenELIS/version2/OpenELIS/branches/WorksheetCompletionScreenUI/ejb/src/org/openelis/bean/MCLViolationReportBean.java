@@ -137,6 +137,7 @@ public class MCLViolationReportBean {
         AuxDataManager adMan;
         Calendar cal;
         Date lastRunDate, currentRunDate, now;
+        Integer lastSectionId;
         MCLViolationReportVO analysis;
         ReportStatus status;
         ResultViewDO rowResult, colResult;
@@ -176,6 +177,7 @@ public class MCLViolationReportBean {
             }
 
             lastPWSId = "xyzzy";
+            lastSectionId = -1;
             bactPosBody = new StringBuilder();
             dnrMCLBody = new StringBuilder();
             shlMCLBody = new StringBuilder();
@@ -201,21 +203,6 @@ public class MCLViolationReportBean {
                     // ignore not found
                 }
 
-                toEmail = "";
-                try {
-                    emailList = sectParamBean.fetchBySectionIdAndTypeId(analysis.getSectionId(),
-                                                                        Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL);
-                    for (j = 0; j < emailList.size(); j++ ) {
-                        if (toEmail.length() > 0)
-                            toEmail += ",";
-                        toEmail += emailList.get(j).getValue().trim();
-                    }
-                } catch (NotFoundException nfE) {
-                    log.fine("No MCL Violation Email Address(es) for Section (" +
-                             analysis.getSectionId() + ").");
-                    continue;
-                }
-
                 adMan = AuxDataManager.fetchById(analysis.getSampleId(),
                                                  Constants.table().SAMPLE);
 
@@ -229,7 +216,7 @@ public class MCLViolationReportBean {
                     continue;
                 }
                 
-                if (!lastPWSId.equals(analysis.getPwsId())) {
+                if (!lastPWSId.equals(analysis.getPwsId()) || !lastSectionId.equals(analysis.getSectionId())) {
                     if (!"xyzzy".equals(lastPWSId) && bactPosBody.length() > 0) {
                         sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
                                   "\r\nThis is an automatic notification for Bacterial Positive. " +
@@ -240,7 +227,24 @@ public class MCLViolationReportBean {
                         log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
                         bactPosBody.setLength(0);
                     }
+                    
+                    toEmail = "";
+                    try {
+                        emailList = sectParamBean.fetchBySectionIdAndTypeId(analysis.getSectionId(),
+                                                                            Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL);
+                        for (j = 0; j < emailList.size(); j++ ) {
+                            if (toEmail.length() > 0)
+                                toEmail += ",";
+                            toEmail += emailList.get(j).getValue().trim();
+                        }
+                    } catch (NotFoundException nfE) {
+                        log.fine("No MCL Violation Email Address(es) for Section (" +
+                                 analysis.getSectionId() + ").");
+                        continue;
+                    }
+
                     lastPWSId = analysis.getPwsId();
+                    lastSectionId = analysis.getSectionId();
                 }
                 printBactPosBody(bactPosBody, analysis, adMan, results);
                 

@@ -347,6 +347,10 @@ public class BillingReportBean {
                    .append("|")                                // reserved for patient first name
                    .append(org.getName()).append("|");
                 
+                /*
+                 * If the address does not have a multiple unit designation, we
+                 * need to shift the street address up into the first address field
+                 */
                 if (addr.getMultipleUnit() != null && addr.getMultipleUnit().length() > 0) {
                     hdr.append(DataBaseUtil.toString(addr.getMultipleUnit())).append("|")
                        .append(DataBaseUtil.toString(addr.getStreetAddress())).append("|");
