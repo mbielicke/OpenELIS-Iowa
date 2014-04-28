@@ -2030,7 +2030,8 @@ public class SampleManager1Bean {
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception {
-        return analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+        analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+        return sm;
     }
 
     /**

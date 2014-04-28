@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,6 +110,8 @@ public class WorksheetExcelHelperBean {
     SystemVariableBean                 systemVariableLocal;
     @EJB
     WorksheetAnalysisBean              worksheetAnalysisLocal;
+    @EJB
+    WorksheetManager1Bean              worksheetManager;
     @EJB
     UserCacheBean                      userCache;
 
@@ -586,15 +589,23 @@ public class WorksheetExcelHelperBean {
         SystemUserVO userVO;
         ValidationErrorsList errorList;
 
+        manager = worksheetManager.fetchForUpdate(manager.getWorksheet().getId());
+        
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         errorList = new ValidationErrorsList();
-        file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId(),
-                                                   manager.getWorksheet()
-                                                          .getSystemUserId()));
-        in = new FileInputStream(file);
-        wb = new HSSFWorkbook(in);
 
+        try {
+            file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId(),
+                                                       manager.getWorksheet()
+                                                              .getSystemUserId()));
+            in = new FileInputStream(file);
+            wb = new HSSFWorkbook(in);
+        } catch (Exception anyE) {
+            worksheetManager.unlock(manager.getWorksheet().getId());
+            throw anyE;
+        }
+        
         loadStatuses();
 
         i = 0;
@@ -642,11 +653,13 @@ public class WorksheetExcelHelperBean {
                                                 validUsers += userVO.getLoginName();
                                             } else {
                                                 errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
+                                                                                     userToken,
                                                                                      String.valueOf(wiDO.getPosition()),
                                                                                      String.valueOf(a + 1))));
                                             }
                                         } catch (Exception anyE) {
                                             errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
+                                                                                 userToken,
                                                                                  String.valueOf(wiDO.getPosition()),
                                                                                  String.valueOf(a + 1))));
                                         }
@@ -657,12 +670,19 @@ public class WorksheetExcelHelperBean {
                                 value = getValueFromCellByName(wb.getSheet("Overrides"),
                                                                "analysis_started." + i + "." + a);
                                 if (value != null) {
-                                    if (value instanceof Datetime)
+                                    if (value instanceof Datetime) {
                                         waVDO.setStartedDate((Datetime)value);
-                                    else if (value instanceof String)
-                                        waVDO.setStartedDate(new Datetime(Datetime.YEAR,
-                                                                          Datetime.MINUTE,
-                                                                          format.parse((String)value)));
+                                    } else if (value instanceof String) {
+                                        try {
+                                            waVDO.setStartedDate(new Datetime(Datetime.YEAR,
+                                                                              Datetime.MINUTE,
+                                                                              format.parse((String)value)));
+                                        } catch (ParseException parE) {
+                                            errorList.add(new FormErrorException(Messages.get().worksheet_unparseableStartedDate(
+                                                                                 String.valueOf(wiDO.getPosition()),
+                                                                                 String.valueOf(a + 1))));
+                                        }
+                                    }
                                 } else {
                                     waVDO.setStartedDate(null);
                                 }
@@ -671,19 +691,26 @@ public class WorksheetExcelHelperBean {
                                                                "analysis_completed." + i +
                                                                "." + a);
                                 if (value != null) {
-                                    if (value instanceof Datetime)
+                                    if (value instanceof Datetime) {
                                         waVDO.setCompletedDate((Datetime)value);
-                                    else if (value instanceof String)
-                                        waVDO.setCompletedDate(new Datetime(Datetime.YEAR,
-                                                                           Datetime.MINUTE,
-                                                                           format.parse((String)value)));
+                                    } else if (value instanceof String) {
+                                        try {
+                                            waVDO.setCompletedDate(new Datetime(Datetime.YEAR,
+                                                                               Datetime.MINUTE,
+                                                                               format.parse((String)value)));
+                                        } catch (ParseException anyE) {
+                                            errorList.add(new FormErrorException(Messages.get().worksheet_unparseableCompletedDate(
+                                                                                 String.valueOf(wiDO.getPosition()),
+                                                                                 String.valueOf(a + 1))));
+                                        }
+                                    }
                                 } else {
                                     waVDO.setCompletedDate(null);
                                 }
 
                                 if (wrList != null && wrList.size() > 0) {
                                     r = 0;
-                                    for (WorksheetResultViewDO wrVDO : getResults(manager)) {
+                                    for (WorksheetResultViewDO wrVDO : wrList) {
                                         for (c = 0; c < 30; c++ ) {
                                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
                                                                              rowIndex,
@@ -742,11 +769,13 @@ public class WorksheetExcelHelperBean {
                                             validUsers += userVO.getLoginName();
                                         } else {
                                             errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
+                                                                                 userToken,
                                                                                  String.valueOf(wiDO.getPosition()),
                                                                                  String.valueOf(a + 1))));
                                         }
                                     } catch (Exception anyE) {
                                         errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
+                                                                             userToken,
                                                                              String.valueOf(wiDO.getPosition()),
                                                                              String.valueOf(a + 1))));
                                     }
@@ -769,12 +798,19 @@ public class WorksheetExcelHelperBean {
                             value = getValueFromCellByName(wb.getSheet("Overrides"),
                                                            "analysis_started." + i + "." + a);
                             if (value != null) {
-                                if (value instanceof Datetime)
+                                if (value instanceof Datetime) {
                                     waVDO.setStartedDate((Datetime)value);
-                                else if (value instanceof String)
-                                    waVDO.setStartedDate(new Datetime(Datetime.YEAR,
-                                                                      Datetime.MINUTE,
-                                                                      format.parse((String)value)));
+                                } else if (value instanceof String) {
+                                    try {
+                                        waVDO.setStartedDate(new Datetime(Datetime.YEAR,
+                                                                          Datetime.MINUTE,
+                                                                          format.parse((String)value)));
+                                    } catch (ParseException anyE) {
+                                        errorList.add(new FormErrorException(Messages.get().worksheet_unparseableStartedDate(
+                                                                             String.valueOf(wiDO.getPosition()),
+                                                                             String.valueOf(a + 1))));
+                                    }
+                                }
                             } else {
                                 waVDO.setStartedDate(null);
                             }
@@ -782,12 +818,19 @@ public class WorksheetExcelHelperBean {
                             value = getValueFromCellByName(wb.getSheet("Overrides"),
                                                            "analysis_completed." + i + "." + a);
                             if (value != null) {
-                                if (value instanceof Datetime)
+                                if (value instanceof Datetime) {
                                     waVDO.setCompletedDate((Datetime)value);
-                                else if (value instanceof String)
-                                    waVDO.setCompletedDate(new Datetime(Datetime.YEAR,
-                                                                        Datetime.MINUTE,
-                                                                        format.parse((String)value)));
+                                } else if (value instanceof String) {
+                                    try {
+                                        waVDO.setCompletedDate(new Datetime(Datetime.YEAR,
+                                                                            Datetime.MINUTE,
+                                                                            format.parse((String)value)));
+                                    } catch (ParseException anyE) {
+                                        errorList.add(new FormErrorException(Messages.get().worksheet_unparseableCompletedDate(
+                                                                             String.valueOf(wiDO.getPosition()),
+                                                                             String.valueOf(a + 1))));
+                                    }
+                                }
                             } else {
                                 waVDO.setCompletedDate(null);
                             }
@@ -806,8 +849,16 @@ public class WorksheetExcelHelperBean {
             }
         }
 
-        if (errorList.getErrorList().size() > 0)
+        if (errorList.getErrorList().size() > 0) {
+            try {
+                worksheetManager.unlock(manager.getWorksheet().getId());
+            } catch (Exception anyE) {
+                errorList.add(anyE);
+            }
             throw errorList;
+        } else {
+            manager = worksheetManager.update(manager, null);
+        }
 
         file.delete();
 

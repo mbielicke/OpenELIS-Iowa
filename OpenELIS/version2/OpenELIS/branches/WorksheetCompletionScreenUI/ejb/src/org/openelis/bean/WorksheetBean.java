@@ -25,9 +25,6 @@
  */
 package org.openelis.bean;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,22 +36,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.poi.hssf.usermodel.HSSFName;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.util.AreaReference;
-import org.apache.poi.ss.util.CellReference;
-import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
@@ -430,42 +418,5 @@ public class WorksheetBean {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    @TransactionTimeout(600)
-    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
-        int i;
-        ArrayList<DictionaryDO> columnDOs;
-        ArrayList<IdNameVO> columnNames;
-        DictionaryDO columnDO, formatDO;
-        String columnName;
-
-        columnNames = new ArrayList<IdNameVO>();
-
-        try {
-            formatDO = dictionary.fetchById(formatId);
-        } catch (NotFoundException nfE) {
-            try {
-                formatDO = dictionary.fetchBySystemName("wf_total");
-            } catch (Exception anyE1) {
-                throw new Exception("Error retrieving worksheet format: " + anyE1.getMessage());
-            }
-        } catch (Exception anyE) {
-            throw new Exception("Error retrieving worksheet format: " + anyE.getMessage());
-        }
-
-        try {
-            columnDOs = dictionary.fetchByCategorySystemName(formatDO.getSystemName());
-        } catch (Exception anyE) {
-            throw new Exception("Error retrieving worksheet column names: " + anyE.getMessage());
-        }
-        
-        for (i = 0; i < columnDOs.size(); i++) {
-            columnDO = columnDOs.get(i);
-            columnName = columnDO.getSystemName().substring(formatDO.getSystemName().length() + 1);
-            columnNames.add(new IdNameVO(10 + i, columnName));
-        }
-
-        return columnNames;
     }
 }
