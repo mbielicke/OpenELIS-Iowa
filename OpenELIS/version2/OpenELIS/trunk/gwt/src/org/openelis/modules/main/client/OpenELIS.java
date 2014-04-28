@@ -57,7 +57,7 @@ import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.order1.client.VendorOrderScreenUI;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
-//import org.openelis.modules.organization.client.OrganizationScreenUI;
+// import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.preferences.client.PreferencesScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -106,6 +106,7 @@ import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
@@ -153,6 +154,9 @@ public class OpenELIS extends Screen {
                     label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
                     scriptlet, systemVariable, pws, cron, logs;
 
+	@UiField
+    protected Menu maintenanceMenu;                    
+
     public OpenELIS() throws Exception {
         Exception loadError;
 
@@ -164,6 +168,9 @@ public class OpenELIS extends Screen {
         }
 
         initWidget(uiBinder.createAndBindUi(this));
+        
+        maintenanceMenu.ensureDebugId("openelis.maintenanceMenu");
+        method.ensureDebugId("openelis.method");
 
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
@@ -172,7 +179,7 @@ public class OpenELIS extends Screen {
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
         initialize();
-
+        
         if (loadError != null)
             Window.alert("FATAL ERROR: " + loadError.getMessage() + "; Please contact IT support");
     }
