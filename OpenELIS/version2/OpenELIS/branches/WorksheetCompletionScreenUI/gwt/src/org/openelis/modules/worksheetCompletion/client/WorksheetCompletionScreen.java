@@ -367,7 +367,7 @@ public class WorksheetCompletionScreen extends Screen {
 
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = InstrumentService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    matches = InstrumentService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         iVDO = (InstrumentViewDO)matches.get(i);
 
@@ -378,10 +378,6 @@ public class WorksheetCompletionScreen extends Screen {
                         row.cells.get(2).value = iVDO.getTypeId();
                         row.cells.get(3).value = iVDO.getLocation();
                         row.data = iVDO;
-
-                        if (!"Y".equals(iVDO.getIsActive()))
-                            row.enabled = false;
-
                         model.add(row);
                     }
 

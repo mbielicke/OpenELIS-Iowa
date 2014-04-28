@@ -44,17 +44,7 @@
           <t:LabelCell/>
         </t:Column>
         <t:Column width="110" label="{msg.gen_description}">
-          <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="description" width="110px" dropWidth="200px" case="MIXED">
-              <w:popup>
-                <t:Table visibleRows="10" header="true" horizontalScroll="NEVER">
-                  <t:Column label="{msg.qc_qcName}">
-                    <t:LabelCell/>
-                  </t:Column>
-                </t:Table>
-              </w:popup>
-            </w:AutoComplete>
-          </t:AutoCompleteCell>
+          <t:LabelCell/>
         </t:Column>
         <t:Column width="70" label="{msg.worksheet_qcLink}">
           <t:DropdownCell>
@@ -89,9 +79,7 @@
           <t:LabelCell/>
         </t:Column>
         <t:Column width="70" label="{msg.gen_reportable}">
-          <t:CheckBoxCell>
-            <w:CheckBox ui:field="resultIsReportable"/>
-          </t:CheckBoxCell>
+          <t:CheckBoxCell/>
         </t:Column>
         <t:Column width="100" label="A">
           <t:LabelCell/>

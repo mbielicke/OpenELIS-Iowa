@@ -32,6 +32,8 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
+import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.ui.common.ReportStatus;
@@ -50,9 +52,14 @@ public interface WorksheetServiceInt1 extends XsrfProtectedService {
 
     public WorksheetManager1 fetchForUpdate(Integer worksheetId) throws Exception;
 
+    public WorksheetResultsTransferVO fetchForTransfer(Integer worksheetId) throws Exception;
+
     public WorksheetManager1 unlock(Integer worksheetId, Load... elements) throws Exception;
 
-    public WorksheetManager1 update(WorksheetManager1 wm) throws Exception;
+    public WorksheetManager1 update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag) throws Exception;
+
+    public WorksheetManager1 transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                             ArrayList<SampleManager1> sampleMans) throws Exception;
 
     public ArrayList<AnalysisViewVO> fetchAnalysesByView(Query query) throws Exception;
 
@@ -82,4 +89,6 @@ public interface WorksheetServiceInt1 extends XsrfProtectedService {
     public WorksheetManager1 importFromExcel(WorksheetManager1 wm) throws Exception;
 
     ReportStatus getExportToExcelStatus() throws Exception;
+
+    ReportStatus getImportFromExcelStatus() throws Exception;
 }
