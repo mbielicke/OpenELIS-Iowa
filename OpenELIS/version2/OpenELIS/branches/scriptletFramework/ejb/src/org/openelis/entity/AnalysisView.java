@@ -71,9 +71,8 @@ import org.openelis.ui.common.Datetime;
                                    + "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"
                                    + "av.analysisId, av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate,"
                                    + "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
-                                   + " from AnalysisView av, SampleNeonatal sn, Patient p"
-                                   + " where av.sampleId = sn.sampleId and sn.patientId = p.id and p.id = :patientId"
-                                   + " order by av.accessionNumber, av.receivedDate, av.testName, av.methodName"),
+                                   + " from AnalysisView av, SamplePatientView spv where av.sampleId = spv.sampleId and spv.patientId  = :patientId"
+                                   + " order by av.accessionNumber desc, av.receivedDate, av.testName, av.methodName"),
                @NamedQuery(name = "AnalysisView.FetchForSDWISViolation",
                            query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber,"
                                    + "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription,"

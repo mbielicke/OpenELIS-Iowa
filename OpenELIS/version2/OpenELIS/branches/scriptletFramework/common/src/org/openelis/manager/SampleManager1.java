@@ -47,6 +47,7 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
@@ -84,7 +85,7 @@ public class SampleManager1 implements Serializable {
      * after update
      */
     public enum PostProcessing {
-        ESAVE, UNRELEASE
+        UNRELEASE
     };
 
     protected SampleDO                            sample;
@@ -92,6 +93,7 @@ public class SampleManager1 implements Serializable {
     protected SampleSDWISViewDO                   sampleSDWIS;
     protected SamplePrivateWellViewDO             samplePrivateWell;
     protected SampleNeonatalDO                    sampleNeonatal;
+    protected SampleClinicalDO                    sampleClinical;
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
@@ -108,6 +110,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<AnalysisWorksheetVO>      worksheets;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID              = -1;
+    protected PostProcessing                      postProcessing; 
 
     transient public final SampleOrganization     organization         = new SampleOrganization();
     transient public final SampleProject          project              = new SampleProject();
@@ -156,6 +159,10 @@ public class SampleManager1 implements Serializable {
     public SampleNeonatalDO getSampleNeonatal() {
         return sampleNeonatal;
     }
+    
+    public SampleClinicalDO getSampleClinical() {
+        return sampleClinical;
+    }
 
     /**
      * Returns the next negative Id for this sample's newly created and as yet
@@ -174,6 +181,10 @@ public class SampleManager1 implements Serializable {
 
             if (sampleQAs != null)
                 for (SampleQaEventDO data : sampleQAs)
+                    uidMap.put(Constants.uid().get(data), data);
+            
+            if (auxilliary != null)
+                for (AuxDataViewDO data : auxilliary)
                     uidMap.put(Constants.uid().get(data), data);
 
             if (analysisQAs != null)
@@ -210,6 +221,10 @@ public class SampleManager1 implements Serializable {
 
         }
         return uidMap.get(uid);
+    }
+    
+    public void setPostProcessing(PostProcessing postProcessing) {
+        this.postProcessing = postProcessing;
     }
 
     /**
@@ -264,6 +279,7 @@ public class SampleManager1 implements Serializable {
         }
 
         public void remove(SampleOrganizationViewDO data) {
+            organizations.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
@@ -341,10 +357,12 @@ public class SampleManager1 implements Serializable {
             SampleProjectViewDO data;
 
             data = projects.get(i);
+            projects.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
         public void remove(SampleProjectViewDO data) {
+            projects.remove(data);
             dataObjectRemove(data.getId(), data);
         }
 
@@ -1494,7 +1512,7 @@ public class SampleManager1 implements Serializable {
         }
 
         /*
-         * create a hash map from from all the results
+         * create a hash map from all the results
          */
         private void localmapBuild() {
             Integer id;

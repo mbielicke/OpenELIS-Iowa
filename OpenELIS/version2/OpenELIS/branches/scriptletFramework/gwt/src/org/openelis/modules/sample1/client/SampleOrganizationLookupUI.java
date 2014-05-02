@@ -25,12 +25,15 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
@@ -139,7 +142,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() > 2)
+                if ( !isState(ADD, UPDATE) || event.getCol() == 2 || event.getCol() > 3)
                     event.cancel();
             }
         });
@@ -167,7 +170,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
                     case 1:
                         data.setOrganizationAttention((String)val);
                         break;
-                    case 2:
+                    case 3:
                         row = (AutoCompleteValue)val;
                         if (row != null) {
                             org = (OrganizationDO)row.getData();
@@ -192,12 +195,13 @@ public abstract class SampleOrganizationLookupUI extends Screen {
                             data.setOrganizationCountry(null);
                         }
 
-                        table.setValueAt(r, 3, data.getOrganizationMultipleUnit());
-                        table.setValueAt(r, 4, data.getOrganizationStreetAddress());
-                        table.setValueAt(r, 5, data.getOrganizationCity());
-                        table.setValueAt(r, 6, data.getOrganizationState());
-                        table.setValueAt(r, 7, data.getOrganizationZipCode());
-                        table.setValueAt(r, 8, data.getOrganizationCountry());
+                        table.setValueAt(r, 2, data.getOrganizationId());
+                        table.setValueAt(r, 4, data.getOrganizationMultipleUnit());
+                        table.setValueAt(r, 5, data.getOrganizationStreetAddress());
+                        table.setValueAt(r, 6, data.getOrganizationCity());
+                        table.setValueAt(r, 7, data.getOrganizationState());
+                        table.setValueAt(r, 8, data.getOrganizationZipCode());
+                        table.setValueAt(r, 9, data.getOrganizationCountry());
 
                         try {
                             if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(data.getOrganizationId()))
@@ -281,8 +285,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-
         list = CategoryCache.getBySystemName("organization_type");
         for (DictionaryDO d : list) {
             item = new Item<Integer>(d.getId(), d.getEntry());
@@ -292,7 +294,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         type.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             sitem = new Item<String>(d.getEntry(), d.getEntry());
@@ -302,7 +303,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         orgState.setModel(smodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {
             sitem = new Item<String>(d.getEntry(), d.getEntry());
@@ -317,12 +317,26 @@ public abstract class SampleOrganizationLookupUI extends Screen {
      * the widgets
      */
     public void setData(SampleManager1 manager, State state) {
+        String domain;
+        DictionaryDO data;
+
         this.manager = manager;
-        /*
-         * disable the types that are not allowed for this sample's domain
-         */
-        for (Item<Integer> row : type.getModel())
-            row.setEnabled(canAddOrganizationType(row.getKey()));
+        domain = manager.getSample().getDomain();
+        try {
+            for (Item<Integer> row : type.getModel()) {
+                data = DictionaryCache.getById(row.getKey());
+                /*
+                 * the code contains the list of domains that are allowed to
+                 * have an orgnaization of this type; so only those types are
+                 * enabled
+                 */
+                row.setEnabled(data.getCode().contains(domain));
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
 
         setState(state);
         fireDataChange();
@@ -370,11 +384,11 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         Validation validation;
 
         table.finishEditing();
-        
+
         validation = validate();
 
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -427,32 +441,22 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         for (int i = 0; i < manager.organization.count(); i++ ) {
             data = manager.organization.get(i);
 
-            row = new Row(9);
+            row = new Row(10);
             row.setCell(0, data.getTypeId());
             row.setCell(1, data.getOrganizationAttention());
-            row.setCell(2, new AutoCompleteValue(data.getOrganizationId(),
+            row.setCell(2, data.getOrganizationId());
+            row.setCell(3, new AutoCompleteValue(data.getOrganizationId(),
                                                  data.getOrganizationName()));
-            row.setCell(3, data.getOrganizationMultipleUnit());
-            row.setCell(4, data.getOrganizationStreetAddress());
-            row.setCell(5, data.getOrganizationCity());
-            row.setCell(6, data.getOrganizationState());
-            row.setCell(7, data.getOrganizationZipCode());
-            row.setCell(8, data.getOrganizationCountry());
+            row.setCell(4, data.getOrganizationMultipleUnit());
+            row.setCell(5, data.getOrganizationStreetAddress());
+            row.setCell(6, data.getOrganizationCity());
+            row.setCell(7, data.getOrganizationState());
+            row.setCell(8, data.getOrganizationZipCode());
+            row.setCell(9, data.getOrganizationCountry());
             row.setData(data);
             model.add(row);
         }
 
         return model;
-    }
-
-    private boolean canAddOrganizationType(Integer typeId) {
-        String domain;
-
-        domain = manager.getSample().getDomain();
-
-        return (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(typeId) ||
-                Constants.dictionary().ORG_REPORT_TO.equals(typeId) ||
-                (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(typeId) && Constants.domain().NEONATAL.equals(domain)));
-        //Constants.dictionary().ORG_BILL_TO.equals(typeId) && !Constants.domain().NEONATAL.equals(domain))
     }
 }

@@ -57,11 +57,11 @@ public class PatientRelation implements Auditable, Cloneable {
     @Column(name = "relation_id")
     private Integer         relationId;
 
-    @Column(name = "from_patient_id")
-    private Integer         fromPatientId;
+    @Column(name = "patient_id")
+    private Integer         patientId;
 
-    @Column(name = "to_patient_id")
-    private Integer         toPatientId;
+    @Column(name = "related_patient_id")
+    private Integer         relatedPatientId;
 
     @Transient
     private PatientRelation original;
@@ -84,22 +84,22 @@ public class PatientRelation implements Auditable, Cloneable {
             this.relationId = relationId;
     }
 
-    public Integer getFromPatientId() {
-        return fromPatientId;
+    public Integer getPatientId() {
+        return patientId;
     }
 
-    public void setFromPatientId(Integer fromPatientId) {
-        if (DataBaseUtil.isDifferent(fromPatientId, this.fromPatientId))
-            this.fromPatientId = fromPatientId;
+    public void setPatientId(Integer patientId) {
+        if (DataBaseUtil.isDifferent(patientId, this.patientId))
+            this.patientId = patientId;
     }
 
-    public Integer getToPatientId() {
-        return toPatientId;
+    public Integer getRelatedPatientId() {
+        return relatedPatientId;
     }
 
-    public void setToPatientId(Integer toPatientId) {
-        if (DataBaseUtil.isDifferent(toPatientId, this.toPatientId))
-            this.toPatientId = toPatientId;
+    public void setRelatedPatientId(Integer relatedPatientId) {
+        if (DataBaseUtil.isDifferent(relatedPatientId, this.relatedPatientId))
+            this.relatedPatientId = relatedPatientId;
     }
 
     public void setClone() {
@@ -119,8 +119,8 @@ public class PatientRelation implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("relation_id", relationId, original.relationId, Constants.table().DICTIONARY)
-                 .setField("from_patient_id", fromPatientId, original.fromPatientId, Constants.table().PATIENT)
-                 .setField("to_patient_id", toPatientId, original.toPatientId, Constants.table().PATIENT);
+                 .setField("patient_id", patientId, original.patientId, Constants.table().PATIENT)
+                 .setField("related_patient_id", relatedPatientId, original.relatedPatientId, Constants.table().PATIENT);
 
         return audit;
     }

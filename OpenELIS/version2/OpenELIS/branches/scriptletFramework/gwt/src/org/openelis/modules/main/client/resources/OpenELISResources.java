@@ -69,8 +69,23 @@ public interface OpenELISResources extends UIResources {
 	@Source("images/addorcancelIconbuttonimage.gif")
 	ImageResource addOrCancelIcon();
 	
+	@Source("images/completebuttonimage.png")
+	ImageResource completeIcon();
+	
+	@Source("images/completebuttonimagedisabled.png")
+	ImageResource completeDisabledIcon();
+	
 	@Source("images/reviewandreleasebuttonimage.gif")
 	ImageResource reviewAndReleaseIcon();
+	
+    @Source("images/reviewandreleasebuttonimagedisabled.gif")
+    ImageResource reviewAndReleaseDisabledIcon();
+    
+    @Source("images/unrelease.png")
+    ImageResource unreleaseIcon();
+    
+    @Source("images/unreleasedisabled.png")
+    ImageResource unreleaseDisabledIcon();
 	
 	@Source("images/todobuttonimage.gif")
 	ImageResource toDoIcon();
@@ -179,4 +194,10 @@ public interface OpenELISResources extends UIResources {
     
     @Source("images/fieldlookupdisabled.png")
     ImageResource fieldLookupDisabledIcon();
+    
+    @Source("images/arrow_redo.png")
+    ImageResource redoIcon();
+    
+    @Source("images/delete.png")
+    ImageResource deleteIcon();
 }

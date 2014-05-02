@@ -96,6 +96,7 @@ public class ApplicationBean {
                         "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
                         "round_sig_fig_noe", "sample_completed", "sample_error",
                         "sample_logged_in", "sample_not_verified", "sample_released",
+                        "scriptlet_neonatal_domain", "scriptlet_pws_validate",
                         "sdwis_category_bacterial", "sdwis_category_chemical",
                         "sdwis_category_lead", "sdwis_category_radchem",
                         "section_mcl_violation_email", "shipping_status_processed",
@@ -241,6 +242,8 @@ public class ApplicationBean {
         Constants.dictionary().SAMPLE_LOGGED_IN = dictId(map, "sample_logged_in");
         Constants.dictionary().SAMPLE_NOT_VERIFIED = dictId(map, "sample_not_verified");
         Constants.dictionary().SAMPLE_RELEASED = dictId(map, "sample_released");
+        Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN = dictId(map, "scriptlet_neonatal_domain");
+        Constants.dictionary().SCRIPTLET_PWS_VALIDATE = dictId(map, "scriptlet_pws_validate");
         Constants.dictionary().SDWIS_CATEGORY_BACTERIAL = dictId(map, "sdwis_category_bacterial");
         Constants.dictionary().SDWIS_CATEGORY_CHEMICAL = dictId(map, "sdwis_category_chemical");
         Constants.dictionary().SDWIS_CATEGORY_LEAD = dictId(map, "sdwis_category_lead");

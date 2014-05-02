@@ -32,7 +32,6 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
@@ -52,7 +51,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -69,7 +67,6 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.meta.TestMeta;
 import org.openelis.modules.qc.client.QcService;
-import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 import org.openelis.ui.widget.WindowInt;
 
@@ -87,12 +84,12 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
     private boolean                          loaded;
 
-    private Dropdown<Integer>                formatId;
+    private Dropdown<Integer>                formatId, scriptletId;
     private TableWidget                      worksheetAnalyteTable, worksheetTable;
     private AppButton                        addWSItemButton, removeWSItemButton,
                                              addWSAnalyteButton, removeWSAnalyteButton;
     private TextBox<Integer>                 subsetCapacity, totalCapacity;
-    private AutoComplete                     scriptlet, qcname;
+    private AutoComplete                     qcname;
 
     public WorksheetLayoutTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
@@ -184,13 +181,12 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(TestMeta.getWorksheetScriptletName());
-        addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
+        scriptletId = (Dropdown<Integer>)def.getWidget(TestMeta.getWorksheetScriptletId());
+        addScreenHandler(scriptletId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     if(manager != null)
-                        scriptlet.setSelection(manager.getTestWorksheet().getWorksheet().getScriptletId(),
-                                               manager.getTestWorksheet().getWorksheet().getScriptletName());
+                        scriptletId.setSelection(manager.getTestWorksheet().getWorksheet().getScriptletId());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -199,36 +195,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 try {
                     manager.getTestWorksheet().getWorksheet().setScriptletId(event.getValue());
-                    manager.getTestWorksheet().getWorksheet().setScriptletName(scriptlet.getTextBoxDisplay());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                scriptletId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                         .contains(event.getState()));
-                scriptlet.setQueryMode(event.getState() == State.QUERY);
+                scriptletId.setQueryMode(event.getState() == State.QUERY);
             }
-        });
-
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
-
-                try {
-                    list = ScriptletService.get().fetchByName(event.getMatch() + "%");
-                    model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list) {
-                        model.add(new TableDataRow(data.getId(), data.getName()));
-                    }
-                    scriptlet.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-
         });
 
         worksheetTable = (TableWidget)def.getWidget("worksheetTable");
@@ -585,6 +561,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             model.add(row);
         }
         formatId.setModel(model);
+        
+        model = new ArrayList<TableDataRow>();
+        list = CategoryCache.getBySystemName("scriptlet");
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : list) {
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
+        scriptletId.setModel(model);
     }
 
     private ArrayList<TableDataRow> getWSItemsModel() {

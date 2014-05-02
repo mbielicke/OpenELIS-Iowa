@@ -65,6 +65,10 @@ public class AuxiliaryServlet extends RemoteServlet implements AuxiliaryServiceI
     public ArrayList<AuxFieldViewDO> fetchAll()  throws Exception {
         return auxField.fetchAll();
     }
+    
+    public ArrayList<AuxFieldViewDO> fetchByAnalyteName(String search)  throws Exception {
+        return auxField.fetchByAnalyteName(search + "%", 10);
+    }
 
     // manager methods
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
