@@ -57,6 +57,7 @@ import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
+import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.SDWISTabUI;
@@ -1243,43 +1244,75 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("cancelTestButton")
     protected void cancelTest(ClickEvent event) {
-        /*
-         * existing analyses cannot be removed, only cancelled
-         */
-        if (cancelAnalysisConfirm == null) {
-            cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                Messages.get().analysis_cancelCaption(),
-                                                Messages.get().analysis_cancelMessage(),
-                                                Messages.get().gen_no(),
-                                                Messages.get().gen_yes());
-            cancelAnalysisConfirm.setWidth("300px");
-            cancelAnalysisConfirm.setHeight("150px");
-            cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                    String uid;
-                    Node node;
+        String uid;
+        Node node;
+        AnalysisViewDO ana;
 
-                    switch (event.getSelectedItem().intValue()) {
-                        case 1:
-                            /*
-                             * the uid is obtained here again to make sure that
-                             * the event fired below has the uid of the
-                             * currently selected analysis and not of the
-                             * analysis for which the event was fired for the
-                             * first time after creating this popup
-                             */
-                            node = tree.getNodeAt(tree.getSelectedNode());
-                            uid = ((UUID)node.getData()).uid;
+        node = tree.getNodeAt(tree.getSelectedNode());
+        uid = ((UUID)node.getData()).uid;
+        ana = (AnalysisViewDO)manager.getObject(uid);
+ 
+        if (ana.getId() > 0) {
+            /*
+             * existing analyses cannot be removed, only cancelled
+             */
+            if (cancelAnalysisConfirm == null) {
+                cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                    Messages.get().analysis_cancelCaption(),
+                                                    Messages.get().analysis_cancelMessage(),
+                                                    Messages.get().gen_no(),
+                                                    Messages.get().gen_yes());
+                cancelAnalysisConfirm.setWidth("300px");
+                cancelAnalysisConfirm.setHeight("150px");
+                cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                    public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                        String uid;
+                        Node node;
 
-                            changeAnalysisStatus(uid, Constants.dictionary().ANALYSIS_CANCELLED);
+                        switch (event.getSelectedItem().intValue()) {
+                            case 1:
+                                /*
+                                 * the uid is obtained here again to make sure
+                                 * that the event fired below has the uid of the
+                                 * currently selected analysis and not of the
+                                 * analysis for which the event was fired for
+                                 * the first time after creating this popup
+                                 */
+                                node = tree.getNodeAt(tree.getSelectedNode());
+                                uid = ((UUID)node.getData()).uid;
 
-                            break;
+                                changeAnalysisStatus(uid, Constants.dictionary().ANALYSIS_CANCELLED);
+
+                                break;
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        cancelAnalysisConfirm.show();
+            cancelAnalysisConfirm.show();
+        } else {
+            /*
+             * remove this analysis as it is not an existing one
+             */
+            setBusy();
+            try {
+                manager = SampleService1.get().removeAnalysis(manager, ana.getId());
+                managers.put(manager.getSample().getId(), manager);
+                setData();
+                setState(state);
+                /*
+                 * the tree needs to be reloaded because the analysis was
+                 * removed
+                 */
+                node = findAncestorByType(SAMPLE_LEAF);
+                reloadSample(node);
+                bus.fireEventFromSource(new RemoveAnalysisEvent(uid), screen);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+            clearStatus();
+        }
     }
 
     /**
@@ -3012,7 +3045,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         ArrayList<SampleTestRequestVO> tests;
 
         /*
-         * find the sample item to
+         * find the sample item to get its sample type
          */
         node = findAncestorByType(SAMPLE_ITEM_LEAF);
         item = (SampleItemViewDO)manager.getObject( ((UUID)node.getData()).uid);
@@ -3042,8 +3075,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             managers.put(manager.getSample().getId(), manager);
 
             setData();
-            evaluateEdit();
             setState(state);
+            /*
+             * notify the tabs that some new tests have been added
+             */
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
+
             /*
              * reload the sample's subtree to show the newly added analyses
              */
@@ -3273,7 +3310,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret.getTests() == null || ret.getTests().size() > 0) {
+        if (ret.getTests() == null || ret.getTests().size() == 0) {
             isBusy = false;
             return;
         }

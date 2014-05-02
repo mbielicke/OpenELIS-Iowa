@@ -2650,7 +2650,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             managers.put(manager.getSample().getId(), manager);
             setData();
             setState(state);
-
+            /*
+             * notify the tabs that some new tests have been added
+             */
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
@@ -2831,7 +2834,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret.getTests() == null || ret.getTests().size() > 0) {
+        if (ret.getTests() == null || ret.getTests().size() == 0) {
             isBusy = false;
             return;
         }

@@ -85,7 +85,7 @@
                 </td>
                 <td>
                   <g:HorizontalPanel>
-                    <w:TextBox ui:field="orderId" width="75px" field="Integer" />
+                    <w:TextBox ui:field="orderId" width="103px" field="Integer" />
                     <g:AbsolutePanel>
                       <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
                         text="" css="{res.FormFieldButton}" />
@@ -247,7 +247,7 @@
                 </table>
               </g:HTMLPanel>
             </g:layer>
-            <g:layer top="0px" bottom="0px" left="320px" width="22%">
+            <g:layer top="0px" bottom="0px" left="335px" width="22%">
               <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
                   <tr>

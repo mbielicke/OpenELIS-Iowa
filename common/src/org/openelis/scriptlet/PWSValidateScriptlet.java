@@ -34,7 +34,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.PWSDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
-import org.openelis.modules.pws.client.PWSService;
+import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
@@ -66,7 +66,7 @@ public class PWSValidateScriptlet implements ScriptletInt<SampleSO> {
         /*
          * validate only if an aux data was changed
          */
-        if (data.getAuxData() == null)
+        if (!SampleMeta.getAuxDataValue().equals(data.getChanged()))
             return data;
 
         try {
@@ -86,15 +86,14 @@ public class PWSValidateScriptlet implements ScriptletInt<SampleSO> {
                      */
                     if (aux.getAuxFieldId().equals(auxf.getId()) &&
                         Constants.dictionary().SCRIPTLET_PWS_VALIDATE.equals(auxf.getScriptletId())) {
-                        try {
                             proxy.fetchPwsByNumber0(aux.getValue());
-                            break;
-                        } catch (NotFoundException e) {
-                            throw new FormErrorException(Messages.get().gen_invalidValueException());
-                        }
+                            break;                    
                     }
                 }
             }
+        } catch (NotFoundException e) {
+            data.setStatus(Status.FAILED);
+            data.addException(new FormErrorException(Messages.get().gen_invalidValueException()));
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);

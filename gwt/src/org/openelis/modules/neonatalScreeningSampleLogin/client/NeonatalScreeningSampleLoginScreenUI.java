@@ -942,8 +942,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  setPatientLastName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged();
-                                 else
-                                     runDomainScriptlet(SampleMeta.getNeonatalPatientLastName());
+                                 runDomainScriptlet(SampleMeta.getNeonatalPatientLastName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -969,8 +968,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  setPatientFirstName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged();
-                                 else
-                                     runDomainScriptlet(SampleMeta.getNeonatalPatientFirstName());
+                                 runDomainScriptlet(SampleMeta.getNeonatalPatientFirstName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1404,7 +1402,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 setIsRepeat(event.getValue());
-                runDomainScriptlet(SampleMeta.getNeonatalIsRepeat());
+                // runDomainScriptlet(SampleMeta.getNeonatalIsRepeat());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1527,8 +1525,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  if (getNextOfKinLastName() != null &&
                                      getNextOfKinFirstName() != null)
                                      nextOfKinQueryChanged();
-                                 else
-                                     runDomainScriptlet(SampleMeta.getNeonatalNextOfKinLastName());
+                                 // else
+                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinLastName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1579,8 +1577,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  if (getNextOfKinLastName() != null &&
                                      getNextOfKinFirstName() != null)
                                      nextOfKinQueryChanged();
-                                 else
-                                     runDomainScriptlet(SampleMeta.getNeonatalNextOfKinFirstName());
+                                 // else
+                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinFirstName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2224,6 +2222,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setFormNumber(event.getValue());
+                                 runDomainScriptlet(SampleMeta.getNeonatalFormNumber());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
