@@ -3748,7 +3748,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret.getTests() == null || ret.getTests().size() > 0) {
+        if (ret.getTests() == null || ret.getTests().size() == 0) {
             isBusy = false;
             return;
         }
