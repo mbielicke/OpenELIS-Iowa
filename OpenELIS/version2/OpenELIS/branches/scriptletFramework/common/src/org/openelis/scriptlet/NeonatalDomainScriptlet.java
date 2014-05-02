@@ -51,25 +51,30 @@ public class NeonatalDomainScriptlet implements ScriptletInt<SampleSO> {
         return checkRepeat(data);
     }
 
-    protected SampleSO checkRepeat(SampleSO data) {        
+    protected SampleSO checkRepeat(SampleSO data) {
+        String changed;
         SampleNeonatalDO sn;
         SampleManager1 sm;
 
+        changed = data.getChanged();
         sm = data.getManager();
         sn = sm.getSampleNeonatal();
         /*
-         * don't check for repeat if either the sample is already marked as
-         * repeat or if the patient is not an existing one
+         * don't check for repeat if a field related to neonatal domain hasn't
+         * changed or the sample is already marked as repeat or the patient is
+         * not an existing one
          */
-        if ("Y".equals(sn.getIsRepeat()) || sn.getPatientId() == null)
+        if ( (changed.indexOf("sampleNeonatal") == -1 && changed.indexOf("neonatal") == -1) ||
+            "Y".equals(sn.getIsRepeat()) || sn.getPatientId() == null)
             return data;
 
         try {
-            proxy.fetchPreviousForNeonatalPatient(sn.getPatientId(), sm.getSample().getEnteredDate());
+            proxy.fetchPreviousForNeonatalPatient(sn.getPatientId(), sm.getSample()
+                                                                       .getEnteredDate());
             sn.setIsRepeat("Y");
             data.addRerun(SampleMeta.getNeonatalIsRepeat());
         } catch (NotFoundException e) {
-            //ignore
+            // ignore
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);
@@ -78,7 +83,8 @@ public class NeonatalDomainScriptlet implements ScriptletInt<SampleSO> {
     }
 
     public static interface Proxy {
-        public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
+        public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId,
+                                                              Datetime enteredDate,
                                                               Load... elements) throws Exception;
     }
 }
