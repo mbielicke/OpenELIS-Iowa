@@ -27,6 +27,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.widget.table.Row;
 
 /**
@@ -46,6 +47,6 @@ public class HeaderRow extends Row {
     }
     
     public String getStyle(int index) {
-        return "SubHeader";
+        return UIResources.INSTANCE.table().SubHeader();
     }
 }

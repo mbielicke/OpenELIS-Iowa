@@ -45,6 +45,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -121,9 +122,6 @@ public class SampleBean {
         builder.setOrderBy(SampleMeta.getAccessionNumber());
 
         whereForFrom = builder.getWhereClause();
-        if (whereForFrom.indexOf("auxData.") > -1)
-            builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
-                             Constants.table().SAMPLE);
 
         // for the well screen we have to link to the org table and the address
         // table
@@ -134,6 +132,12 @@ public class SampleBean {
         privateWellWhere = createWhereFromWellFields(fields, wellFields);
         builder.clearWhereClause();
         builder.constructWhere(fields);
+        /*
+         * make sure that only the aux data linked to samples is queried
+         */
+        if (whereForFrom.indexOf("auxData.") > -1)
+            builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
+                             Constants.table().SAMPLE);
         sampleWhere = builder.getWhereClause();
 
         queryString = builder.getSelectClause() + builder.getFromClause(whereForFrom) +
@@ -217,6 +221,22 @@ public class SampleBean {
         query = manager.createNamedQuery("Sample.FetchSDWISByReleased");
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<SampleDO> fetchPreviousForNeonatalPatient(Integer patientId,
+                                                               Datetime enteredDate) throws Exception {
+        Query query;
+        List<SampleDO> list;
+
+        query = manager.createNamedQuery("Sample.FetchPreviousForNeonatalPatient");
+        query.setParameter("patientId", patientId);
+        query.setParameter("enteredDate", enteredDate.getDate());
 
         list = query.getResultList();
         if (list.isEmpty())
@@ -509,7 +529,7 @@ public class SampleBean {
         d = data.getDomain();
         if (d == null ||
             ( !Constants.domain().ANIMAL.equals(d) && !Constants.domain().ENVIRONMENTAL.equals(d) &&
-             !Constants.domain().HUMAN.equals(d) && !Constants.domain().NEONATAL.equals(d) &&
+             !Constants.domain().CLINICAL.equals(d) && !Constants.domain().NEONATAL.equals(d) &&
              !Constants.domain().PRIVATEWELL.equals(d) && !Constants.domain().PT.equals(d) &&
              !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
             e.add(new FormErrorException(Messages.get()

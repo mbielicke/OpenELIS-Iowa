@@ -34,8 +34,8 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
     <inherits name="org.openelis.modules.analyteParameter.AnalyteParameter"/>
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
-    <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
-    <inherits name="org.openelis.modules.completeRelease.CompleteRelease"/>
+    <inherits name="org.openelis.modules.clinicalSampleLogin1.ClinicalSampleLogin1"/>
+    <inherits name="org.openelis.modules.completeRelease1.CompleteRelease1"/>
     <inherits name="org.openelis.modules.cron.Cron"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.eventLog.EventLog"/>
@@ -88,6 +88,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
+    <inherits name="org.openelis.modules.sampleTracking1.SampleTracking1"/>
     <inherits name="org.openelis.modules.sample1.Sample1"/>
     <inherits name="org.openelis.modules.report.Report"/>
     <inherits name="org.openelis.modules.report.dataView.DataView"/>

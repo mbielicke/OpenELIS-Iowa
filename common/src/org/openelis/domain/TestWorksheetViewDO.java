@@ -25,7 +25,6 @@
  */
 package org.openelis.domain;
 
-import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class extends test worksheet DO and adds a commonly used field scriptlet
@@ -38,23 +37,11 @@ public class TestWorksheetViewDO extends TestWorksheetDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          scriptletName;
-
     public TestWorksheetViewDO() {
     }
 
     public TestWorksheetViewDO(Integer id, Integer testId, Integer subsetCapacity,
-                               Integer totalCapacity, Integer formatId, Integer scriptletId,
-                               String scriptletName) {
+                               Integer totalCapacity, Integer formatId, Integer scriptletId) {
         super(id, testId, subsetCapacity, totalCapacity, formatId, scriptletId);
-        setScriptletName(scriptletName);
-    }
-
-    public String getScriptletName() {
-        return scriptletName;
-    }
-
-    public void setScriptletName(String scriptletName) {
-        this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 }

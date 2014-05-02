@@ -56,6 +56,34 @@ public class PatientService implements PatientServiceInt, PatientServiceIntAsync
     }
 
     @Override
+    public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception {
+        Callback<ArrayList<PatientRelationVO>> callback;
+        
+        callback = new Callback<ArrayList<PatientRelationVO>>();
+        service.fetchByRelatedPatientId(patientId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchByRelatedPatientId(Integer patientId, AsyncCallback<ArrayList<PatientRelationVO>> callback) {
+        service.fetchByRelatedPatientId(patientId, callback);
+    }
+
+    @Override
+    public PatientDO fetchForUpdate(Integer patientId) throws Exception {
+        Callback<PatientDO> callback;
+        
+        callback = new Callback<PatientDO>();
+        service.fetchForUpdate(patientId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchForUpdate(Integer patientId, AsyncCallback<PatientDO> callback) {
+        service.fetchForUpdate(patientId, callback);
+    }
+    
+    @Override
     public ArrayList<PatientDO> query(Query query) throws Exception {
         Callback<ArrayList<PatientDO>> callback;
         
@@ -70,16 +98,58 @@ public class PatientService implements PatientServiceInt, PatientServiceIntAsync
     }
 
     @Override
-    public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception {
-        Callback<ArrayList<PatientRelationVO>> callback;
+    public PatientDO add(PatientDO data) throws Exception {
+        Callback<PatientDO> callback;
         
-        callback = new Callback<ArrayList<PatientRelationVO>>();
-        service.fetchByRelatedPatientId(patientId, callback);
+        callback = new Callback<PatientDO>();
+        service.add(data, callback);
         return callback.getResult();
     }
     
     @Override
-    public void fetchByRelatedPatientId(Integer patientId, AsyncCallback<ArrayList<PatientRelationVO>> callback) {
-        service.fetchByRelatedPatientId(patientId, callback);
+    public void add(PatientDO data, AsyncCallback<PatientDO> callback) {
+        service.add(data, callback);
+    }
+    
+    @Override
+    public PatientDO update(PatientDO data) throws Exception {
+        Callback<PatientDO> callback;
+        
+        callback = new Callback<PatientDO>();
+        service.update(data, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void update(PatientDO data, AsyncCallback<PatientDO> callback) {
+        service.update(data, callback);
+    }
+
+    @Override
+    public PatientDO abortUpdate(Integer patientId) throws Exception {
+        Callback<PatientDO> callback;
+        
+        callback = new Callback<PatientDO>();
+        service.abortUpdate(patientId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void abortUpdate(Integer patientId, AsyncCallback<PatientDO> callback) {
+        service.abortUpdate(patientId, callback);
+    }
+
+    @Override
+    public void validate(PatientDO data) throws Exception {
+        Callback<Void> callback;
+        
+        callback = new Callback<Void>();
+        service.validate(data, callback);
+        callback.getResult();
+    }
+
+    @Override
+    public void validate(PatientDO data, AsyncCallback<Void> callback) {
+        service.validate(data, callback);
     }
 }

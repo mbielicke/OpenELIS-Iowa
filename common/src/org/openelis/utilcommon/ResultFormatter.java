@@ -571,8 +571,9 @@ public class ResultFormatter implements Serializable {
             }
             if (value.startsWith("1:"))
                 value = value.substring(2);
-            else
-                fmt += "1:";
+            
+            fmt += "1:";
+            
             try {
                 d = Integer.parseInt(value);
                 if (d < min || d > max)

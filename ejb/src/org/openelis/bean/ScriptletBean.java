@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -72,16 +73,36 @@ public class ScriptletBean  {
     
     @SuppressWarnings("unchecked")
 	public ArrayList<IdNameVO> fetchByName(String match, int maxResults) {
-        Query query = manager.createNamedQuery("Scriptlet.ScriptletFindByName");
+        Query query;
+        
+        query = manager.createNamedQuery("Scriptlet.FetchByName");
         query.setParameter("name", match);
         query.setMaxResults(maxResults);
+        
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ScriptletDO fetchById(Integer id) {
-        Query  query = manager.createNamedQuery("Scriptlet.fetchById");
+    public ScriptletDO fetchById(Integer id) throws Exception {
+        Query  query;
+        
+        query = manager.createNamedQuery("Scriptlet.FetchById");
         query.setParameter("id",id);
-        return (ScriptletDO)query.getSingleResult();
+        try {
+            return (ScriptletDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    public ArrayList<ScriptletDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("Scriptlet.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {

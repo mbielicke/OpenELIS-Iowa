@@ -39,11 +39,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.GridFieldErrorException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -62,7 +57,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.ScrollableTabBar;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -88,7 +82,11 @@ import org.openelis.meta.TestMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.dictionary.client.DictionaryService;
-import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
@@ -120,11 +118,10 @@ public class AnalyteAndResultTab extends Screen
     private DictionaryLookupScreen                       dictLookup;
 
     private TableWidget                                  analyteTable, resultTable;
-    private Dropdown<Integer>                            typeId;
+    private Dropdown<Integer>                            typeId, scriptletId;
     private Dropdown<String>                             tableActions;
     private ScrollableTabBar                             resultTabPanel;
     private CheckBox                                     isReportable;
-    private AutoComplete<Integer>                        scriptlet;
     private AppButton                                    addButton, removeButton,
                     addResultTabButton, dictionaryLookUpButton, addTestResultButton,
                     removeTestResultButton;
@@ -834,8 +831,8 @@ public class AnalyteAndResultTab extends Screen
             }
         });
 
-        scriptlet = (AutoComplete<Integer>)def.getWidget(TestMeta.getAnalyteScriptletId());
-        addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
+        scriptletId = (Dropdown<Integer>)def.getWidget(TestMeta.getAnalyteScriptletId());
+        addScreenHandler(scriptletId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 TestAnalyteViewDO data;
                 int r;
@@ -849,10 +846,9 @@ public class AnalyteAndResultTab extends Screen
                         data = displayManager.getObjectAt(r, anaSelCol - 1);
 
                     if (data != null)
-                        scriptlet.setSelection(data.getScriptletId(),
-                                               data.getScriptletName());
+                        scriptletId.setSelection(data.getScriptletId());
                     else
-                        scriptlet.setSelection(null, "");
+                        scriptletId.setSelection(null);
                 } else {
                     //
                     // everytime the data on the screen changes, the model in
@@ -863,7 +859,7 @@ public class AnalyteAndResultTab extends Screen
                     // of any
                     // previous selection and disabled
                     //
-                    scriptlet.setSelection(null, "");
+                    scriptletId.setSelection(null);
                 }
             }
 
@@ -886,7 +882,6 @@ public class AnalyteAndResultTab extends Screen
                                     continue;
 
                                 data.setScriptletId(event.getValue());
-                                data.setScriptletName(scriptlet.getTextBoxDisplay());
 
                                 if (j + 1 < analyteTable.numRows()) {
                                     nrow = analyteTable.getRow(j + 1);
@@ -902,7 +897,6 @@ public class AnalyteAndResultTab extends Screen
                                 break;
                             data = displayManager.getObjectAt(r[j], anaSelCol);
                             data.setScriptletId(event.getValue());
-                            data.setScriptletName(scriptlet.getTextBoxDisplay());
                         }
                     }
                 }
@@ -918,28 +912,8 @@ public class AnalyteAndResultTab extends Screen
                 // any
                 // previous selection and disabled
                 //
-                scriptlet.setSelection(null, "");
-                scriptlet.enable(false);
-            }
-        });
-
-        // Screens now must implement AutoCompleteCallInt and set themselves as
-        // the calling interface
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
-
-                try {
-                    list = ScriptletService.get().fetchByName(event.getMatch() + "%");
-                    model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list)
-                        model.add(new TableDataRow(data.getId(), data.getName()));
-
-                    scriptlet.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
+                scriptletId.setSelection(null);
+                scriptletId.enable(false);
             }
         });
 
@@ -1655,7 +1629,18 @@ public class AnalyteAndResultTab extends Screen
         }
 
         typeId.setModel(model);
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        list = CategoryCache.getBySystemName("scriptlet");
+        for (DictionaryDO resultDO : list) {
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
 
+        scriptletId.setModel(model);
+        
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("test_result_type");
@@ -1779,13 +1764,13 @@ public class AnalyteAndResultTab extends Screen
     private void refreshAnalyteWidgets() {
         DataChangeEvent.fire(screen, isReportable);
         DataChangeEvent.fire(screen, typeId);
-        DataChangeEvent.fire(screen, scriptlet);
+        DataChangeEvent.fire(screen, scriptletId);
     }
 
     private void enableAnalyteWidgets(boolean enable) {
         isReportable.enable(enable);
         typeId.enable(enable);
-        scriptlet.enable(enable);
+        scriptletId.enable(enable);
     }
 
     private void addColumnToRowsBelow(int row) {
