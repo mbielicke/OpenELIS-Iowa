@@ -4,6 +4,19 @@
 	<property name="gwt.sdk" location="/usr/local/java/gwt-2.6.0" />
 	
 	<property name="jboss.home" location="/usr/local/java/jboss-as-7.1.1.Final"/>
+	
+	<taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" classpath="/usr/share/java/ivy.jar"/>
+	<taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" classpath="/usr/share/java/ivy.jar"/>
+	<taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" classpath="/usr/share/java/ivy.jar"/>
+	<taskdef name="ivy-deliver" classname="org.apache.ivy.ant.IvyDeliver" classpath="/usr/share/java/ivy.jar"/> 
+	<taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpath="/usr/share/java/ivy.jar"/>
+	
+	<ivy-configure file="ivysettings.xml"/>
+	<ivy-retrieve pattern="lib/[artifact]-[type]-[revision].[ext]"/>
+	
+	<path id="ivy.lib">
+	   <fileset dir="lib" includes="*.jar"/>
+    </path>
 
 	<path id="gwt.jars">
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
@@ -22,59 +35,59 @@
 		<fileset dir="${jboss.home}/modules/org/jboss/ejb3/main" includes="*.jar"/>
 	</path>
 	
+	<!--
 	<path id="ui.class.path">
 		<path refid="gwt.jars"/>
         <fileset dir="../OpenELIS-UI/lib/" includes="*.jar"/>
 		<path refid="jboss.jars"/>
     </path>
+    -->
 	
 	<path id="lib.class.path">
 		<path refid="gwt.jars"/>
-    	<pathelement location="../OpenELIS-UI/bin"/>
+    	<pathelement location="lib/ui-jar-1.0.0.jar"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar" />
 		<path refid="jboss.jars"/>
 	</path>
 	
 	<path id="security.class.path">
 		<path refid="gwt.jars"/>
-    	<pathelement location="../OpenELIS-UI/bin"/>
+    	<path refid="ivy.lib"/>
     	<fileset dir="../Security/lib" includes="*.jar"/>
 		<path refid="jboss.jars"/>
 	</path>
 	
 	<path id="ejb.class.path">
-		<pathelement location="../OpenELIS-UI/bin"/>
+		<path refid="ivy.lib"/>
 		<fileset dir="../OpenELIS-EJB/lib" includes="*.jar"/>
 		<path refid="jboss.jars"/>
 	</path>
 	
 	<path id="gwt.class.path">
 		<path refid="gwt.jars"/>
-		<pathelement location="../OpenELIS-UI/bin"/>
     	<pathelement location="../OpenELIS-Common/bin"/>
     	<pathelement location="../OpenELIS-EJB/bin"/>
     	<pathelement location="../OpenELIS-Lib/bin"/>
 		<path refid="jboss.jars"/>
-    	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+		<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
 	</path>
 	
 	<path id="common.class.path">
 		<path refid="gwt.jars"/>
-		<pathelement location="../OpenELIS-UI/bin"/>
     	<pathelement location="../OpenELIS-EJB/bin"/>
+		<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
 		<path refid="jboss.jars"/>
 	</path>	
 	
 	<path id="web.class.path">
 		<path refid="gwt.jars"/>
-		<pathelement location="../OpenELIS-UI/bin"/>
     	<pathelement location="../OpenELIS-Common/bin"/>
     	<pathelement location="../OpenELIS-EJB/bin"/>
     	<pathelement location="../OpenELIS-Lib/bin"/>
     	<pathelement location="bin"/>
-    	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+		<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
 		<path refid="jboss.jars"/>
 	</path>
@@ -86,12 +99,10 @@
 		<pathelement location="war/WEB-INF/classes"/>
 		<pathelement location="../OpenELIS-Common/src" />
 		<pathelement location="../OpenELIS-Common/bin"/>
-		<pathelement location="../OpenELIS-UI/src" />
 		<pathelement location="../OpenELIS-Lib/src"/>
-		<pathelement location="../OpenELIS-UI/bin"/>
 		<pathelement location="../OpenELIS-Lib/bin"/>
 		<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
-		<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+		<path refid="ivy.lib"/>
 		<path refid="jboss.jars"/>
     </path>
 		
@@ -103,17 +114,15 @@
 		<pathelement location="../Security/src"/>
 		<pathelement location="../OpenELIS-Common/src" />
 		<pathelement location="../OpenELIS-Common/bin"/>
-		<pathelement location="../OpenELIS-UI/src" />
+		<pathelement location="lib/ui-jar-1.0.0.jar" />
 		<pathelement location="../OpenELIS-Lib/src"/>
-		<pathelement location="../OpenELIS-UI/bin"/>
 		<pathelement location="../OpenELIS-Lib/bin"/>
 		<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
-		<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+		<path refid="ivy.lib"/>
 		<path refid="jboss.jars"/>
     </path>
 
 	<target name="javac" depends="clean" description="Compile java source to bytecode">
-		<mkdir dir="../OpenELIS-UI/bin"/>
 		<mkdir dir="../OpenELIS-Lib/bin"/>
 		<mkdir dir="../Security/bin"/>
 		<mkdir dir="../OpenELIS-Common/bin"/>
@@ -123,10 +132,11 @@
 		
 		<!-- Projects need to be compiled in the order that they are in until we can remove the manager circular references -->
 		
-		<!-- Compile of OpenELIS-UI project -->
+		<!-- Compile of OpenELIS-UI project 
 		<javac includeantruntime="false" srcdir="../OpenELIS-UI/src" includes="**" encoding="utf-8" destdir="../OpenELIS-UI/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
             <classpath refid="ui.class.path"/>
 	    </javac>
+	    -->
 		
 		<!-- Compile of OpenELIS-Lib project -->
 		<javac executable="/usr/local/java/jdk1.7.0_09/bin/javac" includeantruntime="false" srcdir="../OpenELIS-Lib/src" includes="**" encoding="utf-8" destdir="../OpenELIS-Lib/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
