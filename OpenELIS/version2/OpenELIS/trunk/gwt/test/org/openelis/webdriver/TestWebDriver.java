@@ -21,7 +21,7 @@ public class TestWebDriver {
     
     @Before
     public void load() {
-        driver.get("http://192.168.111.202:8080/openelis");
+        driver.get("http://ap-serv-j:8080/openelis");
     }
     
     @AfterClass
