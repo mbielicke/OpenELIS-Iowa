@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="OpenELIS" default="gwtc.dev" basedir=".">
+<project name="OpenELIS" default="javac" basedir=".">
 
 	<property name="gwt.sdk" location="/usr/local/java/gwt-2.6.0" />
 	
@@ -169,7 +169,7 @@
 	    </javac>
 	</target>
 	
-	<target name="gwtc.dev" depends="javac" description="GWT compile to JavaScript">
+	<target name="gwtc.dev" description="GWT compile to JavaScript">
 		<!-- GWT compile of OpenELIS-GWT project -->
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 			<classpath refid="gwt.gwtc.path"/>
@@ -196,7 +196,7 @@
 		</java>
 	</target>
 	
-	<target name="gwtc.prod" depends="javac" description="GWT compile to JavaScript">
+	<target name="gwtc.prod" description="GWT compile to JavaScript">
 		<!-- GWT compile of OpenELIS-GWT project -->
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 			<classpath refid="gwt.gwtc.path"/>
