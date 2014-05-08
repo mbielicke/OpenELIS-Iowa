@@ -30,6 +30,6 @@
       <dependency org="junit" name="junit" rev="4.11"/>
       <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" transitive="false"/>
       <dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.41.0"/>
-      <dependency org="org.openelis" name="ui" rev="1.0.0"/>
+      <dependency org="org.javassist" name="javassist" rev="3.18.1-GA" conf="default->master"/>
     </dependencies>
 </ivy-module>
