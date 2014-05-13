@@ -836,7 +836,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "pre_analysis_id", analysis.getPreAnalysisId());
         setAttribute(elm, "parent_analysis_id", analysis.getParentAnalysisId());
         setAttribute(elm, "parent_result_id", analysis.getParentResultId());
-        setAttribute(elm, "is_preliminary", analysis.getIsPreliminary());
+        setAttribute(elm, "type_id", analysis.getTypeId());
         setAttribute(elm, "is_reportable", analysis.getIsReportable());
         setAttribute(elm, "unit_of_measure_id", analysis.getUnitOfMeasureId());
         setAttribute(elm, "status_id", analysis.getStatusId());
