@@ -119,8 +119,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private boolean                                     loaded;
 
     protected AutoComplete<Integer>                     test, samplePrep, panel;
-    protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId, userActionId;
-    protected CheckBox                                  isPreliminary, isReportable;
+    protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId, userActionId, typeId;
+    protected CheckBox                                  isReportable;
     protected TextBox                                   method;
     protected TextBox<Integer>                          revision;
     protected CalendarLookUp                            startedDate, completedDate, releasedDate,
@@ -431,21 +431,21 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        isPreliminary = (CheckBox)def.getWidget(SampleMeta.getAnalysisIsPreliminary());
-        addScreenHandler(isPreliminary, new ScreenEventHandler<String>() {
+        typeId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisTypeId());
+        addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                isPreliminary.setValue(analysis.getIsPreliminary());
+                typeId.setSelection(analysis.getTypeId());
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                analysis.setIsPreliminary(event.getValue());
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                analysis.setTypeId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isPreliminary.enable(event.getState() == State.QUERY ||
+                typeId.enable(event.getState() == State.QUERY ||
                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState())));
-                isPreliminary.setQueryMode(event.getState() == State.QUERY);
+                typeId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -993,6 +993,14 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     
         statusId.setModel(model);
     
+        // analysis type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+    
+        typeId.setModel(model);
+
         // section full dropdown model
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
