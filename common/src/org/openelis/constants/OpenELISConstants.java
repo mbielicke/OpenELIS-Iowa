@@ -6820,6 +6820,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String instrumentHistory();
 
   /**
+   * Translated "Accession #".
+   * 
+   * @return translated "Accession #"
+   */
+  @DefaultMessage("Accession #")
+  @Key("instrumentInterface.accessionNumber")
+  String instrumentInterface_accessionNumber();
+
+  /**
+   * Translated "Analyst".
+   * 
+   * @return translated "Analyst"
+   */
+  @DefaultMessage("Analyst")
+  @Key("instrumentInterface.analyst")
+  String instrumentInterface_analyst();
+
+  /**
+   * Translated "Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.".
+   * 
+   * @return translated "Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''."
+   */
+  @DefaultMessage("Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.")
+  @Key("instrumentInterface.differentInstrumentName")
+  String instrumentInterface_differentInstrumentName(String arg0,  String arg1);
+
+  /**
+   * Translated "Instrument ID".
+   * 
+   * @return translated "Instrument ID"
+   */
+  @DefaultMessage("Instrument ID")
+  @Key("instrumentInterface.instrumentId")
+  String instrumentInterface_instrumentId();
+
+  /**
    * Translated "Invalid file name for instrument import file.".
    * 
    * @return translated "Invalid file name for instrument import file."
@@ -6827,6 +6863,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Invalid file name for instrument import file.")
   @Key("instrumentInterface.invalidFileName")
   String instrumentInterface_invalidFileName();
+
+  /**
+   * Translated "Invalid instrument name ''{0}''".
+   * 
+   * @return translated "Invalid instrument name ''{0}''"
+   */
+  @DefaultMessage("Invalid instrument name ''{0}''")
+  @Key("instrumentInterface.invalidInstrumentName")
+  String instrumentInterface_invalidInstrumentName(String arg0);
 
   /**
    * Translated "Path to instrument file directory is missing. Please contact the system administrator.".
@@ -6845,6 +6890,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Missing required column ''{0}''.")
   @Key("instrumentInterface.missingRequiredColumn")
   String instrumentInterface_missingRequiredColumn(String arg0);
+
+  /**
+   * Translated "Start of Analysis".
+   * 
+   * @return translated "Start of Analysis"
+   */
+  @DefaultMessage("Start of Analysis")
+  @Key("instrumentInterface.startOfAnalysis")
+  String instrumentInterface_startOfAnalysis();
+
+  /**
+   * Translated "Started Date/Time".
+   * 
+   * @return translated "Started Date/Time"
+   */
+  @DefaultMessage("Started Date/Time")
+  @Key("instrumentInterface.startedDateTime")
+  String instrumentInterface_startedDateTime();
 
   /**
    * Translated "Worksheet #{0,number} has no analyses at position #{1,number}.".
@@ -17591,6 +17654,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Username")
   @Key("worksheetUser")
   String worksheetUser();
+
+  /**
+   * Translated "The selected analyses are from multiple tests, please select analyses that belong to only one test.".
+   * 
+   * @return translated "The selected analyses are from multiple tests, please select analyses that belong to only one test."
+   */
+  @DefaultMessage("The selected analyses are from multiple tests, please select analyses that belong to only one test.")
+  @Key("worksheet_oneTestForEditMultiple")
+  String worksheet_oneTestForEditMultiple();
+
+  /**
+   * Translated "The selected analyses use multiple units, please select analyses that use only one unit.".
+   * 
+   * @return translated "The selected analyses use multiple units, please select analyses that use only one unit."
+   */
+  @DefaultMessage("The selected analyses use multiple units, please select analyses that use only one unit.")
+  @Key("worksheet_oneUnitForEditMultiple")
+  String worksheet_oneUnitForEditMultiple();
 
   /**
    * Translated "The status of the shipping record must be either \"Processed\" or \"Shipped\"".
