@@ -65,9 +65,9 @@ UIRF Software License are applicable instead of those above.
           </text>
           <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" tab="{meta:getAnalysisSectionId()},{meta:getAnalysisTestName()}" field="Integer" />
           <text style="Prompt">
-            Preliminary:
+            Type:
           </text>
-          <check key="_analysis.isPreliminary" tab="{meta:getAnalysisUnitOfMeasureId()},{meta:getAnalysisSectionId()}"/>
+          <dropdown key="_analysis.typeId" width="105" popWidth="105" tab="{meta:getAnalysisUnitOfMeasureId()},{meta:getAnalysisSectionId()}" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'testReportable')" />:
           </text>
