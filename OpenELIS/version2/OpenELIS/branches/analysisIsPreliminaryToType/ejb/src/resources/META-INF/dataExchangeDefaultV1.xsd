@@ -246,6 +246,7 @@ UIRF Software License are applicable instead of those above.
       <xs:element name="section" type="section" />          
       <xs:element name="unit_of_measure" minOccurs="0" type="dictionary"/>
       <xs:element name="status" type="dictionary"/>
+      <xs:element name="type_id" type="dictionary"/>
       <xs:element name="analysis_qaevent" minOccurs="0" maxOccurs="unbounded" type="analysisQaevent"/>   
       <xs:element name="result" maxOccurs="unbounded" type="result"/>
       <xs:element name="analysis_user" type="analysis_user" minOccurs="0" maxOccurs="unbounded"/>    
@@ -264,7 +265,6 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="released_date" type="xs:dateTime"/>
     <xs:attribute name="printed_date" type="xs:dateTime"/>
     <xs:attribute name="panel_id" type="xs:integer" />
-    <xs:attribute name="is_preliminary" type="xs:string"/>
   </xs:complexType>
   
   <xs:complexType name="test">

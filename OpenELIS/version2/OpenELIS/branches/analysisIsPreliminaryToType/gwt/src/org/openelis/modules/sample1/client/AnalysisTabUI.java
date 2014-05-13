@@ -119,10 +119,10 @@ public class AnalysisTabUI extends Screen {
 
     @UiField
     protected Dropdown<Integer>        section, unitOfMeasure, status, panel, samplePrep,
-                    worksheetStatus, userAction;
+                                       worksheetStatus, userAction, type;
 
     @UiField
-    protected CheckBox                 isReportable, isPreliminary;
+    protected CheckBox                 isReportable;
 
     @UiField
     protected TextBox<Integer>         revision;
@@ -280,21 +280,21 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
-        addScreenHandler(isPreliminary,
-                         SampleMeta.getAnalysisIsPreliminary(),
-                         new ScreenHandler<String>() {
+        addScreenHandler(type,
+                         SampleMeta.getAnalysisTypeId(),
+                         new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 isPreliminary.setValue(getIsPreliminary());
+                                 type.setValue(getTypeId());
                              }
 
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setIsPreliminary(event.getValue());
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setTypeId(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 isPreliminary.setEnabled(isState(QUERY) ||
+                                 type.setEnabled(isState(QUERY) ||
                                                           (isState(ADD, UPDATE) && canEdit));
-                                 isPreliminary.setQueryMode(isState(QUERY));
+                                 type.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -320,7 +320,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? unitOfMeasure : isPreliminary;
+                                 return forward ? unitOfMeasure : type;
                              }
                          });
 
@@ -356,7 +356,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? isPreliminary : status;
+                return forward ? type : status;
             }
         });
 
@@ -838,6 +838,12 @@ public class AnalysisTabUI extends Screen {
 
         status.setModel(model);
 
+        model = new ArrayList<Item<Integer>>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_type"))
+            model.add(new Item<Integer>(d.getId(), d.getEntry()));
+
+        type.setModel(model);
+
         allSectionsModel = new ArrayList<Item<Integer>>();
         for (SectionDO s : SectionCache.getList())
             allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
@@ -1076,15 +1082,15 @@ public class AnalysisTabUI extends Screen {
                                                     AnalysisChangeEvent.Action.SECTION_CHANGED));
     }
 
-    private String getIsPreliminary() {
+    private Integer getTypeId() {
         if (analysis != null)
-            return analysis.getIsPreliminary();
+            return analysis.getTypeId();
 
         return null;
     }
 
-    private void setIsPreliminary(String isPreliminary) {
-        analysis.setIsPreliminary(isPreliminary);
+    private void setTypeId(Integer typeId) {
+        analysis.setTypeId(typeId);
     }
 
     private String getIsReportable() {

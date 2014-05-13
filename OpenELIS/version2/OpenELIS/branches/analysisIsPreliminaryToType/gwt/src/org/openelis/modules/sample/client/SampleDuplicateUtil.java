@@ -261,7 +261,7 @@ public class SampleDuplicateUtil {
             newData.setMethodId(oldData.getMethodId());
             newData.setPanelId(oldData.getPanelId());
             newData.setPanelName(oldData.getPanelName());
-            newData.setIsPreliminary(oldData.getIsPreliminary());
+            newData.setTypeId(oldData.getTypeId());
             newData.setIsReportable(oldData.getIsReportable());
             newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
             newData.setSectionId(oldData.getSectionId());
