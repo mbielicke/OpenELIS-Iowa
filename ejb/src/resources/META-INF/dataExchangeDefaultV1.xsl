@@ -510,11 +510,6 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@panel_id" />
         </xsl:attribute>
       </xsl:if>    
-      <xsl:if test="@is_preliminary[. != '']">
-        <xsl:attribute name="is_preliminary">
-          <xsl:value-of select="@is_preliminary" />
-        </xsl:attribute>
-      </xsl:if>
       <xsl:variable name="test_id" select="@test_id" />
       <test id="{@test_id}">
         <xsl:apply-templates select="//test[@id = $test_id]" />
@@ -533,6 +528,10 @@ UIRF Software License are applicable instead of those above.
       <status>
         <xsl:apply-templates select="//dictionary[@id = $status_id]" />
       </status> 
+      <xsl:variable name="type_id" select="@type_id" />
+      <type>
+        <xsl:apply-templates select="//dictionary[@id = $type_id]" />
+      </type> 
       <xsl:variable name="analysis_id" select="@id" />
       <!-- 
         The qa events for this analysis
