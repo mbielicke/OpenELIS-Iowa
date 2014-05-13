@@ -25,7 +25,25 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.WorksheetManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.WorksheetManager1Accessor.addAnalysis;
+import static org.openelis.manager.WorksheetManager1Accessor.addItem;
+import static org.openelis.manager.WorksheetManager1Accessor.addNote;
+import static org.openelis.manager.WorksheetManager1Accessor.addQcResult;
+import static org.openelis.manager.WorksheetManager1Accessor.addResult;
+import static org.openelis.manager.WorksheetManager1Accessor.getAnalyses;
+import static org.openelis.manager.WorksheetManager1Accessor.getItems;
+import static org.openelis.manager.WorksheetManager1Accessor.getNotes;
+import static org.openelis.manager.WorksheetManager1Accessor.getQcResults;
+import static org.openelis.manager.WorksheetManager1Accessor.getRemoved;
+import static org.openelis.manager.WorksheetManager1Accessor.getResults;
+import static org.openelis.manager.WorksheetManager1Accessor.getWorksheet;
+import static org.openelis.manager.WorksheetManager1Accessor.setAnalyses;
+import static org.openelis.manager.WorksheetManager1Accessor.setItems;
+import static org.openelis.manager.WorksheetManager1Accessor.setNotes;
+import static org.openelis.manager.WorksheetManager1Accessor.setQcResults;
+import static org.openelis.manager.WorksheetManager1Accessor.setResults;
+import static org.openelis.manager.WorksheetManager1Accessor.setWorksheet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,10 +65,9 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.CategoryCacheVO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
@@ -1369,6 +1386,27 @@ public class WorksheetManager1Bean {
             wm.item.get(i).setPosition(i + 1);
 
         return wm;
+    }
+    
+    public ArrayList<WorksheetManager1> fetchByAccessionNumber(Integer accession) throws Exception {
+        SampleManager1 sm;
+        ArrayList<AnalysisWorksheetVO> worksheets;
+        ArrayList<WorksheetManager1> wms;
+        ArrayList<Integer> aids, wids;
+
+        aids = new ArrayList<Integer>();
+        sm = sampleMan.fetchByAccession(accession, SampleManager1.Load.ANALYSISUSER);
+        for (AnalysisViewDO data : getAnalyses(sm))
+            aids.add(data.getId());
+        worksheets = worksheet.fetchByAnalysisIds(aids);
+
+        wids = new ArrayList<Integer>();
+        for (AnalysisWorksheetVO data : worksheets) {
+            wids.add(data.getId());
+        }
+        wms = fetchByIds(wids, WorksheetManager1.Load.DETAIL);
+
+        return wms;
     }
     
     private void loadQcForAnalysis(WorksheetManager1 wm, TestWorksheetItemDO twiDO,

@@ -1177,7 +1177,7 @@ public class OrderManager1Bean {
                                             ValidationErrorsList e) throws Exception {
         int i, testCount, contCount;
         Integer sequence, testId;
-        Integer ordNum;
+        Integer orderId;
         ArrayList<OrderTestViewDO> ots;
         ArrayList<OrderContainerDO> ocs;
         OrderTestViewDO test;
@@ -1185,7 +1185,12 @@ public class OrderManager1Bean {
         TestTypeOfSampleManager samTypeMan;
 
         for (OrderManager1 om : oms) {
-            ordNum = getOrder(om).getId();
+            orderId = getOrder(om).getId();
+            /*
+             * for display
+             */
+            if (orderId == null)
+                orderId = 0;
             ots = getTests(om);
             ocs = getContainers(om);
 
@@ -1205,7 +1210,7 @@ public class OrderManager1Bean {
                      * no container is present for this item sequence
                      */
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .order_noContainerWithItemNumWarning(ordNum,
+                                                       .order_noContainerWithItemNumWarning(orderId,
                                                                                             sequence.toString(),
                                                                                             getTestLabel(test))));
                 } else if (sequence >= 0 && testId != null) {
@@ -1221,7 +1226,7 @@ public class OrderManager1Bean {
                     samTypeMan = tms.get(testId).getSampleTypes();
                     if ( !testHasSampleType(cont.getTypeOfSampleId(), samTypeMan))
                         e.add(new FormErrorWarning(Messages.get()
-                                                           .order_invalidSampleTypeForTestWarning(ordNum,
+                                                           .order_invalidSampleTypeForTestWarning(orderId,
                                                                                                   sequence.toString(),
                                                                                                   getTestLabel(test))));
 
@@ -1231,7 +1236,7 @@ public class OrderManager1Bean {
                 cont = ocs.get(i);
                 if (cont.getTypeOfSampleId() == null)
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .order_noSampleTypeForContainerWarning(ordNum,
+                                                       .order_noSampleTypeForContainerWarning(orderId,
                                                                                               cont.getItemSequence()
                                                                                                   .toString())));
             }

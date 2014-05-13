@@ -87,6 +87,7 @@ import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
+import org.openelis.modules.sampleQC.client.SampleQCScreenUI;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.scriptlet.client.ScriptletScreen;
 import org.openelis.modules.section.client.SectionScreen;
@@ -140,18 +141,18 @@ public class OpenELIS extends Screen {
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
                     worksheetBuilder, worksheetCreation, worksheetCompletion, addOrCancel,
-                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
-                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
-                    inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
-                    testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
-                    billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
-                    sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
-                    turnAroundStatisticReport, kitTrackingReport, airQualityReport,
-                    sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
-                    finalReportBatchReprint, test, method, panel, QAEvent, labSection, analyte,
-                    dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
-                    label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
-                    scriptlet, systemVariable, pws, cron, logs;
+                    reviewAndRelease, toDo, labelFor, storage, QC, sampleQc, analyteParameter,
+                    internalOrder, vendorOrder, sendoutOrder, fillOrder, shipping, buildKits,
+                    inventoryTransfer, inventoryReceipt, inventoryAdjustment, inventoryItem,
+                    verificationReport, testRequestFormReport, orderRequestForm,
+                    holdRefuseOrganization, testReport, billingReport, sampleInhouseReport,
+                    volumeReport, toDoAnalyteReport, sampleDataExport, QASummaryReport,
+                    testCountByFacility, turnaround, turnAroundStatisticReport, kitTrackingReport,
+                    airQualityReport, sdwisUnloadReport, dataView, qcChart, finalReport,
+                    finalReportBatch, finalReportBatchReprint, test, method, panel, QAEvent,
+                    labSection, analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
+                    exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
+                    storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs;
 
     public OpenELIS() throws Exception {
         Exception loadError;
@@ -739,6 +740,30 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new QcScreen(window));
                             browser.addWindow(window, "QC");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(sampleQc, "sampletracking", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.sample_sampleQc());
+                            window.setSize("700px", "350px");
+                            window.setContent(new SampleQCScreenUI(window));
+                            browser.addWindow(window, "sampleQc");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
