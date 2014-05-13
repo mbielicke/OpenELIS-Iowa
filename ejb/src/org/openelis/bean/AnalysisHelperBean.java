@@ -1272,6 +1272,7 @@ public class AnalysisHelperBean {
         r.setIsReportable(reportable);
         r.setAnalyteId(ta.getAnalyteId());
         r.setAnalyte(ta.getAnalyteName());
+        r.setAnalyteExternalId(ta.getAnalyteExternalId());
         r.setResultGroup(ta.getResultGroup());
         r.setRowGroup(ta.getRowGroup());
         setDefault(r, ana.getUnitOfMeasureId(), rf);

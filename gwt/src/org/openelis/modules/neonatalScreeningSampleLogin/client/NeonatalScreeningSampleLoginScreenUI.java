@@ -31,6 +31,7 @@ import static org.openelis.ui.screen.Screen.Validation.Status.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -59,7 +60,6 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.ScriptletDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -97,6 +97,7 @@ import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.scriptlet.SampleSO;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -120,7 +121,6 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.scriptlet.ScriptletInt;
-import org.openelis.ui.scriptlet.ScriptletObject.Operation;
 import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
@@ -310,7 +310,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                            "user_action",
                                            "unit_of_measure",
                                            "qaevent_type",
-                                           "scriptlet");
+                                           "scriptlet",
+                                           "newborn_results",
+                                           "newborn_interpretation");
         } catch (Exception e) {
             window.close();
             throw e;
@@ -2274,6 +2276,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        sampleItemTab.setCanQuery(true);
+
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -2393,6 +2401,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 return auxDataTab.getQueryFields();
             }
         });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
 
         //
         // navigation panel
@@ -2557,7 +2571,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     runScriptlet(event.getScriptletId(),
                                  event.getUid(),
                                  event.getChanged(),
-                                 Operation.UPDATE);
+                                 event.getOperation());
             }
         });
 
@@ -2703,18 +2717,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 public void success(SampleManager1 result) {
                     previousManager = manager;
                     manager = result;
-                    manager.getSampleNeonatal()
-                           .setNextOfKinRelationId(Constants.dictionary().PATIENT_RELATION_MOTHER);
+                    setNeonatalNextOfKinRelationId(Constants.dictionary().PATIENT_RELATION_MOTHER);
                     cache = new HashMap<String, Object>();
                     isPatientLocked = false;
                     isNextOfKinLocked = false;
+                    addScriptlet(null);
+                    runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
                     evaluateEdit();
                     setData();
                     setState(ADD);
                     fireDataChange();
                     accessionNumber.setFocus(true);
                     setDone(Messages.get().gen_enterInformationPressCommit());
-                    addScriptlet(null);
                 }
 
                 public void failure(Throwable error) {
@@ -3000,6 +3014,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setState(DEFAULT);
             fireDataChange();
             setDone(Messages.get().gen_queryAborted());
+            cache = null;
         } else if (state == ADD) {
             /*
              * unlock the patient if it's locked
@@ -3027,6 +3042,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setState(DEFAULT);
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
+            cache = null;
+            scriptletRunner = null;
         } else if (state == UPDATE) {
             /*
              * unlock the patient if it's locked
@@ -3552,14 +3569,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void buildCache() {
         int i, j;
         Integer prevId;
-        ArrayList<Integer> ids, scids;
+        ArrayList<Integer> ids;
         SampleItemViewDO item;
         AnalysisViewDO ana;
         AuxDataViewDO aux;
-        AuxFieldManager afm;
         ArrayList<TestManager> tms;
         ArrayList<AuxFieldGroupManager> afgms;
-        ArrayList<ScriptletDO> scs;
 
         cache = new HashMap<String, Object>();
 
@@ -3576,14 +3591,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 }
             }
 
-            scids = new ArrayList<Integer>();
             if (ids.size() > 0) {
                 tms = TestService.get().fetchByIds(ids);
-                for (TestManager tm : tms) {
+                for (TestManager tm : tms)
                     cache.put(Constants.uid().getTest(tm.getTest().getId()), tm);
-                    if (tm.getTest().getScriptletId() != null)
-                        scids.add(tm.getTest().getScriptletId());
-                }
             }
 
             /*
@@ -3601,20 +3612,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             if (ids.size() > 0) {
                 afgms = AuxiliaryService.get().fetchByIds(ids);
-                for (AuxFieldGroupManager afgm : afgms) {
+                for (AuxFieldGroupManager afgm : afgms)
                     cache.put(Constants.uid().getAuxFieldGroup(afgm.getGroup().getId()), afgm);
-                    afm = afgm.getFields();
-                    for (i = 0; i < afm.count(); i++ ) {
-                        if (afm.getAuxFieldAt(i).getScriptletId() != null)
-                            scids.add(afm.getAuxFieldAt(i).getScriptletId());
-                    }
-                }
-            }
-
-            if (scids.size() > 0) {
-                scs = ScriptletService.get().fetchByIds(scids);
-                for (ScriptletDO sc : scs)
-                    cache.put(Constants.uid().getScriptlet(sc.getId()), sc);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -3690,14 +3689,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     /**
      * Adds the scriptlet with the passed ids to the scriptlet runner
      */
-    private void addScriptlets(HashSet<Integer> scids) throws Exception {
-        ScriptletInt<SampleSO> sc;
-
-        for (Integer id : scids) {
-            sc = (ScriptletInt<SampleSO>)ScriptletFactory.get(id);
-            if ( !scriptletRunner.containsScriptlet(sc))
-                scriptletRunner.add(sc);
-        }
+    private void addScriptlets(HashSet<Integer> ids) throws Exception {
+        for (Integer id : ids)
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(id));
     }
 
     /**
@@ -3707,8 +3701,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void runScriptlet(Integer scriptletId, String uid, String changed, Operation operation) {
         Object obj;
         SampleSO data;
+        AnalysisViewDO ana;
+        ResultViewDO res;
         AuxDataViewDO aux;
+        TestManager tm;
         AuxFieldGroupManager auxfgm;
+        EnumSet<Operation> operations;
         HashMap<Integer, TestManager> analyses, results;
         HashMap<Integer, AuxFieldGroupManager> auxData;
         ValidationErrorsList errors;
@@ -3716,6 +3714,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         analyses = null;
         results = null;
         auxData = null;
+        res = null;
 
         if (uid != null) {
             /*
@@ -3726,7 +3725,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             if (obj instanceof AnalysisViewDO) {
 
             } else if (obj instanceof ResultViewDO) {
-
+                res = (ResultViewDO)obj;
+                ana = (AnalysisViewDO)manager.getObject(Constants.uid()
+                                                                 .getAnalysis(res.getAnalysisId()));
+                tm = get(ana.getTestId(), TestManager.class);
+                results = new HashMap<Integer, TestManager>();
+                results.put(res.getId(), tm);
             } else if (obj instanceof AuxDataViewDO) {
                 aux = (AuxDataViewDO)obj;
                 auxfgm = get(aux.getAuxFieldGroupId(), AuxFieldGroupManager.class);
@@ -3739,7 +3743,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * create the sciptlet object
          */
         data = new SampleSO();
-        data.setOperation(operation);
+        operations = EnumSet.of(operation);
+        if (manager.getSampleNeonatal().getId() == null && Operation.NEW_DOMAIN_ADDED != operation)
+            /*
+             * this is either an uncommitted sample or was a quick-entry sample
+             * before being loaded on the screen
+             */
+            operations.add(Operation.NEW_DOMAIN_ADDED);
+        data.setOperations(operations);
         data.setChanged(changed);
         data.setManager(manager);
         data.setAnalyses(analyses);
@@ -3760,10 +3771,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             clearErrors();
         }
 
+        manager = data.getManager();
         evaluateEdit();
         setData();
-        setState(state);
-        fireDataChange();
+        if (Operation.RESULT_CHANGED == operation) {
+            bus.fireEvent(new ResultChangeEvent(Constants.uid()
+                                                .getAnalysis(res.getAnalysisId())));
+        } else {
+            setState(state);
+            fireDataChange();
+        }
     }
 
     /**
@@ -3773,7 +3790,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         runScriptlet(Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN,
                      null,
                      changed,
-                     Operation.UPDATE);
+                     Operation.NEW_DOMAIN_ADDED);
+    }
+
+    /**
+     * Runs the scriptlet for the neonatal domain
+     */
+    private void runDomainScriptlet(Operation operation) {
+        runScriptlet(Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN, null, null, operation);
     }
 
     /**
@@ -4997,7 +5021,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSampleNeonatal().setNextOfKinId(data.getId());
         manager.getSampleNeonatal().setNextOfKin(data);
         if (relationId != null)
-            manager.getSampleNeonatal().setNextOfKinRelationId(relationId);
+            setNeonatalNextOfKinRelationId(relationId);
 
         if (getNextOfKinLastName() != null)
             nextOfKinLastName.clearExceptions();
@@ -5231,12 +5255,31 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
-        HashSet<Integer> scids;
+        HashSet<Integer> ids;
+        Datetime bt, et;
 
         setBusy();
         try {
+            bt = Datetime.getInstance();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
+            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+                showErrors(ret.getErrors());
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+                runDomainScriptlet(Operation.TEST_ADDED);
+            } else {
+                showTests(ret);
+            }
+            et = Datetime.getInstance();
+            logger.log(Level.FINE, "Adding tests took " +
+                                   (et.getDate().getTime() - bt.getDate().getTime()));
+
             setData();
             setState(state);
 
@@ -5249,22 +5292,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             /*
              * add scriptlets for any newly added tests and aux data
              */
-            scids = new HashSet<Integer>();
-            scids.addAll(getTestScriptlets(true));
-            scids.addAll(getAuxScriptlets(true));
-            addScriptlets(scids);
-
-            /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
-             * added
-             */
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() == null || ret.getTests().size() == 0)
-                isBusy = false;
-            else
-                showTests(ret);
+            ids = new HashSet<Integer>();
+            ids.addAll(getTestScriptlets(true));
+            ids.addAll(getAuxScriptlets(true));
+            addScriptlets(ids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

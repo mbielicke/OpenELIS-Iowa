@@ -45,6 +45,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.sample1.client.ResultCell;
 import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.modules.sample1.client.RunScriptletEvent;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -115,7 +116,7 @@ public abstract class AuxDataTabUI extends Screen {
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
-    protected boolean                                   canEdit, isVisible, redraw;
+    protected boolean                                   canEdit, isVisible, redraw, canQuery;
 
     public AuxDataTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -265,7 +266,8 @@ public abstract class AuxDataTabUI extends Screen {
                                         parentBus.fireEventFromSource(new RunScriptletEvent(af.getScriptletId(),
                                                                                             Constants.uid()
                                                                                                      .getAuxData(data.getId()),
-                                                                                            getValueMetaKey()),
+                                                                                            getValueMetaKey(),
+                                                                                            Operation.AUX_DATA_CHANGED),
                                                                       screen);
                                 }
                             } catch (ParseException e) {
@@ -398,17 +400,6 @@ public abstract class AuxDataTabUI extends Screen {
                 }
             }
         });
-
-        /*
-         * aux field analyte dropdown / model = new ArrayList<Item<Integer>>();
-         * try { for (AuxFieldViewDO a : AuxiliaryService.get().fetchAll()) {
-         * row = new Item<Integer>(2); row.setKey(a.getId()); row.setCell(0,
-         * a.getAnalyteName()); row.setCell(1, a.getAuxFieldGroupName());
-         * row.setData(a); model.add(row); } analyte.setModel(model); } catch
-         * (Exception e) { Window.alert(e.getMessage());
-         * logger.log(Level.SEVERE, e.getMessage(), e);
-         * parentScreen.getWindow().close(); }
-         */
     }
 
     public void setState(State state) {
@@ -492,7 +483,8 @@ public abstract class AuxDataTabUI extends Screen {
                         val = rv.getDisplay();
 
                     if (DataBaseUtil.isDifferent(aux.getIsReportable(), row.getCell(0)) ||
-                        DataBaseUtil.isDifferent(aux.getAuxFieldId(), ((AutoCompleteValue)row.getCell(1)).getId()) ||
+                        DataBaseUtil.isDifferent(aux.getAuxFieldId(),
+                                                 ((AutoCompleteValue)row.getCell(1)).getId()) ||
                         DataBaseUtil.isDifferent(aux.getValue(), val)) {
                         redraw = true;
                         break;
@@ -503,6 +495,10 @@ public abstract class AuxDataTabUI extends Screen {
             }
         }
         displayAuxData();
+    }
+
+    public void setCanQuery(boolean canQuery) {
+        this.canQuery = canQuery;
     }
 
     public ArrayList<QueryData> getQueryFields() {
@@ -649,7 +645,7 @@ public abstract class AuxDataTabUI extends Screen {
         model = new ArrayList<Row>();
         table.clearExceptions();
 
-        if (isState(QUERY)) {
+        if (isState(QUERY) && canQuery) {
             row = new Row(3);
             row.setCell(2, new ResultCell.Value(null, null));
             model.add(row);

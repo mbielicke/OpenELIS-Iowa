@@ -25,21 +25,23 @@
  */
 package org.openelis.modules.scriptlet.client;
 
-import org.openelis.manager.SampleManager1;
-import org.openelis.manager.SampleManager1.Load;
-import org.openelis.modules.sample1.client.SampleService1;
-import org.openelis.scriptlet.NeonatalDomainScriptlet;
-import org.openelis.ui.common.Datetime;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.scriptlet.NBSBTScriptlet1;
 
 /**
- * This class is used for implementing the front-end functionality for neonatal
- * domain scriptlet
+ * This class is used for providing the front-end functionality for "nbs bt"
+ * scriptlet
  */
-public class NeonatalDomainProxy implements NeonatalDomainScriptlet.Proxy {
+public class NBSBTProxy1 implements NBSBTScriptlet1.Proxy {
+
     @Override
-    public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                          Load... elements) throws Exception {
-        
-        return SampleService1.get().fetchPreviousForNeonatalPatient(patientId, enteredDate, elements);
+    public DictionaryDO getDictionaryById(Integer id) throws Exception {
+        return DictionaryCache.getById(id);
+    }
+
+    @Override
+    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
+        return DictionaryCache.getBySystemName(systemName);
     }
 }

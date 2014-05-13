@@ -933,7 +933,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? patientBirthDate : patientLastName;
                              }
                          });
-        
+
         addScreenHandler(patientBirthDate,
                          SampleMeta.getClinicalPatientBirthDate(),
                          new ScreenHandler<Datetime>() {
@@ -956,7 +956,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? patientNationalId : patientFirstName;
                              }
                          });
-        
+
         addScreenHandler(patientNationalId,
                          SampleMeta.getClinicalPatientNationalId(),
                          new ScreenHandler<String>() {
@@ -1322,7 +1322,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? reportToName : providerPhone;
                              }
                          });
-        
+
         projectName.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1566,6 +1566,12 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 return sampleItemTab.getQueryFields();
             }
         });
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1686,6 +1692,12 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 return auxDataTab.getQueryFields();
             }
         });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
 
         //
         // navigation panel

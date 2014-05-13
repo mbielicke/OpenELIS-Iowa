@@ -84,7 +84,7 @@ public class SampleItemTabUI extends Screen {
 
     protected String                     displayedUid;
 
-    protected boolean                    canEdit, isVisible, redraw, hasReleasedAnalysis;
+    protected boolean                    canEdit, isVisible, redraw, hasReleasedAnalysis, canQuery;
 
     public SampleItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -114,9 +114,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 typeOfSample.setEnabled(isState(QUERY) ||
+                                 typeOfSample.setEnabled((isState(QUERY) && canQuery) ||
                                                          (isState(ADD, UPDATE) && canEdit && !hasReleasedAnalysis));
-                                 typeOfSample.setQueryMode(isState(QUERY));
+                                 typeOfSample.setQueryMode((isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -136,9 +136,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sourceOfSample.setEnabled(isState(QUERY) ||
+                                 sourceOfSample.setEnabled((isState(QUERY) && canQuery) ||
                                                            (isState(ADD, UPDATE) && canEdit));
-                                 sourceOfSample.setQueryMode(isState(QUERY));
+                                 sourceOfSample.setQueryMode((isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -156,8 +156,8 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sourceOther.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                sourceOther.setQueryMode(isState(QUERY));
+                sourceOther.setEnabled((isState(QUERY) && canQuery) || (isState(ADD, UPDATE) && canEdit));
+                sourceOther.setQueryMode((isState(QUERY) && canQuery));
             }
 
             public Widget onTab(boolean forward) {
@@ -175,8 +175,8 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                container.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                container.setQueryMode(isState(QUERY));
+                container.setEnabled((isState(QUERY) && canQuery) || (isState(ADD, UPDATE) && canEdit));
+                container.setQueryMode((isState(QUERY) && canQuery));
             }
 
             public Widget onTab(boolean forward) {
@@ -196,9 +196,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 containerReference.setEnabled(isState(QUERY) ||
+                                 containerReference.setEnabled((isState(QUERY) && canQuery) ||
                                                                (isState(ADD, UPDATE) && canEdit));
-                                 containerReference.setQueryMode(isState(QUERY));
+                                 containerReference.setQueryMode((isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -216,7 +216,7 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                quantity.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                quantity.setEnabled((isState(QUERY) && canQuery) || (isState(ADD, UPDATE) && canEdit));
                 quantity.setQueryMode(isState(QUERY));
             }
 
@@ -237,7 +237,7 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 unitOfMeasure.setEnabled(isState(QUERY) ||
+                                 unitOfMeasure.setEnabled((isState(QUERY) && canQuery) ||
                                                           (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasure.setQueryMode(isState(QUERY));
                              }
@@ -352,6 +352,10 @@ public class SampleItemTabUI extends Screen {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    public void setCanQuery(boolean canQuery) {
+        this.canQuery = canQuery;
     }
 
     private void evaluateEdit() {

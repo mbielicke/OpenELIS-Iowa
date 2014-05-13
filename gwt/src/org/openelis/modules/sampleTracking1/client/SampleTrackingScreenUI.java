@@ -786,6 +786,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        environmentalTab.setCanQuery(true);
+
         addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 privateWellTab.onDataChange();
@@ -804,7 +810,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        privateWellTab.setCanQuery(true);
+        
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisTab.onDataChange();
@@ -823,7 +835,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        sdwisTab.setCanQuery(true);
+        
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 neonatalTab.onDataChange();
@@ -864,6 +882,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        clinicalTab.setCanQuery(true);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -894,6 +918,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 return sampleItemTab.getQueryFields();
             }
         });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        sampleItemTab.setCanQuery(true);
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1014,6 +1044,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
 
         /*
          * handlers for the events fired by the tabs
@@ -1251,7 +1287,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         node = tree.getNodeAt(tree.getSelectedNode());
         uid = ((UUID)node.getData()).uid;
         ana = (AnalysisViewDO)manager.getObject(uid);
- 
+
         if (ana.getId() > 0) {
             /*
              * existing analyses cannot be removed, only cancelled

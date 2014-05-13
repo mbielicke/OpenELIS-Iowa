@@ -718,6 +718,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
+        
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        environmentalTab.setCanQuery(false);
 
         addScreenHandler(privateWellTab, "privateWellTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -732,6 +737,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
+        
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        privateWellTab.setCanQuery(false);
 
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -746,6 +756,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
+        
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        sdwisTab.setCanQuery(false);
 
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -782,6 +797,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
+        
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        clinicalTab.setCanQuery(false);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -812,7 +832,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-
+        
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        sampleItemTab.setCanQuery(false);
+        
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -932,6 +957,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
+        
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        auxDataTab.setCanQuery(false);
 
         /*
          * handlers for the events fired by the tabs
