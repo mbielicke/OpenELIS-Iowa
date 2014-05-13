@@ -13156,6 +13156,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_sampleItemTypeRequired();
 
   /**
+   * Translated "Sample QC".
+   * 
+   * @return translated "Sample QC"
+   */
+  @DefaultMessage("Sample QC")
+  @Key("sample.sampleQc")
+  String sample_sampleQc();
+
+  /**
+   * Translated "Report quality control items".
+   * 
+   * @return translated "Report quality control items"
+   */
+  @DefaultMessage("Report quality control items")
+  @Key("sample.sampleQcDescription")
+  String sample_sampleQcDescription();
+
+  /**
    * Translated "Test Lookup".
    * 
    * @return translated "Test Lookup"
