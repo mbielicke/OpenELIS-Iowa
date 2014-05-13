@@ -53,6 +53,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
@@ -62,6 +63,7 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.utilcommon.ResultFormatter;
@@ -71,6 +73,8 @@ import org.openelis.utilcommon.ResultFormatter;
 public class InstrumentInterfaceImportBean {
     @EJB
     LockBean                         lock;
+    @EJB
+    private InstrumentBean           instrument;
     @EJB
     private SystemVariableBean       systemVariable;
     @EJB
@@ -159,17 +163,17 @@ public class InstrumentInterfaceImportBean {
                 fileColumnMap = new HashMap<String, Integer>();
                 for (String token : tokens)
                     fileColumnMap.put(token, i++);
-                if (fileColumnMap.get("Accession #") == null) {
-                    writeErrorFile(file, Messages.get().instrumentInterface_missingRequiredColumn("Accession #"));
+                if (fileColumnMap.get(Messages.get().instrumentInterface_accessionNumber()) == null) {
+                    writeErrorFile(file, Messages.get().instrumentInterface_missingRequiredColumn(Messages.get().instrumentInterface_accessionNumber()));
                     continue;
                 }
-                if (fileColumnMap.get("Analyte") == null) { 
-                    writeErrorFile(file, Messages.get().instrumentInterface_missingRequiredColumn("Analyte"));
+                if (fileColumnMap.get(Messages.get().gen_analyte()) == null) { 
+                    writeErrorFile(file, Messages.get().instrumentInterface_missingRequiredColumn(Messages.get().gen_analyte()));
                     continue;
                 }
                 
                 try {
-                    importResults(worksheetId, position, bReader, formatColumnMap, fileColumnMap);
+                    importData(worksheetId, position, bReader, formatColumnMap, fileColumnMap);
                 } catch (Exception anyE1) {
                     writeErrorFile(file, anyE1.getMessage());
                     worksheetManager.unlock(worksheetId, WorksheetManager1.Load.NOTE);
@@ -237,11 +241,12 @@ public class InstrumentInterfaceImportBean {
     }
     
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void importResults(Integer worksheetId, Integer position, BufferedReader file,
-                               HashMap<Integer, String> formatColumnMap, HashMap<String, Integer> fileColumnMap) throws Exception {
-        boolean update;
+    private void importData(Integer worksheetId, Integer position, BufferedReader file,
+                            HashMap<Integer, String> formatColumnMap, HashMap<String, Integer> fileColumnMap) throws Exception {
+        boolean update, setInstrument;
         int i, j;
         ArrayList<ArrayList<TestAnalyteViewDO>> taList;
+        ArrayList<InstrumentViewDO> instruments;
         ArrayList<Integer> excludedIds;
         ArrayList<TestAnalyteViewDO> taRow;
         ArrayList<WorksheetResultViewDO> wrVDOs;
@@ -267,7 +272,7 @@ public class InstrumentInterfaceImportBean {
         WorksheetQcResultViewDO wqrVDO;
         WorksheetResultViewDO wrVDO;
         
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        format = new SimpleDateFormat(Messages.get().dateTimePattern());
         
         taColumnMap = new HashMap<String, Integer>();
         for (Integer col : formatColumnMap.keySet())
@@ -338,14 +343,15 @@ public class InstrumentInterfaceImportBean {
             throw new Exception(Messages.get().instrumentInterface_worksheetHasNoItems(worksheetId));
         }            
         
+        setInstrument = false;
         while ((line = file.readLine()) != null) {
             data = line.split("\\|");
-            waVDO = waVDOsByAccessionNumber.get(data[fileColumnMap.get("Accession #")]);
+            waVDO = waVDOsByAccessionNumber.get(data[fileColumnMap.get(Messages.get().instrumentInterface_accessionNumber())]);
             if (waVDO != null) {
                 if (waVDO.getAnalysisId() != null) {
                     wrMap = wrMapsByAnalysisId.get(waVDO.getId());
                     if (wrMap != null) {
-                        wrVDOs = wrMap.get(data[fileColumnMap.get("Analyte")]);
+                        wrVDOs = wrMap.get(data[fileColumnMap.get(Messages.get().gen_analyte())]);
                         if (wrVDOs == null) {
                             taList = testAnalyteMap.get(waVDO.getTestId());
                             excludedIds = excludedMap.get(waVDO.getTestId());
@@ -376,7 +382,7 @@ public class InstrumentInterfaceImportBean {
                             for (i = 0; i < taList.size(); i++) {
                                 taRow = taList.get(i);
                                 taVDO = taRow.get(0);
-                                if (taVDO.getAnalyteName().equals(data[fileColumnMap.get("Analyte")]) &&
+                                if (taVDO.getAnalyteName().equals(data[fileColumnMap.get(Messages.get().gen_analyte())]) &&
                                     (excludedIds.size() == 0 || !excludedIds.contains(taVDO.getId()))) {
                                     wrVDOs = new ArrayList<WorksheetResultViewDO>();
                                     wrVDO = new WorksheetResultViewDO();
@@ -425,13 +431,13 @@ public class InstrumentInterfaceImportBean {
                             }
                             wrVDOs.remove(0);
                             if (wrVDOs.size() == 0)
-                                wrMap.remove(data[fileColumnMap.get("Analyte")]);
+                                wrMap.remove(data[fileColumnMap.get(Messages.get().gen_analyte())]);
                         }
                     }
                 } else {
                     wqrMap = wqrMapsByAnalysisId.get(waVDO.getId());
                     if (wqrMap != null) {
-                        wqrVDOs = wqrMap.get(data[fileColumnMap.get("Analyte")]);
+                        wqrVDOs = wqrMap.get(data[fileColumnMap.get(Messages.get().gen_analyte())]);
                         if (wqrVDOs != null) {
                             wqrVDO = wqrVDOs.get(0);
                             for (i = 0; i < 30; i++) {
@@ -446,28 +452,42 @@ public class InstrumentInterfaceImportBean {
                             }
                             wqrVDOs.remove(0);
                             if (wqrVDOs.size() == 0)
-                                wqrMap.remove(data[fileColumnMap.get("Analyte")]);
+                                wqrMap.remove(data[fileColumnMap.get(Messages.get().gen_analyte())]);
                         }
                     }
                 }
                 
-                value = data[fileColumnMap.get("Analyst")];
+                value = data[fileColumnMap.get(Messages.get().instrumentInterface_analyst())];
                 if (value != null && value.length() > 0) {
                     value.replaceAll(";", ",");
                     waVDO.setSystemUsers(value);
                 }
                 
-                value = data[fileColumnMap.get("Start of Analysis")];
+                value = data[fileColumnMap.get(Messages.get().instrumentInterface_startOfAnalysis())];
                 if (value != null && value.length() > 0) {
                     waVDO.setStartedDate(new Datetime(Datetime.YEAR,
                                                       Datetime.MINUTE,
                                                       format.parse((String)value)));
                 }
-                value = data[fileColumnMap.get("Started Date/Time")];
+                value = data[fileColumnMap.get(Messages.get().instrumentInterface_startedDateTime())];
                 if (value != null && value.length() > 0) {
                     waVDO.setStartedDate(new Datetime(Datetime.YEAR,
                                                       Datetime.MINUTE,
                                                       format.parse((String)value)));
+                }
+                value = data[fileColumnMap.get(Messages.get().instrumentInterface_instrumentId())];
+                if (!setInstrument && value != null && value.length() > 0) {
+                    instruments = instrument.fetchActiveByName(value, 1);
+                    if (instruments.size() != 1) 
+                        throw new Exception(Messages.get().instrumentInterface_invalidInstrumentName(value));
+                    if (manager.getWorksheet().getInstrumentId() != null &&
+                        DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value))
+                        throw new Exception(Messages.get().instrumentInterface_differentInstrumentName(value, manager.getWorksheet().getInstrumentName()));
+                    if (manager.getWorksheet().getInstrumentId() == null) {
+                        manager.getWorksheet().setInstrumentId(instruments.get(0).getId());
+                        manager.getWorksheet().setInstrumentName(instruments.get(0).getName());
+                    }
+                    setInstrument = true;
                 }
             }
         }

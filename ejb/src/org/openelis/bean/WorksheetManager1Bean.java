@@ -2026,36 +2026,40 @@ public class WorksheetManager1Bean {
                 }
             }
             
-            rVDO = results.get(++i);
-            while ("Y".equals(rVDO.getIsColumn())) {
-                anaDO = analyteMap.get(rVDO.getAnalyteId());
-                if (anaDO == null) {
-                    try {
-                        anaDO = analyte.fetchById(rVDO.getAnalyteId());
-                        analyteMap.put(rVDO.getAnalyteId(), anaDO);
-                    } catch (Exception anyE) {
-                        log.severe("Error looking up analyte for worksheet: "+anyE.getMessage());
-                        anaDO = null;
-                    }
-                }
-                if (anaDO != null) {
-                    col = formatColumnMap.get(anaDO.getExternalId());
-                    if (col != null && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0)) {
-                        if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
-                            try {
-                                dDO = dictionary.getById(Integer.valueOf(rVDO.getValue()));
-                                wrVDO.setValueAt(col, dDO.getEntry());
-                            } catch (Exception anyE) {
-                                log.severe("Error copying result values to worksheet: "+anyE.getMessage());
-                            }
-                        } else {
-                            wrVDO.setValueAt(col, rVDO.getValue());
+            i++;
+            if (i < results.size()) {
+                rVDO = results.get(i);
+                while ("Y".equals(rVDO.getIsColumn())) {
+                    anaDO = analyteMap.get(rVDO.getAnalyteId());
+                    if (anaDO == null) {
+                        try {
+                            anaDO = analyte.fetchById(rVDO.getAnalyteId());
+                            analyteMap.put(rVDO.getAnalyteId(), anaDO);
+                        } catch (Exception anyE) {
+                            log.severe("Error looking up analyte for worksheet: "+anyE.getMessage());
+                            anaDO = null;
                         }
                     }
+                    if (anaDO != null) {
+                        col = formatColumnMap.get(anaDO.getExternalId());
+                        if (col != null && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0)) {
+                            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
+                                try {
+                                    dDO = dictionary.getById(Integer.valueOf(rVDO.getValue()));
+                                    wrVDO.setValueAt(col, dDO.getEntry());
+                                } catch (Exception anyE) {
+                                    log.severe("Error copying result values to worksheet: "+anyE.getMessage());
+                                }
+                            } else {
+                                wrVDO.setValueAt(col, rVDO.getValue());
+                            }
+                        }
+                    }
+                    i++;
+                    if (i == results.size())
+                        break;
+                    rVDO = results.get(i);
                 }
-                if (++i == results.size())
-                    break;
-                rVDO = results.get(i);
             }
             i--;
         }
@@ -2091,10 +2095,6 @@ public class WorksheetManager1Bean {
         for (c = 0; c < resultRow.size(); c++) {
             rVDO = resultRow.get(c);
             if (c == 0) {
-                if (DataBaseUtil.isDifferent(wrVDO.getIsReportable(), rVDO.getIsReportable())) {
-                    rVDO.setIsReportable(wrVDO.getIsReportable());
-                    update = true;
-                }
                 try {
                     ResultHelper.formatValue(rVDO, wrVDO.getValueAt(0), aVDO.getUnitOfMeasureId(), rf);
                     update = true;
@@ -2105,6 +2105,10 @@ public class WorksheetManager1Bean {
                                                                                               ", " +
                                                                                               waVDO.getMethodName(),
                                                                                               anyE.getMessage())));
+                }
+                if (DataBaseUtil.isDifferent(wrVDO.getIsReportable(), rVDO.getIsReportable())) {
+                    rVDO.setIsReportable(wrVDO.getIsReportable());
+                    update = true;
                 }
             } else {
                 aDO = analytesById.get(rVDO.getAnalyteId());
