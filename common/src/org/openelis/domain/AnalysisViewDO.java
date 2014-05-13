@@ -54,7 +54,7 @@ public class AnalysisViewDO extends AnalysisDO {
     // analysis and test name,method name, and status
     public AnalysisViewDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
                           Integer sectionId, Integer panelId, Integer preAnalysisId,
-                          Integer parentAnalysisId, Integer parentResultId, String isPreliminary,
+                          Integer parentAnalysisId, Integer parentResultId, Integer typeId,
                           String isReportable, Integer unitOfMeasureId, Integer statusId,
                           Date availableDate, Date startedDate, Date completedDate,
                           Date releasedDate, Date printedDate, String testName,
@@ -63,7 +63,7 @@ public class AnalysisViewDO extends AnalysisDO {
                           String preAnalysisMethod, String sectionName, String panelName) {
 
         super(id, sampleItemId, revision, testId, sectionId, panelId, preAnalysisId,
-              parentAnalysisId, parentResultId, isPreliminary, isReportable, unitOfMeasureId,
+              parentAnalysisId, parentResultId, typeId, isReportable, unitOfMeasureId,
               statusId, availableDate, startedDate, completedDate, releasedDate,
               printedDate);
 
