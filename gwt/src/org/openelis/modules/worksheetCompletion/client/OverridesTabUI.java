@@ -391,17 +391,18 @@ public class OverridesTabUI extends Screen {
             editMultiplePopup = new OverridesEditMultiplePopupUI() {
                 @Override
                 public void ok() {
-                    fireDataChange();
+                    onDataChange();
                 }
             };
         }
         
         modal = new ModalWindow();
-        modal.setSize("600px", "300px");
         modal.setName(Messages.get().worksheet_editMultiple());
-        modal.setCSS(UIResources.INSTANCE.popupWindow());
-        editMultiplePopup.initialize();
         modal.setContent(editMultiplePopup);
+        modal.setSize("240px", "175px");
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        editMultiplePopup.setWindow(modal);
+        editMultiplePopup.initialize();
         editMultiplePopup.setData(dataList);
     }
 }

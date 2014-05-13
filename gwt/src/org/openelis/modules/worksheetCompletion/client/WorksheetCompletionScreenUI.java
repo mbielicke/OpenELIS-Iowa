@@ -30,7 +30,6 @@ import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
@@ -170,7 +169,6 @@ public class WorksheetCompletionScreenUI extends Screen {
                                                           updateCall;
     protected AsyncCallbackUI<WorksheetResultsTransferVO> fetchForTransferCall;
     protected EditNoteLookupUI                            failedNoteLookup;
-    protected HashMap<Integer, SampleManager1>            sampleMansByAnalysisId;
     protected SampleManager1.Load                         sampleElements[] = {SampleManager1.Load.ORGANIZATION,
                                                                               SampleManager1.Load.QA,
                                                                               SampleManager1.Load.SINGLERESULT};
@@ -1231,17 +1229,6 @@ public class WorksheetCompletionScreenUI extends Screen {
                     
                     manager = result.getWorksheetManager();
                     sampleMans = result.getSampleManagers();
-                    sampleMansByAnalysisId = new HashMap<Integer, SampleManager1>();
-                    for (SampleManager1 sMan : sampleMans) {
-                        for (i = 0; i < sMan.item.count(); i++) {
-                            siVDO = sMan.item.get(i);
-                            for (a = 0; a < sMan.analysis.count(siVDO); a++) {
-                                aVDO = sMan.analysis.get(siVDO, a);
-                                if (sMan.result.count(aVDO) > 0)
-                                    sampleMansByAnalysisId.put(aVDO.getId(), sMan);
-                            }
-                        }
-                    }
                     updateTransferMode = true;
                     setData();
                     setState(UPDATE);
@@ -1260,93 +1247,6 @@ public class WorksheetCompletionScreenUI extends Screen {
         }
 
         WorksheetService1.get().fetchForTransfer(manager.getWorksheet().getId(), fetchForTransferCall);
-        
-        
-//        if (successfulLoad) {
-//            Window.alert(Messages.get().oneWorksheetLoadPerCommit());
-//            return;
-//        }
-//
-//        final WorksheetCompletionScreen wcs = this;
-//
-//        setBusy("Loading worksheet from edited file");
-//        WorksheetCompletionService.get().loadFromEdit(manager, new AsyncCallback<WorksheetManager>() {
-//              public void onSuccess(WorksheetManager newMan) {
-//                  int i;
-//                  ArrayList<Object> tempBundle;
-//                  ArrayList<ResultViewDO> reflexResults;
-//                  ArrayList<SampleDataBundle> reflexBundles;
-//                  ArrayList<ArrayList<Object>> bundles;
-//                  HashMap<SampleDataBundle, ArrayList<ResultViewDO>> reflexMap;
-//                  SampleDataBundle bundle;
-//    
-//                  manager = newMan;
-//                  DataChangeEvent.fire(wcs);
-//    
-//                  if (testReflexUtil == null) {
-//                      testReflexUtil = new TestReflexUtility();
-//    
-//                      testReflexUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
-//                          @SuppressWarnings("unchecked")
-//                          public void onAction(ActionEvent<TestReflexUtility.Action> event) {
-//                              if (testPrepUtil == null) {
-//                                  testPrepUtil = new TestPrepUtility();
-//                                  testPrepUtil.setScreen(wcs);
-//    
-//                                  testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-//                                      public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
-//                                          setDone("Worksheet loaded");
-//                                      }
-//                                  });
-//                              }
-//    
-//                              try {
-//                                  testPrepUtil.lookup((ArrayList<SampleDataBundle>)event.getData());
-//                              } catch (Exception e) {
-//                                  Window.alert("loadFromEdit: " +
-//                                               e.getMessage());
-//                              }
-//                          }
-//                      });
-//                  }
-//    
-//                  testReflexUtil.setScreen(wcs);
-//    
-//                  bundles = manager.getReflexBundles();
-//                  reflexBundles = new ArrayList<SampleDataBundle>();
-//                  reflexMap = new HashMap<SampleDataBundle, ArrayList<ResultViewDO>>();
-//                  for (i = 0; i < bundles.size(); i++) {
-//                      tempBundle = bundles.get(i);
-//                      bundle = (SampleDataBundle)tempBundle.get(0);
-//                      reflexResults = reflexMap.get(bundle);
-//                      if (reflexResults == null) {
-//                          reflexResults = new ArrayList<ResultViewDO>();
-//                          reflexBundles.add(bundle);
-//                      }
-//                      reflexResults.add((ResultViewDO)tempBundle.get(1));
-//                      reflexMap.put(bundle,
-//                                    reflexResults);
-//                  }
-//                  try {
-//                      testReflexUtil.resultsEntered(reflexBundles,
-//                                                    reflexMap);
-//                  } catch (Exception anyE) {
-//                      Window.alert(anyE.getMessage());
-//                  }
-//                  successfulLoad = true;
-//                  manager.getReflexBundles().clear();
-//              }
-//    
-//              public void onFailure(Throwable error) {
-//                  if (error instanceof ValidationErrorsList) {
-//                      showErrors((ValidationErrorsList)error);
-//                  } else {
-//                      Window.alert(error.getMessage());
-//                      clearStatus();
-//                  }
-//                  manager.getReflexBundles().clear();
-//              }
-//          });
     }
     
     protected void openFailedRunNote() {

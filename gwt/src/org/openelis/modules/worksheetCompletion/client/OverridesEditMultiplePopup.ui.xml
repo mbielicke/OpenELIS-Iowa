@@ -32,7 +32,7 @@ UIRF Software License are applicable instead of those above.
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" height="25px">
+    <g:layer top="0px" bottom="30px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
@@ -40,7 +40,7 @@ UIRF Software License are applicable instead of those above.
               <ui:text from="{msg.worksheet_overrideUsers}:"/>
             </td>
             <td>
-              <w:TextBox ui:field="systemUsers" width="110px" case="LOWER" field="String"/>
+              <w:TextBox ui:field="systemUsers" width="128px" case="LOWER" field="String"/>
             </td>
           </tr>
           <tr>
@@ -48,7 +48,7 @@ UIRF Software License are applicable instead of those above.
               <ui:text from="{msg.analysis_started}:" />
             </td>
             <td>
-              <c:Calendar ui:field="startedDate" begin="0" end="4" width="125px" />
+              <c:Calendar ui:field="startedDate" begin="0" end="4" width="130px" />
             </td>
           </tr>
           <tr>
@@ -56,13 +56,13 @@ UIRF Software License are applicable instead of those above.
               <ui:text from="{msg.analysis_completed}:" />
             </td>
             <td>
-              <c:Calendar ui:field="completedDate" begin="0" end="4" width="125px" />
+              <c:Calendar ui:field="completedDate" begin="0" end="4" width="130px" />
             </td>
           </tr>
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer bottom="0px" height="25px">
+    <g:layer bottom="0px" height="30px">
       <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
         <g:HorizontalPanel>
           <w:Button ui:field="ok" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_ok}" />

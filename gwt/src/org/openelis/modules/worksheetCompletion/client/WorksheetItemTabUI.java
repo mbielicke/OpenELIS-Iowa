@@ -30,14 +30,17 @@ import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
@@ -73,6 +76,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
@@ -83,9 +87,9 @@ import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.MenuItem;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.table.Column;
-import org.openelis.ui.widget.table.LabelCell;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -104,7 +108,6 @@ public class WorksheetItemTabUI extends Screen {
     private static WorksheetItemTabUiBinder               uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
     private boolean                                       canEdit, isVisible, redraw;
-    private int                                           maxColumn;
     private WorksheetManager1                             manager;
 
     @UiField
@@ -125,7 +128,6 @@ public class WorksheetItemTabUI extends Screen {
                                                           worksheetExitConfirm;
     protected EventBus                                    parentBus;
     protected HashMap<Integer, DictionaryDO>              unitOfMeasureMap;
-    protected HashMap<Integer, Exception>                 qcErrors;
     protected HashMap<Integer, Integer>                   transferRowMap;
     protected HashMap<Integer, TestManager>               testManagers;
     protected HashMap<Integer, HashMap<Integer, Integer>> resultGroupMap;
@@ -136,6 +138,7 @@ public class WorksheetItemTabUI extends Screen {
     protected Screen                                      parentScreen;
     protected TestWorksheetDO                             testWorksheetDO;
     protected TestWorksheetManager                        twManager;
+    protected WorksheetEditMultiplePopupUI                editMultiplePopup;
     protected WorksheetLookupScreenUI                     wLookupScreen;
     
     /**
@@ -152,7 +155,6 @@ public class WorksheetItemTabUI extends Screen {
         initialize();
         
         manager = null;
-        qcErrors = new HashMap<Integer, Exception>();
         dictionaryResultMap = new HashMap<String, ArrayList<Item<Integer>>>();
         resultGroupMap = new HashMap<Integer, HashMap<Integer, Integer>>();
         templateMap = new HashMap<MenuItem, Integer>();
@@ -169,6 +171,7 @@ public class WorksheetItemTabUI extends Screen {
 
         addScreenHandler(worksheetItemTable, "worksheetItemTable", new ScreenHandler<ArrayList<Item<String>>>() {
             public void onDataChange(DataChangeEvent event) {
+                worksheetItemTable.setModel(new ArrayList<Row>());
                 worksheetItemTable.setModel(getTableModel());
             }
 
@@ -181,7 +184,8 @@ public class WorksheetItemTabUI extends Screen {
 
         worksheetItemTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                if (worksheetItemTable.getSelectedRows().length > 1 && isState(ADD, UPDATE) && canEdit)
+                if (worksheetItemTable.getSelectedRows().length > 1 && isState(ADD, UPDATE) &&
+                    canEdit && !getUpdateTransferMode())
                     editMultipleButton.setEnabled(true);
                 else
                     editMultipleButton.setEnabled(false);
@@ -203,7 +207,7 @@ public class WorksheetItemTabUI extends Screen {
                 
                 if (!isState(UPDATE) || !canEdit || event.getCol() == 1 || event.getCol() == 2 ||
                     event.getCol() == 3 || event.getCol() == 4 || event.getCol() == 5 ||
-                    event.getCol() == 6 || event.getCol() == 9 || event.getCol() > maxColumn) {
+                    event.getCol() == 6 || event.getCol() == 9) {
                     event.cancel();
                 } else if (!getUpdateTransferMode() && (event.getCol() == 0 || event.getCol() == 7 ||
                                                         event.getCol() == 8 || event.getCol() == 10)) {
@@ -699,7 +703,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
-        int i, j, k, l, r;
+        int i, j, k, l, r, rowSize;
         ArrayList<IdNameVO> headers;
         ArrayList<Row> model;
         Column col;
@@ -726,20 +730,22 @@ public class WorksheetItemTabUI extends Screen {
                     logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                 }
 
-                maxColumn = 10 + headers.size();
-                for (i = 0; i < 30; i++) {
-                    col = worksheetItemTable.getColumnAt(i + 11);
-                    if (i < headers.size())
-                        col.setLabel(headers.get(i).getName());
-                    else
-                        col.setLabel("");
+                rowSize = Math.min(headers.size(), 30) + 11;
+                for (i = 11; i < rowSize; i++) {
+                    if (i == worksheetItemTable.getColumnCount())
+                        worksheetItemTable.addColumn();
+                    col = worksheetItemTable.getColumnAt(i);
+                    col.setLabel(headers.get(i - 11).getName());
                     col.setCellRenderer(new ResultCell());
+                    col.setWidth(150);
                 }
+                while (rowSize < worksheetItemTable.getColumnCount())
+                    worksheetItemTable.removeColumnAt(rowSize);
 
                 for (i = 0; i < manager.item.count(); i++) {
                     wiDO = (WorksheetItemDO)manager.item.get(i);
     
-                    row = new Row(41);
+                    row = new Row(rowSize);
                     row.setCell(0, "N");
                     row.setCell(1, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
@@ -749,7 +755,7 @@ public class WorksheetItemTabUI extends Screen {
                                                                         ")"));
     
                         if (j > 0) {
-                            row = new Row(41);
+                            row = new Row(rowSize);
                             row.setCell(0, "N");
                             row.setCell(1, wiDO.getPosition());
                         }
@@ -784,7 +790,7 @@ public class WorksheetItemTabUI extends Screen {
                             for (k = 0; k < manager.result.count(waDO); k++) {
                                 wrVDO = manager.result.get(waDO, k);
                                 if (k > 0) {
-                                    row = new Row(41);
+                                    row = new Row(rowSize);
                                     row.setCell(0, "N");
                                     row.setCell(1, "");
                                     row.setCell(2, "");
@@ -797,8 +803,8 @@ public class WorksheetItemTabUI extends Screen {
                                 }
                                 row.setCell(9, wrVDO.getAnalyteName());
                                 row.setCell(10, wrVDO.getIsReportable());
-                                for (l = 0; l < 30; l++)
-                                    row.setCell(11 + l, new ResultCell.Value(wrVDO.getValueAt(l), null));
+                                for (l = 11; l < rowSize; l++)
+                                    row.setCell(l, new ResultCell.Value(wrVDO.getValueAt(l - 11), null));
                                 row.setData(manager.getUid(wrVDO)); 
                                 model.add(row);
                                 r++;
@@ -806,7 +812,7 @@ public class WorksheetItemTabUI extends Screen {
                             if (k == 0) {
                                 row.setCell(9, "NO ANAlYTES FOOUND");
                                 row.setCell(10, null);
-                                for (l = 11; l < 40; l++)
+                                for (l = 11; l < rowSize; l++)
                                     row.setCell(l, new ResultCell.Value(null, null));
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
@@ -824,7 +830,7 @@ public class WorksheetItemTabUI extends Screen {
                             for (k = 0; k < manager.qcResult.count(waDO); k++) {
                                 wqrVDO = manager.qcResult.get(waDO, k);
                                 if (k > 0) {
-                                    row = new Row(41);
+                                    row = new Row(rowSize);
                                     row.setCell(0, "N");
                                     row.setCell(1, "");
                                     row.setCell(2, "");
@@ -837,8 +843,8 @@ public class WorksheetItemTabUI extends Screen {
                                 }
                                 row.setCell(9, wqrVDO.getAnalyteName());
                                 row.setCell(10, null);
-                                for (l = 0; l < 30; l++)
-                                    row.setCell(11 + l, new ResultCell.Value(wqrVDO.getValueAt(l), null));
+                                for (l = 11; l < rowSize; l++)
+                                    row.setCell(l, new ResultCell.Value(wqrVDO.getValueAt(l - 11), null));
                                 row.setData(manager.getUid(wqrVDO)); 
                                 model.add(row);
                                 r++;
@@ -846,7 +852,7 @@ public class WorksheetItemTabUI extends Screen {
                             if (k == 0) {
                                 row.setCell(9, "NO ANAlYTES FOOUND");
                                 row.setCell(10, null);
-                                for (l = 11; l < 40; l++)
+                                for (l = 11; l < rowSize; l++)
                                     row.setCell(l, new ResultCell.Value(null, null));
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
@@ -877,5 +883,100 @@ public class WorksheetItemTabUI extends Screen {
 
     private boolean getUpdateTransferMode() {
         return ((WorksheetCompletionScreenUI)parentScreen).updateTransferMode;
+    }
+    
+    @SuppressWarnings("unused")
+    @UiHandler("editMultipleButton")
+    protected void editMultiple(ClickEvent event) {
+        ArrayList<WorksheetAnalysisViewDO> dataList;
+        DataObject data;
+        HashSet<Integer> waIds;
+        Integer testId, unitId;
+        ModalWindow modal;
+        ResultFormatter rf;
+        StringBuilder errorList;
+        TestManager tMan;
+        WorksheetAnalysisViewDO waVDO;
+        
+        dataList = new ArrayList<WorksheetAnalysisViewDO>();
+        errorList = new StringBuilder();
+        rf = null;
+        testId = null;
+        unitId = null;
+        waIds = new HashSet<Integer>();
+        for (Integer rowIndex : worksheetItemTable.getSelectedRows()) {
+            data = (DataObject) manager.getObject((String)worksheetItemTable.getRowAt(rowIndex).getData());
+            if (data instanceof WorksheetAnalysisViewDO) {
+                waVDO = (WorksheetAnalysisViewDO)data;
+                if (waIds.contains(waVDO.getId()))
+                    continue;
+            } else if (data instanceof WorksheetResultViewDO) {
+                if (waIds.contains(((WorksheetResultViewDO)data).getWorksheetAnalysisId()))
+                    continue;
+                waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(((WorksheetResultViewDO)data).getWorksheetAnalysisId()));
+            } else if (data instanceof WorksheetQcResultViewDO) {
+                if (waIds.contains(((WorksheetQcResultViewDO)data).getWorksheetAnalysisId()))
+                    continue;
+                waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(((WorksheetQcResultViewDO)data).getWorksheetAnalysisId()));
+            } else {
+                continue;
+            }
+
+            if (testId != null && !testId.equals(waVDO.getTestId())) {
+                Window.alert(Messages.get().worksheet_oneTestForEditMultiple());
+                return;
+            } else if (testId == null) {
+                testId = waVDO.getTestId();
+                try {
+                    tMan = testManagers.get(testId);
+                    rf = tMan.getFormatter();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    return;
+                }
+            }
+            
+            if (unitId != null && !unitId.equals(waVDO.getUnitOfMeasureId())) {
+                Window.alert(Messages.get().worksheet_oneUnitForEditMultiple());
+                return;
+            } else if (unitId == null) {
+                if (waVDO.getUnitOfMeasureId() == null)
+                    unitId = 0;
+                else
+                    unitId = waVDO.getUnitOfMeasureId();
+            }
+            
+            waIds.add(waVDO.getId());
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId())) {
+                errorList.append("\n").append("\t").append("Row: ").append(rowIndex + 1);
+                continue;
+            }
+            dataList.add(waVDO);
+        }
+        
+        if (errorList.length() > 0) {
+            Window.alert(Messages.get().worksheet_wrongStatusNoEditRows(errorList.toString()));
+            return;
+        }
+
+        if (editMultiplePopup == null) {
+            editMultiplePopup = new WorksheetEditMultiplePopupUI() {
+                @Override
+                public void ok() {
+                    onDataChange();
+                }
+            };
+        }
+        
+        modal = new ModalWindow();
+        modal.setName(Messages.get().worksheet_editMultiple());
+        modal.setContent(editMultiplePopup);
+        modal.setSize("631px", "494px");
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        editMultiplePopup.setWindow(modal);
+        editMultiplePopup.initialize();
+        editMultiplePopup.setData(manager, testId, unitId, rf, dataList, resultGroupMap, dictionaryResultMap);
     }
 }

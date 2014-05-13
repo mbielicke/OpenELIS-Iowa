@@ -36,7 +36,6 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.domain.WorksheetAnalysisViewDO;
-import org.openelis.manager.WorksheetManager1;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.TextBox;
@@ -58,7 +57,6 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
     protected TextBox<String>                         systemUsers;
 
     protected ArrayList<WorksheetAnalysisViewDO>      analyses;
-    protected WorksheetManager1                       manager;
 
     public OverridesEditMultiplePopupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -74,9 +72,9 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
 
     public void setData(ArrayList<WorksheetAnalysisViewDO> analyses) {
         this.analyses = analyses;
-        /*
-         * this is done to get rid of any old error messages
-         */
+        systemUsers.setValue(null);
+        startedDate.setValue(null);
+        completedDate.setValue(null);
         window.clearStatus();
     }
 
