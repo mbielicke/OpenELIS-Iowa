@@ -26,16 +26,14 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -43,259 +41,111 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.constants.Messages;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
-import org.openelis.domain.WorksheetItemDO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.modules.sample1.client.ResultCell;
+import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.event.ActionEvent;
-import org.openelis.ui.event.ActionHandler;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
-import org.openelis.ui.event.HasActionHandlers;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.Dropdown;
-import org.openelis.ui.widget.TextBox;
-import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.table.Column;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.ui.widget.table.event.CellEditedEvent;
-import org.openelis.ui.widget.table.event.CellEditedHandler;
-import org.openelis.ui.widget.table.event.UnselectionEvent;
-import org.openelis.ui.widget.table.event.UnselectionHandler;
+import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 
 public abstract class WorksheetEditMultiplePopupUI extends Screen {
 
     @UiTemplate("WorksheetEditMultiplePopup.ui.xml")
-    interface WorksheetAnalysisSelectionUiBinder extends UiBinder<Widget, WorksheetEditMultiplePopupUI> {
+    interface WorksheetEditMultiplePopupUiBinder extends UiBinder<Widget, WorksheetEditMultiplePopupUI> {
     };
 
-    private static WorksheetAnalysisSelectionUiBinder uiBinder = GWT.create(WorksheetAnalysisSelectionUiBinder.class);
+    private static WorksheetEditMultiplePopupUiBinder              uiBinder = GWT.create(WorksheetEditMultiplePopupUiBinder.class);
 
     @UiField
-    protected Button                                  ok, cancel;
+    protected Button                                               ok, cancel;
     @UiField
-    protected Table                                   analyteResultTable;
-    @UiField
-    protected Dropdown<Integer>                       analysisStatusId, unitOfMeasureId;
+    protected Table                                                analyteResultTable;
 
-    protected ArrayList<WorksheetAnalysisViewDO>      analyses;
-    protected WorksheetManager1                       manager;
+    protected ArrayList<WorksheetAnalysisViewDO>                   analyses;
+    protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> qcResultsByQcAnalyteId;
+    protected HashMap<Integer, ArrayList<WorksheetResultViewDO>>   resultsByTestAnalyteId;
+    protected HashMap<Integer, HashMap<Integer, Integer>>          resultGroupMap;
+    protected HashMap<String, ArrayList<Item<Integer>>>            dictionaryResultMap;
+    protected Integer                                              testId, unitId;
+    protected ResultFormatter                                      resultFormatter;
+    protected WorksheetManager1                                    manager;
 
-    public WorksheetEditMultiplePopupUI() throws Exception {
+    public WorksheetEditMultiplePopupUI() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
     public void initialize() {
-        //
-        // worksheet analysis search results table
-        //
+        ok.setEnabled(true);
+        cancel.setEnabled(true);
+        analyteResultTable.setEnabled(true);
+        analyteResultTable.setAllowMultipleSelection(false);
+
         addScreenHandler(analyteResultTable, "analyteResultTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 analyteResultTable.setModel(getTableModel());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                analyteResultTable.setEnabled(true);
-                analyteResultTable.setAllowMultipleSelection(false);
             }
         });
         
         analyteResultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-//                ArrayList<Item<Integer>> model;
-//                ArrayList<FormattedValue> values;
-//                DataObject data;
-//                HashMap<Integer, Integer> rgRow;
-//                Integer rg, testId, unitId;
-//                ResultFormatter rf;
-//                SectionPermission perm;
-//                String accessionNumber, resultKey;
-//                TestManager tMan;
-//                WorksheetAnalysisViewDO waVDO;
-//                
-//                if (!isState(UPDATE) || !canEdit || event.getCol() == 1 || event.getCol() == 2 ||
-//                    event.getCol() == 3 || event.getCol() == 4 || event.getCol() == 5 ||
-//                    event.getCol() == 6 || event.getCol() == 9 || event.getCol() > maxColumn) {
-//                    event.cancel();
-//                } else if (!getUpdateTransferMode() && (event.getCol() == 0 || event.getCol() == 7 ||
-//                                                        event.getCol() == 8 || event.getCol() == 10)) {
-//                    event.cancel();
-//                } else if (getUpdateTransferMode() && event.getCol() != 0 && event.getCol() != 7 &&
-//                                                      event.getCol() != 8 && event.getCol() != 10) {
-//                    event.cancel();
-//                } else {
-//                    data = manager.getObject((String)worksheetItemTable.getRowAt(event.getRow()).getData());
-//                    accessionNumber = worksheetItemTable.getValueAt(event.getRow(), 2);
-//                    if (data instanceof WorksheetItemDO) {
-//                        event.cancel();
-//                    } else if ((accessionNumber == null || accessionNumber.length() <= 0) && event.getCol() < 10) {
-//                        event.cancel();
-//                    } else if (data instanceof WorksheetQcResultViewDO && event.getCol() < 11) {
-//                        event.cancel();
-//                    } else {
-//                        if (data instanceof WorksheetResultViewDO)
-//                            waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(((WorksheetResultViewDO)data).getWorksheetAnalysisId()));
-//                        else
-//                            waVDO = (WorksheetAnalysisViewDO)data;
-//                        perm = UserCache.getPermission().getSection(waVDO.getSectionName());
-//                        if (waVDO.getQcLotId() != null || waVDO.getFromOtherId() != null ||
-//                            Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
-//                            Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
-//                            event.cancel();
-//                        } else if (perm == null || !perm.hasCompletePermission()) {
-//                            Window.alert(Messages.get().worksheet_completePermissionRequiredForOperation(waVDO.getSectionName(),
-//                                                                                                         Messages.get().edit()));
-//                            event.cancel();
-//                        } else if (event.getCol() >= 11) {
-//                            rgRow = resultGroupMap.get(((WorksheetResultViewDO)data).getTestAnalyteId());
-//                            rg = rgRow.get(event.getCol() - 1);
-//                            testId = waVDO.getTestId();
-//                            unitId = waVDO.getUnitOfMeasureId();
-//
-//                            resultKey = testId + ":" + rg + ":" + (unitId == null ? 0 : unitId);
-//                            model = dictionaryResultMap.get(resultKey);
-//                            if (model == null) {
-//                                try {
-//                                    tMan = testManagers.get(testId);
-//                                    rf = tMan.getFormatter();
-//                                    /*
-//                                     * if all the ranges for this unit in this result
-//                                     * group are dictionary values, then create a
-//                                     * dropdown model from them
-//                                     */
-//                                    if (rf.hasAllDictionary(rg, unitId)) {
-//                                        values = rf.getDictionaryValues(rg, unitId);
-//                                        if (values != null) {
-//                                            model = new ArrayList<Item<Integer>>();
-//                                            for (FormattedValue v : values)
-//                                                model.add(new Item<Integer>(v.getId(), v.getDisplay()));
-//                                        }
-//                                    }
-//                                    dictionaryResultMap.put(resultKey, model);
-//                                } catch (Exception e) {
-//                                    Window.alert(e.getMessage());
-//                                    logger.log(Level.SEVERE, e.getMessage(), e);
-//                                    event.cancel();
-//                                }
-//                            }
-//                            ((ResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
-//                        }
-//                    }
-//                }
+                ArrayList<Item<Integer>> model;
+                ArrayList<FormattedValue> values;
+                HashMap<Integer, Integer> rgRow;
+                Integer rg;
+                Row row;
+                String data, resultKey;
+                
+                if (event.getCol() == 0) {
+                    event.cancel();
+                } else {
+                    row = analyteResultTable.getRowAt(event.getRow());
+                    data = row.getData();
+                    if (!data.startsWith("R")) {
+                        event.cancel();
+                    } else {
+                        rgRow = resultGroupMap.get(Integer.valueOf(data.substring(1)));
+                        rg = rgRow.get(event.getCol() + 9);
+    
+                        resultKey = testId + ":" + rg + ":" + (unitId == null ? 0 : unitId);
+                        model = dictionaryResultMap.get(resultKey);
+                        if (model == null) {
+                            /*
+                             * if all the ranges for this unit in this result
+                             * group are dictionary values, then create a
+                             * dropdown model from them
+                             */
+                            if (resultFormatter.hasAllDictionary(rg, unitId)) {
+                                values = resultFormatter.getDictionaryValues(rg, unitId);
+                                if (values != null) {
+                                    model = new ArrayList<Item<Integer>>();
+                                    for (FormattedValue v : values)
+                                        model.add(new Item<Integer>(v.getId(), v.getDisplay()));
+                                }
+                            }
+                            dictionaryResultMap.put(resultKey, model);
+                        }
+                        ((ResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
+                    }
+                }
             }
         });
         
-        analyteResultTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-//                int r, c;
-//                DataObject data;
-//                Integer rowIndex;
-//                Object val;
-//                Row row;
-//                Value value;
-//                WorksheetAnalysisViewDO waVDO;
-//                WorksheetResultViewDO wrVDO;
-//                WorksheetQcResultViewDO wqrVDO;
-//
-//                r = event.getRow();
-//                c = event.getCol();
-//                
-//                row = worksheetItemTable.getRowAt(r);
-//                val = worksheetItemTable.getValueAt(r,c);
-//
-//                data = manager.getObject((String)row.getData());
-//                if (data instanceof WorksheetAnalysisViewDO) {
-//                    waVDO = (WorksheetAnalysisViewDO)data;
-//                    wrVDO = null;
-//                    wqrVDO = null;
-//                } else if (data instanceof WorksheetResultViewDO) {
-//                    wqrVDO = null;
-//                    wrVDO = (WorksheetResultViewDO)data;
-//                    waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wrVDO.getWorksheetAnalysisId()));
-//                } else if (data instanceof WorksheetQcResultViewDO) {
-//                    wrVDO = null;
-//                    wqrVDO = (WorksheetQcResultViewDO)data;
-//                    waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wqrVDO.getWorksheetAnalysisId()));
-//                } else {
-//                    return;
-//                }
-//                
-//                switch (c) {
-//                    case 0:
-//                        if ("Y".equals(val)) {
-//                            rowIndex = transferRowMap.get(waVDO.getAnalysisId());
-//                            if (rowIndex == null) {
-//                                transferRowMap.put(waVDO.getAnalysisId(), r);
-//                            } else {
-//                                worksheetItemTable.setValueAt(rowIndex, 0, "N");
-//                                transferRowMap.put(waVDO.getAnalysisId(), r);
-//                            }
-//                        } else if ("N".equals(val)) {
-//                            transferRowMap.remove(waVDO.getAnalysisId());
-//                        }
-//                        break;
-//                    case 7:
-//                        if (val != null)
-//                            waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
-//                        else
-//                            waVDO.setUnitOfMeasureId(null);
-//                        break;
-//                    case 8:
-//                        waVDO.setStatusId((Integer)val);
-//                        break;
-//                    case 10:
-//                        wrVDO.setIsReportable((String)val);
-//                        break;
-//                    case 11:
-//                    case 12:
-//                    case 13:
-//                    case 14:
-//                    case 15:
-//                    case 16:
-//                    case 17:
-//                    case 18:
-//                    case 19:
-//                    case 20:
-//                    case 21:
-//                    case 22:
-//                    case 23:
-//                    case 24:
-//                    case 25:
-//                    case 26:
-//                    case 27:
-//                    case 28:
-//                    case 29:
-//                    case 30:
-//                    case 31:
-//                    case 32:
-//                    case 33:
-//                    case 34:
-//                    case 35:
-//                    case 36:
-//                    case 37:
-//                    case 38:
-//                    case 39:
-//                    case 40:
-//                        value = (Value)val;
-//                        if (wrVDO != null)
-//                            wrVDO.setValueAt(c - 11, value.getDisplay());
-//                        else if (wqrVDO != null)
-//                            wqrVDO.setValueAt(c - 11, value.getDisplay());
-//                        break;
-//                }
-            }
-        });
-
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 ok.setEnabled(true);
@@ -311,14 +161,18 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
         setState(State.DEFAULT);
     }
     
-    public void setData(WorksheetManager1 manager, ArrayList<WorksheetAnalysisViewDO> analyses) {
+    public void setData(WorksheetManager1 manager, Integer testId, Integer unitId,
+                        ResultFormatter resultFormatter, ArrayList<WorksheetAnalysisViewDO> analyses,
+                        HashMap<Integer, HashMap<Integer, Integer>> resultGroupMap,
+                        HashMap<String, ArrayList<Item<Integer>>> dictionaryResultMap) {
         this.manager = manager;
+        this.testId = testId;
+        this.unitId = unitId;
+        this.resultFormatter = resultFormatter;
         this.analyses = analyses;
-        setState(UPDATE);
+        this.resultGroupMap = resultGroupMap;
+        this.dictionaryResultMap = dictionaryResultMap;
         fireDataChange();
-        /*
-         * this is done to get rid of any old error messages
-         */
         window.clearStatus();
     }
 
@@ -327,57 +181,131 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
      */
     public abstract void ok();
 
-    /**
-     * overridden to respond to the user clicking "cancel"
-     */
-    public abstract void cancel();
-
+    @SuppressWarnings("unused")
     @UiHandler("ok")
     protected void ok(ClickEvent event) {
+        int i;
+        ArrayList<WorksheetQcResultViewDO> wqrVDOs;
+        ArrayList<WorksheetResultViewDO> wrVDOs;
+        String data;
+        Value val;
+        
         window.close();
+        
+        for (Row row : analyteResultTable.getModel()) {
+            data = row.getData();
+            if (((String)row.getData()).startsWith("R")) {
+                wrVDOs = resultsByTestAnalyteId.get(Integer.valueOf(data.substring(1)));
+                for (i = 1; i < row.size(); i++) {
+                    val = (Value) row.getCell(i);
+                    if (val.getDisplay() != null && val.getDisplay().length() > 0) {
+                        for (WorksheetResultViewDO wrVDO : wrVDOs)
+                            wrVDO.setValueAt(i - 1, val.getDisplay());
+                    }
+                }
+            } else if (((String)row.getData()).startsWith("Q")) {
+                wqrVDOs = qcResultsByQcAnalyteId.get(Integer.valueOf(data.substring(1)));
+                for (i = 1; i < row.size(); i++) {
+                    val = (Value) row.getCell(i);
+                    if (val.getDisplay() != null && val.getDisplay().length() > 0) {
+                        for (WorksheetQcResultViewDO wqrVDO : wqrVDOs)
+                            wqrVDO.setValueAt(i - 1, val.getDisplay());
+                    }
+                }
+            }
+        }
+        
         ok();
     }
     
+    @SuppressWarnings("unused")
     @UiHandler("cancel")
     protected void cancel(ClickEvent event) {
         window.close();
-        cancel();
     }
     
     private ArrayList<Row> getTableModel() {
-        int i, j;
+        int i, j, rowSize;
+        ArrayList<IdNameVO> headers;
         ArrayList<Row> model;
+        ArrayList<WorksheetQcResultViewDO> wqrVDOs;
+        ArrayList<WorksheetResultViewDO> wrVDOs;
+        Column col;
+        HashSet<Integer> testAnalytes, qcAnalytes;
         Row row;
-        WorksheetItemDO wiDO;
+        WorksheetQcResultViewDO wqrVDO;
+        WorksheetResultViewDO wrVDO;
         
         model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
+        headers = new ArrayList<IdNameVO>();
+        try {
+            headers = WorksheetService1.get().getHeaderLabelsForScreen(manager);
+        } catch (Exception anyE) {
+            Window.alert("Error loading headers for format; " + anyE.getMessage());
+            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+        }
+
+        rowSize = Math.min(headers.size(), 30) + 1;
+        for (i = 1; i < rowSize; i++) {
+            if (i == analyteResultTable.getColumnCount())
+                analyteResultTable.addColumn();
+            col = analyteResultTable.getColumnAt(i);
+            col.setLabel(headers.get(i - 1).getName());
+            col.setCellRenderer(new ResultCell());
+            col.setWidth(150);
+        }
+        while (rowSize < analyteResultTable.getColumnCount())
+            analyteResultTable.removeColumnAt(rowSize);
+        
+
+        testAnalytes = new HashSet<Integer>();
+        qcAnalytes = new HashSet<Integer>();
+        qcResultsByQcAnalyteId = new HashMap<Integer, ArrayList<WorksheetQcResultViewDO>>();
+        resultsByTestAnalyteId = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
         try {
             for (WorksheetAnalysisViewDO waVDO : analyses) {
-//                wiDO = (WorksheetItemDO)manager.item.get(i);
-//                
-//                row = new Row(5);
-//                row.setCell(0, wiDO.getPosition());
-//                for (j = 0; j < manager.analysis.count(wiDO); j++) {
-//                    waDO = manager.analysis.get(wiDO, j);
-//                    
-//                    if (j > 0) {
-//                        row = new Row(5);
-//                        row.setCell(0, wiDO.getPosition());
-//                    }
-//                    row.setCell(1, waDO.getAccessionNumber());
-//                    if (waDO.getAnalysisId() != null) {
-//                        row.setCell(2, waDO.getDescription());
-//                        row.setCell(3, waDO.getTestName());
-//                        row.setCell(4, waDO.getMethodName());
-//                    } else if (waDO.getQcLotId() != null) {
-//                       row.setCell(2, waDO.getDescription());
-//                    }
-//                    row.setData(waDO);
-//                    model.add(row);
-//                }
+                if (waVDO.getAnalysisId() != null) {
+                    for (i = 0; i < manager.result.count(waVDO); i++) {
+                        wrVDO = manager.result.get(waVDO, i);
+                        if (!testAnalytes.contains(wrVDO.getTestAnalyteId())) {
+                            testAnalytes.add(wrVDO.getTestAnalyteId());
+                            row = new Row(rowSize);
+                            row.setCell(0, wrVDO.getAnalyteName());
+                            for (j = 1; j < rowSize; j++)
+                                row.setCell(j, new ResultCell.Value(null, null));
+                            row.setData("R"+wrVDO.getTestAnalyteId());
+                            model.add(row);
+                        }
+                        wrVDOs = resultsByTestAnalyteId.get(wrVDO.getTestAnalyteId());
+                        if (wrVDOs == null) {
+                            wrVDOs = new ArrayList<WorksheetResultViewDO>();
+                            resultsByTestAnalyteId.put(wrVDO.getTestAnalyteId(), wrVDOs);
+                        }
+                        wrVDOs.add(wrVDO);
+                    }
+                } else if (waVDO.getQcId() != null) {
+                    for (i = 0; i < manager.qcResult.count(waVDO); i++) {
+                        wqrVDO = manager.qcResult.get(waVDO, i);
+                        if (!qcAnalytes.contains(wqrVDO.getQcAnalyteId())) {
+                            qcAnalytes.add(wqrVDO.getQcAnalyteId());
+                            row = new Row(rowSize);
+                            row.setCell(0, "(QC) " + wqrVDO.getAnalyteName());
+                            for (j = 1; j < rowSize; j++)
+                                row.setCell(j, new ResultCell.Value(null, null));
+                            row.setData("Q"+wqrVDO.getQcAnalyteId());
+                            model.add(row);
+                        }
+                        wqrVDOs = qcResultsByQcAnalyteId.get(wqrVDO.getQcAnalyteId());
+                        if (wqrVDOs == null) {
+                            wqrVDOs = new ArrayList<WorksheetQcResultViewDO>();
+                            qcResultsByQcAnalyteId.put(wqrVDO.getQcAnalyteId(), wqrVDOs);
+                        }
+                        wqrVDOs.add(wqrVDO);
+                    }
+                }
             }
         } catch (Exception anyE) {
             Window.alert("error: " + anyE.getMessage());
