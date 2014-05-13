@@ -26,6 +26,7 @@
 package org.openelis.modules.analyte.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;

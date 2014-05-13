@@ -75,7 +75,7 @@ public class PrivateWellTabUI extends Screen {
 
     protected EventBus                    parentBus;
 
-    protected boolean                     canEdit, isBusy, isVisible, redraw;
+    protected boolean                     canEdit, isBusy, isVisible, redraw, canQuery;
 
     public PrivateWellTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -100,8 +100,8 @@ public class PrivateWellTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                location.setQueryMode(isState(QUERY));
+                location.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                location.setQueryMode(isState(QUERY) && canQuery);
             }
             
             public Widget onTab(boolean forward) {
@@ -121,10 +121,10 @@ public class PrivateWellTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressMultipleUnit.setEnabled(isState(QUERY) ||
+                                 locationAddressMultipleUnit.setEnabled((isState(QUERY) && canQuery) ||
                                                                         (canEdit && isState(ADD,
                                                                                             UPDATE)));
-                                 locationAddressMultipleUnit.setQueryMode(isState(QUERY));
+                                 locationAddressMultipleUnit.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -144,10 +144,10 @@ public class PrivateWellTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressStreetAddress.setEnabled(isState(QUERY) ||
+                                 locationAddressStreetAddress.setEnabled((isState(QUERY) && canQuery) ||
                                                                          (canEdit && isState(ADD,
                                                                                              UPDATE)));
-                                 locationAddressStreetAddress.setQueryMode(isState(QUERY));
+                                 locationAddressStreetAddress.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -167,9 +167,9 @@ public class PrivateWellTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressCity.setEnabled(isState(QUERY) ||
+                                 locationAddressCity.setEnabled((isState(QUERY) && canQuery) ||
                                                                 (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressCity.setQueryMode(isState(QUERY));
+                                 locationAddressCity.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -189,9 +189,9 @@ public class PrivateWellTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressState.setEnabled(isState(QUERY) ||
+                                 locationAddressState.setEnabled((isState(QUERY) && canQuery) ||
                                                                  (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressState.setQueryMode(isState(QUERY));
+                                 locationAddressState.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -211,9 +211,9 @@ public class PrivateWellTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressZipCode.setEnabled(isState(QUERY) ||
+                                 locationAddressZipCode.setEnabled((isState(QUERY) && canQuery) ||
                                                                    (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressZipCode.setQueryMode(isState(QUERY));
+                                 locationAddressZipCode.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -231,8 +231,8 @@ public class PrivateWellTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                wellOwner.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                wellOwner.setQueryMode(isState(QUERY));
+                wellOwner.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                wellOwner.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -250,8 +250,8 @@ public class PrivateWellTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                collector.setQueryMode(isState(QUERY));
+                collector.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                collector.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -269,8 +269,8 @@ public class PrivateWellTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                wellNumber.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                wellNumber.setQueryMode(isState(QUERY));
+                wellNumber.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                wellNumber.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -302,6 +302,10 @@ public class PrivateWellTabUI extends Screen {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    public void setCanQuery(boolean canQuery) {
+        this.canQuery = canQuery;
     }
 
     /**

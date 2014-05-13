@@ -25,6 +25,8 @@
  */
 package org.openelis.modules.sample1.client;
 
+import org.openelis.scriptlet.SampleSO.Operation;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -40,11 +42,13 @@ public class RunScriptletEvent extends GwtEvent<RunScriptletEvent.Handler> {
 
     private Integer                                scriptletId;
     private String                                 uid, changed;
+    private Operation                              operation;
 
-    public RunScriptletEvent(Integer scriptletId, String uid, String changed) {
+    public RunScriptletEvent(Integer scriptletId, String uid, String changed, Operation operation) {
         this.scriptletId = scriptletId;
         this.uid = uid;
         this.changed = changed;
+        this.operation = operation;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -74,6 +78,10 @@ public class RunScriptletEvent extends GwtEvent<RunScriptletEvent.Handler> {
 
     public String getChanged() {
         return changed;
+    }
+    
+    public Operation getOperation() {
+        return operation;
     }
 
     @Override

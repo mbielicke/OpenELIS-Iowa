@@ -25,11 +25,10 @@
  */
 package org.openelis.modules.scriptlet.client;
 
-import java.util.HashMap;
-
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.NeonatalDomainScriptlet;
+import org.openelis.scriptlet.NBSBTScriptlet1;
+import org.openelis.scriptlet.NeonatalDomainScriptlet1;
 import org.openelis.scriptlet.PWSValidateScriptlet;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
@@ -37,30 +36,26 @@ import org.openelis.ui.scriptlet.ScriptletInt;
  * This class is used to obtain instances of scriptlet classes for the front-end
  */
 public class ScriptletFactory {
-    public static HashMap<Integer, ScriptletInt<?>> map = new HashMap<Integer, ScriptletInt<?>>();
-
     @SuppressWarnings("unchecked")
     public static <T extends ScriptletInt<?>> T get(Integer id) throws Exception {
         T script;
         DictionaryDO dict;
 
-        script = (T)map.get(id);
-
-        if (script != null)
-            return script;
-
         dict = DictionaryCache.getById(id);
 
+        script = null;
         switch (dict.getSystemName()) {
             case "scriptlet_neonatal_domain":
-                script = (T)new NeonatalDomainScriptlet(new NeonatalDomainProxy());
+                script = (T)new NeonatalDomainScriptlet1(new NeonatalDomainProxy1());
                 break;
             case "scriptlet_pws_validate":
                 script = (T)new PWSValidateScriptlet(new PWSValidateProxy());
                 break;
+            case "scriptlet_nbs_bt":
+                script = (T)new NBSBTScriptlet1(new NBSBTProxy1());
+                break;
         }
 
-        map.put(id, script);
         return script;
     }
 }

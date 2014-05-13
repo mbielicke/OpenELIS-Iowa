@@ -512,6 +512,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
              * any other checks
              */
             tree.removeNode(node);
+            parentBus.fireEvent(new SelectionEvent(SelectedType.NONE, null));
         } else {
             uid = (String)node.getData();
             ana = (AnalysisViewDO)manager.getObject(uid);

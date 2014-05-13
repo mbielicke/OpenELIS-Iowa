@@ -367,7 +367,7 @@ public class SampleManager1Bean {
 
         ids2 = null;
         map2 = null;
-        
+
         /*
          * it is possible for a sample to have no analyses before it's verified
          */

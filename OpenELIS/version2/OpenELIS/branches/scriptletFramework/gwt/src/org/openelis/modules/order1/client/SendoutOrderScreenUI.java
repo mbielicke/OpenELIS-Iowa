@@ -889,6 +889,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
 
         addScreenHandler(testTab, "testTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

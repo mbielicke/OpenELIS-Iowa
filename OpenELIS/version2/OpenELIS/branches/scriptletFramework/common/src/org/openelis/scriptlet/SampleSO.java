@@ -25,6 +25,7 @@
  */
 package org.openelis.scriptlet;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.openelis.manager.AuxFieldGroupManager;
@@ -38,13 +39,27 @@ import org.openelis.ui.scriptlet.ScriptletObject;
  */
 public class SampleSO extends ScriptletObject {
 
-    private static final long                      serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private SampleManager1                         manager;
+    public enum Operation {
+        NEW_DOMAIN_ADDED, TEST_ADDED, RESULT_CHANGED, AUX_DATA_CHANGED
+    }
 
-    private HashMap<Integer, TestManager>          analyses, results;
+    protected EnumSet<Operation>                    operations;
 
-    private HashMap<Integer, AuxFieldGroupManager> auxData;
+    protected SampleManager1                         manager;
+
+    protected HashMap<Integer, TestManager>          analyses, results;
+
+    protected HashMap<Integer, AuxFieldGroupManager> auxData;
+
+    public EnumSet<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(EnumSet<Operation> operations) {
+        this.operations = operations;
+    }
 
     public void setManager(SampleManager1 manager) {
         this.manager = manager;

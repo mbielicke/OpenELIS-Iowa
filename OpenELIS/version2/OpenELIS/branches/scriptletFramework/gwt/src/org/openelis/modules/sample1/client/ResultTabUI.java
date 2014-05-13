@@ -48,6 +48,7 @@ import org.openelis.exception.ParseException;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.sample1.client.ResultCell.Value;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -294,6 +295,7 @@ public class ResultTabUI extends Screen {
                     return;
                 }
 
+                tm = null;
                 if (c == 0) {
                     data = manager.result.get(analysis, index, c);
                     data.setIsReportable((String)val);
@@ -344,6 +346,19 @@ public class ResultTabUI extends Screen {
 
                     if (data.getValue() == null)
                         return;
+                    
+                    /*
+                     * execute any scriptlet specified for the test
+                     */
+                    if (tm.getTest().getScriptletId() != null) {
+                        parentBus.fireEventFromSource(new RunScriptletEvent(tm.getTest().getScriptletId(),
+                                                                            Constants.uid()
+                                                                                     .getResult(data.getId()),
+                                                                            data.getAnalyteExternalId(),
+                                                                            Operation.RESULT_CHANGED),
+                                                      screen);
+                        return;
+                    }
 
                     if (testReflexUtility == null) {
                         testReflexUtility = new TestReflexUtility1() {

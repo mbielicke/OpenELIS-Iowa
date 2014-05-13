@@ -38,7 +38,7 @@ public class TestAnalyteViewDO extends TestAnalyteDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          analyteName, isAlias;
+    protected String          analyteName, analyteExternalId, isAlias;
 
     public TestAnalyteViewDO() {
     }
@@ -46,10 +46,11 @@ public class TestAnalyteViewDO extends TestAnalyteDO {
     public TestAnalyteViewDO(Integer id, Integer testId, Integer sortOrder, Integer rowGroup,
                                 String isColumn, Integer analyteId, Integer typeId,
                                 String isReportable, Integer resultGroup, Integer scriptletId,
-                                String analyteName) {
+                                String analyteName, String analyteExternalId) {
         super(id, testId, sortOrder, rowGroup, isColumn, analyteId, typeId, isReportable,
               resultGroup, scriptletId);
         setAnalyteName(analyteName);
+        setAnalyteExternalId(analyteExternalId);
         setIsAlias("N");
     }
 
@@ -59,6 +60,14 @@ public class TestAnalyteViewDO extends TestAnalyteDO {
 
     public void setAnalyteName(String analyteName) {
         this.analyteName = DataBaseUtil.trim(analyteName);
+    }
+
+    public void setAnalyteExternalId(String analyteExternalId) {
+        this.analyteExternalId = DataBaseUtil.trim(analyteExternalId);
+    }
+
+    public String getAnalyteExternalId() {
+        return analyteExternalId;
     }
 
     public String getIsColumn() {

@@ -96,7 +96,7 @@ public class SDWISTabUI extends Screen {
 
     protected EventBus              parentBus;
 
-    protected boolean               canEdit, isVisible, redraw;
+    protected boolean               canEdit, isVisible, redraw, canQuery;
 
     public SDWISTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -123,8 +123,8 @@ public class SDWISTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                pwsNumber0.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                pwsNumber0.setQueryMode(isState(QUERY));
+                pwsNumber0.setEnabled((isState(QUERY) && canQuery)|| (canEdit && isState(ADD, UPDATE)));
+                pwsNumber0.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -145,7 +145,7 @@ public class SDWISTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 pwsName.setEnabled(false);
-                pwsName.setQueryMode(isState(QUERY));
+                pwsName.setQueryMode((isState(QUERY) && canQuery));
             }
         });
 
@@ -159,8 +159,8 @@ public class SDWISTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                stateLabId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                stateLabId.setQueryMode(isState(QUERY));
+                stateLabId.setEnabled((isState(QUERY) && canQuery)|| (canEdit && isState(ADD, UPDATE)));
+                stateLabId.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -178,8 +178,8 @@ public class SDWISTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                facilityId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                facilityId.setQueryMode(isState(QUERY));
+                facilityId.setEnabled((isState(QUERY) && canQuery)|| (canEdit && isState(ADD, UPDATE)));
+                facilityId.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -199,9 +199,9 @@ public class SDWISTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sampleType.setEnabled(isState(QUERY) ||
+                                 sampleType.setEnabled((isState(QUERY) && canQuery) ||
                                                        (canEdit && isState(ADD, UPDATE)));
-                                 sampleType.setQueryMode(isState(QUERY));
+                                 sampleType.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -221,9 +221,9 @@ public class SDWISTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sampleCategory.setEnabled(isState(QUERY) ||
+                                 sampleCategory.setEnabled((isState(QUERY) && canQuery) ||
                                                            (canEdit && isState(ADD, UPDATE)));
-                                 sampleCategory.setQueryMode(isState(QUERY));
+                                 sampleCategory.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -243,9 +243,9 @@ public class SDWISTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 samplePointId.setEnabled(isState(QUERY) ||
+                                 samplePointId.setEnabled((isState(QUERY) && canQuery) ||
                                                           (canEdit && isState(ADD, UPDATE)));
-                                 samplePointId.setQueryMode(isState(QUERY));
+                                 samplePointId.setQueryMode((isState(QUERY) && canQuery));
                              }
                              
                              public Widget onTab(boolean forward) {
@@ -263,8 +263,8 @@ public class SDWISTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                location.setQueryMode(isState(QUERY));
+                location.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                location.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -282,8 +282,8 @@ public class SDWISTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                collector.setQueryMode(isState(QUERY));
+                collector.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                collector.setQueryMode((isState(QUERY) && canQuery));
             }
             
             public Widget onTab(boolean forward) {
@@ -323,6 +323,10 @@ public class SDWISTabUI extends Screen {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    public void setCanQuery(boolean canQuery) {
+        this.canQuery = canQuery;
     }
 
     /**
