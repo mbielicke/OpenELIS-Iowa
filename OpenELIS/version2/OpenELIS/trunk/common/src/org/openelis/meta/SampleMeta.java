@@ -210,7 +210,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_PRE_ANALYSIS_ID = "_analysis.preAnalysisId",
                     ANALYSIS_PARENT_ANALYSIS_ID = "_analysis.parentAnalysisId",
                     ANALYSIS_PARENT_RESULT_ID = "_analysis.parentResultId",
-                    ANALYSIS_IS_PRELIMINARY = "_analysis.isPreliminary",
+                    ANALYSIS_TYPE_ID = "_analysis.typeId",
                     ANALYSIS_IS_REPORTABLE = "_analysis.isReportable",
                     ANALYSIS_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
                     ANALYSIS_STATUS_ID = "_analysis.statusId",
@@ -401,7 +401,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   ANALYSIS_SECTION_ID, ANALYSIS_PRE_ANALYSIS_ID,
                                                   ANALYSIS_PARENT_ANALYSIS_ID,
                                                   ANALYSIS_PARENT_RESULT_ID,
-                                                  ANALYSIS_IS_PRELIMINARY, ANALYSIS_IS_REPORTABLE,
+                                                  ANALYSIS_TYPE_ID, ANALYSIS_IS_REPORTABLE,
                                                   ANALYSIS_UNIT_OF_MEASURE_ID, ANALYSIS_STATUS_ID,
                                                   ANALYSIS_AVAILABLE_DATE, ANALYSIS_STARTED_DATE,
                                                   ANALYSIS_COMPLETED_DATE, ANALYSIS_RELEASED_DATE,
@@ -1081,8 +1081,8 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSIS_PARENT_RESULT_ID;
     }
 
-    public static String getAnalysisIsPreliminary() {
-        return ANALYSIS_IS_PRELIMINARY;
+    public static String getAnalysisTypeId() {
+        return ANALYSIS_TYPE_ID;
     }
 
     public static String getAnalysisIsReportable() {
