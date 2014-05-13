@@ -198,7 +198,7 @@ public class SampleMergeUtility {
         orderAna.setPreAnalysisMethod(qeAna.getPreAnalysisMethod());
         orderAna.setParentAnalysisId(qeAna.getParentAnalysisId());
         orderAna.setParentResultId(qeAna.getParentResultId());
-        orderAna.setIsPreliminary(qeAna.getIsPreliminary());
+        orderAna.setTypeId(qeAna.getTypeId());
         orderAna.setIsReportable(qeAna.getIsReportable());
         orderAna.setUnitOfMeasureId(qeAna.getUnitOfMeasureId());
         orderAna.setStatusId(qeAna.getStatusId());
