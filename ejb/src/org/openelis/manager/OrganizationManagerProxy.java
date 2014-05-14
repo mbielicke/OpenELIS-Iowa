@@ -134,6 +134,11 @@ public class OrganizationManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    public OrganizationManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";

@@ -38,6 +38,8 @@ import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
+import net.lightoze.gwt.i18n.server.LocaleProxy;
+
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -117,7 +119,7 @@ public class ApplicationBean {
          * One time system wide initializations
          */
         Constants.setConstants(new Constants());
-        com.teklabs.gwt.i18n.server.LocaleProxy.initialize();
+        LocaleProxy.initialize();
 
         /*
          * system properties

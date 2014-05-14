@@ -110,6 +110,11 @@ public class ProviderManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    public ProviderManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
 
     public ProviderManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
