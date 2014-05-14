@@ -39,6 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
@@ -60,13 +61,13 @@ import org.openelis.ui.util.QueryBuilderV2;
 public class MethodBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager           manager;
+    EntityManager           manager;
 
     @EJB
-    private LockBean               lock;
+    LockBean               lock;
     
     @EJB
-    private UserCacheBean           userCache;
+    UserCacheBean           userCache;
 
     private static final MethodMeta meta = new MethodMeta();
 
@@ -219,13 +220,13 @@ public class MethodBean {
         return fetchById(id);
     }
 
-    public void validate(MethodDO data) throws Exception {
+    public void validate(MethodDO data) throws ValidationErrorsList, Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+            list.add(new FieldErrorException(getMessages().fieldRequiredException(),
                                              MethodMeta.getName()));
         } else {
             MethodDO dup;
@@ -233,7 +234,7 @@ public class MethodBean {
             try {
                 dup = fetchByName(data.getName());
                 if (DataBaseUtil.isDifferent(data.getId(), dup.getId()))
-                    list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
+                    list.add(new FieldErrorException(getMessages().fieldUniqueException(),
                                                      MethodMeta.getName()));
             } catch (NotFoundException ignE) {
             }
@@ -256,5 +257,9 @@ public class MethodBean {
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
         userCache.applyPermission("method", flag);
+    }
+    
+    protected OpenELISConstants getMessages() {
+        return Messages.get();
     }
 }
