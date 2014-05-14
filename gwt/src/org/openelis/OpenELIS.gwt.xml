@@ -30,34 +30,26 @@ UIRF Software License are applicable instead of those above.
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name="com.google.gwt.xml.XML"/>
     <inherits name="com.google.gwt.i18n.I18N"/> 
+    <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd"/> 
+    <inherits name="com.google.gwt.visualization.Visualization"/>
+    
+    <!-- Inherit needed openelis modules -->
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
     <inherits name="org.openelis.ui.UI"/>
-    <!--  
-    <inherits name="com.google.gwt.widgetideas.GWTCanvas"/>
-    -->
-    <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd"/> 
-    <inherits name="com.google.gwt.visualization.Visualization"/>
     <inherits name="org.openelis.modules.Modules"/>
-    <inherits name="org.openelis.ELISCommon"/>     
+    <inherits name="org.openelis.ELISCommon"/>   
+      
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class="org.openelis.modules.main.client.OpenELISEntry"/>
-	
-<!--
-	<extend-property name="locale" values="cn"/>
-    <extend-property name="locale" values="fa"/>
-    <extend-property name="locale" values="sp"/>
--->
     
     <define-property name="props" values="org_openelis_constants_OpenELISConstants"/>
     <set-property name="props" value="org_openelis_constants_OpenELISConstants"/>
-
-    <set-property name="user.agent" value="gecko1_8" />
     
     <set-property name="gwt.logging.logLevel" value="SEVERE"/>
     <set-property name="gwt.logging.consoleHandler" value="DISABLED"/>
@@ -67,12 +59,7 @@ UIRF Software License are applicable instead of those above.
     <set-property name="gwt.logging.firebugHandler" value="DISABLED"/>
     
     <set-property name="compiler.stackMode" value="emulated" />
-    <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="TRUE"/>
-    
-    <set-configuration-property name="CssResource.style" value="pretty"/>
-    
-    <servlet class="org.openelis.server.UserCacheServletTest" path="/userCache"/>
-    <servlet class="org.openelis.server.XsrfTokenServiceServlet" path="/xsrf"/>
-   
+    <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true"/>
+    <set-configuration-property name="compiler.emulatedStack.recordFileNames"   value="true"/>   
     
 </module>

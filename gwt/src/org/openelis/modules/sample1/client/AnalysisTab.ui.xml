@@ -59,10 +59,10 @@
               <w:Dropdown ui:field="status" width="150px" field="Integer" /> 
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.analysis_preliminary}:" />
+              <ui:text from="{msg.gen_type}:" />
             </td>
             <td>
-              <w:CheckBox ui:field="isPreliminary" />
+              <w:Dropdown ui:field="type" width="120px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.gen_reportable}:" />

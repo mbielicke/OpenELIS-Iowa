@@ -1780,7 +1780,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     }   
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
 
     public void onSelection(SelectionEvent<Integer> event) {
