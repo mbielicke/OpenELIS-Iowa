@@ -36,6 +36,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -62,6 +63,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         UIResources.INSTANCE.text().ensureInjected();
         UIResources.INSTANCE.dragDrop().ensureInjected();
         UIResources.INSTANCE.general().ensureInjected();
+        DebugInfo.setDebugIdPrefix("");
         
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             public void onUncaughtException(Throwable e) {
