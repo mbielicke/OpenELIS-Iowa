@@ -27,8 +27,6 @@ package org.openelis.modules.sampleQC.client;
 
 import java.util.ArrayList;
 
-import org.openelis.manager.WorksheetManager1;
-
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -40,5 +38,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("sampleQC")
 public interface SampleQCServiceInt extends RemoteService {
 
-    public ArrayList<WorksheetManager1> fetchByAccessionNumber(Integer accession) throws Exception;
+    public ArrayList<Object> fetchByAccessionNumber(Integer accession) throws Exception;
 }

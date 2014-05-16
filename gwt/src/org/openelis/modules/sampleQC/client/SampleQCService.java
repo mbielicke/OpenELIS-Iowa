@@ -28,7 +28,6 @@ package org.openelis.modules.sampleQC.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.screen.Callback;
-import org.openelis.manager.WorksheetManager1;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -57,17 +56,16 @@ public class SampleQCService implements SampleQCServiceInt, SampleQCServiceIntAs
     }
 
     @Override
-    public ArrayList<WorksheetManager1> fetchByAccessionNumber(Integer accession) throws Exception {
-        Callback<ArrayList<WorksheetManager1>> callback;
+    public ArrayList<Object> fetchByAccessionNumber(Integer accession) throws Exception {
+        Callback<ArrayList<Object>> callback;
 
-        callback = new Callback<ArrayList<WorksheetManager1>>();
+        callback = new Callback<ArrayList<Object>>();
         service.fetchByAccessionNumber(accession, callback);
         return callback.getResult();
     }
 
     @Override
-    public void fetchByAccessionNumber(Integer accession,
-                                       AsyncCallback<ArrayList<WorksheetManager1>> callback) {
+    public void fetchByAccessionNumber(Integer accession, AsyncCallback<ArrayList<Object>> callback) {
         service.fetchByAccessionNumber(accession, callback);
     }
 }

@@ -38,5 +38,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface SampleQCServiceIntAsync {
 
     public void fetchByAccessionNumber(Integer accession,
-                                       AsyncCallback<ArrayList<WorksheetManager1>> callback);
+                                       AsyncCallback<ArrayList<Object>> callback);
 }

@@ -28,18 +28,18 @@
         <g:layer top="0px" height="30px">
           <g:AbsolutePanel width="100%">
             <w:MenuBar>
-              <w:Menu label="{msg.application}">
+              <w:Menu label="{msg.application}" ui:field="applicationMenu">
                 <w:MenuItem description="{msg.preferenceDescription}" enabled="true" icon="{res.icon.preferenceIcon}" ui:field="preference"
                   display="{msg.preference}" />
                 <w:MenuItem description="" enabled="true" ui:field="logs" display="{msg.logs}"/>
                 <w:MenuItem description="{msg.logoutDescription}" enabled="true" icon="{res.icon.logoutIcon}" ui:field="logout"
                   display="{msg.logout}" />
               </w:Menu>
-              <w:Menu label="{msg.label}">
+              <w:Menu label="{msg.label}" ui:field="labelMenu">
                 <w:MenuItem description="" enabled="false" icon="" ui:field="sampleLoginLabelReport" display="{msg.loginBarcode}" />
                 <w:MenuItem description="" enabled="false" icon="" ui:field="sampleLoginLabelAdditionalReport" display="{msg.loginBarcodeAdd}" />
               </w:Menu>
-              <w:Menu label="{msg.sample}">
+              <w:Menu label="{msg.sample}" ui:field="sampleMenu">
                 <w:MenuItem description="{msg.quickEntryDescription}" enabled="false" icon="{res.icon.quickEntryIcon}" ui:field="quickEntry"
                   display="{msg.quickEntry}" />
                 <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
@@ -73,9 +73,9 @@
                 <w:MenuItem description="{msg.organizationDescription}" enabled="false" icon="{res.icon.organizationIcon}"
                   ui:field="organization" display="{msg.organization}" />
               </w:Menu>
-              <w:Menu label="{msg.analysis}">
-                <w:MenuItem description="{msg.worksheetCreationDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}"
-                  ui:field="worksheetCreation" display="{msg.worksheetCreation}" />
+              <w:Menu label="{msg.analysis}" ui:field="analysisMenu">
+<!--                 <w:MenuItem description="{msg.worksheetCreationDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}" -->
+<!--                   ui:field="worksheetCreation" display="{msg.worksheetCreation}" /> -->
                 <w:MenuItem description="{msg.worksheetBuilderDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}" ui:field="worksheetBuilder"
                   display="{msg.worksheetBuilder}" />
                 <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
@@ -96,7 +96,7 @@
                 <w:MenuItem description="{msg.analyteParameterDescription}" enabled="false" icon="{res.icon.QCIcon}" ui:field="analyteParameter"
                   display="{msg.analyteParameter}" />
               </w:Menu>
-              <w:Menu label="{msg.inventoryOrder}">
+              <w:Menu label="{msg.inventoryOrder}" ui:field="inventoryMenu">
                 <w:MenuItem description="{msg.internalOrderDescription}" enabled="false" icon="{res.icon.orderIcon}" ui:field="internalOrder"
                   display="{msg.internalOrder}" />
                 <w:MenuItem description="{msg.vendorOrderDescription}" enabled="false" icon="{res.icon.orderIcon}" ui:field="vendorOrder"
@@ -126,7 +126,7 @@
                 <w:MenuItem description="{msg.inventoryItemDescription}" enabled="false" icon="{res.icon.inventoryIcon}"
                   ui:field="inventoryItem" display="{msg.inventoryItem}" />
               </w:Menu>
-              <w:Menu label="{msg.report}">
+              <w:Menu label="{msg.report}" ui:field="reportMenu">
                 <w:Menu display="{msg.login}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="verificationReport" display="{msg.verificationReport}" />
                   <w:MenuItem enabled="false" ui:field="testRequestFormReport" display="{msg.TRFReport}" />
@@ -156,7 +156,7 @@
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
                 </w:Menu>
               </w:Menu>
-              <w:Menu label="{msg.maintenance}">
+              <w:Menu label="{msg.maintenance}" ui:field="maintenanceMenu">
                 <w:MenuItem description="{msg.testDescription}" enabled="false" icon="{res.icon.testIcon}" ui:field="test"
                   display="{msg.test}" />
                 <w:MenuItem description="{msg.methodDescription}" enabled="false" icon="{res.icon.methodIcon}" ui:field="method"

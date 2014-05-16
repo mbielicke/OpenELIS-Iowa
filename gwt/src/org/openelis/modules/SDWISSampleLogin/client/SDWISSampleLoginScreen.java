@@ -1469,7 +1469,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
 
     private void setDefaults() throws Exception {

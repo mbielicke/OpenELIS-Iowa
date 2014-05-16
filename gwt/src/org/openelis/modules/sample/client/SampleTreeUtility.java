@@ -409,7 +409,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     public abstract void selectNewRowFromBundle(TreeDataItem row);
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
 
     private class TestPrepActionHandler implements ActionHandler<TestPrepUtility.Action>{
