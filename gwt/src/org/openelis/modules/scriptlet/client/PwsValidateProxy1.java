@@ -25,17 +25,33 @@
  */
 package org.openelis.modules.scriptlet.client;
 
+import static org.openelis.modules.main.client.Logger.*;
+
+import java.util.logging.Level;
+
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.modules.pws.client.PWSService;
-import org.openelis.scriptlet.PWSValidateScriptlet;
+import org.openelis.scriptlet.PwsValidateScriptlet1;
 
 /**
  * This class is used for implementing the front-end functionality for pws
  * validate scriptlet
  */
-public class PWSValidateProxy implements PWSValidateScriptlet.Proxy {
+public class PwsValidateProxy1 implements PwsValidateScriptlet1.Proxy {
     @Override
     public PWSDO fetchPwsByNumber0(String value) throws Exception {
         return PWSService.get().fetchPwsByNumber0(value);
+    }
+
+    @Override
+    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
+        return DictionaryCache.getBySystemName(systemName);
+    }
+
+    @Override
+    public void log(Level level, String message) {
+        logger.log(level, message);
     }
 }

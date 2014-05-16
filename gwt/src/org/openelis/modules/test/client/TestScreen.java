@@ -185,7 +185,9 @@ public class TestScreen extends Screen {
                                            "test_worksheet_analyte_flags",
                                            "test_worksheet_item_type",
                                            "test_worksheet_format",
-                                           "scriptlet");
+                                           "scriptlet_test",
+                                           "scriptlet_test_analyte",
+                                           "scriptlet_worksheet");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1221,7 +1223,7 @@ public class TestScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("scriptlet");
+        list = CategoryCache.getBySystemName("scriptlet_test");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

@@ -26,33 +26,33 @@
 package org.openelis.modules.scriptlet.client;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.NBSBTScriptlet1;
+import org.openelis.scriptlet.NbsBtScriptlet1;
 import org.openelis.scriptlet.NeonatalDomainScriptlet1;
-import org.openelis.scriptlet.PWSValidateScriptlet;
+import org.openelis.scriptlet.PwsValidateScriptlet1;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
 /**
  * This class is used to obtain instances of scriptlet classes for the front-end
  */
 public class ScriptletFactory {
-    @SuppressWarnings("unchecked")
     public static <T extends ScriptletInt<?>> T get(Integer id) throws Exception {
+        return get(DictionaryCache.getById(id).getSystemName());
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T extends ScriptletInt<?>> T get(String systemName) throws Exception {
         T script;
-        DictionaryDO dict;
-
-        dict = DictionaryCache.getById(id);
 
         script = null;
-        switch (dict.getSystemName()) {
-            case "scriptlet_neonatal_domain":
+        switch (systemName) {
+            case "scriptlet_neonatal_domain1":
                 script = (T)new NeonatalDomainScriptlet1(new NeonatalDomainProxy1());
                 break;
-            case "scriptlet_pws_validate":
-                script = (T)new PWSValidateScriptlet(new PWSValidateProxy());
+            case "scriptlet_pws_validate1":
+                script = (T)new PwsValidateScriptlet1(new PwsValidateProxy1());
                 break;
-            case "scriptlet_nbs_bt":
-                script = (T)new NBSBTScriptlet1(new NBSBTProxy1());
+            case "scriptlet_nbs_bt1":
+                script = (T)new NbsBtScriptlet1(new NbsBtProxy1());
                 break;
         }
 

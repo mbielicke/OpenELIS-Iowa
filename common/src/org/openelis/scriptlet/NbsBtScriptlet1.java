@@ -26,6 +26,7 @@
 package org.openelis.scriptlet;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -35,14 +36,17 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.scriptlet.SampleSO.Operation;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
+import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultHelper;
 
 /**
  * The scriptlet for performing operations for "nbs bt (Biotinidase)" test
  */
-public class NBSBTScriptlet1 implements ScriptletInt<SampleSO> {
+public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Proxy proxy;
 
@@ -52,56 +56,96 @@ public class NBSBTScriptlet1 implements ScriptletInt<SampleSO> {
                     WITHIN_NORMAL_LIMITS = "newborn_inter_within_normal",
                     PRESUMPTIVE_POSITIVE = "newborn_inter_presumptive_pos";
 
-    public NBSBTScriptlet1(Proxy proxy) {
+    public NbsBtScriptlet1(Proxy proxy) {
         this.proxy = proxy;
+
+        proxy.log(Level.FINE, "Initializing NbsBtScriptlet1");
     }
 
     @Override
     public SampleSO run(SampleSO data) {
-        int i, j;
-        String overrideVal, bioVal, sysName;
-        ResultViewDO res, resInter;
-        AnalysisViewDO ana;
-        TestViewDO test;
-        DictionaryDO dict;
-        TestManager tm;
-        SampleManager1 sm;
+        ResultViewDO res;
 
+        proxy.log(Level.FINE, "In NbsBtScriptlet1.run");
         /*
          * don't do anything if a result was not changed
          */
         if ( !data.getOperations().contains(Operation.RESULT_CHANGED))
             return data;
 
-        sm = data.getManager();
-        tm = null;
-        res = null;
+        /*
+         * get result that made this scriptlet get executed
+         */
+        res = getChangedResult(data);
+
+        if (res == null)
+            /*
+             * the result doesn't belong to this test
+             */
+            return data;
 
         /*
-         * find out if any of the changed results belongs to the active version
-         * of the test
+         * set the value of interpretation based on the value of this result
          */
+        setInterpretion(data, res);
+
+        return data;
+    }
+
+    /**
+     * Returns the result whose value was changed to make this scriptlet get
+     * executed, but only if belongs to the active version of this test;
+     * otherwise returns null
+     */
+    private ResultViewDO getChangedResult(SampleSO data) {
+        ResultViewDO res;
+        TestViewDO test;
+        TestManager tm;
+
+        res = null;
+        proxy.log(Level.FINE,
+                  "Going through the SO to find the result that trigerred the scriptlet");
         for (Map.Entry<Integer, TestManager> entry : data.getResults().entrySet()) {
             tm = entry.getValue();
             test = tm.getTest();
             if (TEST_NAME.equals(test.getName()) && METHOD_NAME.equals(test.getMethodName()) &&
                 "Y".equals(test.getIsActive())) {
-                res = (ResultViewDO)sm.getObject(Constants.uid().getResult(entry.getKey()));
+                res = (ResultViewDO)data.getManager()
+                                        .getObject(Constants.uid().getResult(entry.getKey()));
                 break;
             }
         }
 
-        if (res == null)
-            return data;
+        return res;
+    }
+
+    /**
+     * Sets the value of the analyte for interpretation based on the value of
+     * the passed result, if the value to be set is different from the current
+     * value
+     */
+    private void setInterpretion(SampleSO data, ResultViewDO resChanged) {
+        int i, j;
+        String overrideVal, bioVal, sysName;
+        TestManager tm;
+        SampleManager1 sm;
+        ResultViewDO res, resInter;
+        DictionaryDO dict;
+        AnalysisViewDO ana;
+        FormattedValue fv;
+        ResultFormatter rf;
 
         /*
          * find the analysis for the result and the values for the various
          * analytes
          */
-        ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(res.getAnalysisId()));
+        sm = data.getManager();
+        ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(resChanged.getAnalysisId()));
         bioVal = null;
         overrideVal = null;
         resInter = null;
+        proxy.log(Level.FINE,
+                  "Going through the SO to find the result that trigerred the scriptlet");
         for (i = 0; i < sm.result.count(ana); i++ ) {
             for (j = 0; j < sm.result.count(ana, i); j++ ) {
                 res = sm.result.get(ana, i, j);
@@ -110,45 +154,63 @@ public class NBSBTScriptlet1 implements ScriptletInt<SampleSO> {
                 else if (OVERRIDE_INTER.equals(res.getAnalyteExternalId()))
                     overrideVal = res.getValue();
                 else if (INTERPRETATION.equals(res.getAnalyteExternalId()))
-                    resInter = res; 
+                    resInter = res;
             }
         }
 
         try {
+            proxy.log(Level.FINE, "Finding the values of override interretation");
             /*
              * proceed only if the value for override interpretation is "No"
              */
             dict = getDictionaryByValue(overrideVal);
             if (dict == null || !NO.equals(dict.getSystemName()))
-                return data;
+                return;
 
+            proxy.log(Level.FINE, "Finding the value of biotinidase");
+            /*
+             * get the value for biotinidase
+             */
             dict = getDictionaryByValue(bioVal);
             if (dict == null)
-                return data;
+                return;
+
             /*
-             * set the value of interpretation to "presumptive positive" if the
-             * value of biotinidase is "1+" or "0", otherwise set it to
-             * "within normal limits"
+             * the value of interpretation is "presumptive positive" if the
+             * value of biotinidase is "1+" or "0", otherwise the value of
+             * interpretation is "within normal limits" if the value of
+             * biotinidase is "2+" or "3+"
              */
+            proxy.log(Level.FINE, "Getting the value for interretation based on the value for biotinidase");
             sysName = dict.getSystemName();
-            
             if (sysName.endsWith("1+") || sysName.endsWith("0"))
                 dict = proxy.getDictionaryBySystemName(PRESUMPTIVE_POSITIVE);
-            else 
+            else if (sysName.endsWith("2+") || sysName.endsWith("3+"))
                 dict = proxy.getDictionaryBySystemName(WITHIN_NORMAL_LIMITS);
-            
-            ResultHelper.formatValue(resInter,
-                                     dict.getEntry(),
-                                     ana.getUnitOfMeasureId(),
-                                     tm.getFormatter());
+
+            tm = data.getResults().get(resChanged.getId());
+            rf = tm.getFormatter();
+            /*
+             * get the value to be set in the interpretation from this test
+             * manager's result formatter and set it only if it's different from
+             * the current value
+             */
+            fv = rf.format(resInter.getResultGroup(), ana.getUnitOfMeasureId(), dict.getEntry());
+            if ( !DataBaseUtil.isSame(resInter.getTestResultId(), fv.getId())) {
+                proxy.log(Level.FINE, "Setting the value of interpretion as: " + dict.getEntry());
+                ResultHelper.formatValue(resInter, dict.getEntry(), ana.getUnitOfMeasureId(), rf);
+                data.addRerun(resInter.getAnalyteExternalId());
+            }
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);
         }
-
-        return data;
     }
 
+    /**
+     * Returns the dictionary entry whose id's string equivalent is the passed
+     * value
+     */
     private DictionaryDO getDictionaryByValue(String value) throws Exception {
         if (value == null)
             return null;
@@ -158,6 +220,9 @@ public class NBSBTScriptlet1 implements ScriptletInt<SampleSO> {
 
     public static interface Proxy {
         public DictionaryDO getDictionaryById(Integer id) throws Exception;
+
         public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
+
+        public void log(Level level, String message);
     }
 }

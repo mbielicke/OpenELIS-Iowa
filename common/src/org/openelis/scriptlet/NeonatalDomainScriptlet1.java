@@ -32,9 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
@@ -74,10 +72,14 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
     private static DictionaryDO                  driedBloodSpotDict;
 
     public NeonatalDomainScriptlet1(Proxy proxy) throws Exception {
+        this.proxy = proxy;
+
+        proxy.log(Level.FINE, "Initializing NeonatalDomainScriptlet1");
         /*
          * external ids for the analytes for interpretation
          */
         if (interpretations == null) {
+            proxy.log(Level.FINE, "Creating a hashset for the analytes for interpretation");
             interpretations = new HashSet<String>();
             interpretations.add("nbs_bt_inter");
             interpretations.add("nbs_cah_inter");
@@ -90,34 +92,28 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * the dictionary for most common sample type for neonatal domain
+         * the dictionary entry for the most common sample type for neonatal
+         * domain
          */
-        if (driedBloodSpotDict == null)
-            driedBloodSpotDict = DictionaryCache.getBySystemName("dried_blood_spot");
-
-        this.proxy = proxy;
+        if (driedBloodSpotDict == null) {
+            proxy.log(Level.FINE, "Getting the dictionary for 'dried_blood_spot'");
+            driedBloodSpotDict = proxy.getDictionaryBySystemName("dried_blood_spot");
+        }
     }
 
     @Override
     public SampleSO run(SampleSO data) {
-        String changed;
-        SampleItemViewDO item;
         SampleNeonatalDO sn;
-        SampleManager1 sm;
 
-        sm = data.getManager();
-        sn = sm.getSampleNeonatal();
+        proxy.log(Level.FINE, "In NeonatalDomainScriptlet1.run");
 
         /*
-         * if the sample doesn't have any items then add an item with "dried
-         * blood spot" as its sample type
+         * if the sample doesn't have any items then add an item with the most
+         * common sample type for neonatal samples
          */
-        if (sm.item.count() == 0) {
-            item = sm.item.add();
-            item.setTypeOfSampleId(driedBloodSpotDict.getId());
-            item.setTypeOfSample(driedBloodSpotDict.getEntry());
-        }
+        addDefaultSampleItem(data.getManager());
 
+        sn = data.getManager().getSampleNeonatal();
         /*
          * don't do anything if it's an existing neonatal sample or if it
          * doesn't have a patient
@@ -126,41 +122,41 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
             return data;
 
         try {
-            changed = data.getChanged();
-            if (changed != null) {
-                fetchPreviousManager(sm);
+            if (data.getChanged() != null)
                 /*
-                 * check if the current sample is a repeat if a field related to
-                 * neonatal domain has changed, the sample is not marked as
-                 * repeat and the patient is an existing one
+                 * set this sample as repeat if there's another sample entered
+                 * previously for its patient
                  */
-                if (previousManager != null &&
-                    (changed.startsWith("_sampleNeonatal") || changed.startsWith("_neonatal")) &&
-                    "N".equals(sn.getIsRepeat())) {
-                    sn.setIsRepeat("Y");
-                    /*
-                     * notify the scriptlet runner that a field was changed
-                     */
-                    data.addRerun(SampleMeta.getNeonatalIsRepeat());
-                }
-            } else if (data.getOperations().contains(TEST_ADDED) && "Y".equals(sn.getIsRepeat())) {
-                fetchPreviousManager(sm);
+                setRepeat(data);
+            else if (data.getOperations().contains(TEST_ADDED) && "Y".equals(sn.getIsRepeat()))
                 /*
-                 * since the current sample is a repeat sample, remove any
+                 * since the current sample is a repeat sample, remove those
                  * uncommitted tests from it that didn't have any abnormal
                  * results in the previous sample
                  */
-                if (previousManager != null) {
-                    sm = removeNormalTests(sm);
-                    data.setManager(sm);
-                }
-            }
+                removeNormalTests(data);
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);
         }
 
         return data;
+    }
+
+    /**
+     * If the sample doesn't have any items then adds an item with the sample
+     * type 'dried blood spot'
+     */
+    private void addDefaultSampleItem(SampleManager1 sm) {
+        SampleItemViewDO item;
+
+        if (sm.item.count() == 0) {
+            proxy.log(Level.FINE, "Adding a sample item by default with sample type: " +
+                                  driedBloodSpotDict.getSystemName());
+            item = sm.item.add();
+            item.setTypeOfSampleId(driedBloodSpotDict.getId());
+            item.setTypeOfSample(driedBloodSpotDict.getEntry());
+        }
     }
 
     /**
@@ -185,6 +181,8 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
         field.setType(QueryData.Type.INTEGER);
         fields.add(field);
 
+        proxy.log(Level.FINE, "Fetching samples for patient: " +
+                              sm.getSampleNeonatal().getPatientId());
         try {
             sms = proxy.fetchByQuery(fields, 0, 1000, SampleManager1.Load.RESULT);
 
@@ -192,6 +190,7 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
              * find the sample with the most recent entered date;
              */
             ed = null;
+            proxy.log(Level.FINE, "Finding the most recent previous sample");
             for (SampleManager1 data : sms) {
                 if (ed == null || DataBaseUtil.isAfter(data.getSample().getEnteredDate(), ed)) {
                     previousManager = data;
@@ -202,28 +201,66 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
             /*
              * there are no previous samples for this patient
              */
+            proxy.log(Level.FINE, "No samples found for patient: " +
+                                  sm.getSampleNeonatal().getPatientId());
             previousManager = null;
         }
         patientId = sm.getSampleNeonatal().getPatientId();
     }
 
     /**
-     * TODO remove the uncommitted analyses from the current sample that are
-     * linked to tests that have no abnormal results in the previous sample
+     * Sets the sample in the passed SO as repeat if there's another sample
+     * previosuly entered for its patient
      */
-    public SampleManager1 removeNormalTests(SampleManager1 sm) throws Exception {
+    private void setRepeat(SampleSO data) throws Exception {
+        String changed;
+        SampleNeonatalDO sn;
+        SampleManager1 sm;
+
+        sm = data.getManager();
+        sn = sm.getSampleNeonatal();
+
+        fetchPreviousManager(sm);
+        /*
+         * check if the current sample is a repeat if a field related to
+         * neonatal domain has changed, the sample is not marked as repeat and
+         * the patient is an existing one
+         */
+        changed = data.getChanged();
+        if (previousManager != null &&
+            (changed.startsWith("_sampleNeonatal") || changed.startsWith("_neonatal")) &&
+            "N".equals(sn.getIsRepeat())) {
+            proxy.log(Level.FINE, "Setting the sample as repeat");
+            sn.setIsRepeat("Y");
+            /*
+             * notify the scriptlet runner that a field was changed
+             */
+            data.addRerun(SampleMeta.getNeonatalIsRepeat());
+        }
+    }
+
+    /**
+     * Removes the uncommitted tests from the passed SO's sample that have no
+     * abnormal results in the previous sample
+     */
+    private void removeNormalTests(SampleSO data) throws Exception {
         int i, j, k, l;
+        DictionaryDO dict;
         SampleItemViewDO item;
         AnalysisViewDO ana;
         ResultViewDO res;
         TestViewDO t;
         TestResultViewDO tr;
         TestResultManager trm;
-        DictionaryDO dict;
+        SampleManager1 sm;
         ArrayList<TestManager> tms;
         ArrayList<Integer> anaIds;
         HashSet<Integer> testIds;
-        Datetime bt, et;
+
+        sm = data.getManager();
+        fetchPreviousManager(sm);
+        if (previousManager == null)
+            return;
 
         /*
          * find out which tests are present in the previous sample
@@ -232,8 +269,8 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
         if (testManagers == null)
             testManagers = new HashMap<Integer, TestManager>();
 
-        bt = Datetime.getInstance();
-        proxy.log(Level.FINE, "Starting removeTests", null);
+        proxy.log(Level.FINE, "Going through the analyses of the previous sample");
+
         for (i = 0; i < previousManager.item.count(); i++ ) {
             item = previousManager.item.get(i);
             for (j = 0; j < previousManager.analysis.count(item); j++ ) {
@@ -243,22 +280,17 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
                     testIds.add(ana.getTestId());
             }
         }
-        et = Datetime.getInstance();
-        proxy.log(Level.FINE, "Going through the analyses of the previous sample took " +
-                              (et.getDate().getTime() - bt.getDate().getTime()), null);
 
         if (normalTestResults == null)
             normalTestResults = new HashSet<Integer>();
         if (testIds.size() > 0) {
-            bt = Datetime.getInstance();
+            proxy.log(Level.FINE, "Fetching test managers");
             /*
              * fetch the test managers for the tests found above
              */
             tms = proxy.fetchTestManagersByIds(new ArrayList<Integer>(testIds));
-            et = Datetime.getInstance();
-            proxy.log(Level.FINE, "Fetching test managers took " +
-                                  (et.getDate().getTime() - bt.getDate().getTime()), null);
-            bt = Datetime.getInstance();
+
+            proxy.log(Level.FINE, "Going through the test results of the fetched managers");
             for (TestManager tm : tms) {
                 testManagers.put(tm.getTest().getId(), tm);
                 /*
@@ -279,16 +311,13 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
                     }
                 }
             }
-            et = Datetime.getInstance();
-            proxy.log(Level.FINE, "Going through test analytes and results took " +
-                                  (et.getDate().getTime() - bt.getDate().getTime()), null);
         }
 
-        bt = Datetime.getInstance();
         /*
          * find out which analyses in the previous sample have normal results
          * for the interpretation
          */
+        proxy.log(Level.FINE, "Going through the results of the previous sample");
         testIds.clear();
         for (i = 0; i < previousManager.item.count(); i++ ) {
             item = previousManager.item.get(i);
@@ -314,11 +343,7 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
             }
         }
 
-        et = Datetime.getInstance();
-        proxy.log(Level.FINE, "Going through the results of the previous sample took " +
-                              (et.getDate().getTime() - bt.getDate().getTime()), null);
-
-        bt = Datetime.getInstance();
+        proxy.log(Level.FINE, "Finding analyses to remove in the current manager");
         /*
          * find the uncommitted analyses in the current sample whose tests have
          * have normal results in the previous sample
@@ -354,22 +379,14 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
             }
         }
 
-        et = Datetime.getInstance();
-        proxy.log(Level.FINE, "Going through the analyses of the current sample took " +
-                              (et.getDate().getTime() - bt.getDate().getTime()), null);
-
-        bt = Datetime.getInstance();
+        proxy.log(Level.FINE, "Removing " + anaIds.size() + " analyses");
         /*
          * remove the analyses found above
          */
         for (Integer id : anaIds)
             sm = proxy.removeAnalysis(sm, id);
 
-        et = Datetime.getInstance();
-        proxy.log(Level.FINE, "Removing analyses took " +
-                              (et.getDate().getTime() - bt.getDate().getTime()), null);
-
-        return sm;
+        data.setManager(sm);
     }
 
     public static interface Proxy {
@@ -380,8 +397,10 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
 
         public DictionaryDO getDictionaryById(Integer id) throws Exception;
 
+        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
+
         public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception;
 
-        public void log(Level level, String message, Exception e);
+        public void log(Level level, String message);
     }
 }
