@@ -83,6 +83,11 @@ public class InventoryAdjustmentManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
 
     public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";

@@ -133,6 +133,11 @@ public class ExchangeCriteriaManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    public ExchangeCriteriaManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
 
     public ExchangeCriteriaManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";

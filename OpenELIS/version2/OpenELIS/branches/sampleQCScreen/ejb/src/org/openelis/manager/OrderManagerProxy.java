@@ -275,6 +275,11 @@ public class OrderManagerProxy {
         return null;
     }
 
+    public OrderManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public OrderManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;

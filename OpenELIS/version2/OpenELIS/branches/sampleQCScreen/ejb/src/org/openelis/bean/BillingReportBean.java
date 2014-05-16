@@ -338,22 +338,32 @@ public class BillingReportBean {
                 df.applyPattern("yyyyMMdd");
                 hdr.setLength(0);
                 hdr.append("HDR").append("|")
-                    .append(currentDateStr).append("|")
-                    .append(accession).append("|")
-                    .append(billingType).append("|")
-                    .append(df.format(recieved)).append("|")
-                    .append(clientCode).append("|")                
-                    .append(lastName).append("|")
-                    .append("|")                                // reserved for patient first name
-                    .append(org.getName()).append("|")
-                    .append(DataBaseUtil.toString(addr.getMultipleUnit())).append("|")
-                    .append(DataBaseUtil.toString(addr.getStreetAddress())).append("|")
-                    .append(DataBaseUtil.toString(addr.getCity())).append("|")
-                    .append(DataBaseUtil.toString(addr.getState())).append("|")
-                    .append(DataBaseUtil.toString(addr.getZipCode())).append("|")
-                    .append(domainInfo).append("|")
-                    .append("|")                            // reserved for Client Patient Id 2
-                    .append(DataBaseUtil.toString(projectName).toUpperCase()).append("|");
+                   .append(currentDateStr).append("|")
+                   .append(accession).append("|")
+                   .append(billingType).append("|")
+                   .append(df.format(recieved)).append("|")
+                   .append(clientCode).append("|")                
+                   .append(lastName).append("|")
+                   .append("|")                                // reserved for patient first name
+                   .append(org.getName()).append("|");
+                
+                /*
+                 * If the address does not have a multiple unit designation, we
+                 * need to shift the street address up into the first address field
+                 */
+                if (addr.getMultipleUnit() != null && addr.getMultipleUnit().length() > 0) {
+                    hdr.append(DataBaseUtil.toString(addr.getMultipleUnit())).append("|")
+                       .append(DataBaseUtil.toString(addr.getStreetAddress())).append("|");
+                } else {
+                    hdr.append(DataBaseUtil.toString(addr.getStreetAddress())).append("||");
+                }
+                
+                hdr.append(DataBaseUtil.toString(addr.getCity())).append("|")
+                   .append(DataBaseUtil.toString(addr.getState())).append("|")
+                   .append(DataBaseUtil.toString(addr.getZipCode())).append("|")
+                   .append(domainInfo).append("|")
+                   .append("|")                            // reserved for Client Patient Id 2
+                   .append(DataBaseUtil.toString(projectName).toUpperCase()).append("|");
             }
             
             /*
