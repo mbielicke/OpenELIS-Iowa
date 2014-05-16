@@ -32,12 +32,14 @@ import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.QcMeta;
 import org.openelis.ui.common.ModulePermission;
@@ -71,32 +73,37 @@ public class SampleQCScreenUI extends Screen {
     interface SampleQcUiBinder extends UiBinder<Widget, SampleQCScreenUI> {
     };
 
-    public static final SampleQcUiBinder           uiBinder = GWT.create(SampleQcUiBinder.class);
+    public static final SampleQcUiBinder                           uiBinder = GWT.create(SampleQcUiBinder.class);
 
-    protected ArrayList<WorksheetManager1>         managers;
+    protected ArrayList<WorksheetManager1>                         managers;
 
-    protected ModulePermission                     userPermission;
+    protected SampleManager1                                       sm;
 
-    @UiField
-    protected Button                               query, commit, abort, optionsButton, run;
+    protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> selected;
 
-    @UiField
-    protected TextBox<Integer>                     id;
+    protected ModulePermission                                     userPermission;
 
     @UiField
-    protected Dropdown<Integer>                    printer;
+    protected Button                                               query, commit, abort,
+                    optionsButton, run;
 
     @UiField
-    protected Tree                                 tree;
+    protected TextBox<Integer>                                     id;
 
-    protected SampleQCScreenUI                     screen;
+    @UiField
+    protected Dropdown<Integer>                                    printer;
 
-    protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
+    @UiField
+    protected Tree                                                 tree;
 
-    protected AsyncCallbackUI<ArrayList<WorksheetManager1>> fetchByIdCall, unlockCall;
+    protected SampleQCScreenUI                                     screen;
 
-    private static final String                             WORKSHEET_LEAF = "worksheet",
-                    QC_LEAF = "qc";
+    protected AsyncCallbackUI<ArrayList<IdNameVO>>                 queryCall;
+
+    protected AsyncCallbackUI<ArrayList<Object>>                   fetchByIdCall, unlockCall;
+
+    private static final String                                    ANALYSIS_LEAF = "analysis",
+                    WORKSHEET_LEAF = "worksheet", QC_LEAF = "qc";
 
     public SampleQCScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -199,6 +206,8 @@ public class SampleQCScreenUI extends Screen {
 
                     } else if (WORKSHEET_LEAF.equals(node.getType())) {
 
+                    } else if (ANALYSIS_LEAF.equals(node.getType())) {
+
                     }
                 }
             }
@@ -211,6 +220,7 @@ public class SampleQCScreenUI extends Screen {
      */
     @UiHandler("query")
     protected void query(ClickEvent event) {
+        sm = null;
         managers = null;
         /*
          * the tab for aux data uses the cache in query state
@@ -223,10 +233,6 @@ public class SampleQCScreenUI extends Screen {
 
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
-        commit(false);
-    }
-
-    private void commit(boolean ignoreWarning) {
         Validation validation;
 
         finishEditing();
@@ -254,7 +260,6 @@ public class SampleQCScreenUI extends Screen {
         }
 
         commitQuery();
-
     }
 
     protected void commitQuery() {
@@ -290,9 +295,14 @@ public class SampleQCScreenUI extends Screen {
         } else {
             setBusy(Messages.get().gen_fetching());
             if (fetchByIdCall == null) {
-                fetchByIdCall = new AsyncCallbackUI<ArrayList<WorksheetManager1>>() {
-                    public void success(ArrayList<WorksheetManager1> result) {
-                        managers = result;
+                fetchByIdCall = new AsyncCallbackUI<ArrayList<Object>>() {
+                    public void success(ArrayList<Object> result) {
+                        sm = (SampleManager1)result.get(0);
+                        managers = (ArrayList<WorksheetManager1>)result.get(1);
+                        if (sm == null || managers.size() < 1) {
+                            sm = null;
+                            managers = null;
+                        }
                         setState(DISPLAY);
                     }
 

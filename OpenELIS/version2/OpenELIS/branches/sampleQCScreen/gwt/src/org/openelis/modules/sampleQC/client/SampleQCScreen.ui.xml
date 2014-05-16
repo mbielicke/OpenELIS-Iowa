@@ -81,12 +81,7 @@
 						<r:Column width="200" label="worksheet description" />
 						<r:Column width="100" label="worksheet date" />
 						<r:Column width="200" label="worksheet instrument" />
-						<r:Leaf key="qc">
-							<r:LeafColumn>
-								<t:CheckBoxCell>
-									<w:CheckBox />
-								</t:CheckBoxCell>
-							</r:LeafColumn>
+						<r:Leaf key="analysis">
 							<r:LeafColumn>
 								<t:TextBoxCell>
 									<w:TextBox field="Integer" />
@@ -128,6 +123,33 @@
 								<t:TextBoxCell>
 									<w:TextBox field="String" />
 								</t:TextBoxCell>
+							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="qc">
+							<r:LeafColumn>
+								<t:CheckBoxCell>
+									<w:CheckBox />
+								</t:CheckBoxCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:TextBoxCell>
+									<w:TextBox field="Integer" />
+								</t:TextBoxCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 						</r:Leaf>
 					</r:Tree>

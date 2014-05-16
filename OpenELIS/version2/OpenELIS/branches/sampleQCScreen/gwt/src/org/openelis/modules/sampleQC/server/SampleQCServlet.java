@@ -31,7 +31,6 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.WorksheetManager1Bean;
-import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.sampleQC.client.SampleQCServiceInt;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -44,7 +43,7 @@ public class SampleQCServlet extends RemoteServlet implements SampleQCServiceInt
     private WorksheetManager1Bean     worksheetManager;
 
     @Override
-    public ArrayList<WorksheetManager1> fetchByAccessionNumber(Integer accession) throws Exception {
+    public ArrayList<Object> fetchByAccessionNumber(Integer accession) throws Exception {
         try {
             return worksheetManager.fetchByAccessionNumber(accession);
         } catch (Exception anyE) {

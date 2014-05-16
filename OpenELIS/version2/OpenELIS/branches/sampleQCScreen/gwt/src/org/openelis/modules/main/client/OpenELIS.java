@@ -103,10 +103,11 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
+//import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
@@ -140,7 +141,7 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder, worksheetCreation, worksheetCompletion, addOrCancel,
+                    worksheetBuilder,/* worksheetCreation,*/ worksheetCompletion, addOrCancel,
                     reviewAndRelease, toDo, labelFor, storage, QC, sampleQc, analyteParameter,
                     internalOrder, vendorOrder, sendoutOrder, fillOrder, shipping, buildKits,
                     inventoryTransfer, inventoryReceipt, inventoryAdjustment, inventoryItem,
@@ -154,6 +155,9 @@ public class OpenELIS extends Screen {
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs;
 
+	@UiField
+    protected Menu maintenanceMenu;                    
+
     public OpenELIS() throws Exception {
         Exception loadError;
 
@@ -165,6 +169,9 @@ public class OpenELIS extends Screen {
         }
 
         initWidget(uiBinder.createAndBindUi(this));
+        
+        maintenanceMenu.ensureDebugId("openelis.maintenanceMenu");
+        method.ensureDebugId("openelis.method");
 
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
@@ -173,7 +180,7 @@ public class OpenELIS extends Screen {
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
         initialize();
-
+        
         if (loadError != null)
             Window.alert("FATAL ERROR: " + loadError.getMessage() + "; Please contact IT support");
     }
@@ -513,14 +520,12 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            // org.openelis.ui.widget.Window window = new
-                            // org.openelis.ui.widget.Window();
+//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.organization());
-                            // window.setSize("877px", "631px");
+//                            window.setSize("877px", "631px");
                             window.setSize("20px", "20px");
                             window.setContent(new OrganizationScreen(window));
-                            // window.setContent(new
-                            // OrganizationScreenUI(window));
+//                            window.setContent(new OrganizationScreenUI(window));
                             browser.addWindow(window, "organization");
                         } catch (Throwable e) {
                             e.printStackTrace();
@@ -537,30 +542,30 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(worksheetCreation, "worksheet", new Command() {
-            public void execute() {
-
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.worksheetCreation());
-                            window.setSize("20px", "20px");
-                            window.setContent(new WorksheetCreationScreen(window));
-                            browser.addWindow(window, "worksheetCreation");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE, e.getMessage(), e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
+//        addCommand(worksheetCreation, "worksheet", new Command() {
+//            public void execute() {
+//
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        try {
+//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+//                            window.setName(msg.worksheetCreation());
+//                            window.setSize("20px", "20px");
+//                            window.setContent(new WorksheetCreationScreen(window));
+//                            browser.addWindow(window, "worksheetCreation");
+//                        } catch (Throwable e) {
+//                            remote().log(Level.SEVERE, e.getMessage(), e);
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
 
         addCommand(worksheetBuilder, "worksheetbuilder", new Command() {
             public void execute() {
