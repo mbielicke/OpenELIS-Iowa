@@ -188,7 +188,6 @@ public class AnalysisHelperBean {
         }
 
         ana.setIsReportable(t.getIsReportable());
-        ana.setIsPreliminary("N");
 
         for (SampleItemViewDO item : getItems(sm)) {
             if (item.getId().equals(sampleItemId)) {

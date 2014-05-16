@@ -105,6 +105,12 @@ public class QcManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    @SuppressWarnings("unused")
+    public QcManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
 
     @SuppressWarnings("unused")
     public QcManager abortUpdate(Integer id) throws Exception {
