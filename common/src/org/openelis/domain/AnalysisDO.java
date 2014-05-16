@@ -40,8 +40,8 @@ public class AnalysisDO extends DataObject {
 
     protected Integer         id, sampleItemId, revision, testId, sectionId, preAnalysisId,
                               parentAnalysisId, parentResultId, unitOfMeasureId,
-                              statusId, panelId;
-    protected String          isReportable, isPreliminary;
+                              statusId, panelId, typeId;
+    protected String          isReportable;
     protected Datetime        availableDate, startedDate, completedDate, releasedDate, printedDate;
 
     public AnalysisDO() {
@@ -49,7 +49,7 @@ public class AnalysisDO extends DataObject {
 
     public AnalysisDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
                       Integer sectionId, Integer panelId, Integer preAnalysisId,
-                      Integer parentAnalysisId, Integer parentResultId, String isPreliminary,
+                      Integer parentAnalysisId, Integer parentResultId, Integer typeId,
                       String isReportable, Integer unitOfMeasureId, Integer statusId,
                       Date availableDate, Date startedDate, Date completedDate,
                       Date releasedDate, Date printedDate) {
@@ -62,7 +62,7 @@ public class AnalysisDO extends DataObject {
         setPreAnalysisId(preAnalysisId);
         setParentAnalysisId(parentAnalysisId);
         setParentResultId(parentResultId);
-        setIsPreliminary(isPreliminary);
+        setTypeId(typeId);
         setIsReportable(isReportable);
         setUnitOfMeasureId(unitOfMeasureId);
         setStatusId(statusId);
@@ -155,12 +155,12 @@ public class AnalysisDO extends DataObject {
         _changed = true;
     }
 
-    public String getIsPreliminary() {
-        return isPreliminary;
+    public Integer getTypeId() {
+        return typeId;
     }
 
-    public void setIsPreliminary(String isPreliminary) {
-        this.isPreliminary = DataBaseUtil.trim(isPreliminary);
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
         _changed = true;
     }
 
