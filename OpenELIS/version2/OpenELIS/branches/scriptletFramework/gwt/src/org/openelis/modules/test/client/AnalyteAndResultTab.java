@@ -1632,7 +1632,7 @@ public class AnalyteAndResultTab extends Screen
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("scriptlet");
+        list = CategoryCache.getBySystemName("scriptlet_test_analyte");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));

@@ -38,6 +38,7 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
@@ -58,6 +59,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.ScriptletDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
@@ -95,6 +97,7 @@ import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.scriptlet.SampleSO;
 import org.openelis.scriptlet.SampleSO.Operation;
@@ -271,6 +274,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
+    protected SystemVariableDO                          domainScriptletVariable;
+
+    protected Integer                                   domainScriptletId;
+
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
@@ -278,7 +285,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET                  };
 
-    private static final String                         REPORT_TO_KEY = "reportTo",
+    protected static final String                       REPORT_TO_KEY = "reportTo",
                     BIRTH_HOSPITAL_KEY = "birthHospital";
 
     /**
@@ -310,7 +317,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                            "user_action",
                                            "unit_of_measure",
                                            "qaevent_type",
-                                           "scriptlet",
+                                           "scriptlet_domain",
+                                           "scriptlet_test",
+                                           "scriptlet_test_analyte",
                                            "newborn_results",
                                            "newborn_interpretation");
         } catch (Exception e) {
@@ -3664,13 +3673,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             scids = new HashSet<Integer>();
             if (scriptletId == null) {
                 /*
-                 * the scriptlet for the domain
+                 * add the scriptlet for the domain, which is the value of this
+                 * system variable
                  */
-                scids = new HashSet<Integer>();
-                scids.add(Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN);
+                if (domainScriptletVariable == null) {
+                    domainScriptletVariable = SystemVariableService.get()
+                                                                   .fetchByExactName("neonatal_domain_scriptlet");
+                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                }
+
+                scids.add(domainScriptletId);
 
                 /*
-                 * all the scriptlets for all tests, test analytes and aux
+                 * add all the scriptlets for all tests, test analytes and aux
                  * fields linked to the manager
                  */
                 scids.addAll(getTestScriptlets(false));
@@ -3775,8 +3790,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         evaluateEdit();
         setData();
         if (Operation.RESULT_CHANGED == operation) {
-            bus.fireEvent(new ResultChangeEvent(Constants.uid()
-                                                .getAnalysis(res.getAnalysisId())));
+            bus.fireEvent(new ResultChangeEvent(Constants.uid().getAnalysis(res.getAnalysisId())));
         } else {
             setState(state);
             fireDataChange();
@@ -3787,7 +3801,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(String changed) {
-        runScriptlet(Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN,
+        runScriptlet(domainScriptletId,
                      null,
                      changed,
                      Operation.NEW_DOMAIN_ADDED);
@@ -3797,7 +3811,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(Operation operation) {
-        runScriptlet(Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN, null, null, operation);
+        runScriptlet(domainScriptletId, null, null, operation);
     }
 
     /**

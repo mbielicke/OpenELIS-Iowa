@@ -25,15 +25,19 @@
  */
 package org.openelis.modules.scriptlet.client;
 
+import static org.openelis.modules.main.client.Logger.*;
+
+import java.util.logging.Level;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.NBSBTScriptlet1;
+import org.openelis.scriptlet.NbsBtScriptlet1;
 
 /**
  * This class is used for providing the front-end functionality for "nbs bt"
  * scriptlet
  */
-public class NBSBTProxy1 implements NBSBTScriptlet1.Proxy {
+public class NbsBtProxy1 implements NbsBtScriptlet1.Proxy {
 
     @Override
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
@@ -43,5 +47,10 @@ public class NBSBTProxy1 implements NBSBTScriptlet1.Proxy {
     @Override
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
         return DictionaryCache.getBySystemName(systemName);
+    }
+
+    @Override
+    public void log(Level level, String message) {
+        logger.log(level, message);
     }
 }

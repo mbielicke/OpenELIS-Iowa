@@ -62,12 +62,17 @@ public class NeonatalDomainProxy1 implements NeonatalDomainScriptlet1.Proxy {
     }
 
     @Override
+    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
+        return DictionaryCache.getBySystemName(systemName);
+    }
+    
+    @Override
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
         return SampleService1.get().removeAnalysis(sm, analysisId);
     }
 
     @Override
-    public void log(Level level, String message, Exception e) {
-        logger.log(level, message, e);
+    public void log(Level level, String message) {
+        logger.log(level, message);
     }
 }

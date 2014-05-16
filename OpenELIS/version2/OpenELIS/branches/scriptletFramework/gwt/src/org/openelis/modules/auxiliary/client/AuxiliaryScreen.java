@@ -959,7 +959,7 @@ public class AuxiliaryScreen extends Screen {
         // scriptlet dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("scriptlet");
+        list = CategoryCache.getBySystemName("scriptlet_aux_field");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

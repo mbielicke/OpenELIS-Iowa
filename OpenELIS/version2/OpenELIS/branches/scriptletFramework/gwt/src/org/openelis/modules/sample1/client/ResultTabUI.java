@@ -357,7 +357,6 @@ public class ResultTabUI extends Screen {
                                                                             data.getAnalyteExternalId(),
                                                                             Operation.RESULT_CHANGED),
                                                       screen);
-                        return;
                     }
 
                     if (testReflexUtility == null) {

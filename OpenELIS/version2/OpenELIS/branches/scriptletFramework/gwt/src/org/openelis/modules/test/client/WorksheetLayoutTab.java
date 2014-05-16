@@ -563,7 +563,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         formatId.setModel(model);
         
         model = new ArrayList<TableDataRow>();
-        list = CategoryCache.getBySystemName("scriptlet");
+        list = CategoryCache.getBySystemName("scriptlet_worksheet");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());

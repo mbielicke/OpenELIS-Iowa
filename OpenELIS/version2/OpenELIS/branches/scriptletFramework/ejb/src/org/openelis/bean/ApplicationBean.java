@@ -250,8 +250,6 @@ public class ApplicationBean {
         Constants.dictionary().SAMPLE_LOGGED_IN = dictId(map, "sample_logged_in");
         Constants.dictionary().SAMPLE_NOT_VERIFIED = dictId(map, "sample_not_verified");
         Constants.dictionary().SAMPLE_RELEASED = dictId(map, "sample_released");
-        Constants.dictionary().SCRIPTLET_NEONATAL_DOMAIN = dictId(map, "scriptlet_neonatal_domain");
-        Constants.dictionary().SCRIPTLET_PWS_VALIDATE = dictId(map, "scriptlet_pws_validate");
         Constants.dictionary().SDWIS_CATEGORY_BACTERIAL = dictId(map, "sdwis_category_bacterial");
         Constants.dictionary().SDWIS_CATEGORY_CHEMICAL = dictId(map, "sdwis_category_chemical");
         Constants.dictionary().SDWIS_CATEGORY_LEAD = dictId(map, "sdwis_category_lead");

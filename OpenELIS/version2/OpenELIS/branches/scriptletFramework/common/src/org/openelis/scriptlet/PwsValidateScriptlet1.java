@@ -26,11 +26,13 @@
 package org.openelis.scriptlet;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
@@ -43,40 +45,61 @@ import org.openelis.ui.scriptlet.ScriptletObject.Status;
 /**
  * The scriptlet for validating PWS information entered through aux data
  */
-public class PWSValidateScriptlet implements ScriptletInt<SampleSO> {
+public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
 
-    private Proxy proxy;
+    private Proxy               proxy;
 
-    public PWSValidateScriptlet(Proxy proxy) {
+    private static DictionaryDO pwsValidateDict;
+
+    public PwsValidateScriptlet1(Proxy proxy) throws Exception {
         this.proxy = proxy;
+
+        proxy.log(Level.FINE, "Initializing PwsValidateScriptlet1");
+        /*
+         * the dictionary entry for this scriptlet
+         */
+        if (pwsValidateDict == null) {
+            proxy.log(Level.FINE, "Getting the dictionary for 'scriptlet_pws_validate1'");
+            pwsValidateDict = proxy.getDictionaryBySystemName("scriptlet_pws_validate1");
+        }
     }
 
     @Override
     public SampleSO run(SampleSO data) {
-        return validatePWS(data);
+        proxy.log(Level.FINE, "In PwsValidateScriptlet1.run");
+        /*
+         * validate only if an aux data was changed
+         */
+        if ( !SampleMeta.getAuxDataValue().equals(data.getChanged()))
+            return data;
+
+        validatePWS(data);
+        return data;
     }
 
-    protected SampleSO validatePWS(SampleSO data) {
+    /**
+     * Validates whether the value of the aux data, that triggered this
+     * scriptlet, is the number0 of an existing PWS record, if it's linked to
+     * the scriptlet
+     */
+    private void validatePWS(SampleSO data) {
         int i;
         String uid;
         AuxDataViewDO aux;
         AuxFieldViewDO auxf;
         AuxFieldManager auxfm;
 
-        /*
-         * validate only if an aux data was changed
-         */
-        if (!SampleMeta.getAuxDataValue().equals(data.getChanged()))
-            return data;
-
         try {
+            /*
+             * go through the hashmap for aux data in the SO to find the aux
+             * data that was changed
+             */
+            proxy.log(Level.FINE,
+                      "Going through the SO to find the aux data that was changed to trigger the scriptlet");
             for (Map.Entry<Integer, AuxFieldGroupManager> entry : data.getAuxData().entrySet()) {
                 uid = Constants.uid().getAuxData(entry.getKey());
                 aux = (AuxDataViewDO)data.getManager().getObject(uid);
                 auxfm = entry.getValue().getFields();
-                /*
-                 * find the aux data that was changed
-                 */
                 for (i = 0; i < auxfm.count(); i++ ) {
                     auxf = auxfm.getAuxFieldAt(i);
                     /*
@@ -85,9 +108,10 @@ public class PWSValidateScriptlet implements ScriptletInt<SampleSO> {
                      * record whose number0 is the aux data's value
                      */
                     if (aux.getAuxFieldId().equals(auxf.getId()) &&
-                        Constants.dictionary().SCRIPTLET_PWS_VALIDATE.equals(auxf.getScriptletId())) {
-                            proxy.fetchPwsByNumber0(aux.getValue());
-                            break;                    
+                        pwsValidateDict.getId().equals(auxf.getScriptletId())) {
+                        proxy.log(Level.FINE, "Fetching PWS record for number0: " + aux.getValue());
+                        proxy.fetchPwsByNumber0(aux.getValue());
+                        break;
                     }
                 }
             }
@@ -98,10 +122,13 @@ public class PWSValidateScriptlet implements ScriptletInt<SampleSO> {
             data.setStatus(Status.FAILED);
             data.addException(e);
         }
-        return data;
     }
 
     public static interface Proxy {
+        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
+
         public PWSDO fetchPwsByNumber0(String value) throws Exception;
+
+        public void log(Level level, String message);
     }
 }

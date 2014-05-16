@@ -226,9 +226,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, String>         analysisStatuses;
 
-    protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall, fetchForUpdateCall, unlockCall;
+    protected AsyncCallbackUI<ArrayList<SampleManager1>> queryCall, unlockCall;
 
-    protected AsyncCallbackUI<SampleManager1>            commitUpdateCall;
+    protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, commitUpdateCall;
 
     protected Integer                                    lastAccession;
 
@@ -718,7 +718,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         /*
          * querying by this tab is not allowed on this screen
          */
@@ -737,7 +737,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         /*
          * querying by this tab is not allowed on this screen
          */
@@ -756,7 +756,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         /*
          * querying by this tab is not allowed on this screen
          */
@@ -797,7 +797,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
+
         /*
          * querying by this tab is not allowed on this screen
          */
@@ -832,12 +832,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         /*
          * querying by this tab is not allowed on this screen
          */
         sampleItemTab.setCanQuery(false);
-        
+
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -957,7 +957,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 return null;
             }
         });
-        
+
         /*
          * querying by this tab is not allowed on this screen
          */
@@ -1129,11 +1129,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().gen_lockForUpdate());
 
         if (fetchForUpdateCall == null) {
-            fetchForUpdateCall = new AsyncCallbackUI<ArrayList<SampleManager1>>() {
-                public void success(ArrayList<SampleManager1> result) {
+            fetchForUpdateCall = new AsyncCallbackUI<SampleManager1>() {
+                public void success(SampleManager1 result) {
                     UUID data;
 
-                    manager = result.get(0);
+                    manager = result;
                     managers.put(manager.getSample().getId(), manager);
                     refreshRows(manager.getSample().getId());
                     buildCache();
@@ -1154,9 +1154,19 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             };
         }
 
-        SampleService1.get().fetchForUpdateByAnalyses(getAnalyses(manager.getSample().getId()),
-                                                      elements,
-                                                      fetchForUpdateCall);
+        /*
+         * for update the data for all analyses is fetched and not just for the
+         * once that were returned by the initial query
+         */
+        SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
+                        SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
+                        SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
+                        SampleManager1.Load.QA, SampleManager1.Load.RESULT,
+                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
+
+        SampleService1.get().fetchForUpdate(manager.getSample().getId(),
+                                            elements,
+                                            fetchForUpdateCall);
     }
 
     /**
