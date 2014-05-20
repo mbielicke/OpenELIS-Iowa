@@ -35,6 +35,7 @@ public class WorksheetResultsTransferVO implements Serializable {
 
     private static final long    serialVersionUID = 1L;
 
+    protected ArrayList<ArrayList<ResultViewDO>> reflexResultsList;
     protected ArrayList<SampleManager1> sampleManagers;
     protected WorksheetManager1 worksheetManager;
 
@@ -46,11 +47,22 @@ public class WorksheetResultsTransferVO implements Serializable {
         this.sampleManagers = sampleManagers;
     }
 
+    public WorksheetResultsTransferVO(WorksheetManager1 worksheetManager, ArrayList<SampleManager1> sampleManagers,
+                                      ArrayList<ArrayList<ResultViewDO>> reflexResultsList) {
+        this.worksheetManager = worksheetManager;
+        this.sampleManagers = sampleManagers;
+        this.reflexResultsList = reflexResultsList;
+    }
+
     public WorksheetManager1 getWorksheetManager() {
         return worksheetManager;
     }
 
     public ArrayList<SampleManager1> getSampleManagers() {
         return sampleManagers;
+    }
+
+    public ArrayList<ArrayList<ResultViewDO>> getReflexResultsList() {
+        return reflexResultsList;
     }
 }
