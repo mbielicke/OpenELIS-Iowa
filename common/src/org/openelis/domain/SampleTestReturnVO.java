@@ -61,13 +61,13 @@ public class SampleTestReturnVO implements Serializable {
         this.errors = errors;
     }
 
-    public void addTest(Integer sampleItemId, Integer testId, Integer analysisId,
-                        Integer sectionId, Integer resultId, Integer panelId,
-                        boolean allowDuplicate, ArrayList<Integer> reportableAnalytes) {
+    public void addTest(Integer sampleId, Integer sampleItemId, Integer testId,
+                        Integer analysisId, Integer sectionId, Integer resultId,
+                        Integer panelId, boolean allowDuplicate, ArrayList<Integer> reportableAnalytes) {
         if (tests == null)
             tests = new ArrayList<SampleTestRequestVO>(1);
 
-        tests.add(new SampleTestRequestVO(sampleItemId, testId, analysisId, sectionId,
+        tests.add(new SampleTestRequestVO(sampleId, sampleItemId, testId, analysisId, sectionId,
                                           resultId, panelId, allowDuplicate,
                                           reportableAnalytes));
     }

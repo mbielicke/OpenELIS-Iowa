@@ -17674,6 +17674,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_oneUnitForEditMultiple();
 
   /**
+   * Translated "Some analyses were not checked for transfer due to a duplicate being present.".
+   * 
+   * @return translated "Some analyses were not checked for transfer due to a duplicate being present."
+   */
+  @DefaultMessage("Some analyses were not checked for transfer due to a duplicate being present.")
+  @Key("worksheet_uncheckedDuplicateAnalyses")
+  String worksheet_uncheckedDuplicateAnalyses();
+
+  /**
    * Translated "The status of the shipping record must be either \"Processed\" or \"Shipped\"".
    * 
    * @return translated "The status of the shipping record must be either \"Processed\" or \"Shipped\""
