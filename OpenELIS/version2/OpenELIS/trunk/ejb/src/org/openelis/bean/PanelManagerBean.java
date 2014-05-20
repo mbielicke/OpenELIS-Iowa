@@ -125,26 +125,6 @@ public class PanelManagerBean {
         return fetchById(id);
     }
 
-    public PanelManager delete(PanelManager man) throws Exception {
-        UserTransaction ut;
-
-        checkSecurity(ModuleFlags.DELETE);
-
-        ut = ctx.getUserTransaction();
-        try {
-            ut.begin();
-            lockBean.validateLock(Constants.table().PANEL, man.getPanel().getId());
-            man.delete();
-            lockBean.unlock(Constants.table().PANEL, man.getPanel().getId());
-            ut.commit();
-        } catch (Exception e) {
-            ut.rollback();
-            throw e;
-        }
-
-        return man;
-    }
-
     public PanelItemManager fetchItemByPanelId(Integer id) throws Exception {
         return PanelItemManager.fetchByPanelId(id);
     }
