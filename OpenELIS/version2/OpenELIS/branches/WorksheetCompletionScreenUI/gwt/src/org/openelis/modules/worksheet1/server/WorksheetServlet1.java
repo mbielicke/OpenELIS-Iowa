@@ -125,8 +125,8 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
-    public WorksheetManager1 transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                             ArrayList<SampleManager1> sampleMans) throws Exception {
+    public WorksheetResultsTransferVO transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
         try {
             return worksheetManager1.transferResults(wm, waVDOs, sampleMans);
         } catch (Exception anyE) {

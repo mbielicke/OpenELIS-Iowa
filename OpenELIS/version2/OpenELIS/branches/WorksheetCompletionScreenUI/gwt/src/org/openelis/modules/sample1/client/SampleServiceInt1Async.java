@@ -76,6 +76,9 @@ public interface SampleServiceInt1Async {
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback);
 
+    public void update(ArrayList<SampleManager1> sms, boolean ignoreWarnings,
+                       AsyncCallback<ArrayList<SampleManager1>> callback);
+
     public void validateAccessionNumber(SampleManager1 sm,
                                 AsyncCallback<Void> callback);
 

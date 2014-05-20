@@ -247,6 +247,21 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.update(sms, ignoreWarnings, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void update(ArrayList<SampleManager1> sms, boolean ignoreWarnings,
+                       AsyncCallback<ArrayList<SampleManager1>> callback) {
+        service.update(sms, ignoreWarnings, callback);
+    }
+
+    @Override
     public void validateAccessionNumber(SampleManager1 sm, AsyncCallback<Void> callback) {
         service.validateAccessionNumber(sm, callback);
     }

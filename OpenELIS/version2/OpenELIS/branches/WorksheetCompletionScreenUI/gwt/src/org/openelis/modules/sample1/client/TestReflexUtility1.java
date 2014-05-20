@@ -48,6 +48,18 @@ public abstract class TestReflexUtility1 {
      */
     public abstract TestManager getTestManager(Integer testId) throws Exception;
 
+    public ArrayList<SampleTestRequestVO> getReflexTests(ArrayList<SampleManager1> sms,
+                                                         ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
+        int i;
+        ArrayList<SampleTestRequestVO> tests;
+        
+        tests = new ArrayList<SampleTestRequestVO>();
+        for (i = 0; i < sms.size(); i++)
+            tests.addAll(getReflexTests(sms.get(i), results.get(i)));
+        
+        return tests;
+    }
+    
     public ArrayList<SampleTestRequestVO> getReflexTests(SampleManager1 sm,
                                                          ArrayList<ResultViewDO> results) throws Exception {
 
@@ -115,7 +127,8 @@ public abstract class TestReflexUtility1 {
 
                 if (tests == null)
                     tests = new ArrayList<SampleTestRequestVO>();
-                test = new SampleTestRequestVO(ana.getSampleItemId(),
+                test = new SampleTestRequestVO(sm.getSample().getId(),
+                                               ana.getSampleItemId(),
                                                tr.getAddTestId(),
                                                ana.getId(),
                                                null,
