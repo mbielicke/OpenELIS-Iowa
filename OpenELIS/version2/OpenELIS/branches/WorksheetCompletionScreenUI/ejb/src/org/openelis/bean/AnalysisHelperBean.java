@@ -343,7 +343,7 @@ public class AnalysisHelperBean {
         prepIds = setPrepForAnalysis(sm, ana, anaByTest, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
-                ret.addTest(ana.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+                ret.addTest(sm.getSample().getId(), ana.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
 
         results = getResults(sm);
         rows = null;

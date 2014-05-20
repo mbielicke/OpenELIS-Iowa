@@ -1631,16 +1631,18 @@ public class WorksheetManager1Bean {
         return columnNames;
     }
 
-    public WorksheetManager1 transferResults(WorksheetManager1 manager, ArrayList<WorksheetAnalysisViewDO> waVDOs,
-                                             ArrayList<SampleManager1> sampleMans) throws Exception {
+    public WorksheetResultsTransferVO transferResults(WorksheetManager1 manager,
+                                                      ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
         boolean update;
         int i, c;
         AnalysisUserViewDO auVDO;
         AnalysisViewDO aVDO;
-        ArrayList<ArrayList<ResultViewDO>> resultRows, analyteRows;
+        ArrayList<ArrayList<ResultViewDO>> resultRows, analyteRows, reflexResultsList;
         ArrayList<IdNameVO> formatColumns;
         ArrayList<Integer> unlockIds, newAnalyteIndexes;
-        ArrayList<ResultViewDO> resultRow;
+        ArrayList<ResultViewDO> resultRow, reflexResults;
+        ArrayList<SampleManager1> reflexMans;
         ArrayList<TestAnalyteViewDO> newAnalytes;
         ArrayList<WorksheetResultViewDO> wrVDOs, newAnalyteWRVDOs;
         HashMap<Integer, HashMap<Integer, TestAnalyteViewDO>> testTestAnalyteMap;
@@ -1712,6 +1714,8 @@ public class WorksheetManager1Bean {
         newAnalytes = new ArrayList<TestAnalyteViewDO>();
         newAnalyteIndexes = new ArrayList<Integer>();
         newAnalyteWRVDOs = new ArrayList<WorksheetResultViewDO>();
+        reflexMans = new ArrayList<SampleManager1>();
+        reflexResultsList = new ArrayList<ArrayList<ResultViewDO>>();
         for (WorksheetAnalysisViewDO waVDO : waVDOs) {
             update = false;
             if (Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
@@ -1814,13 +1818,15 @@ public class WorksheetManager1Bean {
                 newAnalytes.clear();
                 newAnalyteIndexes.clear();
                 newAnalyteWRVDOs.clear();
+                reflexResults = new ArrayList<ResultViewDO>();
                 for (WorksheetResultViewDO wrVDO : wrVDOsByWorksheetAnalysisId.get(waVDO.getId())) {
                     resultRows = resultRowsByAnalyteId.get(wrVDO.getAnalyteId());
                     if (resultRows != null) {
                         resultRow = resultRows.get(0);
                         update = worksheetResultToAnalysisResult(manager, wrVDO, resultRow,
                                                                  aVDO, rf, formatColumnMap,
-                                                                 analytesById, errorList) ||
+                                                                 analytesById, reflexResults,
+                                                                 errorList) ||
                                  update;
                         
                         resultRows.remove(0);
@@ -1854,8 +1860,13 @@ public class WorksheetManager1Bean {
                     update = worksheetResultToAnalysisResult(manager, newAnalyteWRVDOs.get(i),
                                                              resultRow, aVDO, rf,
                                                              formatColumnMap, analytesById,
-                                                             errorList) ||
+                                                             reflexResults, errorList) ||
                              update;
+                }
+                
+                if (reflexResults.size() > 0) {
+                    reflexMans.add(sMan);
+                    reflexResultsList.add(reflexResults);
                 }
             }
             
@@ -1890,6 +1901,8 @@ public class WorksheetManager1Bean {
             if (!updateIds.contains(data.getSample().getId())) {
                 unlockIds.add(data.getSample().getId());
                 sampleMans.remove(data);
+            } else if (reflexMans.contains(data)) {
+                sampleMans.remove(data);
             }
         }
 
@@ -1898,7 +1911,12 @@ public class WorksheetManager1Bean {
         if (unlockIds.size() > 0)
             lock.unlock(Constants.table().SAMPLE, unlockIds);
         
-        return unlock(manager.getWorksheet().getId(), WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.NOTE);
+        if (reflexMans.size() > 0)
+            return new WorksheetResultsTransferVO(manager, reflexMans, reflexResultsList);
+        else
+            return new WorksheetResultsTransferVO(unlock(manager.getWorksheet().getId(),
+                                                         WorksheetManager1.Load.DETAIL,
+                                                         WorksheetManager1.Load.NOTE), null);
     }
     
     private void loadQcForAnalysis(WorksheetManager1 wm, TestWorksheetItemDO twiDO,
@@ -2080,6 +2098,7 @@ public class WorksheetManager1Bean {
                                                     AnalysisViewDO aVDO, ResultFormatter rf,
                                                     HashMap<String, Integer> formatColumnMap,
                                                     HashMap<Integer, AnalyteDO> analytesById,
+                                                    ArrayList<ResultViewDO> reflexResults,
                                                     ValidationErrorsList errorList) {
         boolean update;
         int c;
@@ -2097,6 +2116,8 @@ public class WorksheetManager1Bean {
             if (c == 0) {
                 try {
                     ResultHelper.formatValue(rVDO, wrVDO.getValueAt(0), aVDO.getUnitOfMeasureId(), rf);
+                    if (rVDO.isChanged())
+                        reflexResults.add(rVDO);
                     update = true;
                 } catch (Exception anyE) {
                     errorList.add(new FormErrorException(Messages.get().worksheet_errorPrefix(String.valueOf(wiDO.getPosition()),
@@ -2130,6 +2151,8 @@ public class WorksheetManager1Bean {
                 if (wCol != null) {
                     try {
                         ResultHelper.formatValue(rVDO, wrVDO.getValueAt(wCol), aVDO.getUnitOfMeasureId(), rf);
+                        if (rVDO.isChanged())
+                            reflexResults.add(rVDO);
                         update = true;
                     } catch (Exception anyE) {
                         errorList.add(new FormErrorException(Messages.get().worksheet_errorPrefix(String.valueOf(wiDO.getPosition()),
