@@ -76,6 +76,11 @@ public class MethodService implements MethodServiceInt, MethodServiceIntAsync {
     }
 
     @Override
+    public void fetchActiveByName(String search, AsyncCallback<ArrayList<MethodDO>> callback) {
+        service.fetchActiveByName(search, callback);
+    }
+
+    @Override
     public void fetchForUpdate(Integer id, AsyncCallback<MethodDO> callback) {
         service.fetchForUpdate(id, callback);
     }
@@ -96,6 +101,15 @@ public class MethodService implements MethodServiceInt, MethodServiceIntAsync {
         
         callback = new Callback<ArrayList<MethodDO>>();
         service.fetchByName(search, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<MethodDO> fetchActiveByName(String search) throws Exception {
+        Callback<ArrayList<MethodDO>> callback;
+        
+        callback = new Callback<ArrayList<MethodDO>>();
+        service.fetchActiveByName(search, callback);
         return callback.getResult();
     }
 
@@ -151,5 +165,4 @@ public class MethodService implements MethodServiceInt, MethodServiceIntAsync {
         service.abortUpdate(id, callback);
         return callback.getResult();
     }
-
 }
