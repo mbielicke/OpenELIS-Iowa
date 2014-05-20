@@ -62,7 +62,8 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
                     TEST_ANA_VIEW_ROW_ANALYTE_ID = "_testAnalyteView.rowAnalyteId",
                     TEST_ANA_VIEW_ROW_ANALYTE_NAME = "_testAnalyteView.rowAnalyteName",
                     TEST_ANA_VIEW_COL_ANALYTE_ID = "_testAnalyteView.colAnalyteId",
-                    TEST_ANA_VIEW_COL_ANALYTE_NAME = "_testAnalyteView.colAnalyteName";
+                    TEST_ANA_VIEW_COL_ANALYTE_NAME = "_testAnalyteView.colAnalyteName",
+                    PANEL_NAME = "_panel.name";
 
     private static HashSet<String> names;
 
@@ -89,7 +90,8 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
                                                   TEST_ANA_VIEW_ROW_ANALYTE_ID,
                                                   TEST_ANA_VIEW_ROW_ANALYTE_NAME,
                                                   TEST_ANA_VIEW_COL_ANALYTE_ID,
-                                                  TEST_ANA_VIEW_COL_ANALYTE_NAME));
+                                                  TEST_ANA_VIEW_COL_ANALYTE_NAME,
+                                                  PANEL_NAME));
     }
 
     public static String getId() {
@@ -207,6 +209,10 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
     public static String getTestAnalyteViewColAnalyteName() {
         return TEST_ANA_VIEW_COL_ANALYTE_NAME;
     }
+    
+    public static String getPanelName() {
+        return PANEL_NAME;
+    }
 
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
@@ -237,6 +243,9 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
 
         if (where.indexOf("testAnalyteView.") > -1)
             from += ", IN (_exchangeLocalTerm.testAnalyteView) _testAnalyteView ";
+        
+        if (where.indexOf("panel.") > -1)
+            from += ", IN (_exchangeLocalTerm.panel) _panel ";
 
         return from;
     }

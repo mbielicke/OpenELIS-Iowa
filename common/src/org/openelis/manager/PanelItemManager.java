@@ -110,10 +110,6 @@ public class PanelItemManager implements Serializable {
         return proxy().update(this);
     }
     
-    public void delete() throws Exception {
-        proxy().delete(this);            
-    }
-    
     public void validate() throws Exception {
         proxy().validate(this);
     }
