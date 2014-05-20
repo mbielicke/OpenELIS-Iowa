@@ -45,11 +45,6 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
     }
 
     @Override
-    public void delete(PanelManager man, AsyncCallback<Void> callback) {
-        service.delete(man, callback);
-    }
-
-    @Override
     public void fetchAuxIdsByPanelId(Integer panelId, AsyncCallback<ArrayList<IdVO>> callback) {
         service.fetchAuxIdsByPanelId(panelId, callback);
     }
@@ -182,16 +177,7 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
         service.update(man, callback);
         return callback.getResult();
     }
-
-    @Override
-    public void delete(PanelManager man) throws Exception {
-        Callback<Void> callback;
-        
-        callback = new Callback<Void>();
-        service.delete(man, callback);
-        callback.getResult();
-    }
-
+    
     @Override
     public PanelManager fetchForUpdate(Integer id) throws Exception {
         Callback<PanelManager> callback;

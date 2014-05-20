@@ -48,10 +48,6 @@ public class PanelManagerProxy {
         return PanelService.get().update(man);
     }
     
-    public void delete(PanelManager man) throws Exception {
-        PanelService.get().delete(man);
-    }
-    
     public PanelManager fetchForUpdate(Integer id) throws Exception {
         return PanelService.get().fetchForUpdate(id);
     }
@@ -60,7 +56,6 @@ public class PanelManagerProxy {
         return PanelService.get().abortUpdate(id);
     }
     
-    @SuppressWarnings("unused")
     public void validate(PanelManager man) throws Exception {
     }
 }

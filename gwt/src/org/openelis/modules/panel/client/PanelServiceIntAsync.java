@@ -18,8 +18,6 @@ public interface PanelServiceIntAsync {
 
     void add(PanelManager man, AsyncCallback<PanelManager> callback);
 
-    void delete(PanelManager man, AsyncCallback<Void> callback);
-
     void fetchAuxIdsByPanelId(Integer panelId, AsyncCallback<ArrayList<IdVO>> callback);
 
     void fetchById(Integer id, AsyncCallback<PanelManager> callback);

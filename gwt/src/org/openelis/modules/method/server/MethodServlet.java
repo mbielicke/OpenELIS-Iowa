@@ -47,6 +47,14 @@ public class MethodServlet extends RemoteServlet implements MethodServiceInt {
 
     public ArrayList<MethodDO> fetchByName(String search) throws Exception {
         try {
+            return method.fetchByName(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<MethodDO> fetchActiveByName(String search) throws Exception {
+        try {
             return method.fetchActiveByName(search + "%", 10);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
