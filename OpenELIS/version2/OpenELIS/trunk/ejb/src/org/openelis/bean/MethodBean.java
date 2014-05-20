@@ -90,7 +90,7 @@ public class MethodBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<MethodDO> fetchByName(String name, int maxResults) throws Exception {
+    public ArrayList<MethodDO> fetchByName(String name, int maxResults) {
         Query query;
 
         query = manager.createNamedQuery("Method.FetchByName");
