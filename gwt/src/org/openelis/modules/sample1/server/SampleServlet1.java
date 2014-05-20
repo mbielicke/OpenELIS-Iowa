@@ -131,6 +131,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
+        try {
+            return sampleManager1.update(sms, ignoreWarnings);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception {
         try {
             return sampleManager1.unlock(sampleId, elements);

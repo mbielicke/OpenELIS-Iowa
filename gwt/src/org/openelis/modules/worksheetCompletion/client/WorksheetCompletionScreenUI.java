@@ -30,6 +30,7 @@ import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
@@ -57,11 +58,14 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleTestRequestVO;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetResultsTransferVO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
@@ -70,7 +74,10 @@ import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.pws.client.StatusBarPopupScreenUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.TestReflexUtility1;
+import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
+import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
@@ -165,14 +172,17 @@ public class WorksheetCompletionScreenUI extends Screen {
     protected AsyncCallbackUI<ArrayList<SampleManager1>>  unlockSamplesCall;
     protected AsyncCallbackUI<WorksheetManager1>          exportToExcelCall, fetchByIdCall,
                                                           fetchForUpdateCall, importFromExcelCall,
-                                                          transferCall, unlockCall,
-                                                          updateCall;
-    protected AsyncCallbackUI<WorksheetResultsTransferVO> fetchForTransferCall;
+                                                          unlockCall, updateCall;
+    protected AsyncCallbackUI<WorksheetResultsTransferVO> fetchForTransferCall, transferCall;
     protected EditNoteLookupUI                            failedNoteLookup;
+    protected HashMap<Integer, TestManager>               testManagers;
     protected SampleManager1.Load                         sampleElements[] = {SampleManager1.Load.ORGANIZATION,
                                                                               SampleManager1.Load.QA,
                                                                               SampleManager1.Load.SINGLERESULT};
     protected String                                      displayExcelDirectory;
+    protected TestReflexUtility1                          testReflexUtility;
+    protected TestSelectionLookupUI                       testSelectionLookup;
+    protected WorksheetCompletionScreenUI                 screen;
     protected WorksheetLookupScreenUI                     wLookupScreen;
     protected WorksheetManager1.Load                      elements[] = {WorksheetManager1.Load.DETAIL,
                                                                         WorksheetManager1.Load.NOTE};
@@ -200,6 +210,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         
         manager = null;
         updateTransferMode = false;
+        testManagers = new HashMap<Integer, TestManager>();
     }
 
     /**
@@ -209,6 +220,8 @@ public class WorksheetCompletionScreenUI extends Screen {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
 
+        screen = this;
+        
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
@@ -239,8 +252,8 @@ public class WorksheetCompletionScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE, DISPLAY) && !updateTransferMode &&
-                                  userPermission.hasUpdatePermission());
+                update.setEnabled((isState(UPDATE) && !updateTransferMode) ||
+                                  (isState(DISPLAY) && userPermission.hasUpdatePermission()));
                 if (isState(UPDATE) && !updateTransferMode) {
                     update.setPressed(true);
                     update.lock();
@@ -298,8 +311,9 @@ public class WorksheetCompletionScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                transferResultsButton.setEnabled(isState(DISPLAY) && canEdit() &&
-                                                 userPermission.hasUpdatePermission());
+                transferResultsButton.setEnabled((isState(UPDATE) && updateTransferMode) ||
+                                                 (isState(DISPLAY) && canEdit() &&
+                                                  userPermission.hasUpdatePermission()));
                 if (isState(UPDATE) && updateTransferMode) {
                     transferResultsButton.setPressed(true);
                     transferResultsButton.lock();
@@ -810,14 +824,54 @@ public class WorksheetCompletionScreenUI extends Screen {
         
         waVDOs = worksheetItemTab.getTransferSelection();
         if (transferCall == null) {
-            transferCall = new AsyncCallbackUI<WorksheetManager1>() {
-                public void success(WorksheetManager1 result) {
-                    manager = result;
-                    setData();
-                    setState(DISPLAY);
-                    fireDataChange();
-                    updateTransferMode = false;
-                    setDone(Messages.get().gen_updatingComplete());
+            transferCall = new AsyncCallbackUI<WorksheetResultsTransferVO>() {
+                public void success(final WorksheetResultsTransferVO result) {
+                    ArrayList<SampleTestRequestVO> tests;
+
+                    manager = result.getWorksheetManager();
+                    if (result.getSampleManagers() != null && result.getSampleManagers().size() > 0) {
+                        final HashMap<Integer, SampleManager1> sMansById = new HashMap<Integer, SampleManager1>();
+                        for (SampleManager1 sMan : result.getSampleManagers())
+                            sMansById.put(sMan.getSample().getId(), sMan);
+                        
+                        if (testReflexUtility == null) {
+                            testReflexUtility = new TestReflexUtility1() {
+                                @Override
+                                public TestManager getTestManager(Integer testId) throws Exception {
+                                    return screen.getTestManager(testId);
+                                }
+                            };
+                        }
+                        try {
+                            tests = testReflexUtility.getReflexTests(result.getSampleManagers(),
+                                                                     result.getReflexResultsList());
+                            if (tests != null) {
+                                showPrepAndReflexTests(sMansById, tests);
+                            } else {
+                                try {
+                                    SampleService1.get().update(result.getSampleManagers(), true);
+                                } catch (Exception e) {
+                                    Window.alert(e.getMessage());
+                                    logger.log(Level.SEVERE, e.getMessage(), e);
+                                    return;
+                                }
+                                setData();
+                                setState(DISPLAY);
+                                fireDataChange();
+                                updateTransferMode = false;
+                                setDone(Messages.get().gen_updatingComplete());
+                            }
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                        }
+                    } else {
+                        setData();
+                        setState(DISPLAY);
+                        fireDataChange();
+                        updateTransferMode = false;
+                        setDone(Messages.get().gen_updatingComplete());
+                    }
                 }
                 
                 public void validationErrors(ValidationErrorsList e) {
@@ -1328,6 +1382,105 @@ public class WorksheetCompletionScreenUI extends Screen {
         }
     }
     
+    /*
+     * show the popup for selecting the reflex test
+     */
+    private void showPrepAndReflexTests(final HashMap<Integer, SampleManager1> sMansById,
+                                        ArrayList<SampleTestRequestVO> reqTests) {
+        ModalWindow modal;
+
+        if (testSelectionLookup == null) {
+            testSelectionLookup = new TestSelectionLookupUI() {
+                @Override
+                public TestManager getTestManager(Integer testId) throws Exception {
+                    return screen.getTestManager(testId);
+                }
+
+                @Override
+                public void ok() {
+                    ArrayList<SampleTestRequestVO> prepTests, selTests, samTests;
+                    Integer samId;
+                    SampleTestReturnVO returnVO;
+
+                    samId = null;
+                    prepTests = new ArrayList<SampleTestRequestVO>();
+                    samTests = new ArrayList<SampleTestRequestVO>();
+                    selTests = testSelectionLookup.getSelectedTests();
+                    if (selTests != null && selTests.size() > 0) {
+                        for (SampleTestRequestVO test : selTests) {
+                            if (!test.getSampleId().equals(samId)) {
+                                if (samId != null) {
+                                    try {
+                                        returnVO = SampleService1.get().addAnalyses(sMansById.get(samId), samTests);
+                                        sMansById.put(samId, returnVO.getManager());
+                                        samTests.clear();
+                                        if (returnVO.getTests() != null && returnVO.getTests().size() > 0)
+                                            prepTests.addAll(returnVO.getTests());
+                                    } catch (Exception e) {
+                                        Window.alert(e.getMessage());
+                                        logger.log(Level.SEVERE, e.getMessage(), e);
+                                        return;
+                                    }
+                                }
+                                samId = test.getSampleId();
+                            }
+                            samTests.add(test);
+                        }
+                        if (samTests.size() > 0) {
+                            try {
+                                returnVO = SampleService1.get().addAnalyses(sMansById.get(samId), samTests);
+                                sMansById.put(samId, returnVO.getManager());
+                                if (returnVO.getTests() != null && returnVO.getTests().size() > 0)
+                                    prepTests.addAll(returnVO.getTests());
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                                logger.log(Level.SEVERE, e.getMessage(), e);
+                                return;
+                            }
+                        }
+                    }
+                    
+                    if (prepTests.size() > 0) {
+                        showPrepAndReflexTests(sMansById, prepTests);
+                    } else {
+                        try {
+                            SampleService1.get().update(new ArrayList<SampleManager1>(sMansById.values()), true);
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            return;
+                        }
+                        screen.setData();
+                        screen.setState(DISPLAY);
+                        screen.fireDataChange();
+                        updateTransferMode = false;
+                        screen.setDone(Messages.get().gen_updatingComplete());
+                    }
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("520px", "350px");
+        modal.setName(Messages.get().testSelection_reflexTestSelection());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(testSelectionLookup);
+
+        testSelectionLookup.setData(new ArrayList<SampleManager1>(sMansById.values()), reqTests);
+        testSelectionLookup.setWindow(modal);
+    }
+
+    private TestManager getTestManager(Integer testId) throws Exception {
+        TestManager tMan;
+        
+        tMan = testManagers.get(testId);
+        if (tMan == null) {
+            tMan = TestService.get().fetchWithPrepTestsAndReflexTests(testId);
+            testManagers.put(testId, tMan);
+        }
+        return tMan;
+    }
+
     private Integer getWorksheetId() {
         if (manager == null)
             return null;

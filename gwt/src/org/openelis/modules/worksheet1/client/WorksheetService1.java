@@ -165,16 +165,18 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public WorksheetManager1 transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs, ArrayList<SampleManager1> sampleMans) throws Exception {
-        Callback<WorksheetManager1> callback;
+    public WorksheetResultsTransferVO transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
+        Callback<WorksheetResultsTransferVO> callback;
 
-        callback = new Callback<WorksheetManager1>();
+        callback = new Callback<WorksheetResultsTransferVO>();
         service.transferResults(wm, waVDOs, sampleMans, callback);
         return callback.getResult();
     }
 
     @Override
-    public void transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs, ArrayList<SampleManager1> sampleMans, AsyncCallback<WorksheetManager1> callback) {
+    public void transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                ArrayList<SampleManager1> sampleMans, AsyncCallback<WorksheetResultsTransferVO> callback) {
         service.transferResults(wm, waVDOs, sampleMans, callback);
     }
 

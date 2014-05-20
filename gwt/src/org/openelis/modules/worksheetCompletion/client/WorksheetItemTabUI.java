@@ -703,6 +703,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
+        boolean dupMsg;
         int i, j, k, l, r, rowSize;
         ArrayList<IdNameVO> headers;
         ArrayList<Row> model;
@@ -719,6 +720,7 @@ public class WorksheetItemTabUI extends Screen {
         transferRowMap.clear();
         
         r = 0;
+        dupMsg = false;
         model = new ArrayList<Row>();
         if (manager != null) {
             try {
@@ -770,6 +772,11 @@ public class WorksheetItemTabUI extends Screen {
                                         model.get(rowIndex).setCell(0, "N");
                                         transferRowMap.put(waDO.getAnalysisId(), null);
                                     }
+                                    dupMsg = true;
+                                } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(waDO.getStatusId()) ||
+                                           Constants.dictionary().ANALYSIS_RELEASED.equals(waDO.getStatusId()) ||
+                                           Constants.dictionary().ANALYSIS_CANCELLED.equals(waDO.getStatusId())) {
+                                    row.setCell(0, "N");
                                 } else {
                                     row.setCell(0, "Y");
                                     transferRowMap.put(waDO.getAnalysisId(), r);
@@ -878,6 +885,9 @@ public class WorksheetItemTabUI extends Screen {
          */
         qcLink.setModel(qcLinkModel);
 
+        if (dupMsg)
+            Window.alert(Messages.get().worksheet_uncheckedDuplicateAnalyses());
+        
         return model;
     }
 

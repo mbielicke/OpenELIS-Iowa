@@ -75,6 +75,8 @@ public interface SampleServiceInt1 extends RemoteService {
 
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception;
 
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception;
+
     public void validateAccessionNumber(SampleManager1 sm) throws Exception;
     
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception;
