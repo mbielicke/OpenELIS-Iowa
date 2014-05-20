@@ -244,7 +244,10 @@ public class TestMethodBean {
         when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
         MethodDO dup = mock(MethodDO.class);
         when(dup.getId()).thenReturn(1);
-        when(query.getSingleResult()).thenReturn(dup);
+        when(dup.getIsActive()).thenReturn("Y");
+        List<MethodDO> results =  new ArrayList<MethodDO>();
+        results.add(dup);
+        when(query.getResultList()).thenReturn(results);
         
         MethodDO data = mock(MethodDO.class);
         when(data.getActiveBegin()).thenReturn(Datetime.getInstance());
