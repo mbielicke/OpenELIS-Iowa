@@ -25,9 +25,6 @@
  */
 package org.openelis.bean;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,21 +36,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.poi.hssf.usermodel.HSSFName;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.util.AreaReference;
-import org.apache.poi.ss.util.CellReference;
-import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
@@ -429,68 +418,5 @@ public class WorksheetBean {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    @TransactionTimeout(600)
-    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
-        int i;
-        AreaReference aref;
-        ArrayList<IdNameVO> columnNames;
-        CellReference cref[];
-        DictionaryViewDO formatVDO;
-        FileInputStream in;
-        HSSFName name;
-        HSSFWorkbook wb;
-
-        columnNames = new ArrayList<IdNameVO>();
-
-        try {
-            formatVDO = dictionary.fetchById(formatId);
-        } catch (NotFoundException nfE) {
-            formatVDO = new DictionaryViewDO();
-            formatVDO.setEntry("DefaultTotal");
-        } catch (Exception anyE) {
-            throw new Exception("Error retrieving worksheet format: " + anyE.getMessage());
-        }
-
-        try {
-            in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
-        } catch (FileNotFoundException fnfE) {
-            throw new Exception("Error loading template file: " + fnfE.getMessage());
-        }
-
-        try {
-            wb = new HSSFWorkbook(in, true);
-        } catch (IOException ioE) {
-            throw new Exception("Error loading workbook from template file: " + ioE.getMessage());
-        }
-
-        for (i = 0; i < wb.getNumberOfNames(); i++) {
-            name = wb.getNameAt(i);
-            if (name.getRefersToFormula() != null) {
-                aref = new AreaReference(name.getRefersToFormula());
-                cref = aref.getAllReferencedCells();
-                columnNames.add(new IdNameVO(new Integer(Short.valueOf(cref[0].getCol()).intValue()),
-                                             name.getNameName()));
-            }
-        }
-
-        return columnNames;
-    }
-
-    private String getWorksheetTemplateFileName(DictionaryViewDO formatVDO) throws Exception {
-        ArrayList<SystemVariableDO> sysVars;
-        String dirName;
-
-        dirName = "";
-        try {
-            sysVars = systemVariable.fetchByName("worksheet_template_directory", 1);
-            if (sysVars.size() > 0)
-                dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
-        } catch (Exception anyE) {
-            throw new Exception("Error retrieving temp directory variable: " + anyE.getMessage());
-        }
-
-        return dirName + "OEWorksheet" + formatVDO.getEntry() + ".xls";
     }
 }
