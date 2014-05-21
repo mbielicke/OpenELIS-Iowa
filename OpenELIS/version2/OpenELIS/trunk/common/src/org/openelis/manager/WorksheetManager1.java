@@ -49,10 +49,18 @@ public class WorksheetManager1 implements Serializable {
     private static final long                    serialVersionUID = 1L;
 
     /**
-     * Flags that specifies what optional data to load with the manager
+     * Flags that specify what optional data to load with the manager
      */
     public enum Load {
         DETAIL, NOTE
+    };
+
+    /**
+     * Flags that specify what type of updates need to be perform on the analyses
+     * associated with this worksheet
+     */
+    public enum ANALYSIS_UPDATE {
+        VOID, FAILED_RUN, UPDATE
     };
 
     protected WorksheetViewDO                     worksheet;
@@ -450,10 +458,13 @@ public class WorksheetManager1 implements Serializable {
             toDO.setAnalysisId(fromDO.getAnalysisId());
             toDO.setQcLotId(fromDO.getQcLotId());
             toDO.setWorksheetAnalysisId(fromDO.getWorksheetAnalysisId());
-            toDO.setQcSystemUserId(fromDO.getQcSystemUserId());
-            toDO.setQcStartedDate(fromDO.getQcStartedDate());
+            toDO.setSystemUsers(fromDO.getSystemUsers());
+            toDO.setStartedDate(fromDO.getStartedDate());
+            toDO.setCompletedDate(fromDO.getCompletedDate());
             toDO.setFromOtherId(fromDO.getFromOtherId());
+            toDO.setChangeFlagsId(fromDO.getChangeFlagsId());
             toDO.setWorksheetId(fromDO.getWorksheetId());
+            toDO.setQcId(fromDO.getQcId());
             toDO.setDescription(fromDO.getDescription());
             toDO.setTestId(fromDO.getTestId());
             toDO.setTestName(fromDO.getTestName());
@@ -606,10 +617,8 @@ public class WorksheetManager1 implements Serializable {
 
         private void copyDO(WorksheetResultViewDO fromDO, WorksheetResultViewDO toDO) {
             toDO.setTestAnalyteId(fromDO.getTestAnalyteId());
-            toDO.setTestResultId(fromDO.getTestResultId());
             toDO.setResultRow(fromDO.getResultRow());
             toDO.setAnalyteId(fromDO.getAnalyteId());
-            toDO.setTypeId(fromDO.getTypeId());
             toDO.setValueAt(0, fromDO.getValueAt(0));
             toDO.setValueAt(1, fromDO.getValueAt(1));
             toDO.setValueAt(2, fromDO.getValueAt(2));
@@ -769,7 +778,6 @@ public class WorksheetManager1 implements Serializable {
         private void copyDO(WorksheetQcResultViewDO fromDO, WorksheetQcResultViewDO toDO) {
             toDO.setSortOrder(fromDO.getSortOrder());
             toDO.setQcAnalyteId(fromDO.getQcAnalyteId());
-            toDO.setTypeId(fromDO.getTypeId());
             toDO.setValueAt(0, fromDO.getValueAt(0));
             toDO.setValueAt(1, fromDO.getValueAt(1));
             toDO.setValueAt(2, fromDO.getValueAt(2));
