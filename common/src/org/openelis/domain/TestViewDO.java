@@ -40,7 +40,7 @@ public class TestViewDO extends TestDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          methodName, labelName, trailerName, scriptletName;
+    protected String          methodName, labelName, trailerName;
 
     public TestViewDO() {
     }
@@ -53,7 +53,7 @@ public class TestViewDO extends TestDO {
                         Integer scriptletId, Integer testFormatId, Integer revisionMethodId,
                         Integer reportingMethodId, Integer sortingMethodId,
                         Integer reportingSequence, String methodName, String labelName,
-                        String testTrailerName, String scriptletName) {
+                        String testTrailerName) {
         super(id, name, description, reportingDescription, methodId, isActive, activeBegin,
               activeEnd, isReportable, timeTransit, timeHolding, timeTaAverage, timeTaWarning,
               timeTaMax, labelId, labelQty, testTrailerId, scriptletId, testFormatId,
@@ -61,7 +61,6 @@ public class TestViewDO extends TestDO {
         setMethodName(methodName);
         setLabelName(labelName);
         setTrailerName(testTrailerName);
-        setScriptletName(scriptletName);
     }
 
     public String getMethodName() {
@@ -86,13 +85,5 @@ public class TestViewDO extends TestDO {
 
     public void setTrailerName(String trailerName) {
         this.trailerName = DataBaseUtil.trim(trailerName);
-    }
-
-    public String getScriptletName() {
-        return scriptletName;
-    }
-
-    public void setScriptletName(String scriptletName) {
-        this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 }
