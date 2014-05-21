@@ -40,7 +40,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -58,27 +57,33 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "AuxField.FetchById",
                            query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
                                    + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"
-                                   + "af.isActive,af.isReportable, s.id, afg.name, a.name, m.name,s.name, d.entry)"
-                                   + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
+                                   + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name, m.name, d.entry)"
+                                   + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
                                    + " left join af.method m left join af.unitOfMeasure d where af.id = :id"),
                @NamedQuery(name = "AuxField.FetchAllByGroupId",
                            query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
                                    + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"
-                                   + "af.isActive,af.isReportable, s.id, afg.name, a.name,m.name,s.name, d.entry)"
-                                   + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
+                                   + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name,m.name, d.entry)"
+                                   + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
                                    + " left join af.method m left join af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
                @NamedQuery(name = "AuxField.FetchAllActiveByGroupId",
                            query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
                                    + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"
-                                   + "af.isActive,af.isReportable, s.id, afg.name, a.name, m.name, s.name, d.entry)"
-                                   + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
+                                   + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name, m.name, d.entry)"
+                                   + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
                                    + " left join af.method m left join af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder "),
                @NamedQuery(name = "AuxField.FetchAll",
                            query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
                                    + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"
-                                   + "af.isActive,af.isReportable, s.id, afg.name, a.name, m.name, s.name, d.entry)"
-                                   + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
-                                   + " left join af.method m left join af.unitOfMeasure d order by a.name, afg.name")})
+                                   + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name, m.name, d.entry)"
+                                   + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
+                                   + " left join af.method m left join af.unitOfMeasure d order by a.name, afg.name"),
+               @NamedQuery(name = "AuxField.FetchByAnalyteName",
+                           query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
+                                   + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"
+                                   + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name, m.name, d.entry)"
+                                   + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
+                                   + " left join af.method m left join af.unitOfMeasure d where a.name like :name order by a.name, afg.name")})
 @Entity
 @Table(name = "aux_field")
 @EntityListeners({AuditUtil.class})
@@ -134,10 +139,6 @@ public class AuxField implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "method_id", insertable = false, updatable = false)
     private Method                    method;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scriptlet_id", insertable = false, updatable = false)
-    private Scriptlet                 scriptlet;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unit_of_measure_id", insertable = false, updatable = false)
@@ -269,14 +270,6 @@ public class AuxField implements Auditable, Cloneable {
         this.auxFieldValue = auxFieldValue;
     }
 
-    public Scriptlet getScriptlet() {
-        return scriptlet;
-    }
-
-    public void setScriptlet(Scriptlet scriptlet) {
-        this.scriptlet = scriptlet;
-    }
-
     public Dictionary getUnitOfMeasure() {
         return unitOfMeasure;
     }
@@ -324,7 +317,7 @@ public class AuxField implements Auditable, Cloneable {
                  .setField("scriptlet_id",
                            scriptletId,
                            original.scriptletId,
-                           Constants.table().SCRIPTLET);
+                           Constants.table().DICTIONARY);
 
         return audit;
     }

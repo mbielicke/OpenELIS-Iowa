@@ -49,13 +49,16 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-//TODO fix the named queries and create a DO for the table, convert to the new format.
-@NamedQueries( {
-    @NamedQuery( name = "Scriptlet.fetchByName", 
-                query = "select distinct new org.openelis.domain.IdNameVO(script.id, script.name) from Scriptlet script  "
-                                                                  + "order by script.name "),
-    @NamedQuery( name = "Scriptlet.fetchById", query = "select distinct new org.openelis.domain.ScriptletDO(script.id, script.name, script.bean, script.isActive, script.activeBegin, script.activeEnd) from Scriptlet script  "
-                                                                            + "where script.id = :id")})
+@NamedQueries({
+               @NamedQuery( name = "Scriptlet.FetchByName",
+                           query = "select distinct new org.openelis.domain.IdNameVO(s.id, s.name) "
+                                 + " from Scriptlet s where s.name like :name order by s.name "),
+               @NamedQuery( name = "Scriptlet.FetchById",
+                           query = "select distinct new org.openelis.domain.ScriptletDO(s.id, s.name, s.bean, s.isActive, s.activeBegin, s.activeEnd)"
+                                 + " from Scriptlet s where s.id = :id"),
+               @NamedQuery( name = "Scriptlet.FetchByIds",
+                           query = "select distinct new org.openelis.domain.ScriptletDO(s.id, s.name, s.bean, s.isActive, s.activeBegin, s.activeEnd)"
+                                 + " from Scriptlet s where s.id in (:ids)")})
 @Entity
 @Table(name = "scriptlet")
 @EntityListeners({AuditUtil.class})
@@ -64,22 +67,22 @@ public class Scriptlet implements Auditable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer                          id;
+    private Integer   id;
 
     @Column(name = "name")
-    private String                           name;
+    private String    name;
 
     @Column(name = "bean")
-    private String                           bean;
-    
+    private String    bean;
+
     @Column(name = "is_active")
-    private String                           isActive;
+    private String    isActive;
 
     @Column(name = "active_begin")
-    private Date                             activeBegin;
+    private Date      activeBegin;
 
     @Column(name = "active_end")
-    private Date                             activeEnd;
+    private Date      activeEnd;
 
     @Transient
     private Scriptlet original;
@@ -110,7 +113,7 @@ public class Scriptlet implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(bean, this.bean))
             this.bean = bean;
     }
-    
+
     public String getIsActive() {
         return isActive;
     }

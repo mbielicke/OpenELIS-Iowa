@@ -237,7 +237,15 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select type_of_sample_id as DICTIONARY_ID from analyte_parameter where type_of_sample_id = :id "+
                           "UNION " +
-                          "select type_id as DICTIONARY_ID from section_parameter where type_id = :id ",
+                          "select type_id as DICTIONARY_ID from section_parameter where type_id = :id "+
+                          "UNION " +
+                          "select scriptlet_id as DICTIONARY_ID from test where scriptlet_id = :id "+
+                          "UNION " +
+                          "select scriptlet_id as DICTIONARY_ID from test_analyte where scriptlet_id = :id "+
+                          "UNION " +
+                          "select scriptlet_id as DICTIONARY_ID from aux_field where scriptlet_id = :id "+
+                          "UNION " +
+                          "select scriptlet_id as DICTIONARY_ID from test_worksheet where scriptlet_id = :id ",
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
                               query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
