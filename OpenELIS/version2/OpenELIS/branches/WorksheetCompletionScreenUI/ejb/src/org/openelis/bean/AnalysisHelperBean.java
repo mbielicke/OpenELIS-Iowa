@@ -992,7 +992,8 @@ public class AnalysisHelperBean {
                     for (TestAnalyteViewDO ta : tas) {
                         r = createResult(sm, ana, ta, ta.getIsReportable(), rf);
                         getResults(sm).add(j, r);
-                        positions.add(j);
+                        if ("N".equals(ta.getIsColumn()))
+                            positions.add(j);
                         j++;
                     }
                     break;

@@ -51,12 +51,14 @@ public abstract class TestReflexUtility1 {
     public ArrayList<SampleTestRequestVO> getReflexTests(ArrayList<SampleManager1> sms,
                                                          ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
         int i;
-        ArrayList<SampleTestRequestVO> tests;
+        ArrayList<SampleTestRequestVO> tests, samTests;
         
         tests = new ArrayList<SampleTestRequestVO>();
-        for (i = 0; i < sms.size(); i++)
-            tests.addAll(getReflexTests(sms.get(i), results.get(i)));
-        
+        for (i = 0; i < sms.size(); i++) {
+            samTests = getReflexTests(sms.get(i), results.get(i));
+            if (samTests != null && samTests.size() > 0)
+                tests.addAll(samTests);
+        }
         return tests;
     }
     
