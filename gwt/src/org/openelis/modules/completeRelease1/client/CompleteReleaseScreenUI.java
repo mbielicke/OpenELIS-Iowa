@@ -1715,7 +1715,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     WorksheetAnalysisViewDO wa;
                     WorksheetManager1 wm;
                     ArrayList<Integer> ids;
-
+                    
                     // TODO extract this to a different method after fetch
                     // starts working
                     manager = null;
@@ -1729,7 +1729,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                                                                          null));
                     lastAccession = null;
 
-                    setBusy(Messages.get().gen_querying());
+                    screen.setBusy(Messages.get().gen_querying());
                     try {
                         /*
                          * fetch the worksheet specified by the user and find
@@ -1738,6 +1738,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         wm = WorksheetService1.get()
                                               .fetchById(queryByWorksheetLookup.getWorksheetId(),
                                                          WorksheetManager1.Load.DETAIL);
+                        if (wm == null) {
+                            noRecordsFound();
+                            return;
+                        }
+                        
                         ids = new ArrayList<Integer>();
                         for (i = 0; i < wm.item.count(); i++ ) {
                             wi = wm.item.get(i);
@@ -1756,8 +1761,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                             SampleService1.get().fetchByAnalyses(ids, elements, getQueryCallBack());
                         else
                             noRecordsFound();
-                    } catch (NotFoundException e) {
-                        noRecordsFound();
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
