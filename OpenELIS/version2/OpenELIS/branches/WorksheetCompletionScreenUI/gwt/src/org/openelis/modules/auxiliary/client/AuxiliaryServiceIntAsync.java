@@ -21,6 +21,8 @@ public interface AuxiliaryServiceIntAsync {
     void fetchActive(AsyncCallback<ArrayList<AuxFieldGroupDO>> callback);
     
     void fetchAll(AsyncCallback<ArrayList<AuxFieldViewDO>> callback);
+    
+    void fetchByAnalyteName(String search, AsyncCallback<ArrayList<AuxFieldViewDO>> callback);
 
     void fetchFieldByGroupId(Integer groupId, AsyncCallback<AuxFieldManager> callback);
 

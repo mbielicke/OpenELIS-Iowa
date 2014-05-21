@@ -128,6 +128,20 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
     }
 
     @Override
+    public ArrayList<AuxFieldViewDO> fetchByAnalyteName(String search) throws Exception {
+        Callback<ArrayList<AuxFieldViewDO>> callback;
+        
+        callback = new Callback<ArrayList<AuxFieldViewDO>>();
+        service.fetchByAnalyteName(search, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchByAnalyteName(String search, AsyncCallback<ArrayList<AuxFieldViewDO>> callback) {
+        service.fetchByAnalyteName(search, callback);
+    }
+
+    @Override
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
         Callback<AuxFieldGroupManager> callback;
         

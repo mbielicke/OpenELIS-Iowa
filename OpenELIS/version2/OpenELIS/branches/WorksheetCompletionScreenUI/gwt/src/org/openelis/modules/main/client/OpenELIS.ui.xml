@@ -55,10 +55,10 @@
                   icon="{res.icon.privateWellWaterSampleLoginIcon}" ui:field="privateWellWaterSampleLogin" display="{msg.privateWellWaterSampleLogin}" />
                 <w:MenuItem description="{msg.sdwisSampleLoginDescription}" enabled="false" icon="{res.icon.sdwisSampleLoginIcon}"
                   ui:field="sdwisSampleLogin" display="{msg.sdwisSampleLogin}" />
-                <w:MenuItem description="{msg.clinicalSampleLoginDescription}" enabled="false" ui:field="clinicalSampleLogin"
-                  display="{msg.clinicalSampleLogin}" />
-                <w:MenuItem description="{msg.neonatalScreeningSampleLoginDescription}" enabled="false" ui:field="neonatalScreeningSampleLogin"
-                  display="{msg.neonatalScreeningSampleLogin}" />
+                <w:MenuItem description="{msg.sampleClinical_loginDescription}" enabled="false" ui:field="clinicalSampleLogin"
+                  display="{msg.sampleClinical_login}" />
+                <w:MenuItem description="{msg.sampleNeonatal_loginDescription}" enabled="false" ui:field="neonatalScreeningSampleLogin"
+                  display="{msg.sampleNeonatal_login}" />
                 <w:MenuItem description="{msg.animalSampleLoginDescription}" enabled="false" ui:field="animalSampleLogin"
                   display="{msg.animalSampleLogin}" />
                 <w:MenuItem description="{msg.ptSampleLoginDescription}" enabled="false" ui:field="ptSampleLogin" display="{msg.ptSampleLogin}" />
@@ -84,8 +84,8 @@
                   ui:field="worksheetCompletionUI" display="{msg.worksheetCompletion} 2" />
                 <w:MenuItem description="{msg.addOrCancelDescription}" enabled="false" icon="{res.icon.addOrCancelIcon}"
                   ui:field="addOrCancel" display="{msg.manageMultipleSamples}" />
-                <w:MenuItem description="{msg.reviewAndReleaseDescription}" enabled="false" icon="{res.icon.reviewAndReleaseIcon}"
-                  ui:field="reviewAndRelease" display="{msg.reviewAndRelease}" />
+                <w:MenuItem description="{msg.completeRelease_description}" enabled="false" icon="{res.icon.reviewAndReleaseIcon}"
+                  ui:field="reviewAndRelease" display="{msg.completeRelease_completeAndRelease}" />
                 <w:MenuItem description="{msg.toDoDescription}" enabled="false" icon="{res.icon.toDoIcon}" ui:field="toDo"
                   display="{msg.toDo}" />
                 <w:MenuItem description="{msg.labelForDescription}" enabled="false" icon="{res.icon.labelForIcon}" ui:field="labelFor"

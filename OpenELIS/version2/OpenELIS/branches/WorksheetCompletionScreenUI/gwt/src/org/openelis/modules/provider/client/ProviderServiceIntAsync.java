@@ -14,7 +14,7 @@ public interface ProviderServiceIntAsync {
 
     void fetchById(Integer id, AsyncCallback<ProviderManager> callback);
     
-    void fetchByLastName(String lastName, AsyncCallback<ArrayList<ProviderDO>> callback);
+    void fetchByLastNameNpiExternalId(String search, AsyncCallback<ArrayList<ProviderDO>> callback);
     
     void fetchWithLocations(Integer id, AsyncCallback<ProviderManager> callback);
     

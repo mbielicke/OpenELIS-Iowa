@@ -28,6 +28,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 import org.openelis.modules.sample1.client.SampleServiceInt1;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.server.RemoteServlet;
@@ -39,9 +40,9 @@ import org.openelis.ui.server.RemoteServlet;
 public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
 
     private static final long  serialVersionUID = 1L;
-    
+
     @EJB
-    private SampleBean sample;
+    private SampleBean         sample;
 
     @EJB
     private SampleManager1Bean sampleManager1;
@@ -70,7 +71,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
         try {
@@ -79,7 +80,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public SampleManager1 fetchByAccession(Integer accessionNum, SampleManager1.Load... elements) throws Exception {
         try {
             return sampleManager1.fetchByAccession(accessionNum, elements);
@@ -87,11 +88,23 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception {
         try {
             return sampleManager1.fetchByQuery(fields, first, max, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query,
+                                                          SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchByAnalysisQuery(query.getFields(),
+                                                       query.getPage() * query.getRowsPerPage(),
+                                                       query.getRowsPerPage(),
+                                                       elements);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -112,12 +125,21 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-    
+
+    public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds,
+                                                              Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchForUpdateByAnalyses(analysisIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }   
+
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {
         try {
             return sample.query(query.getFields(),
-                               query.getPage() * query.getRowsPerPage(),
-                               query.getRowsPerPage());
+                                query.getPage() * query.getRowsPerPage(),
+                                query.getRowsPerPage());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -156,6 +178,15 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                                      SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.unlockByAnalyses(analysisIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public void validateAccessionNumber(SampleManager1 sm) throws Exception {
         try {
             sampleManager1.validateAccessionNumber(sm);
@@ -183,6 +214,22 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     public SampleManager1 duplicate(Integer sampleId) throws Exception {
         try {
             return sampleManager1.duplicate(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception {
+        try {
+            return sampleManager1.changeDomain(sm, domain);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public SampleManager1 unrelease(SampleManager1 sm) throws Exception {
+        try {
+            return sampleManager1.unrelease(sm);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
