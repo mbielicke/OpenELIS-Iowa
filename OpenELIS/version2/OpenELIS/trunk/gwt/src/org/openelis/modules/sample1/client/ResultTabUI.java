@@ -48,6 +48,7 @@ import org.openelis.exception.ParseException;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.sample1.client.ResultCell.Value;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -126,7 +127,7 @@ public class ResultTabUI extends Screen {
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
     protected static int                                MEAN_CHAR_WIDTH = 8,
-                    DEFAULT_NUM_CHARS = 10;
+                    CHECK_BOX_NUM_CHARS = 4, DEFAULT_NUM_CHARS = 10;
 
     public ResultTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -294,6 +295,7 @@ public class ResultTabUI extends Screen {
                     return;
                 }
 
+                tm = null;
                 if (c == 0) {
                     data = manager.result.get(analysis, index, c);
                     data.setIsReportable((String)val);
@@ -344,6 +346,18 @@ public class ResultTabUI extends Screen {
 
                     if (data.getValue() == null)
                         return;
+                    
+                    /*
+                     * execute any scriptlet specified for the test
+                     */
+                    if (tm.getTest().getScriptletId() != null) {
+                        parentBus.fireEventFromSource(new RunScriptletEvent(tm.getTest().getScriptletId(),
+                                                                            Constants.uid()
+                                                                                     .getResult(data.getId()),
+                                                                            data.getAnalyteExternalId(),
+                                                                            Operation.RESULT_CHANGED),
+                                                      screen);
+                    }
 
                     if (testReflexUtility == null) {
                         testReflexUtility = new TestReflexUtility1() {
@@ -385,7 +399,8 @@ public class ResultTabUI extends Screen {
                                          */
                                         tests = testSelectionLookup.getSelectedTests();
                                         if (tests != null && tests.size() > 0)
-                                            parentBus.fireEvent(new AddTestEvent(tests));
+                                            parentBus.fireEventFromSource(new AddTestEvent(tests),
+                                                                          screen);
                                         else
                                             isBusy = false;
                                     }
@@ -485,6 +500,7 @@ public class ResultTabUI extends Screen {
                 if (DataBaseUtil.isDifferent(displayedUid, uid))
                     redraw = true;
 
+                setState(state);
                 displayResults(uid);
             }
         });
@@ -536,8 +552,7 @@ public class ResultTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -585,7 +600,7 @@ public class ResultTabUI extends Screen {
         if ( !isVisible)
             return;
 
-        if (analysis != null) {
+        if (analysis != null && manager.result.count(analysis) > 0) {
             table.setVisible(true);
             /*
              * Reset the table's view, so that if its model is changed, it shows
@@ -599,12 +614,8 @@ public class ResultTabUI extends Screen {
         }
 
         if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
             redraw = false;
             displayedUid = uid;
-            setState(state);
             fireDataChange();
         }
     }
@@ -744,7 +755,7 @@ public class ResultTabUI extends Screen {
          * column
          */
         maxTextLength = new int[table.getColumnCount()];
-        maxTextLength[0] = DEFAULT_NUM_CHARS;
+        maxTextLength[0] = CHECK_BOX_NUM_CHARS;
         setMaxTextLength(maxTextLength, 1, Messages.get().gen_analyte());
         setMaxTextLength(maxTextLength, 2, Messages.get().gen_value());
         for (i = 3; i < maxTextLength.length; i++ )

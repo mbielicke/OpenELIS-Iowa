@@ -23,8 +23,25 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.neonatalScreeningSampleLogin.server;
+package org.openelis.modules.auxData.client;
 
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.scriptlet.ScriptletObject;
 
-public class NeonatalScreeningSampleLoginService {
+/**
+ * This class is used to specify the PWS data to be validated using a scriptlet
+ */
+public class PWSValidateSO extends ScriptletObject {
+
+    private static final long serialVersionUID = 1L;
+
+    protected String pwsNumber0;
+
+    public String getPwsNumber0() {
+        return pwsNumber0;
+    }
+
+    public void setPwsNumber0(String pwsNumber0) {
+        this.pwsNumber0 = DataBaseUtil.toString(pwsNumber0);
+    }
 }

@@ -122,8 +122,12 @@ public class VerificationScreen extends Screen {
                                                                               .getStatusId())) {
                     window.setError(Messages.get().wrongStatusForVerifying());
                     return;
+                } else if (Constants.domain().QUICKENTRY.equals(manager.getSample()
+                                                                             .getDomain())) {
+                   window.setError(Messages.get().cantVerifyQuickEntry());
+                   return;
                 }
-
+                
                 for (i = 0; i < manager.getSampleItems().count(); i++) {
                     if (manager.getSampleItems().getAnalysisAt(0).count() > 0)
                         break;

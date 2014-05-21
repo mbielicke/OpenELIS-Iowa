@@ -16,7 +16,7 @@ public interface ProviderServiceInt extends XsrfProtectedService {
 
     ProviderManager fetchById(Integer id) throws Exception;
     
-    ArrayList<ProviderDO> fetchByLastName(String lastName) throws Exception;
+    ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search) throws Exception;
 
     ProviderManager fetchWithLocations(Integer id) throws Exception;
 

@@ -95,7 +95,6 @@ import org.openelis.meta.TestMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.label.client.LabelService;
 import org.openelis.modules.method.client.MethodService;
-import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.testTrailer.client.TestTrailerService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
@@ -141,9 +140,9 @@ public class TestScreen extends Screen {
     private AppButton                queryButton, previousButton, nextButton, addButton,
                                      updateButton, commitButton, abortButton, removeSectionButton,
                                      addSectionButton;
-    private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat,
+    private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat, scriptlet,
                                      revisionMethod;
-    private AutoComplete<Integer>    testTrailer, scriptlet, method, label;
+    private AutoComplete<Integer>    testTrailer, method, label;
     protected MenuItem               duplicate, testHistory, testSectionHistory,
                                      testSampleTypeHistory, testAnalyteHistory, testResultHistory,
                                      testPrepHistory, testReflexHistory, testWorksheetHistory,
@@ -185,7 +184,10 @@ public class TestScreen extends Screen {
                                            "test_res_type_dictionary",
                                            "test_worksheet_analyte_flags",
                                            "test_worksheet_item_type",
-                                           "test_worksheet_format");
+                                           "test_worksheet_format",
+                                           "scriptlet_test",
+                                           "scriptlet_test_analyte",
+                                           "scriptlet_worksheet");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1006,16 +1008,14 @@ public class TestScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(TestMeta.getScriptletName());
+        scriptlet = (Dropdown<Integer>)def.getWidget(TestMeta.getScriptletId());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptlet.setSelection(manager.getTest().getScriptletId(),
-                                       manager.getTest().getScriptletName());
+                scriptlet.setSelection(manager.getTest().getScriptletId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getTest().setScriptletId(event.getValue());
-                manager.getTest().setScriptletName(scriptlet.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1023,27 +1023,6 @@ public class TestScreen extends Screen {
                                         .contains(event.getState()));
                 scriptlet.setQueryMode(event.getState() == State.QUERY);
             }
-        });
-
-        // Screens now must implement AutoCompleteCallInt and set themselves as
-        // the calling interface
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
-
-                try {
-                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list) {
-                        model.add(new TableDataRow(data.getId(), data.getName()));
-                    }
-                    scriptlet.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-
         });
 
         // Get TabPanel and set Tab Selection Handlers
@@ -1241,6 +1220,16 @@ public class TestScreen extends Screen {
             model.add(row);
         }
         testFormat.setModel(model);
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        list = CategoryCache.getBySystemName("scriptlet_test");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        scriptlet.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("test_reporting_method");
