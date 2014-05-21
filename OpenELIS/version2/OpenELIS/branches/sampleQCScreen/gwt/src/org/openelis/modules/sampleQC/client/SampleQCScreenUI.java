@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.manager.SampleManager1;
@@ -349,14 +350,24 @@ public class SampleQCScreenUI extends Screen {
 
     private Node getRoot() {
         int i, j, k, l;
-        Node root, qnode, wnode;
+        Node root, qnode, wnode, anode;
         WorksheetQcResultViewDO wq;
         WorksheetManager1 wm;
+        HashMap<Integer, Node> analysisNodes;
 
         root = new Node();
         if (managers == null || managers.size() == 0)
             return root;
 
+        analysisNodes = new HashMap<Integer, Node>();
+        for (i = 0; i < sm.item.count(); i++ ) {
+            for (j = 0; j < sm.analysis.count(sm.item.get(i)); j++ ) {
+                anode = new Node();
+                anode.setData(sm.analysis.get(sm.item.get(i), j));
+                analysisNodes.put(sm.analysis.get(sm.item.get(i), j).getId(), anode);
+                root.add(anode);
+            }
+        }
         for (i = 0; i < managers.size(); i++ ) {
             wm = managers.get(i);
             wnode = new Node(4);
@@ -366,7 +377,6 @@ public class SampleQCScreenUI extends Screen {
             wnode.setCell(2, wm.getWorksheet().getCreatedDate());
             wnode.setCell(2, wm.getWorksheet().getInstrumentName());
             wnode.setData(wm);
-            root.add(wnode);
 
             for (j = 0; j < wm.item.count(); j++ ) {
                 for (k = 0; k < wm.analysis.count(wm.item.get(j)); k++ ) {
@@ -377,6 +387,10 @@ public class SampleQCScreenUI extends Screen {
                         qnode.setCell(1, wq.getAnalyteName());
                         qnode.setData(wq);
                         wnode.add(qnode);
+                    }
+                    if (analysisNodes.get(wm.analysis.get(wm.item.get(j), k).getAnalysisId()) != null) {
+                        analysisNodes.get(wm.analysis.get(wm.item.get(j), k).getAnalysisId())
+                                     .add(wnode);
                     }
                 }
             }
