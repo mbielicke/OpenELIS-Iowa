@@ -84,7 +84,7 @@ public class SampleItemTabUI extends Screen {
 
     protected String                     displayedUid;
 
-    protected boolean                   canEdit, isVisible, redraw, hasReleasedAnalysis;
+    protected boolean                    canEdit, isVisible, redraw, hasReleasedAnalysis, canQuery;
 
     public SampleItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -114,9 +114,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 typeOfSample.setEnabled(isState(QUERY) ||
+                                 typeOfSample.setEnabled((isState(QUERY) && canQuery) ||
                                                          (isState(ADD, UPDATE) && canEdit && !hasReleasedAnalysis));
-                                 typeOfSample.setQueryMode(isState(QUERY));
+                                 typeOfSample.setQueryMode((isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -136,9 +136,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sourceOfSample.setEnabled(isState(QUERY) ||
+                                 sourceOfSample.setEnabled((isState(QUERY) && canQuery) ||
                                                            (isState(ADD, UPDATE) && canEdit));
-                                 sourceOfSample.setQueryMode(isState(QUERY));
+                                 sourceOfSample.setQueryMode((isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -156,8 +156,8 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sourceOther.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                sourceOther.setQueryMode(isState(QUERY));
+                sourceOther.setEnabled((isState(QUERY) && canQuery) || (isState(ADD, UPDATE) && canEdit));
+                sourceOther.setQueryMode((isState(QUERY) && canQuery));
             }
 
             public Widget onTab(boolean forward) {
@@ -175,8 +175,8 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                container.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                container.setQueryMode(isState(QUERY));
+                container.setEnabled((isState(QUERY) && canQuery) || (isState(ADD, UPDATE) && canEdit));
+                container.setQueryMode((isState(QUERY) && canQuery));
             }
 
             public Widget onTab(boolean forward) {
@@ -196,9 +196,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 containerReference.setEnabled(isState(QUERY) ||
+                                 containerReference.setEnabled((isState(QUERY) && canQuery) ||
                                                                (isState(ADD, UPDATE) && canEdit));
-                                 containerReference.setQueryMode(isState(QUERY));
+                                 containerReference.setQueryMode((isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -216,7 +216,7 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                quantity.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                quantity.setEnabled((isState(QUERY) && canQuery) || (isState(ADD, UPDATE) && canEdit));
                 quantity.setQueryMode(isState(QUERY));
             }
 
@@ -237,7 +237,7 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 unitOfMeasure.setEnabled(isState(QUERY) ||
+                                 unitOfMeasure.setEnabled((isState(QUERY) && canQuery) ||
                                                           (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasure.setQueryMode(isState(QUERY));
                              }
@@ -259,7 +259,7 @@ public class SampleItemTabUI extends Screen {
                 displaySampleItem(uid);
             }
         });
-        
+
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
@@ -277,36 +277,32 @@ public class SampleItemTabUI extends Screen {
                         uid = null;
                         break;
                 }
-                
+
                 if (uid != null)
                     sampleItem = (SampleItemViewDO)manager.getObject(uid);
                 else
                     sampleItem = null;
 
-                if (isState(QUERY)) {
-                    /*
-                     * In query state the tree is empty, so no sample item is
-                     * selected in it and the current uid is null. If there was
-                     * no sample item selected in the tree before going in query
-                     * state, the previous (displayed) uid was null too. This
-                     * makes sure that the tab is redrawn for query state even
-                     * if both uids are null and thus not different.
-                     */
-                    redraw = true;
-                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    /*
-                     * while the tab is not visible, the data in the sample item
-                     * linked by displayed uid may get changed e.g. if displayed
-                     * uid is negative and a different manager uses the same uid
-                     * or if the manager is fetched again and the data was
-                     * changed in the database; this makes sure that whenever
-                     * the tab is opened again, it shows the latest data for the
-                     * sample item, because when a new manager is loaded the uid
-                     * in this event is null
-                     */
+                /*
+                 * The widgets are compared with the sample item's fields to
+                 * reload the tab even if the current uid is the same as
+                 * previous but the data in some fields is different; this can
+                 * happen on complete and release screen, where the selected
+                 * analysis' manager may be replaced with a locked and refetched
+                 * manager containing changes from the database.
+                 */
+                if (DataBaseUtil.isDifferent(displayedUid, uid) ||
+                    DataBaseUtil.isDifferent(typeOfSample.getValue(), getTypeOfSampleId()) ||
+                    DataBaseUtil.isDifferent(sourceOfSample.getValue(), getSourceOfSampleId()) ||
+                    DataBaseUtil.isDifferent(sourceOther.getValue(), getSourceOther()) ||
+                    DataBaseUtil.isDifferent(container.getValue(), getContainerId()) ||
+                    DataBaseUtil.isDifferent(containerReference.getValue(), getContainerReference()) ||
+                    DataBaseUtil.isDifferent(quantity.getValue(), getQuantity()) ||
+                    DataBaseUtil.isDifferent(unitOfMeasure.getValue(), getUnitOfMeasureId())) {
                     redraw = true;
                 }
 
+                setState(state);
                 displaySampleItem(uid);
             }
         });
@@ -349,14 +345,17 @@ public class SampleItemTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    public void setCanQuery(boolean canQuery) {
+        this.canQuery = canQuery;
     }
 
     private void evaluateEdit() {
@@ -379,7 +378,6 @@ public class SampleItemTabUI extends Screen {
              */
             redraw = false;
             displayedUid = uid;
-            setState(state);
             fireDataChange();
         }
     }

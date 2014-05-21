@@ -375,8 +375,8 @@ public abstract class ImportOrder {
         // get a new manager if this aux group's id is encountered for the first
         // time
         if (auxFieldGroupMan == null ||
-            !auxData.getGroupId().equals(auxFieldGroupMan.getGroup().getId())) {
-            auxFieldGroupMan = AuxFieldGroupManager.fetchById(auxData.getGroupId());
+            !auxData.getAuxFieldGroupId().equals(auxFieldGroupMan.getGroup().getId())) {
+            auxFieldGroupMan = AuxFieldGroupManager.fetchById(auxData.getAuxFieldGroupId());
             lastAuxFieldIndex = 0;
         }
         afman = auxFieldGroupMan.getFields();

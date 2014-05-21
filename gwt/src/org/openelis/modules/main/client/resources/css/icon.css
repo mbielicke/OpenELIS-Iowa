@@ -58,8 +58,28 @@
 	gwt-image: 'addOrCancelIcon';
 }
 
+@sprite .completeIcon {
+    gwt-image: 'completeIcon';   
+}
+
+@sprite .Disabled .completeIcon {
+    gwt-image: 'completeDisabledIcon';   
+}
+
 @sprite .reviewAndReleaseIcon {
-	gwt-image: 'reviewAndReleaseIcon';
+	gwt-image: 'reviewAndReleaseIcon';	
+}
+
+@sprite .Disabled .reviewAndReleaseIcon {
+    gwt-image: 'reviewAndReleaseDisabledIcon';    
+}
+
+@sprite .unreleaseIcon {
+    gwt-image: 'unreleaseIcon';  
+}
+
+@sprite .Disabled .unreleaseIcon {
+    gwt-image: 'unreleaseDisabledIcon';    
 }
 
 @sprite .toDoIcon {
@@ -209,4 +229,3 @@
 @sprite .Disabled .fieldLookupIcon {
     gwt-image: 'fieldLookupDisabledIcon';
 }
-

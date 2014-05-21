@@ -107,6 +107,18 @@ public abstract class TestSelectionLookupUI extends Screen {
     }
 
     private void initialize() {
+        addScreenHandler(copyToEmptyButton, "copyToEmptyButton", new ScreenHandler<String>() {
+            public void onStateChange(StateChangeEvent event) {
+                copyToEmptyButton.setEnabled(false);
+            }
+        });
+        
+        addScreenHandler(copyToAllButton, "copyToAllButton", new ScreenHandler<String>() {
+            public void onStateChange(StateChangeEvent event) {
+                copyToAllButton.setEnabled(false);
+            }
+        });
+        
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 tree.setRoot(getRoot());
@@ -518,7 +530,9 @@ public abstract class TestSelectionLookupUI extends Screen {
                 for (j = 0; j < tsm.count(); j++ ) {
                     ts = tsm.getSectionAt(j);
                     if (sectionId.equals(ts.getSectionId())) {
+                        td.test.setSectionId(sectionId);
                         item.setCell(1, sectionId);
+                        tree.refreshNode(item);
                         break;
                     }
                 }
@@ -556,7 +570,9 @@ public abstract class TestSelectionLookupUI extends Screen {
                 for (j = 0; j < tsm.count(); j++ ) {
                     tsVDO = tsm.getSectionAt(j);
                     if (sectionId.equals(tsVDO.getSectionId())) {
+                        td.test.setSectionId(sectionId);
                         item.setCell(1, sectionId);
+                        tree.refreshNode(item);
                         break;
                     }
                 }

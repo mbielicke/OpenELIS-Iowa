@@ -35,8 +35,8 @@
           </t:CheckBoxCell>
         </t:Column>
         <t:Column width="130" label="{msg.gen_name}">
-          <t:DropdownCell>
-            <w:Dropdown field="Integer" ui:field="analyte" width = "130px" dropWidth = "280px">
+          <t:AutoCompleteCell>
+            <w:AutoComplete ui:field="analyte" width = "130px" dropWidth = "280px">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="130" label="{msg.gen_analyte}">
@@ -47,8 +47,8 @@
                   </t:Column>
                 </t:Table>
               </w:popup>
-            </w:Dropdown>
-          </t:DropdownCell>
+            </w:AutoComplete>
+          </t:AutoCompleteCell>
         </t:Column>
         <t:Column width="130" label="{msg.gen_value}">
           <s:ResultCell />

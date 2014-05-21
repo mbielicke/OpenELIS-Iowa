@@ -40,11 +40,9 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.panel.client.PanelService;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -109,7 +107,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     protected SampleItemAnalysisTreeTabUI            screen;
 
-    protected SampleItemPopoutLookupUI               treePopout;
+    protected SampleItemPopoutLookupUI               sampleItemPopout;
 
     protected EventBus                               parentBus;
 
@@ -150,16 +148,16 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 String uid;
                 AnalysisViewDO a;
                 SelectionEvent selEvent;
-                Node selection;
+                Node node;
 
-                selection = tree.getNodeAt(event.getSelectedItem());
-                uid = selection.getData();
+                node = tree.getNodeAt(event.getSelectedItem());
+                uid = node.getData();
                 enable = false;
                 selEvent = null;
 
-                if (SAMPLE_ITEM_LEAF.equals(selection.getType())) {
+                if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
                     if (canEdit && isState(ADD, UPDATE))
-                        enable = !selection.hasChildren();
+                        enable = !node.hasChildren();
                     if (uid != null)
                         selEvent = new SelectionEvent(SelectedType.SAMPLE_ITEM, uid);
                 } else if (uid != null) {
@@ -273,15 +271,13 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 SampleItemViewDO item;
                 DictionaryDO dict;
                 TestManager tm;
-                TestViewDO t;
                 Node node;
 
                 /*
                  * to add a test, a sample item must be selected
                  */
                 if (tree.getSelectedNode() == -1) {
-                    parentScreen.getWindow()
-                                .setError(Messages.get().sample_sampleItemSelectedToAddAnalysis());
+                    parentScreen.setError(Messages.get().sample_sampleItemSelectedToAddAnalysis());
                     event.cancel();
                     /*
                      * clear the text entered in the autocomplete
@@ -323,8 +319,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
                         if ("t".equals(flag)) {
                             tm = getTestManager(addId);
-                            t = tm.getTest();
-                            addAnalysis(addId, t.getMethodId());
+                            addAnalysis(addId, tm.getTest().getMethodId());
                         } else if ("p".equals(flag)) {
                             addAnalysis(addId, null);
                         }
@@ -355,8 +350,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 item = (SampleItemViewDO)manager.getObject((String)node.getData());
 
                 if (item.getTypeOfSampleId() == null) {
-                    parentScreen.getWindow().setError(Messages.get()
-                                                              .sample_sampleItemTypeRequired());
+                    parentScreen.setError(Messages.get().sample_sampleItemTypeRequired());
                     return;
                 }
 
@@ -374,7 +368,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
                     query.setFields(fields);
 
-                    parentScreen.getWindow().setBusy();
+                    parentScreen.setBusy();
 
                     tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
 
@@ -408,7 +402,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                parentScreen.getWindow().clearStatus();
+                parentScreen.clearStatus();
             }
         });
 
@@ -458,8 +452,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -519,6 +512,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
              * any other checks
              */
             tree.removeNode(node);
+            parentBus.fireEvent(new SelectionEvent(SelectedType.NONE, null));
         } else {
             uid = (String)node.getData();
             ana = (AnalysisViewDO)manager.getObject(uid);
@@ -579,8 +573,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     protected void popoutTree(ClickEvent event) {
         ModalWindow modal;
 
-        if (treePopout == null) {
-            treePopout = new SampleItemPopoutLookupUI() {
+        if (sampleItemPopout == null) {
+            sampleItemPopout = new SampleItemPopoutLookupUI() {
                 @Override
                 public void ok() {
                     /*
@@ -596,10 +590,10 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         modal.setSize("500px", "500px");
         modal.setName(Messages.get().itemsAndAnalyses());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
-        modal.setContent(treePopout);
+        modal.setContent(sampleItemPopout);
 
-        treePopout.setWindow(modal);
-        treePopout.setData(manager, state);
+        sampleItemPopout.setWindow(modal);
+        sampleItemPopout.setData(manager, state);
     }
 
     private void evaluateEdit() {
@@ -617,6 +611,12 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         root = new Node();
         if (manager == null)
             return root;
+
+        /*
+         * this prevents any problems with trying to show the errors that were
+         * added to the previous nodes and not to the latest ones added below 
+         */
+        tree.clearExceptions();
 
         /*
          * If the tree is reloaded in add or update state then it could mean
@@ -684,7 +684,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     }
 
     private void sampleItemChanged(String itemUid, SampleItemChangeEvent.Action action) {
-        int i;
+        int i, j;
         Node parent, node;
         SampleItemViewDO item;
 
@@ -706,8 +706,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                  * show a warning if the new sample type isn't valid for an
                  * analysis linked to this sample item
                  */
-                for (i = 0; i < parent.getChildCount(); i++ ) {
-                    node = parent.getChildAt(i);
+                for (j = 0; j < parent.getChildCount(); j++ ) {
+                    node = parent.getChildAt(j);
                     validateSampleType(node, item.getTypeOfSampleId());
                 }
 
@@ -783,9 +783,9 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         sb.append(ana.getMethodName());
         if (ana.getStatusId() != null) {
             try {
-                sb.append(" (");
+                sb.append(" [");
                 sb.append(DictionaryCache.getById(ana.getStatusId()).getEntry());
-                sb.append(")");
+                sb.append("]");
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);

@@ -1542,6 +1542,8 @@ public class ExchangeDataSelectionScreen extends Screen {
             
             ExchangeDataSelectionService.get().export(accs, manager);
             window.setDone(Messages.get().gen_loadCompleteMessage());
+        } catch (NotFoundException e) {
+            window.setDone(Messages.get().noRecordsFound());
         } catch (Exception e) {
             window.setError(Messages.get().gen_failed());
             Window.alert(e.getMessage());

@@ -169,7 +169,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select="resource:getString($constants,'description')" />:
                         </text>
                         <widget colspan="2">
-                          <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getReportingDescription()},{meta:getScriptletName()}" field="String" required="true" />
+                          <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getReportingDescription()},{meta:getScriptletId()}" field="String" required="true" />
                         </widget>
                       </row>
                       <row>
@@ -331,7 +331,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'testFormat')" />:
                         </text>
-                        <dropdown key="{meta:getTestFormatId()}" width="180" tab="{meta:getScriptletName()},{meta:getTestTrailerName()}" field="Integer" required="true"/>
+                        <dropdown key="{meta:getTestFormatId()}" width="180" tab="{meta:getScriptletId()},{meta:getTestTrailerName()}" field="Integer" required="true"/>
                       </row>
                       <row>
                         <text style="Prompt">
@@ -341,9 +341,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                         </text>
-                        <autoComplete key="{meta:getScriptletName()}" width="180" case="LOWER" tab="{meta:getDescription()},{meta:getTestFormatId()}" field="Integer">
-                          <col width="180" />
-                        </autoComplete>
+                        <dropdown key="{meta:getScriptletId()}" width="180" tab="{meta:getDescription()},{meta:getTestFormatId()}" field="Integer"/>                          
                       </row>
                       <row>
                         <text style="Prompt">
@@ -477,9 +475,7 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
-                          <autoComplete key="{meta:getAnalyteScriptletId()}" width="100" case="LOWER" field="Integer">
-                            <col width="165" />
-                          </autoComplete>
+                          <dropdown key="{meta:getAnalyteScriptletId()}" width="100" popWidth = "165" field="Integer"/>
                         </row>
                       </TablePanel>
                     </HorizontalPanel>
@@ -668,7 +664,7 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'numberFormat')" />:
                           </text>
                           <widget colspan="4">
-                            <dropdown key="{meta:getWorksheetFormatId()}" width="145" case="MIXED" tab="{meta:getWorksheetSubsetCapacity()}, {meta:getWorksheetScriptletName()}" field="Integer" />
+                            <dropdown key="{meta:getWorksheetFormatId()}" width="145" case="MIXED" tab="{meta:getWorksheetSubsetCapacity()}, {meta:getWorksheetScriptletId()}" field="Integer" />
                           </widget>
                         </row>
                         <row>
@@ -684,7 +680,7 @@ UIRF Software License are applicable instead of those above.
                             </text>
                           </widget>
                           <widget>
-                            <textbox key="{meta:getWorksheetTotalCapacity()}" width="40" tab="{meta:getWorksheetScriptletName()},{meta:getWorksheetSubsetCapacity()}" field="Integer" />
+                            <textbox key="{meta:getWorksheetTotalCapacity()}" width="40" tab="{meta:getWorksheetScriptletId()},{meta:getWorksheetSubsetCapacity()}" field="Integer" />
                           </widget>
                         </row>
                         <row>
@@ -692,9 +688,7 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
                           <widget colspan="3">
-                            <autoComplete key="{meta:getWorksheetScriptletName()}" width="235" field="Integer">
-                              <col width="235" />
-                            </autoComplete>
+                            <dropdown key="{meta:getWorksheetScriptletId()}" width="235" field="Integer"/>
                           </widget>
                         </row>
                       </TablePanel>
@@ -705,7 +699,7 @@ UIRF Software License are applicable instead of those above.
                       </text>
                       <HorizontalPanel>
                         <widget valign="top">
-                          <table key="worksheetTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="worksheetAnalyteTable, {meta:getWorksheetScriptletName()}" title="">
+                          <table key="worksheetTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="worksheetAnalyteTable, {meta:getWorksheetScriptletId()}" title="">
                             <col key="{meta:getWorksheetItemPosition()}" width="70" header="{resource:getString($constants,'position')}">
                               <textbox field="Integer" />
                             </col>

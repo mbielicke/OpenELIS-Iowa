@@ -52,23 +52,6 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.TestWorksheetViewDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FieldErrorException;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.GridFieldErrorException;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.TableFieldErrorException;
-import org.openelis.ui.common.Util;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -89,7 +72,6 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -113,8 +95,22 @@ import org.openelis.meta.TestMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.label.client.LabelService;
 import org.openelis.modules.method.client.MethodService;
-import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.testTrailer.client.TestTrailerService;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -122,8 +118,6 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -146,9 +140,9 @@ public class TestScreen extends Screen {
     private AppButton                queryButton, previousButton, nextButton, addButton,
                                      updateButton, commitButton, abortButton, removeSectionButton,
                                      addSectionButton;
-    private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat,
+    private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat, scriptlet,
                                      revisionMethod;
-    private AutoComplete<Integer>    testTrailer, scriptlet, method, label;
+    private AutoComplete<Integer>    testTrailer, method, label;
     protected MenuItem               duplicate, testHistory, testSectionHistory,
                                      testSampleTypeHistory, testAnalyteHistory, testResultHistory,
                                      testPrepHistory, testReflexHistory, testWorksheetHistory,
@@ -190,7 +184,10 @@ public class TestScreen extends Screen {
                                            "test_res_type_dictionary",
                                            "test_worksheet_analyte_flags",
                                            "test_worksheet_item_type",
-                                           "test_worksheet_format");
+                                           "test_worksheet_format",
+                                           "scriptlet_test",
+                                           "scriptlet_test_analyte",
+                                           "scriptlet_worksheet");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -491,7 +488,7 @@ public class TestScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = MethodService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = MethodService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (MethodDO data : list)
@@ -1011,16 +1008,14 @@ public class TestScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(TestMeta.getScriptletName());
+        scriptlet = (Dropdown<Integer>)def.getWidget(TestMeta.getScriptletId());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptlet.setSelection(manager.getTest().getScriptletId(),
-                                       manager.getTest().getScriptletName());
+                scriptlet.setSelection(manager.getTest().getScriptletId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getTest().setScriptletId(event.getValue());
-                manager.getTest().setScriptletName(scriptlet.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1028,27 +1023,6 @@ public class TestScreen extends Screen {
                                         .contains(event.getState()));
                 scriptlet.setQueryMode(event.getState() == State.QUERY);
             }
-        });
-
-        // Screens now must implement AutoCompleteCallInt and set themselves as
-        // the calling interface
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
-
-                try {
-                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list) {
-                        model.add(new TableDataRow(data.getId(), data.getName()));
-                    }
-                    scriptlet.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-
         });
 
         // Get TabPanel and set Tab Selection Handlers
@@ -1246,6 +1220,16 @@ public class TestScreen extends Screen {
             model.add(row);
         }
         testFormat.setModel(model);
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        list = CategoryCache.getBySystemName("scriptlet_test");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        scriptlet.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("test_reporting_method");

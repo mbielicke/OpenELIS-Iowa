@@ -192,10 +192,8 @@ UIRF Software License are applicable instead of those above.
                 <col key="{meta:getFieldDescription()}" width="200" header="{resource:getString($constants,'description')}">
                   <textbox max="60" field="String" />
                 </col>
-                <col key="{meta:getFieldScriptletName()}" width="150" header="{resource:getString($constants,'scriptlet')}">
-                  <autoComplete width="150" popWidth="auto" field="Integer">
-                    <col width="150" />
-                  </autoComplete>
+                <col key="{meta:getFieldScriptletId()}" width="150" header="{resource:getString($constants,'scriptlet')}">
+                  <dropdown width="150" field="Integer" />
                 </col>
               </table>
             </HorizontalPanel>
