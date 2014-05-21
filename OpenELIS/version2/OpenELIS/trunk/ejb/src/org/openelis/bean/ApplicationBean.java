@@ -85,16 +85,19 @@ public class ApplicationBean {
                         "order_status_on_hold", "order_status_cancelled", "order_status_template",
                         "org_finalrep_fax_number", "org_no_finalreport", "org_report_to",
                         "org_bill_to", "org_second_report_to", "org_birth_hospital",
-                        "pos_duplicate", "pos_fixed", "pos_fixed_always", "pos_random",
-                        "pos_last_of_subset", "pos_last_of_run", "pos_last_of_subset_and_run",
-                        "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
-                        "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
+                        "patient_relation_mother", "patient_relation_father",
+                        "patient_relation_guardian", "patient_relation_self", "pos_duplicate",
+                        "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
+                        "pos_last_of_run", "pos_last_of_subset_and_run", "pt_sample",
+                        "qaevent_internal", "qaevent_override", "qaevent_warning", "qc_blank",
+                        "qc_duplicate", "qc_spike", "receivable_reportto_email",
                         "released_reportto_email", "org_hold_sample", "profile_air_string",
                         "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
                         "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
                         "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
                         "round_sig_fig_noe", "sample_completed", "sample_error",
                         "sample_logged_in", "sample_not_verified", "sample_released",
+                        "scriptlet_neonatal_domain", "scriptlet_pws_validate",
                         "sdwis_category_bacterial", "sdwis_category_chemical",
                         "sdwis_category_lead", "sdwis_category_radchem",
                         "section_mcl_violation_email", "shipping_status_processed",
@@ -191,6 +194,10 @@ public class ApplicationBean {
         Constants.dictionary().ORG_BILL_TO = dictId(map, "org_bill_to");
         Constants.dictionary().ORG_SECOND_REPORT_TO = dictId(map, "org_second_report_to");
         Constants.dictionary().ORG_BIRTH_HOSPITAL = dictId(map, "org_birth_hospital");
+        Constants.dictionary().PATIENT_RELATION_MOTHER = dictId(map, "patient_relation_mother");  
+        Constants.dictionary().PATIENT_RELATION_FATHER = dictId(map, "patient_relation_father");
+        Constants.dictionary().PATIENT_RELATION_GUARDIAN = dictId(map, "patient_relation_guardian");
+        Constants.dictionary().PATIENT_RELATION_SELF = dictId(map, "patient_relation_self");
         Constants.dictionary().POS_DUPLICATE = dictId(map, "pos_duplicate");
         Constants.dictionary().POS_FIXED = dictId(map, "pos_fixed");
         Constants.dictionary().POS_FIXED_ALWAYS = dictId(map, "pos_fixed_always");

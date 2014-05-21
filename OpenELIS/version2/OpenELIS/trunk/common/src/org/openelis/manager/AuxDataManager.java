@@ -108,7 +108,7 @@ public class AuxDataManager implements Serializable {
             return;
 
         // need to get the group id to remove
-        groupId = items.get(i).data.getGroupId();
+        groupId = items.get(i).data.getAuxFieldGroupId();
 
         if (deletedList == null)
             deletedList = new ArrayList<AuxDataListItem>();

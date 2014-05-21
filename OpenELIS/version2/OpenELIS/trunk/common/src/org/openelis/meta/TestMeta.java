@@ -131,18 +131,14 @@ public class TestMeta implements Meta, MetaMap {
 	                            METHOD_NAME = "_test.method.name",   
 	                            METHOD_DESCRIPTION = "_test.method.description",     
 	                            TEST_TRAILER_NAME = "_test.testTrailer.name",
-	                            SCRIPTLET_NAME = "_test.scriptlet.name",
 	
-	                            ANA_SCRIPTLET_NAME = "_testAnalyte.scriptlet.name",
 	                            ANA_ANALYTE_NAME = "_testAnalyte.analyte.name",
 	
 	                            PREP_PREP_TEST_NAME = "_testPrep.prepTest.name",
 	
 	                            REF_TEST_ANALYTE_NAME = "_testReflex.testAnalyte.analyte.name",
 	                            REF_TEST_RESULT_VALUE = "_testReflex.testResult.value",
-	                            REF_ADD_TEST_NAME = "_testReflex.addTest.name",
-	                            
-	                            WS_SCRIPTLET_NAME ="_testWorksheet.scriptlet.name";
+	                            REF_ADD_TEST_NAME = "_testReflex.addTest.name";
   	  
 	private static HashSet<String> names;
     
@@ -162,13 +158,12 @@ public class TestMeta implements Meta, MetaMap {
                                                   PREP_PREP_TEST_ID,PREP_IS_OPTIONAL,REF_ID,REF_TEST_ID,
                                                   REF_TEST_ANALYTE_ID,REF_TEST_RESULT_ID,REF_FLAGS_ID,
                                                   REF_ADD_TEST_ID,WS_ID,WS_FORMAT_ID,WS_TOTAL_CAPACITY,
-                                                  WS_SUBSET_CAPACITY,WS_SCRIPTLET_ID,WS_SCRIPTLET_NAME,
-                                                  WS_TEST_ID,WSI_ID,WSI_TEST_WORKSHEET_ID,WSI_SORT_ORDER,
-                                                  WSI_POSITION,WSI_TYPE_ID,WSI_QC_NAME,WSA_ID,WSA_TEST_ID,
-                                                  WSA_ANALYTE_ID,WSA_REPEAT,WSA_FLAG_ID,LABEL_NAME,METHOD_NAME,
-                                                  TEST_TRAILER_NAME,SCRIPTLET_NAME,ANA_SCRIPTLET_NAME, 
-                                                  ANA_ANALYTE_NAME,PREP_PREP_TEST_NAME,REF_TEST_ANALYTE_NAME,
-                                                  REF_TEST_RESULT_VALUE,REF_ADD_TEST_NAME));
+                                                  WS_SUBSET_CAPACITY,WS_SCRIPTLET_ID,WS_TEST_ID,WSI_ID,
+                                                  WSI_TEST_WORKSHEET_ID,WSI_SORT_ORDER,WSI_POSITION,WSI_TYPE_ID,
+                                                  WSI_QC_NAME,WSA_ID,WSA_TEST_ID,WSA_ANALYTE_ID,WSA_REPEAT,
+                                                  WSA_FLAG_ID,LABEL_NAME,METHOD_NAME,TEST_TRAILER_NAME,ANA_ANALYTE_NAME,
+                                                  PREP_PREP_TEST_NAME,REF_TEST_ANALYTE_NAME,REF_TEST_RESULT_VALUE,
+                                                  REF_ADD_TEST_NAME));
     }
         
     public static String getId() {
@@ -279,10 +274,6 @@ public class TestMeta implements Meta, MetaMap {
         return TEST_TRAILER_NAME;
     }
     
-    public static String getScriptletName() {
-        return SCRIPTLET_NAME;
-    }
-    
     public static String getSectionId() {
         return SECT_ID;
     } 
@@ -353,11 +344,7 @@ public class TestMeta implements Meta, MetaMap {
     
     public static String getAnalyteAnalyteName() {
         return ANA_ANALYTE_NAME;
-    }
-    
-    public static String getAnalyteScriptletName() {
-        return ANA_SCRIPTLET_NAME;
-    }
+    }  
     
     public static String getResultId() {
         return RES_ID;
@@ -489,10 +476,6 @@ public class TestMeta implements Meta, MetaMap {
 
     public static String getWorksheetScriptletId() {
         return WS_SCRIPTLET_ID;
-    }
-    
-    public static String getWorksheetScriptletName() {
-        return WS_SCRIPTLET_NAME;
     }
     
     public static String getWorksheetItemId() {

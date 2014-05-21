@@ -380,7 +380,6 @@ public class TestAnalyteManager implements Serializable {
             currDO.setResultGroup(prevDO.getResultGroup());
             currDO.setIsReportable(prevDO.getIsReportable());
             currDO.setScriptletId(prevDO.getScriptletId());
-            currDO.setScriptletName(prevDO.getScriptletName());
         } else {
             currDO.setId(id);
             currDO.setIsReportable("N");

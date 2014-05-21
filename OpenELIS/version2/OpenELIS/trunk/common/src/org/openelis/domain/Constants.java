@@ -118,7 +118,7 @@ public class Constants implements Serializable {
 
         public final Integer      PATIENT          = 2, PATIENT_RELATION = 3, PROVIDER = 4,
                         ORGANIZATION = 5, ORGANIZATION_CONTACT = 6, SAMPLE = 8,
-                        SAMPLE_ENVIRONMENTAL = 9, SAMPLE_ANIMAL = 10, SAMPLE_HUMAN = 11,
+                        SAMPLE_ENVIRONMENTAL = 9, SAMPLE_ANIMAL = 10, SAMPLE_CLINICAL = 11,
                         SAMPLE_PROJECT = 12, SAMPLE_ORGANIZATION = 13, SAMPLE_ITEM = 14,
                         ANALYSIS = 15, ANALYSIS_QAEVENT = 16, ANALYSIS_USER = 17, RESULT = 18,
                         QAEVENT = 19, NOTE = 20, STANDARD_NOTE = 21, TEST = 22, TEST_ANALYTE = 23,
@@ -161,7 +161,7 @@ public class Constants implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final String       QUICKENTRY       = "Q", ENVIRONMENTAL = "E", SDWIS = "S",
-                        PRIVATEWELL = "W", NEONATAL = "N", HUMAN = "H", ANIMAL = "A", PT = "P";
+                        PRIVATEWELL = "W", NEONATAL = "N", CLINICAL = "C", ANIMAL = "A", PT = "P";
     }
 
     /**
@@ -199,9 +199,11 @@ public class Constants implements Serializable {
                         ORDER_STATUS_PENDING, ORDER_STATUS_PROCESSED, ORDER_STATUS_RECURRING,
                         ORDER_STATUS_ON_HOLD, ORDER_STATUS_CANCELLED, ORDER_STATUS_TEMPLATE,
                         ORG_BILL_TO, ORG_BIRTH_HOSPITAL, ORG_FINALREP_FAX_NUMBER,
-                        ORG_NO_FINALREPORT, ORG_REPORT_TO, ORG_SECOND_REPORT_TO, POS_DUPLICATE,
-                        POS_FIXED, POS_FIXED_ALWAYS, POS_RANDOM, POS_LAST_OF_SUBSET,
-                        POS_LAST_OF_RUN, POS_LAST_OF_SUBSET_AND_RUN, PROFILE_AIR_STRING, PT_SAMPLE,
+                        ORG_NO_FINALREPORT, ORG_REPORT_TO, ORG_SECOND_REPORT_TO,
+                        PATIENT_RELATION_MOTHER, PATIENT_RELATION_FATHER,
+                        PATIENT_RELATION_GUARDIAN, PATIENT_RELATION_SELF, POS_DUPLICATE, POS_FIXED,
+                        POS_FIXED_ALWAYS, POS_RANDOM, POS_LAST_OF_SUBSET, POS_LAST_OF_RUN,
+                        POS_LAST_OF_SUBSET_AND_RUN, PROFILE_AIR_STRING, PT_SAMPLE,
                         QAEVENT_INTERNAL, QAEVENT_OVERRIDE, QAEVENT_WARNING, QC_BLANK,
                         QC_DUPLICATE, QC_SPIKE, RECEIVABLE_REPORTTO_EMAIL, RELEASED_REPORTTO_EMAIL,
                         ORG_HOLD_SAMPLE, REFLEX_AUTO, REFLEX_PROMPT, REFLEX_AUTO_NDUP,
@@ -210,8 +212,9 @@ public class Constants implements Serializable {
                         RESULT_FLAG_DNR, RESULT_FLAG_DPH, ROUND_INT, ROUND_INT_SIG_FIG,
                         ROUND_INT_SIG_FIG_NOE, ROUND_SIG_FIG, ROUND_SIG_FIG_NOE, SAMPLE_COMPLETED,
                         SAMPLE_ERROR, SAMPLE_LOGGED_IN, SAMPLE_NOT_VERIFIED, SAMPLE_RELEASED,
-                        SDWIS_CATEGORY_BACTERIAL, SDWIS_CATEGORY_CHEMICAL, SDWIS_CATEGORY_LEAD,
-                        SDWIS_CATEGORY_RADCHEM, SECTION_MCL_VIOLATION_EMAIL,
+                        ANIMAL, ENVIRONMENTAL, CLINICAL, NEWBORN, PT, PRIVATE_WELL, QUICK_ENTRY,
+                        SDWIS, SDWIS_CATEGORY_BACTERIAL, SDWIS_CATEGORY_CHEMICAL,
+                        SDWIS_CATEGORY_LEAD, SDWIS_CATEGORY_RADCHEM, SECTION_MCL_VIOLATION_EMAIL,
                         SHIPPING_STATUS_PROCESSED, SHIPPING_STATUS_SHIPPED, SMPL_TYPE_RT,
                         SMPL_TYPE_RP, SMPL_TYPE_SP, TEST_ANALYTE_REQ, TEST_ANALYTE_SUPLMTL,
                         TEST_ANALYTE_READ_ONLY, TEST_RES_TYPE_ALPHA_LOWER,
@@ -301,6 +304,10 @@ public class Constants implements Serializable {
             return getOrderTestAnalyte(data.getId());
         }
 
+        public String get(AuxDataDO data) {
+            return getAuxData(data.getId());
+        }
+
         /**
          * Returns the UID for a given key.
          */
@@ -350,6 +357,10 @@ public class Constants implements Serializable {
 
         public String getOrderTestAnalyte(Integer id) {
             return Constants.table().ORDER_TEST_ANALYTE + ":" + id;
+        }
+
+        public String getAuxData(Integer id) {
+            return Constants.table().AUX_DATA + ":" + id;
         }
     }
 }

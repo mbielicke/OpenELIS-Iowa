@@ -49,45 +49,47 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery( name = "SampleHuman.SampleHumanBySampleId",
-                            query = "select new org.openelis.domain.SampleHumanDO(sh.id, sh.sampleId, sh.patientId, sh.providerId, sh.providerPhone)"
-                                  + " from SampleHuman sh where sh.sampleId = :id")})
+@NamedQueries({
+    @NamedQuery( name = "SampleClinical.FetchBySampleIds",
+                query = "select distinct new org.openelis.domain.SampleClinicalDO(s.id, s.sampleId, s.patientId,"
+                      + "s.providerId, s.providerPhone)"
+                      + " from SampleClinical s where s.sampleId in (:ids)")})
 @Entity
-@Table(name = "sample_human")
+@Table(name = "sample_clinical")
 @EntityListeners({AuditUtil.class})
-public class SampleHuman implements Auditable, Cloneable {
+public class SampleClinical implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer     id;
+    private Integer        id;
 
     @Column(name = "sample_id")
-    private Integer     sampleId;
+    private Integer        sampleId;
 
     @Column(name = "patient_id")
-    private Integer     patientId;
+    private Integer        patientId;
 
     @Column(name = "provider_id")
-    private Integer     providerId;
+    private Integer        providerId;
 
     @Column(name = "provider_phone")
-    private String      providerPhone;
+    private String         providerPhone;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
-    private Sample      sample;
+    private Sample         sample;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", insertable = false, updatable = false)
-    private Patient     patient;
+    private Patient        patient;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_id", insertable = false, updatable = false)
-    private Provider    provider;
+    private Provider       provider;
 
     @Transient
-    private SampleHuman original;
+    private SampleClinical original;
 
     public Integer getId() {
         return id;
@@ -160,7 +162,7 @@ public class SampleHuman implements Auditable, Cloneable {
 
     public void setClone() {
         try {
-            original = (SampleHuman)this.clone();
+            original = (SampleClinical)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -170,7 +172,7 @@ public class SampleHuman implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().SAMPLE_HUMAN);
+        audit.setReferenceTableId(Constants.table().SAMPLE_CLINICAL);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
