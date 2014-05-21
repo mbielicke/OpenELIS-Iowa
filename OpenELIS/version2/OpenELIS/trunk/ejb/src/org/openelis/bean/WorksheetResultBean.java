@@ -86,10 +86,8 @@ public class WorksheetResultBean {
         entity = new WorksheetResult();
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setTestAnalyteId(data.getTestAnalyteId());
-        entity.setTestResultId(data.getTestResultId());
         entity.setResultRow(data.getResultRow());
         entity.setAnalyteId(data.getAnalyteId());
-        entity.setTypeId(data.getTypeId());
         entity.setValue1(data.getValueAt(0));
         entity.setValue2(data.getValueAt(1));
         entity.setValue3(data.getValueAt(2));
@@ -138,10 +136,8 @@ public class WorksheetResultBean {
         entity = manager.find(WorksheetResult.class, data.getId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setTestAnalyteId(data.getTestAnalyteId());
-        entity.setTestResultId(data.getTestResultId());
         entity.setResultRow(data.getResultRow());
         entity.setAnalyteId(data.getAnalyteId());
-        entity.setTypeId(data.getTypeId());
         entity.setValue1(data.getValueAt(0));
         entity.setValue2(data.getValueAt(1));
         entity.setValue3(data.getValueAt(2));

@@ -2063,7 +2063,8 @@ public class SampleManager1Bean {
                      * the tests defined in the panel are added as analytical
                      * tests
                      */
-                    panelTests.add(new SampleTestRequestVO(test.getSampleItemId(),
+                    panelTests.add(new SampleTestRequestVO(test.getSampleId(),
+                                                           test.getSampleItemId(),
                                                            pt.getId(),
                                                            null,
                                                            null,
@@ -2197,7 +2198,8 @@ public class SampleManager1Bean {
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception {
-        return analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+        analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+        return sm;
     }
 
     /**
@@ -2608,7 +2610,7 @@ public class SampleManager1Bean {
         prepIds = analysisHelper.setPrepForAnalysis(ret.getManager(), ana, analyses, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
-                ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+                ret.addTest(ret.getManager().getSample().getId(), test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
         analysisHelper.addResults(ret.getManager(), tm, ana, test.getReportableAnalytes(), null);
 
         analyses.put(ana.getTestId(), ana);
