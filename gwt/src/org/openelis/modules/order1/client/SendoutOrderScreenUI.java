@@ -25,13 +25,9 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -887,6 +883,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
 
         addScreenHandler(testTab, "testTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1685,6 +1687,28 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Executes a query to fetch the order whose id is the passed value
+     */
+    public void query(Integer id) {
+        Query query;
+        QueryData field;
+
+        if (id == null)
+            return;
+
+        query = new Query();
+        query.setRowsPerPage(25);
+        field = new QueryData();
+        field.setKey(OrderMeta.getId());               
+        field.setQuery(id.toString());
+        field.setType(QueryData.Type.INTEGER);
+        
+        query.setFields(field);
+        nav.setQuery(query);
+        cache = null;
+    }
+
+    /**
      * Returns from the cache, the object that has the specified key and is of
      * the specified class
      */
@@ -2116,9 +2140,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         prevId = null;
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
-            if ( !aux.getGroupId().equals(prevId)) {
-                ids.add(aux.getGroupId());
-                prevId = aux.getGroupId();
+            if ( !aux.getAuxFieldGroupId().equals(prevId)) {
+                ids.add(aux.getAuxFieldGroupId());
+                prevId = aux.getAuxFieldGroupId();
             }
         }
 

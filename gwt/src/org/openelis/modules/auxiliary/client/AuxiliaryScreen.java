@@ -33,7 +33,6 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -41,18 +40,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FieldErrorException;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.GridFieldErrorException;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.TableFieldErrorException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
@@ -101,8 +88,19 @@ import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
-import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -126,14 +124,14 @@ public class AuxiliaryScreen extends Screen {
     private CalendarLookUp                     activeBegin, activeEnd;
     private TextBox                            name, description;
     private CheckBox                           isActive;
-    private AppButton                          queryButton, previousButton, nextButton,
-                    addButton, updateButton, commitButton, abortButton,
-                    addAuxFieldButton, removeAuxFieldButton, addAuxFieldValueButton,
-                    removeAuxFieldValueButton, dictionaryLookUpButton;
+    private AppButton                          queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton, addAuxFieldButton,
+                    removeAuxFieldButton, addAuxFieldValueButton, removeAuxFieldValueButton,
+                    dictionaryLookUpButton;
     protected MenuItem                         auxFieldGroupHistory, auxFieldHistory,
                     auxFieldValueHistory;
-    private Dropdown<Integer>                  unitOfMeasureId, auxFieldValueTypeId;
-    private AutoComplete<Integer>              analyte, scriptlet, method;
+    private Dropdown<Integer>                  unitOfMeasureId, scriptletId, auxFieldValueTypeId;
+    private AutoComplete<Integer>              analyte, method;
     private TableWidget                        auxFieldTable, auxFieldValueTable;
     private Integer                            prevSelFieldRow;
     private DictionaryLookupScreen             dictLookup;
@@ -144,7 +142,7 @@ public class AuxiliaryScreen extends Screen {
 
     public AuxiliaryScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(AuxiliaryDef.class));
-        
+
         setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("auxiliary");
@@ -191,8 +189,7 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY)
-                                             .contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -243,10 +240,8 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,
-                                               State.ADD,
-                                               State.UPDATE,
-                                               State.DELETE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -257,10 +252,8 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,
-                                              State.ADD,
-                                              State.UPDATE,
-                                              State.DELETE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                          .contains(event.getState()));
             }
         });
 
@@ -271,8 +264,7 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxFieldGroupHistory.enable(EnumSet.of(State.DISPLAY)
-                                                   .contains(event.getState()));
+                auxFieldGroupHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -283,8 +275,7 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxFieldHistory.enable(EnumSet.of(State.DISPLAY)
-                                              .contains(event.getState()));
+                auxFieldHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -295,8 +286,7 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxFieldValueHistory.enable(EnumSet.of(State.DISPLAY)
-                                                   .contains(event.getState()));
+                auxFieldValueHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -391,29 +381,19 @@ public class AuxiliaryScreen extends Screen {
         unitOfMeasureId = (Dropdown<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldUnitOfMeasureId());
         analyte = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldAnalyteName());
         method = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldMethodName());
-        scriptlet = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldScriptletName());
+        scriptletId = (Dropdown<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldScriptletId());
 
-        addScreenHandler(auxFieldTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 if (state != State.QUERY)
-                                     auxFieldTable.load(getAuxFieldModel());
-                             }
+        addScreenHandler(auxFieldTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (state != State.QUERY)
+                    auxFieldTable.load(getAuxFieldModel());
+            }
 
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 boolean enable;
-
-                                 auxFieldTable.enable(true);
-                                 auxFieldTable.setQueryMode(event.getState() == State.QUERY);
-
-                                 /*
-                                  * enable = EnumSet.of(State.ADD,
-                                  * State.UPDATE).contains(event.getState());
-                                  * auxFieldTable.enableDrag(enable);
-                                  * auxFieldTable.enableDrop(enable);
-                                  */
-                             }
-                         });
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxFieldTable.enable(true);
+                auxFieldTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
 
         auxFieldTable.enableDrag(true);
         auxFieldTable.enableDrop(true);
@@ -523,14 +503,7 @@ public class AuxiliaryScreen extends Screen {
                         data.setDescription((String)val);
                         break;
                     case 7:
-                        row = (TableDataRow)val;
-                        if (row != null) {
-                            data.setScriptletId((Integer)row.key);
-                            data.setScriptletName(scriptlet.getTextBoxDisplay());
-                        } else {
-                            data.setScriptletId(null);
-                            data.setScriptletName(null);
-                        }
+                        data.setScriptletId((Integer)val);
                         break;
                 }
             }
@@ -571,7 +544,8 @@ public class AuxiliaryScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = AnalyteService.get()
+                                         .fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -602,24 +576,6 @@ public class AuxiliaryScreen extends Screen {
                 }
             }
 
-        });
-
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
-
-                try {
-                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list) {
-                        model.add(new TableDataRow(data.getId(), data.getName()));
-                    }
-                    scriptlet.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
         });
 
         auxFieldTable.addRowAddedHandler(new RowAddedHandler() {
@@ -666,8 +622,7 @@ public class AuxiliaryScreen extends Screen {
         auxFieldTable.addRowMovedHandler(new RowMovedHandler() {
             public void onRowMoved(RowMovedEvent event) {
                 try {
-                    manager.getFields().moveField(event.getOldIndex(),
-                                                  event.getNewIndex());
+                    manager.getFields().moveField(event.getOldIndex(), event.getNewIndex());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -726,16 +681,15 @@ public class AuxiliaryScreen extends Screen {
 
         auxFieldValueTable = (TableWidget)def.getWidget("auxFieldValueTable");
         auxFieldValueTypeId = (Dropdown<Integer>)auxFieldValueTable.getColumnWidget(AuxFieldGroupMeta.getFieldValueTypeId());
-        addScreenHandler(auxFieldValueTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 auxFieldValueTable.load(getAuxFieldValueModel(null));
-                             }
+        addScreenHandler(auxFieldValueTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                auxFieldValueTable.load(getAuxFieldValueModel(null));
+            }
 
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 auxFieldValueTable.enable(true);
-                             }
-                         });
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxFieldValueTable.enable(true);
+            }
+        });
 
         auxFieldValueTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -752,7 +706,7 @@ public class AuxiliaryScreen extends Screen {
 
                 if (state == State.DISPLAY || state == State.DEFAULT)
                     return;
-                
+
                 auxFieldTable.finishEditing();
                 r = auxFieldValueTable.getSelectedRow();
                 fr = auxFieldTable.getSelectedRow();
@@ -802,8 +756,7 @@ public class AuxiliaryScreen extends Screen {
                         data.setTypeId((Integer)val);
                         auxFieldValueTable.clearCellExceptions(r, 1);
                         try {
-                            validateValue(data,
-                                          (String)auxFieldValueTable.getObject(r, 1));
+                            validateValue(data, (String)auxFieldValueTable.getObject(r, 1));
                         } catch (Exception e) {
                             auxFieldValueTable.setCellException(r, 1, e);
                         }
@@ -830,9 +783,7 @@ public class AuxiliaryScreen extends Screen {
 
                 r = auxFieldTable.getSelectedRow();
                 try {
-                    manager.getFields()
-                           .getValuesAt(r)
-                           .addAuxFieldValue(new AuxFieldValueViewDO());
+                    manager.getFields().getValuesAt(r).addAuxFieldValue(new AuxFieldValueViewDO());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -845,9 +796,7 @@ public class AuxiliaryScreen extends Screen {
 
                 fr = auxFieldTable.getSelectedRow();
                 try {
-                    manager.getFields()
-                           .getValuesAt(fr)
-                           .removeAuxFieldValueAt(event.getIndex());
+                    manager.getFields().getValuesAt(fr).removeAuxFieldValueAt(event.getIndex());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -910,20 +859,20 @@ public class AuxiliaryScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                                     public void onFailure(Throwable error) {
-                                         setQueryResult(null);
-                                         if (error instanceof NotFoundException) {
-                                             window.setDone(Messages.get().noRecordsFound());
-                                             setState(State.DEFAULT);
-                                         } else if (error instanceof LastPageException) {
-                                             window.setError(Messages.get().noMoreRecordInDir());
-                                         } else {
-                                             Window.alert("Error: Auxiliary call query failed; " +
-                                                          error.getMessage());
-                                             window.setError(Messages.get().queryFailed());
-                                         }
-                                     }
-                                 });
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(Messages.get().noRecordsFound());
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError(Messages.get().noMoreRecordInDir());
+                        } else {
+                            Window.alert("Error: Auxiliary call query failed; " +
+                                         error.getMessage());
+                            window.setError(Messages.get().queryFailed());
+                        }
+                    }
+                });
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -949,8 +898,7 @@ public class AuxiliaryScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
-                                .contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -962,7 +910,7 @@ public class AuxiliaryScreen extends Screen {
 
                 field = new QueryData();
                 field.setKey(AuxFieldGroupMeta.getName());
-                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setQuery( ((AppButton)event.getSource()).getAction());
                 field.setType(QueryData.Type.STRING);
 
                 query = new Query();
@@ -997,6 +945,18 @@ public class AuxiliaryScreen extends Screen {
         }
 
         unitOfMeasureId.setModel(model);
+
+        // scriptlet dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        list = CategoryCache.getBySystemName("scriptlet_aux_field");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+
+        scriptletId.setModel(model);
 
         // aux field value type dropdown
         model = new ArrayList<TableDataRow>();
@@ -1260,15 +1220,14 @@ public class AuxiliaryScreen extends Screen {
                     if ( !rowList.contains(row)) {
                         auxFieldTable.setCellException(row,
                                                        AuxFieldGroupMeta.getFieldAnalyteName(),
-                                                       new Exception(Messages.get().errorsWithAuxFieldValuesException()));
+                                                       new Exception(Messages.get()
+                                                                             .errorsWithAuxFieldValuesException()));
                         rowList.add(row);
                     }
                     valueErrorList.add(gfe);
                 } else {
                     tfe = (TableFieldErrorException)ex;
-                    auxFieldTable.setCellException(tfe.getRowIndex(),
-                                                   tfe.getFieldName(),
-                                                   tfe);
+                    auxFieldTable.setCellException(tfe.getRowIndex(), tfe.getFieldName(), tfe);
                 }
             } else if (ex instanceof FormErrorException) {
                 fe = (FormErrorException)ex;
@@ -1308,15 +1267,14 @@ public class AuxiliaryScreen extends Screen {
                 row.key = data.getId();
                 row.cells.get(0).setValue(new TableDataRow(data.getAnalyteId(),
                                                            data.getAnalyteName()));
-                row.cells.get(1).setValue(new TableDataRow(data.getMethodId(),
-                                                           data.getMethodName()));
+                row.cells.get(1)
+                         .setValue(new TableDataRow(data.getMethodId(), data.getMethodName()));
                 row.cells.get(2).setValue(data.getUnitOfMeasureId());
                 row.cells.get(3).setValue(data.getIsActive());
                 row.cells.get(4).setValue(data.getIsRequired());
                 row.cells.get(5).setValue(data.getIsReportable());
                 row.cells.get(6).setValue(data.getDescription());
-                row.cells.get(7).setValue(new TableDataRow(data.getScriptletId(),
-                                                           data.getScriptletName()));
+                row.cells.get(7).setValue(data.getScriptletId());
                 model.add(row);
             }
         } catch (Exception e) {
@@ -1457,9 +1415,7 @@ public class AuxiliaryScreen extends Screen {
                             }
                             entry = list.get(0);
                             try {
-                                data = manager.getFields()
-                                              .getValuesAt(fr)
-                                              .getAuxFieldValueAt(r);
+                                data = manager.getFields().getValuesAt(fr).getAuxFieldValueAt(r);
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
                                 data.setTypeId(Constants.dictionary().AUX_DICTIONARY);

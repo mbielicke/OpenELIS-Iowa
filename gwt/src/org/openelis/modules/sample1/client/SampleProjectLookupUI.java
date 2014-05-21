@@ -195,9 +195,6 @@ public abstract class SampleProjectLookupUI extends Screen {
             public void onRowAdded(RowAddedEvent event) {
                 SampleProjectViewDO data;
 
-                // data = new SampleProjectViewDO();
-                // data.setIsPermanent("N");
-                // manager.addProject(data);
                 data = manager.project.add();
                 data.setIsPermanent("N");
                 removeProjectButton.setEnabled(true);
@@ -239,8 +236,10 @@ public abstract class SampleProjectLookupUI extends Screen {
         setState(state);
         fireDataChange();
 
-        if (isState(ADD, UPDATE) && table.getRowCount() > 0)
+        if (isState(ADD, UPDATE) && table.getRowCount() > 0) {
             table.startEditing(0, 0);
+            removeProjectButton.setEnabled(true);
+        }
     }
 
     public void setState(State state) {
