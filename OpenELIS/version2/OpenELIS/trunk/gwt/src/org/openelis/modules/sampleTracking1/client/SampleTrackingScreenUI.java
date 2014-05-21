@@ -3088,9 +3088,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         tests = new ArrayList<SampleTestRequestVO>();
         if (methodId != null)
-            test = new SampleTestRequestVO(item.getId(), addId, null, null, null, null, false, null);
+            test = new SampleTestRequestVO(manager.getSample().getId(), item.getId(), addId, null, null, null, null, false, null);
         else
-            test = new SampleTestRequestVO(item.getId(), null, null, null, null, addId, false, null);
+            test = new SampleTestRequestVO(manager.getSample().getId(), item.getId(), null, null, null, null, addId, false, null);
 
         tests.add(test);
         addAnalyses(tests);
