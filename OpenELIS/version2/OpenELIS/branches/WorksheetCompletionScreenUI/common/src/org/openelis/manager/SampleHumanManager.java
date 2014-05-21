@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
-import org.openelis.domain.SampleHumanDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleHumanManager implements Serializable, SampleDomainInt {
@@ -39,7 +39,7 @@ public class SampleHumanManager implements Serializable, SampleDomainInt {
     protected Integer                            sampleId;
     protected ProviderDO                         provider;
     protected PatientDO                          patient;
-    protected SampleHumanDO                      human;
+    protected SampleClinicalDO                      human;
 
    // protected transient SampleHumanManagerIOInt manager;
 
@@ -58,7 +58,7 @@ public class SampleHumanManager implements Serializable, SampleDomainInt {
         SampleHumanManager shm;
 
         shm = new SampleHumanManager();
-        shm.human = new SampleHumanDO();
+        shm.human = new SampleClinicalDO();
         shm.setSampleId(sampleId);
         
         shm.fetch();
@@ -99,7 +99,7 @@ public class SampleHumanManager implements Serializable, SampleDomainInt {
         this.patient = patient;
     }
 
-    public SampleHumanDO getHuman() {
+    public SampleClinicalDO getHuman() {
         fetch();
         return human;
     }
@@ -112,7 +112,7 @@ public class SampleHumanManager implements Serializable, SampleDomainInt {
   //      return newId;
   //  }
     
-    public SampleHumanDO fetch(){
+    public SampleClinicalDO fetch(){
   //      human = manager().fetch(sampleId);
         return human;
     }

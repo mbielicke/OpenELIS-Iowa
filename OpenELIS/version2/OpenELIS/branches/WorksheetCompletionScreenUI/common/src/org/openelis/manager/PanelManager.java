@@ -79,11 +79,7 @@ public class PanelManager implements Serializable {
     
     public PanelManager update() throws Exception {
         return proxy().update(this);
-    }
-    
-    public void delete() throws Exception {
-        proxy().delete(this);
-    }
+    }   
     
     public PanelManager fetchForUpdate() throws Exception {
         return proxy().fetchForUpdate(panel.getId());
