@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1656,6 +1657,7 @@ public class WorksheetManager1Bean {
         HashMap<String, Integer> formatColumnMap;
         HashSet<Integer> updateIds, completeUserIds;
         Integer lastAnaId;
+        Iterator<SampleManager1> smIter;
         ResultFormatter rf;
         ResultViewDO rVDO;
         SampleManager1 sMan;
@@ -1897,12 +1899,14 @@ public class WorksheetManager1Bean {
             throw errorList;
         
         unlockIds = new ArrayList<Integer>();
-        for (SampleManager1 data : sampleMans) {
-            if (!updateIds.contains(data.getSample().getId())) {
-                unlockIds.add(data.getSample().getId());
-                sampleMans.remove(data);
-            } else if (reflexMans.contains(data)) {
-                sampleMans.remove(data);
+        smIter = sampleMans.iterator();
+        while (smIter.hasNext()) {
+            sMan = smIter.next();
+            if (!updateIds.contains(sMan.getSample().getId())) {
+                unlockIds.add(sMan.getSample().getId());
+                smIter.remove();
+            } else if (reflexMans.contains(sMan)) {
+                smIter.remove();
             }
         }
 
@@ -2031,7 +2035,7 @@ public class WorksheetManager1Bean {
             }
             
             col = formatColumnMap.get("final_value");
-            if (col != null && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0)) {
+            if (col != null && wrVDO.getId() <= 0 && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0)) {
                 if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
                     try {
                         dDO = dictionary.getById(Integer.valueOf(rVDO.getValue()));
@@ -2060,7 +2064,7 @@ public class WorksheetManager1Bean {
                     }
                     if (anaDO != null) {
                         col = formatColumnMap.get(anaDO.getExternalId());
-                        if (col != null && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0)) {
+                        if (col != null && wrVDO.getId() <= 0 && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0)) {
                             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
                                 try {
                                     dDO = dictionary.getById(Integer.valueOf(rVDO.getValue()));
@@ -2115,10 +2119,12 @@ public class WorksheetManager1Bean {
             rVDO = resultRow.get(c);
             if (c == 0) {
                 try {
-                    ResultHelper.formatValue(rVDO, wrVDO.getValueAt(0), aVDO.getUnitOfMeasureId(), rf);
-                    if (rVDO.isChanged())
-                        reflexResults.add(rVDO);
-                    update = true;
+                    if (!DataBaseUtil.isEmpty(wrVDO.getValueAt(0))) {
+                        ResultHelper.formatValue(rVDO, wrVDO.getValueAt(0), aVDO.getUnitOfMeasureId(), rf);
+                        if (rVDO.isChanged())
+                            reflexResults.add(rVDO);
+                        update = true;
+                    }
                 } catch (Exception anyE) {
                     errorList.add(new FormErrorException(Messages.get().worksheet_errorPrefix(String.valueOf(wiDO.getPosition()),
                                                                                               "'" +
@@ -2150,10 +2156,12 @@ public class WorksheetManager1Bean {
                 wCol = formatColumnMap.get(aDO.getExternalId());
                 if (wCol != null) {
                     try {
-                        ResultHelper.formatValue(rVDO, wrVDO.getValueAt(wCol), aVDO.getUnitOfMeasureId(), rf);
-                        if (rVDO.isChanged())
-                            reflexResults.add(rVDO);
-                        update = true;
+                        if (!DataBaseUtil.isEmpty(wrVDO.getValueAt(wCol))) {
+                            ResultHelper.formatValue(rVDO, wrVDO.getValueAt(wCol), aVDO.getUnitOfMeasureId(), rf);
+                            if (rVDO.isChanged())
+                                reflexResults.add(rVDO);
+                            update = true;
+                        }
                     } catch (Exception anyE) {
                         errorList.add(new FormErrorException(Messages.get().worksheet_errorPrefix(String.valueOf(wiDO.getPosition()),
                                                                                                   "'" +

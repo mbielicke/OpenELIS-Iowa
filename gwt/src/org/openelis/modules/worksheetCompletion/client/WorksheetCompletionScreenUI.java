@@ -845,11 +845,14 @@ public class WorksheetCompletionScreenUI extends Screen {
                         try {
                             tests = testReflexUtility.getReflexTests(result.getSampleManagers(),
                                                                      result.getReflexResultsList());
-                            if (tests != null) {
+                            if (tests != null && tests.size() > 0) {
                                 showPrepAndReflexTests(sMansById, tests);
                             } else {
                                 try {
                                     SampleService1.get().update(result.getSampleManagers(), true);
+                                } catch (ValidationErrorsList vel) {
+                                    screen.showErrors(vel);
+                                    return;
                                 } catch (Exception e) {
                                     Window.alert(e.getMessage());
                                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -946,6 +949,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                                 setData();
                                 setState(DISPLAY);
                                 fireDataChange();
+                                updateTransferMode = false;
                                 setDone(Messages.get().gen_updateAborted());
                             }
                             
@@ -1416,6 +1420,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                                         samTests.clear();
                                         if (returnVO.getTests() != null && returnVO.getTests().size() > 0)
                                             prepTests.addAll(returnVO.getTests());
+                                    } catch (ValidationErrorsList vel) {
+                                        screen.showErrors(vel);
+                                        return;
                                     } catch (Exception e) {
                                         Window.alert(e.getMessage());
                                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1432,6 +1439,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                                 sMansById.put(samId, returnVO.getManager());
                                 if (returnVO.getTests() != null && returnVO.getTests().size() > 0)
                                     prepTests.addAll(returnVO.getTests());
+                            } catch (ValidationErrorsList vel) {
+                                screen.showErrors(vel);
+                                return;
                             } catch (Exception e) {
                                 Window.alert(e.getMessage());
                                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1445,6 +1455,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                     } else {
                         try {
                             SampleService1.get().update(new ArrayList<SampleManager1>(sMansById.values()), true);
+                        } catch (ValidationErrorsList vel) {
+                            screen.showErrors(vel);
+                            return;
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
