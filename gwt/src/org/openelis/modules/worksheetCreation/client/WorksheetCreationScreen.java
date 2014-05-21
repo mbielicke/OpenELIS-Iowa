@@ -804,10 +804,8 @@ public class WorksheetCreationScreen extends Screen {
                                 waDO.setFromOtherId(wrVDO.getWorksheetAnalysisId());
                             newWrVDO = new WorksheetResultViewDO();
                             newWrVDO.setTestAnalyteId(wrVDO.getTestAnalyteId());
-                            newWrVDO.setTestResultId(wrVDO.getTestResultId());
                             newWrVDO.setResultRow(wrVDO.getResultRow());
                             newWrVDO.setAnalyteId(wrVDO.getAnalyteId());
-                            newWrVDO.setTypeId(wrVDO.getTypeId());
                             if (fromColumnNames != null && toColumnNames != null) {
                                 for (k = 0; k < 30; k++) {
                                     fromName = fromColumnNames.get(k+9);
@@ -836,7 +834,6 @@ public class WorksheetCreationScreen extends Screen {
                             newWqrVDO = new WorksheetQcResultViewDO();
                             newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
                             newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
-                            newWqrVDO.setTypeId(wqrVDO.getTypeId());
                             if (fromColumnNames != null && toColumnNames != null) {
                                 for (k = 0; k < 30; k++) {
                                     fromName = fromColumnNames.get(k+9);

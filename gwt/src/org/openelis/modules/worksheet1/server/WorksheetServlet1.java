@@ -30,13 +30,22 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.SessionCacheBean;
+import org.openelis.bean.TestTypeOfSampleBean;
 import org.openelis.bean.WorksheetBean;
+import org.openelis.bean.WorksheetExcelHelperBean;
 import org.openelis.bean.WorksheetManager1Bean;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
+import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
+import org.openelis.domain.WorksheetQcChoiceVO;
+import org.openelis.domain.WorksheetResultsTransferVO;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.modules.worksheet1.client.WorksheetServiceInt1;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -46,7 +55,17 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
     private static final long serialVersionUID = 1L;
     
     @EJB
+    private SessionCacheBean           session;
+
+    @EJB
+    TestTypeOfSampleBean  testTypeOfSample;
+    
+    @EJB
     WorksheetBean worksheet;
+    
+    @EJB
+    WorksheetExcelHelperBean worksheetExcelHelper;
+
     @EJB
     WorksheetManager1Bean worksheetManager1;
 
@@ -82,6 +101,14 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
+    public WorksheetResultsTransferVO fetchForTransfer(Integer worksheetId) throws Exception {
+        try {
+            return worksheetManager1.fetchForTransfer(worksheetId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public WorksheetManager1 unlock(Integer worksheetId, Load... elements) throws Exception {
         try {
             return worksheetManager1.unlock(worksheetId, elements);
@@ -90,11 +117,119 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
-    public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
+    public WorksheetManager1 update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag) throws Exception {
         try {
-            return worksheetManager1.update(wm);
+            return worksheetManager1.update(wm, updateFlag);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
+    }
+    
+    public WorksheetResultsTransferVO transferResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> waVDOs,
+                                                      ArrayList<SampleManager1> sampleMans) throws Exception {
+        try {
+            return worksheetManager1.transferResults(wm, waVDOs, sampleMans);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<AnalysisViewVO> fetchAnalysesByView(Query query) throws Exception {
+        try {
+            return worksheet.fetchAnalysesByView(query.getFields(), 0, query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer analysisId, String unitOfMeasure) throws Exception {
+        try {
+            return testTypeOfSample.fetchUnitsForWorksheetAutocomplete(analysisId, unitOfMeasure);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<ResultViewDO> fetchAnalytesByAnalysis(Integer analysisId, Integer testId) throws Exception {
+        try {
+            return worksheetManager1.fetchAnalytesByAnalysis(analysisId, testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        try {
+            return worksheetManager1.getColumnNames(formatId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager1 manager) throws Exception {
+        try {        
+            return worksheetManager1.getHeaderLabelsForScreen(manager.getWorksheet().getFormatId());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public WorksheetQcChoiceVO loadTemplate(WorksheetManager1 wm, Integer testId) throws Exception {
+        try {
+            return worksheetManager1.loadTemplate(wm, testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 initializeResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses) throws Exception {
+        try {
+            return worksheetManager1.initializeResults(wm, analyses);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                                        ArrayList<WorksheetAnalysisViewDO> toAnalyses,
+                                                        Integer fromWorksheetId) throws Exception {
+        try {
+            return worksheetManager1.initializeResultsFromOther(wm, fromAnalyses,
+                                                               toAnalyses, fromWorksheetId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 sortItems(WorksheetManager1 wm, int col, int dir) throws Exception {
+        try {
+            return worksheetManager1.sortItems(wm, col, dir);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public WorksheetManager1 exportToExcel(WorksheetManager1 manager) throws Exception {
+        try {        
+            return worksheetExcelHelper.exportToExcel(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public WorksheetManager1 importFromExcel(WorksheetManager1 manager) throws Exception {
+        try {        
+            return worksheetExcelHelper.importFromExcel(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ReportStatus getExportToExcelStatus() throws Exception {
+        return (ReportStatus)session.getAttribute("ExportToExcelStatus");
+    }
+
+    public ReportStatus getImportFromExcelStatus() throws Exception {
+        return (ReportStatus)session.getAttribute("ImportFromExcelStatus");
     }
 }
