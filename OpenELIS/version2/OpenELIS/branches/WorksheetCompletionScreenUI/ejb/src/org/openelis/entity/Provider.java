@@ -1,33 +1,33 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.entity;
 
 /**
-  * Provider Entity POJO for database 
-  */
+ * Provider Entity POJO for database
+ */
 
 import java.util.Collection;
 
@@ -52,17 +52,16 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "Provider.FetchById", 
-                query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
-                      + " from Provider p where p.id = :id"),
-    @NamedQuery( name = "Provider.FetchByIds", 
-                query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
-                      + " from Provider p where p.id in (:ids)"),
-    @NamedQuery( name = "Provider.FetchByLastName", 
-                query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
-                      + " from Provider p where p.lastName like :lastName")                  
-})
-
+               @NamedQuery(name = "Provider.FetchById",
+                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                                   + " from Provider p where p.id = :id"),
+               @NamedQuery(name = "Provider.FetchByIds",
+                           query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                                   + " from Provider p where p.id in (:ids)"),
+               @NamedQuery(name = "Provider.FetchByLastNameNpiExternalId",
+                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                                   + " from Provider p left join p.providerLocation pl where p.lastName like :search or p.npi like :search"
+                                   + " or pl.externalId like :search order by p.lastName, p.firstName, p.middleName, p.npi")})
 @Entity
 @Table(name = "provider")
 @EntityListeners({AuditUtil.class})
@@ -173,11 +172,11 @@ public class Provider implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                .setField("last_name", lastName, original.lastName)
-                .setField("first_name", firstName, original.firstName)
-                .setField("middle_name", middleName, original.middleName)
-                .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
-                .setField("npi", npi, original.npi);
+                 .setField("last_name", lastName, original.lastName)
+                 .setField("first_name", firstName, original.firstName)
+                 .setField("middle_name", middleName, original.middleName)
+                 .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
+                 .setField("npi", npi, original.npi);
 
         return audit;
     }

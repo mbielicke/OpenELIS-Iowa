@@ -31,6 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -136,16 +138,31 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private OrganizationParameterBean organizationParameter;
-
+    
     private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
                     analytes, projects, organizations, qas, trailers, sections, panels;
+    
     private static SimpleDateFormat   dateFormat, timeFormat;
+    
+    private static Integer ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL, ORG_EPARTNER_AGGR;
+    
+    private static final Logger log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
         if (dateFormat == null) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             timeFormat = new SimpleDateFormat("HH:mm:ss");
+        }
+        
+        if (ORG_PROD_EPARTNER_URL == null) {
+            try {
+                ORG_PROD_EPARTNER_URL = dictionaryCache.getBySystemName("org_prod_epartner_url").getId();
+                ORG_TEST_EPARTNER_URL = dictionaryCache.getBySystemName("org_test_epartner_url").getId();
+                ORG_EPARTNER_AGGR = dictionaryCache.getBySystemName("org_epartner_aggr").getId();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Could not load dictionary constants", e);
+            }
         }
     }
 
@@ -287,10 +304,14 @@ public class DataExchangeXMLMapperBean {
         if (reportTo != null) {
             try {
                 orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
+                if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null || ORG_EPARTNER_AGGR == null) {
+                    log.log(Level.SEVERE, "One or more dictionary constants for electronic partner url not initialized");
+                    return doc;
+                }
                 for (OrganizationParameterDO op : orgps) {
-                    if (Constants.dictionary().ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
-                        Constants.dictionary().ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
-                        Constants.dictionary().ORG_EPARTNER_AGGR.equals(op.getTypeId()))
+                    if (ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
+                        ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
+                        ORG_EPARTNER_AGGR.equals(op.getTypeId()))
                         header.appendChild(createOrganizationParameter(doc, op));
                 }
             } catch (NotFoundException e) {
@@ -530,6 +551,16 @@ public class DataExchangeXMLMapperBean {
                                          dicts,
                                          profiles,
                                          "dictionary_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+            
+            if (panels.size() > 0) {
+                elm = createTranslations(Constants.table().PANEL,
+                                         panels,
+                                         profiles,
+                                         "panel_translations",
                                          doc);
                 if (elm != null)
                     root.appendChild(elm);
@@ -850,8 +881,9 @@ public class DataExchangeXMLMapperBean {
         addMethod(analysis.getMethodId());
         addSection(analysis.getSectionId());
         addPanel(analysis.getPanelId());
-        addDictionary(analysis.getStatusId());
+        addDictionary(analysis.getTypeId());
         addDictionary(analysis.getUnitOfMeasureId());
+        addDictionary(analysis.getStatusId());
 
         return elm;
     }

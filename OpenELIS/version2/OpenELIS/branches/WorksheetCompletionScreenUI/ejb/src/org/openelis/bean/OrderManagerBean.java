@@ -402,7 +402,7 @@ public class OrderManagerBean {
             newData.setTypeId(oldData.getTypeId());
             newData.setValue(oldData.getValue());
             newData.setDictionary(oldData.getDictionary());
-            newData.setGroupId(oldData.getGroupId());
+            newData.setAuxFieldGroupId(oldData.getAuxFieldGroupId());
             newData.setAnalyteName(oldData.getAnalyteName());
             newData.setAnalyteId(oldData.getAnalyteId());
             newData.setAnalyteExternalId(oldData.getAnalyteExternalId());

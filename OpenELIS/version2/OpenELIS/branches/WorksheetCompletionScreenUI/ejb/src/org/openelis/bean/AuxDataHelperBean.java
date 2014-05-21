@@ -185,7 +185,8 @@ public class AuxDataHelperBean {
                     continue;
                 aux1 = new AuxDataViewDO();
                 aux1.setAuxFieldId(af.getId());
-                aux1.setGroupId(id);
+                aux1.setAuxFieldGroupId(id);
+                aux1.setAuxFieldGroupName(afg.getName());
                 aux1.setAnalyteId(af.getAnalyteId());
                 aux1.setAnalyteName(af.getAnalyteName());
                 aux1.setIsReportable(af.getIsReportable());
@@ -222,11 +223,11 @@ public class AuxDataHelperBean {
 
         removed = new ArrayList<AuxDataViewDO>();
         for (int i = 0; i < auxiliary.size(); i++ ) {
-            prevId = auxiliary.get(i).getGroupId();
+            prevId = auxiliary.get(i).getAuxFieldGroupId();
             if (groupIds.contains(prevId)) {
                 do {
                     removed.add(auxiliary.remove(i));
-                } while (i < auxiliary.size() && auxiliary.get(i).getGroupId().equals(prevId));
+                } while (i < auxiliary.size() && auxiliary.get(i).getAuxFieldGroupId().equals(prevId));
             }
         }
 
@@ -255,11 +256,11 @@ public class AuxDataHelperBean {
         grpIds = new ArrayList<Integer>();
         auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
         for (AuxDataViewDO aux : auxiliary) {
-            auxGrp = auxGrps.get(aux.getGroupId());
+            auxGrp = auxGrps.get(aux.getAuxFieldGroupId());
             if (auxGrp == null) {
                 auxGrp = new HashMap<Integer, AuxDataViewDO>();
-                auxGrps.put(aux.getGroupId(), auxGrp);
-                grpIds.add(aux.getGroupId());
+                auxGrps.put(aux.getAuxFieldGroupId(), auxGrp);
+                grpIds.add(aux.getAuxFieldGroupId());
             }
             auxGrp.put(aux.getAnalyteId(), aux);
         }
@@ -314,10 +315,10 @@ public class AuxDataHelperBean {
         prevId = null;
         addIds = new ArrayList<Integer>(groupIds);
         for (AuxDataViewDO a : auxiliary) {
-            if ( !a.getGroupId().equals(prevId)) {
-                if (groupIds.contains(a.getGroupId()))
-                    addIds.remove(a.getGroupId());
-                prevId = a.getGroupId();
+            if ( !a.getAuxFieldGroupId().equals(prevId)) {
+                if (groupIds.contains(a.getAuxFieldGroupId()))
+                    addIds.remove(a.getAuxFieldGroupId());
+                prevId = a.getAuxFieldGroupId();
             }
         }
         return addIds;

@@ -37,6 +37,7 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -44,6 +45,7 @@ import org.openelis.domain.MethodDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -55,11 +57,14 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestSectionManager;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
 
@@ -83,6 +88,12 @@ public class AnalysisHelperBean {
 
     @EJB
     private DictionaryCacheBean dictionaryCache;
+
+    @EJB
+    private AnalysisBean        analysis;
+
+    @EJB
+    private ResultBean          result;
 
     /**
      * Returns TestManagers for given test ids. For those tests that are not
@@ -419,10 +430,18 @@ public class AnalysisHelperBean {
      */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
                                                Integer statusId) throws Exception {
+        boolean resultsOverriden, addUser, hasUnreleaseNote;
         Integer accession;
+        Datetime now;
         AnalysisViewDO ana;
-        ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
+        AnalysisUserViewDO au;
+        SampleItemViewDO item;
+        SystemUserVO su;
         SystemUserPermission perm;
+        TestManager tm;
+        ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
+        HashMap<Integer, AnalysisUserViewDO> cmplUsers;
+        AnalysisUserViewDO relUser;
 
         ana = null;
         prepAnas = new ArrayList<AnalysisViewDO>();
@@ -431,14 +450,64 @@ public class AnalysisHelperBean {
          * find the analysis whose status is to be changed; also, find which
          * analyses have it as their prep and/or reflex analysis
          */
-        for (AnalysisViewDO a : getAnalyses(sm)) {
-            if (a.getId().equals(analysisId)) {
-                ana = a;
+        for (AnalysisViewDO data : getAnalyses(sm)) {
+            if (data.getId().equals(analysisId)) {
+                ana = data;
             } else {
-                if (analysisId.equals(a.getPreAnalysisId()))
-                    prepAnas.add(a);
-                if (analysisId.equals(a.getParentAnalysisId()))
-                    rflxAnas.add(a);
+                if (analysisId.equals(data.getPreAnalysisId()))
+                    prepAnas.add(data);
+                if (analysisId.equals(data.getParentAnalysisId()))
+                    rflxAnas.add(data);
+            }
+        }
+
+        /*
+         * find the analysis' sample item
+         */
+        item = null;
+        for (SampleItemViewDO data : getItems(sm)) {
+            if (data.getId().equals(ana.getSampleItemId())) {
+                item = data;
+                break;
+            }
+        }
+
+        /*
+         * find the users that completed/released the analysis
+         */
+        cmplUsers = new HashMap<Integer, AnalysisUserViewDO>();
+        relUser = null;
+        if (getUsers(sm) != null) {
+            for (AnalysisUserViewDO data : getUsers(sm)) {
+                if ( !analysisId.equals(data.getAnalysisId()))
+                    continue;
+                if (Constants.dictionary().AN_USER_AC_COMPLETED.equals(data.getActionId()))
+                    cmplUsers.put(data.getSystemUserId(), data);
+                else if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId()))
+                    relUser = data;
+            }
+        }
+
+        /*
+         * find out if the sample or the analysis has an overriding QA event
+         */
+        resultsOverriden = false;
+        if (getSampleQAs(sm) != null) {
+            for (SampleQaEventViewDO sqa : getSampleQAs(sm)) {
+                if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId())) {
+                    resultsOverriden = true;
+                    break;
+                }
+            }
+        }
+
+        if ( !resultsOverriden && getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO aqa : getAnalysisQAs(sm)) {
+                if (analysisId.equals(aqa.getAnalysisId()) &&
+                    Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId())) {
+                    resultsOverriden = true;
+                    break;
+                }
             }
         }
 
@@ -451,13 +520,15 @@ public class AnalysisHelperBean {
 
         perm = userCache.getPermission();
 
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+
         /*
          * change the status to the specified value after performing any
-         * necessary checks
+         * necessary checks and change any necessary fields
          */
         if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId)) {
             if (ana.getAvailableDate() == null)
-                ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                ana.setAvailableDate(now);
             else if (ana.getStartedDate() != null)
                 ana.setStartedDate(null);
         } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
@@ -472,11 +543,166 @@ public class AnalysisHelperBean {
             }
 
             if (ana.getStartedDate() == null)
-                ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                ana.setStartedDate(now);
         } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
-            // TODO check to make sure that the analysis can be completed
+            if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
+                /*
+                 * the analysis is being completed
+                 */
+
+                if (ana.getSectionName() == null ||
+                    !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
+                    throw new InconsistencyException(Messages.get()
+                                                             .analysis_insufficientPrivilegesCompleteException(accession,
+                                                                                                               ana.getTestName(),
+                                                                                                               ana.getMethodName()));
+                }
+
+                tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
+
+                /*
+                 * validate unit and sample type
+                 */
+                analysis.validate(ana, tm, accession, item);
+
+                if ( !resultsOverriden)
+                    validateResults(sm, accession, ana, tm.getFormatter());
+
+                /*
+                 * if this is the prep analysis of some in-prep analyses then
+                 * move them to logged-in
+                 */
+                for (AnalysisViewDO data : prepAnas) {
+                    if (Constants.dictionary().ANALYSIS_INPREP.equals(data.getStatusId())) {
+                        data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+                        data.setAvailableDate(now);
+                    }
+                }
+
+                if (ana.getStartedDate() == null)
+                    ana.setStartedDate(now);
+
+                if (ana.getCompletedDate() == null)
+                    ana.setCompletedDate(now);
+
+                /*
+                 * if the logged in user hasn't already completed this analysis,
+                 * add a record for it
+                 */
+                addUser = true;
+                su = perm.getUser();
+                if (cmplUsers != null) {
+                    au = cmplUsers.get(su.getId());
+                    if (au != null)
+                        addUser = false;
+                }
+
+                if (addUser) {
+                    au = new AnalysisUserViewDO();
+                    au.setId(sm.getNextUID());
+                    au.setAnalysisId(analysisId);
+                    au.setSystemUserId(su.getId());
+                    au.setSystemUser(su.getLoginName());
+                    au.setActionId(Constants.dictionary().AN_USER_AC_COMPLETED);
+                    addUser(sm, au);
+                }
+            } else {
+                /*
+                 * the analysis is being unreleased
+                 */
+
+                if (ana.getSectionName() == null ||
+                    !perm.getSection(ana.getSectionName()).hasReleasePermission()) {
+                    throw new InconsistencyException(Messages.get()
+                                                             .analysis_insufficientPrivilegesUnreleaseException(accession,
+                                                                                                                ana.getTestName(),
+                                                                                                                ana.getMethodName()));
+                }
+
+                /*
+                 * the analysis must have an uncommitted internal note for
+                 * describing the reason for unreleasing it
+                 */
+                hasUnreleaseNote = false;
+                if (getAnalysisInternalNotes(sm) != null) {
+                    for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
+                        if (data.getId() < 0 && analysisId.equals(data.getReferenceId())) {
+                            hasUnreleaseNote = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ( !hasUnreleaseNote)
+                    throw new InconsistencyException(Messages.get()
+                                                             .sample_unreleaseNoNoteException(accession));
+
+                ana.setReleasedDate(null);
+                ana.setPrintedDate(null);
+                ana.setRevision(ana.getRevision() + 1);
+
+                /*
+                 * increment the sample's revision and blank the released date
+                 * if the sample will be unreleased as well
+                 */
+                if (Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId())) {
+                    getSample(sm).setRevision(getSample(sm).getRevision() + 1);
+                    getSample(sm).setReleasedDate(null);
+                }
+
+                /*
+                 * mark the sample for extra processing e.g. e-save as a result
+                 * of the analysis getting unreleased
+                 */
+                setPostProcessing(sm, SampleManager1.PostProcessing.UNRELEASE);
+            }
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
-            // TODO check to make sure that the analysis can be released
+            if (ana.getSectionName() == null ||
+                !perm.getSection(ana.getSectionName()).hasReleasePermission()) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_insufficientPrivilegesReleaseException(accession,
+                                                                                                          ana.getTestName(),
+                                                                                                          ana.getMethodName()));
+            }
+
+            /*
+             * can't release the analysis if sample is not verified
+             */
+            if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(getSample(sm).getStatusId())) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_cantReleaseSampleNotVerifiedException(accession,
+                                                                                                         ana.getTestName(),
+                                                                                                         ana.getMethodName()));
+            }
+
+            tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
+
+            /*
+             * validate the results to make sure that the values of any required
+             * analytes were not removed after completing the analysis
+             */
+            if ( !resultsOverriden)
+                validateResults(sm, accession, ana, tm.getFormatter());
+
+            /*
+             * if a user released this analysis before then delete that record;
+             * create a new one
+             */
+            if (relUser != null) {
+                getUsers(sm).remove(relUser);
+                if (getRemoved(sm) == null)
+                    setRemoved(sm, new ArrayList<DataObject>());
+                getRemoved(sm).add(relUser);
+            }
+
+            su = perm.getUser();
+            au = new AnalysisUserViewDO();
+            au.setId(sm.getNextUID());
+            au.setAnalysisId(analysisId);
+            au.setSystemUserId(su.getId());
+            au.setSystemUser(su.getLoginName());
+            au.setActionId(Constants.dictionary().AN_USER_AC_RELEASED);
+            addUser(sm, au);
         } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
             if (ana.getId() < 0)
                 throw new InconsistencyException(Messages.get()
@@ -496,25 +722,25 @@ public class AnalysisHelperBean {
              * if the analysis to be cancelled is prep analysis of or was
              * reflexed by any analyses then remove those links
              */
-            for (AnalysisViewDO a : prepAnas) {
+            for (AnalysisViewDO data : prepAnas) {
                 /*
                  * the analysis can't be cancelled if it's the prep for any
                  * released analysis
                  */
-                if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId())) {
+                if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
                     throw new InconsistencyException(Messages.get()
                                                              .analysis_cantCancelPrepWithReleasedTest(accession,
                                                                                                       ana.getTestName(),
                                                                                                       ana.getMethodName(),
-                                                                                                      a.getTestName(),
-                                                                                                      a.getMethodName()));
+                                                                                                      data.getTestName(),
+                                                                                                      data.getMethodName()));
                 }
-                unlinkFromPrep(sm, a);
+                unlinkFromPrep(sm, data);
             }
 
-            for (AnalysisViewDO a : rflxAnas) {
-                a.setParentAnalysisId(null);
-                a.setParentResultId(null);
+            for (AnalysisViewDO data : rflxAnas) {
+                data.setParentAnalysisId(null);
+                data.setParentResultId(null);
             }
 
             /*
@@ -527,6 +753,16 @@ public class AnalysisHelperBean {
             ana.setParentAnalysisId(null);
             ana.setParentResultId(null);
         }
+
+        /*
+         * The status of a completed analysis can be changed to something other
+         * than released e.g. by specifying a prep analysis for it. In those
+         * cases, the completed date needs to be blanked.
+         */
+        if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId) &&
+            !Constants.dictionary().ANALYSIS_RELEASED.equals(statusId) &&
+            ana.getCompletedDate() != null)
+            ana.setCompletedDate(null);
 
         ana.setStatusId(statusId);
 
@@ -568,7 +804,7 @@ public class AnalysisHelperBean {
         tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
         rf = tm.getFormatter();
         /*
-         * set the defaults for this unit in this analysis's results
+         * set the defaults for this unit in this analysis' results
          */
         for (int i = 0; i < results.size(); i++ ) {
             r = results.get(i);
@@ -599,7 +835,7 @@ public class AnalysisHelperBean {
         /*
          * find the analysis whose prep analysis is to be changed and also the
          * analysis that is to be set as the prep
-         */       
+         */
         for (AnalysisViewDO a : getAnalyses(sm)) {
             if (a.getId().equals(analysisId))
                 ana = a;
@@ -655,7 +891,8 @@ public class AnalysisHelperBean {
     /**
      * This method removes the analysis with the specified id and all of its
      * child data, e.g. results, qa events etc. It also removes any links
-     * between other analyses and this one.
+     * between other analyses and this one. Does not remove a previously
+     * committed analysis.
      */
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
         int i;
@@ -669,10 +906,10 @@ public class AnalysisHelperBean {
         ArrayList<NoteViewDO> notes;
         ArrayList<StorageViewDO> sts;
 
-        accession = getSample(sm).getAccessionNumber();
         /*
          * for display
          */
+        accession = getSample(sm).getAccessionNumber();
         if (accession == null)
             accession = 0;
 
@@ -704,12 +941,16 @@ public class AnalysisHelperBean {
                                                                                            ana.getMethodName()));
 
         /*
-         * if the analysis to be removed is the prep analysis of or was reflexed
-         * by any analyses then remove those links
+         * if the analysis to be removed is the prep analysis of any analyses
+         * then remove those links
          */
         for (AnalysisViewDO a : prepAnas)
             unlinkFromPrep(sm, a);
 
+        /*
+         * if the analysis to be removed was reflexed by any analyses then
+         * remove those links
+         */
         for (AnalysisViewDO a : rflxAnas) {
             a.setParentAnalysisId(null);
             a.setParentResultId(null);
@@ -1035,6 +1276,7 @@ public class AnalysisHelperBean {
         r.setIsReportable(reportable);
         r.setAnalyteId(ta.getAnalyteId());
         r.setAnalyte(ta.getAnalyteName());
+        r.setAnalyteExternalId(ta.getAnalyteExternalId());
         r.setResultGroup(ta.getResultGroup());
         r.setRowGroup(ta.getRowGroup());
         setDefault(r, ana.getUnitOfMeasureId(), rf);
@@ -1054,5 +1296,37 @@ public class AnalysisHelperBean {
         if (def != null)
             r.setValue(def);
         r.setTypeId(null);
+    }
+
+    /**
+     * Validates whether the results of the analysis are valid and all required
+     * results have a value
+     */
+    private void validateResults(SampleManager1 sm, Integer accession, AnalysisViewDO ana,
+                                 ResultFormatter rf) throws Exception {
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+        for (ResultViewDO r : getResults(sm)) {
+            if ( !ana.getId().equals(r.getAnalysisId()))
+                continue;
+
+            if ( !DataBaseUtil.isEmpty(r.getValue())) {
+                try {
+                    result.validate(r, rf, accession, ana);
+                } catch (Exception err) {
+                    DataBaseUtil.mergeException(e, err);
+                }
+            } else if (Constants.dictionary().TEST_ANALYTE_REQ.equals(r.getTestAnalyteTypeId())) {
+                e.add(new FormErrorException(Messages.get()
+                                                     .result_valueRequiredException(accession,
+                                                                                    ana.getTestName(),
+                                                                                    ana.getMethodName(),
+                                                                                    r.getAnalyte())));
+            }
+        }
+
+        if (e.size() > 0)
+            throw e;
     }
 }

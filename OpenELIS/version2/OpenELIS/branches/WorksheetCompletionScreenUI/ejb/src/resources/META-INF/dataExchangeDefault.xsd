@@ -280,7 +280,7 @@
             <xs:element name="section" type="section" />
             <xs:element name="unit_of_measure" minOccurs="0" type="dictionary" />
             <xs:element name="status" type="dictionary" />
-            <xs:element name="type_id" type="dictionary" />
+            <xs:element name="Type"  minOccurs="0" type="dictionary" />
             <xs:element name="panel" minOccurs="0" type="panel" />
             <xs:element name="analysis_qaevent" minOccurs="0" maxOccurs="unbounded" type="analysisQaevent" />
             <xs:element name="analysis_user" type="analysis_user" minOccurs="0"
@@ -304,6 +304,7 @@
         <xs:attribute name="section_id" type="xs:integer" />
         <xs:attribute name="status_id" type="xs:integer" use="required" />
         <xs:attribute name="test_id" type="xs:integer" use="required" />
+        <xs:attribute name="type_id" type="xs:integer" />
         <xs:attribute name="unit_of_measure_id" type="xs:integer" />
     </xs:complexType>
 
@@ -367,6 +368,7 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string" />
             <xs:element name="description" type="xs:string" />
+            <xs:element name="translation" minOccurs="0" type="translation" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
