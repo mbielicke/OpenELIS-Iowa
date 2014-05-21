@@ -220,6 +220,9 @@ public class DataExchangeReportBean {
         session.setAttribute("DataExchange", status);
 
         ids = getSamples(accessions);
+        if (ids.size() == 0)
+            throw new NotFoundException();        
+            
         sms = sampleManager.fetchByIds(ids,
                                        SampleManager1.Load.ORGANIZATION,
                                        SampleManager1.Load.PROJECT,

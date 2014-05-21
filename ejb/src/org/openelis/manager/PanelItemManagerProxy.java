@@ -87,24 +87,6 @@ public class PanelItemManagerProxy {
         return man;        
     }
     
-    public PanelItemManager delete(PanelItemManager man) throws Exception {
-        PanelItemBean pl;
-        PanelItemDO data;
-        
-        pl = EJBFactory.getPanelItem();
-        for(int j = 0; j < man.deleteCount(); j++) {
-            pl.delete(man.getDeletedAt(j));
-        }
-        
-        for(int i = 0; i < man.count(); i++) {
-            data = man.getItemAt(i);            
-            if(data.getId() != null)               
-                pl.delete(data);                                
-        }
-        
-        return man;        
-    }
-    
     public void validate(PanelItemManager man) throws Exception {        
         ValidationErrorsList list;
         PanelItemBean pl;

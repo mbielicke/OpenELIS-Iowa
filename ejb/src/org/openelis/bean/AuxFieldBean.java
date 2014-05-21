@@ -92,6 +92,17 @@ public class AuxFieldBean {
         query = manager.createNamedQuery("AuxField.FetchAll");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    public ArrayList<AuxFieldViewDO> fetchByAnalyteName(String name, int max)  throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("AuxField.FetchByAnalyteName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
 
     public AuxFieldDO add(AuxFieldDO data) throws Exception {
         AuxField entity;

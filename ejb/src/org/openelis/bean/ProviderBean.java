@@ -91,11 +91,11 @@ public class ProviderBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<ProviderDO> fetchByLastName(String providerLastName, int max) throws Exception {
+    public ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search, int max) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Provider.FetchByLastName");
-        query.setParameter("lastName", providerLastName);
+        query = manager.createNamedQuery("Provider.FetchByLastNameNpiExternalId");
+        query.setParameter("search", search);
         query.setMaxResults(max);
         
         return DataBaseUtil.toArrayList(query.getResultList());
