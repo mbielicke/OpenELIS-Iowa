@@ -88,4 +88,8 @@ public class UserCache {
         }
         return perm;
     }
+    
+    public static ArrayList<SystemUserVO> validateSystemUsers(ArrayList<String> names) throws Exception {
+        return UserCacheService.get().validateSystemUsers(names);
+    } 
 }

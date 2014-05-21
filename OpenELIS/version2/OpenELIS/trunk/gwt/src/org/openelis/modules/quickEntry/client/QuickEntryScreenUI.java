@@ -874,23 +874,25 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             siVDO.setContainerReference(tubeNum);
             
             if (typeDO.getTestId() != null)
-                requestVO = new SampleTestRequestVO(siVDO.getId(),
-                                                typeDO.getTestId(),
-                                                null,
-                                                tsVDO.getSectionId(),
-                                                null,
-                                                null,
-                                                false,
-                                                null);
+                requestVO = new SampleTestRequestVO(sampleMan.getSample().getId(),
+                                                    siVDO.getId(),
+                                                    typeDO.getTestId(),
+                                                    null,
+                                                    tsVDO.getSectionId(),
+                                                    null,
+                                                    null,
+                                                    false,
+                                                    null);
             else
-                requestVO = new SampleTestRequestVO(siVDO.getId(),
-                                                null,
-                                                null,
-                                                tsVDO.getSectionId(),
-                                                null,
-                                                typeDO.getPanelId(),
-                                                false,
-                                                null);
+                requestVO = new SampleTestRequestVO(sampleMan.getSample().getId(),
+                                                    siVDO.getId(),
+                                                    null,
+                                                    null,
+                                                    tsVDO.getSectionId(),
+                                                    null,
+                                                    typeDO.getPanelId(),
+                                                    false,
+                                                    null);
 
             returnVO = SampleService1.get().addAnalysis(sampleMan, requestVO);
             smRowCount.sampleManager = returnVO.getManager();

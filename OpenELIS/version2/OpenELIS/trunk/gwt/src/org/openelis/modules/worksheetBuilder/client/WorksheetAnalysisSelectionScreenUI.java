@@ -25,7 +25,10 @@
 */
 package org.openelis.modules.worksheetBuilder.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
+
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -194,8 +197,8 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
                 }
             }
         } catch (Exception anyE) {
-            anyE.printStackTrace();
             Window.alert("error: " + anyE.getMessage());
+            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
         }
             
         return model;
@@ -212,8 +215,8 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
         } catch (NotFoundException nfE) {
             Window.alert(Messages.get().worksheet_worksheetAnalysesNotFound(DataBaseUtil.toString(worksheetId)));
         } catch (Exception anyE) {
-            anyE.printStackTrace();
             Window.alert("setWorksheetId(): "+anyE.getMessage());
+            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
         }
     }
     
