@@ -38,35 +38,38 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, dueDays, id, fromOtherId, priority, qcLotId,
-                       qcSystemUserId, statusId, testId, timeHolding, timeTaAverage,
+    protected Integer  analysisId, changeFlagsId, dueDays, id, fromOtherId, priority,
+                       qcId, qcLotId, statusId, testId, timeHolding, timeTaAverage,
                        unitOfMeasureId, worksheetAnalysisId, worksheetId, worksheetItemId;
-    protected String   accessionNumber, description, methodName, sectionName, testName,
-                       unitOfMeasure;
-    protected Datetime collectionDate, collectionTime, expireDate, qcStartedDate,
-                       receivedDate;
+    protected String   accessionNumber, description, methodName, sectionName, systemUsers,
+                       testName, unitOfMeasure;
+    protected Datetime collectionDate, collectionTime, expireDate, receivedDate,
+                       startedDate, completedDate;
     
     public WorksheetAnalysisViewVO() {
     }
 
     public WorksheetAnalysisViewVO(Integer id, Integer worksheetItemId, Integer worksheetId,
                                    String accessionNumber, Integer analysisId, Integer qcLotId,
-                                   Integer worksheetAnalysisId, Integer qcSystemUserId,
-                                   Date qcStartedDate, Integer fromOtherId, String description,
-                                   Integer testId, String testName, String methodName,
-                                   Integer timeTaAverage, Integer timeHolding, String sectionName,
-                                   Integer unitOfMeasureId, String unitOfMeasure,
-                                   Integer statusId, Date collectionDate, Date collectionTime,
-                                   Date receivedDate, Integer priority) {
+                                   Integer qcId, Integer worksheetAnalysisId, String systemUsers,
+                                   Date startedDate, Date completedDate, Integer fromOtherId,
+                                   Integer changeFlagsId, String description, Integer testId,
+                                   String testName, String methodName, Integer timeTaAverage,
+                                   Integer timeHolding, String sectionName, Integer unitOfMeasureId,
+                                   String unitOfMeasure, Integer statusId, Date collectionDate,
+                                   Date collectionTime, Date receivedDate, Integer priority) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
         setAnalysisId(analysisId);
         setQcLotId(qcLotId);
+        setQcId(qcId);
         setWorksheetAnalysisId(worksheetAnalysisId);
-        setQcSystemUserId(qcSystemUserId);
-        setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
+        setSystemUsers(systemUsers);
+        setStartedDate(DataBaseUtil.toYM(startedDate));
+        setCompletedDate(DataBaseUtil.toYM(completedDate));
         setFromOtherId(fromOtherId);
+        setChangeFlagsId(changeFlagsId);
         setWorksheetId(worksheetId);
         setDescription(description);
         setTestId(testId);
@@ -124,6 +127,14 @@ public class WorksheetAnalysisViewVO extends DataObject {
         this.qcLotId = qcLotId;
     }
 
+    public Integer getQcId() {
+        return qcId;
+    }
+
+    public void setQcId(Integer qcId) {
+        this.qcId = qcId;
+    }
+
     public Integer getWorksheetAnalysisId() {
         return worksheetAnalysisId;
     }
@@ -132,20 +143,28 @@ public class WorksheetAnalysisViewVO extends DataObject {
         this.worksheetAnalysisId = worksheetAnalysisId;
     }
 
-    public Integer getQcSystemUserId() {
-        return qcSystemUserId;
+    public String getSystemUsers() {
+        return systemUsers;
     }
 
-    public void setQcSystemUserId(Integer qcSystemUserId) {
-        this.qcSystemUserId = qcSystemUserId;
+    public void setSystemUsers(String systemUsers) {
+        this.systemUsers = DataBaseUtil.trim(systemUsers);
     }
 
-    public Datetime getQcStartedDate() {
-        return qcStartedDate;
+    public Datetime getStartedDate() {
+        return startedDate;
     }
 
-    public void setQcStartedDate(Datetime qcStartedDate) {
-        this.qcStartedDate = DataBaseUtil.toYM(qcStartedDate);
+    public void setStartedDate(Datetime startedDate) {
+        this.startedDate = DataBaseUtil.toYM(startedDate);
+    }
+
+    public Datetime getCompletedDate() {
+        return completedDate;
+    }
+
+    public void setCompletedDate(Datetime completedDate) {
+        this.completedDate = DataBaseUtil.toYM(completedDate);
     }
 
     public Integer getFromOtherId() {
@@ -154,6 +173,14 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     public void setFromOtherId(Integer fromOtherId) {
         this.fromOtherId = fromOtherId;
+    }
+
+    public Integer getChangeFlagsId() {
+        return changeFlagsId;
+    }
+
+    public void setChangeFlagsId(Integer changeFlagsId) {
+        this.changeFlagsId = changeFlagsId;
     }
 
     public Integer getWorksheetId() {
