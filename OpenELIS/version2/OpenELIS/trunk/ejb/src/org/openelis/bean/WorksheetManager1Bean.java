@@ -1822,17 +1822,17 @@ public class WorksheetManager1Bean {
                 newAnalyteWRVDOs.clear();
                 reflexResults = new ArrayList<ResultViewDO>();
                 for (WorksheetResultViewDO wrVDO : wrVDOsByWorksheetAnalysisId.get(waVDO.getId())) {
-                    resultRows = resultRowsByAnalyteId.get(wrVDO.getAnalyteId());
-                    if (resultRows != null) {
-                        resultRow = resultRows.get(0);
+                    analyteRows = resultRowsByAnalyteId.get(wrVDO.getAnalyteId());
+                    if (analyteRows != null) {
+                        resultRow = analyteRows.get(0);
                         update = worksheetResultToAnalysisResult(manager, wrVDO, resultRow,
                                                                  aVDO, rf, formatColumnMap,
                                                                  analytesById, reflexResults,
                                                                  errorList) ||
                                  update;
                         
-                        resultRows.remove(0);
-                        if (resultRows.size() == 0)
+                        analyteRows.remove(0);
+                        if (analyteRows.size() == 0)
                             resultRowsByAnalyteId.remove(wrVDO.getAnalyteId());
                     } else {
                         newAnalytes.add(taMap.get(wrVDO.getTestAnalyteId()));
