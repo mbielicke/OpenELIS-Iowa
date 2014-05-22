@@ -1698,6 +1698,7 @@ public class WorksheetManager1Bean {
                 if (!lastAnaId.equals(rData.getAnalysisId())) {
                     resultRows = new ArrayList<ArrayList<ResultViewDO>>();
                     resultsByAnalysisId.put(rData.getAnalysisId(), resultRows);
+                    lastAnaId = rData.getAnalysisId();
                 }
                 if ("N".equals(rData.getIsColumn())) {
                     resultRow = new ArrayList<ResultViewDO>();
@@ -2118,9 +2119,10 @@ public class WorksheetManager1Bean {
         for (c = 0; c < resultRow.size(); c++) {
             rVDO = resultRow.get(c);
             if (c == 0) {
+                wCol = formatColumnMap.get("final_value");
                 try {
-                    if (!DataBaseUtil.isEmpty(wrVDO.getValueAt(0))) {
-                        ResultHelper.formatValue(rVDO, wrVDO.getValueAt(0), aVDO.getUnitOfMeasureId(), rf);
+                    if (wCol != null && !DataBaseUtil.isEmpty(wrVDO.getValueAt(wCol))) {
+                        ResultHelper.formatValue(rVDO, wrVDO.getValueAt(wCol), aVDO.getUnitOfMeasureId(), rf);
                         if (rVDO.isChanged())
                             reflexResults.add(rVDO);
                         update = true;
