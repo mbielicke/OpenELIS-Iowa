@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project xmlns:jacoco="antlib:org.jacoco.ant" name="OpenELIS" default="test.dev" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:jacoco="antlib:org.jacoco.ant" name="OpenELIS" default="test.dev" basedir=".">
 	<!-- Arguments to gwtc and devmode targets -->
 	<property name="gwt.args" value="" />
 
@@ -9,16 +9,12 @@
 	<property name="checkstyle.home" location="/usr/local/java/checkstyle-5.7" />
 	<property name="findbugs.home" location="/usr/local/java/findbugs-2.0.3" />
 	<property name="selenium.home" location="/usr/local/java/selenium-2.41.0" />
-	<property name="jboss.home" location="/usr/local/java/jboss-as-7.1.1.Final"/>
 	
-	<taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" classpath="/usr/share/java/ivy.jar"/>
-	<taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" classpath="/usr/share/java/ivy.jar"/>
-	<taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" classpath="/usr/share/java/ivy.jar"/>
-	<taskdef name="ivy-deliver" classname="org.apache.ivy.ant.IvyDeliver" classpath="/usr/share/java/ivy.jar"/> 
-	<taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpath="/usr/share/java/ivy.jar"/>
+	<taskdef resource="org/apache/ivy/ant/antlib.xml"
+	         uri="antlib:org.apache.ivy.ant" classpath="/usr/share/java/ivy.jar"/>
 	
-	<ivy-configure file="ivysettings.xml"/>
-	<ivy-retrieve pattern="lib/[artifact]-[type]-[revision].[ext]"/>
+	<ivy:configure file="ivysettings.xml"/>
+	<ivy:retrieve pattern="lib/[artifact]-[type]-[revision].[ext]"/>
 	
 	<path id="ivy.lib">
 	   <fileset dir="lib" includes="*.jar"/>
@@ -30,23 +26,14 @@
 		<classpath path="/usr/local/java/jacoco/lib/jacocoant.jar"/>
 	</taskdef>
 	
+	
+	
 	<path id="gwt.jars">
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
 		<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
 		<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
     </path>
-	
-	<path id="jboss.jars">
-		<fileset dir="${jboss.home}/bin/client" includes="jboss-client.jar" />
-		<fileset dir="${jboss.home}/modules/javax/persistence/api/main" includes="*.jar" />
-		<fileset dir="${jboss.home}/modules/javax/annotation/api/main" includes="*.jar"/>
-		<fileset dir="${jboss.home}/modules/javax/validation/api/main" includes="*.jar"/>
-		<fileset dir="${jboss.home}/modules/org/picketbox/main" includes="*.jar"/>
-		<fileset dir="${jboss.home}/modules/org/jboss/jboss-transaction-spi/main" includes="*.jar"/>
-		<fileset dir="${jboss.home}/modules/org/jboss/ejb3/main" includes="*.jar"/>
-		<fileset dir="${jboss.home}/modules/org/slf4j/main" includes="*.jar"/>
-	</path>
 
 	<target name="javac.tests" description="Compiles test code">
 		<javac srcdir="test:../OpenELIS-EJB/test" includes="**" encoding="utf-8" source="1.7" target="1.7" nowarn="true" destdir="war/WEB-INF/classes" debug="true" debuglevel="lines,vars,source">
@@ -61,7 +48,6 @@
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
             	<fileset dir="${selenium.home}/libs/" includes="*.jar" />
             	<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>
-            	<path refid="jboss.jars"/>
             </classpath>
 		</javac>
 	</target>
@@ -90,7 +76,6 @@
             	<pathelement location="../OpenELIS-EJB/bin"/>
             	<pathelement location="../OpenELIS-Lib/bin"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
-				<path refid="jboss.jars"/>
             </classpath>
 			<batchtest todir="reports/junit">
 				<fileset dir="../OpenELIS-EJB/test">
@@ -106,7 +91,7 @@
 	    </jacoco:coverage>
 	</target>
 
-	<target name="acceptance.test.dev" depends="javac.tests" description="Run development mode tests">
+	<target name="acceptance.test.dev" description="Run development mode tests">
 		<delete dir="reports"/>
 		<mkdir dir="reports/junit" />
 		<jacoco:coverage destfile="reports/jacoco/jacoco.exec">
@@ -130,7 +115,6 @@
             	<pathelement location="../OpenELIS-EJB/bin"/>
             	<pathelement location="../OpenELIS-Lib/bin"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
-				<path refid="jboss.jars"/>
             </classpath>
 			<batchtest todir="reports/junit">
 				<fileset dir="test">
