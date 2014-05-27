@@ -160,6 +160,15 @@ public class Worksheet implements Auditable, Cloneable {
             this.instrumentId = instrumentId;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        if (DataBaseUtil.isDifferent(description, this.description))
+            this.description = description;
+    }
+
     public Collection<WorksheetItem> getWorksheetItem() {
         return worksheetItem;
     }
@@ -174,15 +183,6 @@ public class Worksheet implements Auditable, Cloneable {
 
     public void setInstrument(Instrument instrument) {
         this.instrument = instrument;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        if (DataBaseUtil.isDifferent(description, this.description))
-            this.description = description;
     }
 
     public void setClone() {

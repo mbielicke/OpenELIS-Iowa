@@ -81,14 +81,6 @@ public class PanelManagerProxy {
         return man;
     }
     
-    public void delete(PanelManager man) throws Exception {
-        
-        man.getItems().setPanelId(man.getPanel().getId());
-        man.getItems().delete();
-
-        EJBFactory.getPanel().delete(man.getPanel());
-    }
-    
     public PanelManager fetchForUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;

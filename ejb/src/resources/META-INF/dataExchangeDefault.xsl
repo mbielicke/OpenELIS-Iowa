@@ -293,6 +293,9 @@
             <xsl:apply-templates select="//dictionary[@id = current()/@status_id]">
                 <xsl:with-param name="tagname">status</xsl:with-param>
             </xsl:apply-templates>
+            <xsl:apply-templates select="//dictionary[@id = current()/@type_id]">
+                <xsl:with-param name="tagname">Type</xsl:with-param>
+            </xsl:apply-templates>
             <xsl:apply-templates select="//panel[@id = current()/@panel_id]" />            
             <xsl:apply-templates select="//analysis_qaevent[@analysis_id = $id]" />
             <xsl:apply-templates select="//analysis_user[@analysis_id = $id]" />
@@ -363,6 +366,15 @@
             <xsl:apply-templates select="@*|node()" />
 
             <xsl:apply-templates select="//method_translations/translation[@reference_id = current()/@id]" />
+
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="panel">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+
+            <xsl:apply-templates select="//panel_translations/translation[@reference_id = current()/@id]" />
 
         </xsl:copy>
     </xsl:template>

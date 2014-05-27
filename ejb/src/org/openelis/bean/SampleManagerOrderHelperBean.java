@@ -447,7 +447,8 @@ public class SampleManagerOrderHelperBean {
              * add the test and mark the analytes specified by the ids,
              * reportable
              */
-            tests.add(new SampleTestRequestVO(item.getId(),
+            tests.add(new SampleTestRequestVO(sm.getSample().getId(),
+                                              item.getId(),
                                               ot.getTestId(),
                                               null,
                                               null,

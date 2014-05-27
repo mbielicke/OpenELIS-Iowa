@@ -95,12 +95,7 @@ import org.openelis.utils.Auditable;
                                    + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, AnalysisReportFlags arf"
                                    + " where s.releasedDate between :startDate and :endDate and s.statusId = (select id from Dictionary where systemName = ('sample_released')) and"
                                    + " si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and a.sectionId = se.id and"
-                                   + " a.id = arf.analysisId order by s.accessionNumber, a.id"),
-               @NamedQuery(name = "Sample.FetchPreviousForNeonatalPatient",
-                           query = "select  distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain, s.accessionNumber,"
-                                   + " s.revision, s.orderId, s.enteredDate, s.receivedDate, s.receivedById, s.collectionDate, s.collectionTime,"
-                                   + " s.statusId, s.packageId, s.clientReference, s.releasedDate)"
-                                   + " from Sample s left join s.sampleNeonatal sn where s.enteredDate < :enteredDate and sn.patientId = :patientId order by s.enteredDate")})
+                                   + " a.id = arf.analysisId order by s.accessionNumber, a.id")})
 @NamedNativeQueries({
                      @NamedNativeQuery(name = "Sample.FetchForFinalReportBatch",
                                        query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"

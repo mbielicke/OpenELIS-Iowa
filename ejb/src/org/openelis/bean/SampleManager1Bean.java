@@ -1945,22 +1945,6 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Returns the manager for the neonatal sample that has the passed patient
-     * and was entered most recently before the passed entered date
-     */
-    public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                          SampleManager1.Load... elements) throws Exception {
-        ArrayList<SampleDO> list;
-
-        /*
-         * find the neonatal samples that were entered in the past for the
-         * passed patient and return the most recent one
-         */
-        list = sample.fetchPreviousForNeonatalPatient(patientId, enteredDate);
-        return fetchById(list.get(0).getId(), elements);
-    }
-
-    /**
      * Adds aux groups with the passed ids to the sample
      */
     public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
@@ -2079,7 +2063,8 @@ public class SampleManager1Bean {
                      * the tests defined in the panel are added as analytical
                      * tests
                      */
-                    panelTests.add(new SampleTestRequestVO(test.getSampleItemId(),
+                    panelTests.add(new SampleTestRequestVO(test.getSampleId(),
+                                                           test.getSampleItemId(),
                                                            pt.getId(),
                                                            null,
                                                            null,
@@ -2213,7 +2198,8 @@ public class SampleManager1Bean {
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception {
-        return analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+        analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+        return sm;
     }
 
     /**
@@ -2624,7 +2610,7 @@ public class SampleManager1Bean {
         prepIds = analysisHelper.setPrepForAnalysis(ret.getManager(), ana, analyses, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
-                ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+                ret.addTest(ret.getManager().getSample().getId(), test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
         analysisHelper.addResults(ret.getManager(), tm, ana, test.getReportableAnalytes(), null);
 
         analyses.put(ana.getTestId(), ana);
