@@ -89,7 +89,7 @@ public class MethodScreenUI extends Screen {
 
     public static final MethodUiBinder uiBinder = GWT.create(MethodUiBinder.class);
 
-    private MethodDO                   data;
+    protected MethodDO                 data;
     private ModulePermission           userPermission;
 
     @UiField
