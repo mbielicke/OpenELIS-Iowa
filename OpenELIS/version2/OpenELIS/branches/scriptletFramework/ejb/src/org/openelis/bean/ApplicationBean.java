@@ -76,11 +76,9 @@ public class ApplicationBean {
                         "aux_date_time", "aux_default", "aux_dictionary", "aux_numeric",
                         "aux_time", "chart_type_dynamic", "chart_type_fixed",
                         "cost_center_unknown", "instrument_log_completed",
-                        "instrument_log_pending", "laboratory_location_ic", "local_type_analyte",
-                        "local_type_dictionary", "local_type_method", "local_type_organization",
-                        "local_type_test", "local_type_test_analyte", "log_level_error",
-                        "log_level_info", "log_type_data_transmission", "micrograms_per_liter",
-                        "nanograms_per_liter", "nanograms_per_milliliter",
+                        "instrument_log_pending", "laboratory_location_ic",                         
+                        "log_level_error", "log_level_info", "log_type_data_transmission",
+                        "micrograms_per_liter", "nanograms_per_liter", "nanograms_per_milliliter",
                         "order_recurrence_unit_days", "order_recurrence_unit_months",
                         "order_recurrence_unit_years", "order_status_back_ordered",
                         "order_status_pending", "order_status_processed", "order_status_recurring",
@@ -93,8 +91,7 @@ public class ApplicationBean {
                         "pos_last_of_run", "pos_last_of_subset_and_run", "pt_sample",
                         "qaevent_internal", "qaevent_override", "qaevent_warning", "qc_blank",
                         "qc_duplicate", "qc_spike", "receivable_reportto_email",
-                        "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
-                        "org_test_epartner_url", "org_epartner_aggr", "profile_air_string",
+                        "released_reportto_email", "org_hold_sample", "profile_air_string",
                         "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
                         "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
                         "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
@@ -170,13 +167,7 @@ public class ApplicationBean {
         Constants.dictionary().COST_CENTER_UNKNOWN = dictId(map, "cost_center_unknown");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
-        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
-        Constants.dictionary().LOCAL_TYPE_ANALYTE = dictId(map, "local_type_analyte");
-        Constants.dictionary().LOCAL_TYPE_DICTIONARY = dictId(map, "local_type_dictionary");
-        Constants.dictionary().LOCAL_TYPE_METHOD = dictId(map, "local_type_method");
-        Constants.dictionary().LOCAL_TYPE_ORGANIZATION = dictId(map, "local_type_organization");
-        Constants.dictionary().LOCAL_TYPE_TEST = dictId(map, "local_type_test");
-        Constants.dictionary().LOCAL_TYPE_TEST_ANALYTE = dictId(map, "local_type_test_analyte");
+        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");      
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
         Constants.dictionary().LOG_LEVEL_INFO = dictId(map, "log_level_info");
         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map,
@@ -226,9 +217,6 @@ public class ApplicationBean {
         Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL = dictId(map, "receivable_reportto_email");
         Constants.dictionary().RELEASED_REPORTTO_EMAIL = dictId(map, "released_reportto_email");
         Constants.dictionary().ORG_HOLD_SAMPLE = dictId(map, "org_hold_sample");
-        Constants.dictionary().ORG_PROD_EPARTNER_URL = dictId(map, "org_prod_epartner_url");
-        Constants.dictionary().ORG_TEST_EPARTNER_URL = dictId(map, "org_test_epartner_url");
-        Constants.dictionary().ORG_EPARTNER_AGGR = dictId(map, "org_epartner_aggr");
         Constants.dictionary().REFLEX_AUTO = dictId(map, "reflex_auto");
         Constants.dictionary().REFLEX_PROMPT = dictId(map, "reflex_prompt");
         Constants.dictionary().REFLEX_AUTO_NDUP = dictId(map, "reflex_auto_ndup");

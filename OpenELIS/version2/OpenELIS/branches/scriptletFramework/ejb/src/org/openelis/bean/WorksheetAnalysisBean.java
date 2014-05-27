@@ -249,9 +249,11 @@ public class WorksheetAnalysisBean {
         entity.setAnalysisId(data.getAnalysisId());
         entity.setQcLotId(data.getQcLotId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
-        entity.setQcSystemUserId(data.getQcSystemUserId());
-        entity.setQcStartedDate(data.getQcStartedDate());
+        entity.setSystemUsers(data.getSystemUsers());
+        entity.setStartedDate(data.getStartedDate());
+        entity.setCompletedDate(data.getCompletedDate());
         entity.setFromOtherId(data.getFromOtherId());
+        entity.setChangeFlagsId(data.getChangeFlagsId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -273,9 +275,11 @@ public class WorksheetAnalysisBean {
         entity.setAnalysisId(data.getAnalysisId());
         entity.setQcLotId(data.getQcLotId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
-        entity.setQcSystemUserId(data.getQcSystemUserId());
-        entity.setQcStartedDate(data.getQcStartedDate());
+        entity.setSystemUsers(data.getSystemUsers());
+        entity.setStartedDate(data.getStartedDate());
+        entity.setCompletedDate(data.getCompletedDate());
         entity.setFromOtherId(data.getFromOtherId());
+        entity.setChangeFlagsId(data.getChangeFlagsId());
 
         return data;
     }
@@ -309,30 +313,34 @@ public class WorksheetAnalysisBean {
     }
     
     private WorksheetAnalysisViewDO copyViewToDO(WorksheetAnalysisViewVO waVVO) {
-        Date qcStartedDate, collectionDate, receivedDate;
+        Date collectionDate, completedDate, receivedDate, startedDate;
         WorksheetAnalysisViewDO waVDO;
 
         collectionDate = null;
-        qcStartedDate = null;
+        completedDate = null;
+        startedDate = null;
         receivedDate = null;
         if (waVVO.getCollectionDate() != null)
             collectionDate = DataBaseUtil.toYD(waVVO.getCollectionDate()).getDate();
-        if (waVVO.getQcStartedDate() != null)
-            qcStartedDate = DataBaseUtil.toYM(waVVO.getQcStartedDate()).getDate();
+        if (waVVO.getStartedDate() != null)
+            startedDate = DataBaseUtil.toYM(waVVO.getStartedDate()).getDate();
+        if (waVVO.getCompletedDate() != null)
+            completedDate = DataBaseUtil.toYM(waVVO.getCompletedDate()).getDate();
         if (waVVO.getReceivedDate() != null)
             receivedDate = DataBaseUtil.toYM(waVVO.getReceivedDate()).getDate();
 
         waVDO = new WorksheetAnalysisViewDO(waVVO.getId(), waVVO.getWorksheetItemId(),
                                             waVVO.getWorksheetId(), waVVO.getAccessionNumber(),
                                             waVVO.getAnalysisId(), waVVO.getQcLotId(),
-                                            waVVO.getWorksheetAnalysisId(), waVVO.getQcSystemUserId(),
-                                            qcStartedDate, waVVO.getFromOtherId(),
-                                            waVVO.getDescription(), waVVO.getTestId(),
-                                            waVVO.getTestName(), waVVO.getMethodName(),
-                                            waVVO.getSectionName(), waVVO.getUnitOfMeasureId(),
-                                            waVVO.getUnitOfMeasure(), waVVO.getStatusId(),
-                                            collectionDate, receivedDate, (Integer)null,
-                                            (Date)null);
+                                            waVVO.getQcId(), waVVO.getWorksheetAnalysisId(),
+                                            waVVO.getSystemUsers(), startedDate,
+                                            completedDate, waVVO.getFromOtherId(),
+                                            waVVO.getChangeFlagsId(), waVVO.getDescription(),
+                                            waVVO.getTestId(), waVVO.getTestName(),
+                                            waVVO.getMethodName(), waVVO.getSectionName(),
+                                            waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),
+                                            waVVO.getStatusId(), collectionDate,
+                                            receivedDate, (Integer)null, (Date)null);
         if (waVVO.getAnalysisId() != null) {
             //
             // Compute and set the number of days until the analysis is 

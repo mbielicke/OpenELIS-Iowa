@@ -228,22 +228,6 @@ public class SampleBean {
 
         return DataBaseUtil.toArrayList(list);
     }
-    
-    public ArrayList<SampleDO> fetchPreviousForNeonatalPatient(Integer patientId,
-                                                               Datetime enteredDate) throws Exception {
-        Query query;
-        List<SampleDO> list;
-
-        query = manager.createNamedQuery("Sample.FetchPreviousForNeonatalPatient");
-        query.setParameter("patientId", patientId);
-        query.setParameter("enteredDate", enteredDate.getDate());
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
-    }
 
     public ArrayList<FinalReportVO> fetchForFinalReportBatch() throws Exception {
         Query query;
