@@ -39,7 +39,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
     private static final long serialVersionUID = 1L;
 
     protected boolean _statusChanged, _unitChanged;
-    protected Integer dueDays, statusId, testId, unitOfMeasureId, worksheetId;
+    protected Integer dueDays, qcId, statusId, testId, unitOfMeasureId, worksheetId;
     protected String description, methodName, sectionName, testName, unitOfMeasure;
     protected Datetime collectionDate, expireDate, receivedDate;
     
@@ -48,15 +48,17 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public WorksheetAnalysisViewDO(Integer id, Integer worksheetItemId, Integer worksheetId,
                                    String accessionNumber, Integer analysisId, Integer qcLotId,
-                                   Integer worksheetAnalysisId, Integer qcSystemUserId,
-                                   Date qcStartedDate, Integer fromOtherId, String description,
-                                   Integer testId, String testName, String methodName,
-                                   String sectionName, Integer unitOfMeasureId,
-                                   String unitOfMeasure, Integer statusId, Date collectionDate,
-                                   Date receivedDate, Integer dueDays, Date expireDate) {
+                                   Integer qcId, Integer worksheetAnalysisId, String systemUsers,
+                                   Date startedDate, Date completedDate, Integer fromOtherId,
+                                   Integer changeFlagsId, String description, Integer testId,
+                                   String testName, String methodName, String sectionName,
+                                   Integer unitOfMeasureId, String unitOfMeasure,
+                                   Integer statusId, Date collectionDate, Date receivedDate,
+                                   Integer dueDays, Date expireDate) {
         super(id, worksheetItemId, accessionNumber, analysisId, qcLotId, worksheetAnalysisId,
-              qcSystemUserId, qcStartedDate, fromOtherId);
+              systemUsers, startedDate, completedDate, fromOtherId, changeFlagsId);
         setWorksheetId(worksheetId);
+        setQcId(qcId);
         setDescription(description);
         setTestId(testId);
         setTestName(testName);
@@ -77,6 +79,14 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public void setWorksheetId(Integer worksheetId) {
         this.worksheetId = worksheetId;
+    }
+
+    public Integer getQcId() {
+        return qcId;
+    }
+
+    public void setQcId(Integer qcId) {
+        this.qcId = qcId;
     }
 
     public String getDescription() {

@@ -40,6 +40,11 @@ public class SampleTestRequestVO implements Serializable {
     /*
      * id of the sample item to which the test should be added
      */
+    protected Integer            sampleId;
+
+    /*
+     * id of the sample item to which the test should be added
+     */
     protected Integer            sampleItemId;
 
     /*
@@ -87,9 +92,10 @@ public class SampleTestRequestVO implements Serializable {
     protected SampleTestRequestVO() {
     }
 
-    public SampleTestRequestVO(Integer sampleItemId, Integer testId, Integer analysisId,
-                               Integer sectionId, Integer resultId, Integer panelId,
-                               boolean allowDuplicate, ArrayList<Integer> reportableAnalytes) {
+    public SampleTestRequestVO(Integer sampleId, Integer sampleItemId, Integer testId,
+                               Integer analysisId, Integer sectionId, Integer resultId,
+                               Integer panelId, boolean allowDuplicate, ArrayList<Integer> reportableAnalytes) {
+        this.sampleId = sampleId;
         this.sampleItemId = sampleItemId;
         this.testId = testId;
         this.analysisId = analysisId;
@@ -98,6 +104,13 @@ public class SampleTestRequestVO implements Serializable {
         this.panelId = panelId;
         this.allowDuplicate = allowDuplicate;
         this.reportableAnalytes = reportableAnalytes;
+    }
+
+    /**
+     * returns the id of the sample to which the test should be added
+     */
+    public Integer getSampleId() {
+        return sampleId;
     }
 
     /**

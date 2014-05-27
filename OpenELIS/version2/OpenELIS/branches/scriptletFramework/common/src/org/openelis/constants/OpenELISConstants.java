@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -7171,6 +7171,132 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String instrumentHistory();
 
   /**
+   * Translated "Accession #".
+   * 
+   * @return translated "Accession #"
+   */
+  @DefaultMessage("Accession #")
+  @Key("instrumentInterface.accessionNumber")
+  String instrumentInterface_accessionNumber();
+
+  /**
+   * Translated "Analyst".
+   * 
+   * @return translated "Analyst"
+   */
+  @DefaultMessage("Analyst")
+  @Key("instrumentInterface.analyst")
+  String instrumentInterface_analyst();
+
+  /**
+   * Translated "Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.".
+   * 
+   * @return translated "Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''."
+   */
+  @DefaultMessage("Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.")
+  @Key("instrumentInterface.differentInstrumentName")
+  String instrumentInterface_differentInstrumentName(String arg0,  String arg1);
+
+  /**
+   * Translated "Instrument ID".
+   * 
+   * @return translated "Instrument ID"
+   */
+  @DefaultMessage("Instrument ID")
+  @Key("instrumentInterface.instrumentId")
+  String instrumentInterface_instrumentId();
+
+  /**
+   * Translated "Invalid file name for instrument import file.".
+   * 
+   * @return translated "Invalid file name for instrument import file."
+   */
+  @DefaultMessage("Invalid file name for instrument import file.")
+  @Key("instrumentInterface.invalidFileName")
+  String instrumentInterface_invalidFileName();
+
+  /**
+   * Translated "Invalid instrument name ''{0}''".
+   * 
+   * @return translated "Invalid instrument name ''{0}''"
+   */
+  @DefaultMessage("Invalid instrument name ''{0}''")
+  @Key("instrumentInterface.invalidInstrumentName")
+  String instrumentInterface_invalidInstrumentName(String arg0);
+
+  /**
+   * Translated "Path to instrument file directory is missing. Please contact the system administrator.".
+   * 
+   * @return translated "Path to instrument file directory is missing. Please contact the system administrator."
+   */
+  @DefaultMessage("Path to instrument file directory is missing. Please contact the system administrator.")
+  @Key("instrumentInterface.missingPath")
+  String instrumentInterface_missingPath();
+
+  /**
+   * Translated "Missing required column ''{0}''.".
+   * 
+   * @return translated "Missing required column ''{0}''."
+   */
+  @DefaultMessage("Missing required column ''{0}''.")
+  @Key("instrumentInterface.missingRequiredColumn")
+  String instrumentInterface_missingRequiredColumn(String arg0);
+
+  /**
+   * Translated "Start of Analysis".
+   * 
+   * @return translated "Start of Analysis"
+   */
+  @DefaultMessage("Start of Analysis")
+  @Key("instrumentInterface.startOfAnalysis")
+  String instrumentInterface_startOfAnalysis();
+
+  /**
+   * Translated "Started Date/Time".
+   * 
+   * @return translated "Started Date/Time"
+   */
+  @DefaultMessage("Started Date/Time")
+  @Key("instrumentInterface.startedDateTime")
+  String instrumentInterface_startedDateTime();
+
+  /**
+   * Translated "Worksheet #{0,number} has no analyses at position #{1,number}.".
+   * 
+   * @return translated "Worksheet #{0,number} has no analyses at position #{1,number}."
+   */
+  @DefaultMessage("Worksheet #{0,number} has no analyses at position #{1,number}.")
+  @Key("instrumentInterface.worksheetHasNoAnalysesAtPosition")
+  String instrumentInterface_worksheetHasNoAnalysesAtPosition(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Worksheet #{0,number} has no items.".
+   * 
+   * @return translated "Worksheet #{0,number} has no items."
+   */
+  @DefaultMessage("Worksheet #{0,number} has no items.")
+  @Key("instrumentInterface.worksheetHasNoItems")
+  String instrumentInterface_worksheetHasNoItems(Integer arg0);
+
+  /**
+   * Translated "Worksheet #{0,number} not found for instrument import file.".
+   * 
+   * @return translated "Worksheet #{0,number} not found for instrument import file."
+   */
+  @DefaultMessage("Worksheet #{0,number} not found for instrument import file.")
+  @Key("instrumentInterface.worksheetNotFound")
+  String instrumentInterface_worksheetNotFound(Integer arg0);
+
+  /**
+   * Translated "Worksheet #{0,number} it not in ''Working'' status.".
+   * 
+   * @return translated "Worksheet #{0,number} it not in ''Working'' status."
+   */
+  @DefaultMessage("Worksheet #{0,number} it not in ''Working'' status.")
+  @Key("instrumentInterface.worksheetWrongStatus")
+  String instrumentInterface_worksheetWrongStatus(Integer arg0);
+
+  /**
    * Translated "History - Instrument Log".
    * 
    * @return translated "History - Instrument Log"
@@ -8512,11 +8638,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String methodHistory();
 
   /**
-   * Translated "This method has an overlapping begin date or end date with another method which has the same name as this".
+   * Translated "This method has an overlapping begin or end date with another method with the same name".
    * 
-   * @return translated "This method has an overlapping begin date or end date with another method which has the same name as this"
+   * @return translated "This method has an overlapping begin or end date with another method with the same name"
    */
-  @DefaultMessage("This method has an overlapping begin date or end date with another method which has the same name as this")
+  @DefaultMessage("This method has an overlapping begin or end date with another method with the same name")
   @Key("methodTimeOverlapException")
   String methodTimeOverlapException();
 
@@ -17494,6 +17620,87 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_createdDate();
 
   /**
+   * Translated "Error fetching worksheet display directory system variable".
+   * 
+   * @return translated "Error fetching worksheet display directory system variable"
+   */
+  @DefaultMessage("Error fetching worksheet display directory system variable")
+  @Key("worksheet.displayDirectoryLookupException")
+  String worksheet_displayDirectoryLookupException();
+
+  /**
+   * Translated "Edit Multiple".
+   * 
+   * @return translated "Edit Multiple"
+   */
+  @DefaultMessage("Edit Multiple")
+  @Key("worksheet.editMultiple")
+  String worksheet_editMultiple();
+
+  /**
+   * Translated "Error changing analysis status for position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Error changing analysis status for position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Error changing analysis status for position {0} analysis {1}: {2}")
+  @Key("worksheet.errorChangingAnalysisStatus")
+  String worksheet_errorChangingAnalysisStatus(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Error changing analysis unit for position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Error changing analysis unit for position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Error changing analysis unit for position {0} analysis {1}: {2}")
+  @Key("worksheet.errorChangingAnalysisUnit")
+  String worksheet_errorChangingAnalysisUnit(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Error loading additional analytes for position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Error loading additional analytes for position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Error loading additional analytes for position {0} analysis {1}: {2}")
+  @Key("worksheet.errorLoadingAdditionalAnalytes")
+  String worksheet_errorLoadingAdditionalAnalytes(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Error loading result formatter for {0}: {1}".
+   * 
+   * @return translated "Error loading result formatter for {0}: {1}"
+   */
+  @DefaultMessage("Error loading result formatter for {0}: {1}")
+  @Key("worksheet.errorLoadingResultFormatter")
+  String worksheet_errorLoadingResultFormatter(String arg0,  String arg1);
+
+  /**
+   * Translated "Position {0} analysis {1}: {2}".
+   * 
+   * @return translated "Position {0} analysis {1}: {2}"
+   */
+  @DefaultMessage("Position {0} analysis {1}: {2}")
+  @Key("worksheet.errorPrefix")
+  String worksheet_errorPrefix(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Export to Excel".
+   * 
+   * @return translated "Export to Excel"
+   */
+  @DefaultMessage("Export to Excel")
+  @Key("worksheet.exportToExcel")
+  String worksheet_exportToExcel();
+
+  /**
+   * Translated "Worksheet was exported to".
+   * 
+   * @return translated "Worksheet was exported to"
+   */
+  @DefaultMessage("Worksheet was exported to")
+  @Key("worksheet.exportedToExcelFile")
+  String worksheet_exportedToExcelFile();
+
+  /**
    * Translated "Format".
    * 
    * @return translated "Format"
@@ -17501,6 +17708,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Format")
   @Key("worksheet.format")
   String worksheet_format();
+
+  /**
+   * Translated "Invalid user ''{0}'' for position {1} analysis {2}".
+   * 
+   * @return translated "Invalid user ''{0}'' for position {1} analysis {2}"
+   */
+  @DefaultMessage("Invalid user ''{0}'' for position {1} analysis {2}")
+  @Key("worksheet.illegalWorksheetUserFormException")
+  String worksheet_illegalWorksheetUserFormException(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Import From Excel".
+   * 
+   * @return translated "Import From Excel"
+   */
+  @DefaultMessage("Import From Excel")
+  @Key("worksheet.importFromExcel")
+  String worksheet_importFromExcel();
 
   /**
    * Translated "Analysis Above".
@@ -17566,6 +17791,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_instrumentName();
 
   /**
+   * Translated "Invalid override user(s) specified: {0}".
+   * 
+   * @return translated "Invalid override user(s) specified: {0}"
+   */
+  @DefaultMessage("Invalid override user(s) specified: {0}")
+  @Key("worksheet.invalidUsersException")
+  String worksheet_invalidUsersException(String arg0);
+
+  /**
    * Translated "The following Analyses have not been added because of permission, status, or QA Event".
    * 
    * @return translated "The following Analyses have not been added because of permission, status, or QA Event"
@@ -17602,6 +17836,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_oneOrMoreQcLinkOnRemove();
 
   /**
+   * Translated "User(s)".
+   * 
+   * @return translated "User(s)"
+   */
+  @DefaultMessage("User(s)")
+  @Key("worksheet.overrideUsers")
+  String worksheet_overrideUsers();
+
+  /**
+   * Translated "Error validating override user(s)".
+   * 
+   * @return translated "Error validating override user(s)"
+   */
+  @DefaultMessage("Error validating override user(s)")
+  @Key("worksheet.overrideUsersValidationException")
+  String worksheet_overrideUsersValidationException();
+
+  /**
+   * Translated "Overrides".
+   * 
+   * @return translated "Overrides"
+   */
+  @DefaultMessage("Overrides")
+  @Key("worksheet.overrides")
+  String worksheet_overrides();
+
+  /**
    * Translated "Position".
    * 
    * @return translated "Position"
@@ -17627,6 +17888,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Related Worksheet #")
   @Key("worksheet.relatedWorksheetNumber")
   String worksheet_relatedWorksheetNumber();
+
+  /**
+   * Translated "Transfer Results".
+   * 
+   * @return translated "Transfer Results"
+   */
+  @DefaultMessage("Transfer Results")
+  @Key("worksheet.transferResults")
+  String worksheet_transferResults();
 
   /**
    * Translated "All".
@@ -17663,6 +17933,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Template")
   @Key("worksheet.undoTemplate")
   String worksheet_undoTemplate();
+
+  /**
+   * Translated "Unparseable completed date for position {0} analysis {1}".
+   * 
+   * @return translated "Unparseable completed date for position {0} analysis {1}"
+   */
+  @DefaultMessage("Unparseable completed date for position {0} analysis {1}")
+  @Key("worksheet.unparseableCompletedDate")
+  String worksheet_unparseableCompletedDate(String arg0,  String arg1);
+
+  /**
+   * Translated "Unparseable started date for position {0} analysis {1}".
+   * 
+   * @return translated "Unparseable started date for position {0} analysis {1}"
+   */
+  @DefaultMessage("Unparseable started date for position {0} analysis {1}")
+  @Key("worksheet.unparseableStartedDate")
+  String worksheet_unparseableStartedDate(String arg0,  String arg1);
 
   /**
    * Translated "No Analyses Found For Worksheet Id: {0}".
@@ -17717,6 +18005,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet #")
   @Key("worksheet.worksheetNumber")
   String worksheet_worksheetNumber();
+
+  /**
+   * Translated "The following rows are in a status that does not allow edit: {0}".
+   * 
+   * @return translated "The following rows are in a status that does not allow edit: {0}"
+   */
+  @DefaultMessage("The following rows are in a status that does not allow edit: {0}")
+  @Key("worksheet.wrongStatusNoEditRows")
+  String worksheet_wrongStatusNoEditRows(String arg0);
 
   /**
    * Translated "No Analyses Found For Worksheet Id: {0}".
@@ -18068,6 +18365,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Username")
   @Key("worksheetUser")
   String worksheetUser();
+
+  /**
+   * Translated "The selected analyses are from multiple tests, please select analyses that belong to only one test.".
+   * 
+   * @return translated "The selected analyses are from multiple tests, please select analyses that belong to only one test."
+   */
+  @DefaultMessage("The selected analyses are from multiple tests, please select analyses that belong to only one test.")
+  @Key("worksheet_oneTestForEditMultiple")
+  String worksheet_oneTestForEditMultiple();
+
+  /**
+   * Translated "The selected analyses use multiple units, please select analyses that use only one unit.".
+   * 
+   * @return translated "The selected analyses use multiple units, please select analyses that use only one unit."
+   */
+  @DefaultMessage("The selected analyses use multiple units, please select analyses that use only one unit.")
+  @Key("worksheet_oneUnitForEditMultiple")
+  String worksheet_oneUnitForEditMultiple();
+
+  /**
+   * Translated "Some analyses were not checked for transfer due to a duplicate being present.".
+   * 
+   * @return translated "Some analyses were not checked for transfer due to a duplicate being present."
+   */
+  @DefaultMessage("Some analyses were not checked for transfer due to a duplicate being present.")
+  @Key("worksheet_uncheckedDuplicateAnalyses")
+  String worksheet_uncheckedDuplicateAnalyses();
 
   /**
    * Translated "The status of the shipping record must be either \"Processed\" or \"Shipped\"".
