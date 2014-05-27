@@ -27,6 +27,9 @@ package org.openelis.modules.scriptlet.client;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.scriptlet.NbsBtScriptlet1;
+import org.openelis.scriptlet.NbsCahScriptlet1;
+import org.openelis.scriptlet.NbsGaltScriptlet1;
+import org.openelis.scriptlet.NbsTshScriptlet1;
 import org.openelis.scriptlet.NeonatalDomainScriptlet1;
 import org.openelis.scriptlet.PwsValidateScriptlet1;
 import org.openelis.ui.scriptlet.ScriptletInt;
@@ -48,11 +51,20 @@ public class ScriptletFactory {
             case "scriptlet_neonatal_domain1":
                 script = (T)new NeonatalDomainScriptlet1(new NeonatalDomainProxy1());
                 break;
-            case "scriptlet_pws_validate1":
-                script = (T)new PwsValidateScriptlet1(new PwsValidateProxy1());
-                break;
             case "scriptlet_nbs_bt1":
                 script = (T)new NbsBtScriptlet1(new NbsBtProxy1());
+                break;
+            case "scriptlet_nbs_tsh1":
+                script = (T)new NbsTshScriptlet1(new NbsTshProxy1());
+                break;
+            case "scriptlet_nbs_galt1":
+                script = (T)new NbsGaltScriptlet1(new NbsGaltProxy1());
+                break;
+            case "scriptlet_nbs_cah1":
+                script = (T)new NbsCahScriptlet1(new NbsCahProxy1());
+                break;
+            case "scriptlet_pws_validate1":
+                script = (T)new PwsValidateScriptlet1(new PwsValidateProxy1());
                 break;
         }
 
