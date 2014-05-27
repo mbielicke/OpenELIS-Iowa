@@ -47,7 +47,7 @@
                     <ui:text from="{msg.gen_addTest}:" />
                   </td>
                   <td>
-                    <w:AutoComplete ui:field="test" width="138px" case="LOWER"
+                    <w:AutoComplete ui:field="test" width="130px" case="LOWER"
                       dropWidth="630px"
                     >
                       <w:popup>

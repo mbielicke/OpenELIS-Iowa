@@ -3016,7 +3016,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         clearErrors();
         setBusy(Messages.get().gen_cancelChanges());
 
-        if (state == QUERY) {
+        if (isState(QUERY)) {
             manager = null;
             evaluateEdit();
             setData();
@@ -3024,7 +3024,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             fireDataChange();
             setDone(Messages.get().gen_queryAborted());
             cache = null;
-        } else if (state == ADD) {
+        } else if (isState(ADD)) {
             /*
              * unlock the patient if it's locked
              */
@@ -3053,7 +3053,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setDone(Messages.get().gen_addAborted());
             cache = null;
             scriptletRunner = null;
-        } else if (state == UPDATE) {
+        } else if (isState(UPDATE)) {
             /*
              * unlock the patient if it's locked
              */
@@ -3271,8 +3271,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             cacheKey = Constants.uid().getTest((Integer)key);
         else if (c == AuxFieldGroupManager.class)
             cacheKey = Constants.uid().getAuxFieldGroup((Integer)key);
-        else if (c == ScriptletDO.class)
-            cacheKey = Constants.uid().getScriptlet((Integer)key);
 
         obj = cache.get(cacheKey);
         if (obj != null)
@@ -3287,8 +3285,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 obj = TestService.get().fetchById((Integer)key);
             else if (c == AuxFieldGroupManager.class)
                 obj = AuxiliaryService.get().fetchById((Integer)key);
-            else if (c == ScriptletDO.class)
-                obj = ScriptletService.get().fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -4009,13 +4005,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setData();
             fireDataChange();
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+            if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+            else if (ret.getTests() == null || ret.getTests().size() == 0)
                 isBusy = false;
-            } else {
-                showTests(ret);
-            }
+            else
+                showTests(ret);            
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

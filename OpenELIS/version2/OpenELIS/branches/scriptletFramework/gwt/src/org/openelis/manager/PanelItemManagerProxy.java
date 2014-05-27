@@ -46,11 +46,6 @@ public class PanelItemManagerProxy {
         return null;
     }
     
-    public PanelItemManager delete(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
     public void validate(PanelItemManager man) throws Exception {
     }
 }

@@ -26,7 +26,6 @@
 package org.openelis.modules.analyte.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
@@ -35,9 +34,9 @@ import org.openelis.bean.AnalyteBean;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.modules.analyte.client.AnalyteServiceInt;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.modules.analyte.client.AnalyteServiceInt;
 
 @WebServlet("/openelis/analyte")
 public class AnalyteServlet extends RemoteServlet implements AnalyteServiceInt {

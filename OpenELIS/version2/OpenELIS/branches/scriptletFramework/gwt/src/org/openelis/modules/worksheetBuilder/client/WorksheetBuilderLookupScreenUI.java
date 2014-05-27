@@ -25,12 +25,13 @@
 */
 package org.openelis.modules.worksheetBuilder.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,6 +61,7 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.meta.AnalysisViewMeta;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -399,7 +401,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         validation = validate();
 
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            setError(Messages.get().correctErrors());
             return;
         }
 
@@ -407,10 +409,10 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         query.setFields(getQueryFields());
 
         if (query.getFields().size() > 0) {
-            window.setBusy(Messages.get().querying());
+            setBusy(Messages.get().querying());
     
             query.setRowsPerPage(500);
-            WorksheetBuilderService.get().fetchAnalysesByView(query, new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+            WorksheetService1.get().fetchAnalysesByView(query, new AsyncCallback<ArrayList<AnalysisViewVO>>() {
                 public void onSuccess(ArrayList<AnalysisViewVO> list) {
                     setQueryResult(list);
                 }
@@ -418,15 +420,15 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                 public void onFailure(Throwable error) {
                     setQueryResult(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(Messages.get().noRecordsFound());
+                        setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert("Error: WorksheetBuilderLookup call lookupAnalyses failed; "+error.getMessage());
-                        window.setError(Messages.get().queryFailed());
+                        setError(Messages.get().queryFailed());
                     }
                 }
             });
         } else {
-            window.setDone(Messages.get().emptyQueryException());
+            setDone(Messages.get().emptyQueryException());
         }
     }
 
@@ -476,8 +478,8 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                     sectionVDO = SectionCache.getById(data.getSectionId());
                     message.append("\t\t").append(sectionVDO.getName().trim());
                 } catch (Exception anyE) {
-                    anyE.printStackTrace();
                     message.append("\t\t").append("ERROR");
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                 }
                 message.append("\n");
             } else {
@@ -505,7 +507,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         
         model = new ArrayList<Item<Integer>>();
         if (list == null || list.size() == 0) {
-            window.setDone(Messages.get().gen_noRecordsFound());
+            setDone(Messages.get().gen_noRecordsFound());
         } else {
             for (AnalysisViewVO analysisRow : list) {
                 row = new Item<Integer>(12);
@@ -536,7 +538,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                 model.add(row);
             }
 
-            window.setDone(Messages.get().gen_queryingComplete());
+            setDone(Messages.get().gen_queryingComplete());
         }
 
         analysesTable.setModel(model);
@@ -586,7 +588,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         Integer selectedRows[];
         AnalysisResultManager arMan;
         
-        window.clearStatus();
+        clearStatus();
         if (analyteTable.isVisible()) {
             selectedRows = analysesTable.getSelectedRows();
             if (selectedRows.length == 1) {
@@ -604,7 +606,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                         public void onFailure(Throwable error) {
                             analyteTable.setModel(null);
                             if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
+                                setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                             } else {
                                 Window.alert("Error: WorksheetCreationLookup call showAnalytes failed; "+error.getMessage());
                             }

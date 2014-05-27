@@ -182,27 +182,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.query(query, callback);
         return callback.getResult();
     }
-
-    @Override
-    public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                          Load... elements) throws Exception {
-        Callback<SampleManager1> callback;
-
-        callback = new Callback<SampleManager1>();
-        service.fetchPreviousForNeonatalPatient(patientId, enteredDate,
-                                                elements, callback);
-        return callback.getResult();
-    }
     
-    @Override
-    public void fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                Load[] elements,
-                                                AsyncCallback<SampleManager1> callback) {
-        service.fetchPreviousForNeonatalPatient(patientId, enteredDate,
-                                                elements, callback);
-        
-    }
-
     @Override
     public void query(Query query, AsyncCallback<ArrayList<IdAccessionVO>> callback) {
         service.query(query, callback);
@@ -313,6 +293,21 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback) {
         service.update(sm, ignoreWarnings, callback);
+    }
+
+    @Override
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.update(sms, ignoreWarnings, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void update(ArrayList<SampleManager1> sms, boolean ignoreWarnings,
+                       AsyncCallback<ArrayList<SampleManager1>> callback) {
+        service.update(sms, ignoreWarnings, callback);
     }
 
     @Override

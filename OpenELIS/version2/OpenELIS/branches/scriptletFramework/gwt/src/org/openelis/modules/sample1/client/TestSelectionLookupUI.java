@@ -28,12 +28,14 @@ package org.openelis.modules.sample1.client;
 import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
@@ -96,9 +98,8 @@ public abstract class TestSelectionLookupUI extends Screen {
     @UiField
     protected Dropdown<Integer>                section;
 
-    protected SampleManager1                   manager;
-
     protected ArrayList<SampleTestRequestVO>   tests, selectedTests;
+    protected HashMap<Integer, SampleManager1> managersById;
 
     public TestSelectionLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -224,14 +225,27 @@ public abstract class TestSelectionLookupUI extends Screen {
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
+    public void setData(SampleManager1 manager, ArrayList<SampleTestRequestVO> tests) {
+        ArrayList<SampleManager1> sMans;
+
+        sMans = new ArrayList<SampleManager1>();
+        sMans.add(manager);
+        setData(sMans, tests);
+    }
+
     /**
      * refreshes the screen's view by setting the state and loading data in
      * widgets
      */
-    public void setData(SampleManager1 manager, ArrayList<SampleTestRequestVO> tests) {
-        this.manager = manager;
+    public void setData(ArrayList<SampleManager1> managers, ArrayList<SampleTestRequestVO> tests) {
         this.tests = tests;
 
+        if (managersById == null)
+            managersById = new HashMap<Integer, SampleManager1>();
+        managersById.clear();
+        for (SampleManager1 man : managers)
+            managersById.put(man.getSample().getId(), man);
+        
         setState(state);
         fireDataChange();
     }
@@ -255,8 +269,8 @@ public abstract class TestSelectionLookupUI extends Screen {
 
     private Node getRoot() {
         int i;
-        boolean isPrep;
-        Integer anaId;
+        boolean isPrep, newAnode;
+        Integer anaId, samId, resId;
         String accession;
         Node root, anode, tnode;
         AnalysisViewDO ana;
@@ -269,24 +283,48 @@ public abstract class TestSelectionLookupUI extends Screen {
         HashSet<Integer> sectionIds;
         ArrayList<Item<Integer>> model;
         ArrayList<String> labels;
+        SampleManager1 manager;
+        ResultViewDO res;
 
         root = new Node();
         anaId = null;
         ana = null;
         anode = null;
+        samId = null;
+        resId = null;
         sectionIds = new HashSet<Integer>();
         model = new ArrayList<Item<Integer>>();
         labels = new ArrayList<String>();
-
-        if (manager.getSample().getAccessionNumber() != null)
-            accession = DataBaseUtil.toString(manager.getSample().getAccessionNumber());
-        else
-            accession = Messages.get().testSelection_newAccession();
+        manager = null;
+        accession = null;
+        res = null;
 
         isPrep = false;
         for (SampleTestRequestVO test : tests) {
-            if ( !test.getAnalysisId().equals(anaId)) {
+            newAnode = false;
+            if (!test.getSampleId().equals(samId)) {
+                manager = managersById.get(test.getSampleId());
+                samId = test.getSampleId();
+                if (manager.getSample().getAccessionNumber() != null)
+                    accession = DataBaseUtil.toString(manager.getSample().getAccessionNumber());
+                else
+                    accession = Messages.get().testSelection_newAccession();
+                newAnode = true;
+            }
+                           
+            if (!test.getAnalysisId().equals(anaId)) {
                 ana = (AnalysisViewDO)manager.getObject(Constants.uid().getAnalysis(test.getAnalysisId()));
+                anaId = test.getAnalysisId();
+                newAnode = true;
+            }
+            
+            if (!test.getResultId().equals(resId)) {
+                res = (ResultViewDO)manager.getObject(Constants.uid().getResult(test.getResultId()));
+                resId = test.getResultId();
+                newAnode = true;
+            }
+
+            if (newAnode) {
                 /*
                  * the node for the analysis
                  */
@@ -300,11 +338,19 @@ public abstract class TestSelectionLookupUI extends Screen {
                 labels.add(ana.getTestName());
                 labels.add(",");
                 labels.add(ana.getMethodName());
+                if (res != null) {
+                    labels.add(":");
+                    labels.add(res.getAnalyte());
+                    labels.add(":");
+                    if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId()))
+                        labels.add(res.getDictionary());
+                    else
+                        labels.add(res.getValue());
+                }
                 anode.setCell(0, DataBaseUtil.concatWithSeparator(labels, " "));
                 anode.setData(ana);
 
                 root.add(anode);
-                anaId = test.getAnalysisId();
             }
 
             td = new TestData();
