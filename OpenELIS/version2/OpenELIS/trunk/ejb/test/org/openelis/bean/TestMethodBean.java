@@ -1,11 +1,11 @@
 package org.openelis.bean;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.openelis.ui.util.TestingUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 
 import net.lightoze.gwt.i18n.client.LocaleFactory;
 import net.lightoze.gwt.i18n.server.LocaleProxy;
@@ -47,6 +46,11 @@ public class TestMethodBean {
    
     OpenELISConstants constants;
     
+    final static String FETCH_BY_ID = "Method.FetchById",
+                        FETCH_BY_NAME = "Method.FetchByName",
+                        FETCH_ACTIVE_BY_NAME = "Method.FetchActiveByName",
+                        FETCH_BY_IDS = "Method.FetchByIds";
+    
     @Before
     public void init() {
         Constants.setConstants(new Constants());
@@ -67,11 +71,8 @@ public class TestMethodBean {
     
     @Test
     public void testFetchById() {
-        Query query = mock(Query.class);
-        MethodDO data = mock(MethodDO.class);
-        
-        when(bean.manager.createNamedQuery("Method.FetchById")).thenReturn(query);
-        when(query.getSingleResult()).thenReturn(data);
+        MethodDO data = mock(MethodDO.class); 
+        mockNamedQueryWithSingleResult(bean.manager, FETCH_BY_ID, data);
         
         try {
             assertEquals(data,bean.fetchById(1));
@@ -82,98 +83,75 @@ public class TestMethodBean {
     
     @Test(expected=NotFoundException.class)
     public void testFetchByIdNotFound() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchById")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new NoResultException());
+        mockNamedQueryThatThrowsException(bean.manager, FETCH_BY_ID, new NoResultException());
         
         bean.fetchById(1);
     }
     
     @Test(expected=DatabaseException.class)
-    public void testFetchByIdDatabaseException() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchById")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new RuntimeException());
+    public void testFetchByIdDatabaseException() throws Exception {        
+        mockNamedQueryThatThrowsException(bean.manager, FETCH_BY_ID, new RuntimeException());
         
         bean.fetchById(1);
     }
     
     @Test
     public void testFetchByName() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        
         List<MethodDO> results = new ArrayList<MethodDO>();
         results.add(mock(MethodDO.class));
         
-        when(query.getResultList()).thenReturn(results);
+        mockNamedQueryWithResultList(bean.manager,FETCH_BY_NAME, results);
         
         assertEquals(results,bean.fetchByName("name", 10));
     }
     
     @Test
-    public void testFetchByNameNoResult() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-                
-        when(query.getResultList()).thenReturn((List<MethodDO>)new ArrayList<MethodDO>());
+    public void testFetchByNameNoResult() throws Exception {        
+        mockNamedQueryWithResultList(bean.manager, FETCH_BY_NAME, new ArrayList<MethodDO>());
         
         assertTrue(bean.fetchByName("name", 10).isEmpty());
     }
     
     @Test
-    public void testFetchActiveByName() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchActiveByName")).thenReturn(query);
-        
+    public void testFetchActiveByName() throws Exception {        
         List<MethodDO> results = new ArrayList<MethodDO>();
         results.add(mock(MethodDO.class));
-        
-        when(query.getResultList()).thenReturn(results);
+                
+        mockNamedQueryWithResultList(bean.manager, FETCH_ACTIVE_BY_NAME, results);
         
         assertEquals(results,bean.fetchActiveByName("name", 10));
     }
     
     @Test
-    public void testFetchActiveByNameNoResult() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchActiveByName")).thenReturn(query);
-                
-        when(query.getResultList()).thenReturn((List<MethodDO>)new ArrayList<MethodDO>());
+    public void testFetchActiveByNameNoResult() throws Exception {        
+        mockNamedQueryWithResultList(bean.manager, FETCH_ACTIVE_BY_NAME, new ArrayList<MethodDO>());
         
         assertTrue(bean.fetchActiveByName("name", 10).isEmpty());
     }
     
     @Test
     public void testFetchByIds() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByIds")).thenReturn(query);
-        
         List<MethodDO> results = new ArrayList<MethodDO>();
         results.add(mock(MethodDO.class));
         
-        when(query.getResultList()).thenReturn(results);
+        mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, results);
         
         assertEquals(results,bean.fetchByIds(mock(Collection.class)));
     }
     
     @Test
-    public void testFetchByIdsNoResult() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByIds")).thenReturn(query);
-                
-        when(query.getResultList()).thenReturn((List<MethodDO>)new ArrayList<MethodDO>());
+    public void testFetchByIdsNoResult() throws Exception {        
+        mockNamedQueryWithResultList(bean.manager, FETCH_BY_IDS, new ArrayList<MethodDO>());
         
         assertTrue(bean.fetchByIds(mock(Collection.class)).isEmpty());
     }
     
     @Test
     public void testQuery() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createQuery(anyString())).thenReturn(query);
         ArrayList<IdNameVO> results = new ArrayList<IdNameVO>();
         results.add(mock(IdNameVO.class));
-        when(query.getResultList()).thenReturn(results);
+        
+        mockQueryWithResultList(bean.manager, results);
         
         ArrayList<QueryData> fields = new ArrayList<QueryData>();
         QueryData field = new QueryData();
@@ -186,12 +164,8 @@ public class TestMethodBean {
     }
     
     @Test(expected=NotFoundException.class)
-    public void testQueryNotFound() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createQuery(anyString())).thenReturn(query);
-        ArrayList<IdNameVO> results = new ArrayList<IdNameVO>();
-        
-        when(query.getResultList()).thenReturn(results);
+    public void testQueryNotFound() throws Exception {        
+        mockQueryWithResultList(bean.manager, new ArrayList<IdNameVO>());
         
         ArrayList<QueryData> fields = new ArrayList<QueryData>();
         QueryData field = new QueryData();
@@ -205,11 +179,10 @@ public class TestMethodBean {
     
     @Test(expected=LastPageException.class)
     public void testQueryLastPage() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createQuery(anyString())).thenReturn(query);
         ArrayList<IdNameVO> results = new ArrayList<IdNameVO>();
         results.add(mock(IdNameVO.class));
-        when(query.getResultList()).thenReturn(results);
+        
+        mockQueryWithResultList(bean.manager, results);
         
         ArrayList<QueryData> fields = new ArrayList<QueryData>();
         QueryData field = new QueryData();
@@ -222,10 +195,8 @@ public class TestMethodBean {
     }
     
     @Test
-    public void testAdd() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new NoResultException());
+    public void testAdd() throws Exception {        
+        mockNamedQueryThatThrowsException(bean.manager,FETCH_BY_NAME,new NoResultException());
         
         MethodDO data = mock(MethodDO.class);
         when(data.getActiveBegin()).thenReturn(Datetime.getInstance());
@@ -240,14 +211,13 @@ public class TestMethodBean {
     
     @Test(expected=ValidationErrorsList.class)
     public void testAddDuplicate() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
         MethodDO dup = mock(MethodDO.class);
         when(dup.getId()).thenReturn(1);
         when(dup.getIsActive()).thenReturn("Y");
         List<MethodDO> results =  new ArrayList<MethodDO>();
         results.add(dup);
-        when(query.getResultList()).thenReturn(results);
+        
+        mockNamedQueryWithResultList(bean.manager, FETCH_BY_NAME, results);
         
         MethodDO data = mock(MethodDO.class);
         when(data.getActiveBegin()).thenReturn(Datetime.getInstance());
@@ -268,11 +238,8 @@ public class TestMethodBean {
     }
     
     @Test
-    public void update() throws Exception {
- 
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new NoResultException());
+    public void update() throws Exception {        
+        mockNamedQueryThatThrowsException(bean.manager, FETCH_BY_NAME, new NoResultException());
         
         MethodDO data = mock(MethodDO.class);
         when(data.getActiveBegin()).thenReturn(Datetime.getInstance());
@@ -317,11 +284,10 @@ public class TestMethodBean {
     
     @Test(expected=Exception.class)
     public void testUpdateNotFound() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
         MethodDO dup = mock(MethodDO.class);
         when(dup.getId()).thenReturn(1);
-        when(query.getSingleResult()).thenReturn(dup);
+        
+        mockNamedQueryWithSingleResult(bean.manager, FETCH_BY_NAME, dup);
         
         when(bean.manager.find(Method.class,1)).thenReturn(null);
         
@@ -355,10 +321,8 @@ public class TestMethodBean {
     }
     
     @Test
-    public void testValidateDateAfter() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new NoResultException());
+    public void testValidateDateAfter() throws Exception {        
+        mockNamedQueryThatThrowsException(bean.manager, FETCH_BY_NAME, new NoResultException());
         
         MethodDO data = new MethodDO();
         data.setName("name");

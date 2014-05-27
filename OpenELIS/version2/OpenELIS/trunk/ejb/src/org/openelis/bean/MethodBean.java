@@ -43,7 +43,6 @@ import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Method;
 import org.openelis.meta.MethodMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -224,25 +223,25 @@ public class MethodBean {
         checkDuplicate = true;
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            errors.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+            errors.add(new FieldErrorException(getMessages().fieldRequiredException(),
                                              MethodMeta.getName()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
-            errors.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+            errors.add(new FieldErrorException(getMessages().fieldRequiredException(),
                                              MethodMeta.getActiveBegin()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
-            errors.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+            errors.add(new FieldErrorException(getMessages().fieldRequiredException(),
                                              MethodMeta.getActiveEnd()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd())) {
-            errors.add(new FormErrorException(Messages.get().endDateAfterBeginDateException()));
+            errors.add(new FormErrorException(getMessages().endDateAfterBeginDateException()));
             checkDuplicate = false;
         }
         
@@ -256,7 +255,7 @@ public class MethodBean {
                 if (DataBaseUtil.isDifferent(dup.getId(), data.getId())&&
                     DataBaseUtil.isSame(dup.getIsActive(), data.getIsActive())) {
                     if ("Y".equals(data.getIsActive())) {
-                        errors.add(new FormErrorException(Messages.get().methodActiveException()));
+                        errors.add(new FormErrorException(getMessages().methodActiveException()));
                         break;
                     }
 
@@ -285,7 +284,7 @@ public class MethodBean {
                     }
 
                     if (overlap)
-                        errors.add(new FormErrorException(Messages.get().methodTimeOverlapException()));                    
+                        errors.add(new FormErrorException(getMessages().methodTimeOverlapException()));                    
                 }
             }
         }
@@ -296,6 +295,10 @@ public class MethodBean {
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
         userCache.applyPermission("method", flag);
+    }
+    
+    protected OpenELISConstants getMessages() {
+        return Messages.get();
     }
     
 }
