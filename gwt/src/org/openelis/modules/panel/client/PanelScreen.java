@@ -35,16 +35,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.PanelVO;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -55,7 +45,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -71,12 +60,20 @@ import org.openelis.meta.PanelMeta;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -90,7 +87,7 @@ public class PanelScreen extends Screen {
     private PanelScreen      screen;
     private TextBox          name, description;
     private AppButton        queryButton, previousButton, nextButton, addButton, updateButton,
-                             deleteButton, commitButton, abortButton, addTestButton, removeTestButton,
+                             commitButton, abortButton, addTestButton, removeTestButton,
                              moveUpButton, moveDownButton, refreshButton;
     protected MenuItem       panelHistory, panelItemHistory;
     private TableWidget      panelItemTable, allTestAuxTable;
@@ -187,20 +184,6 @@ public class PanelScreen extends Screen {
             }
         });
 
-        deleteButton = (AppButton)def.getWidget("delete");
-        addScreenHandler(deleteButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                delete();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    userPermission.hasDeletePermission());
-                if (event.getState() == State.DELETE)
-                    deleteButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -208,7 +191,7 @@ public class PanelScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
             }
         });
@@ -220,7 +203,7 @@ public class PanelScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
             }
         });
@@ -527,7 +510,7 @@ public class PanelScreen extends Screen {
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(Messages.get().mustCommitOrAbort());
                 }
@@ -610,20 +593,6 @@ public class PanelScreen extends Screen {
         window.clearStatus();
     }
 
-    protected void delete() {
-        window.setBusy(Messages.get().lockForUpdate());
-
-        try {
-            manager = manager.fetchForUpdate();
-
-            setState(State.DELETE);
-            DataChangeEvent.fire(this);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
     protected void commit() {
         setFocus(null);
         allTestAuxTable.clearSelections();
@@ -667,19 +636,6 @@ public class PanelScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.DELETE) {
-            window.setBusy(Messages.get().deleting());
-            try {
-                manager.delete();
-
-                fetchById(null);
-                window.setDone(Messages.get().deleteComplete());
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitDelete(): " + e.getMessage());
-                window.clearStatus();
-            }
         }
     }
 
@@ -705,18 +661,6 @@ public class PanelScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(Messages.get().updateAborted());
-        } else if (state == State.DELETE) {
-            try {
-                manager = manager.abortUpdate();
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(Messages.get().deleteAborted());
-        } else {
-            window.clearStatus();
         }
     }
 

@@ -131,7 +131,7 @@
         </g:layer>
         <g:layer top="60px" height="350px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="0px" left="0px" width="39%">
+            <g:layer top="0px" bottom="0px" left="0px" width="40%">
               <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
                   <tr>

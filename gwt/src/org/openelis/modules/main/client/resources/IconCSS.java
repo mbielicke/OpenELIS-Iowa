@@ -97,8 +97,4 @@ public interface IconCSS extends org.openelis.ui.resources.IconCSS {
     public String popoutIcon();
     
     public String fieldLookupIcon();
-
-    public String redoIcon();
-    
-    public String deleteIcon();
 }

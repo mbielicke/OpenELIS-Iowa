@@ -65,9 +65,6 @@ public interface SampleServiceInt1 extends RemoteService {
                                                      SampleManager1.Load... elements) throws Exception;
     
     public SampleManager1 fetchByAccession(Integer accessionNum, SampleManager1.Load... elements) throws Exception;
-    
-    public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                          SampleManager1.Load... elements) throws Exception;
 
     public ArrayList<IdAccessionVO> query(Query query) throws Exception;
 
@@ -86,6 +83,8 @@ public interface SampleServiceInt1 extends RemoteService {
                                                       SampleManager1.Load... elements) throws Exception;
 
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception;
+
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception;
 
     public void validateAccessionNumber(SampleManager1 sm) throws Exception;
     

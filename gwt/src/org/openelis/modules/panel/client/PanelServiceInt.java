@@ -34,8 +34,6 @@ public interface PanelServiceInt extends XsrfProtectedService {
 
     PanelManager update(PanelManager man) throws Exception;
 
-    void delete(PanelManager man) throws Exception;
-
     PanelManager fetchForUpdate(Integer id) throws Exception;
 
     PanelManager abortUpdate(Integer id) throws Exception;

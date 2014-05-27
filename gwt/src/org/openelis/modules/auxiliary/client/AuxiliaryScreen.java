@@ -390,17 +390,8 @@ public class AuxiliaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                boolean enable;
-
                 auxFieldTable.enable(true);
                 auxFieldTable.setQueryMode(event.getState() == State.QUERY);
-
-                /*
-                 * enable = EnumSet.of(State.ADD,
-                 * State.UPDATE).contains(event.getState());
-                 * auxFieldTable.enableDrag(enable);
-                 * auxFieldTable.enableDrop(enable);
-                 */
             }
         });
 
@@ -574,8 +565,7 @@ public class AuxiliaryScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = MethodService.get()
-                                        .fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = MethodService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (MethodDO data : list)

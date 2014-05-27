@@ -488,7 +488,7 @@ public class TestScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = MethodService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = MethodService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (MethodDO data : list)

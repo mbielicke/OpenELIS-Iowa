@@ -133,16 +133,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
-    }
-    
-    public SampleManager1 fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                          SampleManager1.Load... elements) throws Exception {
-        try {
-            return sampleManager1.fetchPreviousForNeonatalPatient(patientId, enteredDate, elements);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
+    }   
 
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {
         try {
@@ -157,6 +148,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
         try {
             return sampleManager1.update(sm, ignoreWarnings);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
+        try {
+            return sampleManager1.update(sms, ignoreWarnings);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

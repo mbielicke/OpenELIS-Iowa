@@ -194,10 +194,4 @@ public interface OpenELISResources extends UIResources {
     
     @Source("images/fieldlookupdisabled.png")
     ImageResource fieldLookupDisabledIcon();
-    
-    @Source("images/arrow_redo.png")
-    ImageResource redoIcon();
-    
-    @Source("images/delete.png")
-    ImageResource deleteIcon();
 }

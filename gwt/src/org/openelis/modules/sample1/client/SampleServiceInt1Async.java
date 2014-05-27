@@ -66,10 +66,6 @@ public interface SampleServiceInt1Async {
     public void fetchByAccession(Integer accessionNum, SampleManager1.Load elements[],
                                  AsyncCallback<SampleManager1> callback);
 
-    public void fetchPreviousForNeonatalPatient(Integer patientId, Datetime enteredDate,
-                                                SampleManager1.Load elements[],
-                                                AsyncCallback<SampleManager1> callback);
-
     public void query(Query query, AsyncCallback<ArrayList<IdAccessionVO>> callback);
 
     public void fetchForUpdate(Integer sampleId, SampleManager1.Load elements[],
@@ -93,6 +89,9 @@ public interface SampleServiceInt1Async {
 
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback);
+
+    public void update(ArrayList<SampleManager1> sms, boolean ignoreWarnings,
+                       AsyncCallback<ArrayList<SampleManager1>> callback);
 
     public void validateAccessionNumber(SampleManager1 sm, AsyncCallback<Void> callback);
 
