@@ -99,36 +99,26 @@ public class TestMethodBean {
     }
     
     @Test
-    public void testFetchByName() {
+    public void testFetchByName() throws Exception {
         Query query = mock(Query.class);
-        MethodDO data = mock(MethodDO.class);
-        
         when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        when(query.getSingleResult()).thenReturn(data);
         
-        try {
-            assertEquals(data,bean.fetchByName("name"));
-        }catch(Exception e) {
-            fail();
-        }
+        List<MethodDO> results = new ArrayList<MethodDO>();
+        results.add(mock(MethodDO.class));
+        
+        when(query.getResultList()).thenReturn(results);
+        
+        assertEquals(results,bean.fetchByName("name", 10));
     }
     
-    @Test(expected=NotFoundException.class)
-    public void testFetchByNameNotFound() throws Exception {
+    @Test
+    public void testFetchByNameNoResult() throws Exception {
         Query query = mock(Query.class);
         when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new NoResultException());
+                
+        when(query.getResultList()).thenReturn((List<MethodDO>)new ArrayList<MethodDO>());
         
-        bean.fetchByName("name");
-    }
-    
-    @Test(expected=DatabaseException.class)
-    public void testFetchByNameDatabaseException() throws Exception {
-        Query query = mock(Query.class);
-        when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
-        when(query.getSingleResult()).thenThrow(new RuntimeException());
-        
-        bean.fetchByName("name");
+        assertTrue(bean.fetchByName("name", 10).isEmpty());
     }
     
     @Test
@@ -254,7 +244,10 @@ public class TestMethodBean {
         when(bean.manager.createNamedQuery("Method.FetchByName")).thenReturn(query);
         MethodDO dup = mock(MethodDO.class);
         when(dup.getId()).thenReturn(1);
-        when(query.getSingleResult()).thenReturn(dup);
+        when(dup.getIsActive()).thenReturn("Y");
+        List<MethodDO> results =  new ArrayList<MethodDO>();
+        results.add(dup);
+        when(query.getResultList()).thenReturn(results);
         
         MethodDO data = mock(MethodDO.class);
         when(data.getActiveBegin()).thenReturn(Datetime.getInstance());
