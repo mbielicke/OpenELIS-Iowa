@@ -58,7 +58,6 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
-import org.openelis.domain.ScriptletDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
@@ -96,7 +95,6 @@ import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
-import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.scriptlet.SampleSO;
@@ -274,8 +272,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
-    protected SystemVariableDO                          domainScriptletVariable;
-
     protected Integer                                   domainScriptletId;
 
     protected static final SampleManager1.Load          elements[] = {
@@ -286,7 +282,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     SampleManager1.Load.WORKSHEET                  };
 
     protected static final String                       REPORT_TO_KEY = "reportTo",
-                    BIRTH_HOSPITAL_KEY = "birthHospital";
+                    BIRTH_HOSPITAL_KEY = "birthHospital", DOMAIN_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_domain_scriptlet";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -3660,37 +3656,37 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * all the records in the manager to the scriptlet runner
      */
     private void addScriptlet(Integer scriptletId) {
-        HashSet<Integer> scids;
+        HashSet<Integer> ids;
+        SystemVariableDO data;
 
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
         try {
-            scids = new HashSet<Integer>();
+            ids = new HashSet<Integer>();
             if (scriptletId == null) {
                 /*
                  * add the scriptlet for the domain, which is the value of this
                  * system variable
                  */
-                if (domainScriptletVariable == null) {
-                    domainScriptletVariable = SystemVariableService.get()
-                                                                   .fetchByExactName("neonatal_domain_scriptlet");
-                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                if (domainScriptletId == null) {
+                    data = SystemVariableService.get().fetchByExactName(DOMAIN_SCRIPTLET_SYSTEM_VARIABLE);
+                    domainScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
                 }
 
-                scids.add(domainScriptletId);
+                ids.add(domainScriptletId);
 
                 /*
                  * add all the scriptlets for all tests, test analytes and aux
                  * fields linked to the manager
                  */
-                scids.addAll(getTestScriptlets(false));
-                scids.addAll(getAuxScriptlets(false));
+                ids.addAll(getTestScriptlets(false));
+                ids.addAll(getAuxScriptlets(false));
             } else {
-                scids.add(scriptletId);
+                ids.add(scriptletId);
             }
 
-            addScriptlets(scids);
+            addScriptlets(ids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -5265,11 +5261,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
         HashSet<Integer> ids;
-        Datetime bt, et;
 
         setBusy();
         try {
-            bt = Datetime.getInstance();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
             /*
@@ -5285,9 +5279,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             } else {
                 showTests(ret);
             }
-            et = Datetime.getInstance();
-            logger.log(Level.FINE, "Adding tests took " +
-                                   (et.getDate().getTime() - bt.getDate().getTime()));
 
             setData();
             setState(state);
