@@ -1566,7 +1566,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 return sampleItemTab.getQueryFields();
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
@@ -2121,12 +2121,11 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         else
             setBusy(Messages.get().gen_updating());
 
-        data = manager.getSampleClinical().getPatient();
-
         try {
             /*
              * add the patient if it's a new one; update it if it's locked
              */
+            data = manager.getSampleClinical().getPatient();
             if (data.getId() == null) {
                 PatientService.get().validate(data);
                 data = PatientService.get().add(data);
@@ -2231,6 +2230,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             setState(DEFAULT);
             fireDataChange();
             setDone(Messages.get().gen_queryAborted());
+            cache = null;
         } else if (isState(ADD)) {
             /*
              * unlock the patient if it's locked
@@ -2248,6 +2248,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             setState(DEFAULT);
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
+            cache = null;
         } else if (isState(UPDATE)) {
             /*
              * unlock the patient if it's locked
@@ -2863,6 +2864,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             clearStatus();
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
+            else if (ret.getTests() == null || ret.getTests().size() == 0)
+                isBusy = false;
             else
                 showTests(ret);
         } catch (Exception e) {
@@ -3187,19 +3190,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     }
 
     /**
-     * Unlocks the patient if it's locked
-     */
-    private void unlockPatient() throws Exception {
-        PatientDO data;
-
-        if (isPatientLocked) {
-            data = PatientService.get().abortUpdate(manager.getSampleClinical().getPatientId());
-            manager.getSampleClinical().setPatient(data);
-            isPatientLocked = false;
-        }
-    }
-
-    /**
      * Makes the patient lookup screen find patients matching the data in the
      * DO. If the flag is true then the screen is not shown if one or no patient
      * was found, otherwise the screen is shown regardless. Sets the patient
@@ -3220,6 +3210,19 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         }
 
         patientLookup.query(data, dontShowIfSinglePatient);
+    }
+    
+    /**
+     * Unlocks the patient if it's locked
+     */
+    private void unlockPatient() throws Exception {
+        PatientDO data;
+
+        if (isPatientLocked) {
+            data = PatientService.get().abortUpdate(manager.getSampleClinical().getPatientId());
+            manager.getSampleClinical().setPatient(data);
+            isPatientLocked = false;
+        }
     }
 
     /**
@@ -3583,6 +3586,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         try {
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                showErrors(ret.getErrors());
+            else if (ret.getTests() == null || ret.getTests().size() == 0) 
+                isBusy = false;
+            else
+                showTests(ret);
+            
             setData();
             setState(state);
             /*
@@ -3590,10 +3600,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else
-                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3635,6 +3641,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              */
             if (ret.getErrors() != null && ret.getErrors().size() > 0) {
                 showErrors(ret.getErrors());
+                isBusy = false;
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
             } else {
                 showTests(ret);
@@ -3759,11 +3767,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
-
-        if (ret.getTests() == null || ret.getTests().size() == 0) {
-            isBusy = false;
-            return;
-        }
 
         /*
          * show the pop for selecting prep/reflex tests
