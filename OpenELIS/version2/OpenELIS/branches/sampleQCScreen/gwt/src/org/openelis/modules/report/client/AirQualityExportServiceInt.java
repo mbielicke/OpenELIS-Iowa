@@ -10,7 +10,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("airQualityReport")
-public interface AirQualityReportServiceInt extends XsrfProtectedService {
+public interface AirQualityExportServiceInt extends XsrfProtectedService {
 
     public ArrayList<Prompt> getPrompts() throws Exception;
 

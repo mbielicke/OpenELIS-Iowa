@@ -77,15 +77,51 @@
 					<r:Tree ui:field="tree" header="true"
 						styleName="{res.table.ScreenTableWithSides}"
 						allowMultipleSelection="true">
-						<r:Column width="100" label="worksheet id" />
-						<r:Column width="200" label="worksheet description" />
-						<r:Column width="100" label="worksheet date" />
-						<r:Column width="200" label="worksheet instrument" />
+						<r:Column width="75" label="analyte test" />
+						<r:Column width="75" label="method" />
+						<r:Column width="75" label="type" />
+						<r:Column width="75" label="started" />
+						<r:Column width="75" label="released" />
+						<r:Column width="75" label="status" />
+						<r:Column width="75" label="prep" />
+						<r:Column width="75" label="unit" />
+						<r:Column width="75" label="position" />
+						<r:Column width="75" label="accession" />
 						<r:Leaf key="analysis">
 							<r:LeafColumn>
-								<t:TextBoxCell>
-									<w:TextBox field="Integer" />
-								</t:TextBoxCell>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 							<r:LeafColumn>
 								<t:LabelCell>
@@ -105,24 +141,34 @@
 						</r:Leaf>
 						<r:Leaf key="worksheet">
 							<r:LeafColumn>
-								<t:TextBoxCell>
-									<w:TextBox field="Integer" />
-								</t:TextBoxCell>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 							<r:LeafColumn>
-								<t:TextBoxCell>
-									<w:TextBox field="String" />
-								</t:TextBoxCell>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 							<r:LeafColumn>
-								<t:TextBoxCell>
-									<w:TextBox field="Datetime" />
-								</t:TextBoxCell>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 							<r:LeafColumn>
-								<t:TextBoxCell>
-									<w:TextBox field="String" />
-								</t:TextBoxCell>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 						</r:Leaf>
 						<r:Leaf key="qc">
@@ -132,9 +178,9 @@
 								</t:CheckBoxCell>
 							</r:LeafColumn>
 							<r:LeafColumn>
-								<t:TextBoxCell>
-									<w:TextBox field="Integer" />
-								</t:TextBoxCell>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
 							</r:LeafColumn>
 							<r:LeafColumn>
 								<t:LabelCell>
