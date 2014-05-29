@@ -190,17 +190,14 @@ public class ContainerTabUI extends Screen {
                 data = manager.container.add(index);
                 data.setContainerId((Integer)row.getCell(1));
                 data.setTypeOfSampleId((Integer)row.getCell(2));
-                table.setModel(getTableModel());
+                fireDataChange();
             }
         });
 
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                int index;
-
-                index = event.getIndex();
-                manager.container.remove(index);
-                table.setModel(getTableModel());
+                manager.container.remove(event.getIndex());
+                fireDataChange();
             }
         });
 
