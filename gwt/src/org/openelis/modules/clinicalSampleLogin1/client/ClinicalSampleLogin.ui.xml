@@ -207,7 +207,7 @@
                       </td>
                       <td colspan="5">
                         <w:TextBox ui:field="patientAddrStreetAddress" field="String"
-                          width="222px" case="UPPER" />
+                          width="232px" case="UPPER" />
                       </td>
                     </tr>
                     <tr>

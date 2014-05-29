@@ -17,17 +17,21 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
@@ -60,24 +64,28 @@ import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
+import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.sample1.client.SDWISTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
-import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
+import org.openelis.modules.scriptlet.client.ScriptletFactory;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.scriptlet.SampleSO;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -91,6 +99,8 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Confirm;
@@ -230,7 +240,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, commitUpdateCall;
 
-    protected Integer                                    lastAccession;
+    protected ScriptletRunner<SampleSO>                  scriptletRunner;
+
+    protected Integer                                    lastAccession, neonatalScriptletId;
 
     protected static final SampleManager1.Load           elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -239,10 +251,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.SINGLERESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET                   };
 
-    protected enum Tabs {
+    protected enum Tab {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
         ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
     };
+
+    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_domain_scriptlet";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -327,7 +341,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         initialize();
         manager = null;
         managers = null;
-        showTabs(Tabs.BLANK);
+        showTabs(Tab.BLANK);
         setData();
         setState(DEFAULT);
         table.setModel(getTableModel(null));
@@ -1053,6 +1067,17 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
+            @Override
+            public void onRunScriptlet(RunScriptletEvent event) {
+                if (screen != event.getSource())
+                    runScriptlet(event.getScriptletId(),
+                                 event.getUid(),
+                                 event.getChanged(),
+                                 event.getOperation());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
@@ -1104,7 +1129,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected void query(ClickEvent event) {
         manager = null;
         managers = null;
-        showTabs(Tabs.SAMPLE, Tabs.ANALYSIS);
+        showTabs(Tab.SAMPLE, Tab.ANALYSIS);
         setData();
         setState(QUERY);
         table.setModel(getTableModel(null));
@@ -1141,6 +1166,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     setState(UPDATE);
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     refreshTabs(data, true);
+                    if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                               .getStatusId()))
+                        addScriptlet(null);
                 }
 
                 public void failure(Throwable e) {
@@ -1504,12 +1532,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     refreshTabs(data, true);
                     clearStatus();
+
                     /*
-                     * the cache is set to null only if the update succeeds
-                     * because otherwise, it can't be used by any tabs if the
-                     * user wants to change any data
+                     * the cache and scriptlet runner are set to null only if
+                     * the add/update succeeds because otherwise, it can't be
+                     * used by any tabs if the user wants to change any data
                      */
                     cache = null;
+                    scriptletRunner = null;
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -1545,7 +1575,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         if (isState(QUERY)) {
             manager = null;
-            showTabs(Tabs.BLANK);
+            showTabs(Tab.BLANK);
             setData();
             setState(DEFAULT);
             table.setModel(getTableModel(null));
@@ -1589,6 +1619,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        scriptletRunner = null;
                     }
 
                     public void failure(Throwable e) {
@@ -1596,6 +1627,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        scriptletRunner = null;
                     }
                 };
             }
@@ -1720,7 +1752,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     // starts working
                     manager = null;
                     managers = null;
-                    showTabs(Tabs.BLANK);
+                    showTabs(Tab.BLANK);
                     setData();
                     setState(DEFAULT);
                     table.setModel(getTableModel(null));
@@ -1729,7 +1761,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                                                                          null));
                     lastAccession = null;
 
-                    setBusy(Messages.get().gen_querying());
+                    screen.setBusy(Messages.get().gen_querying());
                     try {
                         /*
                          * fetch the worksheet specified by the user and find
@@ -1738,6 +1770,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         wm = WorksheetService1.get()
                                               .fetchById(queryByWorksheetLookup.getWorksheetId(),
                                                          WorksheetManager1.Load.DETAIL);
+                        if (wm == null) {
+                            noRecordsFound();
+                            return;
+                        }
+
                         ids = new ArrayList<Integer>();
                         for (i = 0; i < wm.item.count(); i++ ) {
                             wi = wm.item.get(i);
@@ -1756,8 +1793,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                             SampleService1.get().fetchByAnalyses(ids, elements, getQueryCallBack());
                         else
                             noRecordsFound();
-                    } catch (NotFoundException e) {
-                        noRecordsFound();
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1963,6 +1998,261 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * If the passed id is not null then adds the scriptlet with the id to the
+     * scriptlet runner; otherwise adds the scriptlets for the domain and for
+     * all the records in the manager to the scriptlet runner
+     */
+    private void addScriptlet(Integer scriptletId) {
+        Integer id;
+        HashSet<Integer> ids;
+
+        if (scriptletRunner == null)
+            scriptletRunner = new ScriptletRunner<SampleSO>();
+
+        try {
+            ids = new HashSet<Integer>();
+            if (scriptletId == null) {
+                /*
+                 * add the scriptlet for the domain, which is the value of this
+                 * system variable
+                 */
+                id = getDomainScriptlet();
+                if (id != null)
+                    ids.add(id);
+
+                /*
+                 * add all the scriptlets for all tests, test analytes and aux
+                 * fields linked to the manager
+                 */
+                ids.addAll(getTestScriptlets(false));
+                ids.addAll(getAuxScriptlets(false));
+            } else {
+                ids.add(scriptletId);
+            }
+
+            addScriptlets(ids);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Adds the scriptlet with the passed ids to the scriptlet runner
+     */
+    private void addScriptlets(HashSet<Integer> ids) throws Exception {
+        for (Integer id : ids)
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(id));
+    }
+
+    /**
+     * Runs the scriptlet with the passed id for the passed operation performed
+     * on the field "changed" of the record with the passed uid.
+     */
+    private void runScriptlet(Integer scriptletId, String uid, String changed, Operation operation) {
+        Object obj;
+        SampleSO data;
+        AnalysisViewDO ana;
+        ResultViewDO res;
+        AuxDataViewDO aux;
+        TestManager tm;
+        AuxFieldGroupManager auxfgm;
+        HashMap<Integer, TestManager> analyses, results;
+        HashMap<Integer, AuxFieldGroupManager> auxData;
+        ValidationErrorsList errors;
+
+        analyses = null;
+        results = null;
+        auxData = null;
+        res = null;
+
+        if (uid != null) {
+            /*
+             * find the test or aux group manager for the changed record so that
+             * it can be used by the scriptlet
+             */
+            obj = manager.getObject(uid);
+            if (obj instanceof AnalysisViewDO) {
+
+            } else if (obj instanceof ResultViewDO) {
+                res = (ResultViewDO)obj;
+                ana = (AnalysisViewDO)manager.getObject(Constants.uid()
+                                                                 .getAnalysis(res.getAnalysisId()));
+                tm = get(ana.getTestId(), TestManager.class);
+                results = new HashMap<Integer, TestManager>();
+                results.put(res.getId(), tm);
+            } else if (obj instanceof AuxDataViewDO) {
+                aux = (AuxDataViewDO)obj;
+                auxfgm = get(aux.getAuxFieldGroupId(), AuxFieldGroupManager.class);
+                auxData = new HashMap<Integer, AuxFieldGroupManager>();
+                auxData.put(aux.getId(), auxfgm);
+            }
+        }
+
+        /*
+         * create the sciptlet object
+         */
+        data = new SampleSO();
+        data.setOperations(EnumSet.of(operation));
+        data.setChanged(changed);
+        data.setManager(manager);
+        data.setAnalyses(analyses);
+        data.setResults(results);
+        data.setAuxData(auxData);
+
+        /*
+         * run the scritplet and show the errors and the changed data
+         */
+        data = scriptletRunner.run(data);
+
+        if (data.getExceptions() != null && data.getExceptions().size() > 0) {
+            errors = new ValidationErrorsList();
+            for (Exception e : data.getExceptions())
+                errors.add(e);
+            showErrors(errors);
+        } else {
+            clearErrors();
+        }
+
+        manager = data.getManager();
+        managers.put(manager.getSample().getId(), manager);
+        setData();
+        if (Operation.RESULT_CHANGED == operation) {
+            bus.fireEvent(new ResultChangeEvent(Constants.uid().getAnalysis(res.getAnalysisId())));
+        } else {
+            setState(state);
+            fireDataChange();
+        }
+    }
+
+    /**
+     * Runs the scriptlet for the neonatal domain
+     */
+    private void runDomainScriptlet(Operation operation) throws Exception {
+        Integer id;
+
+        id = getDomainScriptlet();
+        if (id != null)
+            runScriptlet(id, null, null, operation);
+    }
+
+    /**
+     * Returns the id of the scriptlet for the selected sample's domain; returns
+     * null if the domain is quick entry
+     */
+    private Integer getDomainScriptlet() throws Exception {
+        SystemVariableDO data;
+
+        if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
+
+        } else if (Constants.domain().PRIVATEWELL.equals(manager.getSample().getDomain())) {
+
+        } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
+
+        } else if (Constants.domain().CLINICAL.equals(manager.getSample().getDomain())) {
+
+        } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
+            if (neonatalScriptletId == null) {
+                data = SystemVariableService.get()
+                                            .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            }
+            return neonatalScriptletId;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the ids of the scriptlets linked to aux fields for the manager's
+     * aux data. If onlyNew is true then only returns the scriptlets for
+     * uncommitted records.
+     */
+    private HashSet<Integer> getAuxScriptlets(boolean onlyNew) throws Exception {
+        int i;
+        AuxFieldViewDO auxf;
+        AuxDataViewDO aux;
+        AuxFieldGroupManager auxfgm;
+        HashSet<Integer> ids, scids;
+
+        ids = new HashSet<Integer>();
+        /*
+         * find the ids of the all aux groups
+         */
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            aux = manager.auxData.get(i);
+            if (aux.getId() > 0 || onlyNew)
+                ids.add(aux.getAuxFieldGroupId());
+        }
+
+        /*
+         * find the scriptlets linked to all aux fields in all aux group
+         * managers
+         */
+        scids = new HashSet<Integer>();
+        for (Integer id : ids) {
+            auxfgm = get(id, AuxFieldGroupManager.class);
+            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
+                auxf = auxfgm.getFields().getAuxFieldAt(i);
+                if (auxf.getScriptletId() != null)
+                    scids.add(auxf.getScriptletId());
+            }
+        }
+
+        return scids;
+    }
+
+    /**
+     * Returns the ids of the scriptlets linked to tests and test analytes for
+     * the manager's analyses and results. If onlyNew is true then only returns
+     * the scriptlets for uncommitted records.
+     */
+    private HashSet<Integer> getTestScriptlets(boolean onlyNew) throws Exception {
+        int i, j, k, l;
+        HashSet<Integer> ids, scids;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestAnalyteViewDO ta;
+        TestManager tm;
+
+        ids = new HashSet<Integer>();
+        /*
+         * find out the tests in the manager for which scriptlets need to be
+         * added
+         */
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if ( (ana.getId() > 0 || onlyNew) &&
+                    !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) &&
+                    !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    ids.add(ana.getTestId());
+            }
+        }
+
+        /*
+         * scriptlets for tests and test analytes
+         */
+        scids = new HashSet<Integer>();
+        for (Integer id : ids) {
+            tm = get(id, TestManager.class);
+            if (tm.getTest().getScriptletId() != null)
+                scids.add(tm.getTest().getScriptletId());
+
+            for (k = 0; k < tm.getTestAnalytes().rowCount(); k++ ) {
+                for (l = 0; l < tm.getTestAnalytes().columnCount(k); l++ ) {
+                    ta = tm.getTestAnalytes().getAnalyteAt(k, l);
+                    if (ta.getScriptletId() != null)
+                        scids.add(ta.getScriptletId());
+                }
+            }
+        }
+
+        return scids;
+    }
+
+    /**
      * executes the passed query and loads the screen with the results
      */
     private void executeQuery(final Query query) {
@@ -2031,7 +2321,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void noRecordsFound() {
         manager = null;
-        showTabs(Tabs.BLANK);
+        showTabs(Tab.BLANK);
         setData();
         setState(DEFAULT);
         table.setModel(getTableModel(null));
@@ -2089,7 +2379,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void refreshTabs(UUID data, boolean forceReloadResults) {
         String uid, domain;
-        Tabs domainTab;
+        Tab domainTab;
         SelectedType type;
         AnalysisViewDO ana;
         SampleManager1 sm;
@@ -2097,7 +2387,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (data == null) {
             uid = null;
             type = SelectedType.NONE;
-            showTabs(Tabs.BLANK);
+            showTabs(Tab.BLANK);
         } else {
             sm = managers.get(data.sampleId);
             uid = data.analysisUid;
@@ -2108,38 +2398,38 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             domain = sm.getSample().getDomain();
             domainTab = null;
             if (Constants.domain().ENVIRONMENTAL.equals(domain))
-                domainTab = Tabs.ENVIRONMENTAL;
+                domainTab = Tab.ENVIRONMENTAL;
             else if (Constants.domain().PRIVATEWELL.equals(domain))
-                domainTab = Tabs.PRIVATE_WELL;
+                domainTab = Tab.PRIVATE_WELL;
             else if (Constants.domain().SDWIS.equals(domain))
-                domainTab = Tabs.SDWIS;
+                domainTab = Tab.SDWIS;
             else if (Constants.domain().NEONATAL.equals(domain))
-                domainTab = Tabs.NEONATAL;
+                domainTab = Tab.NEONATAL;
             else if (Constants.domain().CLINICAL.equals(domain))
-                domainTab = Tabs.CLINICAL;
+                domainTab = Tab.CLINICAL;
             else if (Constants.domain().QUICKENTRY.equals(domain))
-                domainTab = Tabs.QUICK_ENTRY;
+                domainTab = Tab.QUICK_ENTRY;
 
-            showTabs(Tabs.SAMPLE,
+            showTabs(Tab.SAMPLE,
                      domainTab,
-                     Tabs.SAMPLE_ITEM,
-                     Tabs.ANALYSIS,
-                     Tabs.TEST_RESULT,
-                     Tabs.ANALYSIS_NOTES,
-                     Tabs.SAMPLE_NOTES,
-                     Tabs.STORAGE,
-                     Tabs.QA_EVENTS,
-                     Tabs.AUX_DATA);
+                     Tab.SAMPLE_ITEM,
+                     Tab.ANALYSIS,
+                     Tab.TEST_RESULT,
+                     Tab.ANALYSIS_NOTES,
+                     Tab.SAMPLE_NOTES,
+                     Tab.STORAGE,
+                     Tab.QA_EVENTS,
+                     Tab.AUX_DATA);
 
             /*
              * show notifications on the header of the tabs
              */
             ana = (AnalysisViewDO)sm.getObject(uid);
-            setTabNotification(Tabs.ANALYSIS_NOTES, sm, ana);
-            setTabNotification(Tabs.SAMPLE_NOTES, sm, ana);
-            setTabNotification(Tabs.STORAGE, sm, ana);
-            setTabNotification(Tabs.QA_EVENTS, sm, ana);
-            setTabNotification(Tabs.AUX_DATA, sm, ana);
+            setTabNotification(Tab.ANALYSIS_NOTES, sm, ana);
+            setTabNotification(Tab.SAMPLE_NOTES, sm, ana);
+            setTabNotification(Tab.STORAGE, sm, ana);
+            setTabNotification(Tab.QA_EVENTS, sm, ana);
+            setTabNotification(Tab.AUX_DATA, sm, ana);
         }
 
         fireDataChange();
@@ -2160,15 +2450,15 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * visible; selects the first visible tab if no tab is already selected, to
      * show its widgets
      */
-    private void showTabs(Tabs... tabs) {
-        EnumSet<Tabs> el;
+    private void showTabs(Tab... tabs) {
+        EnumSet<Tab> el;
 
         el = EnumSet.copyOf(Arrays.asList(tabs));
 
-        for (Tabs tab : Tabs.values())
+        for (Tab tab : Tab.values())
             tabPanel.setTabVisible(tab.ordinal(), el.contains(tab));
 
-        if (tabs[0] != Tabs.BLANK && tabPanel.getSelectedIndex() < 0)
+        if (tabs[0] != Tab.BLANK && tabPanel.getSelectedIndex() < 0)
             tabPanel.selectTab(tabs[0].ordinal());
     }
 
@@ -2176,7 +2466,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * creates and sets notification, e.g. number of records, on the header of
      * the specified tab
      */
-    private void setTabNotification(Tabs tabs, SampleManager1 sm, AnalysisViewDO ana) {
+    private void setTabNotification(Tab tabs, SampleManager1 sm, AnalysisViewDO ana) {
         int count1, count2;
         String label;
 
@@ -2259,7 +2549,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * returns the ids of the samples that contain the analyses selected in the
+     * Returns the ids of the samples that contain the analyses selected in the
      * table
      */
     private HashSet<Integer> getSelectedSamples() {
@@ -2278,7 +2568,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * locks and refetches the samples that the selected analyses belong to;
+     * Locks and refetches the samples that the selected analyses belong to;
      * updates the screen's hash with the refetched managers
      */
     private void fetchSelectedSamplesForUpdate() throws Exception {
@@ -2526,7 +2816,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * unreleases the specified analysis after adding an internal note having
+     * Unreleases the specified analysis after adding an internal note having
      * the specified subject and text
      */
     private void unreleaseWithNote(SampleManager1 sm, AnalysisViewDO ana, String subject,
@@ -2625,6 +2915,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
+            /*
+             * add scriptlets for the newly added aux data
+             */
+            addScriptlets(getAuxScriptlets(true));
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
         } catch (Exception e) {
@@ -2682,12 +2976,23 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
+        HashSet<Integer> ids;
 
         setBusy();
         try {
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
             managers.put(manager.getSample().getId(), manager);
+
+            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+                showErrors(ret.getErrors());
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+                runDomainScriptlet(Operation.TEST_ADDED);
+            } else {
+                showTests(ret);
+            }
+
             setData();
             setState(state);
             /*
@@ -2695,10 +3000,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else
-                showTests(ret);
+
+            /*
+             * add scriptlets for any newly added tests and aux data
+             */
+            ids = new HashSet<Integer>();
+            ids.addAll(getTestScriptlets(true));
+            ids.addAll(getAuxScriptlets(true));
+            addScriptlets(ids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2742,6 +3051,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             if (ret.getErrors() != null && ret.getErrors().size() > 0) {
                 showErrors(ret.getErrors());
+                isBusy = false;
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
             } else {
                 showTests(ret);
@@ -2874,11 +3185,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
 
-        if (ret.getTests() == null || ret.getTests().size() == 0) {
-            isBusy = false;
-            return;
-        }
-
         /*
          * show the pop for selecting prep/reflex tests
          */
@@ -2956,7 +3262,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
             /*
              * sort the rows by accession number then item sequence then test
-             * name and then method name.
+             * name and then method name
              */
             compVal = sm1.getSample().getAccessionNumber().compareTo(sm2.getSample()
                                                                         .getAccessionNumber());
