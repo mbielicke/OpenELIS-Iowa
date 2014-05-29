@@ -8,7 +8,7 @@ import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface AirQualityReportServiceIntAsync {
+public interface AirQualityExportServiceIntAsync {
 
     public void getPrompts(AsyncCallback<ArrayList<Prompt>> callback) throws Exception;
 

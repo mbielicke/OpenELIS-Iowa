@@ -107,7 +107,7 @@ import org.openelis.utils.ReportUtil;
           type = DataSource.class,
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
-public class AirQualityReportBean {
+public class AirQualityExportBean {
 
     @EJB
     private SystemVariableBean                       systemVariable;

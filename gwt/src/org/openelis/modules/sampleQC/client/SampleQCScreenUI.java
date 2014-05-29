@@ -35,11 +35,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.QcMeta;
@@ -102,6 +105,9 @@ public class SampleQCScreenUI extends Screen {
     protected AsyncCallbackUI<ArrayList<IdNameVO>>                 queryCall;
 
     protected AsyncCallbackUI<ArrayList<Object>>                   fetchByIdCall, unlockCall;
+
+    protected HashMap<Integer, String>                             analysisType, analysisStatus,
+                    analysisUnit, worksheetStatus, worksheetFormat;
 
     private static final String                                    ANALYSIS_LEAF = "analysis",
                     WORKSHEET_LEAF = "worksheet", QC_LEAF = "qc";
@@ -214,6 +220,30 @@ public class SampleQCScreenUI extends Screen {
             }
         });
         tree.setVisible(true);
+
+        analysisType = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_type"))
+            analysisType.put(d.getId(), d.getEntry());
+
+        analysisStatus = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status")) {
+            analysisStatus.put(d.getId(), d.getEntry());
+        }
+
+        analysisUnit = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
+            analysisUnit.put(d.getId(), d.getEntry());
+        }
+
+        worksheetStatus = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("worksheet_status")) {
+            worksheetStatus.put(d.getId(), d.getEntry());
+        }
+
+        worksheetFormat = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("worksheet_format")) {
+            worksheetFormat.put(d.getId(), d.getEntry());
+        }
     }
 
     /*
@@ -351,7 +381,9 @@ public class SampleQCScreenUI extends Screen {
     private Node getRoot() {
         int i, j, k, l;
         Node root, qnode, wnode, anode;
+        AnalysisViewDO analysis;
         WorksheetQcResultViewDO wq;
+        WorksheetViewDO worksheet;
         WorksheetManager1 wm;
         HashMap<Integer, Node> analysisNodes;
 
@@ -362,35 +394,55 @@ public class SampleQCScreenUI extends Screen {
         analysisNodes = new HashMap<Integer, Node>();
         for (i = 0; i < sm.item.count(); i++ ) {
             for (j = 0; j < sm.analysis.count(sm.item.get(i)); j++ ) {
-                anode = new Node();
-                anode.setData(sm.analysis.get(sm.item.get(i), j));
+                analysis = sm.analysis.get(sm.item.get(i), j);
+                anode = new Node(9);
+                anode.setCell(0, analysis.getTestName());
+                anode.setCell(1, analysis.getMethodName());
+                anode.setCell(2, analysisType.get(analysis.getTypeId()));
+                anode.setCell(3, analysis.getStartedDate());
+                anode.setCell(4, analysis.getReleasedDate());
+                anode.setCell(5, analysisStatus.get(analysis.getStatusId()));
+                anode.setCell(6, analysis.getPreAnalysisTest() + ":" +
+                                 analysis.getPreAnalysisMethod());
+                anode.setCell(7, analysisUnit.get(analysis.getUnitOfMeasureId()));
+                anode.setData(analysis);
                 analysisNodes.put(sm.analysis.get(sm.item.get(i), j).getId(), anode);
                 root.add(anode);
             }
         }
         for (i = 0; i < managers.size(); i++ ) {
             wm = managers.get(i);
-            wnode = new Node(4);
+            worksheet = wm.getWorksheet();
+            wnode = new Node(6);
             wnode.setType(WORKSHEET_LEAF);
-            wnode.setCell(0, wm.getWorksheet().getId());
-            wnode.setCell(1, wm.getWorksheet().getDescription());
-            wnode.setCell(2, wm.getWorksheet().getCreatedDate());
-            wnode.setCell(2, wm.getWorksheet().getInstrumentName());
-            wnode.setData(wm);
+            wnode.setCell(0, worksheet.getId());
+            wnode.setCell(1, worksheet.getDescription());
+            wnode.setCell(2, worksheet.getCreatedDate());
+            wnode.setCell(3, worksheetStatus.get(worksheet.getStatusId()));
+            wnode.setCell(4, worksheetFormat.get(worksheet.getFormatId()));
+            wnode.setCell(5, worksheet.getSystemUser());
+            wnode.setData(worksheet);
 
             for (j = 0; j < wm.item.count(); j++ ) {
                 for (k = 0; k < wm.analysis.count(wm.item.get(j)); k++ ) {
                     for (l = 0; l < wm.qcResult.count(wm.analysis.get(wm.item.get(j), k)); l++ ) {
                         wq = wm.qcResult.get(wm.analysis.get(wm.item.get(j), k), l);
-                        qnode = new Node(2);
+                        qnode = new Node(8);
                         qnode.setCell(0, new Boolean(false));
                         qnode.setCell(1, wq.getAnalyteName());
+                        qnode.setCell(2, wq.getSortOrder());
+                        qnode.setCell(3, wq.getTypeId());
+                        qnode.setCell(4, wq.getValueAt(0));
+                        // TODO QC name, QC type, lot number
                         qnode.setData(wq);
                         wnode.add(qnode);
                     }
                     if (analysisNodes.get(wm.analysis.get(wm.item.get(j), k).getAnalysisId()) != null) {
-                        analysisNodes.get(wm.analysis.get(wm.item.get(j), k).getAnalysisId())
-                                     .add(wnode);
+                        anode = analysisNodes.get(wm.analysis.get(wm.item.get(j), k)
+                                                             .getAnalysisId());
+                        anode.setCell(8, wm.item.get(j).getPosition());
+                        anode.setCell(9, wm.analysis.get(wm.item.get(j), k).getAccessionNumber());
+                        anode.add(wnode);
                     }
                 }
             }
