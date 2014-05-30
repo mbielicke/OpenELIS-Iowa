@@ -5,20 +5,23 @@ import org.openelis.ui.common.DataBaseUtil;
 public class ResultViewDO extends ResultDO {
 
     private static final long serialVersionUID = 1L;
-    
-    protected String analyte, dictionary;
-    protected Integer rowGroup,testAnalyteTypeId, resultGroup;
-    
-    public ResultViewDO(){
-        
+
+    protected String          analyte, analyteExternalId, dictionary;
+    protected Integer         rowGroup, testAnalyteTypeId, resultGroup;
+
+    public ResultViewDO() {
+
     }
-    
-    public ResultViewDO(Integer id, Integer analysisId, Integer testAnalyteId, Integer testResultId, 
-                        String isColumn, Integer sortOrder, String isReportable, Integer analyteId,
-                        Integer typeId, String value, String analyte, Integer rowGroup, Integer testAnalyteTypeId, 
-                        Integer resultGroup){
-        super(id, analysisId, testAnalyteId, testResultId, isColumn, sortOrder, isReportable, analyteId, typeId, value);
+
+    public ResultViewDO(Integer id, Integer analysisId, Integer testAnalyteId,
+                        Integer testResultId, String isColumn, Integer sortOrder,
+                        String isReportable, Integer analyteId, Integer typeId, String value,
+                        String analyte, String analyteExternalId, Integer rowGroup,
+                        Integer testAnalyteTypeId, Integer resultGroup) {
+        super(id, analysisId, testAnalyteId, testResultId, isColumn, sortOrder, isReportable,
+              analyteId, typeId, value);
         setAnalyte(analyte);
+        setAnalyteExternalId(analyteExternalId);
         setRowGroup(rowGroup);
         setTestAnalyteTypeId(testAnalyteTypeId);
         setResultGroup(resultGroup);
@@ -30,6 +33,14 @@ public class ResultViewDO extends ResultDO {
 
     public void setAnalyte(String analyte) {
         this.analyte = DataBaseUtil.trim(analyte);
+    }
+
+    public String getAnalyteExternalId() {
+        return analyteExternalId;
+    }
+
+    public void setAnalyteExternalId(String analyteExternalId) {
+        this.analyteExternalId = DataBaseUtil.trim(analyteExternalId);
     }
 
     public String getDictionary() {
@@ -47,7 +58,7 @@ public class ResultViewDO extends ResultDO {
     public void setRowGroup(Integer rowGroup) {
         this.rowGroup = rowGroup;
     }
-    
+
     public Integer getTestAnalyteTypeId() {
         return testAnalyteTypeId;
     }

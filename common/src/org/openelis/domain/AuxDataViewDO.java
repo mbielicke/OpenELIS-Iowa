@@ -5,20 +5,23 @@ import org.openelis.ui.common.DataBaseUtil;
 public class AuxDataViewDO extends AuxDataDO {
 
     private static final long serialVersionUID = 1L;
-    
-    protected String dictionary, analyteName, analyteExternalId;
-    protected Integer analyteId, groupId;
-    
-    public AuxDataViewDO(){
-        
+
+    protected String          dictionary, auxFieldGroupName, analyteName, analyteExternalId;
+    protected Integer         auxFieldGroupId, analyteId;
+
+    public AuxDataViewDO() {
+
     }
-    
+
     public AuxDataViewDO(Integer id, Integer sortOrder, Integer auxFieldId, Integer referenceId,
-                     Integer referenceTableId, String isReportable, Integer typeId, String value, 
-                     String dictionary, Integer groupId, Integer analyteId, String analyteName, String analyteExternalId){
+                         Integer referenceTableId, String isReportable, Integer typeId,
+                         String value, String dictionary, Integer auxFieldGroupId,
+                         String auxFieldGroupName, Integer analyteId, String analyteName,
+                         String analyteExternalId) {
         super(id, sortOrder, auxFieldId, referenceId, referenceTableId, isReportable, typeId, value);
         setDictionary(dictionary);
-        setGroupId(groupId);
+        setAuxFieldGroupId(auxFieldGroupId);     
+        setAuxFieldGroupName(auxFieldGroupName);
         setAnalyteId(analyteId);
         setAnalyteName(analyteName);
         setAnalyteExternalId(analyteExternalId);
@@ -32,14 +35,22 @@ public class AuxDataViewDO extends AuxDataDO {
         this.dictionary = DataBaseUtil.trim(dictionary);
     }
 
-    public Integer getGroupId() {
-        return groupId;
+    public Integer getAuxFieldGroupId() {
+        return auxFieldGroupId;
     }
 
-    public void setGroupId(Integer groupId) {
-        this.groupId = groupId;
+    public void setAuxFieldGroupId(Integer groupId) {
+        this.auxFieldGroupId = groupId;
+    }
+    
+    public String getAuxFieldGroupName() {
+        return auxFieldGroupName;
     }
 
+    public void setAuxFieldGroupName(String auxFieldGroupName) {
+        this.auxFieldGroupName = DataBaseUtil.trim(auxFieldGroupName);
+    }
+    
     public String getAnalyteName() {
         return analyteName;
     }

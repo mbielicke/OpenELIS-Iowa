@@ -25,7 +25,7 @@
  */
 package org.openelis.modules.main.client;
 
-import static org.openelis.modules.main.client.Logger.remote;
+import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.logging.Level;
 
@@ -37,7 +37,8 @@ import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
-import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
+import org.openelis.modules.clinicalSampleLogin1.client.ClinicalSampleLoginScreenUI;
+import org.openelis.modules.completeRelease1.client.CompleteReleaseScreenUI;
 import org.openelis.modules.cron.client.CronScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
@@ -57,7 +58,6 @@ import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.order1.client.VendorOrderScreenUI;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
-// import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.preferences.client.PreferencesScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -87,8 +87,7 @@ import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
-import org.openelis.modules.sampleQC.client.SampleQCScreenUI;
-import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.scriptlet.client.ScriptletScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -103,6 +102,7 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 //import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
@@ -141,19 +141,19 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder,/* worksheetCreation,*/ worksheetCompletion, addOrCancel,
-                    reviewAndRelease, toDo, labelFor, storage, QC, sampleQc, analyteParameter,
-                    internalOrder, vendorOrder, sendoutOrder, fillOrder, shipping, buildKits,
-                    inventoryTransfer, inventoryReceipt, inventoryAdjustment, inventoryItem,
-                    verificationReport, testRequestFormReport, orderRequestForm,
-                    holdRefuseOrganization, testReport, billingReport, sampleInhouseReport,
-                    volumeReport, toDoAnalyteReport, sampleDataExport, QASummaryReport,
-                    testCountByFacility, turnaround, turnAroundStatisticReport, kitTrackingReport,
-                    airQualityReport, sdwisUnloadReport, dataView, qcChart, finalReport,
-                    finalReportBatch, finalReportBatchReprint, test, method, panel, QAEvent,
-                    labSection, analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
-                    exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
-                    storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs;
+                    worksheetBuilder,/* worksheetCreation,*/ worksheetCompletion, worksheetCompletionUI, addOrCancel,
+                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
+                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
+                    inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
+                    testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
+                    billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
+                    sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
+                    turnAroundStatisticReport, kitTrackingReport, airQualityReport,
+                    sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
+                    finalReportBatchReprint, test, method, panel, QAEvent, labSection, analyte,
+                    dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
+                    label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
+                    scriptlet, systemVariable, pws, cron, logs;
 
 	@UiField
     protected Menu maintenanceMenu;                    
@@ -289,10 +289,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.tracking());
-                            window.setSize("20px", "20px");
-                            window.setContent(new SampleTrackingScreen(window));
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.sampleTracking_tracking());
+                            window.setSize("1074px", "435px");
+                            window.setContent(new SampleTrackingScreenUI(window));
                             browser.addWindow(window, "tracking");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
@@ -337,8 +337,11 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            // browser.addScreen(new
-                            // ClinicalSampleLoginScreen());
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.clinicalSampleLogin());
+                            window.setSize("770px", "740px");
+                            window.setContent(new ClinicalSampleLoginScreenUI(window));
+                            browser.addWindow(window, "clinicalSampleLogin");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
@@ -360,7 +363,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.neonatalScreeningSampleLogin());
-                            window.setSize("890px", "850px");
+                            window.setSize("900px", "850px");
                             window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
                             browser.addWindow(window, "neonatalScreeningSampleLogin");
                         } catch (Throwable e) {
@@ -621,6 +624,35 @@ public class OpenELIS extends Screen {
             }
         });
 
+        addCommand(worksheetCompletionUI, "worksheetcompletion", new Command() {
+            public void execute() {
+
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        WorksheetCompletionScreenUI screen;
+                        
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.worksheetCompletion() + " 2");
+                            window.setSize("1061px", "511px");
+                            screen = new WorksheetCompletionScreenUI(window);
+                            window.setContent(screen);
+                            screen.initialize();
+                            browser.addWindow(window, "worksheetCompletionUI");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
         addCommand(addOrCancel, null, new Command() {
             public void execute() {
                 // browser.addScreen(new )
@@ -632,10 +664,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.reviewAndRelease());
-                            window.setSize("20px", "20px");
-                            window.setContent(new CompleteReleaseScreen(window));
+                            window.setSize("750px", "618px");
+                            window.setContent(new CompleteReleaseScreenUI(window));
                             browser.addWindow(window, "reviewAndRelease");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
@@ -745,30 +777,6 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new QcScreen(window));
                             browser.addWindow(window, "QC");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE, e.getMessage(), e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addCommand(sampleQc, "sampletracking", new Command() {
-            public void execute() {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(msg.sample_sampleQc());
-                            window.setSize("700px", "350px");
-                            window.setContent(new SampleQCScreenUI(window));
-                            browser.addWindow(window, "sampleQc");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());

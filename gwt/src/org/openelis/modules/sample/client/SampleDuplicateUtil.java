@@ -482,7 +482,7 @@ public class SampleDuplicateUtil {
         newData.setTypeId(oldData.getTypeId());
         newData.setValue(oldData.getValue());
         newData.setDictionary(oldData.getDictionary());
-        newData.setGroupId(oldData.getGroupId());
+        newData.setAuxFieldGroupId(oldData.getAuxFieldGroupId());
         newData.setAnalyteId(oldData.getAnalyteId());
         newData.setAnalyteName(oldData.getAnalyteName());
         newData.setAnalyteExternalId(oldData.getAnalyteExternalId());
@@ -500,8 +500,7 @@ public class SampleDuplicateUtil {
         newData.setIsReportable(oldData.getIsReportable());
         newData.setScriptletId(oldData.getScriptletId());
         newData.setAnalyteName(oldData.getAnalyteName());
-        newData.setMethodName(oldData.getMethodName());
-        newData.setScriptletName(oldData.getScriptletName());
+        newData.setMethodName(oldData.getMethodName());       
         newData.setUnitOfMeasureName(oldData.getUnitOfMeasureName());
     }   
     

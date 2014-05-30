@@ -34,6 +34,7 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
@@ -57,6 +58,9 @@ public interface SampleServiceInt1 extends RemoteService {
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception;
     
+    public ArrayList<SampleManager1> fetchByAnalysisQuery(Query query,
+                                                          SampleManager1.Load... elements) throws Exception;
+    
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception;
     
@@ -68,12 +72,19 @@ public interface SampleServiceInt1 extends RemoteService {
 
     public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds,
                                                     SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds, Load... elements) throws Exception;
 
-    public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception;
+    public SampleManager1 unlock(Integer sampleId, SampleManager1.Load... elements) throws Exception;
 
-    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception;
+    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<SampleManager1> unlockByAnalyses(ArrayList<Integer> analysisIds,
+                                                      SampleManager1.Load... elements) throws Exception;
 
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception;
+
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception;
 
     public void validateAccessionNumber(SampleManager1 sm) throws Exception;
     
@@ -82,6 +93,14 @@ public interface SampleServiceInt1 extends RemoteService {
     public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception;
     
     public SampleManager1 duplicate(Integer sampleId) throws Exception;
+    
+    public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception;
+    
+    public SampleManager1 unrelease(SampleManager1 sm) throws Exception;
+    
+    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
+    
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
     
     public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception;
     
@@ -101,8 +120,4 @@ public interface SampleServiceInt1 extends RemoteService {
     
     public SampleManager1 changeAnalysisPrep(SampleManager1 sm, Integer analysisId,
                                              Integer preAnalysisId) throws Exception;
-    
-    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
-    
-    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
 }

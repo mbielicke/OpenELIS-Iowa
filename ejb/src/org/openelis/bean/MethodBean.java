@@ -89,22 +89,14 @@ public class MethodBean {
     }
 
     @SuppressWarnings("unchecked")
-    public MethodDO fetchByName(String name) throws Exception {
+    public ArrayList<MethodDO> fetchByName(String name, int maxResults) {
         Query query;
-        MethodDO data;
 
         query = manager.createNamedQuery("Method.FetchByName");
         query.setParameter("name", name);
+        query.setMaxResults(maxResults);
 
-        try {
-            data = (MethodDO)query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-
-        return data;
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     @SuppressWarnings("unchecked")
@@ -220,39 +212,85 @@ public class MethodBean {
         return fetchById(id);
     }
 
-    public void validate(MethodDO data) throws ValidationErrorsList, Exception {
-        ValidationErrorsList list;
+    public void validate(MethodDO data) throws Exception {
+        boolean checkDuplicate, overlap;
+        MethodDO dup;
+        Query query;
+        ValidationErrorsList errors;
+        List<MethodDO> dups;        
 
-        list = new ValidationErrorsList();
+        errors = new ValidationErrorsList();
+        checkDuplicate = true;
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException(getMessages().fieldRequiredException(),
+            errors.add(new FieldErrorException(getMessages().fieldRequiredException(),
                                              MethodMeta.getName()));
-        } else {
-            MethodDO dup;
+            checkDuplicate = false;
+        }
 
-            try {
-                dup = fetchByName(data.getName());
-                if (DataBaseUtil.isDifferent(data.getId(), dup.getId()))
-                    list.add(new FieldErrorException(getMessages().fieldUniqueException(),
-                                                     MethodMeta.getName()));
-            } catch (NotFoundException ignE) {
+        if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
+            errors.add(new FieldErrorException(getMessages().fieldRequiredException(),
+                                             MethodMeta.getActiveBegin()));
+            checkDuplicate = false;
+        }
+
+        if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
+            errors.add(new FieldErrorException(getMessages().fieldRequiredException(),
+                                             MethodMeta.getActiveEnd()));
+            checkDuplicate = false;
+        }
+
+        if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd())) {
+            errors.add(new FormErrorException(getMessages().endDateAfterBeginDateException()));
+            checkDuplicate = false;
+        }
+        
+        if (checkDuplicate) {
+            query = manager.createNamedQuery("Method.FetchByName");
+            query.setParameter("name", data.getName());
+            dups = query.getResultList();
+            for (int i = 0; i < dups.size(); i++ ) {
+                overlap = false;
+                dup = (MethodDO)dups.get(i);
+                if (DataBaseUtil.isDifferent(dup.getId(), data.getId())&&
+                    DataBaseUtil.isSame(dup.getIsActive(), data.getIsActive())) {
+                    if ("Y".equals(data.getIsActive())) {
+                        errors.add(new FormErrorException(getMessages().methodActiveException()));
+                        break;
+                    }
+
+                    if (DataBaseUtil.isAfter(data.getActiveEnd(), dup.getActiveBegin()) &&
+                        DataBaseUtil.isAfter(dup.getActiveEnd(), data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(data.getActiveBegin(), dup.getActiveBegin()) &&
+                               DataBaseUtil.isAfter(dup.getActiveEnd(), data.getActiveEnd())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(data.getActiveEnd(), dup.getActiveEnd()) &&
+                               DataBaseUtil.isAfter(dup.getActiveBegin(), data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(dup.getActiveEnd(), data.getActiveEnd()) &&
+                               DataBaseUtil.isAfter(data.getActiveBegin(), dup.getActiveBegin())) {
+                        overlap = true;
+                    } else if (!DataBaseUtil.isDifferentYD(dup.getActiveBegin(),
+                                                            data.getActiveEnd()) ||
+                               !DataBaseUtil.isDifferentYD(dup.getActiveEnd(),
+                                                           data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (!DataBaseUtil.isDifferentYD(dup.getActiveBegin(),
+                                                            data.getActiveBegin()) ||
+                               (!DataBaseUtil.isDifferentYD(dup.getActiveEnd(),
+                                                             data.getActiveEnd()))) {
+                        overlap = true;
+                    }
+
+                    if (overlap)
+                        errors.add(new FormErrorException(getMessages().methodTimeOverlapException()));                    
+                }
             }
         }
 
-        if (DataBaseUtil.isEmpty(data.getActiveBegin()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             MethodMeta.getActiveBegin()));
-
-        if (DataBaseUtil.isEmpty(data.getActiveEnd()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             MethodMeta.getActiveEnd()));
-
-        if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd()))
-            list.add(new FormErrorException(Messages.get().endDateAfterBeginDateException()));
-
-        if (list.size() > 0)
-            throw list;
+        if (errors.size() > 0)
+            throw errors;
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
@@ -262,4 +300,5 @@ public class MethodBean {
     protected OpenELISConstants getMessages() {
         return Messages.get();
     }
+    
 }

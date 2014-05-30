@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
-import org.openelis.scriptlet.ScriptletObject;
 import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -19,6 +18,8 @@ public interface ScriptletServiceInt extends XsrfProtectedService {
     
     ScriptletDO fetchById(Integer id) throws Exception;
     
+    ArrayList<ScriptletDO> fetchByIds(ArrayList<Integer> ids) throws Exception;
+    
     ScriptletDO fetchForUpdate(Integer id) throws Exception;
     
     ScriptletDO add(ScriptletDO data) throws Exception;
@@ -26,7 +27,4 @@ public interface ScriptletServiceInt extends XsrfProtectedService {
     ScriptletDO update(ScriptletDO data) throws Exception;
     
     ScriptletDO abortUpdate(Integer id) throws Exception;
-    
-    ScriptletObject run(ScriptletObject so) throws Exception;
-
 }

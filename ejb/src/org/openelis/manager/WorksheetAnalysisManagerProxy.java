@@ -161,8 +161,8 @@ public class WorksheetAnalysisManagerProxy {
             // worksheet
             //
             if (analysis.getFromOtherId() == null) {
-                analysis.setQcStartedDate(Datetime.getInstance(Datetime.YEAR,
-                                                               Datetime.MINUTE));
+                analysis.setStartedDate(Datetime.getInstance(Datetime.YEAR,
+                                                             Datetime.MINUTE));
                 qcLotVDO = EJBFactory.getQcLot().fetchById(analysis.getQcLotId());
                 qcManager = QcManager.fetchById(qcLotVDO.getQcId());
                 wqrManager = manager.getWorksheetQcResultAt(i);
@@ -434,7 +434,6 @@ public class WorksheetAnalysisManagerProxy {
                 wrVDO.setTestAnalyteId(result.getTestAnalyteId());
                 wrVDO.setResultRow(i);
                 wrVDO.setAnalyteId(result.getAnalyteId());
-                wrVDO.setTypeId(result.getTypeId());
                 wrVDO.setAnalyteName(result.getAnalyte());
                 wrManager.addWorksheetResult(wrVDO);
             }
@@ -523,7 +522,6 @@ public class WorksheetAnalysisManagerProxy {
             wqrVDO = new WorksheetQcResultViewDO();
             wqrVDO.setSortOrder(i + 1);
             wqrVDO.setQcAnalyteId(qcaVDO.getId());
-            wqrVDO.setTypeId(qcaVDO.getTypeId());
             wqrVDO.setAnalyteId(qcaVDO.getAnalyteId());
             wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
             wqrManager.addWorksheetQcResult(wqrVDO);
