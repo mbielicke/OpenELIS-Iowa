@@ -19,6 +19,8 @@ public interface AuxiliaryServiceInt extends XsrfProtectedService {
     ArrayList<AuxFieldGroupDO> fetchActive() throws Exception;
     
     ArrayList<AuxFieldViewDO> fetchAll() throws Exception;
+    
+    ArrayList<AuxFieldViewDO> fetchByAnalyteName(String search)  throws Exception;
 
     // manager methods
     AuxFieldGroupManager fetchById(Integer id) throws Exception;

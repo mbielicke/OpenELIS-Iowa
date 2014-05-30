@@ -17,7 +17,7 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
-  <g:LayoutPanel>
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="5px">
       <g:LayoutPanel>
         <g:layer width="49%" left="0px">
@@ -45,9 +45,9 @@
                   <w:Button ui:field="removeSampleQAButton" leftIcon="{res.icon.removeRowIcon}"
                     text="{msg.gen_removeRow}" />
                   <w:Button ui:field="sampleQALookupButton" leftIcon="{res.icon.fieldLookupIcon}"
-                    text="{msg.gen_qaEvents}" />
+                    text="{msg.qaEvent_qaEvents}" />
                 </g:HorizontalPanel>
-                <w:Label ui:field="sampleBillableLabel" />
+                <w:Label ui:field="sampleBillableLabel" styleName="{res.style.WarningLabel}" wordWrap = "true"/>
               </g:VerticalPanel>
             </g:layer>
           </g:LayoutPanel>
@@ -77,9 +77,9 @@
                     <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.icon.removeRowIcon}"
                       text="{msg.gen_removeRow}" />
                     <w:Button ui:field="analysisQALookupButton" leftIcon="{res.icon.fieldLookupIcon}"
-                      text="{msg.gen_qaEvents}" />
+                      text="{msg.qaEvent_qaEvents}" />
                   </g:HorizontalPanel>
-                  <w:Label ui:field="analysisBillableLabel" />
+                  <w:Label ui:field="analysisBillableLabel" styleName="{res.style.WarningLabel}" wordWrap = "true"/>
                 </g:VerticalPanel>
             </g:layer>
           </g:LayoutPanel>

@@ -13,14 +13,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
 import org.openelis.entity.Patient;
 import org.openelis.meta.PatientMeta;
-import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.util.QueryBuilderV2;
 
@@ -34,6 +39,12 @@ public class PatientBean {
     
     @EJB
     private AddressBean   address;
+    
+    @EJB
+    private LockBean               lock;
+    
+    @EJB
+    private UserCacheBean           userCache;
    
     private static final PatientMeta meta = new PatientMeta();
 
@@ -134,6 +145,8 @@ public class PatientBean {
     public PatientDO add(PatientDO data) throws Exception {
         Patient entity;
         
+        checkSecurity(ModuleFlags.ADD);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         address.add(data.getAddress());
@@ -158,8 +171,14 @@ public class PatientBean {
     public PatientDO update(PatientDO data) throws Exception {
         Patient entity;
         
-        if (!data.isChanged() && !data.getAddress().isChanged())
+        if (!data.isChanged() && !data.getAddress().isChanged()) {
+            lock.unlock(Constants.table().PATIENT, data.getId());
             return data;
+        }
+        
+        checkSecurity(ModuleFlags.UPDATE);
+        
+        lock.validateLock(Constants.table().PATIENT, data.getId());
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Patient.class, data.getId());
@@ -176,10 +195,46 @@ public class PatientBean {
         if (data.getAddress().isChanged())
             address.update(data.getAddress());
 
+        lock.unlock(Constants.table().PATIENT, data.getId());
+        
         return data;
     }
     
+    public PatientDO fetchForUpdate(Integer id) throws Exception {
+        try {
+            lock.lock(Constants.table().PATIENT, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public PatientDO abortUpdate(Integer id) throws Exception {
+        lock.unlock(Constants.table().PATIENT, id);
+        return fetchById(id);
+    }
+    
     public void validate(PatientDO data) throws Exception {
-        //TODO add logic for validation
+        ValidationErrorsList e;
+        
+        e = new ValidationErrorsList();
+        
+        if (data.getLastName() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .patient_lastnameRequiredException()));
+        
+        if (data.getAddress().getStreetAddress() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .patient_streetAddressRequiredException()));
+        
+        if (data.getAddress().getCity() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .patient_cityRequiredException()));
+        if (e.size() > 0)
+            throw e;
+    }
+    
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        userCache.applyPermission("patient", flag);
     }
 }

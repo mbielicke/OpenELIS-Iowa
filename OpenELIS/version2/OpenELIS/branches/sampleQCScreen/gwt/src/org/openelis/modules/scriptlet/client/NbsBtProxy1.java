@@ -23,31 +23,34 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sampleQC.server;
+package org.openelis.modules.scriptlet.client;
 
-import java.util.ArrayList;
+import static org.openelis.modules.main.client.Logger.*;
 
-import javax.ejb.EJB;
-import javax.servlet.annotation.WebServlet;
+import java.util.logging.Level;
 
-import org.openelis.bean.WorksheetManager1Bean;
-import org.openelis.modules.sampleQC.client.SampleQCServiceInt;
-import org.openelis.ui.server.RemoteServlet;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.scriptlet.NbsBtScriptlet1;
 
-@WebServlet("/openelis/sampleQC")
-public class SampleQCServlet extends RemoteServlet implements SampleQCServiceInt {
-
-    private static final long serialVersionUID = 1L;
-
-    @EJB
-    private WorksheetManager1Bean     worksheetManager;
+/**
+ * This class is used for providing the front-end functionality for "nbs bt"
+ * scriptlet
+ */
+public class NbsBtProxy1 implements NbsBtScriptlet1.Proxy {
 
     @Override
-    public ArrayList<Object> fetchByAccessionNumber(Integer accession) throws Exception {
-        try {
-            return worksheetManager.fetchByAccessionNumber(accession);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
+    public DictionaryDO getDictionaryById(Integer id) throws Exception {
+        return DictionaryCache.getById(id);
+    }
+
+    @Override
+    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
+        return DictionaryCache.getBySystemName(systemName);
+    }
+
+    @Override
+    public void log(Level level, String message) {
+        logger.log(level, message);
     }
 }

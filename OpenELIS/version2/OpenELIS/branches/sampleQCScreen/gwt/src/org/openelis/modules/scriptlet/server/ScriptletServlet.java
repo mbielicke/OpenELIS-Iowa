@@ -33,12 +33,9 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.ScriptletBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
-import org.openelis.scriptlet.ScriptletInt;
-import org.openelis.scriptlet.ScriptletObject;
+import org.openelis.modules.scriptlet.client.ScriptletServiceInt;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.utils.EJBFactory;
-import org.openelis.modules.scriptlet.client.ScriptletServiceInt;
 
 @WebServlet("/openelis/scriptlet")
 public class ScriptletServlet extends RemoteServlet implements ScriptletServiceInt {
@@ -57,29 +54,18 @@ public class ScriptletServlet extends RemoteServlet implements ScriptletServiceI
     }
 
     @Override
-    public ScriptletObject run(ScriptletObject so) throws Exception {
-        ScriptletInt script;
-        ScriptletDO      sdo;
-        
-        script = (ScriptletInt)getThreadLocalRequest().getSession().getAttribute("scriptlet"+so.getId());
-        
-        if(script == null) {
-            sdo = scriptlet.fetchById(so.getId());
-            script = EJBFactory.lookup(sdo.getBean());
-            getThreadLocalRequest().getSession().setAttribute("scriptlet"+so.getId(), script);
-        }
-        
-        try {
-            return script.run(so);
-        }catch(Exception e) {
-            throw serializeForGWT(e);
-        }
-    }
-
-    @Override
     public ScriptletDO fetchById(Integer id) throws Exception {
         try {
             return scriptlet.fetchById(id);
+        }catch(Exception e){
+            throw serializeForGWT(e);
+        }
+    }
+    
+    @Override
+    public ArrayList<ScriptletDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        try {
+            return scriptlet.fetchByIds(ids);
         }catch(Exception e){
             throw serializeForGWT(e);
         }

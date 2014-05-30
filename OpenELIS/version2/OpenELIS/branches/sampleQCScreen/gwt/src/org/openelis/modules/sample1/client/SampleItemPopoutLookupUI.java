@@ -29,7 +29,6 @@ import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
@@ -38,7 +37,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.manager.SampleManager1;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -347,9 +345,9 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
                 builder.append(ana.getMethodName());
                 if (ana.getStatusId() != null) {
                     try {
-                        builder.append(" (");
+                        builder.append(" [");
                         builder.append(DictionaryCache.getById(ana.getStatusId()).getEntry());
-                        builder.append(")");
+                        builder.append("]");
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
