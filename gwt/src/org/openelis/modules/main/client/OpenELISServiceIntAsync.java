@@ -9,10 +9,5 @@ public interface OpenELISServiceIntAsync {
 
     void getConstants(AsyncCallback<Constants> callback);
 
-    void keepAlive(AsyncCallback<Void> callback);
-
     void logout(AsyncCallback<Void> callback);
-
-    void getLastAccess(AsyncCallback<Datetime> callback);
-
 }
