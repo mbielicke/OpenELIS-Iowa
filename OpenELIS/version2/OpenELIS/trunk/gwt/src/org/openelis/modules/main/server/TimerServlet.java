@@ -25,16 +25,10 @@
  */
 package org.openelis.modules.main.server;
 
-import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpSession;
 
-import org.openelis.bean.ApplicationBean;
-import org.openelis.bean.UserCacheBean;
-import org.openelis.domain.Constants;
-import org.openelis.modules.main.client.OpenELISServiceInt;
+import org.openelis.modules.main.client.TimerServiceInt;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.server.RemoteServlet;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -42,26 +36,10 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * This servlet needs to extend RemoteServiceServlet instead of RemoteServlet so that it does not update
  *last_access when checking for last_access;
  */
-@WebServlet("/openelis/service")
-public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt {
+@WebServlet("/openelis/timer")
+public class TimerServlet extends RemoteServiceServlet implements TimerServiceInt {
     
     private static final long serialVersionUID = 1L;
-
-    @EJB
-    UserCacheBean             userCache;
-
-    @EJB
-    ApplicationBean           application;
-
-    public Constants getConstants() throws Exception {
-        keepAlive();
-        
-        try {
-            return application.getConstants();
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
 
     public void keepAlive() {
         getThreadLocalRequest().getSession().setAttribute("last_access",
@@ -73,17 +51,4 @@ public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt
         return (Datetime)getThreadLocalRequest().getSession().getAttribute("last_access");
     }
 
-    public void logout() {
-        HttpSession session;
-
-        try {
-            userCache.logout();
-            session = getThreadLocalRequest().getSession();
-            if (session != null) {
-                session.invalidate();
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-    }
 }

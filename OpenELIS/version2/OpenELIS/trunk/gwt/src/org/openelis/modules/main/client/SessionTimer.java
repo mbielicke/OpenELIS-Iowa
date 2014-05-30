@@ -85,7 +85,7 @@ public class SessionTimer {
             }
         });
         
-        OpenELISService.get().keepAlive(new AsyncCallback<Void>() {
+        TimerService.get().keepAlive(new AsyncCallback<Void>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -108,7 +108,7 @@ public class SessionTimer {
      * Check the last time the server was accessed
      */
     private void checkLastAccess() {
-        OpenELISService.get().getLastAccess(new AsyncCallback<Datetime>() {
+        TimerService.get().getLastAccess(new AsyncCallback<Datetime>() {
             public void onSuccess(Datetime result) {
                 Datetime check;
                 
@@ -134,7 +134,7 @@ public class SessionTimer {
      * ping the server so the session does not expire
      */
     private void resetServerTimeout() {
-        OpenELISService.get().keepAlive(new AsyncCallback<Void>() {
+        TimerService.get().keepAlive(new AsyncCallback<Void>() {
             public void onSuccess(Void result) {
 
             }
