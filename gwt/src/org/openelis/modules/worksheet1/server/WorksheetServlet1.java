@@ -85,6 +85,15 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
+    public ArrayList<WorksheetManager1> fetchByIds(ArrayList<Integer> worksheetIds,
+                                                   WorksheetManager1.Load... elements) throws Exception {
+        try {
+            return worksheetManager1.fetchByIds(worksheetIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
             return worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
