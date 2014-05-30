@@ -48,6 +48,8 @@ public interface WorksheetServiceInt1 extends XsrfProtectedService {
 
     public WorksheetManager1 fetchById(Integer worksheetId, WorksheetManager1.Load... elements) throws Exception;
 
+    public ArrayList<WorksheetManager1> fetchByIds(ArrayList<Integer> worksheetIds, WorksheetManager1.Load... elements) throws Exception;
+
     public ArrayList<IdNameVO> query(Query query) throws Exception;
 
     public WorksheetManager1 fetchForUpdate(Integer worksheetId) throws Exception;

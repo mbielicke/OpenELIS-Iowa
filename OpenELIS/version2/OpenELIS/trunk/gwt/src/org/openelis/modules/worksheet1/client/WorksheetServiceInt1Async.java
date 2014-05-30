@@ -47,6 +47,9 @@ public interface WorksheetServiceInt1Async {
     public void fetchById(Integer worksheetId, WorksheetManager1.Load elements[],
                           AsyncCallback<WorksheetManager1> callback);
 
+    public void fetchByIds(ArrayList<Integer> worksheetIds, WorksheetManager1.Load elements[],
+                           AsyncCallback<ArrayList<WorksheetManager1>> callback);
+
     public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     public void fetchForUpdate(Integer worksheetId, AsyncCallback<WorksheetManager1> callback);

@@ -93,6 +93,21 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
+    public ArrayList<WorksheetManager1> fetchByIds(ArrayList<Integer> worksheetIds, WorksheetManager1.Load... elements) throws Exception {
+        Callback<ArrayList<WorksheetManager1>> callback;
+
+        callback = new Callback<ArrayList<WorksheetManager1>>();
+        service.fetchByIds(worksheetIds, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchByIds(ArrayList<Integer> worksheetIds, WorksheetManager1.Load elements[],
+                          AsyncCallback<ArrayList<WorksheetManager1>> callback) {
+        service.fetchByIds(worksheetIds, elements, callback);
+    }
+
+    @Override
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
 
