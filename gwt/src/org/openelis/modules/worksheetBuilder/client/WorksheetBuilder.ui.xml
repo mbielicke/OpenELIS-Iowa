@@ -237,6 +237,16 @@
             </w:tab>
             <w:tab>
               <w:customHeader>
+                <w:TabWidget text="{msg.worksheet_reagentsMedia}"/>
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <ws:WorksheetReagentTabUI ui:field="reagentTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
                 <w:TabWidget text="{msg.gen_note}" />
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">

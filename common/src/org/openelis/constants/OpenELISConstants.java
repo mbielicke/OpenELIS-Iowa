@@ -6253,6 +6253,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_unit();
 
   /**
+   * Translated "Unselect All".
+   * 
+   * @return translated "Unselect All"
+   */
+  @DefaultMessage("Unselect All")
+  @Key("gen.unselectAll")
+  String gen_unselectAll();
+
+  /**
    * Translated "Update".
    * 
    * @return translated "Update"
@@ -8150,6 +8159,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Labor")
   @Key("labor")
   String labor();
+
+  /**
+   * Translated "Last Name".
+   * 
+   * @return translated "Last Name"
+   */
+  @DefaultMessage("Last Name")
+  @Key("lastName")
+  String lastName();
 
   /**
    * Translated "You have reached the last page of your query results".
@@ -12031,6 +12049,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String qaeventTestComboUnique();
 
   /**
+   * Translated "Expire Date".
+   * 
+   * @return translated "Expire Date"
+   */
+  @DefaultMessage("Expire Date")
+  @Key("qc.expireDate")
+  String qc_expireDate();
+
+  /**
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
@@ -12040,6 +12067,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String qc_invalidValueException();
 
   /**
+   * Translated "Lot Number ".
+   * 
+   * @return translated "Lot Number "
+   */
+  @DefaultMessage("Lot Number ")
+  @Key("qc.lotNumber")
+  String qc_lotNumber();
+
+  /**
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
@@ -12047,6 +12083,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("qc.noSelectedRow")
   String qc_noSelectedRow();
+
+  /**
+   * Translated "Prepared By".
+   * 
+   * @return translated "Prepared By"
+   */
+  @DefaultMessage("Prepared By")
+  @Key("qc.preparedBy")
+  String qc_preparedBy();
+
+  /**
+   * Translated "Prepared Date".
+   * 
+   * @return translated "Prepared Date"
+   */
+  @DefaultMessage("Prepared Date")
+  @Key("qc.preparedDate")
+  String qc_preparedDate();
+
+  /**
+   * Translated "Prepared Unit".
+   * 
+   * @return translated "Prepared Unit"
+   */
+  @DefaultMessage("Prepared Unit")
+  @Key("qc.preparedUnit")
+  String qc_preparedUnit();
+
+  /**
+   * Translated "Prepared Volume".
+   * 
+   * @return translated "Prepared Volume"
+   */
+  @DefaultMessage("Prepared Volume")
+  @Key("qc.preparedVolume")
+  String qc_preparedVolume();
 
   /**
    * Translated "QC Lookup".
@@ -12065,6 +12137,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("QC Name")
   @Key("qc.qcName")
   String qc_qcName();
+
+  /**
+   * Translated "Usable Date".
+   * 
+   * @return translated "Usable Date"
+   */
+  @DefaultMessage("Usable Date")
+  @Key("qc.usableDate")
+  String qc_usableDate();
 
   /**
    * Translated "History - QC Analyte".
@@ -17710,6 +17791,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_format();
 
   /**
+   * Translated "If Empty".
+   * 
+   * @return translated "If Empty"
+   */
+  @DefaultMessage("If Empty")
+  @Key("worksheet.ifEmpty")
+  String worksheet_ifEmpty();
+
+  /**
    * Translated "Invalid user ''{0}'' for position {1} analysis {2}".
    * 
    * @return translated "Invalid user ''{0}'' for position {1} analysis {2}"
@@ -17879,6 +17969,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("QC Link")
   @Key("worksheet.qcLink")
   String worksheet_qcLink();
+
+  /**
+   * Translated "Reagents/Media".
+   * 
+   * @return translated "Reagents/Media"
+   */
+  @DefaultMessage("Reagents/Media")
+  @Key("worksheet.reagentsMedia")
+  String worksheet_reagentsMedia();
 
   /**
    * Translated "Related Worksheet #".

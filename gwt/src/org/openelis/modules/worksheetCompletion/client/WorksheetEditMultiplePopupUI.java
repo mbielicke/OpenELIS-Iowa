@@ -55,6 +55,7 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.table.Column;
 import org.openelis.ui.widget.table.Row;
@@ -74,6 +75,8 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
 
     @UiField
     protected Button                                               ok, cancel;
+    @UiField
+    protected CheckBox                                             ifEmpty;
     @UiField
     protected Table                                                analyteResultTable;
 
@@ -96,6 +99,12 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
         analyteResultTable.setEnabled(true);
         analyteResultTable.setAllowMultipleSelection(false);
 
+        addScreenHandler(ifEmpty, "ifEmpty", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ifEmpty.setValue("Y");
+            }
+        });
+        
         addScreenHandler(analyteResultTable, "analyteResultTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 analyteResultTable.setModel(getTableModel());
@@ -199,8 +208,10 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                 for (i = 1; i < row.size(); i++) {
                     val = (Value) row.getCell(i);
                     if (val.getDisplay() != null && val.getDisplay().length() > 0) {
-                        for (WorksheetResultViewDO wrVDO : wrVDOs)
-                            wrVDO.setValueAt(i - 1, val.getDisplay());
+                        for (WorksheetResultViewDO wrVDO : wrVDOs) {
+                            if (wrVDO.getValueAt(i - 1) == null || "N".equals(ifEmpty.getValue()))
+                                wrVDO.setValueAt(i - 1, val.getDisplay());
+                        }
                     }
                 }
             } else if (((String)row.getData()).startsWith("Q")) {
@@ -208,8 +219,10 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                 for (i = 1; i < row.size(); i++) {
                     val = (Value) row.getCell(i);
                     if (val.getDisplay() != null && val.getDisplay().length() > 0) {
-                        for (WorksheetQcResultViewDO wqrVDO : wqrVDOs)
-                            wqrVDO.setValueAt(i - 1, val.getDisplay());
+                        for (WorksheetQcResultViewDO wqrVDO : wqrVDOs) {
+                            if (wqrVDO.getValueAt(i - 1) == null || "N".equals(ifEmpty.getValue()))
+                                wqrVDO.setValueAt(i - 1, val.getDisplay());
+                        }
                     }
                 }
             }

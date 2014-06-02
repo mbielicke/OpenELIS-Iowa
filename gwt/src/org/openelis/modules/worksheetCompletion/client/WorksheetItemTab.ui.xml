@@ -87,6 +87,10 @@
       <g:HorizontalPanel>
         <w:Button ui:field="editMultipleButton" leftIcon="{res.icon.DuplicateRowButtonImage}"
                   text="{msg.worksheet_editMultiple}"/>
+        <w:Button ui:field="selectAllButton" leftIcon="{res.icon.selectAllIcon}"
+                  text="{msg.gen_selectAll}"/>
+        <w:Button ui:field="unselectAllButton" leftIcon="{res.icon.selectAllIcon}"
+                  text="{msg.gen_unselectAll}"/>
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

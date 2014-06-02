@@ -72,6 +72,7 @@ import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
+import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -157,6 +158,8 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField(provided = true)
     protected WorksheetItemTabUI                          worksheetItemTab;
     @UiField(provided = true)
+    protected WorksheetReagentTabUI                       reagentTab;
+    @UiField(provided = true)
     protected WorksheetNotesTabUI                         notesTab;
 
     protected boolean                                     updateWarningShown;
@@ -176,6 +179,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected HashMap<String, ArrayList<Object>>          analytesMap;
     protected WorksheetLookupScreenUI                     wLookupScreen;
     protected WorksheetManager1.Load                      elements[] = {WorksheetManager1.Load.DETAIL,
+                                                                        WorksheetManager1.Load.REAGENT,
                                                                         WorksheetManager1.Load.NOTE};
 
     public WorksheetBuilderScreenUI(WindowInt window) throws Exception {
@@ -186,6 +190,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             throw new PermissionException(Messages.get().screenPermException("Worksheet Builder Screen"));
 
         worksheetItemTab = new WorksheetItemTabUI(this);
+        reagentTab = new WorksheetReagentTabUI(this);
         notesTab = new WorksheetNotesTabUI(this);
         initWidget(uiBinder.createAndBindUi(this));
         
@@ -508,6 +513,16 @@ public class WorksheetBuilderScreenUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 worksheetItemTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(reagentTab, "reagentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                reagentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                reagentTab.setState(event.getState());
             }
         });
 
@@ -1375,6 +1390,7 @@ public class WorksheetBuilderScreenUI extends Screen {
      */
     private void setData() {
         worksheetItemTab.setData(manager);
+        reagentTab.setData(manager);
         notesTab.setData(manager);
     }
     

@@ -37,6 +37,14 @@ UIRF Software License are applicable instead of those above.
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
+              <ui:text from="{msg.worksheet_ifEmpty}:"/>
+            </td>
+            <td>
+              <w:CheckBox ui:field="ifEmpty" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
               <ui:text from="{msg.worksheet_overrideUsers}:"/>
             </td>
             <td>

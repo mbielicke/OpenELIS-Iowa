@@ -31,27 +31,32 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 /**
- * Class represents the fields in database table qc_lot.
+ * The class extends worksheet reagent DO and carries commonly used fields i.e. qc
+ * name and prepared by name. The additional fields are for read/display only and
+ * do not get committed to the database. Note: isChanged will reflect any changes 
+ * to read/display fields.
  */
 
-public class QcLotDO extends DataObject {
+public class WorksheetReagentViewDO extends WorksheetReagentDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, qcId, preparedUnitId, preparedById, locationId;
-    protected String          lotNumber, isActive;
-    protected Datetime        preparedDate, usableDate, expireDate;
-    protected Double          preparedVolume;
+    protected Datetime expireDate, preparedDate, usableDate;
+    protected Double   preparedVolume;
+    protected Integer  locationId, preparedById, preparedUnitId;
+    protected String   isActive, location, lotNumber, preparedByName, preparedUnit,
+                       qcName;
 
-    public QcLotDO() {
+    public WorksheetReagentViewDO() {
     }
 
-    public QcLotDO(Integer id, Integer qcId, String lotNumber, Integer locationId,
-                   Date preparedDate, Double preparedVolume, Integer preparedUnitId,
-                   Integer preparedById, Date usableDate, Date expireDate,
-                   String isActive) {
-        setId(id);
-        setQcId(qcId);
+    public WorksheetReagentViewDO(Integer id, Integer worksheetId, Integer sortOrder,
+                                  Integer qcLotId, String lotNumber, Integer locationId,
+                                  Date preparedDate,  Double preparedVolume, Integer preparedUnitId,
+                                  Integer preparedById, Date usableDate, Date expireDate,
+                                  String isActive, String location, String preparedUnit,
+                                  String qcName) {
+        super(id, worksheetId, sortOrder, qcLotId);
         setLotNumber(lotNumber);
         setLocationId(locationId);
         setPreparedDate(DataBaseUtil.toYM(preparedDate));
@@ -61,25 +66,9 @@ public class QcLotDO extends DataObject {
         setUsableDate(DataBaseUtil.toYM(usableDate));
         setExpireDate(DataBaseUtil.toYM(expireDate));
         setIsActive(isActive);
-        _changed = false;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
-    }
-
-    public Integer getQcId() {
-        return qcId;
-    }
-
-    public void setQcId(Integer qcId) {
-        this.qcId = qcId;
-        _changed = true;
+        setLocation(location);
+        setPreparedUnit(preparedUnit);
+        setQcName(qcName);
     }
 
     public String getLotNumber() {
@@ -88,7 +77,6 @@ public class QcLotDO extends DataObject {
 
     public void setLotNumber(String lotNumber) {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
-        _changed = true;
     }
     
     public Integer getLocationId() {
@@ -97,43 +85,6 @@ public class QcLotDO extends DataObject {
 
     public void setLocationId(Integer locationId) {
         this.locationId = locationId;
-        _changed = true;
-    }
-
-    public Double getPreparedVolume() {
-        return preparedVolume;
-    }
-
-    public void setPreparedVolume(Double preparedVolume) {
-        this.preparedVolume = preparedVolume;
-        _changed = true;
-    }
-
-    public Integer getPreparedUnitId() {
-        return preparedUnitId;
-    }
-
-    public void setPreparedUnitId(Integer preparedUnitId) {
-        this.preparedUnitId = preparedUnitId;
-        _changed = true;
-    }
-
-    public Integer getPreparedById() {
-        return preparedById;
-    }
-
-    public void setPreparedById(Integer preparedById) {
-        this.preparedById = preparedById;
-        _changed = true;
-    }
-
-    public String getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(String isAtive) {
-        this.isActive = DataBaseUtil.trim(isAtive);
-        _changed = true;
     }
 
     public Datetime getPreparedDate() {
@@ -142,7 +93,38 @@ public class QcLotDO extends DataObject {
 
     public void setPreparedDate(Datetime preparedDate) {
         this.preparedDate = DataBaseUtil.toYM(preparedDate);
-        _changed = true;
+    }
+
+    public Double getPreparedVolume() {
+        return preparedVolume;
+    }
+
+    public void setPreparedVolume(Double preparedVolume) {
+        this.preparedVolume = preparedVolume;
+    }
+
+    public Integer getPreparedUnitId() {
+        return preparedUnitId;
+    }
+
+    public void setPreparedUnitId(Integer preparedUnitId) {
+        this.preparedUnitId = preparedUnitId;
+    }
+
+    public Integer getPreparedById() {
+        return preparedById;
+    }
+
+    public void setPreparedById(Integer preparedById) {
+        this.preparedById = preparedById;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isAtive) {
+        this.isActive = DataBaseUtil.trim(isAtive);
     }
 
     public Datetime getUsableDate() {
@@ -151,7 +133,6 @@ public class QcLotDO extends DataObject {
 
     public void setUsableDate(Datetime usableDate) {
         this.usableDate = DataBaseUtil.toYM(usableDate);
-        _changed = true;
     }
 
     public Datetime getExpireDate() {
@@ -160,6 +141,37 @@ public class QcLotDO extends DataObject {
 
     public void setExpireDate(Datetime expireDate) {
         this.expireDate = DataBaseUtil.toYM(expireDate);
-        _changed = true;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = DataBaseUtil.trim(location);
+    }
+    
+    public String getPreparedUnit() {
+        return preparedUnit;
+    }
+
+    public void setPreparedUnit(String preparedUnit) {
+        this.preparedUnit = DataBaseUtil.trim(preparedUnit);
+    }
+    
+    public String getQcName() {
+        return qcName;
+    }
+
+    public void setQcName(String qcName) {
+        this.qcName = DataBaseUtil.trim(qcName);
+    }
+
+    public String getPreparedByName() {
+        return preparedByName;
+    }
+
+    public void setPreparedByName(String preparedByName) {
+        this.preparedByName = DataBaseUtil.trim(preparedByName);
     }
 }

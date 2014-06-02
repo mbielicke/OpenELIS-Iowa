@@ -80,6 +80,7 @@ import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
+import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -126,6 +127,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     
     private static WorksheetCompletionUiBinder            uiBinder   = GWT.create(WorksheetCompletionUiBinder.class);
 
+    private boolean                                       updateTransferMode;
     private Integer                                       origStatusId;
     private ModulePermission                              userPermission;
     private ScreenNavigator<IdNameVO>                     nav;
@@ -164,9 +166,10 @@ public class WorksheetCompletionScreenUI extends Screen {
     @UiField(provided = true)
     protected OverridesTabUI                              overridesTab;
     @UiField(provided = true)
+    protected WorksheetReagentTabUI                       reagentTab;
+    @UiField(provided = true)
     protected WorksheetNotesTabUI                         notesTab;
 
-    protected boolean                                     updateTransferMode;
     protected ArrayList<SampleManager1>                   sampleMans;
     protected AsyncCallbackUI<ArrayList<IdNameVO>>        queryCall;
     protected AsyncCallbackUI<ArrayList<SampleManager1>>  unlockSamplesCall;
@@ -185,6 +188,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     protected WorksheetCompletionScreenUI                 screen;
     protected WorksheetLookupScreenUI                     wLookupScreen;
     protected WorksheetManager1.Load                      elements[] = {WorksheetManager1.Load.DETAIL,
+                                                                        WorksheetManager1.Load.REAGENT,
                                                                         WorksheetManager1.Load.NOTE};
 
     public WorksheetCompletionScreenUI(WindowInt window) throws Exception {
@@ -205,6 +209,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         
         worksheetItemTab = new WorksheetItemTabUI(this);
         overridesTab = new OverridesTabUI(this);
+        reagentTab = new WorksheetReagentTabUI(this);
         notesTab = new WorksheetNotesTabUI(this);
         initWidget(uiBinder.createAndBindUi(this));
         
@@ -265,7 +270,7 @@ public class WorksheetCompletionScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                commit.setEnabled(isState(QUERY, ADD, UPDATE));
+                commit.setEnabled(isState(QUERY, UPDATE));
             }
         });
 
@@ -273,7 +278,7 @@ public class WorksheetCompletionScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                abort.setEnabled(isState(QUERY, ADD, UPDATE));
+                abort.setEnabled(isState(QUERY, UPDATE));
             }
         });
 
@@ -552,6 +557,16 @@ public class WorksheetCompletionScreenUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 overridesTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(reagentTab, "reagentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                reagentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                reagentTab.setState(event.getState());
             }
         });
 
@@ -1341,6 +1356,10 @@ public class WorksheetCompletionScreenUI extends Screen {
         failedNoteLookup.setText(note.getText());
         failedNoteLookup.setHasSubject("N".equals(note.getIsExternal()));
     }
+    
+    public boolean getUpdateTransferMode() {
+        return updateTransferMode;
+    }
 
     private void setNoteFields(NoteViewDO note, String subject, String text) {
         note.setSubject(subject);
@@ -1364,6 +1383,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     private void setData() {
         worksheetItemTab.setData(manager);
         overridesTab.setData(manager);
+        reagentTab.setData(manager);
         notesTab.setData(manager);
     }
     

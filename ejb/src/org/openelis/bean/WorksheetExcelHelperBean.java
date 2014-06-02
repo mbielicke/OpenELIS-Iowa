@@ -415,7 +415,7 @@ public class WorksheetExcelHelperBean {
                             cell.setCellStyle(styles.get("row_no_edit"));
                             cell.setCellValue("");
         
-                            wqrList = wqrMap.get(waVDO.getAnalysisId());
+                            wqrList = wqrMap.get(waVDO.getId());
                             if (wqrList == null || wqrList.size() == 0) {
                                 // analyte
                                 cell = row.createCell(7);

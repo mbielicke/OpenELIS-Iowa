@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
@@ -53,6 +54,8 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
     protected Button                                  ok, cancel;
     @UiField
     protected Calendar                                startedDate, completedDate;
+    @UiField
+    protected CheckBox                                ifEmpty;
     @UiField
     protected TextBox<String>                         systemUsers;
 
@@ -72,6 +75,7 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
 
     public void setData(ArrayList<WorksheetAnalysisViewDO> analyses) {
         this.analyses = analyses;
+        ifEmpty.setValue("Y");
         systemUsers.setValue(null);
         startedDate.setValue(null);
         completedDate.setValue(null);
@@ -87,11 +91,14 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
     @UiHandler("ok")
     protected void ok(ClickEvent event) {
         for (WorksheetAnalysisViewDO waVDO : analyses) {
-            if (systemUsers.getValue() != null && systemUsers.getValue().length() > 0)
+            if (systemUsers.getValue() != null && systemUsers.getValue().length() > 0 &&
+                (waVDO.getSystemUsers() == null || "N".equals(ifEmpty.getValue())))
                 waVDO.setSystemUsers(systemUsers.getValue());
-            if (startedDate.getValue() != null)
+            if (startedDate.getValue() != null &&
+                (waVDO.getStartedDate() == null || "N".equals(ifEmpty.getValue())))
                 waVDO.setStartedDate(startedDate.getValue());
-            if (completedDate.getValue() != null && waVDO.getAnalysisId() != null)
+            if (completedDate.getValue() != null && waVDO.getAnalysisId() != null &&
+                (waVDO.getCompletedDate() == null || "N".equals(ifEmpty.getValue())))
                 waVDO.setCompletedDate(completedDate.getValue());
         }
         window.close();
