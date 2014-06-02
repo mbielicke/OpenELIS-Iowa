@@ -83,7 +83,8 @@ public class OverridesTabUI extends Screen {
     private WorksheetManager1                           manager;
 
     @UiField
-    protected Button                                    editMultipleButton;
+    protected Button                                    editMultipleButton, selectAllButton,
+                                                        unselectAllButton;
     @UiField
     protected Table                                     overridesTable;
     
@@ -118,7 +119,7 @@ public class OverridesTabUI extends Screen {
 
         overridesTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                if (overridesTable.getSelectedRows().length > 1 && isState(ADD, UPDATE) && canEdit)
+                if (overridesTable.getSelectedRows().length > 1 && isState(UPDATE) && canEdit)
                     editMultipleButton.setEnabled(true);
                 else
                     editMultipleButton.setEnabled(false);
@@ -217,6 +218,13 @@ public class OverridesTabUI extends Screen {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 editMultipleButton.setEnabled(false);
+                if (isState(UPDATE) && canEdit && !getUpdateTransferMode()) {
+                    selectAllButton.setEnabled(true);
+                    unselectAllButton.setEnabled(true);
+                } else {
+                    selectAllButton.setEnabled(false);
+                    unselectAllButton.setEnabled(false);
+                }
             }
         });
 
@@ -290,6 +298,21 @@ public class OverridesTabUI extends Screen {
         displayOverrideData();
     }
 
+    @SuppressWarnings("unused")
+    @UiHandler("selectAllButton")
+    public void selectAll(ClickEvent event) {
+        overridesTable.selectAll();
+        if (overridesTable.getSelectedRows().length > 0)
+            editMultipleButton.setEnabled(true);
+    }
+
+    @SuppressWarnings("unused")
+    @UiHandler("unselectAllButton")
+    public void unselectAll(ClickEvent event) {
+        overridesTable.unselectAll();
+        editMultipleButton.setEnabled(false);
+    }
+
     private void displayOverrideData() {
         if (!isVisible)
             return;
@@ -355,7 +378,7 @@ public class OverridesTabUI extends Screen {
     }
 
     private boolean getUpdateTransferMode() {
-        return ((WorksheetCompletionScreenUI)parentScreen).updateTransferMode;
+        return ((WorksheetCompletionScreenUI)parentScreen).getUpdateTransferMode();
     }
     
     @SuppressWarnings("unused")

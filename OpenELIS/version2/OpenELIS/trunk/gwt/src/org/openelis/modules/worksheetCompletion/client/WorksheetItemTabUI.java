@@ -113,7 +113,8 @@ public class WorksheetItemTabUI extends Screen {
     @UiField
     protected AutoComplete                                unitOfMeasureId;
     @UiField
-    protected Button                                      editMultipleButton;
+    protected Button                                      editMultipleButton, selectAllButton,
+                                                          unselectAllButton;
     @UiField
     protected Dropdown<Integer>                           analysisStatusId, qcLink;
     @UiField
@@ -184,7 +185,7 @@ public class WorksheetItemTabUI extends Screen {
 
         worksheetItemTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                if (worksheetItemTable.getSelectedRows().length > 1 && isState(ADD, UPDATE) &&
+                if (worksheetItemTable.getSelectedRows().length > 1 && isState(UPDATE) &&
                     canEdit && !getUpdateTransferMode())
                     editMultipleButton.setEnabled(true);
                 else
@@ -204,6 +205,8 @@ public class WorksheetItemTabUI extends Screen {
                 String accessionNumber, resultKey;
                 TestManager tMan;
                 WorksheetAnalysisViewDO waVDO;
+                WorksheetQcResultViewDO wqrVDO;
+                WorksheetResultViewDO wrVDO;
                 
                 if (!isState(UPDATE) || !canEdit || event.getCol() == 1 || event.getCol() == 2 ||
                     event.getCol() == 3 || event.getCol() == 4 || event.getCol() == 5 ||
@@ -218,19 +221,36 @@ public class WorksheetItemTabUI extends Screen {
                 } else {
                     data = manager.getObject((String)worksheetItemTable.getRowAt(event.getRow()).getData());
                     accessionNumber = worksheetItemTable.getValueAt(event.getRow(), 2);
-                    if (data instanceof WorksheetItemDO) {
+                    if (data instanceof WorksheetItemDO ||
+                        ((accessionNumber == null || accessionNumber.length() <= 0) && event.getCol() < 10)) {
                         event.cancel();
-                    } else if ((accessionNumber == null || accessionNumber.length() <= 0) && event.getCol() < 10) {
-                        event.cancel();
-                    } else if (data instanceof WorksheetQcResultViewDO && event.getCol() < 11) {
-                        event.cancel();
-                    } else {
-                        if (data instanceof WorksheetResultViewDO)
-                            waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(((WorksheetResultViewDO)data).getWorksheetAnalysisId()));
-                        else
+                    } else if (data instanceof WorksheetAnalysisViewDO) {
+                        if (event.getCol() >= 10) {
+                            event.cancel();
+                        } else {
                             waVDO = (WorksheetAnalysisViewDO)data;
+                            if (waVDO.getQcLotId() != null || waVDO.getFromOtherId() != null ||
+                                Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
+                                Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
+                                event.cancel();
+                            }
+                        }
+                    } else if (data instanceof WorksheetQcResultViewDO) {
+                        if (event.getCol() < 11) {
+                            event.cancel();
+                        } else {
+                            wqrVDO = (WorksheetQcResultViewDO)data;
+                            waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wqrVDO.getWorksheetAnalysisId()));
+                            if (waVDO.getFromOtherId() != null)
+                                event.cancel();
+                            else
+                                ((ResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
+                        }
+                    } else if (data instanceof WorksheetResultViewDO) {
+                        wrVDO = (WorksheetResultViewDO)data;
+                        waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wrVDO.getWorksheetAnalysisId()));
                         perm = UserCache.getPermission().getSection(waVDO.getSectionName());
-                        if (waVDO.getQcLotId() != null || waVDO.getFromOtherId() != null ||
+                        if (waVDO.getFromOtherId() != null ||
                             Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
                             Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
                             event.cancel();
@@ -429,12 +449,18 @@ public class WorksheetItemTabUI extends Screen {
                 WorksheetItemDO wiDO;
 
                 editMultipleButton.setEnabled(false);
+                selectAllButton.setEnabled(false);
+                unselectAllButton.setEnabled(false);
                 dictionaryResultMap.clear();
                 resultGroupMap.clear();
                 testManagers.clear();
                 transferRowMap.clear();
                 
                 if (isState(UPDATE) && !getUpdateTransferMode()) {
+                    if (canEdit) {
+                        selectAllButton.setEnabled(true);
+                        unselectAllButton.setEnabled(true);
+                    }
                     analytes = new HashMap<Integer, AnalyteDO>();
                     colMap = new HashMap<String, Integer>();
                     try {
@@ -662,6 +688,21 @@ public class WorksheetItemTabUI extends Screen {
         displayItemData();
     }
     
+    @SuppressWarnings("unused")
+    @UiHandler("selectAllButton")
+    public void selectAll(ClickEvent event) {
+        worksheetItemTable.selectAll();
+        if (worksheetItemTable.getSelectedRows().length > 0)
+            editMultipleButton.setEnabled(true);
+    }
+
+    @SuppressWarnings("unused")
+    @UiHandler("unselectAllButton")
+    public void unselectAll(ClickEvent event) {
+        worksheetItemTable.unselectAll();
+        editMultipleButton.setEnabled(false);
+    }
+
     protected ArrayList<WorksheetAnalysisViewDO> getTransferSelection() {
         ArrayList<WorksheetAnalysisViewDO> list;
         DataObject data;
@@ -892,7 +933,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private boolean getUpdateTransferMode() {
-        return ((WorksheetCompletionScreenUI)parentScreen).updateTransferMode;
+        return ((WorksheetCompletionScreenUI)parentScreen).getUpdateTransferMode();
     }
     
     @SuppressWarnings("unused")
@@ -932,37 +973,40 @@ public class WorksheetItemTabUI extends Screen {
                 continue;
             }
 
-            if (testId != null && !testId.equals(waVDO.getTestId())) {
-                Window.alert(Messages.get().worksheet_oneTestForEditMultiple());
-                return;
-            } else if (testId == null) {
-                testId = waVDO.getTestId();
-                try {
-                    tMan = testManagers.get(testId);
-                    rf = tMan.getFormatter();
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+            if (waVDO.getAnalysisId() != null) {
+                if (testId != null && !testId.equals(waVDO.getTestId())) {
+                    Window.alert(Messages.get().worksheet_oneTestForEditMultiple());
+                    return;
+                } else if (testId == null) {
+                    testId = waVDO.getTestId();
+                    try {
+                        tMan = testManagers.get(testId);
+                        rf = tMan.getFormatter();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        return;
+                    }
+                }
+                
+                if (unitId == null) {
+                    if (waVDO.getUnitOfMeasureId() != null)
+                        unitId = 0;
+                    else
+                        unitId = waVDO.getUnitOfMeasureId();
+                } else if (!unitId.equals(waVDO.getUnitOfMeasureId()) &&
+                           unitId != 0 && waVDO.getUnitOfMeasureId() != null) {
+                    Window.alert(Messages.get().worksheet_oneUnitForEditMultiple());
                     return;
                 }
+                
+                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId())) {
+                    errorList.append("\n").append("\t").append("Row: ").append(rowIndex + 1);
+                    continue;
+                }
             }
-            
-            if (unitId != null && !unitId.equals(waVDO.getUnitOfMeasureId())) {
-                Window.alert(Messages.get().worksheet_oneUnitForEditMultiple());
-                return;
-            } else if (unitId == null) {
-                if (waVDO.getUnitOfMeasureId() == null)
-                    unitId = 0;
-                else
-                    unitId = waVDO.getUnitOfMeasureId();
-            }
-            
             waIds.add(waVDO.getId());
-            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId()) ||
-                Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId())) {
-                errorList.append("\n").append("\t").append("Row: ").append(rowIndex + 1);
-                continue;
-            }
             dataList.add(waVDO);
         }
         

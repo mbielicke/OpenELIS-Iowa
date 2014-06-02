@@ -32,7 +32,21 @@ UIRF Software License are applicable instead of those above.
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" bottom="30px">
+    <g:layer top="0px" height="30px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.worksheet_ifEmpty}:"/>
+            </td>
+            <td>
+              <w:CheckBox ui:field="ifEmpty" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+    <g:layer top="30px" bottom="30px">
       <t:Table ui:field="analyteResultTable" horizontalScroll="ALWAYS"
               verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="150" label="{msg.gen_analyte}">

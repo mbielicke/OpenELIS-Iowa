@@ -67,6 +67,7 @@ import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetResultsTransferVO;
 import org.openelis.domain.WorksheetViewDO;
@@ -133,6 +134,8 @@ public class WorksheetManager1Bean {
     private WorksheetItemBean            item;
     @EJB
     private WorksheetQcResultBean        wqResult;
+    @EJB
+    private WorksheetReagentBean         reagent;
     @EJB
     private WorksheetResultBean          wResult;
 
@@ -218,6 +221,13 @@ public class WorksheetManager1Bean {
         }
 
         if (!ids1.isEmpty()) {
+            if (el.contains(WorksheetManager1.Load.REAGENT)) {
+                for (WorksheetReagentViewDO data : reagent.fetchByWorksheetIds(ids1)) {
+                    wm = map1.get(data.getWorksheetId());
+                    addReagent(wm, data);
+                }
+            }
+    
             if (el.contains(WorksheetManager1.Load.NOTE)) {
                 for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().WORKSHEET)) {
                     wm = map1.get(data.getReferenceId());
@@ -316,6 +326,12 @@ public class WorksheetManager1Bean {
          */
         worksheetId = new ArrayList<Integer>(1);
         worksheetId.add(getWorksheet(wm).getId());
+        if (el.contains(WorksheetManager1.Load.REAGENT)) {
+            setReagents(wm, null);
+            for (WorksheetReagentViewDO data : reagent.fetchByWorksheetIds(worksheetId))
+                addReagent(wm, data);
+        }
+
         if (el.contains(WorksheetManager1.Load.NOTE)) {
             setNotes(wm, null);
             for (NoteViewDO data : note.fetchByIds(worksheetId, Constants.table().WORKSHEET))
@@ -367,7 +383,7 @@ public class WorksheetManager1Bean {
 
         ids = new ArrayList<Integer>(1);
         ids.add(worksheetId);
-        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.NOTE);
+        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT, WorksheetManager1.Load.NOTE);
         return wms.size() == 0 ? null : wms.get(0);
     }
     
@@ -389,7 +405,7 @@ public class WorksheetManager1Bean {
 
         ids = new ArrayList<Integer>(1);
         ids.add(worksheetId);
-        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.NOTE);
+        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT, WorksheetManager1.Load.NOTE);
         if (wms.size() > 0) {
             wMan = wms.get(0);
             analysisIds = new HashSet<Integer>();
@@ -431,7 +447,7 @@ public class WorksheetManager1Bean {
      */
 //    @RolesAllowed({"worksheet-add", "worksheet-update"})
     public WorksheetManager1 update(WorksheetManager1 wm, WorksheetManager1.ANALYSIS_UPDATE updateFlag) throws Exception {
-        int dep, ldep;
+        int dep, ldep, index;
         boolean locked, nodep, unlock;
         ArrayList<Integer> analyteIndexes, excludedIds;
         ArrayList<ResultViewDO> results;
@@ -487,21 +503,15 @@ public class WorksheetManager1Bean {
             for (DataObject data : getRemoved(wm)) {
                 if (data instanceof WorksheetResultViewDO)
                     wResult.delete((WorksheetResultViewDO)data);
-            }
-            for (DataObject data : getRemoved(wm)) {
-                if (data instanceof WorksheetQcResultViewDO)
+                else if (data instanceof WorksheetQcResultViewDO)
                     wqResult.delete((WorksheetQcResultViewDO)data);
-            }
-            for (DataObject data : getRemoved(wm)) {
-                if (data instanceof WorksheetAnalysisViewDO)
+                else if (data instanceof WorksheetAnalysisViewDO)
                     analysis.delete((WorksheetAnalysisViewDO)data);
-            }
-            for (DataObject data : getRemoved(wm)) {
-                if (data instanceof WorksheetItemDO)
+                else if (data instanceof WorksheetItemDO)
                     item.delete((WorksheetItemDO)data);
-            }
-            for (DataObject data : getRemoved(wm)) {
-                if (data instanceof NoteViewDO)
+                else if (data instanceof WorksheetReagentViewDO)
+                    reagent.delete((WorksheetReagentViewDO)data);
+                else if (data instanceof NoteViewDO)
                     note.delete((NoteViewDO)data);
             }
         }
@@ -533,6 +543,23 @@ public class WorksheetManager1Bean {
             worksheet.add(getWorksheet(wm));
         } else {
             worksheet.update(getWorksheet(wm));
+        }
+
+        index = 1;
+        if (getReagents(wm) != null) {
+            for (WorksheetReagentViewDO data : getReagents(wm)) {
+                if (data.getId() < 0) {
+                    data.setWorksheetId(getWorksheet(wm).getId());
+                    data.setSortOrder(index++);
+                    reagent.add(data);
+                } else {
+                    if (data.getSortOrder() != null && data.getSortOrder() >= index)
+                        index = data.getSortOrder() + 1;
+                    else
+                        data.setSortOrder(index++);
+                    reagent.update(data);
+                }
+            }
         }
 
         if (getNotes(wm) != null) {
@@ -957,6 +984,21 @@ public class WorksheetManager1Bean {
                 if (data.isChanged() || ana.isChanged()) {
                     try {
                         wqResult.validate(data);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
+                }
+            }
+        }
+
+        /*
+         * reagents must be valid
+         */
+        if (getReagents(wm) != null) {
+            for (WorksheetReagentViewDO data : getReagents(wm)) {
+                if (data.isChanged()) {
+                    try {
+                        reagent.validate(data);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
@@ -1921,6 +1963,7 @@ public class WorksheetManager1Bean {
         else
             return new WorksheetResultsTransferVO(unlock(manager.getWorksheet().getId(),
                                                          WorksheetManager1.Load.DETAIL,
+                                                         WorksheetManager1.Load.REAGENT,
                                                          WorksheetManager1.Load.NOTE), null);
     }
     

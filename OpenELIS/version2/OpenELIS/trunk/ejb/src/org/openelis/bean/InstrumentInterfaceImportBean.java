@@ -176,7 +176,7 @@ public class InstrumentInterfaceImportBean {
                     importData(worksheetId, position, bReader, formatColumnMap, fileColumnMap);
                 } catch (Exception anyE1) {
                     writeErrorFile(file, anyE1.getMessage());
-                    worksheetManager.unlock(worksheetId, WorksheetManager1.Load.NOTE);
+                    worksheetManager.unlock(worksheetId, (WorksheetManager1.Load[])null);
                     continue;
                 } finally {
                     bReader.close();
@@ -332,14 +332,14 @@ public class InstrumentInterfaceImportBean {
                             }
                         }
                     } else {
-                        worksheetManager.unlock(worksheetId, WorksheetManager1.Load.NOTE);
+                        worksheetManager.unlock(worksheetId, (WorksheetManager1.Load[])null);
                         throw new Exception(Messages.get().instrumentInterface_worksheetHasNoAnalysesAtPosition(worksheetId, position));
                     }
                     break;
                 }
             }
         } else {
-            worksheetManager.unlock(worksheetId, WorksheetManager1.Load.NOTE);
+            worksheetManager.unlock(worksheetId, (WorksheetManager1.Load[])null);
             throw new Exception(Messages.get().instrumentInterface_worksheetHasNoItems(worksheetId));
         }            
         
@@ -495,6 +495,6 @@ public class InstrumentInterfaceImportBean {
         if (update)
             worksheetManager.update(manager, null);
         else
-            worksheetManager.unlock(worksheetId, WorksheetManager1.Load.NOTE);
+            worksheetManager.unlock(worksheetId, (WorksheetManager1.Load[])null);
     }
 }

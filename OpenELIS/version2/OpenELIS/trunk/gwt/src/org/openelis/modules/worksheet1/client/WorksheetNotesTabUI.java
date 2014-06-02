@@ -33,6 +33,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.note.client.EditNoteLookupUI;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
@@ -93,7 +94,7 @@ public class WorksheetNotesTabUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit);
+                addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit && !getUpdateTransferMode());
             }
         });
 
@@ -177,6 +178,13 @@ public class WorksheetNotesTabUI extends Screen {
         }
     }
 
+    protected boolean getUpdateTransferMode() {
+        if (parentScreen instanceof WorksheetCompletionScreenUI)
+            return ((WorksheetCompletionScreenUI)parentScreen).getUpdateTransferMode();
+        else
+            return false;
+    }
+    
     @SuppressWarnings("unused")
     @UiHandler("addNoteButton")
     protected void showNoteLookup(ClickEvent event) {
