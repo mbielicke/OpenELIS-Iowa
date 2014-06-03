@@ -195,11 +195,7 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select reporting_method_id as DICTIONARY_ID from test where reporting_method_id = :id "+
                           "UNION " +
-                          "select sorting_method_id as DICTIONARY_ID from test where sorting_method_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from worksheet_qc_result where type_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from worksheet_result where type_id = :id "+
+                          "select sorting_method_id as DICTIONARY_ID from test where sorting_method_id = :id "+                                                    
                           "UNION " +                          
                           "select status_id as DICTIONARY_ID from order where status_id = :id "+
                           "UNION " +
