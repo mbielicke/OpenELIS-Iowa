@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Method.FetchByName", 
                 query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
                         "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd)"
-                      + " from Method m where m.name = :name order by m.name"),
+                      + " from Method m where m.name like :name order by m.name"),
     @NamedQuery( name = "Method.FetchById",
                 query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
                         "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd)"
@@ -61,9 +61,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Method.FetchByIds",
                 query = "select distinct new org.openelis.domain.MethodDO(m.id, m.name, m.description," +
                         "m.reportingDescription, m.isActive, m.activeBegin, m.activeEnd)"
-                      + " from Method m where m.id in (:ids)"),                  
-    @NamedQuery( name = "Method.FetchEntityByName",
-                query = "from Method m where m.name = :name order by m.name"),
+                      + " from Method m where m.id in (:ids)"),
     @NamedQuery( name = "Method.FetchActiveByName",
                 query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
                         "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd)"

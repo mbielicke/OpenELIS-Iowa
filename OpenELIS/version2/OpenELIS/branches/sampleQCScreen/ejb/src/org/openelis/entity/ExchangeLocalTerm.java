@@ -101,6 +101,10 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private TestAnalyteView                  testAnalyteView;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+    private Panel                            panel;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "exchange_local_term_id", insertable = false, updatable = false)
@@ -182,6 +186,14 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
 
     public void setTestAnalyteView(TestAnalyteView testAnalyteView) {
         this.testAnalyteView = testAnalyteView;
+    }
+
+    public Panel getPanel() {
+        return panel;
+    }
+
+    public void setPanel(Panel panel) {
+        this.panel = panel;
     }
 
     public Collection<ExchangeExternalTerm> getExchangeExternalTerm() {
