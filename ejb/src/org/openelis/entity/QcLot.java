@@ -119,6 +119,14 @@ public class QcLot implements Auditable, Cloneable {
     @JoinColumn(name = "qc_id", insertable = false, updatable = false)
     private Qc                    qc;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id", insertable = false, updatable = false)
+    private Dictionary location;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prepared_unit_id", insertable = false, updatable = false)
+    private Dictionary preparedUnit;
+
     @Transient
     private QcLot                 original;
 
@@ -227,6 +235,22 @@ public class QcLot implements Auditable, Cloneable {
 
     public void setQc(Qc qc) {
         this.qc = qc;
+    }
+
+    public Dictionary getLocation() {
+        return location;
+    }
+
+    public void setLocation(Dictionary location) {
+        this.location = location;
+    }
+
+    public Dictionary getPreparedUnit() {
+        return preparedUnit;
+    }
+
+    public void setPreparedUnit(Dictionary preparedUnit) {
+        this.preparedUnit = preparedUnit;
     }
 
     public void setClone() {

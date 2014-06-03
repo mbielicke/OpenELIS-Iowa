@@ -25,23 +25,61 @@
  */
 package org.openelis.domain;
 
-
 /**
- * The class extends test worksheet DO and adds a commonly used field scriptlet
- * name. The additional field is for read/display only and do not get committed
- * to the database. Note: isChanged will reflect any changes to read/display
- * fields.
+ * Class represents the fields in database table worksheet_reagent.
  */
 
-public class TestWorksheetViewDO extends TestWorksheetDO {
+public class WorksheetReagentDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public TestWorksheetViewDO() {
+    protected Integer         id, qcLotId, sortOrder, worksheetId;
+
+    public WorksheetReagentDO() {
     }
 
-    public TestWorksheetViewDO(Integer id, Integer testId, Integer subsetCapacity,
-                               Integer totalCapacity, Integer formatId, Integer scriptletId) {
-        super(id, testId, subsetCapacity, totalCapacity, formatId, scriptletId);
+    public WorksheetReagentDO(Integer id, Integer worksheetId, Integer sortOrder,
+                              Integer qcLotId) {
+        setId(id);
+        setWorksheetId(worksheetId);
+        setSortOrder(sortOrder);
+        setQcLotId(qcLotId);
+        _changed = false;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+        _changed = true;
+    }
+
+    public Integer getWorksheetId() {
+        return worksheetId;
+    }
+
+    public void setWorksheetId(Integer worksheetId) {
+        this.worksheetId = worksheetId;
+        _changed = true;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+        _changed = true;
+    }
+
+    public Integer getQcLotId() {
+        return qcLotId;
+    }
+
+    public void setQcLotId(Integer qcLotId) {
+        this.qcLotId = qcLotId;
+        _changed = true;
     }
 }

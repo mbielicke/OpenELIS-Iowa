@@ -21,24 +21,24 @@ import org.openelis.ui.common.DataBaseUtil;
 @NamedQueries({
     @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisId",
                 query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId," +
-                		"wr.testResultId,wr.resultRow,wr.analyteId,wr.typeId,wr.value1," +
-                		"wr.value2,wr.value3,wr.value4,wr.value5,wr.value6,wr.value7," +
-                		"wr.value8,wr.value9,wr.value10,wr.value11,wr.value12,wr.value13," +
-                		"wr.value14,wr.value15,wr.value16,wr.value17,wr.value18," +
-                		"wr.value19,wr.value20,wr.value21,wr.value22,wr.value23," +
-                		"wr.value24,wr.value25,wr.value26,wr.value27,wr.value28," +
-                		"wr.value29,wr.value30,a.name,a.externalId,ta.resultGroup)"
+                		"wr.resultRow,wr.analyteId,wr.value1,wr.value2,wr.value3," +
+                		"wr.value4,wr.value5,wr.value6,wr.value7,wr.value8,wr.value9," +
+                		"wr.value10,wr.value11,wr.value12,wr.value13,wr.value14," +
+                		"wr.value15,wr.value16,wr.value17,wr.value18,wr.value19," +
+                		"wr.value20,wr.value21,wr.value22,wr.value23,wr.value24," +
+                		"wr.value25,wr.value26,wr.value27,wr.value28,wr.value29," +
+                		"wr.value30,wr.changeFlagsId,a.name,a.externalId,ta.resultGroup)"
                       + " from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
                         " where wr.worksheetAnalysisId = :id order by wr.resultRow"),
     @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisIds",
                 query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId," +
-                        "wr.testResultId,wr.resultRow,wr.analyteId,wr.typeId,wr.value1," +
-                        "wr.value2,wr.value3,wr.value4,wr.value5,wr.value6,wr.value7," +
-                        "wr.value8,wr.value9,wr.value10,wr.value11,wr.value12,wr.value13," +
-                        "wr.value14,wr.value15,wr.value16,wr.value17,wr.value18," +
-                        "wr.value19,wr.value20,wr.value21,wr.value22,wr.value23," +
-                        "wr.value24,wr.value25,wr.value26,wr.value27,wr.value28," +
-                        "wr.value29,wr.value30,a.name,a.externalId,ta.resultGroup)"
+                        "wr.resultRow,wr.analyteId,wr.value1,wr.value2,wr.value3," +
+                        "wr.value4,wr.value5,wr.value6,wr.value7,wr.value8,wr.value9," +
+                        "wr.value10,wr.value11,wr.value12,wr.value13,wr.value14," +
+                        "wr.value15,wr.value16,wr.value17,wr.value18,wr.value19," +
+                        "wr.value20,wr.value21,wr.value22,wr.value23,wr.value24," +
+                        "wr.value25,wr.value26,wr.value27,wr.value28,wr.value29," +
+                        "wr.value30,wr.changeFlagsId,a.name,a.externalId,ta.resultGroup)"
                       + " from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
                         " where wr.worksheetAnalysisId in (:ids) order by wr.worksheetAnalysisId, wr.resultRow")})
 @Entity
@@ -56,17 +56,11 @@ public class WorksheetResult {
     @Column(name = "test_analyte_id")
     private Integer         testAnalyteId;
 
-    @Column(name = "test_result_id")
-    private Integer         testResultId;
-
     @Column(name = "result_row")
     private Integer         resultRow;
 
     @Column(name = "analyte_id")
     private Integer         analyteId;
-
-    @Column(name = "type_id")
-    private Integer         typeId;
 
     @Column(name = "value_1")
     private String          value1;
@@ -158,6 +152,9 @@ public class WorksheetResult {
     @Column(name = "value_30")
     private String          value30;
 
+    @Column(name = "change_flags_id")
+    private Integer         changeFlagsId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
     private Analyte         analyte;
@@ -193,15 +190,6 @@ public class WorksheetResult {
             this.testAnalyteId = testAnalyteId;
     }
 
-    public Integer getTestResultId() {
-        return testResultId;
-    }
-
-    public void setTestResultId(Integer testResultId) {
-        if (DataBaseUtil.isDifferent(testResultId, this.testResultId))
-            this.testResultId = testResultId;
-    }
-
     public Integer getResultRow() {
         return resultRow;
     }
@@ -218,15 +206,6 @@ public class WorksheetResult {
     public void setAnalyteId(Integer analyteId) {
         if (DataBaseUtil.isDifferent(analyteId, this.analyteId))
             this.analyteId = analyteId;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId, this.typeId))
-            this.typeId = typeId;
     }
 
     public String getValue1() {
@@ -497,6 +476,15 @@ public class WorksheetResult {
     public void setValue30(String value30) {
         if (DataBaseUtil.isDifferent(value30, this.value30))
             this.value30 = value30;
+    }
+
+    public Integer getChangeFlagsId() {
+        return changeFlagsId;
+    }
+
+    public void setChangeFlagsId(Integer changeFlagsId) {
+        if (DataBaseUtil.isDifferent(changeFlagsId, this.changeFlagsId))
+            this.changeFlagsId = changeFlagsId;
     }
 
     public Analyte getAnalyte() {

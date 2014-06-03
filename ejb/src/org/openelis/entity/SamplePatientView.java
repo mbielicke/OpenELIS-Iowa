@@ -23,25 +23,41 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.domain;
+package org.openelis.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
- * The class extends test worksheet DO and adds a commonly used field scriptlet
- * name. The additional field is for read/display only and do not get committed
- * to the database. Note: isChanged will reflect any changes to read/display
- * fields.
+ * Sample Patient View Entity POJO for database
  */
 
-public class TestWorksheetViewDO extends TestWorksheetDO {
+@Entity
+@Table(name = "sample_patient_view")
+public class SamplePatientView {
 
-    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue
+    private Long    id;
 
-    public TestWorksheetViewDO() {
+    @Column(name = "sample_id")
+    private Integer sampleId;
+
+    @Column(name = "patient_id")
+    private Integer patientId;
+
+    public Long getId() {
+        return id;
+    }
+    
+    public Integer getSampleId() {
+        return sampleId;
     }
 
-    public TestWorksheetViewDO(Integer id, Integer testId, Integer subsetCapacity,
-                               Integer totalCapacity, Integer formatId, Integer scriptletId) {
-        super(id, testId, subsetCapacity, totalCapacity, formatId, scriptletId);
+    public Integer getPatientId() {
+        return patientId;
     }
 }

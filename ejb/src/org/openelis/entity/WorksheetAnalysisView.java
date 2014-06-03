@@ -43,18 +43,18 @@ import org.openelis.ui.common.Datetime;
 
 @NamedQueries( {                  
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetId",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId," +
-                        "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.worksheetAnalysisId, wav.qcSystemUserId, wav.qcStartedDate," +
-                        "wav.fromOtherId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
-                        "wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, " +
-                        "wav.receivedDate, wav.priority)"
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId, " +
+                        "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.qcId, wav.worksheetAnalysisId, wav.systemUsers, wav.startedDate, wav.completedDate, " +
+                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, " +
+                        "wav.timeHolding, wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, " +
+                        "wav.collectionTime, wav.receivedDate, wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId = :worksheetId order by wav.worksheetItemId, wav.id"),
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetIds",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId," +
-                        "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.worksheetAnalysisId, wav.qcSystemUserId, wav.qcStartedDate," +
-                        "wav.fromOtherId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
-                        "wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, " +
-                        "wav.receivedDate, wav.priority)"
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId, " +
+                        "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.qcId, wav.worksheetAnalysisId, wav.systemUsers, wav.startedDate, wav.completedDate, " +
+                        "wav.fromOtherId, wav.changeFlagsId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, " +
+                        "wav.timeHolding, wav.sectionName, wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, " +
+                        "wav.collectionTime, wav.receivedDate, wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId in (:worksheetIds) order by wav.worksheetId, wav.worksheetItemId, wav.id")})
 @Entity
 @Table(name = "worksheet_analysis_view")
@@ -79,17 +79,26 @@ public class WorksheetAnalysisView  {
     @Column(name = "qc_lot_id")
     private Integer                     qcLotId;
 
+    @Column(name = "qc_id")
+    private Integer                     qcId;
+
     @Column(name = "worksheet_analysis_id")
     private Integer                     worksheetAnalysisId;
 
-    @Column(name = "qc_system_user_id")
-    private Integer                     qcSystemUserId;
+    @Column(name = "system_users")
+    private String                      systemUsers;
 
-    @Column(name = "qc_started_date")
-    private Date                        qcStartedDate;
+    @Column(name = "started_date")
+    private Date                        startedDate;
+    
+    @Column(name = "completed_date")
+    private Date                        completedDate;
     
     @Column(name = "from_other_id")
     private Integer                     fromOtherId;
+
+    @Column(name = "change_flags_id")
+    private Integer                     changeFlagsId;
 
     @Column(name = "description")
     private String                      description;
@@ -157,20 +166,32 @@ public class WorksheetAnalysisView  {
         return qcLotId;
     }
 
+    public Integer getQcId() {
+        return qcId;
+    }
+
     public Integer getWorksheetAnalysisId() {
         return worksheetAnalysisId;
     }
 
-    public Integer getQcSystemUserId() {
-        return qcSystemUserId;
+    public String getSystemUsers() {
+        return systemUsers;
     }
 
-    public Datetime getQcStartedDate() {
-        return DataBaseUtil.toYM(qcStartedDate);
+    public Datetime getStartedDate() {
+        return DataBaseUtil.toYM(startedDate);
+    }
+    
+    public Datetime getCompletedDate() {
+        return DataBaseUtil.toYM(completedDate);
     }
     
     public Integer getFromOtherId() {
         return fromOtherId;
+    }
+
+    public Integer getChangeFlagsId() {
+        return changeFlagsId;
     }
 
     public String getDescription() {
