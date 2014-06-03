@@ -1071,10 +1071,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             @Override
             public void onRunScriptlet(RunScriptletEvent event) {
                 if (screen != event.getSource())
-                    runScriptlet(event.getScriptletId(),
-                                 event.getUid(),
-                                 event.getChanged(),
-                                 event.getOperation());
+                    runScriptlet(event.getUid(), event.getChanged(), event.getOperation());
             }
         });
 
@@ -2049,7 +2046,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * Runs the scriptlet with the passed id for the passed operation performed
      * on the field "changed" of the record with the passed uid.
      */
-    private void runScriptlet(Integer scriptletId, String uid, String changed, Operation operation) {
+    private void runScriptlet(String uid, String changed, Operation operation) {
         Object obj;
         SampleSO data;
         AnalysisViewDO ana;
@@ -2133,7 +2130,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         id = getDomainScriptlet();
         if (id != null)
-            runScriptlet(id, null, null, operation);
+            runScriptlet(null, null, operation);
     }
 
     /**
@@ -2153,8 +2150,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
             if (neonatalScriptletId == null) {
-                data = SystemVariableService.get()
-                                            .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                data = SystemVariableService.get().fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
                 neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
             }
             return neonatalScriptletId;

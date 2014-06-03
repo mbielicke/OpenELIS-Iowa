@@ -303,7 +303,7 @@
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.sampleNeonatal_transDate}:" />
                     </td>
-                    <td colspan="3">
+                    <td>
                       <c:Calendar ui:field="transfusionDate" width="90px" begin="0" end="2" />
                     </td>
                   </tr>
@@ -342,7 +342,7 @@
                 </table>
               </g:HTMLPanel>
             </g:layer>
-            <g:layer top="0px" bottom="0px" left="500px" width="39%">
+            <g:layer top="0px" bottom="0px" left="520px" width="39%">
               <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
                   <tr>

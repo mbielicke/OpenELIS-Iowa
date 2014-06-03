@@ -14,6 +14,8 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 public interface QAEventServiceInt extends XsrfProtectedService {
 
     QaEventViewDO fetchById(Integer id) throws Exception;
+    
+    ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception;
 
     ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception;
 

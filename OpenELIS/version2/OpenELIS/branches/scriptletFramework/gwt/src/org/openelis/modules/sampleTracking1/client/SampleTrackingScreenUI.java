@@ -237,9 +237,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     protected Query                                      query;
 
     protected static int                                 ROWS_PER_PAGE = 15, DEEPEST_LEVEL = 3;
-    
+
     protected ScriptletRunner<SampleSO>                  scriptletRunner;
-    
+
     protected Integer                                    neonatalScriptletId;
 
     protected static final SampleManager1.Load           elements[]    = {
@@ -258,7 +258,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
         ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
     };
-    
+
     protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_domain_scriptlet";
 
     /**
@@ -826,13 +826,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
          */
         privateWellTab.setCanQuery(true);
-        
+
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisTab.onDataChange();
@@ -851,13 +851,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
          */
         sdwisTab.setCanQuery(true);
-        
+
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 neonatalTab.onDataChange();
@@ -898,7 +898,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
@@ -1162,15 +1162,12 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
+
         bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
             @Override
             public void onRunScriptlet(RunScriptletEvent event) {
                 if (screen != event.getSource())
-                    runScriptlet(event.getScriptletId(),
-                                 event.getUid(),
-                                 event.getChanged(),
-                                 event.getOperation());
+                    runScriptlet(event.getUid(), event.getChanged(), event.getOperation());
             }
         });
 
@@ -1599,7 +1596,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     reloadSample(node);
                     refreshTabs(node);
                     clearStatus();
-                    
+
                     /*
                      * the cache and scriptlet runner are set to null only if
                      * the add/update succeeds because otherwise, it can't be
@@ -2116,7 +2113,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         return b.toString();
     }
-    
+
     /**
      * If the passed id is not null then adds the scriptlet with the id to the
      * scriptlet runner; otherwise adds the scriptlets for the domain and for
@@ -2139,7 +2136,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 id = getDomainScriptlet();
                 if (id != null)
                     ids.add(id);
-
 
                 /*
                  * add all the scriptlets for all tests, test analytes and aux
@@ -2170,7 +2166,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * Runs the scriptlet with the passed id for the passed operation performed
      * on the field "changed" of the record with the passed uid.
      */
-    private void runScriptlet(Integer scriptletId, String uid, String changed, Operation operation) {
+    private void runScriptlet(String uid, String changed, Operation operation) {
         Object obj;
         SampleSO data;
         AnalysisViewDO ana;
@@ -2245,7 +2241,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             fireDataChange();
         }
     }
-    
+
     /**
      * Runs the scriptlet for the neonatal domain
      */
@@ -2254,7 +2250,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         id = getDomainScriptlet();
         if (id != null)
-            runScriptlet(id, null, null, operation);
+            runScriptlet(null, null, operation);
     }
 
     /**
@@ -2274,8 +2270,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
             if (neonatalScriptletId == null) {
-                data = SystemVariableService.get()
-                                            .fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                data = SystemVariableService.get().fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
                 neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
             }
             return neonatalScriptletId;
@@ -2491,7 +2486,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     reloadSample(node);
                     refreshTabs(node);
                     if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                        .getStatusId()))
+                                                                               .getStatusId()))
                         addScriptlet(null);
                 }
 
@@ -3381,9 +3376,25 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         tests = new ArrayList<SampleTestRequestVO>();
         if (methodId != null)
-            test = new SampleTestRequestVO(manager.getSample().getId(), item.getId(), addId, null, null, null, null, false, null);
+            test = new SampleTestRequestVO(manager.getSample().getId(),
+                                           item.getId(),
+                                           addId,
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           false,
+                                           null);
         else
-            test = new SampleTestRequestVO(manager.getSample().getId(), item.getId(), null, null, null, null, addId, false, null);
+            test = new SampleTestRequestVO(manager.getSample().getId(),
+                                           item.getId(),
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           addId,
+                                           false,
+                                           null);
 
         tests.add(test);
         addAnalyses(tests);
