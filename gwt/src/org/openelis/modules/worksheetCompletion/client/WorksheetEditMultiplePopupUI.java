@@ -94,6 +94,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
     }
 
     public void initialize() {
+        ifEmpty.setEnabled(true);
         ok.setEnabled(true);
         cancel.setEnabled(true);
         analyteResultTable.setEnabled(true);
