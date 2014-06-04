@@ -773,6 +773,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setCollectionTime(event.getValue());
+                                 setCollectionAge();
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -4526,6 +4527,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             numMins = diff.intValue();
         }
         manager.getSampleNeonatal().setCollectionAge(numMins);
+        collectionAge.setValue(numMins);
+        runScriptlets(null, SampleMeta.getNeonatalCollectionAge(), null);
     }
 
     /**

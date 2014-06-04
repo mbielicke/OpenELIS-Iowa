@@ -88,7 +88,9 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
             tm = data.getResults().get(res.getId());
         } else if (data.getOperations().contains(Operation.SAMPLE_QA_ADDED) ||
                    data.getOperations().contains(Operation.SAMPLE_QA_REMOVED) ||
-                   SampleMeta.getNeonatalWeight().equals(data.getChanged())) {
+                   SampleMeta.getNeonatalWeight().equals(data.getChanged()) ||
+                   SampleMeta.getNeonatalCollectionAge().equals(data.getChanged()) ||
+                   SampleMeta.getNeonatalIsCollectionValid().equals(data.getChanged())) {
             /*
              * a sample qa event was added or removed or the weight changed
              */
@@ -109,7 +111,7 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
         /*
          * set the value of interpretation based on the value of this result
          */
-        setInterpretion(data, ana, tm);
+        setInterpretation(data, ana, tm);
 
         return data;
     }
@@ -119,7 +121,7 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
      * the passed result, if the value to be set is different from the current
      * value
      */
-    private void setInterpretion(SampleSO data, AnalysisViewDO ana, TestManager tm) {
+    private void setInterpretation(SampleSO data, AnalysisViewDO ana, TestManager tm) {
         int i, j;
         boolean samHasRejectQA;
         Integer weight, interId;
