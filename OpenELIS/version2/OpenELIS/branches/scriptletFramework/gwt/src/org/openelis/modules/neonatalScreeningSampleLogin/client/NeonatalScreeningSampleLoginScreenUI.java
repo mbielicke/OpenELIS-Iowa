@@ -130,6 +130,7 @@ import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
+import org.openelis.ui.widget.IntervalBox;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.KeyCodes;
 import org.openelis.ui.widget.Menu;
@@ -176,7 +177,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     @UiField
     protected TextBox<Integer>                          accessionNumber, orderId, patientId,
-                    nextOfKinId, birthOrder, gestationalAge, weight, transfusionAge, collectionAge;
+                    nextOfKinId, birthOrder, gestationalAge, weight;
 
     @UiField
     protected TextBox<String>                           clientReference, patientLastName,
@@ -187,16 +188,17 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     nextOfKinAddrZipCode, providerFirstName, formNumber;
 
     @UiField
-    protected Dropdown<Integer>                         status, feedingId, patientGender,
-                    patientRace, patientEthnicity, nextOfKinRelation, nextOfKinGender,
-                    nextOfKinRace, nextOfKinEthnicity;
+    protected IntervalBox                               collectionAge;
+
+    @UiField
+    protected Dropdown<Integer>                         status, condition, feeding, patientGender,
+                    nextOfKinRelation, nextOfKinGender;
 
     @UiField
     protected Dropdown<String>                          patientAddrState, nextOfKinAddrState;
 
     @UiField
-    protected CheckBox                                  isNicu, isTransfused, isRepeat,
-                    isCollectionValid;
+    protected CheckBox                                  isTransfused, isRepeat;
 
     @UiField
     protected AutoComplete                              providerLastName, projectName,
@@ -382,7 +384,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
-        String r;
         Item<Integer> row;
         Item<String> strow;
         ArrayList<Item<Integer>> model;
@@ -734,7 +735,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setCollectionDate(event.getValue());
-                                 setCollectionAge();
+                                 collectionAgeChanged(SampleMeta.getCollectionDate());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -773,7 +774,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setCollectionTime(event.getValue());
-                                 setCollectionAge();
+                                 collectionAgeChanged(SampleMeta.getCollectionTime());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -952,9 +953,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientLastName(event.getValue());
-                                 if (getPatientLastName() != null && getPatientFirstName() != null)
-                                     patientQueryChanged();
-                                 runScriptlets(null, SampleMeta.getNeonatalPatientLastName(), null);
+                                 collectionAgeChanged(SampleMeta.getNeonatalPatientLastName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -978,9 +977,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientFirstName(event.getValue());
-                                 if (getPatientLastName() != null && getPatientFirstName() != null)
-                                     patientQueryChanged();
-                                 runScriptlets(null, SampleMeta.getNeonatalPatientFirstName(), null);
+                                 collectionAgeChanged(SampleMeta.getNeonatalPatientFirstName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1004,8 +1001,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setPatientBirthDate(event.getValue());
-                                 setCollectionAge();
-                                 runScriptlets(null, SampleMeta.getNeonatalPatientBirthDate(), null);
+                                 collectionAgeChanged(SampleMeta.getNeonatalPatientBirthDate());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1029,7 +1025,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setPatientBirthTime(event.getValue());
-                                 runScriptlets(null, SampleMeta.getNeonatalPatientBirthTime(), null);
+                                 collectionAgeChanged(SampleMeta.getNeonatalPatientBirthTime());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1192,77 +1188,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientRace : patientAddrZipCode;
+                                 return forward ? birthOrder : patientAddrZipCode;
                              }
                          });
 
-        addScreenHandler(patientRace,
-                         SampleMeta.getNeonatalPatientRaceId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientRace.setValue(getPatientRaceId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientRaceId(event.getValue());
-                                 runScriptlets(null, SampleMeta.getNeonatalPatientLastName(), null);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientRace.setEnabled(isState(QUERY) ||
-                                                        (canEditSample && canEditPatient && isState(ADD,
-                                                                                                    UPDATE)));
-                                 patientRace.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? patientEthnicity : patientGender;
-                             }
-                         });
-
-        addScreenHandler(patientEthnicity,
-                         SampleMeta.getNeonatalPatientEthnicityId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 patientEthnicity.setValue(getPatientEthnicityId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setPatientEthnicityId(event.getValue());
-                                 runScriptlets(null,
-                                               SampleMeta.getNeonatalPatientEthnicityId(),
-                                               null);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 patientEthnicity.setEnabled(isState(QUERY) ||
-                                                             (canEditSample && canEditPatient && isState(ADD,
-                                                                                                         UPDATE)));
-                                 patientEthnicity.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? isNicu : patientRace;
-                             }
-                         });
-
-        addScreenHandler(isNicu, SampleMeta.getNeonatalIsNicu(), new ScreenHandler<String>() {
+        addScreenHandler(condition, "condition", new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                isNicu.setValue(getIsNicu());
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setIsNicu(event.getValue());
-                runScriptlets(null, SampleMeta.getNeonatalIsNicu(), null);
+            public void onValueChange(ValueChangeEvent<Integer> event) {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                isNicu.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
-                isNicu.setQueryMode(isState(QUERY));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? birthOrder : patientEthnicity;
+                condition.setEnabled(isState(QUERY, ADD, UPDATE));
             }
         });
 
@@ -1285,7 +1223,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? gestationalAge : isNicu;
+                                 return forward ? gestationalAge : patientGender;
                              }
                          });
 
@@ -1308,32 +1246,29 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? feedingId : birthOrder;
+                                 return forward ? feeding : birthOrder;
                              }
                          });
 
-        addScreenHandler(feedingId,
-                         SampleMeta.getNeonatalFeedingId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 feedingId.setValue(getFeedingId());
-                             }
+        addScreenHandler(feeding, SampleMeta.getNeonatalFeedingId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                feeding.setValue(getFeedingId());
+            }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setFeedingId(event.getValue());
-                                 runScriptlets(null, SampleMeta.getNeonatalFeedingId(), null);
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setFeedingId(event.getValue());
+                runScriptlets(null, SampleMeta.getNeonatalFeedingId(), null);
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 feedingId.setEnabled(isState(QUERY) ||
-                                                      (canEditSample && isState(ADD, UPDATE)));
-                                 feedingId.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                feeding.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                feeding.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? weight : gestationalAge;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? weight : gestationalAge;
+            }
+        });
 
         addScreenHandler(weight, SampleMeta.getNeonatalWeight(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1351,7 +1286,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? isTransfused : feedingId;
+                return forward ? isTransfused : feeding;
             }
         });
 
@@ -1397,24 +1332,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? transfusionAge : isTransfused;
+                                 return forward ? isRepeat : isTransfused;
                              }
                          });
-
-        addScreenHandler(transfusionAge, "transfusionAge", new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                transfusionAge.setValue(getTransfusionAge());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                transfusionAge.setEnabled(isState(QUERY));
-                transfusionAge.setQueryMode(isState(QUERY));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? isRepeat : transfusionDate;
-            }
-        });
 
         addScreenHandler(isRepeat, SampleMeta.getNeonatalIsRepeat(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1432,13 +1352,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? collectionAge : transfusionAge;
+                return forward ? collectionAge : transfusionDate;
             }
         });
 
         addScreenHandler(collectionAge,
                          SampleMeta.getNeonatalCollectionAge(),
-                         new ScreenHandler<Integer>() {
+                         new ScreenHandler<Double>() {
                              public void onDataChange(DataChangeEvent event) {
                                  collectionAge.setValue(getNeonatalCollectionAge());
                              }
@@ -1449,32 +1369,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? isCollectionValid : isRepeat;
-                             }
-                         });
-
-        addScreenHandler(isCollectionValid,
-                         SampleMeta.getNeonatalIsCollectionValid(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 isCollectionValid.setValue(getIsCollectionValid());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setIsCollectionValid(event.getValue());
-                                 runScriptlets(null,
-                                               SampleMeta.getNeonatalIsCollectionValid(),
-                                               null);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 isCollectionValid.setEnabled(isState(QUERY) ||
-                                                              (canEditSample && isState(ADD, UPDATE)));
-                                 isCollectionValid.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? nextOfKinId : collectionAge;
+                                 return forward ? nextOfKinId : isRepeat;
                              }
                          });
 
@@ -1491,7 +1386,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? nextOfKinLastName : isCollectionValid;
+                                 return forward ? nextOfKinLastName : collectionAge;
                              }
                          });
 
@@ -1877,57 +1772,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? nextOfKinRace : nextOfKinAddrHomePhone;
-                             }
-                         });
-
-        addScreenHandler(nextOfKinRace,
-                         SampleMeta.getNeonatalNextOfKinRaceId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinRace.setValue(getNextOfKinRaceId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNextOfKinRaceId(event.getValue());
-                                 runScriptlets(null, SampleMeta.getNeonatalNextOfKinRaceId(), null);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinRace.setEnabled(isState(QUERY) ||
-                                                          (canEditSample && canEditNextOfKin && isState(ADD,
-                                                                                                        UPDATE)));
-                                 nextOfKinRace.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? nextOfKinEthnicity : nextOfKinGender;
-                             }
-                         });
-
-        addScreenHandler(nextOfKinEthnicity,
-                         SampleMeta.getNeonatalNextOfKinEthnicityId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 nextOfKinEthnicity.setValue(getNextOfKinEthnicityId());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNextOfKinEthnicityId(event.getValue());
-                                 runScriptlets(null,
-                                               SampleMeta.getNeonatalNextOfKinEthnicityId(),
-                                               null);
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 nextOfKinEthnicity.setEnabled(isState(QUERY) ||
-                                                               (canEditSample && canEditNextOfKin && isState(ADD,
-                                                                                                             UPDATE)));
-                                 nextOfKinEthnicity.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? providerLastName : nextOfKinRace;
+                                 return forward ? providerLastName : nextOfKinAddrHomePhone;
                              }
                          });
 
@@ -1956,7 +1801,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? providerFirstName : nextOfKinEthnicity;
+                                 return forward ? providerFirstName : nextOfKinGender;
                              }
                          });
 
@@ -2652,30 +2497,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         patientGender.setModel(model);
         nextOfKinGender.setModel(model);
 
-        /*
-         * show the combination of code (1,2,3 etc.) and entry("White", "Black")
-         * for each race
-         */
-        for (DictionaryDO d : CategoryCache.getBySystemName("race")) {
-            r = DataBaseUtil.concatWithSeparator(d.getCode(), " - ", d.getEntry());
-            row = new Item<Integer>(d.getId(), r);
-            row.setEnabled( ("Y".equals(d.getIsActive())));
-            model.add(row);
-        }
-
-        patientRace.setModel(model);
-        nextOfKinRace.setModel(model);
-
-        model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("ethnicity")) {
-            row = new Item<Integer>(d.getId(), d.getEntry());
-            row.setEnabled( ("Y".equals(d.getIsActive())));
-            model.add(row);
-        }
-
-        patientEthnicity.setModel(model);
-        nextOfKinEthnicity.setModel(model);
-
         stmodel = new ArrayList<Item<String>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("state")) {
             strow = new Item<String>(d.getEntry(), d.getEntry());
@@ -2687,13 +2508,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         nextOfKinAddrState.setModel(stmodel);
 
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("patient_relation")) {
-            row = new Item<Integer>(d.getId(), d.getEntry());
-            row.setEnabled( ("Y".equals(d.getIsActive())));
-            model.add(row);
-        }
-
-        nextOfKinRelation.setModel(model);
+        model.add(new Item<Integer>(1, "NICU"));
+        model.add(new Item<Integer>(2, "Meconium Ileus"));
+        condition.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("feeding")) {
@@ -2702,7 +2519,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             model.add(row);
         }
 
-        feedingId.setModel(model);
+        feeding.setModel(model);
+
+        model = new ArrayList<Item<Integer>>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("patient_relation")) {
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled( ("Y".equals(d.getIsActive())));
+            model.add(row);
+        }
+
+        nextOfKinRelation.setModel(model);
     }
 
     /*
@@ -3023,7 +2849,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 }
 
                 public void failure(Throwable e) {
-                    if (state == ADD)
+                    if (isState(ADD))
                         Window.alert("commitAdd(): " + e.getMessage());
                     else
                         Window.alert("commitUpdate(): " + e.getMessage());
@@ -4055,7 +3881,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void setCollectionDate(Datetime date) {
         manager.getSample().setCollectionDate(date);
-        transfusionAge.setValue(getTransfusionAge());
     }
 
     /**
@@ -4314,57 +4139,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * returns the patient's race or null if either the manager or the patient
-     * DO is null
-     */
-    private Integer getPatientRaceId() {
-        if (manager == null || manager.getSampleNeonatal() == null ||
-            manager.getSampleNeonatal().getPatient() == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getRaceId();
-    }
-
-    /**
-     * sets the patient's race
-     */
-    private void setPatientRaceId(Integer raceId) {
-        manager.getSampleNeonatal().getPatient().setRaceId(raceId);
-    }
-
-    /**
-     * returns the patient's ethnicity or null if either the manager or the
-     * patient DO is null
-     */
-    private Integer getPatientEthnicityId() {
-        if (manager == null || manager.getSampleNeonatal() == null ||
-            manager.getSampleNeonatal().getPatient() == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getEthnicityId();
-    }
-
-    /**
-     * sets the patient's ethnicity
-     */
-    private void setPatientEthnicityId(Integer ethnicityId) {
-        manager.getSampleNeonatal().getPatient().setEthnicityId(ethnicityId);
-    }
-
-    /**
-     * returns next of kin's zip code or null if either the manager or next of
-     * kin DO is null
-     */
-    private String getIsNicu() {
-        if (manager == null || manager.getSampleNeonatal() == null ||
-            manager.getSampleNeonatal().getNextOfKin() == null)
-            return null;
-        return manager.getSampleNeonatal().getIsNicu();
-    }
-
-    private void setIsNicu(String isNicu) {
-        manager.getSampleNeonatal().setIsNicu(isNicu);
-    }
-
-    /**
      * returns the birth order or null if the manager is null
      */
     private Integer getBirthOrder() {
@@ -4458,29 +4232,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void setTransfusionDate(Datetime transfusionDate) {
         manager.getSampleNeonatal().setTransfusionDate(transfusionDate);
-        transfusionAge.setValue(getTransfusionAge());
-    }
-
-    /**
-     * returns the tranfusion age, calculated as the difference between the
-     * collection date and transfusion date, or null if the manager is null or
-     * any of the dates is null
-     */
-    private Integer getTransfusionAge() {
-        Datetime cd, td;
-        Long diff, day;
-        Double numDays;
-
-        cd = getCollectionDate();
-        td = getTransfusionDate();
-        if (cd == null || td == null)
-            return null;
-
-        diff = cd.getDate().getTime() - td.getDate().getTime();
-        day = 86400000L;
-        numDays = diff.doubleValue() / day.doubleValue();
-
-        return numDays.intValue();
     }
 
     /**
@@ -4501,50 +4252,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * returns the collection age or null if the manager is null
+     * returns the collection age as a double so that it can be formatted by the
+     * interval box or null if the manager is null
      */
-    private Integer getNeonatalCollectionAge() {
+    private Double getNeonatalCollectionAge() {
+        Integer age;
+
         if (manager == null || manager.getSampleNeonatal() == null)
             return null;
-        return manager.getSampleNeonatal().getCollectionAge();
-    }
-
-    /**
-     * sets the collection age as the difference in minutes between collection
-     * date and the patient's date of birth
-     */
-    private void setCollectionAge() {
-        Datetime cd, bd;
-        Long diff;
-        Integer numMins;
-
-        cd = getCollectionDate();
-        bd = getPatientBirthDate();
-        if (cd == null || bd == null) {
-            numMins = null;
-        } else {
-            diff = ((cd.getDate().getTime() - bd.getDate().getTime()) / 3600000);
-            numMins = diff.intValue();
-        }
-        manager.getSampleNeonatal().setCollectionAge(numMins);
-        collectionAge.setValue(numMins);
-        runScriptlets(null, SampleMeta.getNeonatalCollectionAge(), null);
-    }
-
-    /**
-     * returns whether the collection is valid or null if the manager is null
-     */
-    private String getIsCollectionValid() {
-        if (manager == null || manager.getSampleNeonatal() == null)
+        age = manager.getSampleNeonatal().getCollectionAge();
+        if (age == null)
             return null;
-        return manager.getSampleNeonatal().getIsCollectionValid();
-    }
-
-    /**
-     * sets whether the collection is valid
-     */
-    private void setIsCollectionValid(String isCollectionValid) {
-        manager.getSampleNeonatal().setIsCollectionValid(isCollectionValid);
+        else
+            return Double.valueOf(manager.getSampleNeonatal().getCollectionAge());
     }
 
     /**
@@ -4645,42 +4365,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void setNextOfKinGenderId(Integer genderId) {
         manager.getSampleNeonatal().getNextOfKin().setGenderId(genderId);
-    }
-
-    /**
-     * returns next of kin's race or null if either the manager or next of kin
-     * DO is null
-     */
-    private Integer getNextOfKinRaceId() {
-        if (manager == null || manager.getSampleNeonatal() == null ||
-            manager.getSampleNeonatal().getNextOfKin() == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getRaceId();
-    }
-
-    /**
-     * sets next of kin's race
-     */
-    private void setNextOfKinRaceId(Integer raceId) {
-        manager.getSampleNeonatal().getNextOfKin().setRaceId(raceId);
-    }
-
-    /**
-     * returns next of kin's ethnicity or null if either the manager or next of
-     * kin DO is null
-     */
-    private Integer getNextOfKinEthnicityId() {
-        if (manager == null || manager.getSampleNeonatal() == null ||
-            manager.getSampleNeonatal().getNextOfKin() == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getEthnicityId();
-    }
-
-    /**
-     * sets next of kin's ethnicity
-     */
-    private void setNextOfKinEthnicityId(Integer ethnicityId) {
-        manager.getSampleNeonatal().getNextOfKin().setEthnicityId(ethnicityId);
     }
 
     /**
@@ -5077,6 +4761,32 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             nextOfKinAddrStreetAddress.clearExceptions();
 
         runScriptlets(null, SampleMeta.getNeonatalNextOfKinId(), null);
+    }
+
+    /**
+     * TODO change comment Returns true if the collection date-time is after the
+     * patient birth date-time
+     */
+    private void collectionAgeChanged(String changed) {
+        Integer accession;
+        Datetime cd, ct, bd, bt;
+
+        cd = getCollectionDate();
+        ct = getCollectionTime();
+        bd = getPatientBirthDate();
+        bt = getPatientBirthTime();
+
+        accession = manager.getSample().getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
+        if (bd != null &&
+            cd != null &&
+            DataBaseUtil.isAfter(bd, cd) ||
+            (DataBaseUtil.isSame(cd, bd) && bt != null && ct != null && DataBaseUtil.isAfter(bt, ct)))
+            setError(Messages.get().sampleNeonatal_patBirthDateAfterCollectDateException(accession));
+        else
+            runScriptlets(null, changed, null);
     }
 
     /**

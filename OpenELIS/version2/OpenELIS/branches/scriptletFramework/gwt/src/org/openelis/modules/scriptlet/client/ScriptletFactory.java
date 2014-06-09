@@ -61,10 +61,10 @@ public class ScriptletFactory {
                 script = (T)new NbsBtScriptlet1(scriptletUtility, new NbsBtProxy1());
                 break;
             case "scriptlet_nbs_tsh1":
-                script = (T)new NbsTshScriptlet1(new NbsTshProxy1());
+                script = (T)new NbsTshScriptlet1(scriptletUtility, new NbsTshProxy1());
                 break;
             case "scriptlet_nbs_galt1":
-                script = (T)new NbsGaltScriptlet1(new NbsGaltProxy1());
+                script = (T)new NbsGaltScriptlet1(scriptletUtility, new NbsGaltProxy1());
                 break;
             case "scriptlet_nbs_cah1":
                 script = (T)new NbsCahScriptlet1(scriptletUtility, new NbsCahProxy1());

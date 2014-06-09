@@ -20,11 +20,14 @@ public interface AnalyteParameterServiceIntAsync {
 
     void fetchByAnalyteIdReferenceIdReferenceTableId(Query query,
                                                      AsyncCallback<ArrayList<AnalyteParameterViewDO>> callback);
+    
+    void fetchByReferenceIdsReferenceTableId(ArrayList<Integer> refIds,
+                                             Integer refTableId,
+                                             AsyncCallback<ArrayList<AnalyteParameterViewDO>> callback);
 
     void fetchForUpdate(AnalyteParameterManager man, AsyncCallback<AnalyteParameterManager> callback);
 
     void query(Query query, AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>> callback);
 
     void update(AnalyteParameterManager man, AsyncCallback<AnalyteParameterManager> callback);
-
 }

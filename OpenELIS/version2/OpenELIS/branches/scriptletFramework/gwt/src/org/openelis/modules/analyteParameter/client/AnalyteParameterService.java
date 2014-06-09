@@ -89,6 +89,23 @@ public class AnalyteParameterService implements AnalyteParameterServiceInt, Anal
     }
 
     @Override
+    public ArrayList<AnalyteParameterViewDO> fetchByReferenceIdsReferenceTableId(ArrayList<Integer> refIds,
+                                                                                 Integer refTableId) throws Exception {
+        Callback<ArrayList<AnalyteParameterViewDO>> callback;
+        
+        callback = new Callback<ArrayList<AnalyteParameterViewDO>>();
+        service.fetchByReferenceIdsReferenceTableId(refIds, refTableId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchByReferenceIdsReferenceTableId(ArrayList<Integer> refIds,
+                                                    Integer refTableId,
+                                                    AsyncCallback<ArrayList<AnalyteParameterViewDO>> callback) {
+        service.fetchByReferenceIdsReferenceTableId(refIds, refTableId, callback);
+    }
+
+    @Override
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
         Callback<ArrayList<ReferenceIdTableIdNameVO>> callback;
         
@@ -132,5 +149,4 @@ public class AnalyteParameterService implements AnalyteParameterServiceInt, Anal
         service.abortUpdate(man, callback);
         return callback.getResult();
     }
-
 }

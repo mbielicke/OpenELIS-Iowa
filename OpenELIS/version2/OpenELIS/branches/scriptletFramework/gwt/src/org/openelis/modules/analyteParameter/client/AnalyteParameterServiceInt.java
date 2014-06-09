@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.AnalyteParameterManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
@@ -17,7 +16,9 @@ public interface AnalyteParameterServiceInt extends XsrfProtectedService {
     AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Query query) throws Exception;
 
     ArrayList<AnalyteParameterViewDO> fetchByAnalyteIdReferenceIdReferenceTableId(Query query) throws Exception;
-
+    
+    ArrayList<AnalyteParameterViewDO> fetchByReferenceIdsReferenceTableId(ArrayList<Integer> refIds,
+                                                                                 Integer refTableId) throws Exception;
     ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception;
 
     AnalyteParameterManager add(AnalyteParameterManager man) throws Exception;

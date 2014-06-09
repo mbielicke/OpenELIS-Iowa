@@ -5191,11 +5191,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_analytes();
 
   /**
-   * Translated "Barcode              ".
+   * Translated "Barcode             ".
    * 
-   * @return translated "Barcode              "
+   * @return translated "Barcode             "
    */
-  @DefaultMessage("Barcode              ")
+  @DefaultMessage("Barcode             ")
   @Key("gen.barcode")
   String gen_barcode();
 
@@ -14180,6 +14180,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("NICU")
   @Key("sampleNeonatal.nicu")
   String sampleNeonatal_nicu();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Patient birth date must not be after collection date".
+   * 
+   * @return translated "Accession # ''{0,number}'': Patient birth date must not be after collection date"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Patient birth date must not be after collection date")
+  @Key("sampleNeonatal.patBirthDateAfterCollectDateException")
+  String sampleNeonatal_patBirthDateAfterCollectDateException(Integer arg0);
 
   /**
    * Translated "Trans Age".

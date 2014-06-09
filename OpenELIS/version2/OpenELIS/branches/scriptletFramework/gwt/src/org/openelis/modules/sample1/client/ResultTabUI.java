@@ -208,6 +208,13 @@ public class ResultTabUI extends Screen {
                 if (c > 1) {
                     data = manager.result.get(analysis, index, c - 2);
                     /*
+                     * don't allow editing the values of read only analytes
+                     */
+                    if (Constants.dictionary().TEST_ANALYTE_READ_ONLY.equals(data.getTestAnalyteTypeId())) {
+                        event.cancel();
+                        return;
+                    }
+                    /*
                      * if this result's result group only has dictionary values
                      * for this unit, then a dropdown is shown in this cell as
                      * the editor and its model is created from those values
@@ -346,7 +353,7 @@ public class ResultTabUI extends Screen {
 
                     if (data.getValue() == null)
                         return;
-
+                    
                     /*
                      * execute any scriptlet specified for the test
                      */
@@ -541,7 +548,7 @@ public class ResultTabUI extends Screen {
                     isBusy = false;
             }
         });
-
+        
         parentBus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
             @Override
             public void onQAEventChange(QAEventChangeEvent event) {
