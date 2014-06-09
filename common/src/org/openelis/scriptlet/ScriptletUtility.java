@@ -194,7 +194,7 @@ public class ScriptletUtility {
 
         res = null;
         proxy.log(Level.FINE,
-                  "Going through the SO to find the result that trigerred the scriptlet");
+                  "Going through the SO to find the result that trigerred the scriptlet for test: "+testName+", "+methodName);
         for (Map.Entry<Integer, TestManager> entry : data.getResults().entrySet()) {
             tm = entry.getValue();
             test = tm.getTest();
@@ -220,7 +220,7 @@ public class ScriptletUtility {
         TestManager tm;
 
         ana = null;
-        proxy.log(Level.FINE, "Going through the SO to find the analysis for this test");
+        proxy.log(Level.FINE, "Going through the SO to find the analysis for test: "+testName+", "+methodName);
         for (Map.Entry<Integer, TestManager> entry : data.getAnalyses().entrySet()) {
             tm = entry.getValue();
             test = tm.getTest();

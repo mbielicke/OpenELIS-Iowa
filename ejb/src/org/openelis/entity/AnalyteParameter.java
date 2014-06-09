@@ -26,7 +26,7 @@
 package org.openelis.entity;
 
 /**
- * AnalyteParameter Entity POJO for database 
+ * AnalyteParameter Entity POJO for database
  */
 
 import java.util.Date;
@@ -53,37 +53,42 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "AnalyteParameter.FetchActiveByAnaIdRefIdRefTableId",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
-                      +	" ap.referenceTableId = :referenceTableId and ap.isActive = 'Y'"),
-    @NamedQuery( name = "AnalyteParameter.FetchActiveByRefIdRefTableId",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId"
-                      + " and ap.isActive = 'Y' order by ap.analyte.name, ap.activeBegin desc"),
-    @NamedQuery( name = "AnalyteParameter.FetchByAnaIdRefIdRefTableId",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                       + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
-                       + " ap.referenceTableId = :referenceTableId order by ap.analyte.name, ap.activeBegin desc"),                  
-    @NamedQuery( name = "AnalyteParameter.FetchById",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap where ap.id = :id"),
-    @NamedQuery( name = "AnalyteParameter.FetchForQcChartReport",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name) " +
-                        "from AnalyteParameter ap " +
-                        "where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and" +
-                        " ap.activeBegin < :worksheetCreatedDate and ap.activeEnd > :worksheetCreatedDate")})
-
+               @NamedQuery(name = "AnalyteParameter.FetchActiveByAnaIdRefIdRefTableId",
+                           query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
+                                   + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
+                                   + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
+                                   + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
+                                   + " ap.referenceTableId = :referenceTableId and ap.isActive = 'Y'"),
+               @NamedQuery(name = "AnalyteParameter.FetchActiveByRefIdRefTableId",
+                           query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
+                                   + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
+                                   + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
+                                   + " from AnalyteParameter ap where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId"
+                                   + " and ap.isActive = 'Y' order by ap.analyte.name, ap.activeBegin desc"),
+               @NamedQuery(name = "AnalyteParameter.FetchByAnaIdRefIdRefTableId",
+                           query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
+                                   + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
+                                   + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
+                                   + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
+                                   + " ap.referenceTableId = :referenceTableId order by ap.analyte.name, ap.activeBegin desc"),
+               @NamedQuery(name = "AnalyteParameter.FetchByRefIdsRefTableId",
+                           query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
+                                   + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
+                                   + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
+                                   + " from AnalyteParameter ap where ap.referenceId in (:referenceIds) and ap.referenceTableId = :referenceTableId"
+                                   + " and order by ap.referenceId, ap.analyte.name, ap.activeEnd desc"),
+               @NamedQuery(name = "AnalyteParameter.FetchById",
+                           query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
+                                   + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
+                                   + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
+                                   + " from AnalyteParameter ap where ap.id = :id"),
+               @NamedQuery(name = "AnalyteParameter.FetchForQcChartReport",
+                           query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
+                                   + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
+                                   + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name) "
+                                   + "from AnalyteParameter ap "
+                                   + "where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and"
+                                   + " ap.activeBegin < :worksheetCreatedDate and ap.activeEnd > :worksheetCreatedDate")})
 @Entity
 @Table(name = "analyte_parameter")
 @EntityListeners({AuditUtil.class})

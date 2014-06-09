@@ -226,24 +226,6 @@
                         field="String" />
                     </td>
                   </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_race}:" />
-                    </td>
-                    <td colspan="3">
-                      <w:Dropdown ui:field="patientRace" width="230px" dropWidth="235px"
-                        field="String" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_ethnicity}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="patientEthnicity" width="100px" field="String"
-                        dropHeight="120px" />
-                    </td>
-                  </tr>
                 </table>
               </g:HTMLPanel>
             </g:layer>
@@ -251,11 +233,11 @@
               <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
                   <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sampleNeonatal_nicu}:" />
+                    <td class="{res.style.Prompt}"> Condition: 
                     </td>
                     <td>
-                      <w:CheckBox ui:field="isNicu" />
+                      <w:Dropdown ui:field="condition" field="Integer" width="75px"
+                        dropWidth="100px" dropHeight="120px" />
                     </td>
                   </tr>
                   <tr>
@@ -263,7 +245,7 @@
                       <ui:text from="{msg.sampleNeonatal_birthOrder}:" />
                     </td>
                     <td colspan="4">
-                      <w:TextBox ui:field="birthOrder" field="Integer" width="35px" />
+                      <w:TextBox ui:field="birthOrder" field="Integer" width="18px" />
                     </td>
                   </tr>
                   <tr>
@@ -271,7 +253,7 @@
                       <ui:text from="{msg.sampleNeonatal_gestAge}:" />
                     </td>
                     <td>
-                      <w:TextBox ui:field="gestationalAge" field="Integer" width="25px" />
+                      <w:TextBox ui:field="gestationalAge" field="Integer" width="22px" />
                     </td>
                   </tr>
                   <tr>
@@ -279,7 +261,7 @@
                       <ui:text from="{msg.sampleNeonatal_feeding}:" />
                     </td>
                     <td colspan="3">
-                      <w:Dropdown ui:field="feedingId" field="Integer" width="75px"
+                      <w:Dropdown ui:field="feeding" field="Integer" width="75px"
                         dropHeight="120px" />
                     </td>
                   </tr>
@@ -309,14 +291,6 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sampleNeonatal_transAge}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="transfusionAge" field="Integer" width="50px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
                       <ui:text from="{msg.gen_repeat}:" />
                     </td>
                     <td>
@@ -328,15 +302,8 @@
                       <ui:text from="{msg.sampleNeonatal_collectAge}:" />
                     </td>
                     <td colspan="5">
-                      <w:TextBox field="Integer" ui:field="collectionAge" width="50px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sampleNeonatal_collectValid}:" />
-                    </td>
-                    <td>
-                      <w:CheckBox ui:field="isCollectionValid" />
+                      <w:IntervalBox ui:field="collectionAge" unit="MINUTES" width="50px" />
+                      <!-- <w:TextBox field="String" /> -->
                     </td>
                   </tr>
                 </table>
@@ -365,20 +332,27 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.patient_relation}:" />
+                    </td>
+                    <td>
+                      <w:Dropdown ui:field="nextOfKinRelation" width="80px" dropHeight="100px"
+                        field="Integer" required="true" />
+                    </td>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.patient_gender}:" />
+                    </td>
+                    <td>
+                      <w:Dropdown ui:field="nextOfKinGender" width="85px" dropHeight="100px"
+                        field="Integer" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
                       <ui:text from="{msg.gen_last}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinLastName" width="222px" field="String"
                         maxLength="30" required="true" case="UPPER" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_maiden}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="nextOfKinMiddleName" width="222px" field="String"
-                        maxLength="30" case="UPPER" />
                     </td>
                   </tr>
                   <tr>
@@ -392,12 +366,14 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_relation}:" />
+                      <ui:text from="{msg.patient_maiden}:" />
                     </td>
-                    <td>
-                      <w:Dropdown ui:field="nextOfKinRelation" width="80px" dropHeight="100px"
-                        field="Integer" required="true"/>
+                    <td colspan="5">
+                      <w:TextBox ui:field="nextOfKinMiddleName" width="222px" field="String"
+                        maxLength="30" case="UPPER" />
                     </td>
+                  </tr>
+                  <tr>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.patient_birth}:" />
                     </td>
@@ -405,8 +381,6 @@
                       <c:Calendar ui:field="nextOfKinBirthDate" width="80px" begin="0"
                         end="2" />
                     </td>
-                  </tr>
-                  <tr>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.patient_nationalId}:" />
                     </td>
@@ -457,36 +431,13 @@
                       <w:TextBox ui:field="nextOfKinAddrHomePhone" field="String" width="80px"
                         maxLength="10" mask="{msg.gen_phonePattern}" />
                     </td>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_gender}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="nextOfKinGender" width="85px" dropHeight="100px"
-                        field="Integer" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_race}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="nextOfKinRace" width="90px" dropWidth="235px"
-                        field="String" />
-                    </td>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_ethnicity}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="nextOfKinEthnicity" width="85px"
-                        dropHeight="75px" dropWidth="100px" field="Integer" />
-                    </td>
                   </tr>
                 </table>
               </g:HTMLPanel>
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer top="330px" height="180px" left="0px" width="100%">
+        <g:layer top="300px" height="180px" left="0px" width="100%">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="50%">
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
@@ -500,7 +451,9 @@
                         <ui:text from="{msg.provider_lf}:" />
                       </td>
                       <td>
-                        <w:AutoComplete ui:field="providerLastName" width="130" case="UPPER">
+                        <w:AutoComplete ui:field="providerLastName" width="130"
+                          dropWidth="520px" case="UPPER"
+                        >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
                               <t:Column width="150" label="{msg.gen_lastName}">
@@ -509,7 +462,10 @@
                               <t:Column width="150" label="{msg.gen_firstName}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="150" label="{msg.gen_middleName}">
+                              <t:Column width="100" label="{msg.gen_middleName}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="100" label="{msg.provider_npi}">
                                 <t:LabelCell />
                               </t:Column>
                             </t:Table>
@@ -629,7 +585,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="535px" bottom="0px">
+    <g:layer top="505px" bottom="0px">
       <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
         <w:tab>
           <w:customHeader>

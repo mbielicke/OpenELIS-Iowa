@@ -106,6 +106,15 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
         }
     }
     
+    public ArrayList<AnalyteParameterViewDO> fetchByReferenceIdsReferenceTableId(ArrayList<Integer> refIds,
+                                                                                 Integer refTableId) throws Exception {
+        try {
+            return analyteParameter.fetchByReferenceIdsReferenceTableId(refIds, refTableId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
         try {
             return analyteParameter.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());

@@ -91,7 +91,8 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
                    SampleMeta.getNeonatalTransfusionDate().equals(data.getChanged())) {
             /*
              * a sample qa event was added or removed or a field related to
-             * transfusion changed
+             * transfusion changed; find the analysis that's linked to the
+             * active vesrion of this test
              */
             ana = scriptletUtility.getAnalysis(data, TEST_NAME, METHOD_NAME);
             if (ana == null)
@@ -122,11 +123,10 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
      */
     private void setInterpretion(SampleSO data, AnalysisViewDO ana, TestManager tm) {
         int i, j;
-        boolean samHasRejectQA;
-        Integer interId;
-        String overrideVal, bioVal, sysName;
+        Integer interp;
+        String bioVal, sysName;
         SampleManager1 sm;
-        ResultViewDO res, resInter;
+        ResultViewDO res, resOver, resInter;
         DictionaryDO dict;
         QaEventDO qa;
         FormattedValue fv;
@@ -138,7 +138,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
          */
         sm = data.getManager();
         bioVal = null;
-        overrideVal = null;
+        resOver = null;
         resInter = null;
         proxy.log(Level.FINE,
                   "Going through the SO to find the result that trigerred the scriptlet");
@@ -148,7 +148,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
                 if (BIOTINIDASE.equals(res.getAnalyteExternalId()))
                     bioVal = res.getValue();
                 else if (OVERRIDE_INTER.equals(res.getAnalyteExternalId()))
-                    overrideVal = res.getValue();
+                    resOver = res;
                 else if (INTERPRETATION.equals(res.getAnalyteExternalId()))
                     resInter = res;
             }
@@ -157,9 +157,13 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         try {
             proxy.log(Level.FINE, "Finding the values of override interretation");
             /*
-             * proceed only if the value for override interpretation is "No"
+             * proceed only if the value for override interpretation has been
+             * validated and is "No"
              */
-            dict = getDictionaryByValue(overrideVal);
+            if (resOver.getTypeId() == null)
+                return;
+
+            dict = getDictionaryByValue(resOver.getValue());
             if (dict == null || !NO.equals(dict.getSystemName()))
                 return;
 
@@ -178,25 +182,18 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
             proxy.log(Level.FINE,
                       "Getting the value for interretation based on the value of biotinidase");
             sysName = dict.getSystemName();
-            interId = null;
+            interp = null;
             if (sysName.endsWith("1+") || sysName.endsWith("0"))
-                interId = scriptletUtility.INTER_PP_NR;
+                interp = scriptletUtility.INTER_PP_NR;
             else if (sysName.endsWith("2+") || sysName.endsWith("3+"))
-                interId = scriptletUtility.INTER_N;
+                interp = scriptletUtility.INTER_N;
 
             proxy.log(Level.FINE, "Finding the qa event to be added to the analysis");
             /*
              * find the qa event to be added to the analysis
              */
             qa = null;
-            samHasRejectQA = scriptletUtility.sampleHasRejectQA(sm);
-            if (samHasRejectQA) {
-                /*
-                 * add "poor quality" because the sample has some "rejection" qa
-                 * events i.e. warning or override
-                 */
-                qa = scriptletUtility.getQaEvent(scriptletUtility.QA_PQ, ana.getTestId());
-            } else if ("Y".equals(sm.getSampleNeonatal().getIsTransfused())) {
+            if ("Y".equals(sm.getSampleNeonatal().getIsTransfused())) {
                 /*
                  * the sample is transfused; add "transfused" if the transfusion
                  * date has been specified, otherwise add "transfused unknown"
@@ -219,35 +216,35 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
              * the original interpretation overrides qa events if it's
              * "presumptive positive"; otherwise it's overridden by other data
              */
-            if ( !scriptletUtility.INTER_PP_NR.equals(interId)) {
+            if ( !scriptletUtility.INTER_PP_NR.equals(interp)) {
                 proxy.log(Level.FINE, "Setting the interpretation based on qa events");
-                if (samHasRejectQA) {
+                if (scriptletUtility.sampleHasRejectQA(sm)) {
                     /*
                      * the sample has reject qas so set the interpretation as
                      * "poor quality"
                      */
-                    interId = scriptletUtility.INTER_PQ;
-                } else if ("Y".equals(sm.getSampleNeonatal().getIsTransfused())) {
+                    interp = scriptletUtility.INTER_PQ;
+                } else if (qa != null) {
                     /*
                      * the sample is transfused so if a transfusion date is
                      * specified then set "transfused" as the interpretation,
                      * otherwise set "transfused unknown" as the interpretation
                      */
-                    if (sm.getSampleNeonatal().getTransfusionDate() != null)
-                        interId = scriptletUtility.INTER_TRAN;
-                    else
-                        interId = scriptletUtility.INTER_TRANU;
+                    if (scriptletUtility.QA_TRAN.equals(qa.getName()))
+                        interp = scriptletUtility.INTER_TRAN;
+                    else if (scriptletUtility.QA_TRANU.equals(qa.getName()))
+                        interp = scriptletUtility.INTER_TRANU;
                 }
             }
 
-            if (interId != null) {
+            if (interp != null) {
                 /*
                  * get the value to be set in the interpretation from this test
                  * manager's result formatter and set it only if it's different
                  * from the current value
                  */
                 rf = tm.getFormatter();
-                dict = proxy.getDictionaryById(interId);
+                dict = proxy.getDictionaryById(interp);
                 fv = rf.format(resInter.getResultGroup(), ana.getUnitOfMeasureId(), dict.getEntry());
                 if ( !DataBaseUtil.isSame(resInter.getTestResultId(), fv.getId())) {
                     proxy.log(Level.FINE, "Setting the value of interpretation as: " +

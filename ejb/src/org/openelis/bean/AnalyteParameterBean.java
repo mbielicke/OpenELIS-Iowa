@@ -131,7 +131,23 @@ public class AnalyteParameterBean {
         }
         return data;
     }
+    
+    public ArrayList<AnalyteParameterViewDO> fetchByReferenceIdsReferenceTableId(ArrayList<Integer> refIds,
+                                                                                         Integer refTableId) throws Exception {
+        Query query;
+        List list;
 
+        query = manager.createNamedQuery("AnalyteParameter.FetchByRefIdsRefTableId");
+        query.setParameter("referenceIds", refIds);
+        query.setParameter("referenceTableId", refTableId);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+    
     public AnalyteParameterViewDO fetchById(Integer id) throws Exception {
         Query query;
         AnalyteParameterViewDO data;

@@ -37,11 +37,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.entity.SampleNeonatal;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -187,7 +192,35 @@ public class SampleNeonatalBean {
             manager.remove(entity);
     }
 
-    public void validate(SampleNeonatalDO data) throws Exception {
-        // TODO add logic for validation
+    public void validate(SampleNeonatalDO data, SampleDO sample) throws Exception {
+        Integer accession;
+        Datetime cd, ct, bd, bt;
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+        /*
+         * for display
+         */
+        accession = sample.getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
+        cd = sample.getCollectionDate();
+        ct = sample.getCollectionTime();
+        bd = data.getPatient().getBirthDate();
+        bt = data.getPatient().getBirthTime();
+
+        if (bd == null || cd == null)
+            return;
+        /*
+         * patient birth date-time can't be after collection date-time 
+         */
+        if (DataBaseUtil.isAfter(bd, cd) ||
+            (DataBaseUtil.isSame(cd, bd) && bt != null && ct != null && DataBaseUtil.isAfter(bt, ct))) {
+            e.add(new FormErrorException(Messages.get().sampleNeonatal_patBirthDateAfterCollectDateException(accession)));
+        }
+
+        if (e.size() > 0)
+            throw e;
     }
 }
