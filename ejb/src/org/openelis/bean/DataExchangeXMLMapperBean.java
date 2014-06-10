@@ -64,6 +64,7 @@ import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -272,6 +273,19 @@ public class DataExchangeXMLMapperBean {
 
             if (getSampleNeonatal(sm).getProviderId() != null)
                 root.appendChild(createProvider(doc, getSampleNeonatal(sm).getProvider()));
+        } else if (getSampleClinical(sm) != null) {
+            root.appendChild(createClinical(doc, getSampleClinical(sm)));
+
+            if (getSampleClinical(sm).getPatient() != null) {
+                root.appendChild(createPatient(doc, getSampleClinical(sm).getPatient()));
+
+                if (getSampleClinical(sm).getPatient().getAddress().getId() != null)
+                    root.appendChild(createAddress(doc, getSampleClinical(sm).getPatient()
+                                                                             .getAddress()));
+            }
+
+            if (getSampleClinical(sm).getProviderId() != null)
+                root.appendChild(createProvider(doc, getSampleClinical(sm).getProvider()));
         }
 
         sampleOverridden = false;
@@ -496,7 +510,7 @@ public class DataExchangeXMLMapperBean {
          * tables
          */
         if (profiles != null && profiles.size() > 0) {
-            if (organizations.size() > 0) {
+            if (organizations != null && organizations.size() > 0) {
                 elm = createTranslations(Constants.table().ORGANIZATION,
                                          organizations,
                                          profiles,
@@ -506,7 +520,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (tests.size() > 0) {
+            if (tests != null && tests.size() > 0) {
                 elm = createTranslations(Constants.table().TEST,
                                          tests,
                                          profiles,
@@ -516,7 +530,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (methods.size() > 0) {
+            if (methods != null && methods.size() > 0) {
                 elm = createTranslations(Constants.table().METHOD,
                                          methods,
                                          profiles,
@@ -526,7 +540,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (testAnalytes.size() > 0) {
+            if (testAnalytes != null && testAnalytes.size() > 0) {
                 elm = createTranslations(Constants.table().TEST_ANALYTE,
                                          testAnalytes,
                                          profiles,
@@ -536,7 +550,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (analytes.size() > 0) {
+            if (analytes != null && analytes.size() > 0) {
                 elm = createTranslations(Constants.table().ANALYTE,
                                          analytes,
                                          profiles,
@@ -546,7 +560,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (dicts.size() > 0) {
+            if (dicts != null && dicts.size() > 0) {
                 elm = createTranslations(Constants.table().DICTIONARY,
                                          dicts,
                                          profiles,
@@ -556,7 +570,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
             
-            if (panels.size() > 0) {
+            if (panels != null && panels.size() > 0) {
                 elm = createTranslations(Constants.table().PANEL,
                                          panels,
                                          profiles,
@@ -721,6 +735,19 @@ public class DataExchangeXMLMapperBean {
 
         addDictionary(neonatal.getNextOfKinRelationId());
         addDictionary(neonatal.getFeedingId());
+
+        return elm;
+    }
+    
+    public Element createClinical(Document doc, SampleClinicalDO neonatal) {
+        Element elm;
+
+        elm = doc.createElement("sample_clinical");
+        setAttribute(elm, "id", neonatal.getId());
+        setAttribute(elm, "sample_id", neonatal.getSampleId());
+        setAttribute(elm, "patient_id", neonatal.getPatientId());
+        setAttribute(elm, "provider_id", neonatal.getProviderId());
+        setText(doc, elm, "provider_phone", neonatal.getProviderPhone());
 
         return elm;
     }

@@ -55,7 +55,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
     protected boolean                             statusWithError, unreleased;
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
-                                                  HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
+                                                  CLINICAL_DOMAIN_FLAG = "C", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
                                                   PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
                                                   QUICK_ENTRY = "Q";
 
@@ -219,7 +219,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
         if (domainManager == null) {
             if (sample.getId() != null) {
                 try {
-                    if (domain.equals(HUMAN_DOMAIN_FLAG))
+                    if (domain.equals(CLINICAL_DOMAIN_FLAG))
                         domainManager = SampleHumanManager.findBySampleId(sample.getId());
                     else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
                         domainManager = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
@@ -248,7 +248,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
         domain = sample.getDomain();
         assert domain != null : "domain is null";
 
-        if (domain.equals(HUMAN_DOMAIN_FLAG))
+        if (domain.equals(CLINICAL_DOMAIN_FLAG))
             domainManager = SampleHumanManager.getInstance();
         else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
             domainManager = SampleEnvironmentalManager.getInstance();

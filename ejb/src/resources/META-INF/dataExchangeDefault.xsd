@@ -50,6 +50,7 @@
                 <xs:element name="sample_private_well" type="samplePrivateWell" />
                 <xs:element name="sample_sdwis" type="sampleSDWIS" />
                 <xs:element name="sample_neonatal" type="sampleNeonatal" />
+                <xs:element name="sample_clinical" type="sampleClinical" />
             </xs:choice>
             <xs:element name="sample_project" type="sampleProject" minOccurs="0"
                 maxOccurs="unbounded" />
@@ -162,6 +163,18 @@
         <xs:attribute name="provider_id" type="xs:integer" />
         <xs:attribute name="weight" type="xs:integer" />
         <xs:attribute name="transfusion_date" type="xs:date" />
+    </xs:complexType>
+    
+    <xs:complexType name="sampleClinical">
+        <xs:sequence>
+            <xs:element name="provider_phone" minOccurs="0" type="xs:string" />
+            <xs:element name="patient" minOccurs="1" type="patient" />
+            <xs:element name="provider" minOccurs="0" type="provider" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+        <xs:attribute name="sample_id" type="xs:integer" use="required" />
+        <xs:attribute name="patient_id" type="xs:integer" use="required"/>
+        <xs:attribute name="provider_id" type="xs:integer" />
     </xs:complexType>
 
     <xs:complexType name="patient">

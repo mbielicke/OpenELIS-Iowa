@@ -122,6 +122,19 @@
 
         </xsl:copy>
     </xsl:template>
+    
+    <xsl:template match="sample_clinical">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+
+            <xsl:apply-templates select="//patient[@id = current()/@patient_id]">
+                <xsl:with-param name="tagname">patient</xsl:with-param>
+            </xsl:apply-templates>
+            
+            <xsl:apply-templates select="//provider[@id = current()/@provider_id]" />
+
+        </xsl:copy>
+    </xsl:template>
 
     <xsl:template match="sample_project">
         <xsl:copy>
