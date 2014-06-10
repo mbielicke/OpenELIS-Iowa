@@ -76,7 +76,7 @@ import org.openelis.utils.Auditable;
                                    + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
                                    + "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
                                    + " from AnalyteParameter ap where ap.referenceId in (:referenceIds) and ap.referenceTableId = :referenceTableId"
-                                   + " and order by ap.referenceId, ap.analyte.name, ap.activeEnd desc"),
+                                   + " order by ap.referenceId, ap.analyte.name, ap.activeEnd desc"),
                @NamedQuery(name = "AnalyteParameter.FetchById",
                            query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId,"
                                    + "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin,"
