@@ -952,12 +952,12 @@ public class ExchangeDataSelectionScreen extends Screen {
                 row = new TableDataRow(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("human".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.HUMAN_DOMAIN_FLAG, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
             } else if ("newborn".equals(d.getSystemName())) {
                 row = new TableDataRow(SampleManager.NEWBORN_DOMAIN_FLAG, d.getEntry());
+                row.enabled = ("Y".equals(d.getIsActive()));
+                model.add(row);
+            } else if ("clinical".equals(d.getSystemName())) {
+                row = new TableDataRow(SampleManager.CLINICAL_DOMAIN_FLAG, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("pt".equals(d.getSystemName())) {
