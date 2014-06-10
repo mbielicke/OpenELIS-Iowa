@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class TestTypeOfSampleManager implements Serializable {
 
@@ -54,18 +55,18 @@ public class TestTypeOfSampleManager implements Serializable {
 
         return ttsm;
     }
-    
+
     public int count() {
         if (types == null)
             return 0;
 
         return types.size();
     }
-    
+
     public TestTypeOfSampleDO getTypeAt(int i) {
         return types.get(i);
     }
-    
+
     public void setTypeAt(TestTypeOfSampleDO sampleType, int i) {
         if (types == null)
             types = new ArrayList<TestTypeOfSampleDO>();
@@ -86,7 +87,7 @@ public class TestTypeOfSampleManager implements Serializable {
 
     public void removeTypeAt(int i) {
         TestTypeOfSampleDO sampleType;
-        
+
         if (types == null || i >= types.size())
             return;
 
@@ -97,66 +98,67 @@ public class TestTypeOfSampleManager implements Serializable {
             deleted.add(sampleType);
         }
     }
-    
+
     public ArrayList<TestTypeOfSampleDO> getTypesBySampleType(Integer type) {
         ArrayList<TestTypeOfSampleDO> returnList;
         TestTypeOfSampleDO typeDO;
-        
+
         returnList = new ArrayList<TestTypeOfSampleDO>();
-        
+
         if (type != null) {
-            for (int i = 0; i < count(); i++) {
-                typeDO = types.get(i); 
-        
-                if (type.equals(typeDO.getTypeOfSampleId()))
+            for (int i = 0; i < count(); i++ ) {
+                typeDO = types.get(i);
+
+                if (DataBaseUtil.isSame(type, typeDO.getTypeOfSampleId()))
                     returnList.add(typeDO);
             }
         }
-        
+
         return returnList;
-        
+
     }
 
     public boolean hasType(Integer type) {
         TestTypeOfSampleDO typeDO;
-        
-        for (int i = 0; i < count(); i++) {
+
+        for (int i = 0; i < count(); i++ ) {
             typeDO = getTypeAt(i);
-            if (typeDO.getTypeOfSampleId().equals(type))
+            if (DataBaseUtil.isSame(typeDO.getTypeOfSampleId(), type))
                 return true;
         }
-        
+
         return false;
     }
-    
+
     public boolean hasUnit(Integer unitId, Integer typeId) {
         TestTypeOfSampleDO typeDO;
-        
-        for (int i = 0; i < count(); i++) {
+
+        for (int i = 0; i < count(); i++ ) {
             typeDO = getTypeAt(i);
-            if (typeDO.getTypeOfSampleId().equals(typeId) && typeDO.getUnitOfMeasureId().equals(unitId))
+            if (DataBaseUtil.isSame(typeDO.getTypeOfSampleId(), typeId) &&
+                DataBaseUtil.isSame(typeDO.getUnitOfMeasureId(), unitId))
                 return true;
         }
-        
+
         return false;
     }
-    
+
     public boolean hasEmptyUnit() {
         TestTypeOfSampleDO typeDO;
-        
-        for (int i = 0; i < count(); i++) {
+
+        for (int i = 0; i < count(); i++ ) {
             typeDO = getTypeAt(i);
             if (typeDO.getUnitOfMeasureId() == null)
                 return true;
         }
-        
+
         return false;
     }
-    
+
     public static TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
         return proxy().fetchByTestId(testId);
     }
-    
+
     public TestTypeOfSampleManager add() throws Exception {
         return proxy().add(this);
     }
@@ -164,7 +166,7 @@ public class TestTypeOfSampleManager implements Serializable {
     public TestTypeOfSampleManager update() throws Exception {
         return proxy().update(this);
     }
-    
+
     public void validate() throws Exception {
         proxy().validate(this);
     }
