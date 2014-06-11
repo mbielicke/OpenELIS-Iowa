@@ -76,6 +76,7 @@ import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -89,27 +90,15 @@ import org.openelis.ui.common.ValidationErrorsList;
 @SecurityDomain("openelis")
 public class WorksheetExcelHelperBean {
     @EJB
-    AnalyteBean                        analyteLocal;
+    AnalyteParameterBean               analyteParameter;
     @EJB
-    AnalyteParameterBean               analyteParameterLocal;
+    DictionaryCacheBean                dictionaryCache;
     @EJB
-    DictionaryCacheBean                dictionaryCacheLocal;
-    @EJB
-    CategoryCacheBean                  categoryCacheLocal;
-    @EJB
-    QcLotBean                          qcLotLocal;
-    @EJB
-    QcAnalyteBean                      qcAnalyteLocal;
-    @EJB
-    SampleManagerBean                  sampleManagerLocal;
-    @EJB
-    SectionBean                        sectionLocal;
+    CategoryCacheBean                  categoryCache;
     @EJB
     SessionCacheBean                   session;
     @EJB
-    SystemVariableBean                 systemVariableLocal;
-    @EJB
-    WorksheetAnalysisBean              worksheetAnalysisLocal;
+    SystemVariableBean                 systemVariable;
     @EJB
     WorksheetManager1Bean              worksheetManager;
     @EJB
@@ -117,10 +106,10 @@ public class WorksheetExcelHelperBean {
 
     private static final Logger        log = Logger.getLogger("openelis");
 
-    private HashMap<Integer, String> statusIdNameMap;
+    private HashMap<Integer, String>   statusIdNameMap;
     private HashMap<String, CellStyle> styles;
-    private HashMap<String, Integer> statusNameIdMap;
-    private String statuses[];
+    private HashMap<String, Integer>   statusNameIdMap;
+    private String                     statuses[];
                     
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public WorksheetManager1 exportToExcel(WorksheetManager1 manager) throws Exception {
@@ -167,7 +156,7 @@ public class WorksheetExcelHelperBean {
             throw new Exception("An Excel file for this worksheet already exists, please delete it before trying to export");
 
         try {
-            formatDO = dictionaryCacheLocal.getById(manager.getWorksheet().getFormatId());
+            formatDO = dictionaryCache.getById(manager.getWorksheet().getFormatId());
         } catch (NotFoundException nfE) {
             formatDO = new DictionaryDO();
             formatDO.setEntry("DefaultTotal");
@@ -178,21 +167,23 @@ public class WorksheetExcelHelperBean {
 
         try {
             in = new FileInputStream(getWorksheetTemplateFileName(formatDO));
-        } catch (FileNotFoundException fnfE) {
-            throw new Exception("Error loading template file: " + fnfE.getMessage());
-        }
-
-        try {
             wb = new HSSFWorkbook(in, true);
-        } catch (IOException ioE) {
-            throw new Exception("Error loading workbook from template file: " +
-                                ioE.getMessage());
+            createStyles(wb);
+        } catch (FileNotFoundException fnfE) {
+            try {
+                wb = buildTemplate(formatDO);
+                createStyles(wb);
+            } catch (FileNotFoundException fnfE2) {
+                throw new Exception("Error loading template file: " + fnfE2.getMessage());
+            } catch (IOException ioE) {
+                throw new Exception("Error loading workbook from template file: " +
+                                    ioE.getMessage());
+            }
         }
 
         loadStatuses();
 //        statusCells = new CellRangeAddressList();
 
-        createStyles(wb);
         tCellNames = loadNamesByCellReference(wb);
 
         resultSheet = wb.getSheet("Worksheet");
@@ -307,6 +298,7 @@ public class WorksheetExcelHelperBean {
                                                                tRow,
                                                                cellNameIndex,
                                                                tCellNames,
+                                                               manager.getWorksheet(),
                                                                waVDO,
                                                                wrList,
                                                                isEditable,
@@ -437,6 +429,7 @@ public class WorksheetExcelHelperBean {
                                                                  tRow,
                                                                  cellNameIndex,
                                                                  tCellNames,
+                                                                 manager.getWorksheet(),
                                                                  waVDO.getQcId(),
                                                                  wqrList,
                                                                  apMap);
@@ -864,6 +857,52 @@ public class WorksheetExcelHelperBean {
 
         return manager;
     }
+    
+    private HSSFWorkbook buildTemplate(DictionaryDO formatDO) throws Exception {
+        int c;
+        ArrayList<DictionaryDO> formatColumns;
+        Cell hCell, tCell;
+        FileInputStream in;
+        HSSFSheet resultSheet;
+        HSSFWorkbook wb;
+        Name cellName;
+        Row hRow, tRow;
+        
+        in = new FileInputStream(getWorksheetTemplateFileName("Base"));
+        wb = new HSSFWorkbook(in, true);
+        createStyles(wb);
+        
+        try {
+            formatColumns = categoryCache.getBySystemName(formatDO.getSystemName())
+                                              .getDictionaryList();
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving worksheet format: " + anyE.getMessage());
+        }
+        
+        c = 9;
+        resultSheet = wb.getSheet("Worksheet");
+        hRow = resultSheet.getRow(0);
+        tRow = resultSheet.getRow(1);
+        for (DictionaryDO columnDO : formatColumns) {
+            hCell = hRow.createCell(c);
+            hCell.setCellStyle(styles.get("header"));
+            hCell.setCellValue(columnDO.getEntry());
+
+            tCell = tRow.createCell(c);
+            tCell.setCellStyle(styles.get("row_edit"));
+            
+            cellName = wb.createName();
+            cellName.setNameName(columnDO.getSystemName().substring(formatDO.getSystemName().length()));
+            cellName.setRefersToFormula("Worksheet!$" +
+                                        CellReference.convertNumToColString(c) +
+                                        "$" + (tRow.getRowNum() + 1));
+            
+            resultSheet.autoSizeColumn(c, true);
+            c++;
+        }
+        
+        return wb;
+    }
 
     private void createStyles(HSSFWorkbook wb) {
         CellStyle dateTimeEditStyle, dateTimeNoEditStyle, headerStyle, rowEditStyle,
@@ -922,6 +961,7 @@ public class WorksheetExcelHelperBean {
     private int createResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                            String nameIndexPrefix,
                                            HashMap<String, String> cellNames,
+                                           WorksheetViewDO wVDO,
                                            WorksheetAnalysisViewDO waVDO,
                                            ArrayList<WorksheetResultViewDO> wrList,
                                            boolean isEditable,
@@ -999,8 +1039,9 @@ public class WorksheetExcelHelperBean {
                             pMap = new HashMap<Integer, AnalyteParameterViewDO>();
                             apMap.put("T"+waVDO.getTestId(), pMap);
                             try {
-                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(waVDO.getTestId(),
-                                                                                                           Constants.table().TEST);
+                                anaParams = analyteParameter.fetchByActiveDate(waVDO.getTestId(),
+                                                                                    Constants.table().TEST,
+                                                                                    wVDO.getCreatedDate().getDate());
                                 for (AnalyteParameterViewDO anaParam : anaParams)
                                     pMap.put(anaParam.getAnalyteId(), anaParam);
                             } catch (NotFoundException nfE) {
@@ -1036,6 +1077,7 @@ public class WorksheetExcelHelperBean {
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix,
                                              HashMap<String, String> cellNames,
+                                             WorksheetViewDO wVDO,
                                              Integer qcId,
                                              ArrayList<WorksheetQcResultViewDO> wqrList,
                                              HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) {
@@ -1102,8 +1144,9 @@ public class WorksheetExcelHelperBean {
                             pMap = new HashMap<Integer, AnalyteParameterViewDO>();
                             apMap.put("Q"+qcId, pMap);
                             try {
-                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(qcId,
-                                                                                                           Constants.table().QC);
+                                anaParams = analyteParameter.fetchByActiveDate(qcId,
+                                                                                    Constants.table().QC,
+                                                                                    wVDO.getCreatedDate().getDate());
                                 for (AnalyteParameterViewDO anaParam : anaParams)
                                     pMap.put(anaParam.getAnalyteId(), apVDO);
                             } catch (NotFoundException nfE) {
@@ -1165,7 +1208,7 @@ public class WorksheetExcelHelperBean {
         if (statusIdNameMap == null && statuses == null) {
             statusDOs = new ArrayList<DictionaryDO>();
             try {
-                statusDOs = categoryCacheLocal.getBySystemName("analysis_status")
+                statusDOs = categoryCache.getBySystemName("analysis_status")
                                               .getDictionaryList();
                 statuses = new String[statusDOs.size()];
                 statusIdNameMap = new HashMap<Integer, String>();
@@ -1221,7 +1264,7 @@ public class WorksheetExcelHelperBean {
 
         dirName = "";
         try {
-            sysVars = systemVariableLocal.fetchByName("worksheet_output_directory", 1);
+            sysVars = systemVariable.fetchByName("worksheet_output_directory", 1);
             if (sysVars.size() > 0)
                 dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
         } catch (Exception anyE) {
@@ -1241,12 +1284,16 @@ public class WorksheetExcelHelperBean {
     }
 
     private String getWorksheetTemplateFileName(DictionaryDO formatDO) throws Exception {
+        return getWorksheetTemplateFileName(formatDO.getEntry());
+    }
+    
+    private String getWorksheetTemplateFileName(String format) throws Exception {
         ArrayList<SystemVariableDO> sysVars;
         String dirName;
 
         dirName = "";
         try {
-            sysVars = systemVariableLocal.fetchByName("worksheet_template_directory", 1);
+            sysVars = systemVariable.fetchByName("worksheet_template_directory", 1);
             if (sysVars.size() > 0)
                 dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
         } catch (Exception anyE) {
@@ -1254,21 +1301,7 @@ public class WorksheetExcelHelperBean {
                                 anyE.getMessage());
         }
 
-        return dirName + "OEWorksheet" + formatDO.getEntry() + ".xls";
-    }
-
-    private String formatTooltip(String ranges[]) {
-        int i;
-        StringBuffer tooltip;
-
-        tooltip = new StringBuffer();
-        for (i = 0; i < ranges.length; i++) {
-            if (tooltip.length() > 0)
-                tooltip.append("\n");
-            tooltip.append(ranges[i]);
-        }
-
-        return tooltip.toString();
+        return dirName + "OEWorksheet" + format + ".xls";
     }
 
     private Object getValueFromCellByCoords(HSSFSheet sheet, int row, int col) {
