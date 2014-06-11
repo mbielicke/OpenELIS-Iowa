@@ -172,6 +172,23 @@ public class AnalyteParameterBean {
         return data;
     }
 
+    public ArrayList<AnalyteParameterViewDO> fetchByActiveDate(Integer refId, Integer refTableId,
+                                                               Date activeDate) throws Exception {
+        List list;
+        Query query;
+
+        query = manager.createNamedQuery("AnalyteParameter.FetchByActiveDate");
+        query.setParameter("referenceId", refId);
+        query.setParameter("referenceTableId", refTableId);
+        query.setParameter("activeDate", activeDate);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public ArrayList<ReferenceIdTableIdNameVO> query(ArrayList<QueryData> fields,
                                                      int first, int max) throws Exception {
         QueryBuilderV2 builder;

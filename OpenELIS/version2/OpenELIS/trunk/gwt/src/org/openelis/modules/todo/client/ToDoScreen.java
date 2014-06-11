@@ -41,10 +41,9 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -378,14 +377,25 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         }
     }
         
-    private void showCompletionScreen(Integer id) throws Exception {
-        ScreenWindow modal;    
-        WorksheetCompletionScreen wcScreen;
+    private void showCompletionScreen(final Integer id) throws Exception {
+        ScheduledCommand cmd;
+        org.openelis.ui.widget.Window window;
+        final WorksheetCompletionScreenUI wcScreen;
         
-        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(Messages.get().worksheetCompletion());
-        wcScreen = new WorksheetCompletionScreen(id,modal);
-        modal.setContent(wcScreen);
-        window.clearStatus();
+        window = new org.openelis.ui.widget.Window();
+        window.setName(Messages.get().worksheetCompletion() + " 2");
+        window.setSize("1061px", "511px");
+        wcScreen = new WorksheetCompletionScreenUI(window);
+        window.setContent(wcScreen);
+        wcScreen.initialize();
+        OpenELIS.getBrowser().addWindow(window, "worksheetCompletionUI");
+
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                wcScreen.query(id);
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }       
 }
