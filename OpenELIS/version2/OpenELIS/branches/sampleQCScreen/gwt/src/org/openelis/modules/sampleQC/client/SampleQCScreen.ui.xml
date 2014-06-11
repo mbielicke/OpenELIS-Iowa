@@ -17,6 +17,7 @@
 	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'>
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
 		field="res" />
 
@@ -73,49 +74,13 @@
 						</table>
 					</g:HTMLPanel>
 				</g:layer>
-				<g:layer bottom="35px" height="150px">
+				<g:layer bottom="35px" top="125px">
 					<r:Tree ui:field="tree" header="true"
 						styleName="{res.table.ScreenTableWithSides}"
 						allowMultipleSelection="true">
-						<r:Column width="75" label="{msg.gen_test}" />
-						<r:Column width="75" label="{msg.gen_method}" />
-						<r:Column width="75" label="{msg.gen_type}" />
-						<r:Column width="75" label="{msg.analysis_started}" />
-						<r:Column width="75" label="{msg.analysis_released}" />
-						<r:Column width="75" label="{msg.gen_status}" />
-						<r:Column width="75" label="{msg.test_prepTest}" />
-						<r:Column width="75" label="{msg.gen_unit}" />
+						<r:Column width="300" label="" />
+						<r:Column width="100" label="" />
 						<r:Leaf key="analysis">
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
 							<r:LeafColumn>
 								<t:LabelCell>
 									<w:Label />
@@ -138,40 +103,17 @@
 									<w:Label />
 								</t:LabelCell>
 							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="qc">
 							<r:LeafColumn>
 								<t:LabelCell>
 									<w:Label />
 								</t:LabelCell>
 							</r:LeafColumn>
 						</r:Leaf>
-						<r:Leaf key="qc">
+						<r:Leaf key="qcAnalyte">
 							<r:LeafColumn>
-								<t:CheckBoxCell>
+								<t:CheckBoxCell align="right">
 									<w:CheckBox />
 								</t:CheckBoxCell>
 							</r:LeafColumn>
@@ -180,16 +122,8 @@
 									<w:Label />
 								</t:LabelCell>
 							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
-							<r:LeafColumn>
-								<t:LabelCell>
-									<w:Label />
-								</t:LabelCell>
-							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="value">
 							<r:LeafColumn>
 								<t:LabelCell>
 									<w:Label />
@@ -197,6 +131,18 @@
 							</r:LeafColumn>
 						</r:Leaf>
 					</r:Tree>
+				</g:layer>
+				<g:layer bottom="0px" height="35px">
+					<g:LayoutPanel>
+						<g:layer bottom="0px" top="0px" width="50%" left="250px">
+							<g:HorizontalPanel>
+								<w:Button ui:field="checkAllButton" leftIcon="{uiRes.checkbox.Checked}"
+									text="{msg.gen_checkAll}" />
+								<w:Button ui:field="uncheckAllButton" leftIcon="{uiRes.checkbox.Unchecked}"
+									text="{msg.gen_uncheckAll}" />
+							</g:HorizontalPanel>
+						</g:layer>
+					</g:LayoutPanel>
 				</g:layer>
 			</g:LayoutPanel>
 		</g:center>
