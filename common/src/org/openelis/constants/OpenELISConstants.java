@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -12040,6 +12040,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String qc_invalidValueException();
 
   /**
+   * Translated "Check All/Uncheck All for more than one QC is not allowed".
+   * 
+   * @return translated "Check All/Uncheck All for more than one QC is not allowed"
+   */
+  @DefaultMessage("Check All/Uncheck All for more than one QC is not allowed")
+  @Key("qc.multiQcCheckNotAllowed")
+  String qc_multiQcCheckNotAllowed();
+
+  /**
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
@@ -12047,6 +12056,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("qc.noSelectedRow")
   String qc_noSelectedRow();
+
+  /**
+   * Translated "Select a QC or QC analyte node to Check All/Uncheck All".
+   * 
+   * @return translated "Select a QC or QC analyte node to Check All/Uncheck All"
+   */
+  @DefaultMessage("Select a QC or QC analyte node to Check All/Uncheck All")
+  @Key("qc.qcCheckNodeNotAllowed")
+  String qc_qcCheckNodeNotAllowed();
 
   /**
    * Translated "QC Lookup".
@@ -13748,6 +13766,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample type is required before adding test")
   @Key("sample.sampleItemTypeRequired")
   String sample_sampleItemTypeRequired();
+
+  /**
+   * Translated "Sample QC".
+   * 
+   * @return translated "Sample QC"
+   */
+  @DefaultMessage("Sample QC")
+  @Key("sample.sampleQc")
+  String sample_sampleQc();
+
+  /**
+   * Translated "Report quality control items".
+   * 
+   * @return translated "Report quality control items"
+   */
+  @DefaultMessage("Report quality control items")
+  @Key("sample.sampleQcDescription")
+  String sample_sampleQcDescription();
 
   /**
    * Translated "SDWIS".

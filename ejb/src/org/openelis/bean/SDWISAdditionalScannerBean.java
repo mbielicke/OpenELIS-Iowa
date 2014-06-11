@@ -286,7 +286,7 @@ public class SDWISAdditionalScannerBean {
                              ArrayList<String> analytes, PWSViolationDO violation, int multiplier) throws Exception {
         OrderManager1 om;
 
-        om = orderManager.duplicate(orderTemplate, true);
+        om = orderManager.duplicate(orderTemplate, true, false);
 
         if (getItems(om) != null) {
             for (OrderItemViewDO item : getItems(om))

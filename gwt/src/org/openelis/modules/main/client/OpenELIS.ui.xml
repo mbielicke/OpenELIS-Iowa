@@ -93,6 +93,7 @@
                 <w:MenuItem description="{msg.storageDescription}" enabled="false" icon="{res.icon.storageIcon}" ui:field="storage"
                   display="{msg.storage}" />
                 <w:MenuItem description="{msg.QCDescription}" enabled="false" icon="QCIcon" ui:field="QC" display="{msg.QC}" />
+                <w:MenuItem description="{msg.sample_sampleQcDescription}" enabled="false" icon="QCIcon" ui:field="sampleQc" display="{msg.sample_sampleQc}" />
                 <w:MenuItem description="{msg.analyteParameterDescription}" enabled="false" icon="{res.icon.QCIcon}" ui:field="analyteParameter"
                   display="{msg.analyteParameter}" />
               </w:Menu>

@@ -27,13 +27,16 @@ package org.openelis.modules.sampleQC.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DEFAULT;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
@@ -47,11 +50,13 @@ import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
+import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.event.DataChangeEvent;
@@ -85,8 +90,6 @@ public class SampleQCScreenUI extends Screen {
 
     public static final SampleQcUiBinder                           uiBinder            = GWT.create(SampleQcUiBinder.class);
 
-    protected ArrayList<WorksheetManager1>                         managers;
-
     protected SampleManager1                                       sm;
 
     protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> selected;
@@ -95,7 +98,7 @@ public class SampleQCScreenUI extends Screen {
 
     @UiField
     protected Button                                               query, commit, abort,
-                    optionsButton, run;
+                    optionsButton, run, checkAllButton, uncheckAllButton;
 
     @UiField
     protected TextBox<Integer>                                     id;
@@ -114,6 +117,10 @@ public class SampleQCScreenUI extends Screen {
 
     protected AsyncCallbackUI<ArrayList<WorksheetManager1>>        fetchWorksheetsByIdsCall;
 
+    protected AsyncCallbackUI<QcManager>                           fetchQcByIdCall;
+
+    protected HashSet<Integer>                                     qcIds;
+
     protected HashMap<Integer, HashSet<Integer>>                   analysisWorksheets,
                     analysisRelatedWorksheets;
 
@@ -121,13 +128,18 @@ public class SampleQCScreenUI extends Screen {
 
     protected HashMap<Integer, WorksheetManager1>                  wms;
 
+    protected HashMap<Integer, QcManager>                          qms;
+
     protected HashMap<Integer, Integer>                            relatedWorksheets;
 
-    protected HashMap<Integer, String>                             analysisType, analysisStatus,
-                    analysisUnit, worksheetStatus, worksheetFormat;
+    protected HashMap<Integer, String>                             sampleType, analysisStatus,
+                    analysisUnit, worksheetStatus, worksheetFormat, qcType;
 
     private static final String                                    ANALYSIS_LEAF       = "analysis",
-                    WORKSHEET_LEAF = "worksheet", QC_LEAF = "qc";
+                    WORKSHEET_LEAF = "worksheet",
+                    QC_LEAF = "qc",
+                    ANALYTE_LEAF = "qcAnalyte",
+                    VALUE_LEAF = "value";
 
     protected SampleManager1.Load                                  sampleElements[]    = {SampleManager1.Load.WORKSHEET};
 
@@ -143,7 +155,8 @@ public class SampleQCScreenUI extends Screen {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        managers = null;
+        sm = null;
+        wms = null;
 
         initialize();
         setState(DEFAULT);
@@ -242,9 +255,21 @@ public class SampleQCScreenUI extends Screen {
         });
         tree.setVisible(true);
 
-        analysisType = new HashMap<Integer, String>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_type"))
-            analysisType.put(d.getId(), d.getEntry());
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                checkAllButton.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                uncheckAllButton.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        sampleType = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("type_of_sample"))
+            sampleType.put(d.getId(), d.getEntry());
 
         analysisStatus = new HashMap<Integer, String>();
         for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status")) {
@@ -262,8 +287,13 @@ public class SampleQCScreenUI extends Screen {
         }
 
         worksheetFormat = new HashMap<Integer, String>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("worksheet_format")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("test_worksheet_format")) {
             worksheetFormat.put(d.getId(), d.getEntry());
+        }
+
+        qcType = new HashMap<Integer, String>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("qc_type")) {
+            qcType.put(d.getId(), d.getEntry());
         }
     }
 
@@ -273,9 +303,9 @@ public class SampleQCScreenUI extends Screen {
     @UiHandler("query")
     protected void query(ClickEvent event) {
         sm = null;
-        managers = null;
         wms = null;
         worksheetNodes = null;
+        tree.setRoot(getRoot());
         setState(QUERY);
         fireDataChange();
         id.setFocus(true);
@@ -325,7 +355,6 @@ public class SampleQCScreenUI extends Screen {
         if (isState(QUERY)) {
             try {
                 sm = null;
-                managers = null;
                 wms = null;
                 worksheetNodes = null;
                 setState(DEFAULT);
@@ -339,10 +368,81 @@ public class SampleQCScreenUI extends Screen {
         }
     }
 
+    @UiHandler("checkAllButton")
+    protected void checkAll(ClickEvent event) {
+        check("Y");
+    }
+
+    @UiHandler("uncheckAllButton")
+    protected void uncheckAll(ClickEvent event) {
+        check("N");
+    }
+
+    protected void check(String reportable) {
+        int index;
+        Node node, child;
+
+        if (tree.getSelectedNodes().length > 1) {
+            getWindow().setError(Messages.get().qc_multiQcCheckNotAllowed());
+            return;
+        }
+        index = tree.getSelectedNode();
+
+        if (index == -1)
+            return;
+        node = tree.getNodeAt(index);
+        if (ANALYTE_LEAF.equals(node.getType())) {
+            index = tree.getRoot().getIndex(node.getParent());
+        } else if (QC_LEAF.equals(node.getType())) {
+            index = tree.getRoot().getIndex(node);
+        } else {
+            getWindow().setError(Messages.get().qc_qcCheckNodeNotAllowed());
+            return;
+        }
+
+        node = tree.getNodeAt(index);
+        tree.open(node);
+        for (int i = 0; i < node.getChildCount(); i++ ) {
+            child = node.getChildAt(i);
+            child.setCell(0, reportable);
+        }
+        tree.setRoot(tree.getRoot());
+    }
+
+    /**
+     * create a list of worksheet managers with QC data for the checked QCs
+     */
+    protected HashMap<Integer, ArrayList<WorksheetManager1>> runReport() {
+        int i, j, k, l;
+        Node anode, wnode, qnode, qanode;
+        HashMap<Integer, ArrayList<WorksheetManager1>> qcs;
+
+        qcs = new HashMap<Integer, ArrayList<WorksheetManager1>>();
+        for (i = 0; i < tree.getRoot().getChildCount(); i++ ) {
+            anode = tree.getRoot().getChildAt(i);
+            for (j = 0; j < anode.getChildCount(); j++ ) {
+                wnode = anode.getChildAt(j);
+                for (k = 0; k < wnode.getChildCount(); k++ ) {
+                    qnode = wnode.getChildAt(k);
+                    for (l = 0; l < qnode.getChildCount(); l++ ) {
+                        qanode = qnode.getChildAt(l);
+                        if ("Y".equals(qanode.getCell(0))) {
+                            if (qcs.get( ((AnalysisViewDO)anode.getData()).getId()) == null)
+                                qcs.put( ((AnalysisViewDO)anode.getData()).getId(),
+                                        new ArrayList<WorksheetManager1>());
+                            qcs.get( ((AnalysisViewDO)anode.getData()).getId())
+                               .add(wms.get(wnode.getCell(0)));
+                        }
+                    }
+                }
+            }
+        }
+        return qcs;
+    }
+
     private void fetchByAccession(Integer accession) {
         if (accession == null) {
             sm = null;
-            managers = null;
             wms = null;
             worksheetNodes = null;
             setState(DEFAULT);
@@ -361,6 +461,7 @@ public class SampleQCScreenUI extends Screen {
                         sm = result;
                         wids = new ArrayList<Integer>();
                         analysisWorksheets = new HashMap<Integer, HashSet<Integer>>();
+                        analysisRelatedWorksheets = new HashMap<Integer, HashSet<Integer>>();
                         for (int i = 0; i < sm.item.count(); i++ ) {
                             item = sm.item.get(i);
                             for (int j = 0; j < sm.analysis.count(item); j++ ) {
@@ -375,66 +476,106 @@ public class SampleQCScreenUI extends Screen {
                                 }
                             }
                         }
-                        if (fetchWorksheetsByIdsCall == null) {
-                            fetchWorksheetsByIdsCall = new AsyncCallbackUI<ArrayList<WorksheetManager1>>() {
-                                public void success(ArrayList<WorksheetManager1> result) {
-                                    ArrayList<WorksheetManager1> worksheets;
-                                    ArrayList<Integer> wids;
+                        if (wids.size() > 0) {
+                            qcIds = new HashSet<Integer>();
+                            if (fetchWorksheetsByIdsCall == null) {
+                                fetchWorksheetsByIdsCall = new AsyncCallbackUI<ArrayList<WorksheetManager1>>() {
+                                    public void success(ArrayList<WorksheetManager1> result) {
+                                        ArrayList<WorksheetManager1> worksheets;
+                                        ArrayList<Integer> wids;
 
-                                    worksheets = result;
+                                        worksheets = result;
 
-                                    if (sm == null || managers.size() < 1) {
-                                        sm = null;
-                                        managers = null;
-                                        setState(DISPLAY);
-                                        return;
-                                    }
-                                    wids = new ArrayList<Integer>();
-                                    for (WorksheetManager1 wm : worksheets) {
-                                        if (wms.get(wm.getWorksheet().getId()) == null)
-                                            wms.put(wm.getWorksheet().getId(), wm);
-                                        if (wm.getWorksheet().getRelatedWorksheetId() != null) {
-                                            relatedWorksheets.put(wm.getWorksheet().getId(),
-                                                                  wm.getWorksheet()
-                                                                    .getRelatedWorksheetId());
-                                            if ( !wms.containsKey(wm.getWorksheet()
-                                                                    .getRelatedWorksheetId()))
-                                                wids.add(wm.getWorksheet().getRelatedWorksheetId());
+                                        if (sm == null || worksheets == null ||
+                                            worksheets.size() < 1) {
+                                            sm = null;
+                                            return;
+                                        }
+                                        if (wms == null)
+                                            wms = new HashMap<Integer, WorksheetManager1>();
+                                        wids = new ArrayList<Integer>();
+                                        for (WorksheetManager1 wm : worksheets) {
+                                            getQcIds(wm);
+                                            if (wms.get(wm.getWorksheet().getId()) == null)
+                                                wms.put(wm.getWorksheet().getId(), wm);
+                                            if (wm.getWorksheet().getRelatedWorksheetId() != null) {
+                                                relatedWorksheets.put(wm.getWorksheet().getId(),
+                                                                      wm.getWorksheet()
+                                                                        .getRelatedWorksheetId());
+                                                if ( !wms.containsKey(wm.getWorksheet()
+                                                                        .getRelatedWorksheetId()))
+                                                    wids.add(wm.getWorksheet()
+                                                               .getRelatedWorksheetId());
+                                            }
+                                        }
+                                        if (wids.size() > 0)
+                                            WorksheetService1.get()
+                                                             .fetchByIds(wids,
+                                                                         worksheetElements,
+                                                                         fetchWorksheetsByIdsCall);
+                                        else {
+                                            qms = new HashMap<Integer, QcManager>();
+                                            if (fetchQcByIdCall == null) {
+                                                fetchQcByIdCall = new AsyncCallbackUI<QcManager>() {
+                                                    public void success(QcManager result) {
+                                                        qms.put(result.getQc().getId(), result);
+                                                    }
+
+                                                    public void notFound() {
+                                                        setDone(Messages.get().gen_noRecordsFound());
+                                                    }
+
+                                                    public void failure(Throwable e) {
+                                                        Window.alert(Messages.get()
+                                                                             .gen_fetchFailed() +
+                                                                     e.getMessage());
+                                                        logger.log(Level.SEVERE, e.getMessage(), e);
+                                                    }
+
+                                                    public void finish() {
+                                                        fireDataChange();
+                                                        clearStatus();
+                                                    }
+                                                };
+                                            }
+                                            Iterator<Integer> iter = qcIds.iterator();
+                                            // TODO
+                                            // while (iter.hasNext())
+                                            // QcService.get().fetchById(iter.next(),
+                                            // fetchQcByIdCall);
+
+                                            worksheetNodes = new HashMap<Integer, Node>();
+                                            for (Integer id : wms.keySet()) {
+                                                worksheetNodes.put(id,
+                                                                   createWorksheetNode(wms.get(id)));
+                                            }
+                                            tree.setRoot(getRoot());
                                         }
                                     }
-                                    setState(DISPLAY);
-                                    if (wids.size() > 0)
-                                        WorksheetService1.get()
-                                                         .fetchByIds(wids,
-                                                                     worksheetElements,
-                                                                     fetchWorksheetsByIdsCall);
-                                    else {
-                                        worksheetNodes = new HashMap<Integer, Node>();
-                                        for (Integer id : wms.keySet()) {
-                                            worksheetNodes.put(id, createWorksheetNode(wms.get(id)));
-                                        }
-                                        tree.setRoot(getRoot());
+
+                                    public void notFound() {
+                                        setDone(Messages.get().gen_noRecordsFound());
                                     }
-                                }
 
-                                public void notFound() {
-                                    setDone(Messages.get().gen_noRecordsFound());
-                                }
+                                    public void failure(Throwable e) {
+                                        Window.alert(Messages.get().gen_fetchFailed() +
+                                                     e.getMessage());
+                                        logger.log(Level.SEVERE, e.getMessage(), e);
+                                    }
 
-                                public void failure(Throwable e) {
-                                    Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
-                                    logger.log(Level.SEVERE, e.getMessage(), e);
-                                }
-
-                                public void finish() {
-                                    fireDataChange();
-                                    clearStatus();
-                                }
-                            };
+                                    public void finish() {
+                                        fireDataChange();
+                                        clearStatus();
+                                    }
+                                };
+                            }
+                            WorksheetService1.get().fetchByIds(wids,
+                                                               worksheetElements,
+                                                               fetchWorksheetsByIdsCall);
+                        } else {
+                            tree.setRoot(getRoot());
+                            id.setText(DataBaseUtil.toString(sm.getSample().getAccessionNumber()));
                         }
-                        WorksheetService1.get().fetchByIds(wids,
-                                                           worksheetElements,
-                                                           fetchWorksheetsByIdsCall);
                     }
 
                     public void notFound() {
@@ -476,36 +617,56 @@ public class SampleQCScreenUI extends Screen {
         return b.toString();
     }
 
+    private void getQcIds(WorksheetManager1 wm) {
+        int i, j;
+        WorksheetItemDO item;
+
+        for (i = 0; i < wm.item.count(); i++ ) {
+            item = wm.item.get(i);
+            for (j = 0; j < wm.analysis.count(item); j++ )
+                qcIds.add(wm.analysis.get(item, j).getQcId());
+        }
+    }
+
     private Node getRoot() {
         int i, j, k;
         Node root, wnode, anode;
         AnalysisViewDO analysis;
         WorksheetViewDO worksheet;
-        HashMap<Integer, Node> analysisNodes;
         HashSet<Integer> addedWorksheets;
 
         root = new Node();
-        if (managers == null || managers.size() == 0)
+        if (sm == null)
             return root;
 
-        analysisNodes = new HashMap<Integer, Node>();
         for (i = 0; i < sm.item.count(); i++ ) {
             for (j = 0; j < sm.analysis.count(sm.item.get(i)); j++ ) {
                 analysis = sm.analysis.get(sm.item.get(i), j);
-                anode = new Node(8);
-                anode.setCell(0, analysis.getTestName());
-                anode.setCell(1, analysis.getMethodName());
-                anode.setCell(2, analysisType.get(analysis.getTypeId()));
-                anode.setCell(3, analysis.getStartedDate());
-                anode.setCell(4, analysis.getReleasedDate());
-                anode.setCell(5, analysisStatus.get(analysis.getStatusId()));
-                anode.setCell(6, analysis.getPreAnalysisTest() + " : " +
-                                 analysis.getPreAnalysisMethod());
-                anode.setCell(7, analysisUnit.get(analysis.getUnitOfMeasureId()));
+                anode = new Node(2);
+                anode.setType(ANALYSIS_LEAF);
+
+                anode.setCell(0, analysis.getTestName() +
+                                 ", " +
+                                 analysis.getMethodName() +
+                                 "(" +
+                                 analysisStatus.get(analysis.getStatusId()) +
+                                 ", " +
+                                 sm.item.get(i).getTypeOfSample() +
+                                 ", " +
+                                 analysisUnit.get(analysis.getUnitOfMeasureId()) +
+                                 ")" +
+                                 (analysis.getStartedDate() == null ? ""
+                                                                   : "[" +
+                                                                     analysis.getStartedDate() +
+                                                                     "]"));
+                if (analysis.getPreAnalysisTest() != null)
+                    anode.setCell(1, "Prep Test - " + analysis.getPreAnalysisTest() + " : " +
+                                     analysis.getPreAnalysisMethod());
                 anode.setData(analysis);
-                analysisNodes.put(sm.analysis.get(sm.item.get(i), j).getId(), anode);
                 root.add(anode);
-                
+
+                if (wms == null || wms.size() == 0)
+                    continue;
                 addedWorksheets = new HashSet<Integer>();
                 for (k = 0; k < sm.worksheet.count(analysis); k++ ) {
                     worksheet = wms.get(sm.worksheet.get(analysis, k).getId()).getWorksheet();
@@ -514,7 +675,7 @@ public class SampleQCScreenUI extends Screen {
                     while (worksheet.getRelatedWorksheetId() != null) {
                         if ( !addedWorksheets.contains(worksheet.getRelatedWorksheetId())) {
                             wnode = copyNode(worksheetNodes.get(worksheet.getRelatedWorksheetId()));
-                            wnode.setCell(0, "Related: " + wnode.getCell(0));
+                            wnode.setCell(0, "Related " + wnode.getCell(0));
                             anode.add(wnode);
                             worksheet = wms.get(worksheet.getRelatedWorksheetId()).getWorksheet();
                             addedWorksheets.add(worksheet.getId());
@@ -525,7 +686,7 @@ public class SampleQCScreenUI extends Screen {
                 }
             }
         }
-
+        setState(DISPLAY);
         return root;
     }
 
@@ -559,14 +720,25 @@ public class SampleQCScreenUI extends Screen {
         WorksheetAnalysisViewDO wa;
 
         worksheet = wm.getWorksheet();
-        wnode = new Node(8);
+        wnode = new Node(2);
         wnode.setType(WORKSHEET_LEAF);
-        wnode.setCell(0, worksheet.getId());
-        wnode.setCell(1, worksheet.getDescription());
-        wnode.setCell(2, worksheet.getCreatedDate());
-        wnode.setCell(3, worksheetStatus.get(worksheet.getStatusId()));
-        wnode.setCell(4, worksheetFormat.get(worksheet.getFormatId()));
-        wnode.setCell(5, worksheet.getSystemUser());
+        wnode.setCell(0, "Worksheet:  ");
+        wnode.setCell(1,
+                      worksheet.getId() +
+                                      "(" +
+                                      worksheetStatus.get(worksheet.getStatusId()) +
+                                      ", " +
+                                      worksheet.getSystemUser() +
+                                      "|" +
+                                      worksheet.getDescription() +
+                                      ")" +
+                                      "[" +
+                                      worksheet.getCreatedDate() +
+                                      "]" +
+
+                                      (worksheet.getFormatId() == null ? ""
+                                                                      : " - " +
+                                                                        worksheetFormat.get(worksheet.getFormatId())));
         wnode.setData(worksheet);
 
         for (i = 0; i < wm.item.count(); i++ ) {
@@ -576,27 +748,31 @@ public class SampleQCScreenUI extends Screen {
                 if (wa.getQcLotId() == null)
                     continue;
                 qnode = new Node(1);
-                qnode.setCell(0, wa.getDescription());
-                // TODO type
+                qnode.setType(QC_LEAF);
+                qnode.setCell(0, wa.getDescription() + "(" + item.getPosition() + ", " +
+                                 wa.getAccessionNumber() + ")");
+                // TODO
+                // qnode.setCell(2,
+                // qcType.get(qms.get(wa.getQcId()).getQc().getTypeId()));
+                qnode.setData(wa);
                 wnode.add(qnode);
 
                 for (k = 0; k < wm.qcResult.count(wa); k++ ) {
                     wq = wm.qcResult.get(wa, k);
-                    qanode = new Node(8);
-                    qanode.setCell(0, new Boolean(false));
+                    qanode = new Node(2);
+                    qanode.setType(ANALYTE_LEAF);
+                    qanode.setCell(0, "Y");
                     qanode.setCell(1, wq.getAnalyteName());
-                    qanode.setCell(2, wq.getSortOrder());
                     l = 0;
                     while (l <= 30 && wq.getValueAt(l) != null) {
                         vnode = new Node(1);
+                        vnode.setType(VALUE_LEAF);
                         vnode.setCell(0, wq.getValueAt(l));
                         qanode.add(vnode);
+                        l++ ;
                     }
                     qanode.setData(wq);
                     qnode.add(qanode);
-
-                    wnode.setCell(6, item.getPosition());
-                    wnode.setCell(7, wa.getAccessionNumber());
                 }
             }
         }

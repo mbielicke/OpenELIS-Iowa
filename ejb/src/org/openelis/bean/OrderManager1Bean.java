@@ -327,18 +327,28 @@ public class OrderManager1Bean {
     }
 
     /**
+     * duplicates the order with the given order ID and commits the new order
+     */
+    public void recur(Integer id) throws Exception {
+        OrderManager1 om;
+
+        om = duplicate(id, false, true);
+        update(om, true);
+    }
+
+    /**
      * duplicates the order with the given order ID and returns the new order
      * manager
      */
     public OrderManager1 duplicate(Integer id) throws Exception {
-        return duplicate(id, false);
+        return duplicate(id, false, false);
     }
 
     /**
      * duplicates the order with the given order ID, with or without sample
      * notes, and returns the new order manager
      */
-    public OrderManager1 duplicate(Integer id, boolean sampleNotes) throws Exception {
+    public OrderManager1 duplicate(Integer id, boolean sampleNotes, boolean forRecurrence) throws Exception {
         Integer oldId;
         Datetime now;
         OrderManager1 om;
@@ -355,17 +365,20 @@ public class OrderManager1Bean {
         ids = new ArrayList<Integer>(1);
         ids.add(id);
         oms = fetchByIds(ids,
-                         true,
+                         !forRecurrence,
                          OrderManager1.Load.SAMPLE_DATA,
                          OrderManager1.Load.ORGANIZATION,
                          OrderManager1.Load.ITEMS);
 
         om = oms.get(0);
+        if (forRecurrence)
+            getOrder(om).setParentOrderId(getOrder(om).getId());
         getOrder(om).setId(null);
         getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         getOrder(om).setOrderedDate(now);
-        getOrder(om).setRequestedBy(User.getName(ctx));
+        if ( !forRecurrence)
+            getOrder(om).setRequestedBy(User.getName(ctx));
 
         if (getOrganizations(om) != null) {
             for (OrderOrganizationViewDO data : getOrganizations(om)) {
