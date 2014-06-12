@@ -35,7 +35,7 @@
       <t:Table ui:field="worksheetItemTable" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="20">
-          <t:CheckBoxCell/>
+          <wc:WorksheetCheckBoxCell/>
         </t:Column>
         <t:Column width="50" label="{msg.worksheet_position}">
           <t:LabelCell/>

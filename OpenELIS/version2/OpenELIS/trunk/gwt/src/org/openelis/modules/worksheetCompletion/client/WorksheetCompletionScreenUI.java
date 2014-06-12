@@ -855,7 +855,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                             testReflexUtility = new TestReflexUtility1() {
                                 @Override
                                 public TestManager getTestManager(Integer testId) throws Exception {
-                                    return getTestManager(testId);
+                                    return screen.getTestManager(testId);
                                 }
                             };
                         }
@@ -879,10 +879,10 @@ public class WorksheetCompletionScreenUI extends Screen {
                                     unlockReflexCall = new AsyncCallbackUI<WorksheetManager1>() {
                                         public void success(WorksheetManager1 result) {
                                             manager = result;
+                                            updateTransferMode = false;
                                             setData();
                                             setState(DISPLAY);
                                             fireDataChange();
-                                            updateTransferMode = false;
                                             setDone(Messages.get().gen_updatingComplete());
                                         }
                                         
@@ -904,10 +904,10 @@ public class WorksheetCompletionScreenUI extends Screen {
                         }
                     } else {
                         manager = result.getWorksheetManager();
+                        updateTransferMode = false;
                         setData();
                         setState(DISPLAY);
                         fireDataChange();
-                        updateTransferMode = false;
                         setDone(Messages.get().gen_updatingComplete());
                     }
                 }
@@ -981,10 +981,10 @@ public class WorksheetCompletionScreenUI extends Screen {
                         unlockTransferCall = new AsyncCallbackUI<WorksheetManager1>() {
                             public void success(WorksheetManager1 result) {
                                 manager = result;
+                                updateTransferMode = false;
                                 setData();
                                 setState(DISPLAY);
                                 fireDataChange();
-                                updateTransferMode = false;
                                 setDone(Messages.get().gen_updateAborted());
                             }
                             
@@ -1542,10 +1542,10 @@ public class WorksheetCompletionScreenUI extends Screen {
                             unlockReflexPopupCall = new AsyncCallbackUI<WorksheetManager1>() {
                                 public void success(WorksheetManager1 result) {
                                     manager = result;
+                                    updateTransferMode = false;
                                     screen.setData();
                                     screen.setState(DISPLAY);
                                     screen.fireDataChange();
-                                    updateTransferMode = false;
                                     screen.setDone(Messages.get().gen_updatingComplete());
                                 }
                                 
