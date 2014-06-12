@@ -25,12 +25,15 @@
  */
 package org.openelis.modules.worksheetCompletion.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-
 import java.util.ArrayList;
-import java.util.logging.Level;
 
-import org.openelis.cache.DictionaryCache;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.Dropdown;
@@ -42,13 +45,6 @@ import org.openelis.ui.widget.table.ColumnInt;
 import org.openelis.ui.widget.table.Container;
 import org.openelis.ui.widget.table.DropdownCell;
 import org.openelis.ui.widget.table.TextBoxCell;
-
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This class is used for displaying, editing and validating the data in the

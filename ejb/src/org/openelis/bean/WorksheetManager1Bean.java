@@ -1821,20 +1821,24 @@ public class WorksheetManager1Bean {
             
             if (waVDO.getSystemUsers() != null && waVDO.getSystemUsers().length() > 0) {
                 completeUserIds.clear();
-                for (AnalysisUserViewDO auData : SampleManager1Accessor.getUsers(sMan)) {
-                    if (aVDO.getId().equals(auData.getAnalysisId()) &&
-                        Constants.dictionary().AN_USER_AC_COMPLETED.equals(auData.getActionId()))
-                        completeUserIds.add(auData.getSystemUserId());
+                if (SampleManager1Accessor.getUsers(sMan) != null) {
+                    for (AnalysisUserViewDO auData : SampleManager1Accessor.getUsers(sMan)) {
+                        if (aVDO.getId().equals(auData.getAnalysisId()) &&
+                            Constants.dictionary().AN_USER_AC_COMPLETED.equals(auData.getActionId()))
+                            completeUserIds.add(auData.getSystemUserId());
+                    }
                 }
                 for (String userName : waVDO.getSystemUsers().split(",")) {
                     userVO = userCache.getSystemUser(userName);
                     if (userVO != null) {
                         if (!completeUserIds.contains(userVO.getId())) {
                             auVDO = new AnalysisUserViewDO();
+                            auVDO.setId(sMan.getNextUID());
+                            auVDO.setAnalysisId(waVDO.getAnalysisId());
                             auVDO.setActionId(Constants.dictionary().AN_USER_AC_COMPLETED);
                             auVDO.setSystemUserId(userVO.getId());
                             auVDO.setSystemUser(userVO.getLoginName());
-                            SampleManager1Accessor.getUsers(sMan).add(auVDO);
+                            SampleManager1Accessor.addUser(sMan, auVDO);
                             update = true;
                         }
                     } else {
@@ -1967,11 +1971,28 @@ public class WorksheetManager1Bean {
                 if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(waVDO.getStatusId()) ||
                     Constants.dictionary().ANALYSIS_INITIATED.equals(waVDO.getStatusId()) ||
                     Constants.dictionary().ANALYSIS_COMPLETED.equals(waVDO.getStatusId())) {
-                    aHelper.changeAnalysisStatus(sMan, aVDO.getId(), Constants.dictionary().ANALYSIS_COMPLETED);
-                    update = true;
+                    try {
+                        aHelper.changeAnalysisStatus(sMan, aVDO.getId(), Constants.dictionary().ANALYSIS_COMPLETED);
+                        update = true;
+                    } catch (Exception ignE) {
+                        // if there is an error changing the status to Completed,
+                        // we are ignoring it. If it is just missing a required
+                        // result then we leave the status alone. If it is some
+                        // other error, we will catch it on validation during update
+                        // of the sample manager.
+                    }
                 } else if (DataBaseUtil.isDifferent(waVDO.getStatusId(), aVDO.getStatusId())) {
                     aHelper.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
                     update = true;
+                }
+            } catch (ValidationErrorsList vel) {
+                for (Exception e : vel.getErrorList()) {
+                    errorList.add(new FormErrorException(Messages.get().worksheet_errorChangingAnalysisStatus(String.valueOf(wiDO.getPosition()),
+                                                                                                              "'" +
+                                                                                                              waVDO.getTestName() +
+                                                                                                              ", " +
+                                                                                                              waVDO.getMethodName(),
+                                                                                                              e.getMessage())));
                 }
             } catch (Exception anyE) {
                 errorList.add(new FormErrorException(Messages.get().worksheet_errorChangingAnalysisStatus(String.valueOf(wiDO.getPosition()),

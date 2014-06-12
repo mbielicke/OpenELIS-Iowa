@@ -790,7 +790,7 @@ public class WorksheetItemTabUI extends Screen {
                     wiDO = (WorksheetItemDO)manager.item.get(i);
     
                     row = new Row(rowSize);
-                    row.setCell(0, "N");
+                    row.setCell(0, null);
                     row.setCell(1, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
                         waDO = manager.analysis.get(wiDO, j);
@@ -800,7 +800,7 @@ public class WorksheetItemTabUI extends Screen {
     
                         if (j > 0) {
                             row = new Row(rowSize);
-                            row.setCell(0, "N");
+                            row.setCell(0, null);
                             row.setCell(1, wiDO.getPosition());
                         }
                         row.setCell(2, waDO.getAccessionNumber());
@@ -823,6 +823,8 @@ public class WorksheetItemTabUI extends Screen {
                                     row.setCell(0, "Y");
                                     transferRowMap.put(waDO.getAnalysisId(), r);
                                 }
+                            } else {
+                                row.setCell(0, null);
                             }
                             row.setCell(3, waDO.getDescription());
                             row.setCell(4, waDO.getWorksheetAnalysisId());
@@ -840,7 +842,7 @@ public class WorksheetItemTabUI extends Screen {
                                 wrVDO = manager.result.get(waDO, k);
                                 if (k > 0) {
                                     row = new Row(rowSize);
-                                    row.setCell(0, "N");
+                                    row.setCell(0, null);
                                     row.setCell(1, "");
                                     row.setCell(2, "");
                                     row.setCell(3, "");
@@ -868,7 +870,7 @@ public class WorksheetItemTabUI extends Screen {
                                 r++;
                             }
                         } else if (waDO.getQcLotId() != null) {
-                            row.setCell(0, "N");
+                            row.setCell(0, null);
                             row.setCell(3, waDO.getDescription());
                             row.setCell(4, waDO.getWorksheetAnalysisId());
                             row.setCell(5, "");
@@ -880,7 +882,7 @@ public class WorksheetItemTabUI extends Screen {
                                 wqrVDO = manager.qcResult.get(waDO, k);
                                 if (k > 0) {
                                     row = new Row(rowSize);
-                                    row.setCell(0, "N");
+                                    row.setCell(0, null);
                                     row.setCell(1, "");
                                     row.setCell(2, "");
                                     row.setCell(3, "");
