@@ -28,7 +28,7 @@ package org.openelis.modules.order1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.OrderManager1;
 import org.openelis.manager.OrderManager1.Load;
@@ -222,16 +222,16 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderManager1 duplicate(Integer id) throws Exception {
-        Callback<OrderManager1> callback;
+    public OrderReturnVO duplicate(Integer id) throws Exception {
+        Callback<OrderReturnVO> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<OrderReturnVO>();
         service.duplicate(id, callback);
         return callback.getResult();
     }
 
     @Override
-    public void duplicate(Integer id, AsyncCallback<OrderManager1> callback) {
+    public void duplicate(Integer id, AsyncCallback<OrderReturnVO> callback) {
         service.duplicate(id, callback);
     }
 
@@ -266,17 +266,17 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
-        Callback<OrderTestReturnVO> callback;
+    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        Callback<OrderReturnVO> callback;
 
-        callback = new Callback<OrderTestReturnVO>();
+        callback = new Callback<OrderReturnVO>();
         service.addAuxGroups(om, groupIds, callback);
         return callback.getResult();
     }
 
     @Override
     public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderTestReturnVO> callback) {
+                             AsyncCallback<OrderReturnVO> callback) {
         service.addAuxGroups(om, groupIds, callback);
     }
 
@@ -296,17 +296,17 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderTestReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
-        Callback<OrderTestReturnVO> callback;
+    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
+        Callback<OrderReturnVO> callback;
 
-        callback = new Callback<OrderTestReturnVO>();
+        callback = new Callback<OrderReturnVO>();
         service.addTest(om, id, isTest, index, callback);
         return callback.getResult();
     }
 
     @Override
     public void addTest(OrderManager1 om, Integer id, boolean isTest, Integer index,
-                        AsyncCallback<OrderTestReturnVO> callback) {
+                        AsyncCallback<OrderReturnVO> callback) {
         service.addTest(om, id, isTest, index, callback);
     }
 

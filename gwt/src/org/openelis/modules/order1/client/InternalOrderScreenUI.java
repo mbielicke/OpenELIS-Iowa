@@ -44,6 +44,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.manager.OrderManager1;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
@@ -145,7 +146,9 @@ public class InternalOrderScreenUI extends Screen {
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
     protected AsyncCallbackUI<OrderManager1>       addCall, fetchForUpdateCall, updateCall,
-                    fetchByIdCall, unlockCall, duplicateCall;
+                    fetchByIdCall, unlockCall;
+
+    protected AsyncCallbackUI<OrderReturnVO>   duplicateCall;
 
     protected OrderManager1.Load                   elements[] = {OrderManager1.Load.ITEMS};
 
@@ -774,9 +777,9 @@ public class InternalOrderScreenUI extends Screen {
 
     protected void duplicate() {
         if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<OrderManager1>() {
-                public void success(OrderManager1 result) {
-                    manager = result;
+            duplicateCall = new AsyncCallbackUI<OrderReturnVO>() {
+                public void success(OrderReturnVO result) {
+                    manager = result.getManager();
                     setData();
                     setState(ADD);
                     fireDataChange();

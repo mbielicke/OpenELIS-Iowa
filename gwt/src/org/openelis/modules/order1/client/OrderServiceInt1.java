@@ -28,7 +28,7 @@ package org.openelis.modules.order1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.manager.OrderManager1;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -70,17 +70,17 @@ public interface OrderServiceInt1 extends RemoteService {
     public ArrayList<OrderManager1> unlock(ArrayList<Integer> orderIds,
                                            OrderManager1.Load... elements) throws Exception;
 
-    public OrderManager1 duplicate(Integer id) throws Exception;
-    
+    public OrderReturnVO duplicate(Integer id) throws Exception;
+
     public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception;
 
     public ArrayList<IdNameVO> fetchByDescription(String search, int max) throws Exception;
 
-    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
+    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
 
     public OrderManager1 removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
 
-    public OrderTestReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception;
+    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception;
 
     public OrderManager1 removeTests(OrderManager1 om, ArrayList<Integer> ids) throws Exception;
 
