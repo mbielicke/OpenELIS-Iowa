@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -9977,6 +9977,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Order # \"{0,number}\": Frequency must be greater than zero")
   @Key("order.freqInvalidException")
   String order_freqInvalidException(Integer arg0);
+
+  /**
+   * Translated "The following organization is inactive and was not duplicated: {0}".
+   * 
+   * @return translated "The following organization is inactive and was not duplicated: {0}"
+   */
+  @DefaultMessage("The following organization is inactive and was not duplicated: {0}")
+  @Key("order.inactiveOrganizationWarning")
+  String order_inactiveOrganizationWarning(String arg0);
 
   /**
    * Translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".

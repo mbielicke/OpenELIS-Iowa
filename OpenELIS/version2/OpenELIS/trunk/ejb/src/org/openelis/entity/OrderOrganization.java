@@ -54,14 +54,14 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "OrderOrganization.FetchByOrderId",
                            query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, "
                                    + "oo.orderId, oo.organizationId, oo.organizationAttention, "
-                                   + "oo.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, "
+                                   + "oo.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, "
                                    + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
                                    + "o.address.faxPhone, o.address.country)"
                                    + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId = :id"),
                @NamedQuery(name = "OrderOrganization.FetchByOrderIds",
                            query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, "
                                    + "oo.orderId, oo.organizationId, oo.organizationAttention, "
-                                   + "oo.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, "
+                                   + "oo.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, "
                                    + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
                                    + "o.address.faxPhone, o.address.country)"
                                    + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId in ( :ids )")})
