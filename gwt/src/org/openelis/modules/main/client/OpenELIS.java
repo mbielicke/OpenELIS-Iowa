@@ -71,6 +71,7 @@ import org.openelis.modules.report.client.AirQualityReportScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
+import org.openelis.modules.report.client.InstrumentBarcodeReportScreen;
 import org.openelis.modules.report.client.KitTrackingReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.RequestformReportScreen;
@@ -141,19 +142,20 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder,/* worksheetCreation,*/ worksheetCompletion, worksheetCompletionUI, addOrCancel,
-                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
-                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
-                    inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
-                    testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
-                    billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
-                    sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
-                    turnAroundStatisticReport, kitTrackingReport, airQualityReport,
-                    sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
-                    finalReportBatchReprint, test, method, panel, QAEvent, labSection, analyte,
-                    dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
-                    label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
-                    scriptlet, systemVariable, pws, cron, logs;
+                    worksheetBuilder,/* worksheetCreation, */worksheetCompletion,
+                    worksheetCompletionUI, addOrCancel, reviewAndRelease, toDo, labelFor, storage,
+                    QC, analyteParameter, internalOrder, vendorOrder, sendoutOrder, fillOrder,
+                    shipping, buildKits, inventoryTransfer, inventoryReceipt, inventoryAdjustment,
+                    inventoryItem, verificationReport, testRequestFormReport, orderRequestForm,
+                    holdRefuseOrganization, testReport, instrumentBarcodeReport, billingReport,
+                    sampleInhouseReport, volumeReport, toDoAnalyteReport, sampleDataExport,
+                    QASummaryReport, testCountByFacility, turnaround, turnAroundStatisticReport,
+                    kitTrackingReport, airQualityReport, sdwisUnloadReport, dataView, qcChart,
+                    finalReport, finalReportBatch, finalReportBatchReprint, test, method, panel,
+                    QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
+                    exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
+                    trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
+                    systemVariable, pws, cron, logs;
 
 	@UiField
     protected Menu maintenanceMenu;                    
@@ -1980,6 +1982,30 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new HoldRefuseOrganizationReportScreen(window));
                             browser.addWindow(window, "holdRefuseOrganization");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(instrumentBarcodeReport, "worksheet", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.instrumentBarcode_instrumentBarcodeReport());
+                            window.setSize("20px", "20px");
+                            window.setContent(new InstrumentBarcodeReportScreen(window));
+                            browser.addWindow(window, "instrumentBarcodeReport");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());

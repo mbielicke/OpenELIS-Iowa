@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -7160,6 +7160,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Instrument")
   @Key("instrument")
   String instrument();
+
+  /**
+   * Translated "Barcode Type".
+   * 
+   * @return translated "Barcode Type"
+   */
+  @DefaultMessage("Barcode Type")
+  @Key("instrumentBarcode.barcodeType")
+  String instrumentBarcode_barcodeType();
+
+  /**
+   * Translated "Instrument Barcode Report".
+   * 
+   * @return translated "Instrument Barcode Report"
+   */
+  @DefaultMessage("Instrument Barcode Report")
+  @Key("instrumentBarcode.instrumentBarcodeReport")
+  String instrumentBarcode_instrumentBarcodeReport();
+
+  /**
+   * Translated "Worksheet Id".
+   * 
+   * @return translated "Worksheet Id"
+   */
+  @DefaultMessage("Worksheet Id")
+  @Key("instrumentBarcode.worksheetId")
+  String instrumentBarcode_worksheetId();
 
   /**
    * Translated "Define instruments that can be used in the laboratory.".
