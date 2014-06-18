@@ -44,11 +44,11 @@ public class AnalyteParameterViewDO extends AnalyteParameterDO {
     }
     
     public AnalyteParameterViewDO(Integer id, Integer referenceId, Integer referenceTableId,
-                                  Integer analyteId, Integer typeOfSampleId, 
-                                  String isActive, Date activeBegin, Date activeEnd,
+                                  Integer analyteId, Integer typeOfSampleId, Integer unitOfMeasureId,
+                                  Date activeBegin, Date activeEnd,
                                   Double p1, Double p2, Double p3, String analyteName) {
-        super(id, referenceId, referenceTableId, analyteId, typeOfSampleId, 
-              isActive, activeBegin, activeEnd, p1, p2, p3);
+        super(id, referenceId, referenceTableId, analyteId, typeOfSampleId, unitOfMeasureId, 
+              activeBegin, activeEnd, p1, p2, p3);
         setAnalyteName(analyteName);        
     }   
     
