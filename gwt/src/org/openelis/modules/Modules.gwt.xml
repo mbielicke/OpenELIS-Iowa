@@ -32,7 +32,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
     <inherits name="org.openelis.modules.auxData.AuxData"/>
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
-    <inherits name="org.openelis.modules.analyteParameter.AnalyteParameter"/>
+    <inherits name="org.openelis.modules.analyteParameter1.AnalyteParameter1"/>
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
     <inherits name="org.openelis.modules.clinicalSampleLogin1.ClinicalSampleLogin1"/>
     <inherits name="org.openelis.modules.completeRelease1.CompleteRelease1"/>

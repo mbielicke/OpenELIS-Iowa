@@ -999,7 +999,7 @@ public class WorksheetExcelHelperBean {
                             pMap = new HashMap<Integer, AnalyteParameterViewDO>();
                             apMap.put("T"+waVDO.getTestId(), pMap);
                             try {
-                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(waVDO.getTestId(),
+                                anaParams = analyteParameterLocal.fetchByReferenceIdReferenceTableId(waVDO.getTestId(),
                                                                                                            Constants.table().TEST);
                                 for (AnalyteParameterViewDO anaParam : anaParams)
                                     pMap.put(anaParam.getAnalyteId(), anaParam);
@@ -1102,7 +1102,7 @@ public class WorksheetExcelHelperBean {
                             pMap = new HashMap<Integer, AnalyteParameterViewDO>();
                             apMap.put("Q"+qcId, pMap);
                             try {
-                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(qcId,
+                                anaParams = analyteParameterLocal.fetchByReferenceIdReferenceTableId(qcId,
                                                                                                            Constants.table().QC);
                                 for (AnalyteParameterViewDO anaParam : anaParams)
                                     pMap.put(anaParam.getAnalyteId(), apVDO);

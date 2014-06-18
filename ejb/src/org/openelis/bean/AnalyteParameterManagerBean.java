@@ -49,15 +49,14 @@ public class AnalyteParameterManagerBean {
     private SessionContext ctx;
 
     @EJB
-    private LockBean              lock;
-    
+    private LockBean       lock;
+
     @EJB
-    private UserCacheBean         userCache;
+    private UserCacheBean  userCache;
 
     public AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Integer refId,
                                                                             Integer refTableId) throws Exception {
-        return AnalyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId,
-                                                                                refTableId);
+        return AnalyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
     }
 
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {
@@ -95,14 +94,13 @@ public class AnalyteParameterManagerBean {
             ut.begin();
             for (i = 0; i < man.count(); i++ ) {
                 data = man.getParameterAt(i);
-                if ("Y".equals(data.getIsActive()) && data.getId() != null)
+                if (data.getId() != null)
                     lock.validateLock(Constants.table().ANALYTE_PARAMETER, data.getId());
             }
             man.update();
             for (i = 0; i < man.count(); i++ ) {
                 data = man.getParameterAt(i);
-                if ("Y".equals(data.getIsActive()))
-                    lock.unlock(Constants.table().ANALYTE_PARAMETER, data.getId());
+                lock.unlock(Constants.table().ANALYTE_PARAMETER, data.getId());
             }
             ut.commit();
         } catch (Exception e) {
@@ -127,8 +125,7 @@ public class AnalyteParameterManagerBean {
                                                            man.getReferenceTableId());
             for (int i = 0; i < man.count(); i++ ) {
                 data = man.getParameterAt(i);
-                if ("Y".equals(data.getIsActive()))
-                    man.setParameterAt(pl.fetchForUpdate(data.getId()), i);
+                man.setParameterAt(pl.fetchForUpdate(data.getId()), i);
             }
             ut.commit();
             return man;
@@ -145,8 +142,7 @@ public class AnalyteParameterManagerBean {
         pl = EJBFactory.getAnalyteParameter();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getParameterAt(i);
-            if ("Y".equals(data.getIsActive()))
-                pl.abortUpdate(data.getId());
+            pl.abortUpdate(data.getId());
         }
         return fetchActiveByReferenceIdReferenceTableId(man.getReferenceId(),
                                                         man.getReferenceTableId());

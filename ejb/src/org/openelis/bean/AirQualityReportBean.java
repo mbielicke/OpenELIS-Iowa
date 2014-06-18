@@ -2037,7 +2037,7 @@ public class AirQualityReportBean {
             return;
 
         for (Integer testId : testIds) {
-            for (AnalyteParameterViewDO data : analyteParameter.fetchActiveByReferenceIdReferenceTableId(testId,
+            for (AnalyteParameterViewDO data : analyteParameter.fetchByReferenceIdReferenceTableId(testId,
                                                                                                          Constants.table().TEST)) {
                 analyteParameters.put(data.getAnalyteId(), data);
             }

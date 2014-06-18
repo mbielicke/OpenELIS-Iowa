@@ -34,7 +34,7 @@ import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
-import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
+import org.openelis.modules.analyteParameter1.client.AnalyteParameterScreenUI;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
 import org.openelis.modules.clinicalSampleLogin1.client.ClinicalSampleLoginScreenUI;
@@ -103,7 +103,6 @@ import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
-//import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
@@ -796,10 +795,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.analyteParameter());
-                            window.setSize("20px", "20px");
-                            window.setContent(new AnalyteParameterScreen(window));
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.analyteParameter_analyteParameter());
+                            window.setSize("860px", "540px");
+                            window.setContent(new AnalyteParameterScreenUI(window));
                             browser.addWindow(window, "analyteParameter");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);

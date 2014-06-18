@@ -307,6 +307,10 @@ public class Constants implements Serializable {
         public String get(AuxDataDO data) {
             return getAuxData(data.getId());
         }
+        
+        public String get(AnalyteParameterDO data) {
+            return getAnalyteParameter(data.getId());
+        }
 
         /**
          * Returns the UID for a given key.
@@ -361,6 +365,10 @@ public class Constants implements Serializable {
 
         public String getAuxData(Integer id) {
             return Constants.table().AUX_DATA + ":" + id;
+        }
+        
+        public String getAnalyteParameter(Integer id) {
+            return Constants.table().ANALYTE_PARAMETER + ":" + id;
         }
     }
 }

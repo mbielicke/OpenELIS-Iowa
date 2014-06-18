@@ -28,7 +28,6 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 import org.openelis.modules.sample1.client.SampleServiceInt1;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.server.RemoteServlet;
