@@ -12058,6 +12058,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String qc_noSelectedRow();
 
   /**
+   * Translated "QC Analyte".
+   * 
+   * @return translated "QC Analyte"
+   */
+  @DefaultMessage("QC Analyte")
+  @Key("qc.qcAnalyte")
+  String qc_qcAnalyte();
+
+  /**
    * Translated "Select a QC or QC analyte node to Check All/Uncheck All".
    * 
    * @return translated "Select a QC or QC analyte node to Check All/Uncheck All"

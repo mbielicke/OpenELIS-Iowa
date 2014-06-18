@@ -74,7 +74,7 @@
 						</table>
 					</g:HTMLPanel>
 				</g:layer>
-				<g:layer bottom="35px" top="125px">
+				<g:layer bottom="35px" top="100px">
 					<r:Tree ui:field="tree" header="true"
 						styleName="{res.table.ScreenTableWithSides}"
 						allowMultipleSelection="true">
@@ -146,5 +146,26 @@
 				</g:layer>
 			</g:LayoutPanel>
 		</g:center>
+		<g:east size="225">
+			<g:LayoutPanel>
+				<g:layer bottom="35px" top="25px">
+					<t:Table ui:field="table" horizontalScroll="ALWAYS"
+						verticalScroll="ALWAYS" width="225px" header="true"
+						styleName="{res.table.ScreenTableWithSides}">
+						<t:Column width="10" label="" required="true">
+							<t:CheckBoxCell align="right">
+								<w:CheckBox />
+							</t:CheckBoxCell>
+						</t:Column>
+						<t:Column width="105" label="{msg.qc_qcAnalyte}"
+							required="true">
+							<t:LabelCell>
+								<w:Label />
+							</t:LabelCell>
+						</t:Column>
+					</t:Table>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:east>
 	</g:SplitLayoutPanel>
 </ui:UiBinder>
