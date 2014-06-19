@@ -550,8 +550,8 @@ public class WorksheetItemTabUI extends Screen {
                                 }
                             }, ClickEvent.getType());
                             loadTemplateMenu.add(item);
-                            enableLoadTemplateMenu(true);
                             templateMap.put(item, data.getTestId());
+                            enableLoadTemplateMenu(true);
                         }
                         
                         if (manager.getWorksheet().getFormatId() == null)
@@ -598,8 +598,10 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
+        if (!isState(state)) {
+            this.state = state;
+            bus.fireEventFromSource(new StateChangeEvent(state), this);
+        }
     }
 
     public void onDataChange() {
