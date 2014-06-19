@@ -1663,7 +1663,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     }
 
     private void setRelatedWorksheetId(Integer id, boolean validate) {
-        if (validate) {
+        if (validate && id != null) {
             setBusy(Messages.get().gen_fetching());
             if (fetchRelatedByIdCall == null) {
                 fetchRelatedByIdCall = new AsyncCallbackUI<WorksheetManager1>() {
@@ -1682,6 +1682,7 @@ public class WorksheetCompletionScreenUI extends Screen {
 
                     public void finish() {
                         relatedWorksheetId.setValue(manager.getWorksheet().getRelatedWorksheetId());
+                        clearStatus();
                     }
                 };
             }
