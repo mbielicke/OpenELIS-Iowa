@@ -107,7 +107,7 @@ import org.openelis.utils.ReportUtil;
           type = DataSource.class,
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
-public class AirQualityReportBean {
+public class AirQualityExportBean {
 
     @EJB
     private SystemVariableBean                       systemVariable;
@@ -214,7 +214,7 @@ public class AirQualityReportBean {
         boolean pressureTempString;
         Integer analysisCount;
         ReportStatus status;
-        String val, frDate, tDate, accession, action, reportTo, attention, tempArray[], analyteArray[], qualifierCode, airDir, metal;
+        String val, frDate, tDate, accession, action, reportTo, attention, tempArray[], analyteArray[], qualifierCode, airDir, metal, errorMessage;
         Datetime d;
         SimpleDateFormat dateTimeFormat;
         QueryData field;
@@ -622,9 +622,26 @@ public class AirQualityReportBean {
          * get the air quality codes corresponding with the analytes and units
          * that are used
          */
-        getAnalyteCodes(analyteIds);
-        getUnitCodes(unitIds);
-        getAnalyteParameters(testIds);
+        try {
+            getAnalyteCodes(analyteIds);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
+            throw new Exception("There was a problem retrieving analyte codes");
+        }
+
+        try {
+            getUnitCodes(unitIds);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
+            throw new Exception("There was a problem retrieving unit codes");
+        }
+
+        try {
+            getAnalyteParameters(testIds);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
+            throw new Exception("There was a problem retrieving analyte parameters");
+        }
 
         sulfateStrings = new HashMap<String, ArrayList<String>>();
         nitrateStrings = new HashMap<String, ArrayList<String>>();
@@ -907,7 +924,7 @@ public class AirQualityReportBean {
          * know the accession numbers
          */
         if (problemSamples.size() > 0) {
-            String errorMessage = "Strings were not created for the following samples:\n";
+            errorMessage = "Strings were not created for the following samples:\n";
             for (Integer i : problemSamples.keySet()) {
                 d = problemSamples.get(i);
                 errorMessage += i + " (" + dateTimeFormat.format(d.getDate()) + ")\n";
@@ -1103,6 +1120,14 @@ public class AirQualityReportBean {
         DecimalFormat threeDigits;
         ArrayList<String> airToxicsStrings;
         HashMap<String, String> auxData;
+
+        /*
+         * only create strings for samples with descriptions of "sample" or
+         * "replicate"
+         */
+        if ( !"sample".equals(sm.getSampleEnvironmental().getDescription()) &&
+            !"duplicate".equals(sm.getSampleEnvironmental().getDescription()))
+            return null;
 
         /*
          * find if there needs to be any extra strings created for extra

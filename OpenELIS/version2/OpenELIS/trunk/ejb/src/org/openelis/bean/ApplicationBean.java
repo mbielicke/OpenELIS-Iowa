@@ -84,19 +84,19 @@ public class ApplicationBean {
                         "order_recurrence_unit_years", "order_status_back_ordered",
                         "order_status_pending", "order_status_processed", "order_status_recurring",
                         "order_status_on_hold", "order_status_cancelled", "order_status_template",
-                        "org_finalrep_fax_number", "org_no_finalreport", "org_report_to",
-                        "org_bill_to", "org_second_report_to", "org_birth_hospital",
-                        "patient_relation_mother", "patient_relation_father",
+                        "order_status_error", "org_finalrep_fax_number", "org_no_finalreport",
+                        "org_report_to", "org_bill_to", "org_second_report_to",
+                        "org_birth_hospital", "patient_relation_mother", "patient_relation_father",
                         "patient_relation_guardian", "patient_relation_self", "pos_duplicate",
                         "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
-                        "pos_last_of_run", "pos_last_of_subset_and_run", "private_well", "pt", "pt_sample",
-                        "qaevent_internal", "qaevent_override", "qaevent_warning", "qc_blank",
-                        "qc_duplicate", "qc_spike", "quick_entry", "receivable_reportto_email",
-                        "released_reportto_email", "org_hold_sample", "profile_air_string",
-                        "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
-                        "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
-                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
-                        "round_sig_fig_noe", "sample_completed", "sample_error",
+                        "pos_last_of_run", "pos_last_of_subset_and_run", "private_well", "pt",
+                        "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
+                        "qc_blank", "qc_duplicate", "qc_spike", "quick_entry",
+                        "receivable_reportto_email", "released_reportto_email", "org_hold_sample",
+                        "profile_air_string", "reflex_auto", "reflex_prompt", "reflex_auto_ndup",
+                        "reflex_prompt_ndup", "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n",
+                        "rf_h", "round_int", "round_int_sig_fig", "round_int_sig_fig_noe",
+                        "round_sig_fig", "round_sig_fig_noe", "sample_completed", "sample_error",
                         "sample_logged_in", "sample_not_verified", "sample_released", "sdwis",
                         "scriptlet_neonatal_domain", "scriptlet_pws_validate",
                         "sdwis_category_bacterial", "sdwis_category_chemical",
@@ -171,7 +171,7 @@ public class ApplicationBean {
         Constants.dictionary().ENVIRONMENTAL = dictId(map, "environmental");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
-        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");      
+        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
         Constants.dictionary().LOG_LEVEL_INFO = dictId(map, "log_level_info");
         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map,
@@ -193,13 +193,14 @@ public class ApplicationBean {
         Constants.dictionary().ORDER_STATUS_ON_HOLD = dictId(map, "order_status_on_hold");
         Constants.dictionary().ORDER_STATUS_CANCELLED = dictId(map, "order_status_cancelled");
         Constants.dictionary().ORDER_STATUS_TEMPLATE = dictId(map, "order_status_template");
+        Constants.dictionary().ORDER_STATUS_ERROR = dictId(map, "order_status_error");
         Constants.dictionary().ORG_FINALREP_FAX_NUMBER = dictId(map, "org_finalrep_fax_number");
         Constants.dictionary().ORG_NO_FINALREPORT = dictId(map, "org_no_finalreport");
         Constants.dictionary().ORG_REPORT_TO = dictId(map, "org_report_to");
         Constants.dictionary().ORG_BILL_TO = dictId(map, "org_bill_to");
         Constants.dictionary().ORG_SECOND_REPORT_TO = dictId(map, "org_second_report_to");
         Constants.dictionary().ORG_BIRTH_HOSPITAL = dictId(map, "org_birth_hospital");
-        Constants.dictionary().PATIENT_RELATION_MOTHER = dictId(map, "patient_relation_mother");  
+        Constants.dictionary().PATIENT_RELATION_MOTHER = dictId(map, "patient_relation_mother");
         Constants.dictionary().PATIENT_RELATION_FATHER = dictId(map, "patient_relation_father");
         Constants.dictionary().PATIENT_RELATION_GUARDIAN = dictId(map, "patient_relation_guardian");
         Constants.dictionary().PATIENT_RELATION_SELF = dictId(map, "patient_relation_self");
