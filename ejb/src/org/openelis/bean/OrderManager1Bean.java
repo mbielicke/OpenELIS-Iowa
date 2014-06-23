@@ -349,7 +349,7 @@ public class OrderManager1Bean {
      * notes, and returns the new order manager
      */
     public OrderReturnVO duplicate(Integer id, boolean sampleNotes, boolean forRecurrence) throws Exception {
-        Integer oldId;
+        Integer oldId, prevGroupId;
         Datetime now;
         OrderManager1 om;
         OrderReturnVO or;
@@ -357,6 +357,7 @@ public class OrderManager1Bean {
         ArrayList<Integer> ids;
         ArrayList<OrderManager1> oms;
         ArrayList<OrderOrganizationViewDO> orgs;
+        ArrayList<AuxDataViewDO> aux;
         HashMap<Integer, Integer> tids;
 
         /*
@@ -374,7 +375,7 @@ public class OrderManager1Bean {
                          OrderManager1.Load.ITEMS);
 
         om = oms.get(0);
-        errors = null;
+        errors = new ValidationErrorsList();
         if (forRecurrence)
             getOrder(om).setParentOrderId(getOrder(om).getId());
         getOrder(om).setId(null);
@@ -392,7 +393,10 @@ public class OrderManager1Bean {
                     data.setOrderId(null);
                     orgs.add(data);
                 } else {
-                    errors = new ValidationErrorsList();
+                    if (forRecurrence) {
+                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        continue;
+                    }
                     errors.add(new FormErrorException(Messages.get()
                                                               .order_inactiveOrganizationWarning(data.getOrganizationName())));
                 }
@@ -443,10 +447,33 @@ public class OrderManager1Bean {
         }
 
         if (getAuxilliary(om) != null) {
+            aux = new ArrayList<AuxDataViewDO>();
+            prevGroupId = null;
             for (AuxDataViewDO data : getAuxilliary(om)) {
-                data.setId(null);
-                data.setReferenceId(null);
+                /*
+                 * don't duplicate the aux group if it is inactive and warn the
+                 * user
+                 */
+                if ("Y".equals(data.getAuxFieldGroupIsActive())) {
+                    data.setId(null);
+                    data.setReferenceId(null);
+                    aux.add(data);
+                } else {
+                    if (forRecurrence) {
+                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        continue;
+                    }
+                    if ( !data.getAuxFieldGroupId().equals(prevGroupId)) {
+                        errors.add(new FormErrorException(Messages.get()
+                                                                  .order_inactiveAuxGroupWarning(data.getAuxFieldGroupName())));
+                    }
+                }
+                prevGroupId = data.getAuxFieldGroupId();
             }
+            if (aux.size() > 0)
+                setAuxilliary(om, aux);
+            else
+                setAuxilliary(om, null);
         }
 
         tids = new HashMap<Integer, Integer>();

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.AirQualityReportBean;
+import org.openelis.bean.AirQualityExportBean;
 import org.openelis.modules.report.client.AirQualityReportServiceInt;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -43,12 +43,12 @@ public class AirQualityReportServlet extends RemoteServlet implements AirQuality
     private static final long    serialVersionUID = 1L;
 
     @EJB
-    private AirQualityReportBean airQualityReport;
+    private AirQualityExportBean airQualityExport;
 
     @Override
     public ArrayList<Prompt> getPrompts() throws Exception {
         try {
-            return airQualityReport.getPrompts();
+            return airQualityExport.getPrompts();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -59,7 +59,7 @@ public class AirQualityReportServlet extends RemoteServlet implements AirQuality
         ReportStatus st;
 
         try {
-            st = airQualityReport.runReport(query.getFields());
+            st = airQualityExport.runReport(query.getFields());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
