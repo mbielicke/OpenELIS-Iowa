@@ -122,6 +122,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
 
+
+
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
 
     protected OrderManager1                  manager;
@@ -1173,6 +1175,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
+            }
+        });
+
+        bus.addHandler(AddRecurrenceEvent.getType(), new AddRecurrenceEvent.Handler() {
+            public void onAddRecurrence(AddRecurrenceEvent event) {
+                status.setEnabled( !Constants.dictionary().ORDER_STATUS_RECURRING.equals(getStatusId()));
+                fireDataChange();
             }
         });
 

@@ -646,6 +646,7 @@ public class RecurrenceTabUI extends Screen {
             endDate.setEnabled(true);
             frequency.setEnabled(true);
             unit.setEnabled(true);
+            parentBus.fireEvent(new AddRecurrenceEvent());
         }
         recurrence.setIsActive(isActive);
         showDatesButton.setEnabled("Y".equals(isActive));
