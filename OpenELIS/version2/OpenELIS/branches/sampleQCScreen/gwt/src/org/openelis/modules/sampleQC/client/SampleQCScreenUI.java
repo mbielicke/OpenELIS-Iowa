@@ -448,7 +448,7 @@ public class SampleQCScreenUI extends Screen {
             return;
         node = tree.getNodeAt(index);
         if (ANALYTE_LEAF.equals(node.getType())) {
-            index = tree.getRoot().getIndex(node.getParent());
+            node = node.getParent();
         } else if (QC_LEAF.equals(node.getType())) {
 
         } else {
@@ -456,13 +456,11 @@ public class SampleQCScreenUI extends Screen {
             return;
         }
 
-        node = tree.getNodeAt(index);
         tree.open(node);
         for (int i = 0; i < node.getChildCount(); i++ ) {
             child = node.getChildAt(i);
             child.setCell(0, reportable);
         }
-        // tree.setRoot(tree.getRoot());
     }
 
     // TODO get all of the QC data
