@@ -100,7 +100,7 @@ public interface SampleServiceInt1Async {
     public void importOrder(SampleManager1 sm, Integer orderId,
                             AsyncCallback<SampleTestReturnVO> callback);
 
-    public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback);
+    public void duplicate(Integer sampleId, AsyncCallback<SampleTestReturnVO> callback);
 
     public void changeDomain(SampleManager1 sm, String domain,
                              AsyncCallback<SampleManager1> callback);

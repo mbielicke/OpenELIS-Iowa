@@ -359,15 +359,15 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
-    public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback) {
+    public void duplicate(Integer sampleId, AsyncCallback<SampleTestReturnVO> callback) {
         service.duplicate(sampleId, callback);
     }
     
     @Override
-    public SampleManager1 duplicate(Integer sampleId) throws Exception {
-        Callback<SampleManager1> callback;
+    public SampleTestReturnVO duplicate(Integer sampleId) throws Exception {
+        Callback<SampleTestReturnVO> callback;
 
-        callback = new Callback<SampleManager1>();
+        callback = new Callback<SampleTestReturnVO>();
         service.duplicate(sampleId, callback);
         return callback.getResult();
     }
