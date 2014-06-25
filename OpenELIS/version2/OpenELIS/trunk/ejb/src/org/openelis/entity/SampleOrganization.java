@@ -53,21 +53,21 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "SampleOrganization.FetchBySampleId",
                 query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
                 		"so.sampleId, so.organizationId, so.organizationAttention, " +
-                		"so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
+                		"so.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, " +
                 		"o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
                 		"o.address.faxPhone, o.address.country)"
                       + " from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id"),
     @NamedQuery( name = "SampleOrganization.FetchBySampleIds",
                 query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
                         "so.sampleId, so.organizationId, so.organizationAttention, " +
-                        "so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
+                        "so.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, " +
                         "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
                         "o.address.faxPhone, o.address.country)"
                       + " from SampleOrganization so LEFT JOIN so.organization o where so.sampleId in (:ids)"),                      
     @NamedQuery( name = "SampleOrganization.FetchReportToBySampleId",
                 query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
                         "so.sampleId, so.organizationId, so.organizationAttention, " +
-                        "so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
+                        "so.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, " +
                         "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
                         "o.address.faxPhone, o.address.country)"
                       + " from SampleOrganization so LEFT JOIN so.organization o "

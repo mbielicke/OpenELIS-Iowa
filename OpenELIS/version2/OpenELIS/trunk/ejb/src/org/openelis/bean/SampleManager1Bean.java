@@ -320,7 +320,7 @@ public class SampleManager1Bean {
         if (el.contains(SampleManager1.Load.AUXDATA)) {
             for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
-                addAuxilliary(sm, data);
+                addAuxiliary(sm, data);
             }
         }
 
@@ -536,7 +536,7 @@ public class SampleManager1Bean {
         if (el.contains(SampleManager1.Load.AUXDATA)) {
             for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
-                addAuxilliary(sm, data);
+                addAuxiliary(sm, data);
             }
         }
 
@@ -703,9 +703,9 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.AUXDATA)) {
-            setAuxilliary(sm, null);
+            setAuxiliary(sm, null);
             for (AuxDataViewDO data : auxdata.fetchByIds(ids, Constants.table().SAMPLE))
-                addAuxilliary(sm, data);
+                addAuxiliary(sm, data);
         }
 
         if (el.contains(SampleManager1.Load.NOTE)) {
@@ -884,8 +884,8 @@ public class SampleManager1Bean {
                 ids2.add(getSampleSDWIS(sm).getPwsId());
             for (AnalysisViewDO an : getAnalyses(sm))
                 ids.add(an.getTestId());
-            if (getAuxilliary(sm) != null) {
-                for (AuxDataViewDO aux : getAuxilliary(sm))
+            if (getAuxiliary(sm) != null) {
+                for (AuxDataViewDO aux : getAuxiliary(sm))
                     ids1.add(aux.getAuxFieldGroupId());
             }
         }
@@ -1130,8 +1130,8 @@ public class SampleManager1Bean {
             }
 
             so = 0;
-            if (getAuxilliary(sm) != null) {
-                for (AuxDataViewDO data : getAuxilliary(sm)) {
+            if (getAuxiliary(sm) != null) {
+                for (AuxDataViewDO data : getAuxiliary(sm)) {
                     so++ ;
                     if ( !DataBaseUtil.isSame(so, data.getSortOrder()))
                         data.setSortOrder(so);
@@ -1515,22 +1515,33 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Returns a manager filled with the data of the sample with the specified
-     * id. The ids in the returned manager are set to either null or negative
-     * numbers. Duplication is not allowed if any analysis is past logged-in
-     * status or if there are reflexed analyses. Cancelled analyses, storages
-     * and internal notes are not duplicated.
+     * Returns a VO with the manager filled with the data of the sample with the
+     * passed id. The ids in the returned manager are set to either null or
+     * negative numbers. Duplication is not allowed (exception is thrown) if any
+     * analysis is past logged-in status or if there are reflexed analyses.
+     * Cancelled analyses, storages and internal notes are not duplicated. If
+     * some data e.g. organization could not be duplicated because of being
+     * inactive, then the returned VO contains warnings for that and the
+     * partially duplicated manager.
      */
-    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+    public SampleTestReturnVO duplicate(Integer sampleId) throws Exception {
         int i;
-        Integer tmpId, accession, seq;
+        Integer tmpId, accession, newAccession, seq, prevGroupId;
         Datetime now;
         SampleManager1 sm;
+        SampleOrganizationViewDO sorg;
+        SampleProjectViewDO sproj;
+        AuxDataViewDO aux;
         AnalysisViewDO ana;
         ResultViewDO res;
         NoteViewDO n;
         AnalysisQaEventViewDO aqa;
+        SampleTestReturnVO ret;
+        ValidationErrorsList errors;
         HashMap<Integer, Integer> imap, amap;
+        ArrayList<SampleOrganizationViewDO> sorgs;
+        ArrayList<SampleProjectViewDO> sprojs;
+        ArrayList<AuxDataViewDO> auxiliary;
         ArrayList<AnalysisViewDO> analyses;
         ArrayList<ResultViewDO> results;
         ArrayList<NoteViewDO> notes;
@@ -1545,7 +1556,6 @@ public class SampleManager1Bean {
                        SampleManager1.Load.RESULT);
 
         accession = getSample(sm).getAccessionNumber();
-
         /*
          * can't duplicate a completed or released sample
          */
@@ -1554,8 +1564,14 @@ public class SampleManager1Bean {
             throw new InconsistencyException(Messages.get()
                                                      .sample_cantDuplicateCompRelException(accession));
 
+        ret = new SampleTestReturnVO();
+        ret.setManager(sm);
+        errors = new ValidationErrorsList();
+        ret.setErrors(errors);
+
         getSample(sm).setId(null);
         getSample(sm).setAccessionNumber(null);
+
         /*
          * set default values in fields like revision, entered date etc.
          */
@@ -1587,17 +1603,54 @@ public class SampleManager1Bean {
             getSampleClinical(sm).setSampleId(null);
         }
 
-        if (getOrganizations(sm) != null) {
-            for (SampleOrganizationViewDO data : getOrganizations(sm)) {
-                data.setId(sm.getNextUID());
-                data.setSampleId(null);
+        /*
+         * this is the accession number used in the warnings for inactive
+         * organizations etc. because the warnings apply to this sample and not
+         * the sample that is being duplicated and the accession number for this
+         * sample currently is null
+         */
+        newAccession = 0;
+        sorgs = getOrganizations(sm);
+        if (sorgs != null) {
+            i = 0;
+            while (i < sorgs.size()) {
+                sorg = sorgs.get(i);
+                /*
+                 * duplicate the organization only if it's active; otherwise add
+                 * the warning for it to inform the user
+                 */
+                if ("Y".equals(sorg.getOrganizationIsActive())) {
+                    sorg.setId(sm.getNextUID());
+                    sorg.setSampleId(null);
+                    i++ ;
+                } else {
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                            .sample_inactiveOrgWarning(newAccession,
+                                                                                       sorg.getOrganizationName())));
+                    sorgs.remove(i);
+                }
             }
         }
 
-        if (getProjects(sm) != null) {
-            for (SampleProjectViewDO data : getProjects(sm)) {
-                data.setId(sm.getNextUID());
-                data.setSampleId(null);
+        sprojs = getProjects(sm);
+        if (sprojs != null) {
+            i = 0;
+            while (i < sprojs.size()) {
+                sproj = sprojs.get(i);
+                /*
+                 * duplicate the project only if it's active; otherwise add the
+                 * warning for it to inform the user
+                 */
+                if ("Y".equals(sproj.getProjectIsActive())) {
+                    sproj.setId(sm.getNextUID());
+                    sproj.setSampleId(null);
+                    i++ ;
+                } else {
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                            .sample_inactiveProjectWarning(newAccession,
+                                                                                           sproj.getProjectName())));
+                    sprojs.remove(i);
+                }
             }
         }
 
@@ -1608,10 +1661,30 @@ public class SampleManager1Bean {
             }
         }
 
-        if (getAuxilliary(sm) != null) {
-            for (AuxDataViewDO data : getAuxilliary(sm)) {
-                data.setId(sm.getNextUID());
-                data.setReferenceId(null);
+        auxiliary = getAuxiliary(sm);
+        prevGroupId = null;
+        if (auxiliary != null) {
+            i = 0;
+            while (i < auxiliary.size()) {
+                aux = auxiliary.get(i);
+                /*
+                 * duplicate the aux group only if it's active; otherwise add
+                 * the warning for it to inform the user; show the warning for
+                 * each inactive group only once
+                 */
+                if ("Y".equals(aux.getAuxFieldGroupIsActive())) {
+                    aux.setId(sm.getNextUID());
+                    aux.setReferenceId(null);
+                    i++ ;
+                } else {
+                    if ( !aux.getAuxFieldGroupId().equals(prevGroupId))
+                        errors.add(new FormErrorWarning(Messages.get()
+                                                                .sample_inactiveAuxGroupWarning(newAccession,
+                                                                                                aux.getAuxFieldGroupName())));
+                    auxiliary.remove(i);
+                }
+
+                prevGroupId = aux.getAuxFieldGroupId();
             }
         }
 
@@ -1761,7 +1834,7 @@ public class SampleManager1Bean {
             }
         }
 
-        return sm;
+        return ret;
     }
 
     /**
@@ -1952,10 +2025,10 @@ public class SampleManager1Bean {
         ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
 
-        auxiliary = getAuxilliary(sm);
+        auxiliary = getAuxiliary(sm);
         if (auxiliary == null) {
             auxiliary = new ArrayList<AuxDataViewDO>();
-            setAuxilliary(sm, auxiliary);
+            setAuxiliary(sm, auxiliary);
         }
 
         ret = new SampleTestReturnVO();
@@ -1982,7 +2055,7 @@ public class SampleManager1Bean {
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> removed;
 
-        removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), new HashSet<Integer>(groupIds));
+        removed = auxDataHelper.removeAuxGroups(getAuxiliary(sm), new HashSet<Integer>(groupIds));
 
         if (removed != null && removed.size() > 0) {
             if (getRemoved(sm) == null)
@@ -2336,8 +2409,8 @@ public class SampleManager1Bean {
          * aux data must be valid for the aux field
          */
 
-        if (getAuxilliary(sm) != null) {
-            for (AuxDataViewDO data : getAuxilliary(sm)) {
+        if (getAuxiliary(sm) != null) {
+            for (AuxDataViewDO data : getAuxiliary(sm)) {
                 if (data.isChanged())
                     try {
                         auxData.validate(data,
@@ -2610,7 +2683,15 @@ public class SampleManager1Bean {
         prepIds = analysisHelper.setPrepForAnalysis(ret.getManager(), ana, analyses, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
-                ret.addTest(ret.getManager().getSample().getId(), test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+                ret.addTest(ret.getManager().getSample().getId(),
+                            test.getSampleItemId(),
+                            id,
+                            ana.getId(),
+                            null,
+                            null,
+                            null,
+                            false,
+                            null);
         analysisHelper.addResults(ret.getManager(), tm, ana, test.getReportableAnalytes(), null);
 
         analyses.put(ana.getTestId(), ana);

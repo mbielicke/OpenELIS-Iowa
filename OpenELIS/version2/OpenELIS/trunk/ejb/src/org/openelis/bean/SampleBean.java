@@ -496,18 +496,17 @@ public class SampleBean {
         accession = data.getAccessionNumber();
         if (accession == null)
             accession = 0;
-        
+
         // accession number must be > 0, previously issued. we don't
         // want to check the duplicate again since it will not guarantee
         // that by the time we insert it will still be unique, and will
         // slow us down.
-        
+
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
             e.add(new FormErrorException(Messages.get()
                                                  .sample_accessionNumberNotValidException(accession)));
         else if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
-            e.add(new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotInUse(accession)));
+            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotInUse(accession)));
 
         // domain
         d = data.getDomain();
@@ -516,8 +515,7 @@ public class SampleBean {
              !Constants.domain().CLINICAL.equals(d) && !Constants.domain().NEONATAL.equals(d) &&
              !Constants.domain().PRIVATEWELL.equals(d) && !Constants.domain().PT.equals(d) &&
              !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
-            e.add(new FormErrorException(Messages.get()
-                                                 .sample_noDomainException(accession)));
+            e.add(new FormErrorException(Messages.get().sample_noDomainException(accession)));
         // dates
         ent = data.getEnteredDate();
         rec = data.getReceivedDate();
@@ -531,23 +529,31 @@ public class SampleBean {
             e.add(new FormErrorException(Messages.get()
                                                  .sample_receivedDateRequiredException(accession)));
         else if (rec.before(minEnt))
-            e.add(new FormErrorWarning(Messages.get()
-                                               .sample_receivedTooOldWarning(accession)));
+            e.add(new FormErrorWarning(Messages.get().sample_receivedTooOldWarning(accession)));
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
-            cal = Calendar.getInstance();
-            cal.setTime(col.getDate());
-            cal.add(Calendar.HOUR_OF_DAY, data.getCollectionTime().get(Datetime.HOUR));
-            cal.add(Calendar.MINUTE, data.getCollectionTime().get(Datetime.MINUTE));
-            col = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
-        }
-        if (col != null) {
-            if (col.after(rec))
+            if (col != null) {
+                cal = Calendar.getInstance();
+                cal.setTime(data.getCollectionDate().getDate());
+                cal.add(Calendar.HOUR_OF_DAY, data.getCollectionTime().get(Datetime.HOUR));
+                cal.add(Calendar.MINUTE, data.getCollectionTime().get(Datetime.MINUTE));
+                col = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
+            } else {
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedDateInvalidError(accession)));
+                                             .sample_collectedTimeWithoutDateException(accession)));
+            }
+        }
+        
+        if (col != null) {
+            if (rec != null && col.after(rec))
+                e.add(new FormErrorException(Messages.get()
+                                                     .sample_collectedDateAfterReceivedException(accession)));
             if (col.before(minEnt))
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedTooOldWarning(accession)));
+            if (ent != null && col.after(ent)) 
+                e.add(new FormErrorException(Messages.get()
+                                             .sample_collectedDateAfterEnteredException(accession)));
         }
 
         if (e.size() > 0)
