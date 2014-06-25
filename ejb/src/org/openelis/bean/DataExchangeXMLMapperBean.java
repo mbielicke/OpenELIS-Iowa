@@ -343,8 +343,8 @@ public class DataExchangeXMLMapperBean {
             root.appendChild(elm);
         }
 
-        if (getAuxilliary(sm) != null) {
-            for (AuxDataViewDO a : getAuxilliary(sm)) {
+        if (getAuxiliary(sm) != null) {
+            for (AuxDataViewDO a : getAuxiliary(sm)) {
                 root.appendChild(createAuxData(doc, a));
                 if (Constants.dictionary().AUX_DICTIONARY.equals(a.getTypeId()) &&
                     a.getValue() != null)

@@ -97,7 +97,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
-    protected ArrayList<AuxDataViewDO>            auxilliary;
+    protected ArrayList<AuxDataViewDO>            auxiliary;
     protected NoteViewDO                          sampleExtNote;
     protected ArrayList<NoteViewDO>               sampleIntNotes, analysisExtNotes,
                     analysisIntNotes;
@@ -183,8 +183,8 @@ public class SampleManager1 implements Serializable {
                 for (SampleQaEventDO data : sampleQAs)
                     uidMap.put(Constants.uid().get(data), data);
             
-            if (auxilliary != null)
-                for (AuxDataViewDO data : auxilliary)
+            if (auxiliary != null)
+                for (AuxDataViewDO data : auxiliary)
                     uidMap.put(Constants.uid().get(data), data);
 
             if (analysisQAs != null)
@@ -637,16 +637,16 @@ public class SampleManager1 implements Serializable {
          * Returns the aux data at specified index.
          */
         public AuxDataViewDO get(int i) {
-            return auxilliary.get(i);
+            return auxiliary.get(i);
         }
 
         /**
          * Returns the number of aux data associated with the sample
          */
         public int count() {
-            if (auxilliary == null)
+            if (auxiliary == null)
                 return 0;
-            return auxilliary.size();
+            return auxiliary.size();
         }
     }
 
