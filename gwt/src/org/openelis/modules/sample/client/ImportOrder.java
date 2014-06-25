@@ -70,6 +70,7 @@ import org.openelis.modules.auxData.client.AuxDataService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
@@ -86,8 +87,7 @@ public abstract class ImportOrder {
 
     }
 
-    protected ValidationErrorsList importOrderInfo(Integer orderId,
-                                                   SampleManager manager,
+    protected ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager,
                                                    String sysVariableKey) throws Exception {
         Integer auxGroupId;
         AuxDataDO auxData;
@@ -113,7 +113,7 @@ public abstract class ImportOrder {
         errors = new ValidationErrorsList();
 
         loadFieldsFromAuxData(auxDataList, auxGroupId, manager, errors);
-        loadOrganizations(orderId, manager);
+        loadOrganizations(orderId, manager, errors);
         loadSampleItems(orderId, manager);
         loadAnalyses(orderId, manager, errors);
         loadNotes(orderId, manager, errors);
@@ -122,12 +122,13 @@ public abstract class ImportOrder {
     }
 
     protected abstract void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList,
-                                                  Integer auxGroupId,
-                                                  SampleManager manager,
+                                                  Integer auxGroupId, SampleManager manager,
                                                   ValidationErrorsList errors) throws Exception;
 
-    protected void loadOrganizations(Integer orderId, SampleManager man) throws Exception {
+    protected void loadOrganizations(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
+        boolean addWarning;
         OrderViewDO order;
+        OrganizationDO shipTo;
         OrderOrganizationManager orderOrgMan;
         SampleOrganizationManager samOrgMan;
         OrderOrganizationViewDO ordOrg, ordReportTo;
@@ -147,42 +148,67 @@ public abstract class ImportOrder {
             /*
              * create the report-to, bill-to and secondary report-to
              * organizations for the sample if the corresponding organizations
-             * are defined in the order
+             * are defined in the order; don't create if the organization is
+             * inactive
              */
+            addWarning = false;
             if (Constants.dictionary().ORG_REPORT_TO.equals(ordOrg.getTypeId())) {
-                ordReportTo = ordOrg;
-                samReportTo = createSampleOrganization(ordReportTo,
-                                                       Constants.dictionary().ORG_REPORT_TO);
-                samOrgMan.addOrganization(samReportTo);
+                if ("Y".equals(ordOrg.getOrganizationIsActive())) {
+                    ordReportTo = ordOrg;
+                    samReportTo = createSampleOrganization(ordReportTo,
+                                                           Constants.dictionary().ORG_REPORT_TO);
+                    samOrgMan.addOrganization(samReportTo);
+                } else {
+                    addWarning = true;
+                }
             } else if (Constants.dictionary().ORG_BILL_TO.equals(ordOrg.getTypeId())) {
-                samBillTo = createSampleOrganization(ordOrg,
-                                                     Constants.dictionary().ORG_BILL_TO);
-                samOrgMan.addOrganization(samBillTo);
+                if ("Y".equals(ordOrg.getOrganizationIsActive())) {
+                    samBillTo = createSampleOrganization(ordOrg, Constants.dictionary().ORG_BILL_TO);
+                    samOrgMan.addOrganization(samBillTo);
+                } else {
+                    addWarning = true;
+                }
             } else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(ordOrg.getTypeId())) {
-                samOrgMan.addOrganization(createSampleOrganization(ordOrg,
-                                                                   Constants.dictionary().ORG_SECOND_REPORT_TO));
+                if ("Y".equals(ordOrg.getOrganizationIsActive()))
+                    samOrgMan.addOrganization(createSampleOrganization(ordOrg,
+                                                                       Constants.dictionary().ORG_SECOND_REPORT_TO));
+                else
+                    addWarning = true;
             }
+
+            if (addWarning)
+                errors.add(new FormErrorWarning(Messages.get()
+                                                        .inactiveOrgWarning(ordOrg.getOrganizationName())));
         }
 
         /*
-         * if report-to was not found then set the ship-to as the report-to
+         * if report-to was not found then set the ship-to as the report-to, but
+         * only if ship-to is active
          */
         order = orderMan.getOrder();
-        if (samReportTo == null)
-            samOrgMan.addOrganization(createSampleOrganization(order,
-                                                               Constants.dictionary().ORG_REPORT_TO));
+        shipTo = order.getOrganization();
+        if (samReportTo == null) {
+            if ("Y".equals(shipTo.getIsActive()))
+                samOrgMan.addOrganization(createSampleOrganization(order,
+                                                                   Constants.dictionary().ORG_REPORT_TO));
+            else
+                errors.add(new FormErrorWarning(Messages.get().inactiveOrgWarning(shipTo.getName())));
+        }
 
         /*
          * if bill-to was not found and if report-to was found then set it as
-         * the bill-to otherwise set the ship-to as the bill-to
+         * the bill-to; otherwise set the ship-to as the bill-to, but only if
+         * ship-to is active
          */
         if (samBillTo == null) {
             if (ordReportTo != null)
                 samOrgMan.addOrganization(createSampleOrganization(ordReportTo,
                                                                    Constants.dictionary().ORG_BILL_TO));
-            else
+            else if ("Y".equals(shipTo.getIsActive()))
                 samOrgMan.addOrganization(createSampleOrganization(order,
                                                                    Constants.dictionary().ORG_BILL_TO));
+            else
+                errors.add(new FormErrorWarning(Messages.get().inactiveOrgWarning(shipTo.getName())));
         }
     }
 
@@ -204,8 +230,7 @@ public abstract class ImportOrder {
             addedIndex = itemMan.addSampleItem();
             item = itemMan.getSampleItemAt(addedIndex);
             item.setContainerId(container.getContainerId());
-            item.setContainer(DictionaryCache.getById(container.getContainerId())
-                                             .getEntry());
+            item.setContainer(DictionaryCache.getById(container.getContainerId()).getEntry());
             item.setTypeOfSampleId(container.getTypeOfSampleId());
             if (container.getTypeOfSampleId() != null)
                 item.setTypeOfSample(DictionaryCache.getById(container.getTypeOfSampleId())
@@ -222,8 +247,7 @@ public abstract class ImportOrder {
             itemMan.addSampleItem();
     }
 
-    protected void loadAnalyses(Integer orderId, SampleManager manager,
-                                ValidationErrorsList errors) {
+    protected void loadAnalyses(Integer orderId, SampleManager manager, ValidationErrorsList errors) {
         Query query;
         QueryData testField, methodField;
         ArrayList<QueryData> fields;
@@ -275,9 +299,9 @@ public abstract class ImportOrder {
                     /*
                      * add an error if such a test couldn't be found
                      */
-                    errors.add(new FormErrorException(Messages.get().inactiveTestOnOrderException(
-                                                      orderTest.getTestName(),
-                                                      orderTest.getMethodName())));
+                    errors.add(new FormErrorException(Messages.get()
+                                                              .inactiveTestOnOrderException(orderTest.getTestName(),
+                                                                                            orderTest.getMethodName())));
                     continue;
                 } catch (Exception anyE) {
                     anyE.printStackTrace();
@@ -296,8 +320,7 @@ public abstract class ImportOrder {
         }
     }
 
-    protected void loadNotes(Integer orderId, SampleManager man,
-                             ValidationErrorsList errors) throws Exception {
+    protected void loadNotes(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
         NoteViewDO note;
         NoteManager ordNoteMan, samNoteMan;
 
@@ -382,8 +405,8 @@ public abstract class ImportOrder {
         afman = auxFieldGroupMan.getFields();
 
         if (afman.count() < lastAuxFieldIndex) {
-            errors.add(new FormErrorException(Messages.get().orderAuxDataNotFoundError(
-                                              auxData.getAnalyteName())));
+            errors.add(new FormErrorException(Messages.get()
+                                                      .orderAuxDataNotFoundError(auxData.getAnalyteName())));
             return;
         }
 
@@ -393,7 +416,7 @@ public abstract class ImportOrder {
          * table id
          */
         auxData.setId(null);
-        
+
         auxfData = auxFieldGroupMan.getFields().getAuxFieldAt(lastAuxFieldIndex);
         /*
          * find out if the aux field in the aux group at this index is the same
@@ -402,9 +425,7 @@ public abstract class ImportOrder {
         if (auxData.getAuxFieldId().equals(auxfData.getId())) {
             // if it matches then add the aux data to the sample
             afvman = auxFieldGroupMan.getFields().getValuesAt(lastAuxFieldIndex);
-            manager.getAuxData().addAuxDataFieldAndValues(auxData,
-                                                          auxfData,
-                                                          afvman.getValues());
+            manager.getAuxData().addAuxDataFieldAndValues(auxData, auxfData, afvman.getValues());
             lastAuxFieldIndex++ ;
             return;
         } else {
@@ -422,12 +443,12 @@ public abstract class ImportOrder {
                                                                   afvman.getValues());
                     return;
                 }
-                j++;
+                j++ ;
             }
         }
 
-        errors.add(new FormErrorException(Messages.get().orderAuxDataNotFoundError(
-                                          auxData.getAnalyteName())));
+        errors.add(new FormErrorException(Messages.get()
+                                                  .orderAuxDataNotFoundError(auxData.getAnalyteName())));
     }
 
     protected SampleOrganizationViewDO createSampleOrganization(OrderOrganizationViewDO org,
@@ -449,8 +470,7 @@ public abstract class ImportOrder {
         return data;
     }
 
-    protected SampleOrganizationViewDO createSampleOrganization(OrderViewDO order,
-                                                                Integer typeId) {
+    protected SampleOrganizationViewDO createSampleOrganization(OrderViewDO order, Integer typeId) {
         SampleOrganizationViewDO data;
         OrganizationDO org;
         AddressDO addr;
@@ -473,10 +493,8 @@ public abstract class ImportOrder {
         return data;
     }
 
-    private void loadAnalysis(OrderTestViewDO orderTest,
-                              OrderTestAnalyteManager orderTestAnaMan,
-                              SampleItemManager itemMan,
-                              HashMap<Integer, TestManager> testMap) throws Exception {
+    private void loadAnalysis(OrderTestViewDO orderTest, OrderTestAnalyteManager orderTestAnaMan,
+                              SampleItemManager itemMan, HashMap<Integer, TestManager> testMap) throws Exception {
         int sequence, anaIndex;
         Integer testId;
         TestManager testMan;

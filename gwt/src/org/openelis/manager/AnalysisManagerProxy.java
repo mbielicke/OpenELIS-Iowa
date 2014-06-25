@@ -25,24 +25,22 @@
  */
 package org.openelis.manager;
 
-import java.util.Calendar;
 import java.util.HashMap;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
+import org.openelis.gwt.services.CalendarService;
+import org.openelis.manager.AnalysisManager.AnalysisListItem;
+import org.openelis.modules.analysis.client.AnalysisService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.gwt.services.CalendarService;
-import org.openelis.manager.AnalysisManager.AnalysisListItem;
-import org.openelis.modules.analysis.client.AnalysisService;
 
 public class AnalysisManagerProxy {
   
@@ -122,7 +120,7 @@ public class AnalysisManagerProxy {
     
                 if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
                     analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
-                    errorsList.add(new FormErrorException(Messages.get().startedDateInvalidError(
+                    errorsList.add(new FormErrorException(Messages.get().startedDateAfterCompletedError(
                                                           analysisDO.getTestName(),
                                                           analysisDO.getMethodName())));
             }

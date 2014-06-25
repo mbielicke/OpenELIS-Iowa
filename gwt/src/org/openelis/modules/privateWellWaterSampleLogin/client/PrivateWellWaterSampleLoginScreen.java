@@ -47,6 +47,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -89,6 +90,7 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.Util;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -114,8 +116,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PrivateWellWaterSampleLoginScreen extends Screen implements
-                                                             HasActionHandlers {
+public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActionHandlers {
     private boolean                           quickUpdate;
     private SampleManager                     manager, previousManager;
     protected Tabs                            tab;
@@ -139,12 +140,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     protected TextBox<Datetime>               collectedTime;
     protected Dropdown<Integer>               statusId;
     protected CalendarLookUp                  collectedDate, receivedDate;
-    protected AppButton                       queryButton, addButton, updateButton,
-                    nextButton, prevButton, commitButton, abortButton, orderLookup;
-    protected MenuItem                        duplicate, historySample,
-                    historySamplePrivateWell, historySampleProject, historySampleItem,
-                    historyAnalysis, historyCurrentResult, historyStorage,
-                    historySampleQA, historyAnalysisQA, historyAuxData;
+    protected AppButton                       queryButton, addButton, updateButton, nextButton,
+                    prevButton, commitButton, abortButton, orderLookup;
+    protected MenuItem                        duplicate, historySample, historySamplePrivateWell,
+                    historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult,
+                    historyStorage, historySampleQA, historyAnalysisQA, historyAuxData;
     protected TabPanel                        tabs;
 
     private ScreenNavigator                   nav;
@@ -155,18 +155,19 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     protected SamplePrivateWellImportOrder    wellOrderImport;
 
     private enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE,
-        QA_EVENTS, AUX_DATA
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA
     };
 
     public PrivateWellWaterSampleLoginScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
-        
+
         setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("sampleprivatewell");
         if (userPermission == null)
-            throw new PermissionException(Messages.get().screenPermException("Private Well Water Sample Login Screen"));
+            throw new PermissionException(Messages.get()
+                                                  .screenPermException("Private Well Water Sample Login Screen"));
 
         tab = Tabs.SAMPLE_ITEM;
         manager = SampleManager.getInstance();
@@ -348,8 +349,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleProject.enable(EnumSet.of(State.DISPLAY)
-                                                   .contains(event.getState()));
+                historySampleProject.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -361,8 +361,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleItem.enable(EnumSet.of(State.DISPLAY)
-                                                .contains(event.getState()));
+                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -374,8 +373,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAnalysis.enable(EnumSet.of(State.DISPLAY)
-                                              .contains(event.getState()));
+                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -395,8 +393,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyCurrentResult.enable(EnumSet.of(State.DISPLAY)
-                                                   .contains(event.getState()));
+                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -408,8 +405,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyStorage.enable(EnumSet.of(State.DISPLAY)
-                                             .contains(event.getState()));
+                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -421,8 +417,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleQA.enable(EnumSet.of(State.DISPLAY)
-                                              .contains(event.getState()));
+                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -434,8 +429,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY)
-                                                .contains(event.getState()));
+                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -447,8 +441,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAuxData.enable(EnumSet.of(State.DISPLAY)
-                                             .contains(event.getState()));
+                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -659,8 +652,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
             public void onStateChange(StateChangeEvent<State> event) {
                 collectedTime.enable(canEdit() &&
-                                     EnumSet.of(State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                                     EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -966,8 +958,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if (state != State.QUERY &&
-                    event.getAction() != AnalysisTab.Action.UNIT_CHANGED)
+                if (state != State.QUERY && event.getAction() != AnalysisTab.Action.UNIT_CHANGED)
                     ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
@@ -996,20 +987,20 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                         setQueryResult(result);
                     }
 
-                                     public void onFailure(Throwable error) {
-                                         setQueryResult(null);
-                                         if (error instanceof NotFoundException) {
-                                             window.setDone(Messages.get().noRecordsFound());
-                                             setState(State.DEFAULT);
-                                         } else if (error instanceof LastPageException) {
-                                             window.setError("No more records in this direction");
-                                         } else {
-                                             Window.alert("Error: envsample call query failed; " +
-                                                          error.getMessage());
-                                             window.setError(Messages.get().queryFailed());
-                                         }
-                                     }
-                                 });
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(Messages.get().noRecordsFound());
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError("No more records in this direction");
+                        } else {
+                            Window.alert("Error: envsample call query failed; " +
+                                         error.getMessage());
+                            window.setError(Messages.get().queryFailed());
+                        }
+                    }
+                });
             }
 
             public boolean fetch(IdAccessionVO entry) {
@@ -1024,8 +1015,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 model = new ArrayList<TableDataRow>();
                 if (result != null) {
                     for (IdAccessionVO entry : result)
-                        model.add(new TableDataRow(entry.getId(),
-                                                   entry.getAccessionNumber()));
+                        model.add(new TableDataRow(entry.getId(), entry.getAccessionNumber()));
                 }
                 return model;
             }
@@ -1079,8 +1069,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         // default the form
         try {
             manager.setDefaults();
-            manager.getSample().setReceivedById(UserCache.getPermission()
-                                                         .getSystemUserId());
+            manager.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
             setDefaults();
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1233,8 +1222,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 quickUpdate = false;
                 if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
                     manager = SampleManager.getInstance();
-                    manager.getSample()
-                           .setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                    manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
                     setDataInTabs();
                     setState(State.DEFAULT);
@@ -1254,6 +1242,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     }
 
     protected void duplicate() {
+        ValidationErrorsList errors;
+
         try {
             window.setBusy(Messages.get().fetching());
             manager = SampleManager.fetchWithAllDataById(manager.getSample().getId());
@@ -1262,8 +1252,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 abort();
                 return;
             }
+
             previousManager = manager;
-            manager = SampleDuplicateUtil.duplicate(manager);
+            errors = new ValidationErrorsList();
+            manager = SampleDuplicateUtil.duplicate(manager, errors);            
 
             setDataInTabs();
             setState(State.ADD);
@@ -1277,7 +1269,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             DataChangeEvent.fire(this);
 
             setFocus(accessionNumber);
-            window.setDone(Messages.get().enterInformationPressCommit());
+            
+            /*
+             * show any errors/warnings found during duplication
+             */
+            if (errors.hasWarnings())
+                showWarnings(errors);
+            if (errors.hasErrors())
+                showErrors(errors);
+            else
+                window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             Window.alert("Sample duplicate: " + e.getMessage());
             e.printStackTrace();
@@ -1310,6 +1311,21 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
         if (man != null)
             showOrder(man);
+    }
+    
+    /**
+     * Shows a list of warnings in the form of an alert and not a confirm dialog
+     * like showWarningsDialog. Doesn't commit the data like that method either.
+     */
+    private void showWarnings(ValidationErrorsList warnings) {
+        String warningText = "Sample duplicate: " + "\n";
+
+        for (Exception ex : warnings.getErrorList()) {
+            if (ex instanceof Warning)
+                warningText += " * " + ex.getMessage() + "\n";
+        }
+
+        Window.alert(warningText);
     }
 
     private void showOrder(OrderManager orderManager) {
@@ -1406,7 +1422,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         statusId.setModel(model);
 
         try {
-            autoNote = StandardNoteService.get().fetchBySystemVariableName("auto_comment_private_well");
+            autoNote = StandardNoteService.get()
+                                          .fetchBySystemVariableName("auto_comment_private_well");
         } catch (NotFoundException nfE) {
             // ignore not found exceptions since this domain may not have a
             // default note
@@ -1642,7 +1659,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     itemMan.removeSampleItemAt(0);
 
                 manager.getSample().setNextItemSequence(0);
-                
+
                 /*
                  * We need to copy the initial external note, if any, from the
                  * quick entry manager
@@ -1651,10 +1668,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             errors = wellOrderImport.importOrderInfo(orderId, manager);
-            
+
             if (quickEntryMan != null)
                 SampleMergeUtility.mergeTests(manager, quickEntryMan);
-            
+
             manager.getSample().setOrderId(orderId);
             setDataInTabs();
             DataChangeEvent.fire(screen);
@@ -1662,8 +1679,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
             ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, null);
 
-            if (errors != null && errors.size() > 0)
-                showErrors(errors);
+            if (errors != null) {
+                if (errors.hasWarnings())
+                    showWarnings(errors);
+                if (errors.hasErrors())
+                    showErrors(errors);
+            }
 
             /*
              * check to see if any of the sample organizations has been marked
@@ -1688,7 +1709,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 orgId = sorg.getOrganizationId();
                 if ( !orgIds.contains(orgId)) {
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
-                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(sorg.getOrganizationName()));
+                        Window.alert(Messages.get()
+                                             .orgMarkedAsHoldRefuseSample(sorg.getOrganizationName()));
                     orgIds.add(orgId);
                 }
             }

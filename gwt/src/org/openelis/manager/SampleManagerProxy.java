@@ -113,7 +113,7 @@ public class SampleManagerProxy {
 
         if (data.getCollectionDate() != null && data.getReceivedDate() != null &&
             data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
-            errorsList.add(new FieldErrorException(Messages.get().collectedDateInvalidError(),
+            errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterReceivedError(),
                                                    SampleMeta.getReceivedDate()));
 
         // every unreleased sample needs an internal comment describing the

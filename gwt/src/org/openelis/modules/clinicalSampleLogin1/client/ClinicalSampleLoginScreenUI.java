@@ -240,7 +240,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall,
-                    commitUpdateCall, fetchByIdCall, unlockCall, duplicateCall;
+                    commitUpdateCall, fetchByIdCall, unlockCall;
+
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
 
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -2305,9 +2307,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         setBusy();
 
         if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<SampleManager1>() {
-                public void success(SampleManager1 result) {
-                    if ( !Constants.domain().CLINICAL.equals(result.getSample().getDomain())) {
+            duplicateCall = new AsyncCallbackUI<SampleTestReturnVO>() {
+                public void success(SampleTestReturnVO result) {
+                    ValidationErrorsList errors;
+                    
+                    if ( !Constants.domain().CLINICAL.equals(result.getManager()
+                                                                   .getSample()
+                                                                   .getDomain())) {
                         /*
                          * the sample's domain may have changed after it was
                          * loaded on the screen, so it can't be edited here
@@ -2330,7 +2336,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     }
 
                     previousManager = manager;
-                    manager = result;
+                    manager = result.getManager();
 
                     buildCache();
                     evaluateEdit();
@@ -2338,7 +2344,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     setState(ADD);
                     fireDataChange();
                     accessionNumber.setFocus(true);
-                    setDone(Messages.get().gen_enterInformationPressCommit());
+
+                    /*
+                     * show any errors/warnings found during duplication
+                     */
+                    errors = result.getErrors();
+                    if (errors!= null && errors.size() > 0)
+                        showErrors(errors);
+                    else
+                        setDone(Messages.get().gen_enterInformationPressCommit());
                 }
 
                 public void failure(Throwable e) {
