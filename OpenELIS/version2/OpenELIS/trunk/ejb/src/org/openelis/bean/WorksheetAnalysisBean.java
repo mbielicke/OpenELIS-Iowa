@@ -40,7 +40,6 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.domain.WorksheetAnalysisDO;

@@ -707,7 +707,7 @@ public class WorksheetExcelHelperBean {
                                         for (c = 0; c < 30; c++ ) {
                                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
                                                                              rowIndex,
-                                                                             10 + c);
+                                                                             9 + c);
                                             if (value != null && !value.equals(wrVDO.getValueAt(c)))
                                                 wrVDO.setValueAt(c, value.toString());
                                             else if (value == null && wrVDO.getValueAt(c) != null)
@@ -734,7 +734,7 @@ public class WorksheetExcelHelperBean {
                                 for (WorksheetQcResultViewDO wqrVDO : wqrList) {
                                     for (c = 0; c < 30; c++) {
                                         value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
-                                                                         rowIndex, 10 + c);
+                                                                         rowIndex, 9 + c);
                                         if (value != null && !value.equals(wqrVDO.getValueAt(c)))
                                             wqrVDO.setValueAt(c, value.toString());
                                         else if (value == null && wqrVDO.getValueAt(c) != null)
