@@ -193,10 +193,9 @@ public class OverridesTabUI extends Screen {
                                         if (validUsers.length() > 0)
                                             validUsers += ",";
                                         validUsers += userVO.getLoginName();
-                                        userNames.remove(userVO.getLastName());
+                                        userNames.remove(userVO.getLoginName());
                                     }
                                 }
-                                waVDO.setSystemUsers(validUsers);
                                 if (userNames.size() > 0)
                                     Window.alert(Messages.get().worksheet_invalidUsersException(userNames.toString()));
                             } catch (Exception anyE) {
@@ -204,6 +203,7 @@ public class OverridesTabUI extends Screen {
                             }
                         }
                         waVDO.setSystemUsers(validUsers);
+                        overridesTable.setValueAt(r, c, validUsers);
                         break;
                     case 6:
                         waVDO.setStartedDate((Datetime)val);
@@ -422,7 +422,7 @@ public class OverridesTabUI extends Screen {
         modal = new ModalWindow();
         modal.setName(Messages.get().worksheet_editMultiple());
         modal.setContent(editMultiplePopup);
-        modal.setSize("240px", "175px");
+        modal.setSize("240px", "200px");
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         editMultiplePopup.setWindow(modal);
         editMultiplePopup.initialize();
