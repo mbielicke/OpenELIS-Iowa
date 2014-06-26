@@ -274,29 +274,6 @@ public class SampleQCScreenUI extends Screen {
             }
         });
 
-        tree.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                // String uid;
-                // Object val;
-                Node node;
-
-                // val = tree.getValueAt(event.getRow(), event.getCol());
-                node = tree.getNodeAt(tree.getSelectedNode());
-                if (event.getCol() == 0) {
-                    if (QC_LEAF.equals(node.getType())) {
-
-                    } else if (WORKSHEET_LEAF.equals(node.getType())) {
-
-                    } else if (ANALYSIS_LEAF.equals(node.getType())) {
-
-                    } else if (VALUE_LEAF.equals(node.getType())) {
-
-                    } else if (ANALYTE_LEAF.equals(node.getType())) {
-
-                    }
-                }
-            }
-        });
         tree.setVisible(true);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
@@ -431,6 +408,9 @@ public class SampleQCScreenUI extends Screen {
         check("N");
     }
 
+    /**
+     * check all the analytes of a QC
+     */
     protected void check(String reportable) {
         int index;
         Node node, child;
@@ -445,6 +425,9 @@ public class SampleQCScreenUI extends Screen {
         if (index == -1)
             return;
         node = tree.getNodeAt(index);
+        /*
+         * if an analyte node is selected, get the QC node that is the parent
+         */
         if (ANALYTE_LEAF.equals(node.getType())) {
             node = node.getParent();
         } else if (QC_LEAF.equals(node.getType())) {
@@ -462,7 +445,7 @@ public class SampleQCScreenUI extends Screen {
         }
     }
 
-    // TODO get all of the QC data
+    // TODO
     /**
      * create a list of worksheet managers an results with QC data for the
      * checked QCs
@@ -495,6 +478,9 @@ public class SampleQCScreenUI extends Screen {
         return qcs;
     }
 
+    /**
+     * query for all of the QC data related to the accession number
+     */
     private void fetchByAccession(Integer accession) {
         if (accession == null) {
             sm = null;
@@ -506,6 +492,9 @@ public class SampleQCScreenUI extends Screen {
             clearStatus();
         } else {
             setBusy(Messages.get().gen_fetching());
+            /*
+             * fetch the sample manager
+             */
             if (fetchByIdCall == null) {
                 fetchByIdCall = new AsyncCallbackUI<SampleManager1>() {
                     public void success(SampleManager1 result) {
@@ -534,6 +523,10 @@ public class SampleQCScreenUI extends Screen {
                         }
                         if (wids.size() > 0) {
                             qcIds = new HashSet<Integer>();
+                            /*
+                             * fetch worksheet managers associated with the
+                             * sample
+                             */
                             if (fetchWorksheetsByIdsCall == null) {
                                 fetchWorksheetsByIdsCall = new AsyncCallbackUI<ArrayList<WorksheetManager1>>() {
                                     public void success(ArrayList<WorksheetManager1> result) {
@@ -565,16 +558,25 @@ public class SampleQCScreenUI extends Screen {
                                                                .getRelatedWorksheetId());
                                             }
                                         }
+                                        /*
+                                         * keep querying for more worksheets
+                                         * while there are more related
+                                         * worksheets that haven't been queried
+                                         * for yet
+                                         */
                                         if (wids.size() > 0)
                                             WorksheetService1.get()
                                                              .fetchByIds(wids,
                                                                          worksheetElements,
                                                                          fetchWorksheetsByIdsCall);
                                         else {
+                                            /*
+                                             * fetch the QC managers for the QCs
+                                             * on all of the worksheet managers
+                                             */
                                             qms = new HashMap<Integer, QcManager>();
 
                                             Iterator<Integer> iter = qcIds.iterator();
-                                            // TODO
                                             while (iter.hasNext()) {
                                                 qcId = iter.next();
                                                 try {
@@ -659,6 +661,9 @@ public class SampleQCScreenUI extends Screen {
         return b.toString();
     }
 
+    /**
+     * add all QC IDs that are in the worksheet manager to a global list
+     */
     private void getQcIds(WorksheetManager1 wm) {
         int i, j;
         WorksheetItemDO item;
@@ -672,6 +677,9 @@ public class SampleQCScreenUI extends Screen {
         }
     }
 
+    /**
+     * create the tree
+     */
     private Node getRoot() {
         int i, j, k;
         Node root, wnode, anode;
@@ -735,6 +743,9 @@ public class SampleQCScreenUI extends Screen {
         return root;
     }
 
+    /**
+     * create the table
+     */
     private ArrayList<Row> getTableModel() {
         Row row;
         ArrayList<Row> model;
@@ -774,6 +785,9 @@ public class SampleQCScreenUI extends Screen {
         return copy;
     }
 
+    /**
+     * Create nodes from the data in this worksheet manager
+     */
     private Node createWorksheetNode(WorksheetManager1 wm) {
         int i, j, k, l;
         Node qanode, qnode, wnode, vnode;
@@ -814,7 +828,6 @@ public class SampleQCScreenUI extends Screen {
                 qnode.setType(QC_LEAF);
                 qnode.setCell(0, wa.getDescription() + "(" + item.getPosition() + ", " +
                                  wa.getAccessionNumber() + ")");
-                // TODO
                 qnode.setCell(1, qcType.get(qms.get(wa.getQcId()).getQc().getTypeId()));
                 qnode.setData(wa);
                 wnode.add(qnode);
@@ -835,13 +848,6 @@ public class SampleQCScreenUI extends Screen {
                         }
                         l++ ;
                     }
-                    // while (l <= 30 && wq.getValueAt(l) != null) {
-                    // vnode = new Node(1);
-                    // vnode.setType(VALUE_LEAF);
-                    // vnode.setCell(0, wq.getValueAt(l));
-                    // qanode.add(vnode);
-                    // l++ ;
-                    // }
                     if (qcAnalyteList.get(wq.getQcAnalyteId()) == null)
                         qcAnalyteList.put(wq.getQcAnalyteId(), wq.getAnalyteName());
                     qanode.setData(wq);
@@ -852,6 +858,9 @@ public class SampleQCScreenUI extends Screen {
         return wnode;
     }
 
+    /**
+     * Check all of a certain analyte in the QCs for the sample
+     */
     private void checkAllAnalytes(Integer qcAnalyteId, String check) {
         int i, j, k, l;
         Node anode, wnode, qnode, qanode;
