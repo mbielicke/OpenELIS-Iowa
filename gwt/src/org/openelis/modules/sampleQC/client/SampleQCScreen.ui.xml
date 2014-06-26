@@ -110,6 +110,11 @@
 									<w:Label />
 								</t:LabelCell>
 							</r:LeafColumn>
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
 						</r:Leaf>
 						<r:Leaf key="qcAnalyte">
 							<r:LeafColumn>

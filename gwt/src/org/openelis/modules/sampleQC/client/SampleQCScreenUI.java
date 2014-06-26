@@ -34,6 +34,7 @@ import static org.openelis.ui.screen.State.QUERY;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
@@ -51,12 +52,12 @@ import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.QcMeta;
+import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
@@ -238,6 +239,8 @@ public class SampleQCScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 id.setEnabled(isState(QUERY));
                 id.setQueryMode(isState(QUERY));
+                if (sm != null)
+                    id.setText(DataBaseUtil.toString(sm.getSample().getAccessionNumber()));
             }
 
             public Widget onTab(boolean forward) {
@@ -266,11 +269,6 @@ public class SampleQCScreenUI extends Screen {
         });
 
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                // TODO
-                // tree.refreshNode(tree.getRoot());
-            }
-
             public void onStateChange(StateChangeEvent event) {
                 tree.setEnabled(isState(DISPLAY));
             }
@@ -460,6 +458,7 @@ public class SampleQCScreenUI extends Screen {
         for (int i = 0; i < node.getChildCount(); i++ ) {
             child = node.getChildAt(i);
             child.setCell(0, reportable);
+            tree.refreshNode(child);
         }
     }
 
@@ -538,6 +537,7 @@ public class SampleQCScreenUI extends Screen {
                             if (fetchWorksheetsByIdsCall == null) {
                                 fetchWorksheetsByIdsCall = new AsyncCallbackUI<ArrayList<WorksheetManager1>>() {
                                     public void success(ArrayList<WorksheetManager1> result) {
+                                        Integer qcId;
                                         ArrayList<WorksheetManager1> worksheets;
                                         ArrayList<Integer> wids;
 
@@ -572,35 +572,19 @@ public class SampleQCScreenUI extends Screen {
                                                                          fetchWorksheetsByIdsCall);
                                         else {
                                             qms = new HashMap<Integer, QcManager>();
-                                            if (fetchQcByIdCall == null) {
-                                                fetchQcByIdCall = new AsyncCallbackUI<QcManager>() {
-                                                    public void success(QcManager result) {
-                                                        qms.put(result.getQc().getId(), result);
-                                                    }
 
-                                                    public void notFound() {
-                                                        setDone(Messages.get().gen_noRecordsFound());
-                                                    }
-
-                                                    public void failure(Throwable e) {
-                                                        Window.alert(Messages.get()
-                                                                             .gen_fetchFailed() +
-                                                                     e.getMessage());
-                                                        logger.log(Level.SEVERE, e.getMessage(), e);
-                                                    }
-
-                                                    public void finish() {
-                                                        fireDataChange();
-                                                        clearStatus();
-                                                    }
-                                                };
-                                            }
-                                            // Iterator<Integer> iter =
-                                            // qcIds.iterator();
+                                            Iterator<Integer> iter = qcIds.iterator();
                                             // TODO
-                                            // while (iter.hasNext())
-                                            // QcService.get().fetchById(iter.next(),
-                                            // fetchQcByIdCall);
+                                            while (iter.hasNext()) {
+                                                qcId = iter.next();
+                                                try {
+                                                    qms.put(qcId, QcService.get().fetchById(qcId));
+                                                } catch (Exception e) {
+                                                    logger.log(Level.SEVERE, e.getMessage(), e);
+                                                    Window.alert("There was a problem getting QC data for QC: " +
+                                                                 qcId);
+                                                }
+                                            }
 
                                             qcAnalyteList = new HashMap<Integer, String>();
                                             worksheetNodes = new HashMap<Integer, Node>();
@@ -633,7 +617,6 @@ public class SampleQCScreenUI extends Screen {
                                                                fetchWorksheetsByIdsCall);
                         } else {
                             tree.setRoot(getRoot());
-                            id.setText(DataBaseUtil.toString(sm.getSample().getAccessionNumber()));
                         }
                     }
 
@@ -682,8 +665,10 @@ public class SampleQCScreenUI extends Screen {
 
         for (i = 0; i < wm.item.count(); i++ ) {
             item = wm.item.get(i);
-            for (j = 0; j < wm.analysis.count(item); j++ )
-                qcIds.add(wm.analysis.get(item, j).getQcId());
+            for (j = 0; j < wm.analysis.count(item); j++ ) {
+                if (wm.analysis.get(item, j).getQcId() != null)
+                    qcIds.add(wm.analysis.get(item, j).getQcId());
+            }
         }
     }
 
@@ -825,13 +810,12 @@ public class SampleQCScreenUI extends Screen {
                 wa = wm.analysis.get(item, j);
                 if (wa.getQcLotId() == null)
                     continue;
-                qnode = new Node(1);
+                qnode = new Node(2);
                 qnode.setType(QC_LEAF);
                 qnode.setCell(0, wa.getDescription() + "(" + item.getPosition() + ", " +
                                  wa.getAccessionNumber() + ")");
                 // TODO
-                // qnode.setCell(2,
-                // qcType.get(qms.get(wa.getQcId()).getQc().getTypeId()));
+                qnode.setCell(1, qcType.get(qms.get(wa.getQcId()).getQc().getTypeId()));
                 qnode.setData(wa);
                 wnode.add(qnode);
 
@@ -882,11 +866,9 @@ public class SampleQCScreenUI extends Screen {
                         qanode = qnode.getChildAt(l);
                         if (qcAnalyteId.equals( ((WorksheetQcResultViewDO)qanode.getData()).getQcAnalyteId())) {
                             qanode.setCell(0, check);
+                            if (tree.isDisplayed(qanode))
+                                tree.refreshNode(qanode);
                         }
-                    }
-                    if (qnode.isOpen()) {
-                        qnode.setOpen(false);
-                        qnode.setOpen(true);
                     }
                 }
             }
