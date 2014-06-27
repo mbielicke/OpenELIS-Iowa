@@ -994,10 +994,7 @@ public class WorksheetExcelHelperBean {
 
             // reportable
             cell = row.createCell(8);
-            if (isEditable)
-                cell.setCellStyle(styles.get("row_edit"));
-            else
-                cell.setCellStyle(styles.get("row_no_edit"));
+            cell.setCellStyle(styles.get("row_no_edit"));
             cell.setCellValue(wrVDO.getIsReportable());
             cellName = sheet.getWorkbook().createName();
             cellName.setNameName("analyte_reportable." + cellNameIndex);
