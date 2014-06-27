@@ -67,7 +67,7 @@ import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreenUI;
-import org.openelis.modules.report.client.AirQualityReportScreen;
+import org.openelis.modules.report.client.AirQualityExportScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
@@ -150,7 +150,7 @@ public class OpenELIS extends Screen {
                     holdRefuseOrganization, testReport, instrumentBarcodeReport, billingReport,
                     sampleInhouseReport, volumeReport, toDoAnalyteReport, sampleDataExport,
                     QASummaryReport, testCountByFacility, turnaround, turnAroundStatisticReport,
-                    kitTrackingReport, airQualityReport, sdwisUnloadReport, dataView, qcChart,
+                    kitTrackingReport, airQualityExport, sdwisUnloadReport, dataView, qcChart,
                     finalReport, finalReportBatch, finalReportBatchReprint, test, method, panel,
                     QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
                     exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
@@ -1948,16 +1948,16 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(airQualityReport, "sampletracking", new Command() {
+        addCommand(airQualityExport, "sampletracking", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.airQuality_airQualityReport());
+                            window.setName(msg.airQuality_airQualityExport());
                             window.setSize("20px", "20px");
-                            window.setContent(new AirQualityReportScreen(window));
-                            browser.addWindow(window, "airQualityReport");
+                            window.setContent(new AirQualityExportScreen(window));
+                            browser.addWindow(window, "airQualityExport");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());

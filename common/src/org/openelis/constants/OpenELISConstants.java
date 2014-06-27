@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -583,13 +583,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String adjustmentNum();
 
   /**
-   * Translated "Air Quality Report".
+   * Translated "Air Quality Export".
    * 
-   * @return translated "Air Quality Report"
+   * @return translated "Air Quality Export"
    */
-  @DefaultMessage("Air Quality Report")
-  @Key("airQuality.airQualityReport")
-  String airQuality_airQualityReport();
+  @DefaultMessage("Air Quality Export")
+  @Key("airQuality.airQualityExport")
+  String airQuality_airQualityExport();
 
   /**
    * Translated "You must specify Action for this report".

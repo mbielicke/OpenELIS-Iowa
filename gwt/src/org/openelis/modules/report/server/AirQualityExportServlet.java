@@ -31,14 +31,14 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.AirQualityExportBean;
-import org.openelis.modules.report.client.AirQualityReportServiceInt;
+import org.openelis.modules.report.client.AirQualityExportServiceInt;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/openelis/airQualityReport")
-public class AirQualityReportServlet extends RemoteServlet implements AirQualityReportServiceInt {
+@WebServlet("/openelis/airQualityExport")
+public class AirQualityExportServlet extends RemoteServlet implements AirQualityExportServiceInt {
 
     private static final long    serialVersionUID = 1L;
 
