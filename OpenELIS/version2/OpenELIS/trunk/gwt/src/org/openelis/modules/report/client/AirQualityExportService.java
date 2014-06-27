@@ -12,20 +12,20 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
-public class AirQualityReportService implements AirQualityReportServiceInt,
-                                     AirQualityReportServiceIntAsync {
+public class AirQualityExportService implements AirQualityExportServiceInt,
+                                    AirQualityExportServiceIntAsync {
 
-    private static AirQualityReportService  instance;
-    private AirQualityReportServiceIntAsync service;
+    private static AirQualityExportService  instance;
+    private AirQualityExportServiceIntAsync service;
 
-    public static AirQualityReportService get() {
+    public static AirQualityExportService get() {
         if (instance == null)
-            instance = new AirQualityReportService();
+            instance = new AirQualityExportService();
         return instance;
     }
 
-    private AirQualityReportService() {
-        service = (AirQualityReportServiceIntAsync)GWT.create(AirQualityReportServiceInt.class);
+    private AirQualityExportService() {
+        service = (AirQualityExportServiceIntAsync)GWT.create(AirQualityExportServiceInt.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 

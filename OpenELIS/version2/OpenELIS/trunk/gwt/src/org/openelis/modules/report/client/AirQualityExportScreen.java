@@ -36,21 +36,21 @@ import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class AirQualityReportScreen extends ReportScreen<Query> {
+public class AirQualityExportScreen extends ReportScreen<Query> {
 
-    public AirQualityReportScreen(WindowInt window) throws Exception {
+    public AirQualityExportScreen(WindowInt window) throws Exception {
         setWindow(window);
         drawScreen(new ScreenDef());        
-        setName(Messages.get().airQuality_airQualityReport());
+        setName(Messages.get().airQuality_airQualityExport());
     }
 
     @Override
     protected ArrayList<Prompt> getPrompts() throws Exception {
-        return AirQualityReportService.get().getPrompts();
+        return AirQualityExportService.get().getPrompts();
     }
 
     @Override
     public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
-        AirQualityReportService.get().runReport((Query)query, callback);
+        AirQualityExportService.get().runReport((Query)query, callback);
     }
 }
