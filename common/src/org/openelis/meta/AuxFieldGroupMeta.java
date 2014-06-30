@@ -58,8 +58,7 @@ public class AuxFieldGroupMeta implements Meta, MetaMap {
                                    FIELD_VALUE_VALUE = "_auxField.auxFieldValue.value",
     
                                    FIELD_ANALYTE_NAME = "_auxField.analyte.name",
-                                   FIELD_METHOD_NAME = "_auxField.method.name",                                   
-                                   FIELD_SCRIPTLET_NAME = "_auxField.scriptlet.name";  
+                                   FIELD_METHOD_NAME = "_auxField.method.name";                                   
     
     private static HashSet<String> names;
     
@@ -71,7 +70,7 @@ public class AuxFieldGroupMeta implements Meta, MetaMap {
                                                   FIELD_IS_ACTIVE, FIELD_IS_REPORTABLE, FIELD_SCRIPTLET_ID,
                                                   FIELD_VALUE_ID, FIELD_VALUE_AUX_FIELD_ID,
                                                   FIELD_VALUE_TYPE_ID, FIELD_VALUE_VALUE, FIELD_ANALYTE_NAME,
-                                                  FIELD_METHOD_NAME, FIELD_SCRIPTLET_NAME));
+                                                  FIELD_METHOD_NAME));
     }
     
     public static String getId() {
@@ -164,10 +163,6 @@ public class AuxFieldGroupMeta implements Meta, MetaMap {
     
     public static String getFieldMethodName() {
         return FIELD_METHOD_NAME;
-    } 
-    
-    public static String getFieldScriptletName() {
-        return FIELD_SCRIPTLET_NAME;
     }
     
     public boolean hasColumn(String columnName) {

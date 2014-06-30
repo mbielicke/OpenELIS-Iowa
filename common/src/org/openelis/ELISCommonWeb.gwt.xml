@@ -25,7 +25,7 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-  <inherits name="com.teklabs.gwt.i18n.GwtI18nServer"/>
+  <inherits name="net.lightoze.gwt.i18n.GwtI18nServer"/>
   <source path="constants"/>
   <source path="domain"/>
   <source path="exception"/>

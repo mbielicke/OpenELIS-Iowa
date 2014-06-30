@@ -38,16 +38,17 @@ public class SampleProjectViewDO extends SampleProjectDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          projectName, projectDescription;
+    protected String          projectName, projectDescription, projectIsActive;
 
     public SampleProjectViewDO() {
     }
 
-    public SampleProjectViewDO(Integer id, Integer sampleId, Integer projectId,
-                                  String isPermanent, String projectName, String projectDescription) {
+    public SampleProjectViewDO(Integer id, Integer sampleId, Integer projectId, String isPermanent,
+                               String projectName, String projectDescription, String projectIsActive) {
         super(id, sampleId, projectId, isPermanent);
         setProjectName(projectName);
         setProjectDescription(projectDescription);
+        setProjectIsActive(projectIsActive);
     }
 
     public String getProjectName() {
@@ -64,5 +65,13 @@ public class SampleProjectViewDO extends SampleProjectDO {
 
     public void setProjectDescription(String projectDescription) {
         this.projectDescription = DataBaseUtil.trim(projectDescription);
+    }
+
+    public String getProjectIsActive() {
+        return projectIsActive;
+    }
+
+    public void setProjectIsActive(String projectIsActive) {
+        this.projectIsActive = DataBaseUtil.trim(projectIsActive);
     }
 }

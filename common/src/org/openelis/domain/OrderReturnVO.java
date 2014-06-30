@@ -34,7 +34,7 @@ import org.openelis.ui.common.ValidationErrorsList;
  * This class is used for transporting the data needed for adding tests to a
  * order and any errors or warnings resulting from trying to do so
  */
-public class OrderTestReturnVO implements Serializable {
+public class OrderReturnVO implements Serializable {
 
     private static final long      serialVersionUID = 1L;
 

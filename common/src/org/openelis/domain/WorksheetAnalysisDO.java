@@ -39,25 +39,28 @@ public class WorksheetAnalysisDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer  id, worksheetItemId, worksheetAnalysisId, analysisId, qcLotId,
-                       qcSystemUserId, fromOtherId;
-    protected String   accessionNumber;
-    protected Datetime qcStartedDate;
+                       fromOtherId, changeFlagsId;
+    protected String   accessionNumber, systemUsers;
+    protected Datetime startedDate, completedDate;
     
     public WorksheetAnalysisDO() {
     }
 
     public WorksheetAnalysisDO(Integer id, Integer worksheetItemId, String accessionNumber,
                                Integer analysisId, Integer qcLotId, Integer worksheetAnalysisId,
-                               Integer qcSystemUserId, Date qcStartedDate, Integer fromOtherId) {
+                               String systemUsers, Date startedDate, Date completedDate,
+                               Integer fromOtherId, Integer changeFlagsId) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
         setAnalysisId(analysisId);
         setQcLotId(qcLotId);
         setWorksheetAnalysisId(worksheetAnalysisId);
-        setQcSystemUserId(qcSystemUserId);
-        setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
+        setSystemUsers(systemUsers);
+        setStartedDate(DataBaseUtil.toYM(startedDate));
+        setCompletedDate(DataBaseUtil.toYM(completedDate));
         setFromOtherId(fromOtherId);
+        setChangeFlagsId(changeFlagsId);
         _changed = false;
     }
 
@@ -115,21 +118,30 @@ public class WorksheetAnalysisDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getQcSystemUserId() {
-        return qcSystemUserId;
+    public String getSystemUsers() {
+        return systemUsers;
     }
 
-    public void setQcSystemUserId(Integer qcSystemUserId) {
-        this.qcSystemUserId = qcSystemUserId;
+    public void setSystemUsers(String systemUsers) {
+        this.systemUsers = DataBaseUtil.trim(systemUsers);
         _changed = true;
     }
 
-    public Datetime getQcStartedDate() {
-        return qcStartedDate;
+    public Datetime getStartedDate() {
+        return startedDate;
     }
 
-    public void setQcStartedDate(Datetime qcStartedDate) {
-        this.qcStartedDate = DataBaseUtil.toYM(qcStartedDate);
+    public void setStartedDate(Datetime startedDate) {
+        this.startedDate = DataBaseUtil.toYM(startedDate);
+        _changed = true;
+    }
+
+    public Datetime getCompletedDate() {
+        return completedDate;
+    }
+
+    public void setCompletedDate(Datetime completedDate) {
+        this.completedDate = DataBaseUtil.toYM(completedDate);
         _changed = true;
     }
 
@@ -139,6 +151,15 @@ public class WorksheetAnalysisDO extends DataObject {
 
     public void setFromOtherId(Integer fromOtherId) {
         this.fromOtherId = fromOtherId;
+        _changed = true;
+    }
+
+    public Integer getChangeFlagsId() {
+        return changeFlagsId;
+    }
+
+    public void setChangeFlagsId(Integer changeFlagsId) {
+        this.changeFlagsId = changeFlagsId;
         _changed = true;
     }
 }
