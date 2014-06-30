@@ -175,7 +175,7 @@ public class SampleNotesTabUI extends Screen {
                 id2 = manager.sampleInternalNote.get(0).getId();
             redraw = DataBaseUtil.isDifferent(id1, id2);
         }
-         displayNotes();
+        displayNotes();
     }
 
     @UiHandler("editNoteButton")
@@ -197,13 +197,12 @@ public class SampleNotesTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
+            displayedExtNote = null;
+            displayedIntNote = null;
             if (manager != null) {
                 displayedExtNote = manager.sampleExternalNote.get();
                 if (manager.sampleInternalNote.count() > 0)
                     displayedIntNote = manager.sampleInternalNote.get(0);
-            } else {
-                displayedExtNote = null;
-                displayedIntNote = null;
             }
             fireDataChange();
         }
@@ -260,20 +259,22 @@ public class SampleNotesTabUI extends Screen {
                      * may have different values passed to it
                      */
                     if (editNoteLookup.getHasSubject()) {
-                        if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                             manager.sampleInternalNote.removeEditing();
-                        else
-                            setNoteFields(manager.sampleInternalNote.getEditing(),
+                        } else {
+                            displayedIntNote = manager.sampleInternalNote.getEditing();
+                            setNoteFields(displayedIntNote,
                                           editNoteLookup.getSubject(),
                                           editNoteLookup.getText());
+                        }
                         drawInternalNotes();
                     } else {
-                        if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                             manager.sampleExternalNote.removeEditing();
-                        else
-                            setNoteFields(manager.sampleExternalNote.getEditing(),
-                                          null,
-                                          editNoteLookup.getText());
+                        } else {
+                            displayedExtNote = manager.sampleExternalNote.getEditing();
+                            setNoteFields(displayedExtNote, null, editNoteLookup.getText());
+                        }
                         drawExternalNote();
                     }
                 }

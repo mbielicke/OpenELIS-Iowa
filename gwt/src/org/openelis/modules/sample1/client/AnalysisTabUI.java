@@ -918,7 +918,6 @@ public class AnalysisTabUI extends Screen {
     }
 
 
-    @SuppressWarnings("unused")
     @UiHandler("selectWorksheetButton")
     protected void selectWorksheet(ClickEvent event) {
         AnalysisWorksheetVO ws;
@@ -1075,7 +1074,7 @@ public class AnalysisTabUI extends Screen {
                             parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
                                                                                   data.getMethodId(),
                                                                                   AnalysisChangeEvent.Action.METHOD_CHANGED),
-                                                          this);
+                                                          screen);
                             break;
                     }
                     

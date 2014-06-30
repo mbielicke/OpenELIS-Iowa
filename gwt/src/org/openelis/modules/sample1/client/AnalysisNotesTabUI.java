@@ -321,14 +321,14 @@ public class AnalysisNotesTabUI extends Screen {
                      * passed to showNoteLookup on subsequent calls
                      */
                     if (editNoteLookup.getHasSubject()) {
-                        setNoteFields(manager.analysisInternalNote.getEditing(analysis),
+                        displayedIntNote = manager.analysisInternalNote.getEditing(analysis);
+                        setNoteFields(displayedIntNote,
                                       editNoteLookup.getSubject(),
                                       editNoteLookup.getText());
                         drawInternalNotes();
                     } else {
-                        setNoteFields(manager.analysisExternalNote.getEditing(analysis),
-                                      null,
-                                      editNoteLookup.getText());
+                        displayedExtNote = manager.analysisExternalNote.getEditing(analysis);
+                        setNoteFields(displayedExtNote, null, editNoteLookup.getText());
                         drawExternalNote();
                     }
                 }
