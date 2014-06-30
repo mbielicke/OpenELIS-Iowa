@@ -195,7 +195,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, SampleManager1>           managers;
 
-    protected boolean                                    canEdit, isBusy, unrelease;
+    protected boolean                                    canEdit, isBusy;
 
     protected ModulePermission                           userPermission, unreleasePermission,
                     changeDomainPermission;
@@ -1225,8 +1225,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * the screen and if it is passed as an argument then its value doesn't
          * change in the call after the call has been instantiated
          */
-        unrelease = false;
-        update();
+        update(false);
     }
 
     /**
@@ -1470,7 +1469,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         NoteViewDO note;
         ValidationErrorsList e1;
 
-        if (unrelease) {
+        if (SampleManager1.PostProcessing.UNRELEASE.equals(manager.getPostProcessing())) {
             /*
              * every unreleased sample needs an internal note describing the
              * reason
@@ -1809,8 +1808,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                              * as an argument then its value doesn't change in
                              * the call after the call has been instantiated
                              */
-                            unrelease = true;
-                            update();
+                            update(true);
                             break;
                     }
                 }
@@ -2162,7 +2160,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * Puts the screen in update state and loads the tabs with a locked manager.
      * Builds the cache from the manager.
      */
-    private void update() {
+    private void update(final boolean unrelease) {
         setBusy(Messages.get().gen_lockForUpdate());
 
         if (fetchForUpdateCall == null) {
