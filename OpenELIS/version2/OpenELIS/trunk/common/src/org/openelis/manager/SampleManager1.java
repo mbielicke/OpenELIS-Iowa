@@ -222,7 +222,11 @@ public class SampleManager1 implements Serializable {
         }
         return uidMap.get(uid);
     }
-    
+
+    public PostProcessing getPostProcessing() {
+        return postProcessing;
+    }
+
     public void setPostProcessing(PostProcessing postProcessing) {
         this.postProcessing = postProcessing;
     }
@@ -1256,7 +1260,14 @@ public class SampleManager1 implements Serializable {
                 data.setId(getNextUID());
                 data.setIsExternal("N");
                 data.setReferenceId(analysis.getId());
-                analysisIntNotes.add(data);
+                /*
+                 * the new note is added at the beginning of the list for all
+                 * internal notes to make sure that when the manager gets sent
+                 * to the back-end and brought back, the new note is still the
+                 * first one for the analysis and not the last one
+                 */
+                analysisIntNotes.add(0, data);
+
                 l.add(0, data);
 
                 uidMapAdd(Constants.uid().get(data), data);

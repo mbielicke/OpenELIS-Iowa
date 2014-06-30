@@ -35,11 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 
@@ -225,5 +228,16 @@ public class NoteBean {
         entity = manager.find(Note.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+    }
+
+    public void validate(NoteDO data) throws Exception {
+        if ("N".equals(data.getIsExternal())) {
+            if (data.getId() < 0) {
+                if (DataBaseUtil.isEmpty(data.getSubject()) || DataBaseUtil.isEmpty(data.getText()))
+                    throw new FormErrorException(Messages.get().note_internalEmptyException());
+            } else if (data.isChanged()) {
+                throw new InconsistencyException("Internal note should not be updated");
+            }
+        }
     }
 }
