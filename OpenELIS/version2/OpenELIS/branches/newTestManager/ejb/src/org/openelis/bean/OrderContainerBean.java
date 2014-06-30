@@ -122,20 +122,29 @@ public class OrderContainerBean {
     }
 
     public void validate(OrderContainerDO data) throws Exception {
+        Integer orderId;
         ValidationErrorsList list;
         Integer num;
+
+        /*
+         * for display
+         */
+        orderId = data.getOrderId();
+        if (orderId == null)
+            orderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getContainerId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_containerRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_containerRequiredException(orderId)));
         num = data.getItemSequence();
         if (DataBaseUtil.isEmpty(num)) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_containerItemSequenceRequiredException(DataBaseUtil.toString(data.getOrderId()))));
+                                                    .order_containerItemSequenceRequiredException(orderId)));
         } else if (num > MAX_QUANTITY) {
             list.add(new FormErrorException(Messages.get()
-                                            .order_qtyNotMoreThanMaxException(DataBaseUtil.toString(data.getOrderId()), DataBaseUtil.toString(MAX_QUANTITY))));
+                                                    .order_qtyNotMoreThanMaxException(orderId,
+                                                                                      DataBaseUtil.toString(MAX_QUANTITY))));
         }
 
         if (list.size() > 0)

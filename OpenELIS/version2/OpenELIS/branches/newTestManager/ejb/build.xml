@@ -41,6 +41,7 @@
 	</jar>
 
 	<delete file="build/openelis-common.jar" />
+	<copy file="../OpenELIS-Common/src/org/openelis/constants/OpenELISWebConstants.properties" todir="../OpenELIS-Common/bin/org/openelis/constants"/>
 	<jar jarfile="build/openelis-common.jar">
 		<fileset dir="../OpenELIS-Common/bin">
 			<include name="org/openelis/constants/*" />
@@ -101,10 +102,11 @@
 			<include name="lib/commons-beanutils-1.8.2.jar" />
 			<include name="lib/jasperreports-4.0.1.jar" />
 			<include name="lib/gwt-servlet.jar" />
+			<!--<include name="lib/gwt-user.jar"/>-->
 			<include name="lib/javamail.jar" />
 			<include name="lib/commons-fileupload-1.2.1.jar"/>
 			<include name="lib/commons-io-2.1.jar"/>
-			<include name="lib/gwt-i18n-server-0.17.jar"/>
+			<include name="lib/gwt-i18n-server-0.22.jar"/>
 			<include name="lib/report-fonts.jar"/>
 		</fileset>
 	</ear>

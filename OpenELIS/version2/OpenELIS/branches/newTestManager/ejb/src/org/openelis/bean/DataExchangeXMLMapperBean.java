@@ -31,6 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -62,6 +64,7 @@ import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -136,16 +139,31 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private OrganizationParameterBean organizationParameter;
-
+    
     private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
                     analytes, projects, organizations, qas, trailers, sections, panels;
+    
     private static SimpleDateFormat   dateFormat, timeFormat;
+    
+    private static Integer ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL, ORG_EPARTNER_AGGR;
+    
+    private static final Logger log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
         if (dateFormat == null) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             timeFormat = new SimpleDateFormat("HH:mm:ss");
+        }
+        
+        if (ORG_PROD_EPARTNER_URL == null) {
+            try {
+                ORG_PROD_EPARTNER_URL = dictionaryCache.getBySystemName("org_prod_epartner_url").getId();
+                ORG_TEST_EPARTNER_URL = dictionaryCache.getBySystemName("org_test_epartner_url").getId();
+                ORG_EPARTNER_AGGR = dictionaryCache.getBySystemName("org_epartner_aggr").getId();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Could not load dictionary constants", e);
+            }
         }
     }
 
@@ -255,6 +273,19 @@ public class DataExchangeXMLMapperBean {
 
             if (getSampleNeonatal(sm).getProviderId() != null)
                 root.appendChild(createProvider(doc, getSampleNeonatal(sm).getProvider()));
+        } else if (getSampleClinical(sm) != null) {
+            root.appendChild(createClinical(doc, getSampleClinical(sm)));
+
+            if (getSampleClinical(sm).getPatient() != null) {
+                root.appendChild(createPatient(doc, getSampleClinical(sm).getPatient()));
+
+                if (getSampleClinical(sm).getPatient().getAddress().getId() != null)
+                    root.appendChild(createAddress(doc, getSampleClinical(sm).getPatient()
+                                                                             .getAddress()));
+            }
+
+            if (getSampleClinical(sm).getProviderId() != null)
+                root.appendChild(createProvider(doc, getSampleClinical(sm).getProvider()));
         }
 
         sampleOverridden = false;
@@ -287,10 +318,14 @@ public class DataExchangeXMLMapperBean {
         if (reportTo != null) {
             try {
                 orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
+                if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null || ORG_EPARTNER_AGGR == null) {
+                    log.log(Level.SEVERE, "One or more dictionary constants for electronic partner url not initialized");
+                    return doc;
+                }
                 for (OrganizationParameterDO op : orgps) {
-                    if (Constants.dictionary().ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
-                        Constants.dictionary().ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
-                        Constants.dictionary().ORG_EPARTNER_AGGR.equals(op.getTypeId()))
+                    if (ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
+                        ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
+                        ORG_EPARTNER_AGGR.equals(op.getTypeId()))
                         header.appendChild(createOrganizationParameter(doc, op));
                 }
             } catch (NotFoundException e) {
@@ -308,8 +343,8 @@ public class DataExchangeXMLMapperBean {
             root.appendChild(elm);
         }
 
-        if (getAuxilliary(sm) != null) {
-            for (AuxDataViewDO a : getAuxilliary(sm)) {
+        if (getAuxiliary(sm) != null) {
+            for (AuxDataViewDO a : getAuxiliary(sm)) {
                 root.appendChild(createAuxData(doc, a));
                 if (Constants.dictionary().AUX_DICTIONARY.equals(a.getTypeId()) &&
                     a.getValue() != null)
@@ -475,7 +510,7 @@ public class DataExchangeXMLMapperBean {
          * tables
          */
         if (profiles != null && profiles.size() > 0) {
-            if (organizations.size() > 0) {
+            if (organizations != null && organizations.size() > 0) {
                 elm = createTranslations(Constants.table().ORGANIZATION,
                                          organizations,
                                          profiles,
@@ -485,7 +520,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (tests.size() > 0) {
+            if (tests != null && tests.size() > 0) {
                 elm = createTranslations(Constants.table().TEST,
                                          tests,
                                          profiles,
@@ -495,7 +530,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (methods.size() > 0) {
+            if (methods != null && methods.size() > 0) {
                 elm = createTranslations(Constants.table().METHOD,
                                          methods,
                                          profiles,
@@ -505,7 +540,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (testAnalytes.size() > 0) {
+            if (testAnalytes != null && testAnalytes.size() > 0) {
                 elm = createTranslations(Constants.table().TEST_ANALYTE,
                                          testAnalytes,
                                          profiles,
@@ -515,7 +550,7 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (analytes.size() > 0) {
+            if (analytes != null && analytes.size() > 0) {
                 elm = createTranslations(Constants.table().ANALYTE,
                                          analytes,
                                          profiles,
@@ -525,11 +560,21 @@ public class DataExchangeXMLMapperBean {
                     root.appendChild(elm);
             }
 
-            if (dicts.size() > 0) {
+            if (dicts != null && dicts.size() > 0) {
                 elm = createTranslations(Constants.table().DICTIONARY,
                                          dicts,
                                          profiles,
                                          "dictionary_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+            
+            if (panels != null && panels.size() > 0) {
+                elm = createTranslations(Constants.table().PANEL,
+                                         panels,
+                                         profiles,
+                                         "panel_translations",
                                          doc);
                 if (elm != null)
                     root.appendChild(elm);
@@ -693,6 +738,19 @@ public class DataExchangeXMLMapperBean {
 
         return elm;
     }
+    
+    public Element createClinical(Document doc, SampleClinicalDO neonatal) {
+        Element elm;
+
+        elm = doc.createElement("sample_clinical");
+        setAttribute(elm, "id", neonatal.getId());
+        setAttribute(elm, "sample_id", neonatal.getSampleId());
+        setAttribute(elm, "patient_id", neonatal.getPatientId());
+        setAttribute(elm, "provider_id", neonatal.getProviderId());
+        setText(doc, elm, "provider_phone", neonatal.getProviderPhone());
+
+        return elm;
+    }
 
     public Element createPatient(Document doc, PatientDO patient) {
         Element elm;
@@ -836,7 +894,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "pre_analysis_id", analysis.getPreAnalysisId());
         setAttribute(elm, "parent_analysis_id", analysis.getParentAnalysisId());
         setAttribute(elm, "parent_result_id", analysis.getParentResultId());
-        setAttribute(elm, "is_preliminary", analysis.getIsPreliminary());
+        setAttribute(elm, "type_id", analysis.getTypeId());
         setAttribute(elm, "is_reportable", analysis.getIsReportable());
         setAttribute(elm, "unit_of_measure_id", analysis.getUnitOfMeasureId());
         setAttribute(elm, "status_id", analysis.getStatusId());
@@ -850,8 +908,9 @@ public class DataExchangeXMLMapperBean {
         addMethod(analysis.getMethodId());
         addSection(analysis.getSectionId());
         addPanel(analysis.getPanelId());
-        addDictionary(analysis.getStatusId());
+        addDictionary(analysis.getTypeId());
         addDictionary(analysis.getUnitOfMeasureId());
+        addDictionary(analysis.getStatusId());
 
         return elm;
     }

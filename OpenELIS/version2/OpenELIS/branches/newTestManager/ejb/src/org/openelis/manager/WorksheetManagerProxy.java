@@ -185,6 +185,11 @@ public class WorksheetManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    public WorksheetManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
 
     public WorksheetManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";

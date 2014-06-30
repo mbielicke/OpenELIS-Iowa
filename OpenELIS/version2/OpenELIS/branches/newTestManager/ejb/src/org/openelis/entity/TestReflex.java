@@ -55,7 +55,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "TestReflex.FetchByTestId",
                 query = "select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId,tr.testResultId," +
                         "tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value,trs.typeId)"
-                      + " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId"),
+                      + " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId order by t.name, m.name"),
     @NamedQuery( name = "TestReflex.FetchByAddTestId",
                 query = "select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId," +
                         "tr.testResultId,tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value,trs.typeId)"

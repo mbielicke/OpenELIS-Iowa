@@ -28,9 +28,8 @@
 FROM   sample s, sample_item si, analysis a, test t, method m, test_section ts, section se, dictionary d
 WHERE  a.released_date between $P{FROM_DATE} and $P{TO_DATE} and
        s.id = si.sample_id and a.sample_item_id = si.id and
-       a.test_id = t.id and t.is_active = "Y" and
-       t.method_id = m.id and ts.section_id = se.id and ts.test_id = t.id and a.section_id = se.id and
-       a.revision = 0 and
+       a.test_id = t.id and t.method_id = m.id and ts.section_id = se.id and ts.test_id = t.id and
+       a.section_id = se.id and a.revision = 0 and
        d.id=a.status_id and d.system_name = 'analysis_released' and
        --a.printed_date is not null and
        a.id not in
