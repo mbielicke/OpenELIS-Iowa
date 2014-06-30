@@ -37,6 +37,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
@@ -56,6 +57,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
     
     protected void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId,
                                          SampleManager manager, ValidationErrorsList errors) throws Exception {
+        Integer prevGroupId;
         AuxDataViewDO data;
         String analyteId;
         DictionaryDO dict;
@@ -69,12 +71,25 @@ public class SampleSDWISImportOrder extends ImportOrder {
 
         sample = manager.getSample();
         sdwis = ((SampleSDWISManager)manager.getDomainManager()).getSDWIS();
+        prevGroupId = null;
         
         for (int i = 0; i < auxDataList.size(); i++ ) {
             data = auxDataList.get(i);
+            if ("N".equals(data.getAuxFieldGroupIsActive())) {
+                /*
+                 * don't add the aux group if it's inactive; add the
+                 * warning only once for each inactive aux group
+                 */
+                if ( !data.getAuxFieldGroupId().equals(prevGroupId))
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                            .inactiveAuxGroupWarning(data.getAuxFieldGroupName())));
+                prevGroupId = data.getAuxFieldGroupId();
+                continue;
+            }
             try {
-                if ( !data.getGroupId().equals(envAuxGroupId)) {
+                if ( !data.getAuxFieldGroupId().equals(envAuxGroupId)) {
                     saveAuxData(data, errors, manager);
+                    prevGroupId = data.getAuxFieldGroupId();
                     continue;
                 }
                 analyteId = data.getAnalyteExternalId();
@@ -152,6 +167,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
             } catch (Exception e) {
                 // problem with aux input, ignore
             }
+            prevGroupId = data.getAuxFieldGroupId();
         }
     }
 }

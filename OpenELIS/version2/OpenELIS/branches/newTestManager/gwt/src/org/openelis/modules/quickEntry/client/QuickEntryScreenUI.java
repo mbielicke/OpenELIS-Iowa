@@ -874,23 +874,25 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             siVDO.setContainerReference(tubeNum);
             
             if (typeDO.getTestId() != null)
-                requestVO = new SampleTestRequestVO(siVDO.getId(),
-                                                typeDO.getTestId(),
-                                                null,
-                                                tsVDO.getSectionId(),
-                                                null,
-                                                null,
-                                                false,
-                                                null);
+                requestVO = new SampleTestRequestVO(sampleMan.getSample().getId(),
+                                                    siVDO.getId(),
+                                                    typeDO.getTestId(),
+                                                    null,
+                                                    tsVDO.getSectionId(),
+                                                    null,
+                                                    null,
+                                                    false,
+                                                    null);
             else
-                requestVO = new SampleTestRequestVO(siVDO.getId(),
-                                                null,
-                                                null,
-                                                tsVDO.getSectionId(),
-                                                null,
-                                                typeDO.getPanelId(),
-                                                false,
-                                                null);
+                requestVO = new SampleTestRequestVO(sampleMan.getSample().getId(),
+                                                    siVDO.getId(),
+                                                    null,
+                                                    null,
+                                                    tsVDO.getSectionId(),
+                                                    null,
+                                                    typeDO.getPanelId(),
+                                                    false,
+                                                    null);
 
             returnVO = SampleService1.get().addAnalysis(sampleMan, requestVO);
             smRowCount.sampleManager = returnVO.getManager();
@@ -1043,7 +1045,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                         row.setCell(2, aVDO.getTestName());
                         row.setCell(3, aVDO.getMethodName());
                         row.setCell(4, siVDO.getTypeOfSample());
-                        if (Constants.domain().HUMAN.equals(sDO.getDomain()))
+                        if (Constants.domain().CLINICAL.equals(sDO.getDomain()))
                             row.setCell(5, sDO.getClientReference());
                         row.setData(aVDO);
                         model.add(row);
@@ -1104,10 +1106,10 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             adVDO = man.auxData.get(i);
             if (adVDO.getValue() != null && adVDO.getTypeId() == null) {
                 try {
-                    if (!adVDO.getGroupId().equals(groupId)) {
-                        afgMan = get(adVDO.getGroupId(), AuxFieldGroupManager.class);
+                    if (!adVDO.getAuxFieldGroupId().equals(groupId)) {
+                        afgMan = get(adVDO.getAuxFieldGroupId(), AuxFieldGroupManager.class);
                         rf = afgMan.getFormatter();
-                        groupId = adVDO.getGroupId();
+                        groupId = adVDO.getAuxFieldGroupId();
                     }
                     ResultHelper.formatValue(adVDO, adVDO.getValue(), rf);
                 } catch (Exception anyE) {

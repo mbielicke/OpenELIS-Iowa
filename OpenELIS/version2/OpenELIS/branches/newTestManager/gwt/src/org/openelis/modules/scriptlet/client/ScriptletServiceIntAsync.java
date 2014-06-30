@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
-import org.openelis.scriptlet.ScriptletObject;
 import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -16,6 +15,8 @@ public interface ScriptletServiceIntAsync {
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
     
     void fetchById(Integer id, AsyncCallback<ScriptletDO> callback);
+
+    void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<ScriptletDO>> callback);
     
     void fetchForUpdate(Integer id, AsyncCallback<ScriptletDO> callback);
     
@@ -24,7 +25,4 @@ public interface ScriptletServiceIntAsync {
     void update(ScriptletDO data, AsyncCallback<ScriptletDO> callback);
     
     void abortUpdate(Integer id, AsyncCallback<ScriptletDO> callback);
-    
-    void run(ScriptletObject so, AsyncCallback<ScriptletObject> callback);
-
 }

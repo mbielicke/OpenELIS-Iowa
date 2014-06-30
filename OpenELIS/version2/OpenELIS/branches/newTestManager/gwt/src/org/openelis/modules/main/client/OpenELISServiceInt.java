@@ -11,10 +11,6 @@ public interface OpenELISServiceInt extends XsrfProtectedService  {
 
     Constants getConstants() throws Exception;
 
-    void keepAlive();
-
     void logout();
-    
-    Datetime getLastAccess();
 
 }

@@ -36,6 +36,12 @@ import org.openelis.modules.main.client.OpenELISServiceInt;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.server.RemoteServlet;
 
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
+/*
+ * This servlet needs to extend RemoteServiceServlet instead of RemoteServlet so that it does not update
+ *last_access when checking for last_access;
+ */
 @WebServlet("/openelis/service")
 public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt {
     

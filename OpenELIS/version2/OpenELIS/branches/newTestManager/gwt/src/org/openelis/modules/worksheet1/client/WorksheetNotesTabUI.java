@@ -33,12 +33,14 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.note.client.EditNoteLookupUI;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
@@ -66,20 +68,21 @@ public class WorksheetNotesTabUI extends Screen {
     @UiField
     protected NotesPanel                     notesPanel;
     
-    protected boolean                        canEdit, isVisible;
+    protected boolean                        canEdit, isVisible, redraw;
     protected EditNoteLookupUI               editNoteLookup;
+    protected EventBus                       parentBus;
+    protected NoteViewDO                     displayedNote;
     protected Screen                         parentScreen;
-    protected WorksheetManager1              displayedManager, manager;
+    protected WorksheetManager1              manager;
 
-    public WorksheetNotesTabUI(Screen parentScreen, EventBus bus) {
+    public WorksheetNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        if (bus != null)
-            setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
+        displayedNote = null;
     }
 
     public void initialize() {
@@ -91,7 +94,7 @@ public class WorksheetNotesTabUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit);
+                addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit && !getUpdateTransferMode());
             }
         });
 
@@ -101,65 +104,59 @@ public class WorksheetNotesTabUI extends Screen {
                 displayNotes();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                evaluateEdit();
-                setState(event.getState());
-            }
-        });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(), parentScreen, new DataChangeEvent.Handler() {
-            public void onDataChange(DataChangeEvent event) {
-                displayNotes();
-            }
-        });
     }
 
     public void setData(WorksheetManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
             this.manager = manager;
+            if (manager != null)
+                canEdit = Constants.dictionary().WORKSHEET_WORKING.equals(manager.getWorksheet()
+                                                                                 .getStatusId());
+            else
+                canEdit = false;
         }
     }
 
-    public void evaluateEdit() {
-        canEdit = false;
-        if (manager != null)
-            canEdit = Constants.dictionary().WORKSHEET_WORKING.equals(manager.getWorksheet()
-                                                                             .getStatusId());
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
+    
+    /**
+     * notifies the tab that it may need to refresh its widgets; if the data
+     * currently showing in the widgets is the same as the data in the latest
+     * manager then the widgets are not refreshed
+     */
+    public void onDataChange() {
+        Integer id1, id2;
 
+        /*
+         * compare internal notes
+         */
+        id1 = displayedNote != null ? displayedNote.getId() : null;
+        id2 = null;
+        if (manager != null && manager.note.count() > 0)
+            id2 = manager.note.get(0).getId();
+        if (DataBaseUtil.isDifferent(id1, id2))
+            redraw = true;
+
+        displayNotes();
+    }
+    
     private void displayNotes() {
-        boolean dataChanged;
-        int count1, count2;
-        NoteViewDO note1, note2;
-
         if (!isVisible)
             return;
 
-        count1 = displayedManager == null ? 0 : displayedManager.note.count();
-        count2 = manager == null ? 0 : manager.note.count();
-
-        if (count1 == count2) {
-            dataChanged = false;
-            if (count1 != 0) {
-                note1 = displayedManager.note.get(0);
-                note2 = manager.note.get(0);
-                if ((note1 == null && note2 != null) || (note1 != null && note2 == null) ||
-                    DataBaseUtil.isDifferent(note1.getId(), note2.getId()))
-                    dataChanged = true;
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
+            if (manager != null && manager.note.count() > 0) {
+                displayedNote = manager.note.get(0);
+            } else {
+                displayedNote = null;
             }
-        } else {
-            dataChanged = true;
-        }
-
-        if (dataChanged) {
-            displayedManager = manager;
-            evaluateEdit();
             setState(state);
             fireDataChange();
         }
@@ -181,6 +178,13 @@ public class WorksheetNotesTabUI extends Screen {
         }
     }
 
+    protected boolean getUpdateTransferMode() {
+        if (parentScreen instanceof WorksheetCompletionScreenUI)
+            return ((WorksheetCompletionScreenUI)parentScreen).getUpdateTransferMode();
+        else
+            return false;
+    }
+    
     @SuppressWarnings("unused")
     @UiHandler("addNoteButton")
     protected void showNoteLookup(ClickEvent event) {
@@ -190,11 +194,16 @@ public class WorksheetNotesTabUI extends Screen {
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
                 public void ok() {
-                    if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                         manager.note.removeEditing();
-                    else
-                        setNoteFields(manager.note.getEditing(), editNoteLookup.getSubject(),
-                                      editNoteLookup.getText());
+                    } else {
+                        displayedNote = manager.note.getEditing();
+                        displayedNote.setSubject(editNoteLookup.getSubject());
+                        displayedNote.setText(editNoteLookup.getText());
+                        displayedNote.setSystemUser(UserCache.getPermission().getLoginName());
+                        displayedNote.setSystemUserId(UserCache.getPermission().getSystemUserId());
+                        displayedNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                    }
                     drawNotes();
                 }
                 
@@ -215,13 +224,5 @@ public class WorksheetNotesTabUI extends Screen {
         editNoteLookup.setSubject(note.getSubject());
         editNoteLookup.setText(note.getText());
         editNoteLookup.setHasSubject("N".equals(note.getIsExternal()));
-    }
-
-    private void setNoteFields(NoteViewDO note, String subject, String text) {
-        note.setSubject(subject);
-        note.setText(text);
-        note.setSystemUser(UserCache.getPermission().getLoginName());
-        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
-        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
     }
 }

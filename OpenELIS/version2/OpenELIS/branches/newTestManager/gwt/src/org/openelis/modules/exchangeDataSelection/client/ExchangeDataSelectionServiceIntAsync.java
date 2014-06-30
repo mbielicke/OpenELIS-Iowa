@@ -34,7 +34,7 @@ public interface ExchangeDataSelectionServiceIntAsync {
 
     void fetchWithProfilesByName(String name, AsyncCallback<ExchangeCriteriaManager> callback);
 
-    void getAccessions(ExchangeCriteriaManager man, AsyncCallback<ArrayList<Integer>> callback);
+    void getSamples(ExchangeCriteriaManager man, AsyncCallback<ArrayList<Integer>> callback);
 
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 

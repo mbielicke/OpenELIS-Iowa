@@ -28,7 +28,7 @@ package org.openelis.modules.order1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.manager.OrderManager1;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -72,7 +72,7 @@ public interface OrderServiceInt1Async {
     public void unlock(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
                        AsyncCallback<ArrayList<OrderManager1>> callback);
 
-    public void duplicate(Integer id, AsyncCallback<OrderManager1> callback);
+    public void duplicate(Integer id, AsyncCallback<OrderReturnVO> callback);
 
     public void update(OrderManager1 om, boolean ignoreWarnings,
                        AsyncCallback<OrderManager1> callback);
@@ -81,13 +81,13 @@ public interface OrderServiceInt1Async {
                                    AsyncCallback<ArrayList<IdNameVO>> callback);
 
     public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderTestReturnVO> callback);
+                             AsyncCallback<OrderReturnVO> callback);
 
     public void removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
                                 AsyncCallback<OrderManager1> callback);
 
     public void addTest(OrderManager1 om, Integer id, boolean isTest, Integer index,
-                        AsyncCallback<OrderTestReturnVO> callback);
+                        AsyncCallback<OrderReturnVO> callback);
 
     public void removeTests(OrderManager1 om, ArrayList<Integer> ids,
                             AsyncCallback<OrderManager1> callback);

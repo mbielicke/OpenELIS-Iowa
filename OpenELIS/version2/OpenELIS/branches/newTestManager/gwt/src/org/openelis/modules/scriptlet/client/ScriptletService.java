@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
 import org.openelis.gwt.screen.Callback;
-import org.openelis.scriptlet.ScriptletObject;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
 
@@ -46,20 +45,6 @@ public class ScriptletService implements ScriptletServiceInt, ScriptletServiceIn
     }
 
     @Override
-    public void run(ScriptletObject so, AsyncCallback<ScriptletObject> callback) {
-        service.run(so,callback);
-    }
-
-    @Override
-    public ScriptletObject run(ScriptletObject so) throws Exception {
-        Callback<ScriptletObject> callback;
-        
-        callback = new Callback<ScriptletObject>();
-        service.run(so, callback);
-        return callback.getResult();
-    }
-
-    @Override
     public void fetchById(Integer id, AsyncCallback<ScriptletDO> callback) {
         service.fetchById(id, callback);
     }
@@ -70,6 +55,20 @@ public class ScriptletService implements ScriptletServiceInt, ScriptletServiceIn
         
         callback = new Callback<ScriptletDO>();
         service.fetchById(id, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<ScriptletDO>> callback) {
+        service.fetchByIds(ids, callback);
+    }
+
+    @Override
+    public ArrayList<ScriptletDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        Callback<ArrayList<ScriptletDO>> callback;
+        
+        callback = new Callback<ArrayList<ScriptletDO>>();
+        service.fetchByIds(ids, callback);
         return callback.getResult();
     }
 
@@ -142,6 +141,4 @@ public class ScriptletService implements ScriptletServiceInt, ScriptletServiceIn
         service.query(query, callback);
         return callback.getResult();
     }
-
-    
 }

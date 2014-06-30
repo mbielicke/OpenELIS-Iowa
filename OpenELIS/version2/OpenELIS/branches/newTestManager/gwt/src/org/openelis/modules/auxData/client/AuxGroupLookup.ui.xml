@@ -21,18 +21,18 @@
       <t:Table ui:field="table" verticalScroll="ALWAYS" visibleRows="10"
         horizontalScroll="ALWAYS" header="true"
       >
-        <t:Column width="205" label="{msg.name}">
+        <t:Column width="205" label="{msg.gen_name}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="265" label="{msg.description}">
+        <t:Column width="265" label="{msg.gen_description}">
           <t:LabelCell />
         </t:Column>
       </t:Table>
     </g:layer>
-    <g:layer bottom="0px" height="25px" right="40%" left="40%">
+    <g:layer bottom="0px" height="25px" left="45%" right="25%">
       <g:HorizontalPanel>
-        <w:Button ui:field="okButton" text="{msg.ok}" />
-        <w:Button ui:field="cancelButton" text="{msg.cancel}" />
+        <w:Button ui:field="okButton" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_ok}" />
+        <w:Button ui:field="cancelButton" leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_cancel}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

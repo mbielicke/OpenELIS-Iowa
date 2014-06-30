@@ -39,7 +39,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -52,10 +51,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetTab extends Screen {
             
-    private boolean                     loadedFromCache;
-    private String                      loadBySection;  
+    private boolean                    loadedFromCache;
+    private String                     loadBySection;  
     private ArrayList<ToDoWorksheetVO> fullList;
-    private TableWidget                 table;
+    private TableWidget                table;
     
     public WorksheetTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
@@ -133,13 +132,12 @@ public class WorksheetTab extends Screen {
             sectName = data.getSectionName();
             if (sectOnly && perm.getSection(sectName) == null)
                 continue;
-            row = new TableDataRow(6);
+            row = new TableDataRow(5);
             row.cells.get(0).setValue(data.getId());
             row.cells.get(1).setValue(data.getSystemUserName());
             row.cells.get(2).setValue(sectName);
-            row.cells.get(3).setValue(data.getTestName());
-            row.cells.get(4).setValue(data.getTestMethodName());
-            row.cells.get(5).setValue(data.getCreatedDate());
+            row.cells.get(3).setValue(data.getDescription());
+            row.cells.get(4).setValue(data.getCreatedDate());
             row.data = data;
             model.add(row);
         }

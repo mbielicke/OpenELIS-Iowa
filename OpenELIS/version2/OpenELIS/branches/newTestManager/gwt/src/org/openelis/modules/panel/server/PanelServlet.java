@@ -71,7 +71,7 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
 
     public ArrayList<PanelDO> fetchByName(String name) throws Exception {
         try {        
-            return panel.fetchByName(name, 100);
+            return panel.fetchByName(name+"%", 100);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -123,14 +123,6 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
     public PanelManager update(PanelManager man) throws Exception {
         try {        
             return panelManager.update(man);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
-    public void delete(PanelManager man) throws Exception {
-        try {   
-            panelManager.delete(man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

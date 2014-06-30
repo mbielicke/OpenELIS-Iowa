@@ -46,7 +46,6 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -118,14 +117,14 @@ public class SampleNotesTabUI extends Screen {
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
+                setState(state);
                 displayNotes();
             }
         });
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;
+        this.manager = manager;
     }
 
     public void setState(State state) {
@@ -176,7 +175,6 @@ public class SampleNotesTabUI extends Screen {
                 id2 = manager.sampleInternalNote.get(0).getId();
             redraw = DataBaseUtil.isDifferent(id1, id2);
         }
-
         displayNotes();
     }
 
@@ -199,15 +197,13 @@ public class SampleNotesTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
+            displayedExtNote = null;
+            displayedIntNote = null;
             if (manager != null) {
                 displayedExtNote = manager.sampleExternalNote.get();
                 if (manager.sampleInternalNote.count() > 0)
                     displayedIntNote = manager.sampleInternalNote.get(0);
-            } else {
-                displayedExtNote = null;
-                displayedIntNote = null;
             }
-            setState(state);
             fireDataChange();
         }
     }
@@ -252,7 +248,6 @@ public class SampleNotesTabUI extends Screen {
         String subject, text;
         NoteViewDO note;
         ModalWindow modal;
-        ScheduledCommand cmd;
 
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
@@ -264,20 +259,22 @@ public class SampleNotesTabUI extends Screen {
                      * may have different values passed to it
                      */
                     if (editNoteLookup.getHasSubject()) {
-                        if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                             manager.sampleInternalNote.removeEditing();
-                        else
-                            setNoteFields(manager.sampleInternalNote.getEditing(),
+                        } else {
+                            displayedIntNote = manager.sampleInternalNote.getEditing();
+                            setNoteFields(displayedIntNote,
                                           editNoteLookup.getSubject(),
                                           editNoteLookup.getText());
+                        }
                         drawInternalNotes();
                     } else {
-                        if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                             manager.sampleExternalNote.removeEditing();
-                        else
-                            setNoteFields(manager.sampleExternalNote.getEditing(),
-                                          null,
-                                          editNoteLookup.getText());
+                        } else {
+                            displayedExtNote = manager.sampleExternalNote.getEditing();
+                            setNoteFields(displayedExtNote, null, editNoteLookup.getText());
+                        }
                         drawExternalNote();
                     }
                 }
@@ -315,20 +312,14 @@ public class SampleNotesTabUI extends Screen {
 
         modal = new ModalWindow();
         modal.setSize("620px", "550px");
-        modal.setName(Messages.get().noteEditor());
+        modal.setName(Messages.get().gen_noteEditor());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(editNoteLookup);
 
         editNoteLookup.setWindow(modal);
         editNoteLookup.setSubject(subject);
         editNoteLookup.setText(text);
-        cmd = new ScheduledCommand() {
-            @Override
-            public void execute() {
-                editNoteLookup.setHasSubject( !isExternal);
-            }
-        };
-        Scheduler.get().scheduleDeferred(cmd);
+        editNoteLookup.setHasSubject( !isExternal);
     }
 
     private void setNoteFields(NoteViewDO note, String subject, String text) {

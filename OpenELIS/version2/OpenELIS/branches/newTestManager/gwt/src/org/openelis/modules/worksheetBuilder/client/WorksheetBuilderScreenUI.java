@@ -28,10 +28,10 @@ package org.openelis.modules.worksheetBuilder.client;
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,7 +42,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CategoryCache;
@@ -55,6 +54,7 @@ import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -62,21 +62,22 @@ import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.meta.WorksheetBuilderMeta;
+import org.openelis.meta.WorksheetMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
+import org.openelis.modules.worksheet1.client.WorksheetReagentTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserVO;
@@ -91,9 +92,12 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -121,48 +125,64 @@ public class WorksheetBuilderScreenUI extends Screen {
     interface WorksheetBuilderUiBinder extends UiBinder<Widget, WorksheetBuilderScreenUI> {
     };
     
-    private static WorksheetBuilderUiBinder             uiBinder = GWT.create(WorksheetBuilderUiBinder.class);
+    private static WorksheetBuilderUiBinder               uiBinder   = GWT.create(WorksheetBuilderUiBinder.class);
 
-    private ModulePermission                            userPermission;
-    private ScreenNavigator<IdNameVO>                   nav;
-    private WorksheetManager1                           manager;
+    private Integer                                       origStatusId;
+    private ModulePermission                              userPermission;
+    private ScreenNavigator<IdNameVO>                     nav;
+    private WorksheetManager1                             manager;
 
     @UiField
-    protected AutoComplete                              instrumentName, systemUserId;
+    protected AutoComplete                                instrumentName, systemUserId;
     @UiField
-    protected Calendar                                  createdDate;
+    protected Calendar                                    createdDate;
     @UiField
-    protected Button                                    query, previous, next, add,
-                                                        update, commit, abort, lookupWorksheetButton,
-                                                        atozNext, atozPrev, optionsButton,
-                                                        checkAllAnalytes, uncheckAllAnalytes;
+    protected Button                                      query, previous, next,
+                                                          add, update, commit, abort,
+                                                          lookupWorksheetButton,
+                                                          atozNext, atozPrev, optionsButton,
+                                                          checkAllAnalytes, uncheckAllAnalytes;
     @UiField
-    protected Dropdown<Integer>                         formatId, statusId;
+    protected Dropdown<Integer>                           formatId, statusId;
     @UiField
-    protected Menu                                      optionsMenu;
+    protected Menu                                        optionsMenu;
     @UiField
-    protected MenuItem                                  worksheetHistory;
+    protected MenuItem                                    worksheetHistory;
     @UiField
-    protected TabLayoutPanel                            tabPanel;
+    protected TabLayoutPanel                              tabPanel;
     @UiField
-    protected Table                                     analyteTable, atozTable;
+    protected Table                                       analyteTable, atozTable;
     @UiField
-    protected TextBox<Integer>                          relatedWorksheetId, worksheetId;
+    protected TextBox<Integer>                            relatedWorksheetId, worksheetId;
     @UiField
-    protected TextBox<String>                           description;
+    protected TextBox<String>                             description;
     @UiField(provided = true)
-    protected WorksheetItemTabUI                        worksheetItemTab;
+    protected WorksheetItemTabUI                          worksheetItemTab;
     @UiField(provided = true)
-    protected WorksheetNotesTabUI                       notesTab;
-    
-    protected boolean                                   updateWarningShown;
-    protected ArrayList<Integer>                        formatIds;
-    protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
-    protected HashMap<Integer, ResultViewDO>            modifiedResults;
-    protected HashMap<Integer, TestAnalyteViewDO>       addedAnalytes;
-    protected HashMap<String, ArrayList<Object>>        analytesMap;
-    protected WorksheetLookupScreenUI                   wLookupScreen;
-    
+    protected WorksheetReagentTabUI                       reagentTab;
+    @UiField(provided = true)
+    protected WorksheetNotesTabUI                         notesTab;
+
+    protected boolean                                     updateWarningShown;
+    protected ArrayList<Integer>                          formatIds;
+    protected AsyncCallbackUI<AnalysisResultManager>      fetchAnalytesForDisplayCall;
+    protected AsyncCallbackUI<ArrayList<IdNameVO>>        queryCall;
+    protected AsyncCallbackUI<ArrayList<QcAnalyteViewDO>> fetchQcAnalytesCall;
+    protected AsyncCallbackUI<ArrayList<ResultViewDO>>    fetchAnalytesCall;
+    protected AsyncCallbackUI<WorksheetManager1>          addCall, fetchByIdCall,
+                                                          fetchForUpdateCall, fetchRelatedByIdCall,
+                                                          unlockCall, updateCall;
+    protected Confirm                                     worksheetSaveConfirm,
+                                                          worksheetExitConfirm;
+    protected EditNoteLookupUI                            failedNoteLookup;
+    protected HashMap<Integer, ResultViewDO>              modifiedResults;
+    protected HashMap<Integer, TestAnalyteViewDO>         addedAnalytes;
+    protected HashMap<String, ArrayList<Object>>          analytesMap;
+    protected WorksheetLookupScreenUI                     wLookupScreen;
+    protected WorksheetManager1.Load                      elements[] = {WorksheetManager1.Load.DETAIL,
+                                                                        WorksheetManager1.Load.REAGENT,
+                                                                        WorksheetManager1.Load.NOTE};
+
     public WorksheetBuilderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
         
@@ -170,8 +190,9 @@ public class WorksheetBuilderScreenUI extends Screen {
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Worksheet Builder Screen"));
 
-        worksheetItemTab = new WorksheetItemTabUI(this, bus);
-        notesTab = new WorksheetNotesTabUI(this, bus);
+        worksheetItemTab = new WorksheetItemTabUI(this);
+        reagentTab = new WorksheetReagentTabUI(this);
+        notesTab = new WorksheetNotesTabUI(this);
         initWidget(uiBinder.createAndBindUi(this));
         
         manager = null;
@@ -334,7 +355,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 ArrayList<SystemUserVO> users;
                 ArrayList<Item<Integer>> model;
                 
-                window.setBusy();
+                setBusy();
                 try {
                     model = new ArrayList<Item<Integer>>();
                     users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
@@ -342,10 +363,10 @@ public class WorksheetBuilderScreenUI extends Screen {
                         model.add(new Item<Integer>(user.getId(), user.getLoginName()));
                     systemUserId.showAutoMatches(model);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     Window.alert(e.toString());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
-                window.clearStatus();
+                clearStatus();
             }
         });
 
@@ -374,11 +395,11 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                setRelatedWorksheetId(event.getValue());
+                setRelatedWorksheetId(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent event) {
-                relatedWorksheetId.setEnabled(isState(QUERY));
+                relatedWorksheetId.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit()));
                 relatedWorksheetId.setQueryMode(isState(QUERY));
             }
 
@@ -389,7 +410,7 @@ public class WorksheetBuilderScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                lookupWorksheetButton.setEnabled(isState(ADD, UPDATE) && canEdit());
+                lookupWorksheetButton.setEnabled(isState(DISPLAY) || (isState(ADD, UPDATE) && canEdit()));
             }
         });
 
@@ -418,7 +439,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 ArrayList<InstrumentViewDO> matches;
                 Item<Integer> row;
 
-                window.setBusy();
+                setBusy();
                 try {
                     model = new ArrayList<Item<Integer>>();
                     matches = InstrumentService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
@@ -435,10 +456,10 @@ public class WorksheetBuilderScreenUI extends Screen {
                     }
                     instrumentName.showAutoMatches(model);
                 } catch(Exception e) {
-                    e.printStackTrace();
                     Window.alert(e.getMessage());                     
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
-                window.clearStatus();
+                clearStatus();
             } 
         });
 
@@ -486,37 +507,77 @@ public class WorksheetBuilderScreenUI extends Screen {
         //
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
         
+        addScreenHandler(worksheetItemTab, "worksheetItemTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                worksheetItemTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                worksheetItemTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(reagentTab, "reagentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                reagentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                reagentTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(notesTab, "notesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                notesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                notesTab.setState(event.getState());
+            }
+        });
+
         //
         // left hand navigation panel
         //
         nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
             public void executeQuery(final Query query) {
-                window.setBusy(Messages.get().querying());
+                setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(19);
-                WorksheetService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
-                        setQueryResult(result);
-                    }
-
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(Messages.get().gen_noRecordsFound());
+                if (queryCall == null) {
+                    queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
+                        public void success(ArrayList<IdNameVO> result) {
+                            clearStatus();
+                            setQueryResult(result);
+                        }
+                        
+                        public void notFound() {
+                            setQueryResult(null);
                             setState(DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(Messages.get().gen_noMoreRecordInDir());
-                        } else {
+                            setDone(Messages.get().gen_noRecordsFound());
+                        }
+                        
+                        public void lastPage() {
+                            setQueryResult(null);
+                            setError(Messages.get().gen_noMoreRecordInDir());
+                        }
+    
+                        public void onFailure(Throwable error) {
+                            setQueryResult(null);
                             Window.alert("Error: Worksheet call query failed; " +
                                          error.getMessage());
-                            window.setError(Messages.get().gen_queryFailed());
+                            setError(Messages.get().gen_queryFailed());
                         }
-                    }
-                });
+                    };
+                }
+
+                query.setRowsPerPage(20);
+                WorksheetService1.get().query(query, queryCall);
             }
 
             public boolean fetch(IdNameVO entry) {
-                return fetchById((entry == null) ? null : entry.getId());
+                fetchById((entry == null) ? null : entry.getId());
+                return true;
             }
 
             public ArrayList<Item<Integer>> getModel() {
@@ -537,6 +598,12 @@ public class WorksheetBuilderScreenUI extends Screen {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 nav.enable(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                analyteTable.setEnabled(true);
+                analytesMap.clear();
+                modifiedResults.clear();
+                addedAnalytes.clear();
+                checkAllAnalytes.setEnabled(false);
+                uncheckAllAnalytes.setEnabled(false);
             }
         });
         
@@ -549,15 +616,6 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
         });
         
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                analyteTable.setEnabled(true);
-                analytesMap.clear();
-                modifiedResults.clear();
-                addedAnalytes.clear();
-            }
-        });
-
         analyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 //
@@ -600,18 +658,11 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                checkAllAnalytes.setEnabled(false);
-                uncheckAllAnalytes.setEnabled(false);
-            }
-        });
-
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    window.setError(Messages.get().gen_mustCommitOrAbort());
+                    setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
                     tabPanel.close();
                 }
@@ -683,7 +734,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         setState(QUERY);
         fireDataChange();
         worksheetId.setFocus(true);
-        window.setDone(Messages.get().gen_enterFieldsToQuery());
+        setDone(Messages.get().gen_enterFieldsToQuery());
     }
 
     @SuppressWarnings("unused")
@@ -701,41 +752,63 @@ public class WorksheetBuilderScreenUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("add")
     protected void add(ClickEvent event) {
-        try {
-            manager = WorksheetService1.get().getInstance();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
-            return;
+        setBusy();
+        
+        if (addCall == null) {
+            addCall = new AsyncCallbackUI<WorksheetManager1>() {
+                public void success(WorksheetManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                    setDone(Messages.get().gen_enterInformationPressCommit());
+                }
+                
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
         }
-        setData();
-        setState(ADD);
-        fireDataChange();
-        window.setDone(Messages.get().gen_enterInformationPressCommit());
+    
+        WorksheetService1.get().getInstance(addCall);
     }
 
     @SuppressWarnings("unused")
     @UiHandler("update")
     protected void update(ClickEvent event) {
-        window.setBusy(Messages.get().lockForUpdate());
+        setBusy(Messages.get().lockForUpdate());
 
-        try {
-            manager = WorksheetService1.get().fetchForUpdate(manager.getWorksheet().getId());
-
-            setData();
-            setState(UPDATE);
-            fireDataChange();
-            statusId.setFocus(true);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
+        if (fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallbackUI<WorksheetManager1>() {
+                public void success(WorksheetManager1 result) {
+                    manager = result;
+                    origStatusId = manager.getWorksheet().getStatusId();
+                    setData();
+                    setState(UPDATE);
+                    fireDataChange();
+                    statusId.setFocus(true);
+                }
+                
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                
+                public void finish() {
+                    clearStatus();
+                }
+            };
         }
 
-        window.clearStatus();
+        WorksheetService1.get().fetchForUpdate(manager.getWorksheet().getId(), fetchForUpdateCall);
     }
 
     @SuppressWarnings("unused")
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        Integer currStatusId;
         Validation validation;
         
         finishEditing();
@@ -743,9 +816,17 @@ public class WorksheetBuilderScreenUI extends Screen {
         
         validation = validate();
         
-        if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().gen_correctErrors());
-            return;
+        switch (validation.getStatus()) {
+            case FLAGGED:
+                /*
+                 * some part of the screen has some operation that needs to be
+                 * completed before committing the data
+                 */
+                return;
+            case ERRORS:
+            case WARNINGS:
+                setError(Messages.get().gen_correctErrors());
+                return;
         }
 
         switch (state) {
@@ -754,11 +835,21 @@ public class WorksheetBuilderScreenUI extends Screen {
                 break;
                 
             case ADD:
-                commitAdd();
+                commitUpdate(WorksheetManager1.ANALYSIS_UPDATE.UPDATE);
                 break;
                 
             case UPDATE:
-                commitUpdate();
+                currStatusId = manager.getWorksheet().getStatusId();
+                if (Constants.dictionary().WORKSHEET_FAILED.equals(currStatusId) &&
+                    !Constants.dictionary().WORKSHEET_FAILED.equals(origStatusId)) {
+                    openFailedRunNote();
+                    return;
+                } else if (Constants.dictionary().WORKSHEET_VOID.equals(currStatusId) &&
+                           !Constants.dictionary().WORKSHEET_VOID.equals(origStatusId)) {
+                    commitUpdate(WorksheetManager1.ANALYSIS_UPDATE.VOID);
+                } else {
+                    commitUpdate(WorksheetManager1.ANALYSIS_UPDATE.UPDATE);
+                }
                 break;
         }
         
@@ -773,42 +864,46 @@ public class WorksheetBuilderScreenUI extends Screen {
         nav.setQuery(query);
     }
 
-    private void commitAdd() {
+    private void commitUpdate(WorksheetManager1.ANALYSIS_UPDATE flag) {
         finishEditing();
-        window.setBusy(Messages.get().adding());
+        if (isState(ADD))
+            setBusy(Messages.get().adding());
+        else
+            setBusy(Messages.get().updating());
 
         manager.setModifiedResults(new ArrayList<ResultViewDO>(modifiedResults.values()));
-        try {
-            manager = WorksheetService1.get().update(manager);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.setDone(Messages.get().gen_addingComplete());
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-        } catch (Exception e) {
-            Window.alert("commitAdd(): " + e.getMessage());
-            window.clearStatus();
+        if (updateCall == null) {
+            updateCall = new AsyncCallbackUI<WorksheetManager1>() {
+                public void success(WorksheetManager1 result) {
+                    State currState;
+                    
+                    currState = state;
+                    manager = result;
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    if (currState == ADD)
+                        setDone(Messages.get().gen_addingComplete());
+                    else
+                        setDone(Messages.get().gen_updatingComplete());
+                }
+                
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                }
+                
+                public void failure(Throwable e) {
+                    if (isState(ADD))
+                        Window.alert("commitAdd(): " + e.getMessage());
+                    else
+                        Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
         }
-    }
-    
-    private void commitUpdate() {
-        finishEditing();
-        window.setBusy(Messages.get().updating());
-
-        manager.setModifiedResults(new ArrayList<ResultViewDO>(modifiedResults.values()));
-        try {
-            manager = WorksheetService1.get().update(manager);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.setDone(Messages.get().gen_updatingComplete());
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-        } catch (Exception e) {
-            Window.alert("commitUpdate(): " + e.getMessage());
-            window.clearStatus();
-        }
+        
+        WorksheetService1.get().update(manager, flag, updateCall);
     }
     
     @SuppressWarnings("unused")
@@ -816,12 +911,12 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected void abort(ClickEvent event) {
         finishEditing();
         clearErrors();
-        window.setBusy(Messages.get().gen_cancelChanges());
+        setBusy(Messages.get().gen_cancelChanges());
 
         switch (state) {
             case QUERY:
                 fetchById(null);
-                window.setDone(Messages.get().gen_queryAborted());
+                setDone(Messages.get().gen_queryAborted());
                 break;
                 
             case ADD:
@@ -831,9 +926,6 @@ public class WorksheetBuilderScreenUI extends Screen {
             case UPDATE:
                 abortUpdate();
                 break;
-                
-            default:
-                window.clearStatus();
         }
 
         updateWarningShown = false;
@@ -856,7 +948,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         
         fetchById(null);
         
-        window.setDone(Messages.get().gen_addAborted());
+        setDone(Messages.get().gen_addAborted());
     }
     
     private void abortUpdate() {
@@ -874,16 +966,26 @@ public class WorksheetBuilderScreenUI extends Screen {
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         formatId.setModel(model);
 
-        try {
-            manager = WorksheetService1.get().unlock(manager.getWorksheet().getId(), Load.DETAIL);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            fetchById(null);
+        if (unlockCall == null) {
+            unlockCall = new AsyncCallbackUI<WorksheetManager1>() {
+                public void success(WorksheetManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    setDone(Messages.get().gen_updateAborted());
+                }
+                
+                public void failure(Throwable  e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
         }
-        window.setDone(Messages.get().gen_updateAborted());
+
+        WorksheetService1.get().unlock(manager.getWorksheet().getId(), elements,
+                                       unlockCall);
     }
 
     private void worksheetHistory() {
@@ -952,8 +1054,8 @@ public class WorksheetBuilderScreenUI extends Screen {
                     }
                     fields.add(field);
                 } catch (Exception anyE) {
-                    anyE.printStackTrace();
                     Window.alert(anyE.getMessage());
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                 }
             }
         }
@@ -961,72 +1063,140 @@ public class WorksheetBuilderScreenUI extends Screen {
         return fields;
     }
 
-    protected boolean fetchById(Integer id) {
+    protected void fetchById(Integer id) {
         if (id == null) {
             manager = null;
             setData();
             setState(DEFAULT);
+            fireDataChange();
+            clearStatus();
         } else {
-            window.setBusy(Messages.get().gen_fetching());
-            try {
-                manager = WorksheetService1.get().fetchById(id, WorksheetManager1.Load.DETAIL,
-                                                            WorksheetManager1.Load.NOTE);
-                setData();
-                setState(DISPLAY);
-            } catch (NotFoundException e) {
-                fetchById(null);
-                window.setDone(Messages.get().gen_noRecordsFound());
-                return false;
-            } catch (Exception e) {
-                fetchById(null);
-                e.printStackTrace();
-                Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
-                return false;
+            setBusy(Messages.get().gen_fetching());
+            if (fetchByIdCall == null) {
+                fetchByIdCall = new AsyncCallbackUI<WorksheetManager1>() {
+                    public void success(WorksheetManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(DISPLAY);
+                    }
+                    
+                    public void notFound() {
+                        fetchById(null);
+                        setDone(Messages.get().gen_noRecordsFound());
+                    }
+                
+                    public void failure(Throwable e) {
+                        fetchById(null);
+                        Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                    
+                    public void finish() {
+                        fireDataChange();
+                        clearStatus();
+                    }
+                };
             }
 
+            WorksheetService1.get().fetchById(id, elements, fetchByIdCall);
         }
-        fireDataChange();
-        window.clearStatus();
-
-        return true;
     }
 
     @SuppressWarnings("unused")
     @UiHandler("lookupWorksheetButton")
-    protected void openWorksheetLookup(ClickEvent event) {
+    protected void lookupWorksheet(ClickEvent event) {
         ModalWindow modal;
-        
-        try {
-            if (wLookupScreen == null) {
-                wLookupScreen = new WorksheetLookupScreenUI();
-                wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreenUI.Action>() {
-                    @SuppressWarnings("unchecked")
-                    public void onAction(ActionEvent<WorksheetLookupScreenUI.Action> event) {
-                        Item<Integer> row;
-                        WorksheetViewDO wVDO;
+        Query query;
+        QueryData field;
 
-                        if (event.getAction() == WorksheetLookupScreenUI.Action.SELECT) {
-                            row = (Item<Integer>)event.getData();
-                            if (row != null) {
-                                wVDO = (WorksheetViewDO)row.getData();
-                                setRelatedWorksheetId(wVDO.getId());
-                                relatedWorksheetId.setValue(getRelatedWorksheetId());
+        if (isState(DISPLAY)) {
+            if (manager.getWorksheet().getRelatedWorksheetId() != null) {
+                field = new QueryData();
+                field.setKey(WorksheetMeta.getId());
+                field.setQuery(manager.getWorksheet().getId() + "|" + manager.getWorksheet().getRelatedWorksheetId());
+                field.setType(QueryData.Type.INTEGER);
+                
+                query = new Query();
+                query.setFields(field);
+                nav.setQuery(query);
+            }
+        } else {
+            try {
+                if (wLookupScreen == null) {
+                    wLookupScreen = new WorksheetLookupScreenUI();
+                    wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreenUI.Action>() {
+                        @SuppressWarnings("unchecked")
+                        public void onAction(ActionEvent<WorksheetLookupScreenUI.Action> event) {
+                            Item<Integer> row;
+                            WorksheetViewDO wVDO;
+    
+                            if (event.getAction() == WorksheetLookupScreenUI.Action.SELECT) {
+                                row = (Item<Integer>)event.getData();
+                                if (row != null) {
+                                    wVDO = (WorksheetViewDO)row.getData();
+                                    setRelatedWorksheetId(wVDO.getId(), false);
+                                    relatedWorksheetId.setValue(getRelatedWorksheetId());
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
+                
+                modal = new ModalWindow();
+                modal.setName(Messages.get().worksheet_worksheetLookup());
+                modal.setContent(wLookupScreen);
+                modal.setSize("636px", "385px");
+                wLookupScreen.setWindow(modal);
+            } catch (Exception e) {
+                Window.alert("error: " + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                return;
             }
-            
-            modal = new ModalWindow();
-            modal.setName(Messages.get().worksheet_worksheetLookup());
-            modal.setContent(wLookupScreen);
-            modal.setSize("636px", "385px");
-            wLookupScreen.setWindow(modal);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
-            return;
         }
+    }
+
+    protected void openFailedRunNote() {
+        ModalWindow modal;
+        NoteViewDO note;
+
+        if (failedNoteLookup == null) {
+            failedNoteLookup = new EditNoteLookupUI() {
+                public void ok() {
+                    if (DataBaseUtil.isEmpty(failedNoteLookup.getText())) {
+                        manager.note.removeEditing();
+                    } else {
+                        setNoteFields(manager.note.getEditing(), failedNoteLookup.getSubject(),
+                                      failedNoteLookup.getText());
+                        commitUpdate(WorksheetManager1.ANALYSIS_UPDATE.FAILED_RUN);
+                        updateWarningShown = false;
+                    }
+                }
+                
+                public void cancel() {
+                    // ignore
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("620px", "550px");
+        modal.setName(Messages.get().gen_noteEditor());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(failedNoteLookup);
+
+        note = manager.note.getEditing();
+        failedNoteLookup.setWindow(modal);
+        failedNoteLookup.setSubject(note.getSubject());
+        failedNoteLookup.setText(note.getText());
+        failedNoteLookup.setHasSubject("N".equals(note.getIsExternal()));
+    }
+
+    private void setNoteFields(NoteViewDO note, String subject, String text) {
+        note.setSubject(subject);
+        note.setText(text);
+        note.setSystemUser(UserCache.getPermission().getLoginName());
+        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
+        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
     }
 
     @SuppressWarnings("unchecked")
@@ -1046,117 +1216,134 @@ public class WorksheetBuilderScreenUI extends Screen {
                     checkAllAnalytes.setEnabled(true);
                     uncheckAllAnalytes.setEnabled(true);
                 }
-                window.clearStatus();
+                clearStatus();
             } else {
                 data = (WorksheetAnalysisViewDO)manager.getObject(uid);
                 if (data.getAnalysisId() != null) {
                     perm = UserCache.getPermission().getSection(data.getSectionName());
                     if (isState(ADD, UPDATE) && perm.hasCompletePermission()) {
-                        WorksheetBuilderService.get().fetchAnalytesByAnalysis(data.getAnalysisId(),
-                                                                              data.getTestId(),
-                                                                              new AsyncCallback<ArrayList<ResultViewDO>>() {
-                            public void onSuccess(ArrayList<ResultViewDO> analytes) {
-                                ArrayList<Object> analyteList;
-                                ArrayList<Row> model;
-                                Row row;
-    
-                                analyteList = new ArrayList<Object>();
-                                model = new ArrayList<Row>();
-                                for (DataObject ana : analytes) {
-                                    row = new Row(2);
-                                    row.setCell(0, ((ResultViewDO)ana).getIsReportable());
-                                    row.setCell(1, ((ResultViewDO)ana).getAnalyte());
-                                    row.setData(ana);
-                                    model.add(row);
+                        if (fetchAnalytesCall == null) {
+                            fetchAnalytesCall = new AsyncCallbackUI<ArrayList<ResultViewDO>>() {
+                                public void success(ArrayList<ResultViewDO> analytes) {
+                                    ArrayList<Object> analyteList;
+                                    ArrayList<Row> model;
+                                    Row row;
+        
+                                    analyteList = new ArrayList<Object>();
+                                    model = new ArrayList<Row>();
+                                    for (DataObject ana : analytes) {
+                                        row = new Row(2);
+                                        row.setCell(0, ((ResultViewDO)ana).getIsReportable());
+                                        row.setCell(1, ((ResultViewDO)ana).getAnalyte());
+                                        row.setData(ana);
+                                        model.add(row);
+                                    }
+                                    analyteTable.setModel(model);
+                                    analyteList.add(Boolean.TRUE);
+                                    analyteList.add(model);
+                                    analytesMap.put(uid, analyteList);
+                                    checkAllAnalytes.setEnabled(true);
+                                    uncheckAllAnalytes.setEnabled(true);
+                                    clearStatus();
                                 }
-                                analyteTable.setModel(model);
-                                analyteList.add(Boolean.TRUE);
-                                analyteList.add(model);
-                                analytesMap.put(uid, analyteList);
-                                checkAllAnalytes.setEnabled(true);
-                                uncheckAllAnalytes.setEnabled(true);
-                                window.clearStatus();
-                            }
-                
-                            public void onFailure(Throwable error) {
-                                analyteTable.setModel(null);
-                                if (error instanceof NotFoundException) {
-                                    window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                                } else {
-                                    Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
+                                
+                                public void notFound() {
+                                    analyteTable.setModel(null);
+                                    setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                                 }
-                            }
-                        });
+                    
+                                public void onFailure(Throwable e) {
+                                    analyteTable.setModel(null);
+                                    Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+e.getMessage());
+                                    logger.log(Level.SEVERE, e.getMessage(), e);
+                                }
+                            };
+                        }
+
+                        WorksheetService1.get().fetchAnalytesByAnalysis(data.getAnalysisId(),
+                                                                        data.getTestId(),
+                                                                        fetchAnalytesCall);
                     } else {
+                        if (fetchAnalytesForDisplayCall == null) {
+                            fetchAnalytesForDisplayCall = new AsyncCallbackUI<AnalysisResultManager>() {
+                                public void success(AnalysisResultManager arMan) {
+                                    int i;
+                                    ArrayList<Object> analyteList;
+                                    ArrayList<Row> model;
+                                    ResultViewDO result;
+                                    Row row;
+        
+                                    analyteList = new ArrayList<Object>();
+                                    model = new ArrayList<Row>();
+                                    for (i = 0; i < arMan.rowCount(); i++) {
+                                        result = arMan.getResultAt(i, 0);
+                                        row = new Row(2);
+                                        row.setCell(0, result.getIsReportable());
+                                        row.setCell(1, result.getAnalyte());
+                                        row.setData(result);
+                                        model.add(row);
+                                    }
+                                    analyteTable.setModel(model);
+                                    analyteList.add(Boolean.FALSE);
+                                    analyteList.add(model);
+                                    analytesMap.put(uid, analyteList);
+                                    clearStatus();
+                                }
+                                
+                                public void notFound() {
+                                    analyteTable.setModel(null);
+                                    setDone(Messages.get().worksheet_noAnalytesFoundForRow());
+                                }
+                                
+                                public void onFailure(Throwable e) {
+                                    analyteTable.setModel(null);
+                                    Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+e.getMessage());
+                                    logger.log(Level.SEVERE, e.getMessage(), e);
+                                }
+                            };
+                        }
+                        
                         ResultService.get().fetchByAnalysisIdForDisplay(data.getAnalysisId(),
-                                                                        new AsyncCallback<AnalysisResultManager>() {
-                            public void onSuccess(AnalysisResultManager arMan) {
-                                int i;
+                                                                        fetchAnalytesForDisplayCall);
+                    }
+                } else if (data.getQcLotId() != null) {
+                    if (fetchQcAnalytesCall == null) {
+                        fetchQcAnalytesCall = new AsyncCallbackUI<ArrayList<QcAnalyteViewDO>>() {
+                            public void success(ArrayList<QcAnalyteViewDO> analytes) {
                                 ArrayList<Object> analyteList;
                                 ArrayList<Row> model;
-                                ResultViewDO result;
                                 Row row;
-    
+        
                                 analyteList = new ArrayList<Object>();
                                 model = new ArrayList<Row>();
-                                for (i = 0; i < arMan.rowCount(); i++) {
-                                    result = arMan.getResultAt(i, 0);
+                                for (QcAnalyteViewDO analyte : analytes) {
                                     row = new Row(2);
-                                    row.setCell(0, result.getIsReportable());
-                                    row.setCell(1, result.getAnalyte());
-                                    row.setData(result);
+                                    row.setCell(0, "N");
+                                    row.setCell(1, analyte.getAnalyteName());
+                                    row.setData(analyte);
                                     model.add(row);
                                 }
                                 analyteTable.setModel(model);
                                 analyteList.add(Boolean.FALSE);
                                 analyteList.add(model);
                                 analytesMap.put(uid, analyteList);
-                                window.clearStatus();
+                                clearStatus();
                             }
                             
-                            public void onFailure(Throwable error) {
+                            public void notFound() {
                                 analyteTable.setModel(null);
-                                if (error instanceof NotFoundException) {
-                                    window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                                } else {
-                                    Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
-                                }
+                                setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                             }
-                        });
+                            
+                            public void onFailure(Throwable e) {
+                                analyteTable.setModel(null);
+                                Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+e.getMessage());
+                                logger.log(Level.SEVERE, e.getMessage(), e);
+                            }
+                        };
                     }
-                } else if (data.getQcLotId() != null) {
-                    QcService.get().fetchAnalytesByLotId(data.getQcLotId(),
-                                                         new AsyncCallback<ArrayList<QcAnalyteViewDO>>() {
-                        public void onSuccess(ArrayList<QcAnalyteViewDO> analytes) {
-                            ArrayList<Object> analyteList;
-                            ArrayList<Row> model;
-                            Row row;
-    
-                            analyteList = new ArrayList<Object>();
-                            model = new ArrayList<Row>();
-                            for (QcAnalyteViewDO analyte : analytes) {
-                                row = new Row(2);
-                                row.setCell(0, "N");
-                                row.setCell(1, analyte.getAnalyteName());
-                                row.setData(analyte);
-                                model.add(row);
-                            }
-                            analyteTable.setModel(model);
-                            analyteList.add(Boolean.FALSE);
-                            analyteList.add(model);
-                            analytesMap.put(uid, analyteList);
-                            window.clearStatus();
-                        }
-                        
-                        public void onFailure(Throwable error) {
-                            analyteTable.setModel(null);
-                            if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
-                            } else {
-                                Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
-                            }
-                        }
-                    });
+
+                    QcService.get().fetchAnalytesByLotId(data.getQcLotId(), fetchQcAnalytesCall);
                 }
                 
                 checkAllAnalytes.setEnabled(false);
@@ -1219,6 +1406,7 @@ public class WorksheetBuilderScreenUI extends Screen {
      */
     private void setData() {
         worksheetItemTab.setData(manager);
+        reagentTab.setData(manager);
         notesTab.setData(manager);
     }
     
@@ -1302,8 +1490,35 @@ public class WorksheetBuilderScreenUI extends Screen {
         return manager.getWorksheet().getRelatedWorksheetId();
     }
 
-    private void setRelatedWorksheetId(Integer relatedWorksheetId) {
-        manager.getWorksheet().setRelatedWorksheetId(relatedWorksheetId);
+    private void setRelatedWorksheetId(Integer id, boolean validate) {
+        if (validate && id != null) {
+            setBusy(Messages.get().gen_fetching());
+            if (fetchRelatedByIdCall == null) {
+                fetchRelatedByIdCall = new AsyncCallbackUI<WorksheetManager1>() {
+                    public void success(WorksheetManager1 result) {
+                        manager.getWorksheet().setRelatedWorksheetId(result.getWorksheet().getId());
+                    }
+                    
+                    public void notFound() {
+                        Window.alert(Messages.get().gen_noRecordsFound());
+                    }
+                    
+                    public void failure(Throwable e) {
+                        Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+
+                    public void finish() {
+                        relatedWorksheetId.setValue(manager.getWorksheet().getRelatedWorksheetId());
+                        clearStatus();
+                    }
+                };
+            }
+
+            WorksheetService1.get().fetchById(id, elements, fetchRelatedByIdCall);
+        } else {
+            manager.getWorksheet().setRelatedWorksheetId(id);
+        }
     }
 
     private void setInstrumentSelection() {
