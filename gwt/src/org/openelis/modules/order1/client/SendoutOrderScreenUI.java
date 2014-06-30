@@ -25,13 +25,9 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +45,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
@@ -222,9 +218,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
     protected AsyncCallbackUI<OrderManager1>           addCall, fetchForUpdateCall, 
-                                                         updateCall, fetchByIdCall, unlockCall,
-                                                         duplicateCall;   
+                                                         updateCall, fetchByIdCall, unlockCall;   
     
+    protected AsyncCallbackUI<OrderReturnVO>   duplicateCall;
+
     // @formatter:off
     protected OrderManager1.Load             elements[] = {
                                                             OrderManager1.Load.SAMPLE_DATA,
@@ -645,7 +642,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                         continue;
                     }
                     if (Constants.dictionary().ORDER_STATUS_PENDING.equals(item.getKey()) ||
-                        Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(item.getKey()))
+                        Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(item.getKey()) ||
+                        Constants.dictionary().ORDER_STATUS_TEMPLATE.equals(item.getKey()))
                         item.setEnabled(true);
                     else if (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(item.getKey()) ||
                              Constants.dictionary().ORDER_STATUS_CANCELLED.equals(item.getKey()))
@@ -885,6 +883,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
 
         addScreenHandler(testTab, "testTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1127,7 +1131,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                OrderTestReturnVO ret;
+                OrderReturnVO ret;
                 ArrayList<Integer> ids;
 
                 if (screen == event.getSource())
@@ -1171,6 +1175,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
+            }
+        });
+
+        bus.addHandler(AddRecurrenceEvent.getType(), new AddRecurrenceEvent.Handler() {
+            public void onAddRecurrence(AddRecurrenceEvent event) {
+                status.setEnabled( !Constants.dictionary().ORDER_STATUS_RECURRING.equals(getStatusId()));
+                fireDataChange();
             }
         });
 
@@ -1491,9 +1502,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     protected void duplicate() {
         if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<OrderManager1>() {
-                public void success(OrderManager1 result) {
-                    manager = result;
+            duplicateCall = new AsyncCallbackUI<OrderReturnVO>() {
+                public void success(OrderReturnVO result) {
+                    manager = result.getManager();
+                    if (result.getErrors() != null && result.getErrors().size() > 0) {
+                        showErrors(result.getErrors());
+                    }
                     manager.getOrder().setParentOrderId(null);
                     /*
                      * the screen is in add state, so we need the cache here
@@ -1680,6 +1694,28 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Executes a query to fetch the order whose id is the passed value
+     */
+    public void query(Integer id) {
+        Query query;
+        QueryData field;
+
+        if (id == null)
+            return;
+
+        query = new Query();
+        query.setRowsPerPage(25);
+        field = new QueryData();
+        field.setKey(OrderMeta.getId());
+        field.setQuery(id.toString());
+        field.setType(QueryData.Type.INTEGER);
+
+        query.setFields(field);
+        nav.setQuery(query);
+        cache = null;
     }
 
     /**
@@ -2114,9 +2150,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         prevId = null;
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
-            if ( !aux.getGroupId().equals(prevId)) {
-                ids.add(aux.getGroupId());
-                prevId = aux.getGroupId();
+            if ( !aux.getAuxFieldGroupId().equals(prevId)) {
+                ids.add(aux.getAuxFieldGroupId());
+                prevId = aux.getAuxFieldGroupId();
             }
         }
 
@@ -2126,7 +2162,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
         }
     }
-    
+
     /**
      * creates a string containing the message that there are warnings on the
      * screen, followed by all warning messages, followed by the question
@@ -2165,7 +2201,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     private void addTest(Integer id, boolean isTest, Integer index) {
-        OrderTestReturnVO ret;
+        OrderReturnVO ret;
         try {
             ret = OrderService1.get().addTest(manager, id, isTest, index);
             manager = ret.getManager();

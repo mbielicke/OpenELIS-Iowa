@@ -190,17 +190,14 @@ public class ContainerTabUI extends Screen {
                 data = manager.container.add(index);
                 data.setContainerId((Integer)row.getCell(1));
                 data.setTypeOfSampleId((Integer)row.getCell(2));
-                table.setModel(getTableModel());
+                fireDataChange();
             }
         });
 
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                int index;
-
-                index = event.getIndex();
-                manager.container.remove(index);
-                table.setModel(getTableModel());
+                manager.container.remove(event.getIndex());
+                fireDataChange();
             }
         });
 
@@ -298,14 +295,17 @@ public class ContainerTabUI extends Screen {
     @UiHandler("duplicateContainerButton")
     protected void duplicateContainer(ClickEvent event) {
         int n;
+        Integer orderId;
         OrderContainerDO data;
         Row row;
 
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
+
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiRowDuplicateNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                          .getId())));
+            parentScreen.getWindow().setError(Messages.get()
+                                                      .order_multiRowDuplicateNotAllowed(orderId));
             return;
         }
 
@@ -330,12 +330,14 @@ public class ContainerTabUI extends Screen {
     @UiHandler("moveUpButton")
     protected void moveUp(ClickEvent event) {
         int r;
+        Integer orderId;
+
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiRowMoveNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                     .getId())));
+            parentScreen.getWindow().setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
             return;
         }
 
@@ -355,12 +357,14 @@ public class ContainerTabUI extends Screen {
     @UiHandler("moveDownButton")
     protected void moveDown(ClickEvent event) {
         int r;
+        Integer orderId;
+
+        orderId = manager.getOrder().getId();
+        if (orderId == null)
+            orderId = 0;
 
         if (table.getSelectedRows().length > 1) {
-            parentScreen.getWindow()
-                        .setError(Messages.get()
-                                          .order_multiRowMoveNotAllowed(DataBaseUtil.toString(manager.getOrder()
-                                                                                                     .getId())));
+            parentScreen.getWindow().setError(Messages.get().order_multiRowMoveNotAllowed(orderId));
             return;
         }
 

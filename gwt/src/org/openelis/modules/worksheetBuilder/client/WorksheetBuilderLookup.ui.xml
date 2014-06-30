@@ -47,7 +47,7 @@ UIRF Software License are applicable instead of those above.
     </g:west>
     <g:center>
       <g:LayoutPanel>
-        <g:layer top="0px" height="100px">
+        <g:layer top="0px" height="80px">
       	  <g:HTMLPanel>
       	    <table class="{res.style.Form}">
       	  	  <tr>
@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
       	  	    <td>
                   <w:AutoComplete ui:field="testId" width="150px" dropWidth="650px" case="LOWER">
                     <w:popup>
-                      <t:Table visibleRows="10" header="true">
+                      <t:Table header="true">
                         <t:Column width="150" label="{msg.gen_test}">
                           <t:LabelCell/>
                         </t:Column>
@@ -130,7 +130,7 @@ UIRF Software License are applicable instead of those above.
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="100px" bottom="25px">
+        <g:layer top="93px" bottom="25px">
           <t:Table ui:field="analysesTable" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
             <t:Column width="90" sortable="true" label="{msg.sample_accessionNum}">
               <t:LabelCell/>

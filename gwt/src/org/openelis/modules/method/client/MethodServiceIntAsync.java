@@ -24,4 +24,6 @@ public interface MethodServiceIntAsync {
 
     void update(MethodDO data, AsyncCallback<MethodDO> callback);
 
+    void fetchActiveByName(String search, AsyncCallback<ArrayList<MethodDO>> callback);
+
 }

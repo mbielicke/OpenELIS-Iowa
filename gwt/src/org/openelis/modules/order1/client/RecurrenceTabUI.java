@@ -511,9 +511,12 @@ public class RecurrenceTabUI extends Screen {
         Integer freq, unit;
         Datetime ndt, bdt, edt, now;
         Date nd;
-        String orderId;
+        Integer orderId;
 
-        orderId = DataBaseUtil.toString(recurrence.getOrderId());
+        orderId = recurrence.getOrderId();
+        if (orderId == null)
+            orderId = 0;
+
         freq = recurrence.getFrequency();
         unit = recurrence.getUnitId();
         bdt = recurrence.getActiveBegin();
@@ -594,18 +597,22 @@ public class RecurrenceTabUI extends Screen {
     }
 
     private boolean validateEndDate() {
+        Integer orderId;
         Datetime bdt, edt;
         OrderRecurrenceDO data;
 
         data = manager.getRecurrence();
         bdt = data.getActiveBegin();
         edt = data.getActiveEnd();
+        orderId = data.getOrderId();
+        if (orderId == null)
+            orderId = 0;
 
         if (bdt == null || edt == null) {
             endDate.clearExceptions();
         } else if (edt.before(bdt)) {
             endDate.addException(new Exception(Messages.get()
-                                                       .order_endDateAfterBeginDateException(DataBaseUtil.toString(data.getOrderId()))));
+                                                       .order_endDateAfterBeginDateException(orderId)));
             return false;
         } else {
             endDate.clearExceptions();
@@ -639,6 +646,7 @@ public class RecurrenceTabUI extends Screen {
             endDate.setEnabled(true);
             frequency.setEnabled(true);
             unit.setEnabled(true);
+            parentBus.fireEvent(new AddRecurrenceEvent());
         }
         recurrence.setIsActive(isActive);
         showDatesButton.setEnabled("Y".equals(isActive));

@@ -19,9 +19,9 @@
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="60px">
       <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
-        <t:Column width="220" label="{msg.gen_name}">
+        <t:Column width="220" label="{msg.gen_name}" required="true">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="project" case="LOWER" required="true"
+            <w:AutoComplete ui:field="project" case="LOWER"
               width="220px" dropWidth = "450px">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
@@ -39,7 +39,7 @@
         <t:Column width="240" label="{msg.gen_description}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="60" label="{msg.sample_isPerm}">
+        <t:Column width="60" label="{msg.sampleProject_isPerm}">
           <t:CheckBoxCell />
         </t:Column>
       </t:Table>

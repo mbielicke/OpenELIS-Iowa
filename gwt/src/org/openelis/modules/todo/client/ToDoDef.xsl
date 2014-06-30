@@ -198,10 +198,7 @@ UIRF Software License are applicable instead of those above.
                 <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                   <label field="String" />
                 </col>
-                <col filter="true" header="{resource:getString($constants,'test')}" key="test" sort="true" width="80">
-                  <label field="String" />
-                </col>
-                <col filter="true" header="{resource:getString($constants,'method')}" key="method" sort="true" width="80">
+                <col filter="true" header="{resource:getString($constants,'description')}" key="description" sort="true" width="183">
                   <label field="String" />
                 </col>
                 <col header="{resource:getString($constants,'created')}" key="createdDate" sort="true" width="105">

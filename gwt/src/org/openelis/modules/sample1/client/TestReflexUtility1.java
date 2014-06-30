@@ -48,6 +48,20 @@ public abstract class TestReflexUtility1 {
      */
     public abstract TestManager getTestManager(Integer testId) throws Exception;
 
+    public ArrayList<SampleTestRequestVO> getReflexTests(ArrayList<SampleManager1> sms,
+                                                         ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
+        int i;
+        ArrayList<SampleTestRequestVO> tests, samTests;
+        
+        tests = new ArrayList<SampleTestRequestVO>();
+        for (i = 0; i < sms.size(); i++) {
+            samTests = getReflexTests(sms.get(i), results.get(i));
+            if (samTests != null && samTests.size() > 0)
+                tests.addAll(samTests);
+        }
+        return tests;
+    }
+    
     public ArrayList<SampleTestRequestVO> getReflexTests(SampleManager1 sm,
                                                          ArrayList<ResultViewDO> results) throws Exception {
 
@@ -69,12 +83,16 @@ public abstract class TestReflexUtility1 {
 
         testIds = new HashSet<Integer>();
         /*
-         * keep track of the tests present in the sample
+         * find out which tests have been assigned to not cancelled analyses in
+         * the sample
          */
         for (i = 0; i < sm.item.count(); i++ ) {
             item = sm.item.get(i);
-            for (j = 0; j < sm.analysis.count(item); j++ )
-                testIds.add(sm.analysis.get(item, j).getTestId());
+            for (j = 0; j < sm.analysis.count(item); j++ ) {
+                ana = sm.analysis.get(item, j);
+                if ( !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    testIds.add(ana.getTestId());
+            }
         }
 
         ana = null;
@@ -111,11 +129,12 @@ public abstract class TestReflexUtility1 {
 
                 if (tests == null)
                     tests = new ArrayList<SampleTestRequestVO>();
-                test = new SampleTestRequestVO(ana.getSampleItemId(),
+                test = new SampleTestRequestVO(sm.getSample().getId(),
+                                               ana.getSampleItemId(),
                                                tr.getAddTestId(),
                                                ana.getId(),
                                                null,
-                                               r.getId(),                                               
+                                               r.getId(),
                                                null,
                                                allowDup,
                                                null);

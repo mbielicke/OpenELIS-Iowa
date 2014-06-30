@@ -34,7 +34,7 @@
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:west size="250">
-      <w:TabLayoutPanel barHeight="18" barUnit="PX">
+      <w:TabLayoutPanel barHeight="25" barUnit="PX">
         <w:tab>
           <w:customHeader>
             <w:TabWidget text="{msg.gen_worksheet}"/>
@@ -74,7 +74,7 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <g:LayoutPanel>
-                <g:layer top="0px" bottom="26px">
+                <g:layer top="0px" bottom="28px">
                   <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
                            verticalScroll="ALWAYS" styleName="{res.table.ScreenTableWithSides}">
                     <t:Column width="20">
@@ -85,7 +85,7 @@
                     </t:Column>
                   </t:Table>
                 </g:layer>
-                <g:layer bottom="0px" height="26px">
+                <g:layer bottom="0px" height="28px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
                       <w:Button ui:field="checkAllAnalytes" leftIcon="{uiRes.checkbox.Checked}"
@@ -135,7 +135,7 @@
             </g:HorizontalPanel>
           </g:AbsolutePanel>
         </g:layer>
-        <g:layer top="30px" height="95px">
+        <g:layer top="30px" height="80px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
@@ -223,8 +223,8 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="110px" bottom="0px">
-          <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
+        <g:layer top="102px" bottom="0px">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="25" barUnit="PX">
             <w:tab>
               <w:customHeader>
                 <w:TabWidget text="{msg.gen_worksheet}"/>
@@ -232,6 +232,16 @@
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <wb:WorksheetItemTabUI ui:field="worksheetItemTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.worksheet_reagentsMedia}"/>
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <ws:WorksheetReagentTabUI ui:field="reagentTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>

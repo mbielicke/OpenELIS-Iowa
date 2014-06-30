@@ -36,7 +36,7 @@ public interface ExchangeDataSelectionServiceInt extends XsrfProtectedService {
 
     ExchangeCriteriaManager duplicate(Integer id) throws Exception;
 
-    ArrayList<Integer> getAccessions(ExchangeCriteriaManager man) throws Exception;
+    ArrayList<Integer> getSamples(ExchangeCriteriaManager man) throws Exception;
     
     ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager cm) throws Exception;
 

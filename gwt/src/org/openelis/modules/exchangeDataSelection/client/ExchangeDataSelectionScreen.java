@@ -952,12 +952,12 @@ public class ExchangeDataSelectionScreen extends Screen {
                 row = new TableDataRow(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("human".equals(d.getSystemName())) {
-                row = new TableDataRow(SampleManager.HUMAN_DOMAIN_FLAG, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
             } else if ("newborn".equals(d.getSystemName())) {
                 row = new TableDataRow(SampleManager.NEWBORN_DOMAIN_FLAG, d.getEntry());
+                row.enabled = ("Y".equals(d.getIsActive()));
+                model.add(row);
+            } else if ("clinical".equals(d.getSystemName())) {
+                row = new TableDataRow(SampleManager.CLINICAL_DOMAIN_FLAG, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("pt".equals(d.getSystemName())) {
@@ -1422,7 +1422,7 @@ public class ExchangeDataSelectionScreen extends Screen {
              * run the query, get the list of accessions and display
              */
             window.setBusy(Messages.get().fetching());
-            accessions = ExchangeDataSelectionService.get().getAccessions(manager);
+            accessions = ExchangeDataSelectionService.get().getSamples(manager);
             setQueryResults(DataBaseUtil.concatWithSeparator(accessions, ","));
             /*
              * this is done so that after the accession numbers fetched from the 
@@ -1542,6 +1542,8 @@ public class ExchangeDataSelectionScreen extends Screen {
             
             ExchangeDataSelectionService.get().export(accs, manager);
             window.setDone(Messages.get().gen_loadCompleteMessage());
+        } catch (NotFoundException e) {
+            window.setDone(Messages.get().noRecordsFound());
         } catch (Exception e) {
             window.setError(Messages.get().gen_failed());
             Window.alert(e.getMessage());

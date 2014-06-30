@@ -586,7 +586,7 @@ public class DetailsTabUI extends Screen {
         });
 
         addScreenHandler(scriptlet,
-                         TestMeta.getScriptletName(),
+                         TestMeta.getScriptletId(),
                          new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
                                  scriptlet.setValue(getScriptlet());
@@ -954,15 +954,15 @@ public class DetailsTabUI extends Screen {
     }
 
     private AutoCompleteValue getScriptlet() {
-        if (manager == null)
+        //if (manager == null)
             return null;
-        return new AutoCompleteValue(manager.getTest().getScriptletId(), manager.getTest()
-                                                                                .getScriptletName());
+        //return new AutoCompleteValue(manager.getTest().getScriptletId(), manager.getTest()
+         //                                                                       .getScriptletId());
     }
 
     private void setScriptlet(ValueChangeEvent<AutoCompleteValue> event) {
         manager.getTest().setScriptletId(event.getValue().getId());
-        manager.getTest().setScriptletName(testTrailer.getDisplay());
+        //manager.getTest().setScriptletName(testTrailer.getDisplay());
     }
 
     private ArrayList<Row> getTableModel() {

@@ -41,6 +41,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.OrderManager;
@@ -54,13 +55,15 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
 
     public SamplePrivateWellImportOrder() throws Exception {
     }
-    
+
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
         return super.importOrderInfo(orderId, manager, "sample_well_aux_data");
     }
 
-    protected void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId,
-                                         SampleManager manager, ValidationErrorsList errors) throws Exception {
+    protected void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList,
+                                         Integer envAuxGroupId, SampleManager manager,
+                                         ValidationErrorsList errors) throws Exception {
+        Integer prevGroupId;
         AuxDataViewDO data;
         ProjectDO proj;
         SampleProjectViewDO sampleProj;
@@ -75,12 +78,25 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         wellMan = (SamplePrivateWellManager)manager.getDomainManager();
         well = wellMan.getPrivateWell();
         locAddr = well.getLocationAddress();
+        prevGroupId = null;
 
         for (int i = 0; i < auxDataList.size(); i++ ) {
             data = auxDataList.get(i);
+            if ("N".equals(data.getAuxFieldGroupIsActive())) {
+                /*
+                 * don't add the aux group if it's inactive; add the warning
+                 * only once for each inactive aux group
+                 */
+                if ( !data.getAuxFieldGroupId().equals(prevGroupId))
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                            .inactiveAuxGroupWarning(data.getAuxFieldGroupName())));
+                prevGroupId = data.getAuxFieldGroupId();
+                continue;
+            }
             try {
-                if ( !data.getGroupId().equals(envAuxGroupId)) {
+                if ( !data.getAuxFieldGroupId().equals(envAuxGroupId)) {
                     saveAuxData(data, errors, manager);
+                    prevGroupId = data.getAuxFieldGroupId();
                     continue;
                 }
                 analyteId = data.getAnalyteExternalId();
@@ -110,8 +126,9 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                     if (getDictionaryByEntry(data.getValue(), "state") != null)
                         locAddr.setState(data.getValue());
                     else if (data.getValue() != null)
-                        errors.add(new FormErrorException(Messages.get().orderImportError("state",
-                                                              data.getValue())));
+                        errors.add(new FormErrorException(Messages.get()
+                                                                  .orderImportError("state",
+                                                                                    data.getValue())));
                 } else if ("loc_zip_code".equals(analyteId)) {
                     locAddr.setZipCode(data.getValue());
                 } else if ("owner".equals(analyteId)) {
@@ -132,17 +149,20 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                         manager.getProjects().addFirstPermanentProject(sampleProj);
 
                     } else {
-                        errors.add(new FormErrorException(Messages.get().orderImportError("project",
-                                                              data.getValue())));
+                        errors.add(new FormErrorException(Messages.get()
+                                                                  .orderImportError("project",
+                                                                                    data.getValue())));
                     }
                 }
             } catch (Exception e) {
                 // problem with aux input, ignore
             }
+            prevGroupId = data.getAuxFieldGroupId();
         }
     }
 
-    protected void loadOrganizations(Integer orderId, SampleManager man) throws Exception {
+    protected void loadOrganizations(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
+        boolean addWarning;
         OrderViewDO order;
         OrganizationDO shipTo;
         SamplePrivateWellManager wellMan;
@@ -157,64 +177,91 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
 
         wellMan = (SamplePrivateWellManager)man.getDomainManager();
         well = wellMan.getPrivateWell();
-        order = orderMan.getOrder();
-        shipTo = order.getOrganization();
-        
-        orderOrgMan = orderMan.getOrganizations(); 
+
+        orderOrgMan = orderMan.getOrganizations();
         samOrgMan = man.getOrganizations();
         ordReportTo = null;
         samBillTo = null;
-        
-        for (int i = 0; i < orderOrgMan.count(); i++) {
+
+        for (int i = 0; i < orderOrgMan.count(); i++ ) {
             ordOrg = orderOrgMan.getOrganizationAt(i);
             /*
-             * create the report-to, bill-to and secondary report-to organizations
-             * for the sample if the corresponding organizations are defined in
-             * the order
+             * create the report-to, bill-to and secondary report-to
+             * organizations for the sample if the corresponding organizations
+             * are defined in the order; don't create if the organization is
+             * inactive
              */
+            addWarning = false;
             if (Constants.dictionary().ORG_REPORT_TO.equals(ordOrg.getTypeId())) {
-                ordReportTo = ordOrg;
-                well.setOrganizationId(ordReportTo.getOrganizationId());
-                well.setOrganization(createOrganization(ordOrg));
-                well.setReportToAttention(ordOrg.getOrganizationAttention());
+                if ("Y".equals(ordOrg.getOrganizationIsActive())) {
+                    ordReportTo = ordOrg;
+                    well.setOrganizationId(ordReportTo.getOrganizationId());
+                    well.setOrganization(createOrganization(ordOrg));
+                    well.setReportToAttention(ordOrg.getOrganizationAttention());
+                } else {
+                    addWarning = true;
+                }
             } else if (Constants.dictionary().ORG_BILL_TO.equals(ordOrg.getTypeId())) {
-                samBillTo = createSampleOrganization(ordOrg, Constants.dictionary().ORG_BILL_TO);
-                samOrgMan.addOrganization(samBillTo);
+                if ("Y".equals(ordOrg.getOrganizationIsActive())) {
+                    samBillTo = createSampleOrganization(ordOrg, Constants.dictionary().ORG_BILL_TO);
+                    samOrgMan.addOrganization(samBillTo);
+                } else {
+                    addWarning = true;
+                }
             } else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(ordOrg.getTypeId())) {
-                samOrgMan.addOrganization(createSampleOrganization(ordOrg, Constants.dictionary().ORG_SECOND_REPORT_TO));
+                if ("Y".equals(ordOrg.getOrganizationIsActive()))
+                    samOrgMan.addOrganization(createSampleOrganization(ordOrg,
+                                                                       Constants.dictionary().ORG_SECOND_REPORT_TO));
+                else
+                    addWarning = true;
             }
-        }       
-                
+
+            if (addWarning)
+                errors.add(new FormErrorWarning(Messages.get()
+                                                        .inactiveOrgWarning(ordOrg.getOrganizationName())));
+        }
+
         /*
-         * if report-to was not found then set the ship-to as the report-to 
+         * if report-to was not found then set the ship-to as the report-to, but
+         * only if ship-to is active
          */
         order = orderMan.getOrder();
+        shipTo = order.getOrganization();
         if (ordReportTo == null) {
-            well.setOrganizationId(shipTo.getId());
-            well.setOrganization(shipTo);
-            well.setReportToAttention(order.getOrganizationAttention());
+            if ("Y".equals(shipTo.getIsActive())) {
+                well.setOrganizationId(shipTo.getId());
+                well.setOrganization(shipTo);
+                well.setReportToAttention(order.getOrganizationAttention());
+            } else {
+                errors.add(new FormErrorWarning(Messages.get().inactiveOrgWarning(shipTo.getName())));
+            }
         }
-        
+
         /*
-         * if bill-to was not found and if report-to was found then set it as the
-         * bill-to otherwise set the ship-to as the bill-to 
+         * if bill-to was not found and if report-to was found then set it as
+         * the bill-to otherwise set the ship-to as the bill-to, but only if
+         * ship-to is active
          */
         if (samBillTo == null) {
             if (ordReportTo != null)
-                samOrgMan.addOrganization(createSampleOrganization(ordReportTo, Constants.dictionary().ORG_BILL_TO));
+                samOrgMan.addOrganization(createSampleOrganization(ordReportTo,
+                                                                   Constants.dictionary().ORG_BILL_TO));
+            else if ("Y".equals(shipTo.getIsActive()))
+                samOrgMan.addOrganization(createSampleOrganization(order,
+                                                                   Constants.dictionary().ORG_BILL_TO));
             else
-                samOrgMan.addOrganization(createSampleOrganization(order, Constants.dictionary().ORG_BILL_TO));
+                errors.add(new FormErrorWarning(Messages.get().inactiveOrgWarning(shipTo.getName())));
         }
     }
-    
+
     private OrganizationDO createOrganization(OrderOrganizationViewDO org) {
         OrganizationDO data;
         AddressDO addr;
-        
+
         data = new OrganizationDO();
         data.setId(org.getOrganizationId());
         data.setName(org.getOrganizationName());
-        
+
         addr = data.getAddress();
         addr.setMultipleUnit(org.getOrganizationAddressMultipleUnit());
         addr.setStreetAddress(org.getOrganizationAddressStreetAddress());
@@ -223,7 +270,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         addr.setZipCode(org.getOrganizationAddressZipCode());
         addr.setFaxPhone(org.getOrganizationAddressFaxPhone());
         addr.setWorkPhone(org.getOrganizationAddressWorkPhone());
-        
+
         return data;
     }
 }

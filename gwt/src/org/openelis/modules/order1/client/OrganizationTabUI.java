@@ -199,7 +199,7 @@ public class OrganizationTabUI extends Screen {
                 c = event.getCol();
                 val = table.getValueAt(r, c);
 
-                data = table.getRowAt(r).getData();
+                data = manager.organization.get(r);
 
                 switch (c) {
                     case 0:
@@ -271,10 +271,7 @@ public class OrganizationTabUI extends Screen {
 
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                OrderOrganizationViewDO data;
-
-                data = event.getRow().getData();
-                manager.organization.remove(data);
+                manager.organization.remove(event.getIndex());
             }
         });
 
@@ -380,7 +377,7 @@ public class OrganizationTabUI extends Screen {
             for (int i = 0; i < count1; i++ ) {
                 r = table.getRowAt(i);
                 org = manager.organization.get(i);
-                if (r.getCell(1) != null)
+                if (r.getCell(2) != null)
                     name = ((AutoCompleteValue)r.getCell(2)).getDisplay();
                 else
                     name = null;

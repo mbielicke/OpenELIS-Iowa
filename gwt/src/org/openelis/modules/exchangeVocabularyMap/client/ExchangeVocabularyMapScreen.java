@@ -40,6 +40,7 @@ import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestAnalyteViewVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -48,6 +49,7 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
@@ -79,6 +81,7 @@ import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.LastPageException;
@@ -283,7 +286,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     Constants.table().TEST_ANALYTE.equals(refTableId))
                     referenceName.setCase(Case.MIXED);
                 else if (Constants.table().METHOD.equals(refTableId) ||
-                         Constants.table().TEST.equals(refTableId))
+                         Constants.table().TEST.equals(refTableId)||
+                         Constants.table().PANEL.equals(refTableId))
                     referenceName.setCase(Case.LOWER);
                 else if (Constants.table().ORGANIZATION.equals(refTableId))
                     referenceName.setCase(Case.UPPER);
@@ -334,9 +338,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 String name, desc1, desc2, desc3;
                 ExchangeLocalTermViewDO data;
-                AnalyteDO ana;
                 IdNameVO dict;
-                MethodDO m;
                 OrganizationDO org;
                 AddressDO addr;
                 TestMethodVO t;
@@ -355,15 +357,13 @@ public class ExchangeVocabularyMapScreen extends Screen {
                  */
                 if (row != null) {
                     if (Constants.table().ANALYTE.equals(data.getReferenceTableId())) {
-                        ana = (AnalyteDO)row.data;
-                        name = ana.getName();
+                        name = ((AnalyteDO)row.data).getName();
                     } else if (Constants.table().DICTIONARY.equals(data.getReferenceTableId())) {
                         dict = (IdNameVO)row.data;
                         name = dict.getName();
                         desc1 = dict.getDescription();
                     } else if (Constants.table().METHOD.equals(data.getReferenceTableId())) {
-                        m = (MethodDO)row.data;
-                        name = m.getName();
+                        name = ((MethodDO)row.data).getName();
                     } else if (Constants.table().ORGANIZATION.equals(data.getReferenceTableId())) {
                         org = (OrganizationDO)row.data;
                         name = org.getName();
@@ -387,6 +387,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
                          */
                         if ( !tav.getRowAnalyteName().equals(tav.getColAnalyteName()))
                             desc3 = tav.getColAnalyteName();
+                    } else if (Constants.table().PANEL.equals(data.getReferenceTableId())) {
+                        name = ((PanelDO)row.data).getName();
                     }
                 }
 
@@ -398,7 +400,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceName.enable(EnumSet.of(State.QUERY, State.QUERY, State.UPDATE)
+                referenceName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 referenceName.setQueryMode(event.getState() == State.QUERY);
             }
@@ -433,6 +435,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     referenceName.showAutoMatches(getTestModel(search));
                 else if (Constants.table().TEST_ANALYTE.equals(referenceTableId.getValue()))
                     referenceName.showAutoMatches(getTestAnalyteModel(search));
+                else if (Constants.table().PANEL.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getPanelModel(search));
 
                 window.clearStatus();
             }
@@ -621,6 +625,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
                         refField.setKey(ExchangeLocalTermMeta.getOrganizationName());
                     else if (Constants.table().TEST.equals(refTableId))
                         refField.setKey(ExchangeLocalTermMeta.getTestName());
+                    else if (Constants.table().PANEL.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getPanelName());
                 }
 
                 window.setBusy(Messages.get().querying());
@@ -691,6 +697,13 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
         };
 
+        addStateChangeHandler(new StateChangeHandler<Screen.State>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                nav.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                           userPermission.hasSelectPermission());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
@@ -710,30 +723,43 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("exchange_local_type");
         for (DictionaryDO d : list) {
-            if (Constants.dictionary().LOCAL_TYPE_ANALYTE.equals(d.getId())) {
-                row = new TableDataRow(Constants.table().ANALYTE, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
-            } else if (Constants.dictionary().LOCAL_TYPE_DICTIONARY.equals(d.getId())) {
-                row = new TableDataRow(Constants.table().DICTIONARY, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
-            } else if (Constants.dictionary().LOCAL_TYPE_METHOD.equals(d.getId())) {
-                row = new TableDataRow(Constants.table().METHOD, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
-            } else if (Constants.dictionary().LOCAL_TYPE_ORGANIZATION.equals(d.getId())) {
-                row = new TableDataRow(Constants.table().ORGANIZATION, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
-            } else if (Constants.dictionary().LOCAL_TYPE_TEST.equals(d.getId())) {
-                row = new TableDataRow(Constants.table().TEST, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
-            } else if (Constants.dictionary().LOCAL_TYPE_TEST_ANALYTE.equals(d.getId())) {
-                row = new TableDataRow(Constants.table().TEST_ANALYTE, d.getEntry());
-                row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);
+            switch (d.getSystemName()) {
+                case "local_type_analyte":
+                    row = new TableDataRow(Constants.table().ANALYTE, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+                case "local_type_dictionary":
+                    row = new TableDataRow(Constants.table().DICTIONARY, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+                case "local_type_method":
+                    row = new TableDataRow(Constants.table().METHOD, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+                case "local_type_organization":
+                    row = new TableDataRow(Constants.table().ORGANIZATION, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+                case "local_type_test":
+                    row = new TableDataRow(Constants.table().TEST, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+                case "local_type_test_analyte":
+                    row = new TableDataRow(Constants.table().TEST_ANALYTE, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+                case "local_type_panel":
+                    row = new TableDataRow(Constants.table().PANEL, d.getEntry());
+                    row.enabled = ("Y".equals(d.getIsActive()));
+                    model.add(row);
+                    break;
+
             }
         }
 
@@ -1056,15 +1082,38 @@ public class ExchangeVocabularyMapScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getMethodModel(String search) {
+        StringBuilder sb;
         TableDataRow row;
         ArrayList<MethodDO> list;
         ArrayList<TableDataRow> model;
 
         model = new ArrayList<TableDataRow>();
         try {
+            /*
+             * the search string may contain the begin and end dates of an
+             * inactive test, so they need to be removed before executing the
+             * query so that they don't unintentionally get included in the
+             * query
+             */
+            search = search.replaceAll(DATE_RANGE_PATTERN, "");
             list = MethodService.get().fetchByName(search);
+            sb = new StringBuilder();
             for (MethodDO data : list) {
-                row = new TableDataRow(data.getId(), data.getName());
+                row = new TableDataRow(1);
+                row.key = data.getId();
+                sb.setLength(0);
+                sb.append(data.getName());
+                /*
+                 * for inactive methods, show the active begin and end dates
+                 */
+                if ("N".equals(data.getIsActive())) {
+                    sb.append(" [");
+                    sb.append(data.getActiveBegin());
+                    sb.append("..");
+                    sb.append(data.getActiveEnd());
+                    sb.append("]");
+                }
+                row.cells.get(0).setValue(sb.toString());
                 row.data = data;
                 model.add(row);
             }
@@ -1145,6 +1194,27 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     sb.append("]");
                 }
                 row.cells.get(0).setValue(sb.toString());
+                row.data = data;
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+
+    private ArrayList<TableDataRow> getPanelModel(String search) {
+        TableDataRow row;
+        ArrayList<PanelDO> list;
+        ArrayList<TableDataRow> model;
+
+        model = new ArrayList<TableDataRow>();
+        try {
+            list = PanelService.get().fetchByName(search);
+            for (PanelDO data : list) {
+                row = new TableDataRow(data.getId(), data.getName());
                 row.data = data;
                 model.add(row);
             }

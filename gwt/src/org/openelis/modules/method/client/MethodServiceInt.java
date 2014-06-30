@@ -13,6 +13,8 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 public interface MethodServiceInt extends XsrfProtectedService {
 
     ArrayList<MethodDO> fetchByName(String search) throws Exception;
+    
+    ArrayList<MethodDO> fetchActiveByName(String search) throws Exception;
 
     MethodDO fetchById(Integer id) throws Exception;
 

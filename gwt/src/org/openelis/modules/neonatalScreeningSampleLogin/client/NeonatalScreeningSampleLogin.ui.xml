@@ -12,32 +12,30 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-  xmlns:o="urn:import:org.openelis.modules.neonatalScreeningSampleLogin.client" xmlns:s="urn:import:org.openelis.modules.sample1.client"
-  xmlns:a="urn:import:org.openelis.modules.auxData.client"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" height="30px">
       <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
         <g:HorizontalPanel>
-          <w:Button css="{res.buttonPanel}" ui:field="query"
-            leftIcon="{res.icon.QueryButtonImage}" text="{msg.gen_query}" toggles="true" />
-          <w:Button css="{res.buttonPanel}" ui:field="previous"
-            leftIcon="{res.icon.PreviousButtonImage}" text="{msg.gen_previous}" />
-          <w:Button css="{res.buttonPanel}" ui:field="next"
-            leftIcon="{res.icon.NextButtonImage}" text="{msg.gen_next}" />
+          <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}"
+            text="{msg.gen_query}" toggles="true" />
+          <w:Button css="{res.buttonPanel}" ui:field="previous" leftIcon="{res.icon.PreviousButtonImage}"
+            text="{msg.gen_previous}" />
+          <w:Button css="{res.buttonPanel}" ui:field="next" leftIcon="{res.icon.NextButtonImage}"
+            text="{msg.gen_next}" />
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
           <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}"
             text="{msg.gen_add}" toggles="true" />
-          <w:Button css="{res.buttonPanel}" ui:field="update"
-            leftIcon="{res.icon.UpdateButtonImage}" text="{msg.gen_update}" toggles="true" />
+          <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
+            text="{msg.gen_update}" toggles="true" />
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
-          <w:Button css="{res.buttonPanel}" ui:field="commit"
-            leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_commit}" />
-          <w:Button css="{res.buttonPanel}" ui:field="abort"
-            leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_abort}" />
+          <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
+            text="{msg.gen_commit}" />
+          <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}"
+            text="{msg.gen_abort}" />
           <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
           <w:Menu ui:field="optionsMenu" selfShow="true">
             <w:display>
@@ -51,13 +49,13 @@
               selfShow="true" showBelow="false"
             >
               <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
-              <w:MenuItem ui:field="historySampleNeonatal" display="{msg.sample_neonatal}" />
+              <w:MenuItem ui:field="historySampleNeonatal" display="{msg.history_sampleNeonatal}" />
               <w:MenuItem ui:field="historyPatient" display="{msg.patient_patient}" />
               <w:MenuItem ui:field="historyNextOfKin" display="{msg.patient_nextOfKin}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
-              <w:MenuItem ui:field="historySampleItem" display="{msg.sample_item}" />
-              <w:MenuItem ui:field="historyAnalysis" display="{msg.sample_analysis}" />
+              <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />
+              <w:MenuItem ui:field="historyAnalysis" display="{msg.analysis_analysis}" />
               <w:MenuItem ui:field="historyCurrentResult" display="{msg.result_current}" />
               <w:MenuItem ui:field="historyStorage" display="{msg.storage_storage}" />
               <w:MenuItem ui:field="historySampleQA" display="{msg.sample_qaEvents}" />
@@ -87,9 +85,10 @@
                 </td>
                 <td>
                   <g:HorizontalPanel>
-                    <w:TextBox ui:field="orderId" width="75px" field="Integer" />
+                    <w:TextBox ui:field="orderId" width="103px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
+                      <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
+                        text="" css="{res.FormFieldButton}" />
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
@@ -132,16 +131,34 @@
         </g:layer>
         <g:layer top="60px" height="350px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="0px" left="0px" width="37%">
+            <g:layer top="0px" bottom="0px" left="0px" width="40%">
               <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_id}:" />
+                    </td>
+                    <td colspan="3">
+                      <g:HorizontalPanel>
+                        <w:TextBox ui:field="patientId" width="50px" field="Integer" />
+                        <w:Button ui:field="patientEmptySearchButton" leftIcon="{res.icon.QueryButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                        <w:Button ui:field="patientFieldSearchButton" leftIcon="{res.icon.refreshButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                        <w:Button ui:field="unlinkPatientButton" leftIcon="{res.icon.DeleteButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                        <w:Button ui:field="editPatientButton" leftIcon="{res.icon.UpdateButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.gen_last}:" />
                     </td>
                     <td colspan="3">
-                      <w:TextBox ui:field="patientLastName" width="222px" case="LOWER"
-                        field="String" maxLength="30" required="true" />
+                      <w:TextBox ui:field="patientLastName" width="222px" field="String"
+                        maxLength="30" required="true" case="UPPER" />
                     </td>
                   </tr>
                   <tr>
@@ -150,32 +167,7 @@
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="patientFirstName" width="222px" field="String"
-                        maxLength="20" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_gender}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="patientGenderId" width="60px" dropHeight="100px"
-                        field="String" />
-                    </td>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_race}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="patientRaceId" width="65px" dropWidth="200px"
-                        field="String" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_ethnicity}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="patientEthnicityId" width="80px" dropHeight="100px"
-                        field="String" />
+                        maxLength="20" case="UPPER" />
                     </td>
                   </tr>
                   <tr>
@@ -183,10 +175,13 @@
                       <ui:text from="{msg.patient_birthDT}:" />
                     </td>
                     <td>
-                      <c:Calendar ui:field="patientBirthDate" width="90px" begin="0" end="2" />
-                    </td>
-                    <td colspan="3">
-                      <c:Calendar ui:field="patientBirthTime" width="60px" begin="3" end="4" />
+                      <g:HorizontalPanel>
+                        <c:Calendar ui:field="patientBirthDate" width="90px" begin="0"
+                          end="2" />
+                        <g:HorizontalPanel width="4px" />
+                        <c:Calendar ui:field="patientBirthTime" width="60px" begin="3"
+                          end="4" />
+                      </g:HorizontalPanel>
                     </td>
                   </tr>
                   <tr>
@@ -194,7 +189,8 @@
                       <ui:text from="{msg.address_aptSuite}:" />
                     </td>
                     <td colspan="5">
-                      <w:TextBox ui:field="patientAddrMultipleUnit" field="String" width="222px" />
+                      <w:TextBox ui:field="patientAddrMultipleUnit" field="String" width="222px"
+                        case="UPPER" />
                     </td>
                   </tr>
                   <tr>
@@ -202,73 +198,23 @@
                       <ui:text from="{msg.address_address}:" />
                     </td>
                     <td colspan="5">
-                      <w:TextBox ui:field="patientAddrStreetAddress" width="222px" />
+                      <w:TextBox ui:field="patientAddrStreetAddress" width="222px" case="UPPER" />
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_city}:" />
+                      <ui:text from="{msg.address_cityStateZip}:" />
                     </td>
                     <td colspan="3">
-                      <w:TextBox ui:field="patientAddrCity" field="String" width="100px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_state}:" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="patientAddrState" field="String" width="40px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_zipcode}:" />
-                    </td>
-                    <td>
-                      <w:TextBox ui:field="patientAddrZipCode" field="String" width="70px" />
-                    </td>
-                  </tr>
-                </table>
-              </g:HTMLPanel>
-            </g:layer>
-            <g:layer top="0px" bottom="0px" left="300px" width="39%">
-              <g:HTMLPanel width="100%">
-                <table class="{res.style.Form}">
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gen_last}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="nextOfKinLastName" width="222px" case="LOWER"
-                        field="String" maxLength="30" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_maiden}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="nextOfKinMiddleName" width="222px" case="LOWER"
-                        field="String" maxLength="30" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gen_first}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="nextOfKinFirstName" width="222px" case="LOWER"
-                        field="String" maxLength="30" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_relation}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:Dropdown ui:field="nextOfKinRelationId" width="80px" dropHeight="100px"
-                        field="Integer" />
+                      <g:HorizontalPanel>
+                        <w:TextBox ui:field="patientAddrCity" field="String" width="100px"
+                          case="UPPER" />
+                        <g:HorizontalPanel width="4px" />
+                        <w:Dropdown ui:field="patientAddrState" field="String" width="42px" />
+                        <g:HorizontalPanel width="4px" />
+                        <w:TextBox ui:field="patientAddrZipCode" field="String" width="75px"
+                          mask="{msg.gen_zipcodePattern}" case="UPPER" />
+                      </g:HorizontalPanel>
                     </td>
                   </tr>
                   <tr>
@@ -276,15 +222,17 @@
                       <ui:text from="{msg.patient_gender}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinGenderId" width="60px" dropHeight="100px"
-                        field="Integer" />
+                      <w:Dropdown ui:field="patientGender" width="65px" dropHeight="100px"
+                        field="String" />
                     </td>
+                  </tr>
+                  <tr>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.patient_race}:" />
                     </td>
-                    <td colspan="2">
-                      <w:Dropdown ui:field="nextOfKinRaceId" width="65px" dropWidth="200px"
-                        field="Integer" />
+                    <td colspan="3">
+                      <w:Dropdown ui:field="patientRace" width="230px" dropWidth="235px"
+                        field="String" />
                     </td>
                   </tr>
                   <tr>
@@ -292,61 +240,14 @@
                       <ui:text from="{msg.patient_ethnicity}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinEthnicityId" width="65px"
-                        dropHeight="75px" dropWidth="100px" field="Integer" />
-                    </td>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.patient_birth}:" />
-                    </td>
-                    <td colspan="5">
-                      <c:Calendar ui:field="nextOfKinBirthDate" width="90px" begin="0"
-                        end="2" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_phone}:" />
-                    </td>
-                    <td colspan="3">
-                      <w:TextBox ui:field="nextOfKinAddrHomePhone" field="String" width="120px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_aptSuite}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="nextOfKinAddrMultipleUnit" field="String"
-                        width="222px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_address}:" />
-                    </td>
-                    <td colspan="5">
-                      <w:TextBox ui:field="nextOfKinAddrStreetAddress" field="String"
-                        width="222px" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address_cityStateZip}:" />
-                    </td>
-                    <td colspan="2">
-                      <w:TextBox ui:field="nextOfKinAddrCity" field="String" width="100px" />
-                    </td>
-                    <td>
-                      <w:Dropdown ui:field="nextOfKinAddrState" field="String" width="40px" />
-                    </td>
-                    <td>
-                      <w:TextBox ui:field="nextOfKinAddrZipCode" field="String" width="70px" />
+                      <w:Dropdown ui:field="patientEthnicity" width="100px" field="String"
+                        dropHeight="120px" />
                     </td>
                   </tr>
                 </table>
               </g:HTMLPanel>
             </g:layer>
-            <g:layer top="0px" bottom="0px" left="630px" width="24%">
+            <g:layer top="0px" bottom="0px" left="335px" width="22%">
               <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
                   <tr>
@@ -441,138 +342,143 @@
                 </table>
               </g:HTMLPanel>
             </g:layer>
-          </g:LayoutPanel>
-        </g:layer>
-        <g:layer top="320px" height="180px" left="10px" width="100%">
-          <g:LayoutPanel>
-            <g:layer top="0px" bottom="0px" left="0px" width="50%">
-              <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
-            </g:layer>
-            <g:layer top="0px" bottom="0px" right="0px" width="50%">
-              <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.collectorOrgInfo}" /></td> -->
-              <g:HTMLPanel>
+            <g:layer top="0px" bottom="0px" left="500px" width="39%">
+              <g:HTMLPanel width="100%">
                 <table class="{res.style.Form}">
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.provider_lf}:" />
+                      <ui:text from="{msg.gen_id}:" />
+                    </td>
+                    <td colspan="3">
+                      <g:HorizontalPanel>
+                        <w:TextBox ui:field="nextOfKinId" width="50px" field="Integer" />
+                        <w:Button ui:field="nextOfKinEmptySearchButton" leftIcon="{res.icon.QueryButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                        <w:Button ui:field="nextOfKinFieldSearchButton" leftIcon="{res.icon.refreshButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                        <w:Button ui:field="unlinkNextOfKinButton" leftIcon="{res.icon.DeleteButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                        <w:Button ui:field="editNextOfKinButton" leftIcon="{res.icon.UpdateButtonImage}"
+                          text="" css="{res.FormFieldButton}" />
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_last}:" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextBox ui:field="nextOfKinLastName" width="222px" field="String"
+                        maxLength="30" required="true" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.patient_maiden}:" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextBox ui:field="nextOfKinMiddleName" width="222px" field="String"
+                        maxLength="30" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_first}:" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextBox ui:field="nextOfKinFirstName" width="222px" field="String"
+                        maxLength="30" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.patient_relation}:" />
                     </td>
                     <td>
-                      <w:AutoComplete ui:field="providerLastName" width="130" case="UPPER">
-                        <w:popup>
-                          <t:Table visibleRows="10" header="true">
-                            <t:Column width="150" label="{msg.gen_lastName}">
-                              <t:LabelCell />
-                            </t:Column>
-                            <t:Column width="150" label="{msg.gen_firstName}">
-                              <t:LabelCell />
-                            </t:Column>
-                            <t:Column width="150" label="{msg.gen_middleName}">
-                              <t:LabelCell />
-                            </t:Column>
-                          </t:Table>
-                        </w:popup>
-                      </w:AutoComplete>
+                      <w:Dropdown ui:field="nextOfKinRelation" width="80px" dropHeight="100px"
+                        field="Integer" required="true"/>
+                    </td>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.patient_birth}:" />
                     </td>
                     <td>
-                      <w:TextBox ui:field="providerFirstName" width="130" maxLength="20" />
+                      <c:Calendar ui:field="nextOfKinBirthDate" width="80px" begin="0"
+                        end="2" />
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.project_project}:" />
+                      <ui:text from="{msg.patient_nationalId}:" />
+                    </td>
+                    <td>
+                      <w:TextBox ui:field="nextOfKinNationalId" width="75px" field="String"
+                        maxLength="9" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.address_aptSuite}:" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextBox ui:field="nextOfKinAddrMultipleUnit" field="String"
+                        width="222px" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.address_address}:" />
+                    </td>
+                    <td colspan="5">
+                      <w:TextBox ui:field="nextOfKinAddrStreetAddress" field="String"
+                        width="222px" case="UPPER" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.address_cityStateZip}:" />
                     </td>
                     <td colspan="3">
                       <g:HorizontalPanel>
-                        <w:AutoComplete ui:field="projectName" width="265" case="LOWER"
-                          dropWidth="440px"
-                        >
-                          <w:popup>
-                            <t:Table visibleRows="10" header="true">
-                              <t:Column width="150" label="{msg.gen_name}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="275" label="{msg.gen_description}">
-                                <t:LabelCell />
-                              </t:Column>
-                            </t:Table>
-                          </w:popup>
-                        </w:AutoComplete>
-                        <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
-                        </g:AbsolutePanel>
+                        <w:TextBox ui:field="nextOfKinAddrCity" field="String" width="100px"
+                          case="UPPER" />
+                        <g:HorizontalPanel width="4px" />
+                        <w:Dropdown ui:field="nextOfKinAddrState" field="String" width="42px" />
+                        <g:HorizontalPanel width="4px" />
+                        <w:TextBox ui:field="nextOfKinAddrZipCode" field="String" width="75px"
+                          mask="{msg.gen_zipcodePattern}" case="UPPER" />
                       </g:HorizontalPanel>
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.org_reportTo}:" />
+                      <ui:text from="{msg.address_phone}:" />
                     </td>
-                    <td colspan="3">
-                      <g:HorizontalPanel>
-                        <w:AutoComplete ui:field="reportToName" width="265" case="UPPER"
-                          dropWidth="490px"
-                        >
-                          <w:popup>
-                            <t:Table visibleRows="10" header="true">
-                              <t:Column width="200" label="{msg.gen_name}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="130" label="{msg.address_street}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="120" label="{msg.address_city}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="20" label="{msg.address_st}">
-                                <t:LabelCell />
-                              </t:Column>
-                            </t:Table>
-                          </w:popup>
-                        </w:AutoComplete>
-                        <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
-                        </g:AbsolutePanel>
-                      </g:HorizontalPanel>
+                    <td>
+                      <w:TextBox ui:field="nextOfKinAddrHomePhone" field="String" width="80px"
+                        maxLength="10" mask="{msg.gen_phonePattern}" />
+                    </td>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.patient_gender}:" />
+                    </td>
+                    <td>
+                      <w:Dropdown ui:field="nextOfKinGender" width="85px" dropHeight="100px"
+                        field="Integer" />
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.org_birthHospital}:" />
+                      <ui:text from="{msg.patient_race}:" />
                     </td>
-                    <td colspan="3">
-                      <g:HorizontalPanel>
-                        <w:AutoComplete ui:field="birthHospitalName" width="265"
-                          dropWidth="490px" case="UPPER"
-                        >
-                          <w:popup>
-                            <t:Table visibleRows="10" header="true">
-                              <t:Column width="200" label="{msg.gen_name}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="130" label="{msg.address_street}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="120" label="{msg.address_city}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="20" label="{msg.address_st}">
-                                <t:LabelCell />
-                              </t:Column>
-                            </t:Table>
-                          </w:popup>
-                        </w:AutoComplete>
-                        <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
-                        </g:AbsolutePanel>
-                      </g:HorizontalPanel>
+                    <td>
+                      <w:Dropdown ui:field="nextOfKinRace" width="90px" dropWidth="235px"
+                        field="String" />
                     </td>
-                  </tr>
-                  <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gen_barcode}:" />
+                      <ui:text from="{msg.patient_ethnicity}:" />
                     </td>
-                    <td colspan="3">
-                      <w:TextBox field="String" ui:field="formNumber" width="150px" />
+                    <td>
+                      <w:Dropdown ui:field="nextOfKinEthnicity" width="85px"
+                        dropHeight="75px" dropWidth="100px" field="Integer" />
                     </td>
                   </tr>
                 </table>
@@ -580,13 +486,154 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
+        <g:layer top="330px" height="180px" left="0px" width="100%">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="0px" left="0px" width="50%">
+              <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
+            </g:layer>
+            <g:layer top="0px" bottom="0px" right="0px" width="50%">
+              <w:TitledPanel title="{msg.sampleClinical_providerOrganizationInfo}">
+                <g:HTMLPanel>
+                  <table class="{res.style.Form}">
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.provider_lf}:" />
+                      </td>
+                      <td>
+                        <w:AutoComplete ui:field="providerLastName" width="130" case="UPPER">
+                          <w:popup>
+                            <t:Table visibleRows="10" header="true">
+                              <t:Column width="150" label="{msg.gen_lastName}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="150" label="{msg.gen_firstName}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="150" label="{msg.gen_middleName}">
+                                <t:LabelCell />
+                              </t:Column>
+                            </t:Table>
+                          </w:popup>
+                        </w:AutoComplete>
+                      </td>
+                      <td>
+                        <w:TextBox ui:field="providerFirstName" width="130" maxLength="20" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.project_project}:" />
+                      </td>
+                      <td colspan="3">
+                        <g:HorizontalPanel>
+                          <w:AutoComplete ui:field="projectName" width="265" case="LOWER"
+                            dropWidth="440px"
+                          >
+                            <w:popup>
+                              <t:Table visibleRows="10" header="true">
+                                <t:Column width="150" label="{msg.gen_name}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="275" label="{msg.gen_description}">
+                                  <t:LabelCell />
+                                </t:Column>
+                              </t:Table>
+                            </w:popup>
+                          </w:AutoComplete>
+                          <g:AbsolutePanel>
+                            <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}"
+                              text="" css="{res.FormFieldButton}" />
+                          </g:AbsolutePanel>
+                        </g:HorizontalPanel>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.sampleOrganization_reportTo}:" />
+                      </td>
+                      <td colspan="3">
+                        <g:HorizontalPanel>
+                          <w:AutoComplete ui:field="reportToName" width="265" case="UPPER"
+                            dropWidth="490px"
+                          >
+                            <w:popup>
+                              <t:Table visibleRows="10" header="true">
+                                <t:Column width="200" label="{msg.gen_name}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="130" label="{msg.address_street}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="120" label="{msg.address_city}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="20" label="{msg.address_st}">
+                                  <t:LabelCell />
+                                </t:Column>
+                              </t:Table>
+                            </w:popup>
+                          </w:AutoComplete>
+                          <g:AbsolutePanel>
+                            <w:Button ui:field="reportToButton" leftIcon="{res.icon.fieldLookupIcon}"
+                              text="" css="{res.FormFieldButton}" />
+                          </g:AbsolutePanel>
+                        </g:HorizontalPanel>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.sampleOrganization_birthHospital}:" />
+                      </td>
+                      <td colspan="3">
+                        <g:HorizontalPanel>
+                          <w:AutoComplete ui:field="birthHospitalName" width="265"
+                            dropWidth="490px" case="UPPER"
+                          >
+                            <w:popup>
+                              <t:Table visibleRows="10" header="true">
+                                <t:Column width="200" label="{msg.gen_name}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="130" label="{msg.address_street}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="120" label="{msg.address_city}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="20" label="{msg.address_st}">
+                                  <t:LabelCell />
+                                </t:Column>
+                              </t:Table>
+                            </w:popup>
+                          </w:AutoComplete>
+                          <g:AbsolutePanel>
+                            <w:Button ui:field="birthHospitalButton" leftIcon="{res.icon.fieldLookupIcon}"
+                              text="" css="{res.FormFieldButton}" />
+                          </g:AbsolutePanel>
+                        </g:HorizontalPanel>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.gen_barcode}:" />
+                      </td>
+                      <td colspan="3">
+                        <w:TextBox field="String" ui:field="formNumber" width="150px" />
+                      </td>
+                    </tr>
+                  </table>
+                </g:HTMLPanel>
+              </w:TitledPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="505px" bottom="0px">
-      <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX" width="715px">
+    <g:layer top="535px" bottom="0px">
+      <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_item}" />
+            <w:TabWidget text="{msg.sampleItem_sampleItem}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -596,7 +643,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sample_analysis}" />
+            <w:TabWidget text="{msg.analysis_analysis}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
@@ -646,7 +693,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.gen_qaEvents}" />
+            <w:TabWidget text="{msg.qaEvent_qaEvents}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>

@@ -103,11 +103,6 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
-              <xsl:call-template name="deleteButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
               <xsl:call-template name="buttonPanelDivider" />
               <xsl:call-template name="commitButton">
                 <xsl:with-param name="language">

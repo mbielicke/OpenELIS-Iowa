@@ -188,7 +188,7 @@ public class AuxDataUtil {
                 data = new AuxDataViewDO();
                 data.setAuxFieldId(field.getId());
                 data.setIsReportable(field.getIsReportable());
-                data.setGroupId(field.getAuxFieldGroupId());
+                data.setAuxFieldGroupId(field.getAuxFieldGroupId());
                 
                 validator = getValidatorForValues(values);
                 if (defaultVal != null) {
