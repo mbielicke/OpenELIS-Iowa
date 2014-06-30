@@ -169,7 +169,6 @@ public class SampleManagerOrderHelperBean {
         Integer accession;
         SampleOrganizationViewDO sRepOrg, sBillOrg;
         OrderViewDO data;
-        OrganizationDO org;
         ArrayList<SampleOrganizationViewDO> sSecOrgs;
 
         data = getOrder(om);
@@ -447,7 +446,8 @@ public class SampleManagerOrderHelperBean {
              * add the test and mark the analytes specified by the ids,
              * reportable
              */
-            tests.add(new SampleTestRequestVO(item.getId(),
+            tests.add(new SampleTestRequestVO(sm.getSample().getId(),
+                                              item.getId(),
                                               ot.getTestId(),
                                               null,
                                               null,
@@ -475,11 +475,19 @@ public class SampleManagerOrderHelperBean {
      * organizations specified in the order
      */
     private void copyOrganizations(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+        Integer accession;
         String attention;
-        OrganizationDO repOrg, billOrg, secOrg;
+        OrganizationDO repOrg, billOrg, secOrg, shipOrg;
         OrderOrganizationViewDO orepOrg, obillOrg;
         ArrayList<OrderOrganizationViewDO> osecOrgs;
         SamplePrivateWellViewDO well;
+
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
 
         orepOrg = null;
         obillOrg = null;
@@ -488,63 +496,90 @@ public class SampleManagerOrderHelperBean {
         /*
          * find out if organizations of various types are specified in the order
          */
-        for (OrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
-            if (Constants.dictionary().ORG_REPORT_TO.equals(otmpOrg.getTypeId()))
-                orepOrg = otmpOrg;
-            else if (Constants.dictionary().ORG_BILL_TO.equals(otmpOrg.getTypeId()))
-                obillOrg = otmpOrg;
-            else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(otmpOrg.getTypeId()))
-                osecOrgs.add(otmpOrg);
-        }
-
-        /*
-         * if report-to is null, use ship-to as the report-to
-         */
-        if (orepOrg != null) {
-            repOrg = createOrganization(orepOrg);
-            attention = orepOrg.getOrganizationAttention();
-        } else {
-            repOrg = om.getOrder().getOrganization();
-            attention = om.getOrder().getOrganizationAttention();
-        }
-
-        /*
-         * for private well domain, the report-to is set in the domain record
-         * itself and not linked through sample organization; for other domains,
-         * add a report-to organization to the sample
-         */
-        if (Constants.domain().PRIVATEWELL.equals(getSample(sm).getDomain())) {
-            well = getSamplePrivateWell(sm);
-            well.setOrganizationId(repOrg.getId());
-            well.setOrganization(repOrg);
-            well.setReportToAttention(attention);
-        } else {
-            addOrganization(sm, createSampleOrganization(repOrg,
-                                                         sm.getNextUID(),
-                                                         attention,
-                                                         Constants.dictionary().ORG_REPORT_TO));
-        }
-        checkIsHoldRefuseSample(repOrg, e);
-
-        /*
-         * set the bill-to if it's different from report-to
-         */
-        if (obillOrg != null) {
-            if ( !obillOrg.getOrganizationId().equals(repOrg.getId())) {
-                billOrg = createOrganization(obillOrg);
-                addOrganization(sm, createSampleOrganization(billOrg,
-                                                             sm.getNextUID(),
-                                                             obillOrg.getOrganizationAttention(),
-                                                             Constants.dictionary().ORG_BILL_TO));
-                checkIsHoldRefuseSample(billOrg, e);
+        if (getOrganizations(om) != null) {
+            for (OrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
+                if (Constants.dictionary().ORG_REPORT_TO.equals(otmpOrg.getTypeId()))
+                    orepOrg = otmpOrg;
+                else if (Constants.dictionary().ORG_BILL_TO.equals(otmpOrg.getTypeId()))
+                    obillOrg = otmpOrg;
+                else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(otmpOrg.getTypeId()))
+                    osecOrgs.add(otmpOrg);
             }
         }
 
         /*
-         * add secondary report-to organizations if any were specified
+         * if report-to is null or inactive, use ship-to as the report-to but
+         * only if ship-to is active
+         */
+        repOrg = null;
+        attention = null;
+        shipOrg = om.getOrder().getOrganization();
+        if (orepOrg != null) {
+            if ("Y".equals(orepOrg.getOrganizationIsActive())) {
+                repOrg = createOrganization(orepOrg);
+                attention = orepOrg.getOrganizationAttention();
+            } else {
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .sample_inactiveOrgWarning(accession,
+                                                                              orepOrg.getOrganizationName())));
+            }
+        } else if ("Y".equals(shipOrg.getIsActive())) {
+            repOrg = om.getOrder().getOrganization();
+            attention = om.getOrder().getOrganizationAttention();
+        } else {
+            e.add(new FormErrorWarning(Messages.get().sample_inactiveOrgWarning(accession,
+                                                                                shipOrg.getName())));
+        }
+
+        if (repOrg != null) {
+            /*
+             * for private well domain, the report-to is set in the domain
+             * record itself and not linked through sample organization; for
+             * other domains, add a report-to organization to the sample
+             */
+            if (Constants.domain().PRIVATEWELL.equals(getSample(sm).getDomain())) {
+                well = getSamplePrivateWell(sm);
+                well.setOrganizationId(repOrg.getId());
+                well.setOrganization(repOrg);
+                well.setReportToAttention(attention);
+            } else {
+                addOrganization(sm, createSampleOrganization(repOrg,
+                                                             sm.getNextUID(),
+                                                             attention,
+                                                             Constants.dictionary().ORG_REPORT_TO));
+            }
+            checkIsHoldRefuseSample(repOrg, e);
+        }
+
+        /*
+         * set the bill-to if it's different from report-to but only if bill-to
+         * is active
+         */
+        if (obillOrg != null) {
+            if (repOrg == null || !obillOrg.getOrganizationId().equals(repOrg.getId())) {
+                if ("Y".equals(obillOrg.getOrganizationIsActive())) {
+                    billOrg = createOrganization(obillOrg);
+                    addOrganization(sm,
+                                    createSampleOrganization(billOrg,
+                                                             sm.getNextUID(),
+                                                             obillOrg.getOrganizationAttention(),
+                                                             Constants.dictionary().ORG_BILL_TO));
+                    checkIsHoldRefuseSample(billOrg, e);
+                } else {
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_inactiveOrgWarning(accession,
+                                                                                  obillOrg.getOrganizationName())));
+                }
+            }
+        }
+
+        /*
+         * add secondary report-to organizations if any were specified, but only
+         * if they are active
          */
         for (OrderOrganizationViewDO osecOrg : osecOrgs) {
-            if ( !osecOrg.getOrganizationId().equals(repOrg.getId())) {
+            if ( (repOrg == null || !osecOrg.getOrganizationId().equals(repOrg.getId())) &&
+                "Y".equals(osecOrg.getOrganizationIsActive())) {
                 secOrg = createOrganization(osecOrg);
                 addOrganization(sm,
                                 createSampleOrganization(secOrg,
@@ -552,6 +587,10 @@ public class SampleManagerOrderHelperBean {
                                                          osecOrg.getOrganizationAttention(),
                                                          Constants.dictionary().ORG_SECOND_REPORT_TO));
                 checkIsHoldRefuseSample(secOrg, e);
+            } else {
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .sample_inactiveOrgWarning(accession,
+                                                                              osecOrg.getOrganizationName())));
             }
         }
     }
@@ -638,7 +677,8 @@ public class SampleManagerOrderHelperBean {
     private void checkIsHoldRefuseSample(OrganizationDO org, ValidationErrorsList e) throws Exception {
         try {
             organizationParameter.fetchByOrgIdAndDictSystemName(org.getId(), ORG_HOLD_SAMPLE);
-            e.add(new FormErrorWarning(Messages.get().orgMarkedAsHoldRefuseSample(org.getName())));
+            e.add(new FormErrorWarning(Messages.get()
+                                               .gen_orgMarkedAsHoldRefuseSample(org.getName())));
         } catch (NotFoundException ex) {
             // ignore
         }

@@ -89,11 +89,21 @@ public class InstrumentManagerProxy {
         return null;
     }
     
+    public InstrumentManager fetchForUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public InstrumentManager abortUpdate(InstrumentManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
+    public InstrumentManager abortUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public void validate(InstrumentManager man) throws Exception {
         ValidationErrorsList list;
         

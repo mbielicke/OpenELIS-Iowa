@@ -50,6 +50,7 @@
                 <xs:element name="sample_private_well" type="samplePrivateWell" />
                 <xs:element name="sample_sdwis" type="sampleSDWIS" />
                 <xs:element name="sample_neonatal" type="sampleNeonatal" />
+                <xs:element name="sample_clinical" type="sampleClinical" />
             </xs:choice>
             <xs:element name="sample_project" type="sampleProject" minOccurs="0"
                 maxOccurs="unbounded" />
@@ -162,6 +163,18 @@
         <xs:attribute name="provider_id" type="xs:integer" />
         <xs:attribute name="weight" type="xs:integer" />
         <xs:attribute name="transfusion_date" type="xs:date" />
+    </xs:complexType>
+    
+    <xs:complexType name="sampleClinical">
+        <xs:sequence>
+            <xs:element name="provider_phone" minOccurs="0" type="xs:string" />
+            <xs:element name="patient" minOccurs="1" type="patient" />
+            <xs:element name="provider" minOccurs="0" type="provider" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+        <xs:attribute name="sample_id" type="xs:integer" use="required" />
+        <xs:attribute name="patient_id" type="xs:integer" use="required"/>
+        <xs:attribute name="provider_id" type="xs:integer" />
     </xs:complexType>
 
     <xs:complexType name="patient">
@@ -280,6 +293,7 @@
             <xs:element name="section" type="section" />
             <xs:element name="unit_of_measure" minOccurs="0" type="dictionary" />
             <xs:element name="status" type="dictionary" />
+            <xs:element name="Type"  minOccurs="0" type="dictionary" />
             <xs:element name="panel" minOccurs="0" type="panel" />
             <xs:element name="analysis_qaevent" minOccurs="0" maxOccurs="unbounded" type="analysisQaevent" />
             <xs:element name="analysis_user" type="analysis_user" minOccurs="0"
@@ -300,10 +314,10 @@
         <xs:attribute name="released_date" type="xs:dateTime" />
         <xs:attribute name="printed_date" type="xs:dateTime" />
         <xs:attribute name="panel_id" type="xs:integer" />
-        <xs:attribute name="is_preliminary" type="xs:string" />
         <xs:attribute name="section_id" type="xs:integer" />
         <xs:attribute name="status_id" type="xs:integer" use="required" />
         <xs:attribute name="test_id" type="xs:integer" use="required" />
+        <xs:attribute name="type_id" type="xs:integer" />
         <xs:attribute name="unit_of_measure_id" type="xs:integer" />
     </xs:complexType>
 
@@ -367,6 +381,7 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string" />
             <xs:element name="description" type="xs:string" />
+            <xs:element name="translation" minOccurs="0" type="translation" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>

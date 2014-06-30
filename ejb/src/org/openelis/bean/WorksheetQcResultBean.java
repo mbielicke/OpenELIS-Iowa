@@ -87,7 +87,6 @@ public class WorksheetQcResultBean  {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setSortOrder(data.getSortOrder());
         entity.setQcAnalyteId(data.getQcAnalyteId());
-        entity.setTypeId(data.getTypeId());
         entity.setValue1(data.getValueAt(0));
         entity.setValue2(data.getValueAt(1));
         entity.setValue3(data.getValueAt(2));
@@ -137,7 +136,6 @@ public class WorksheetQcResultBean  {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setSortOrder(data.getSortOrder());
         entity.setQcAnalyteId(data.getQcAnalyteId());
-        entity.setTypeId(data.getTypeId());
         entity.setValue1(data.getValueAt(0));
         entity.setValue2(data.getValueAt(1));
         entity.setValue3(data.getValueAt(2));
@@ -192,9 +190,6 @@ public class WorksheetQcResultBean  {
         if (DataBaseUtil.isEmpty(data.getQcAnalyteId()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetQcResultQcAnalyteId()));
-        if (DataBaseUtil.isEmpty(data.getTypeId()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             WorksheetCompletionMeta.getWorksheetQcResultTypeId()));
         
         if (list.size() > 0)
             throw list;

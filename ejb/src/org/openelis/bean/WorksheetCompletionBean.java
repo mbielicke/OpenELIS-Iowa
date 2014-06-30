@@ -170,7 +170,6 @@ public class WorksheetCompletionBean {
         SampleOrganizationViewDO soVDO;
         SamplePrivateWellViewDO spwVDO;
         SimpleDateFormat dateTimeFormat;
-        SystemUserVO userVO;
         WorksheetAnalysisDO waDO, waLinkDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO wiDO;
@@ -538,16 +537,7 @@ public class WorksheetCompletionBean {
                     // users (override)
                     cell = oRow.createCell(5);
                     cell.setCellStyle(styles.get("row_edit"));
-                    if (waDO.getQcSystemUserId() != null) {
-                        try {
-                            userVO = userCache.getSystemUser(waDO.getQcSystemUserId());
-                            if (userVO != null)
-                                cell.setCellValue(userVO.getLoginName());
-                        } catch (Exception anyE) {
-                            System.out.println("Error loading QC System User: " +
-                                               anyE.getMessage());
-                        }
-                    }
+                    cell.setCellValue(waDO.getSystemUsers());
                     cellName = wb.createName();
                     cellName.setNameName("analysis_users." + cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$" +
@@ -557,8 +547,8 @@ public class WorksheetCompletionBean {
                     // started (override)
                     cell = oRow.createCell(6);
                     cell.setCellStyle(styles.get("datetime_edit"));
-                    if (waDO.getQcStartedDate() != null)
-                        cell.setCellValue(dateTimeFormat.format(waDO.getQcStartedDate().getDate()));
+                    if (waDO.getStartedDate() != null)
+                        cell.setCellValue(dateTimeFormat.format(waDO.getStartedDate().getDate()));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_started." + cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$" +
@@ -948,7 +938,7 @@ public class WorksheetCompletionBean {
                                                    a);
                     if (value != null) {
                         if (blankIndicator.equals(value)) {
-                            waDO.setQcSystemUserId(null);
+                            waDO.setSystemUsers(null);
                         } else {
                             tokenizer = new StringTokenizer((String)value, ",");
                             if (tokenizer.hasMoreTokens()) {
@@ -956,7 +946,7 @@ public class WorksheetCompletionBean {
                                 try {
                                     userVO = userCache.getSystemUser(userToken);
                                     if (userVO != null) {
-                                        waDO.setQcSystemUserId(userVO.getId());
+                                        waDO.setSystemUsers(userVO.getLoginName());
                                     } else {
                                         errorList.add(new FormErrorException(Messages.get().illegalWorksheetUserFormException(
                                                                              String.valueOf(wiDO.getPosition()),
@@ -969,10 +959,10 @@ public class WorksheetCompletionBean {
                                 }
                             }
                         }
-                    } else if (waDO.getQcSystemUserId() == null) {
+                    } else if (waDO.getSystemUsers() == null) {
                         try {
                             userVO = userCache.getSystemUser();
-                            waDO.setQcSystemUserId(userVO.getId());
+                            waDO.setSystemUsers(userVO.getLoginName());
                         } catch (Exception anyE) {
                             errorList.add(new FormErrorException(Messages.get().defaultWorksheetQcUserFormException(
                                                                  String.valueOf(wiDO.getPosition()),
@@ -984,13 +974,13 @@ public class WorksheetCompletionBean {
                                                    "analysis_started." + i + "." + a);
                     if (value != null) {
                         if (blankIndicator.equals(value))
-                            waDO.setQcStartedDate(null);
+                            waDO.setStartedDate(null);
                         else if (value instanceof Datetime)
-                            waDO.setQcStartedDate((Datetime)value);
+                            waDO.setStartedDate((Datetime)value);
                         else if (value instanceof String)
-                            waDO.setQcStartedDate(new Datetime(Datetime.YEAR,
-                                                               Datetime.MINUTE,
-                                                               format.parse((String)value)));
+                            waDO.setStartedDate(new Datetime(Datetime.YEAR,
+                                                             Datetime.MINUTE,
+                                                             format.parse((String)value)));
                     }
                 }
             }

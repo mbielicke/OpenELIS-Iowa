@@ -46,6 +46,7 @@ import org.openelis.domain.ExchangeLocalTermDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestAnalyteViewVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.ExchangeLocalTerm;
@@ -81,6 +82,9 @@ public class ExchangeLocalTermBean {
 
     @EJB
     private TestBean                           test;
+
+    @EJB
+    private PanelBean                          panel;
 
     private static final ExchangeLocalTermMeta meta    = new ExchangeLocalTermMeta();
 
@@ -130,9 +134,8 @@ public class ExchangeLocalTermBean {
         builder.setMeta(tavMeta);
 
         builder.setSelect("distinct new org.openelis.domain.TestAnalyteViewVO(" +
-                          TestAnalyteViewMeta.getId() + ", " +
-                          TestAnalyteViewMeta.getTestId() + ", " +
-                          TestAnalyteViewMeta.getTestName() + ", " +
+                          TestAnalyteViewMeta.getId() + ", " + TestAnalyteViewMeta.getTestId() +
+                          ", " + TestAnalyteViewMeta.getTestName() + ", " +
                           TestAnalyteViewMeta.getMethodId() + ", " +
                           TestAnalyteViewMeta.getMethodName() + ", " +
                           TestAnalyteViewMeta.getTestIsActive() + ", " +
@@ -187,7 +190,9 @@ public class ExchangeLocalTermBean {
         else if (Constants.table().TEST.equals(refTableId))
             results = testQuery(fields, first, max);
         else if (Constants.table().TEST_ANALYTE.equals(refTableId))
-            results = testAnalyteQuery(fields, first, max);        
+            results = testAnalyteQuery(fields, first, max);
+        else if (Constants.table().PANEL.equals(refTableId))
+            results = panelQuery(fields, first, max);
 
         if (results.isEmpty())
             throw new NotFoundException();
@@ -271,6 +276,7 @@ public class ExchangeLocalTermBean {
         MethodDO m;
         OrganizationViewDO org;
         AddressDO addr;
+        PanelDO p;
         Query query;
 
         if (Constants.table().ANALYTE.equals(data.getReferenceTableId())) {
@@ -282,7 +288,23 @@ public class ExchangeLocalTermBean {
             data.setReferenceDescription1(dict.getCategoryName());
         } else if (Constants.table().METHOD.equals(data.getReferenceTableId())) {
             m = method.fetchById(data.getReferenceId());
-            data.setReferenceName(m.getName());
+            sb = new StringBuffer();
+            sb.append(m.getName());
+            if ("N".equals(m.getIsActive())) {
+                /*
+                 * for inactive methods, show the active begin and end dates
+                 */
+                sb.append(" [");
+                sb.append(m.getActiveBegin());
+                sb.append("..");
+                sb.append(m.getActiveEnd());
+                sb.append("]");
+            }
+            /*
+             * here the dates are not specified as reference description because
+             * otherwise they will be separated from the name by a comma on the
+             */
+            data.setReferenceName(sb.toString());
         } else if (Constants.table().ORGANIZATION.equals(data.getReferenceTableId())) {
             org = organization.fetchById(data.getReferenceId());
             addr = org.getAddress();
@@ -294,7 +316,7 @@ public class ExchangeLocalTermBean {
             t = test.fetchById(data.getReferenceId());
             data.setReferenceName(t.getName());
             sb = new StringBuffer();
-            sb.append(t.getMethodName());            
+            sb.append(t.getMethodName());
             if ("N".equals(t.getIsActive())) {
                 /*
                  * for inactive tests, show the active begin and end dates
@@ -319,8 +341,8 @@ public class ExchangeLocalTermBean {
              */
             sb = new StringBuffer();
             if ( !tav.getRowAnalyteName().equals(tav.getColAnalyteName()))
-                sb.append(tav.getColAnalyteName());            
-            
+                sb.append(tav.getColAnalyteName());
+
             if ("N".equals(tav.getTestIsActive())) {
                 /*
                  * for inactive tests, show the active begin and end dates
@@ -331,8 +353,11 @@ public class ExchangeLocalTermBean {
                 sb.append(tav.getTestActiveEnd());
                 sb.append("]");
             }
-            
+
             data.setReferenceDescription3(sb.toString());
+        } else if (Constants.table().PANEL.equals(data.getReferenceTableId())) {
+            p = panel.fetchById(data.getReferenceId());
+            data.setReferenceName(p.getName());
         }
     }
 
@@ -475,6 +500,29 @@ public class ExchangeLocalTermBean {
                            ExchangeLocalTermMeta.getTestAnalyteViewMethodName() + ", " +
                            ExchangeLocalTermMeta.getTestAnalyteViewRowAnalyteName() + ", " +
                            ExchangeLocalTermMeta.getTestAnalyteViewColAnalyteName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        return query.getResultList();
+    }
+
+    private List panelQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getPanelName() + ", " + "''" + ", " + "''" + ", " +
+                          "''" + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(ExchangeLocalTermMeta.getPanelName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

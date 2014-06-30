@@ -33,6 +33,7 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
+import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -73,8 +74,7 @@ public class AnalysisManagerProxy {
             analysisDO = man.getAnalysisAt(i);
 
             // try to resolve a negative prep analysis id
-            if (analysisDO.getPreAnalysisId() != null &&
-                analysisDO.getPreAnalysisId() < 0) {
+            if (analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0) {
                 prepId = idHash.get(analysisDO.getPreAnalysisId());
                 if (prepId != null) {
                     analysisDO.setPreAnalysisId(prepId);
@@ -84,8 +84,7 @@ public class AnalysisManagerProxy {
             }
 
             // try to resolve a negative parent analysis id
-            if (analysisDO.getParentAnalysisId() != null &&
-                analysisDO.getParentAnalysisId() < 0) {
+            if (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() < 0) {
                 parentId = idHash.get(analysisDO.getParentAnalysisId());
                 if (parentId != null) {
                     analysisDO.setParentAnalysisId(parentId);
@@ -183,8 +182,7 @@ public class AnalysisManagerProxy {
             //
             if (Constants.dictionary().ANALYSIS_RELEASED.equals(analysisDO.getStatusId()) &&
                 analysisDO.getReleasedDate() == null)
-                analysisDO.setReleasedDate(getCurrentDatetime(Datetime.YEAR,
-                                                              Datetime.MINUTE));
+                analysisDO.setReleasedDate(getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
             EJBFactory.getAnalysis().update(analysisDO);
         }
 
@@ -228,16 +226,16 @@ public class AnalysisManagerProxy {
         validate(man, null, null, null, errorsList);
     }
 
-    public void validate(AnalysisManager man, String sampleItemSequence,
-                         Integer sampleTypeId, String sampleDomain,
-                         ValidationErrorsList errorsList) throws Exception {
+    public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId,
+                         String sampleDomain, ValidationErrorsList errorsList) throws Exception {
+        boolean quickEntry;
         AnalysisListItem item;
         AnalysisViewDO analysisDO;
         TestManager testMan;
-        boolean quickEntry;
+        Datetime now;
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
-
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         for (int i = 0; i < man.count(); i++ ) {
             analysisDO = man.getAnalysisAt(i);
             testMan = man.getTestAt(i);
@@ -258,30 +256,62 @@ public class AnalysisManagerProxy {
             //
             if (analysisDO.isChanged()) {
                 if (analysisDO.getTestId() == null)
-                    errorsList.add(new FormErrorException(Messages.get().analysisTestIdMissing(
-                                                          DataBaseUtil.toString(sampleItemSequence))));
+                    errorsList.add(new FormErrorException(Messages.get()
+                                                                  .analysisTestIdMissing(DataBaseUtil.toString(sampleItemSequence))));
 
                 if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
-                    errorsList.add(new FormErrorException(Messages.get().analysisSectionIdMissing(
-                                                          analysisDO.getTestName(),
-                                                          analysisDO.getMethodName())));
+                    errorsList.add(new FormErrorException(Messages.get()
+                                                                  .analysisSectionIdMissing(analysisDO.getTestName(),
+                                                                                            analysisDO.getMethodName())));
 
                 // if unit is null, check the test definition to see if all
                 // sample types
                 // have units defined. if so, require the user to enter units
-                if (analysisDO.getTestId() != null &&
-                    analysisDO.getUnitOfMeasureId() == null &&
+                if (analysisDO.getTestId() != null && analysisDO.getUnitOfMeasureId() == null &&
                     !testMan.getSampleTypes().hasEmptyUnit())
-                    errorsList.add(new FormErrorException(Messages.get().analysisUnitRequired(
-                                                          analysisDO.getTestName(),
-                                                          analysisDO.getMethodName())));
+                    errorsList.add(new FormErrorException(Messages.get()
+                                                                  .analysisUnitRequired(analysisDO.getTestName(),
+                                                                                        analysisDO.getMethodName())));
 
-                if (analysisDO.getStartedDate() != null &&
-                    analysisDO.getCompletedDate() != null &&
-                    analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
-                    errorsList.add(new FormErrorException(Messages.get().startedDateInvalidError(
-                                                          analysisDO.getTestName(),
-                                                          analysisDO.getMethodName())));
+                if (analysisDO.getStartedDate() != null) {
+                    //
+                    // started date can't be after completed date
+                    //
+                    if (analysisDO.getCompletedDate() != null &&
+                        analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
+                        errorsList.add(new FormErrorException(Messages.get()
+                                                                      .startedDateAfterCompletedError(analysisDO.getTestName(),
+                                                                                                      analysisDO.getMethodName())));
+                    //
+                    // started date is before available date, which could be a
+                    // problem
+                    //
+                    if (analysisDO.getAvailableDate() != null &&
+                        analysisDO.getStartedDate().compareTo(analysisDO.getAvailableDate()) == -1)
+                        errorsList.add(new FormErrorWarning(Messages.get()
+                                                                    .startedDateBeforeAvailableWarning(analysisDO.getTestName(),
+                                                                                                      analysisDO.getMethodName())));
+
+                    //
+                    // started date can't be in the future
+                    //
+                    if (analysisDO.getStartedDate().compareTo(now) == 1) {
+                        errorsList.add(new FormErrorException(Messages.get()
+                                                                      .startedDateInFutureError(analysisDO.getTestName(),
+                                                                                                analysisDO.getMethodName())));
+                    }
+                }
+
+                if (analysisDO.getCompletedDate() != null) {
+                    //
+                    //completed date can't be in the future
+                    //
+                    if (analysisDO.getCompletedDate().compareTo(now) == 1) {
+                        errorsList.add(new FormErrorException(Messages.get()
+                                                                      .completedDateInFutureError(analysisDO.getTestName(),
+                                                                                                  analysisDO.getMethodName())));
+                    }
+                }
             }
 
             item = man.getItemAt(i);

@@ -23,21 +23,21 @@ import org.openelis.ui.common.Datetime;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.systemUsers,wa.startedDate,wa.completedDate,wa.fromOtherId,wa.changeFlagsId) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemIds",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.systemUsers,wa.startedDate,wa.completedDate,wa.fromOtherId,wa.changeFlagsId) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId in (:ids) order by wa.worksheetItemId"),
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId) "+
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.systemUsers,wa.startedDate,wa.completedDate,wa.fromOtherId,wa.changeFlagsId) "+
                         "from WorksheetAnalysis wa where wa.id = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByQcLotId",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId)"
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.systemUsers,wa.startedDate,wa.completedDate,wa.fromOtherId,wa.changeFlagsId)"
                       + " from WorksheetAnalysis wa where wa.qcLotId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetStatusId",
-                query = "select distinct new org.openelis.domain.ToDoWorksheetVO(w.id, w.createdDate, w.systemUserId, w.statusId, t.name, m.name, s.name)"
-                      + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Test t, Method m, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
-                      +	" and wa.analysisId = a.id and a.testId = t.id and t.methodId = m.id and a.sectionId = s.id"),
+                query = "select distinct new org.openelis.domain.ToDoWorksheetVO(w.id, w.createdDate, w.systemUserId, w.statusId, w.description, s.name)"
+                      + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
+                      +	" and wa.analysisId = a.id and a.sectionId = s.id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByDateForQcChart",
                 query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
@@ -57,8 +57,8 @@ import org.openelis.ui.common.Datetime;
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wa.qcLotId = ql.id and ql.qcId = q.id and ql.locationId = :qcLocation and" + 
                         " q.name = :qcName and w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) " + 
                         "order by w.createdDate desc"),
-   @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
-               query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
+    @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
+                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         " wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         " wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
@@ -94,14 +94,20 @@ public class WorksheetAnalysis {
     @Column(name = "worksheet_analysis_id")
     private Integer           worksheetAnalysisId;
 
-    @Column(name = "qc_system_user_id")
-    private Integer           qcSystemUserId;
+    @Column(name = "system_users")
+    private String            systemUsers;
 
-    @Column(name = "qc_started_date")
-    private Date              qcStartedDate;
+    @Column(name = "started_date")
+    private Date              startedDate;
+
+    @Column(name = "completed_date")
+    private Date              completedDate;
 
     @Column(name = "from_other_id")
     private Integer           fromOtherId;
+
+    @Column(name = "change_flags_id")
+    private Integer           changeFlagsId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_item_id", insertable = false, updatable = false)
@@ -134,7 +140,8 @@ public class WorksheetAnalysis {
     }
 
     public void setAccessionNumber(String accessionNumber) {
-        this.accessionNumber = accessionNumber;
+        if (DataBaseUtil.isDifferent(accessionNumber, this.accessionNumber))
+            this.accessionNumber = accessionNumber;
     }
 
     public Integer getAnalysisId() {
@@ -164,22 +171,31 @@ public class WorksheetAnalysis {
             this.worksheetAnalysisId = worksheetAnalysisId;
     }
 
-    public Integer getQcSystemUserId() {
-        return qcSystemUserId;
+    public String getSystemUsers() {
+        return systemUsers;
     }
 
-    public void setQcSystemUserId(Integer qcSystemUserId) {
-        if (DataBaseUtil.isDifferent(qcSystemUserId, this.qcSystemUserId))
-            this.qcSystemUserId = qcSystemUserId;
+    public void setSystemUsers(String systemUsers) {
+        if (DataBaseUtil.isDifferent(systemUsers, this.systemUsers))
+            this.systemUsers = systemUsers;
     }
 
-    public Datetime getQcStartedDate() {
-        return DataBaseUtil.toYM(qcStartedDate);
+    public Datetime getStartedDate() {
+        return DataBaseUtil.toYM(startedDate);
     }
 
-    public void setQcStartedDate(Datetime qcStartedDate) {
-        if (DataBaseUtil.isDifferentYM(qcStartedDate, this.qcStartedDate))
-            this.qcStartedDate = DataBaseUtil.toDate(qcStartedDate);
+    public void setStartedDate(Datetime startedDate) {
+        if (DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
+            this.startedDate = DataBaseUtil.toDate(startedDate);
+    }
+
+    public Datetime getCompletedDate() {
+        return DataBaseUtil.toYM(completedDate);
+    }
+
+    public void setCompletedDate(Datetime completedDate) {
+        if (DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
+            this.completedDate = DataBaseUtil.toDate(completedDate);
     }
 
     public Integer getFromOtherId() {
@@ -187,7 +203,17 @@ public class WorksheetAnalysis {
     }
 
     public void setFromOtherId(Integer fromOtherId) {
-        this.fromOtherId = fromOtherId;
+        if (DataBaseUtil.isDifferent(fromOtherId, this.fromOtherId))
+            this.fromOtherId = fromOtherId;
+    }
+
+    public Integer getChangeFlagsId() {
+        return changeFlagsId;
+    }
+
+    public void setChangeFlagsId(Integer changeFlagsId) {
+        if (DataBaseUtil.isDifferent(changeFlagsId, this.changeFlagsId))
+            this.changeFlagsId = changeFlagsId;
     }
 
     public WorksheetItem getWorksheetItem() {

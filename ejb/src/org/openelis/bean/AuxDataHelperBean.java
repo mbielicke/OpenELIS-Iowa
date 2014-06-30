@@ -25,11 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.getProjects;
-import static org.openelis.manager.SampleManager1Accessor.getSample;
-import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
-import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
-import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +51,6 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AuxFieldGroupManager;
@@ -100,7 +95,7 @@ public class AuxDataHelperBean {
 
     private static final Logger      log = Logger.getLogger("openelis");
 
-    private static final String      SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
+    public static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
                     SAMPLE_WELL_AUX_DATA = "sample_well_aux_data",
                     SAMPLE_SDWIS_AUX_DATA = "sample_sdwis_aux_data",
                     SMPL_COLLECTED_DATE = "smpl_collected_date",
@@ -117,7 +112,13 @@ public class AuxDataHelperBean {
                     SAMPLE_CAT = "sample_cat", SAMPLE_PT_ID = "sample_pt_id", YES = "yes",
                     STATE = "state", COUNTRY = "country", SDWIS_SAMPLE_TYPE = "sdwis_sample_type",
                     SDWIS_SAMPLE_CATEGORY = "sdwis_sample_category",
-                    ORG_HOLD_SAMPLE = "org_hold_sample", ORIG_SAMPLE_NUMBER = "orig_sample_number";
+                    ORG_HOLD_SAMPLE = "org_hold_sample", ORIG_SAMPLE_NUMBER = "orig_sample_number",
+                    TEMPERATURE = "temperature", VOLUME = "volume", PRESSURE = "pressure",
+                    NULL_DATA_CODE = "null_data_code", FILTER_LOT_BLANK = "filter_lot_blank",
+                    STRIPS_PER_FILTER = "strips_per_filter",
+                    BLANK_SAMPLE_NUMBER = "blank_sample_number", STATE_CODE = "state_code",
+                    COUNTY_CODE = "county_code", SITE_ID = "site_id", POC = "poc",
+                    COLLECTION_FREQUENCY = "collection_frequency";
 
     /**
      * Adds aux groups specified by the list of ids to the list of aux data, if
@@ -129,7 +130,7 @@ public class AuxDataHelperBean {
     }
 
     /**
-     * Adds aux group specified by the id to the list of aux data. If the aux
+     * Adds aux group specified by the ids to the list of aux data. If an aux
      * data's analyte can be found in the map then the value is set from the
      * map, otherwise it's set as the default of the corresponding aux field in
      * the group.
@@ -180,7 +181,8 @@ public class AuxDataHelperBean {
                     continue;
                 aux1 = new AuxDataViewDO();
                 aux1.setAuxFieldId(af.getId());
-                aux1.setGroupId(id);
+                aux1.setAuxFieldGroupId(id);
+                aux1.setAuxFieldGroupName(afg.getName());
                 aux1.setAnalyteId(af.getAnalyteId());
                 aux1.setAnalyteName(af.getAnalyteName());
                 aux1.setIsReportable(af.getIsReportable());
@@ -217,11 +219,12 @@ public class AuxDataHelperBean {
 
         removed = new ArrayList<AuxDataViewDO>();
         for (int i = 0; i < auxiliary.size(); i++ ) {
-            prevId = auxiliary.get(i).getGroupId();
+            prevId = auxiliary.get(i).getAuxFieldGroupId();
             if (groupIds.contains(prevId)) {
                 do {
                     removed.add(auxiliary.remove(i));
-                } while (i < auxiliary.size() && auxiliary.get(i).getGroupId().equals(prevId));
+                } while (i < auxiliary.size() &&
+                         auxiliary.get(i).getAuxFieldGroupId().equals(prevId));
             }
         }
 
@@ -233,7 +236,7 @@ public class AuxDataHelperBean {
      */
     public void copyToSample(SampleManager1 sm, ArrayList<AuxDataViewDO> auxiliary,
                              ValidationErrorsList e) throws Exception {
-        Integer domainGrpId;
+        Integer accession, domainGrpId, prevGrpId;
         SampleDO data;
         ArrayList<Integer> grpIds;
         HashMap<Integer, AuxDataViewDO> auxGrp;
@@ -244,19 +247,36 @@ public class AuxDataHelperBean {
 
         data = getSample(sm);
         /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+        /*
          * make a hash of aux groups
          */
         domainGrpId = getDomainAuxGroupId(data);
         grpIds = new ArrayList<Integer>();
         auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
+        prevGrpId = null;
         for (AuxDataViewDO aux : auxiliary) {
-            auxGrp = auxGrps.get(aux.getGroupId());
+            /*
+             * consider this aux group only if it's active
+             */
+            if ("N".equals(aux.getAuxFieldGroupIsActive())) {
+                if (!aux.getAuxFieldGroupId().equals(prevGrpId))
+                    e.add(new FormErrorWarning(Messages.get().sample_inactiveAuxGroupWarning(accession, aux.getAuxFieldGroupName())));
+                prevGrpId = aux.getAuxFieldGroupId();
+                continue;
+            }
+            auxGrp = auxGrps.get(aux.getAuxFieldGroupId());
             if (auxGrp == null) {
                 auxGrp = new HashMap<Integer, AuxDataViewDO>();
-                auxGrps.put(aux.getGroupId(), auxGrp);
-                grpIds.add(aux.getGroupId());
+                auxGrps.put(aux.getAuxFieldGroupId(), auxGrp);
+                grpIds.add(aux.getAuxFieldGroupId());
             }
             auxGrp.put(aux.getAnalyteId(), aux);
+            prevGrpId = aux.getAuxFieldGroupId();
         }
 
         /*
@@ -272,6 +292,17 @@ public class AuxDataHelperBean {
             else if (Constants.domain().SDWIS.equals(data.getDomain()))
                 copySDWISFields(getSampleSDWIS(sm), auxGrp, e);
             auxGrps.remove(domainGrpId);
+            grpIds.remove(domainGrpId);
+        }
+
+        /*
+         * if there are any other aux groups in the order than add them to the
+         * sample
+         */
+        if (grpIds.size() > 0) {
+            if (getAuxiliary(sm) == null)
+                setAuxiliary(sm, new ArrayList<AuxDataViewDO>());
+            addAuxGroups(getAuxiliary(sm), grpIds, auxGrps, e);
         }
     }
 
@@ -309,10 +340,10 @@ public class AuxDataHelperBean {
         prevId = null;
         addIds = new ArrayList<Integer>(groupIds);
         for (AuxDataViewDO a : auxiliary) {
-            if ( !a.getGroupId().equals(prevId)) {
-                if (groupIds.contains(a.getGroupId()))
-                    addIds.remove(a.getGroupId());
-                prevId = a.getGroupId();
+            if ( !a.getAuxFieldGroupId().equals(prevId)) {
+                if (groupIds.contains(a.getAuxFieldGroupId()))
+                    addIds.remove(a.getAuxFieldGroupId());
+                prevId = a.getAuxFieldGroupId();
             }
         }
         return addIds;
@@ -825,5 +856,29 @@ public class AuxDataHelperBean {
                 data.setValue(sample.getAccessionNumber().toString());
             }
         }
+    }
+
+    public HashMap<String, String> fillAirQualityAuxData(SampleManager1 sm) throws Exception {
+        AuxDataViewDO data;
+        HashMap<String, String> auxDataValues;
+        ArrayList<AuxDataViewDO> auxiliary;
+
+        auxiliary = getAuxiliary(sm);
+        auxDataValues = new HashMap<String, String>();
+        for (int i = 0; i < auxiliary.size(); i++ ) {
+            data = auxiliary.get(i);
+            if (data.getDictionary() != null) {
+                if ( !NULL_DATA_CODE.equals(data.getAnalyteExternalId())) {
+                    auxDataValues.put(data.getAnalyteExternalId(), data.getDictionary());
+                } else {
+                    auxDataValues.put(data.getAnalyteExternalId(),
+                                      dictionaryCache.getById(Integer.parseInt(data.getValue()))
+                                                     .getCode());
+                }
+            } else {
+                auxDataValues.put(data.getAnalyteExternalId(), data.getValue());
+            }
+        }
+        return auxDataValues;
     }
 }

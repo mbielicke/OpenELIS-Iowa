@@ -60,37 +60,37 @@ import org.openelis.utils.Auditable;
                         "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
                         "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
-                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name)"
-                      + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name)"
+                      + " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),
     @NamedQuery( name = "Test.FetchByIds",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
                         "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
-                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name)"
-                      + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id in (:ids)"),                  
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name)"
+                      + " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.id in (:ids)"),                  
     @NamedQuery( name = "Test.FetchByName",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
                         "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
-                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name)"
-                      + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name order by t.name,m.name"),
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name)"
+                      + " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name order by t.name,m.name"),
     @NamedQuery( name = "Test.FetchActiveByNameMethodName",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         " t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
                         " t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         " t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
-                        " t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) " +
-                        " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.isActive = 'Y' and t.name = :name and " +
+                        " t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name) " +
+                        " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.isActive = 'Y' and t.name = :name and " +
                         " m.name=:methodName order by t.name,m.name"),
     @NamedQuery( name = "Test.FetchByNameMethodName",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         " t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
                         " t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         " t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
-                        " t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) " +
-                        " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name and " +
+                        " t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name) " +
+                        " from Test t left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name and " +
                         " m.name=:methodName order by t.name,m.name"),                    
     @NamedQuery( name = "Test.FetchNameMethodSectionByName",
                 query = "select distinct new org.openelis.domain.PanelVO(t.id,t.name,m.name,s.name)"
@@ -193,10 +193,6 @@ public class Test implements Auditable, Cloneable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "method_id", insertable = false, updatable = false)
     private Method                           method;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scriptlet_id", insertable = false, updatable = false)
-    private Scriptlet                        scriptlet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_trailer_id", insertable = false, updatable = false)
@@ -520,14 +516,6 @@ public class Test implements Auditable, Cloneable {
         this.testWorksheetAnalyte = testWorksheetAnalyte;
     }
 
-    public Scriptlet getScriptlet() {
-        return scriptlet;
-    }
-
-    public void setScriptlet(Scriptlet scriptlet) {
-        this.scriptlet = scriptlet;
-    }
-
     public TestTrailer getTestTrailer() {
         return testTrailer;
     }
@@ -576,7 +564,7 @@ public class Test implements Auditable, Cloneable {
                  .setField("label_id", labelId, original.labelId, Constants.table().LABEL)
                  .setField("label_qty", labelQty, original.labelQty)
                  .setField("test_trailer_id", testTrailerId, original.testTrailerId, Constants.table().TEST_TRAILER)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().DICTIONARY)
                  .setField("test_format_id", testFormatId, original.testFormatId, Constants.table().DICTIONARY)
                  .setField("revision_method_id", revisionMethodId, original.revisionMethodId, Constants.table().DICTIONARY)
                  .setField("reporting_method_id", reportingMethodId, original.reportingMethodId, Constants.table().DICTIONARY)

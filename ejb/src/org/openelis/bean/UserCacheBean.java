@@ -273,4 +273,21 @@ public class UserCacheBean {
 
         return data;
     }
+    
+    /**
+     * Returns the list of valid users out of the list specified.
+     */
+    public ArrayList<SystemUserVO> validateSystemUsers(ArrayList<String> users) {
+        ArrayList<SystemUserVO> validUsers;
+        SystemUserVO userVO;
+        
+        validUsers = new ArrayList<SystemUserVO>();
+        for (String user : users) {
+            userVO = getSystemUser(user);
+            if (userVO != null)
+                validUsers.add(userVO);
+        }
+        
+        return validUsers;
+    }
 }

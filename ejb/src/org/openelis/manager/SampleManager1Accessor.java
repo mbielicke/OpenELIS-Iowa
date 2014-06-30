@@ -35,6 +35,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleClinicalDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -45,6 +46,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
+import org.openelis.manager.SampleManager1.PostProcessing;
 
 /**
  * This class is used to bulk load sample manager.
@@ -91,6 +93,14 @@ public class SampleManager1Accessor {
     
     public static void setSampleNeonatal(SampleManager1 sm, SampleNeonatalDO sampleNeonatal) {
         sm.sampleNeonatal = sampleNeonatal;
+    }
+    
+    public static SampleClinicalDO getSampleClinical(SampleManager1 sm) {
+        return sm.sampleClinical;
+    }
+    
+    public static void setSampleClinical(SampleManager1 sm, SampleClinicalDO sampleClinical) {
+        sm.sampleClinical = sampleClinical;
     }
     
     public static ArrayList<SampleOrganizationViewDO> getOrganizations(SampleManager1 sm) {
@@ -149,18 +159,18 @@ public class SampleManager1Accessor {
         sm.analysisQAs.add(analysisQA);
     }
     
-    public static ArrayList<AuxDataViewDO> getAuxilliary(SampleManager1 sm) {
-        return sm.auxilliary;
+    public static ArrayList<AuxDataViewDO> getAuxiliary(SampleManager1 sm) {
+        return sm.auxiliary;
     }
     
-    public static void setAuxilliary(SampleManager1 sm, ArrayList<AuxDataViewDO> auxilliary) {
-        sm.auxilliary = auxilliary;
+    public static void setAuxiliary(SampleManager1 sm, ArrayList<AuxDataViewDO> auxiliary) {
+        sm.auxiliary = auxiliary;
     }
     
-    public static void addAuxilliary(SampleManager1 sm, AuxDataViewDO auxilliary) {
-        if (sm.auxilliary == null)
-            sm.auxilliary = new ArrayList<AuxDataViewDO>();
-        sm.auxilliary.add(auxilliary);
+    public static void addAuxiliary(SampleManager1 sm, AuxDataViewDO auxiliary) {
+        if (sm.auxiliary == null)
+            sm.auxiliary = new ArrayList<AuxDataViewDO>();
+        sm.auxiliary.add(auxiliary);
     }
     
     public static NoteViewDO getSampleExternalNote(SampleManager1 sm) {
@@ -303,5 +313,13 @@ public class SampleManager1Accessor {
     
     public static void setRemoved(SampleManager1 sm, ArrayList<DataObject> removed) {
         sm.removed = removed;
+    }
+    
+    public static PostProcessing getPostProcessing(SampleManager1 sm) {
+        return sm.postProcessing;
+    }
+    
+    public static void setPostProcessing(SampleManager1 sm, PostProcessing postProcessing) {
+        sm.postProcessing = postProcessing;
     }
 }

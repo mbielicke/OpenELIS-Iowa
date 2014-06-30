@@ -36,6 +36,7 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
@@ -226,6 +227,11 @@ public class AnalysisResultManagerProxy {
         return null;
     }
 
+    public ArrayList<AnalyteDO> getAliasList(ArrayList<TestAnalyteViewDO> list) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public void validate(AnalysisResultManager man,
                          AnalysisViewDO anDO,
                          ValidationErrorsList errorsList) throws Exception {

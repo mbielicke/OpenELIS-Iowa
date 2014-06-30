@@ -32,6 +32,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 
@@ -104,6 +105,20 @@ public class WorksheetManager1Accessor {
         if (wm.qcResults == null)
             wm.qcResults = new ArrayList<WorksheetQcResultViewDO>();
         wm.qcResults.add(qcResult);
+    }
+    
+    public static ArrayList<WorksheetReagentViewDO> getReagents(WorksheetManager1 wm) {
+        return wm.reagents;
+    }
+    
+    public static void setReagents(WorksheetManager1 wm, ArrayList<WorksheetReagentViewDO> reagents) {
+        wm.reagents = reagents;
+    }
+    
+    public static void addReagent(WorksheetManager1 wm, WorksheetReagentViewDO reagent) {
+        if (wm.reagents == null)
+            wm.reagents = new ArrayList<WorksheetReagentViewDO>();
+        wm.reagents.add(reagent);
     }
     
     public static ArrayList<NoteViewDO> getNotes(WorksheetManager1 wm) {

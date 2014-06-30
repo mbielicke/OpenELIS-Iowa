@@ -53,8 +53,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "TestWorksheet.FetchByTestId",
            query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.subsetCapacity," +
-                   "tw.totalCapacity,tw.formatId,tw.scriptletId,s.name)"
-                 + " from TestWorksheet tw left join tw.scriptlet s where tw.testId = :testId")
+                   "tw.totalCapacity,tw.formatId,tw.scriptletId)"
+                 + " from TestWorksheet tw where tw.testId = :testId")
 @Entity
 @Table(name = "test_worksheet")
 @EntityListeners({AuditUtil.class})
@@ -83,10 +83,6 @@ public class TestWorksheet implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_worksheet_id", insertable = false, updatable = false)
     private Collection<TestWorksheetItem> testWorksheetItem;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scriptlet_id", insertable = false, updatable = false)
-    private Scriptlet                     scriptlet;
 
     @Transient
     private TestWorksheet                 original;
@@ -153,14 +149,6 @@ public class TestWorksheet implements Auditable, Cloneable {
         this.testWorksheetItem = testWorksheetItem;
     }
 
-    public Scriptlet getScriptlet() {
-        return scriptlet;
-    }
-
-    public void setScriptlet(Scriptlet scriptlet) {
-        this.scriptlet = scriptlet;
-    }
-
     public void setClone() {
         try {
             original = (TestWorksheet)this.clone();
@@ -181,7 +169,7 @@ public class TestWorksheet implements Auditable, Cloneable {
                  .setField("subset_capacity", subsetCapacity, original.subsetCapacity)
                  .setField("total_capacity", totalCapacity, original.totalCapacity)
                  .setField("format_id", formatId, original.formatId, Constants.table().DICTIONARY)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().DICTIONARY);
 
         return audit;
     }
