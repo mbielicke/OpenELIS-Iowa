@@ -247,7 +247,6 @@ public class TestManager1 implements Serializable {
             data.setResultGroup(analyte.getResultGroup());
             data.setRowGroup(analyte.getRowGroup());
             data.setScriptletId(analyte.getScriptletId());
-            data.setScriptletName(analyte.getScriptletName());
             data.setSortOrder(analyte.getSortOrder());
             data.setTestId(analyte.getTestId());
             data.setTypeId(analyte.getTypeId());

@@ -28,32 +28,38 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * The class extends order organization DO and carries several commonly used fields 
- * such as organization name. The additional fields are for read/display only and
- * do not get committed to the database. Note: isChanged will reflect any
- * changes to read/display fields.
+ * The class extends order organization DO and carries several commonly used
+ * fields such as organization name. The additional fields are for read/display
+ * only and do not get committed to the database. Note: isChanged will reflect
+ * any changes to read/display fields.
  */
 
 public class OrderOrganizationViewDO extends OrderOrganizationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String organizationName, organizationAddressMultipleUnit, organizationAddressStreetAddress,
-                     organizationAddressCity, organizationAddressState, organizationAddressZipCode, organizationAddressWorkPhone,
-                     organizationAddressFaxPhone, organizationAddressCountry;
+    protected String          organizationName, organizationIsActive,
+                    organizationAddressMultipleUnit, organizationAddressStreetAddress,
+                    organizationAddressCity, organizationAddressState, organizationAddressZipCode,
+                    organizationAddressWorkPhone, organizationAddressFaxPhone,
+                    organizationAddressCountry;
 
     public OrderOrganizationViewDO() {
     }
 
     public OrderOrganizationViewDO(Integer id, Integer orderId, Integer organizationId,
-                                    String organizationAttention, Integer typeId,
-                                    String organizationName, String organizationAddressMultipleUnit,
-                                    String organizationAddressStreetAddress, String organizationAddressCity,
-                                    String organizationAddressState, String organizationAddressZipCode,
-                                    String organizationAddressWorkPhone, String organizationAddressFaxPhone,
-                                    String organizationAddressCountry) {
+                                   String organizationAttention, Integer typeId,
+                                   String organizationName, String organizationIsActive,
+                                   String organizationAddressMultipleUnit,
+                                   String organizationAddressStreetAddress,
+                                   String organizationAddressCity, String organizationAddressState,
+                                   String organizationAddressZipCode,
+                                   String organizationAddressWorkPhone,
+                                   String organizationAddressFaxPhone,
+                                   String organizationAddressCountry) {
         super(id, orderId, organizationId, organizationAttention, typeId);
         setOrganizationName(organizationName);
+        setOrganizationIsActive(organizationIsActive);
         setOrganizationAddressMultipleUnit(organizationAddressMultipleUnit);
         setOrganizationAddressStreetAddress(organizationAddressStreetAddress);
         setOrganizationAddressCity(organizationAddressCity);
@@ -70,6 +76,14 @@ public class OrderOrganizationViewDO extends OrderOrganizationDO {
 
     public void setOrganizationName(String organizationName) {
         this.organizationName = DataBaseUtil.trim(organizationName);
+    }
+
+    public void setOrganizationIsActive(String organizationIsActive) {
+        this.organizationIsActive = DataBaseUtil.trim(organizationIsActive);
+    }
+
+    public String getOrganizationIsActive() {
+        return organizationIsActive;
     }
 
     public String getOrganizationAddressMultipleUnit() {
@@ -127,7 +141,7 @@ public class OrderOrganizationViewDO extends OrderOrganizationDO {
     public void setOrganizationAddressFaxPhone(String organizationAddressFaxPhone) {
         this.organizationAddressFaxPhone = DataBaseUtil.trim(organizationAddressFaxPhone);
     }
-    
+
     public String getOrganizationAddressCountry() {
         return organizationAddressCountry;
     }

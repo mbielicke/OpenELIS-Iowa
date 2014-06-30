@@ -27,6 +27,8 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.openelis.domain.DataObject;
@@ -36,6 +38,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 
@@ -49,10 +52,18 @@ public class WorksheetManager1 implements Serializable {
     private static final long                    serialVersionUID = 1L;
 
     /**
-     * Flags that specifies what optional data to load with the manager
+     * Flags that specify what optional data to load with the manager
      */
     public enum Load {
-        DETAIL, NOTE
+        DETAIL, REAGENT, NOTE
+    };
+
+    /**
+     * Flags that specify what type of updates need to be perform on the analyses
+     * associated with this worksheet
+     */
+    public enum ANALYSIS_UPDATE {
+        VOID, FAILED_RUN, UPDATE
     };
 
     protected WorksheetViewDO                     worksheet;
@@ -60,6 +71,7 @@ public class WorksheetManager1 implements Serializable {
     protected ArrayList<WorksheetAnalysisViewDO>  analyses;
     protected ArrayList<WorksheetResultViewDO>    results;
     protected ArrayList<WorksheetQcResultViewDO>  qcResults;
+    protected ArrayList<WorksheetReagentViewDO>   reagents;
     protected ArrayList<NoteViewDO>               notes;
     protected ArrayList<DataObject>               removed;
     protected ArrayList<ResultViewDO>             modifiedResults;
@@ -70,6 +82,7 @@ public class WorksheetManager1 implements Serializable {
     transient public final WorksheetAnalysis      analysis = new WorksheetAnalysis();
     transient public final WorksheetResult        result   = new WorksheetResult();
     transient public final WorksheetQcResult      qcResult = new WorksheetQcResult();
+    transient public final WorksheetReagent       reagent  = new WorksheetReagent();
     transient public final WorksheetNote          note     = new WorksheetNote();
     transient private HashMap<String, DataObject> uidMap;
 
@@ -116,6 +129,10 @@ public class WorksheetManager1 implements Serializable {
         return getWorksheetQcResultUid(data.getId());
     }
 
+    public String getUid(WorksheetReagentViewDO data) {
+        return getWorksheetReagentUid(data.getId());
+    }
+
     public String getUid(NoteDO data) {
         return getNoteUid(data.getId());
     }
@@ -143,6 +160,10 @@ public class WorksheetManager1 implements Serializable {
                 for (WorksheetQcResultViewDO data : qcResults)
                     uidMap.put(getWorksheetQcResultUid(data.getId()), data);
 
+            if (reagents != null)
+                for (WorksheetReagentViewDO data : reagents)
+                    uidMap.put(getWorksheetReagentUid(data.getId()), data);
+
             if (notes != null)
                 for (NoteDO data : notes)
                     uidMap.put(getNoteUid(data.getId()), data);
@@ -168,6 +189,10 @@ public class WorksheetManager1 implements Serializable {
 
     public String getWorksheetQcResultUid(Integer id) {
         return "Q:" + id;
+    }
+
+    public String getWorksheetReagentUid(Integer id) {
+        return "G:" + id;
     }
 
     public String getNoteUid(Integer id) {
@@ -450,10 +475,13 @@ public class WorksheetManager1 implements Serializable {
             toDO.setAnalysisId(fromDO.getAnalysisId());
             toDO.setQcLotId(fromDO.getQcLotId());
             toDO.setWorksheetAnalysisId(fromDO.getWorksheetAnalysisId());
-            toDO.setQcSystemUserId(fromDO.getQcSystemUserId());
-            toDO.setQcStartedDate(fromDO.getQcStartedDate());
+            toDO.setSystemUsers(fromDO.getSystemUsers());
+            toDO.setStartedDate(fromDO.getStartedDate());
+            toDO.setCompletedDate(fromDO.getCompletedDate());
             toDO.setFromOtherId(fromDO.getFromOtherId());
+            toDO.setChangeFlagsId(fromDO.getChangeFlagsId());
             toDO.setWorksheetId(fromDO.getWorksheetId());
+            toDO.setQcId(fromDO.getQcId());
             toDO.setDescription(fromDO.getDescription());
             toDO.setTestId(fromDO.getTestId());
             toDO.setTestName(fromDO.getTestName());
@@ -606,10 +634,8 @@ public class WorksheetManager1 implements Serializable {
 
         private void copyDO(WorksheetResultViewDO fromDO, WorksheetResultViewDO toDO) {
             toDO.setTestAnalyteId(fromDO.getTestAnalyteId());
-            toDO.setTestResultId(fromDO.getTestResultId());
             toDO.setResultRow(fromDO.getResultRow());
             toDO.setAnalyteId(fromDO.getAnalyteId());
-            toDO.setTypeId(fromDO.getTypeId());
             toDO.setValueAt(0, fromDO.getValueAt(0));
             toDO.setValueAt(1, fromDO.getValueAt(1));
             toDO.setValueAt(2, fromDO.getValueAt(2));
@@ -769,7 +795,6 @@ public class WorksheetManager1 implements Serializable {
         private void copyDO(WorksheetQcResultViewDO fromDO, WorksheetQcResultViewDO toDO) {
             toDO.setSortOrder(fromDO.getSortOrder());
             toDO.setQcAnalyteId(fromDO.getQcAnalyteId());
-            toDO.setTypeId(fromDO.getTypeId());
             toDO.setValueAt(0, fromDO.getValueAt(0));
             toDO.setValueAt(1, fromDO.getValueAt(1));
             toDO.setValueAt(2, fromDO.getValueAt(2));
@@ -842,6 +867,95 @@ public class WorksheetManager1 implements Serializable {
                 if (l != null)
                     l.remove(data);
             }
+        }
+    }
+
+    /**
+     * Class to manage worksheet reagents
+     */
+    public class WorksheetReagent {
+        /**
+         * Returns the reagent at specified id.
+         */
+        public WorksheetReagentViewDO getById(Integer id) {
+            return (WorksheetReagentViewDO)getObject(getWorksheetReagentUid(id));
+        }
+        
+        /**
+         * Returns the reagent at specified index.
+         */
+        public WorksheetReagentViewDO get(int i) {
+            return reagents.get(i);
+        }
+
+        /**
+         * Returns a new reagent 
+         */
+        public WorksheetReagentViewDO add(int index) {
+            WorksheetReagentViewDO data;
+
+            assert worksheet != null : "Manager.worksheet == null";
+
+            data = new WorksheetReagentViewDO();
+            data.setId(getNextUID());
+            if (reagents == null)
+                reagents = new ArrayList<WorksheetReagentViewDO>();
+            reagents.add(index, data);
+            uidMapAdd(getWorksheetReagentUid(data.getId()), data);
+
+            return data;
+        }
+
+        /**
+         * Removes a reagent from the list
+         */
+        public void remove(int i) {
+            WorksheetReagentViewDO data;
+
+            data = reagents.get(i);
+            reagents.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetReagentUid(data.getId()));
+        }
+
+        public void remove(WorksheetReagentViewDO data) {
+            reagents.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetReagentUid(data.getId()));
+        }
+
+        /**
+         * Returns the number of reagents associated with this worksheet
+         */
+        public int count() {
+            if (reagents != null)
+                return reagents.size();
+            return 0;
+        }
+        
+        /**
+         * Moves the reagent at the specified index up/down by one position
+         */
+        public void move(int index, boolean up) {
+            WorksheetReagentViewDO wrVDO1, wrVDO2;
+            
+            wrVDO1 = reagents.get(index);
+            if (up) {
+                wrVDO2 = reagents.get(index - 1);
+                reagents.set(index, wrVDO2);
+                reagents.set(index - 1, wrVDO1);
+            } else {
+                wrVDO2 = reagents.get(index + 1);
+                reagents.set(index, wrVDO2);
+                reagents.set(index + 1, wrVDO1);
+            }
+        }
+        
+        /**
+         * Sorts the reagents according to the specified column and direction
+         */
+        public void sort(Comparator<WorksheetReagentViewDO> comparator) {
+            Collections.sort(reagents, comparator);
         }
     }
 
