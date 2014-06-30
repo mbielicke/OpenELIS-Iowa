@@ -803,7 +803,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.sample_sampleQc());
-                            window.setSize("785px", "350px");
+                            window.setSize("1000px", "600px");
                             window.setContent(new SampleQCScreenUI(window));
                             browser.addWindow(window, "sampleQc");
                         } catch (Throwable e) {

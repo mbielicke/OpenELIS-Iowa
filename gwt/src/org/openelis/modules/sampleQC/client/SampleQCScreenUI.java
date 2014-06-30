@@ -105,8 +105,8 @@ public class SampleQCScreenUI extends Screen {
     @UiField
     protected TextBox<Integer>                                     id;
 
-    @UiField
-    protected Dropdown<Integer>                                    printer;
+    // @UiField
+    // protected Dropdown<Integer> printer;
 
     @UiField
     protected Table                                                table;
