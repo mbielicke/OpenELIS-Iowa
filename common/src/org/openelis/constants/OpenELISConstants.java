@@ -1042,6 +1042,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_notBillable();
 
   /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}")
+  @Key("analysis.noteException")
+  String analysis_noteException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
+
+  /**
    * Translated "Analysis Notes".
    * 
    * @return translated "Analysis Notes"
@@ -9457,6 +9466,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String note();
 
   /**
+   * Translated "Internal note subject/text cannot be empty".
+   * 
+   * @return translated "Internal note subject/text cannot be empty"
+   */
+  @DefaultMessage("Internal note subject/text cannot be empty")
+  @Key("note.internalEmptyException")
+  String note_internalEmptyException();
+
+  /**
    * Translated "Notes".
    * 
    * @return translated "Notes"
@@ -13865,6 +13883,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Not a Quick Entry sample")
   @Key("sample.notQuickEntryException")
   String sample_notQuickEntryException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': {1}".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}")
+  @Key("sample.noteException")
+  String sample_noteException(Integer arg0,  String arg1);
 
   /**
    * Translated "Sample Notes".

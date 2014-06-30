@@ -1286,15 +1286,13 @@ public class SampleManager1Bean {
             if (dep > 0 && ldep == dep)
                 throw new InconsistencyException(Messages.get().analysis_circularReference());
 
-            // add/update analysis notes
+            // add analysis notes; no updates allowed
             if (getAnalysisInternalNotes(sm) != null) {
                 for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
                     if (data.getId() < 0) {
                         data.setReferenceTableId(Constants.table().ANALYSIS);
                         data.setReferenceId(amap.get(data.getReferenceId()));
                         note.add(data);
-                    } else if (data.isChanged()) {
-                        note.update(data);
                     }
                 }
             }
@@ -2406,9 +2404,24 @@ public class SampleManager1Bean {
                                                  .sample_moreThanOneReportToException(accession)));
 
         /*
+         * internal notes can't be updated or be empty
+         */
+        if (getSampleInternalNotes(sm) != null) {
+            for (NoteViewDO data : getSampleInternalNotes(sm)) {
+                try {
+                    note.validate(data);
+                } catch (Exception err) {
+                    DataBaseUtil.mergeException(e,
+                                                new FormErrorException(Messages.get()
+                                                                               .sample_noteException(accession,
+                                                                                                     err.getMessage())));
+                }
+            }
+        }
+
+        /*
          * aux data must be valid for the aux field
          */
-
         if (getAuxiliary(sm) != null) {
             for (AuxDataViewDO data : getAuxiliary(sm)) {
                 if (data.isChanged())
@@ -2425,7 +2438,6 @@ public class SampleManager1Bean {
         /*
          * type is required for each qa event
          */
-
         if (getSampleQAs(sm) != null) {
             for (SampleQaEventViewDO data : getSampleQAs(sm)) {
                 if (data.isChanged())
@@ -2458,7 +2470,6 @@ public class SampleManager1Bean {
         /*
          * each analysis must be valid for sample item type
          */
-
         amap = new HashMap<Integer, AnalysisViewDO>();
         if (getAnalyses(sm) != null) {
             for (AnalysisViewDO data : getAnalyses(sm)) {
@@ -2519,6 +2530,27 @@ public class SampleManager1Bean {
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
+                }
+            }
+        }
+
+        /*
+         * internal notes can't be updated or be empty
+         */
+        if (getAnalysisInternalNotes(sm) != null) {
+            for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
+                ana = amap.get(data.getReferenceId());
+                try {
+                    note.validate(data);
+                } catch (Exception err) {
+                    DataBaseUtil.mergeException(e,
+                                                new FormErrorException(Messages.get()
+                                                                               .analysis_noteException(accession,
+                                                                                                       imap.get(ana.getSampleItemId())
+                                                                                                           .getItemSequence(),
+                                                                                                       ana.getTestName(),
+                                                                                                       ana.getMethodName(),
+                                                                                                       err.getMessage())));
                 }
             }
         }
