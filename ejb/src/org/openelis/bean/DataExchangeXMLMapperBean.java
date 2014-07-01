@@ -25,10 +25,27 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.SampleManager1Accessor.getAnalysisExternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.getAnalysisQAs;
+import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.getItems;
+import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.getProjects;
+import static org.openelis.manager.SampleManager1Accessor.getResults;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
+import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.getSampleExternalNote;
+import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
+import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
+import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
+import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.getUsers;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -78,6 +95,7 @@ import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.domain.WorksheetQcResultViewVO;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
@@ -139,15 +157,16 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private OrganizationParameterBean organizationParameter;
-    
+
     private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
                     analytes, projects, organizations, qas, trailers, sections, panels;
-    
+
     private static SimpleDateFormat   dateFormat, timeFormat;
-    
-    private static Integer ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL, ORG_EPARTNER_AGGR;
-    
-    private static final Logger log = Logger.getLogger("openelis");
+
+    private static Integer            ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
+                    ORG_EPARTNER_AGGR;
+
+    private static final Logger       log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -155,11 +174,13 @@ public class DataExchangeXMLMapperBean {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             timeFormat = new SimpleDateFormat("HH:mm:ss");
         }
-        
+
         if (ORG_PROD_EPARTNER_URL == null) {
             try {
-                ORG_PROD_EPARTNER_URL = dictionaryCache.getBySystemName("org_prod_epartner_url").getId();
-                ORG_TEST_EPARTNER_URL = dictionaryCache.getBySystemName("org_test_epartner_url").getId();
+                ORG_PROD_EPARTNER_URL = dictionaryCache.getBySystemName("org_prod_epartner_url")
+                                                       .getId();
+                ORG_TEST_EPARTNER_URL = dictionaryCache.getBySystemName("org_test_epartner_url")
+                                                       .getId();
                 ORG_EPARTNER_AGGR = dictionaryCache.getBySystemName("org_epartner_aggr").getId();
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Could not load dictionary constants", e);
@@ -172,12 +193,16 @@ public class DataExchangeXMLMapperBean {
      * method uses several fields from the exchange criteria such as
      * include-all-analyses, test-ids, etc. in creating the XML.
      * 
+     * The optional parameter can be used to output structures such as QC as
+     * part of the generated XML. The optional objects will need to be supported
+     * before they can be output to XML.
+     * 
      * The produced XML segments such as analyses, tests, etc. are not nested
      * inside their parent segments (no hierarchy), however the ids present in
      * each segment can be used to nest the segments.
      */
 
-    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm) throws Exception {
+    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Object... optional) throws Exception {
         Boolean sampleOverridden, showValue;
         Document doc;
         Element root, header, elm, elm1;
@@ -202,7 +227,7 @@ public class DataExchangeXMLMapperBean {
         root = doc.getDocumentElement();
         root.setAttribute("Type", "result-out");
 
-        header = createHeader(doc, cm.getExchangeCriteria());
+        header = toXML(doc, cm.getExchangeCriteria());
         root.appendChild(header);
 
         /*
@@ -225,7 +250,7 @@ public class DataExchangeXMLMapperBean {
         if (cm.getProfiles().count() > 0) {
             elm1 = doc.createElement("profiles");
             for (int i = 0; i < cm.getProfiles().count(); i++ ) {
-                elm1.appendChild(createProfile(doc, cm.getProfiles().getProfileAt(i)));
+                elm1.appendChild(toXML(doc, cm.getProfiles().getProfileAt(i)));
                 profiles.add(cm.getProfiles().getProfileAt(i).getProfileId());
             }
             header.appendChild(elm1);
@@ -234,64 +259,61 @@ public class DataExchangeXMLMapperBean {
         /*
          * first level - sample, organizations, project ...
          */
-        root.appendChild(createSample(doc, getSample(sm)));
+        root.appendChild(toXML(doc, getSample(sm)));
 
         if (getSampleEnvironmental(sm) != null) {
-            root.appendChild(createEnviromental(doc, getSampleEnvironmental(sm)));
+            root.appendChild(toXML(doc, getSampleEnvironmental(sm)));
 
             if (getSampleEnvironmental(sm).getLocationAddress().getId() != null)
-                root.appendChild(createAddress(doc, getSampleEnvironmental(sm).getLocationAddress()));
+                root.appendChild(toXML(doc, getSampleEnvironmental(sm).getLocationAddress()));
         } else if (getSamplePrivateWell(sm) != null) {
-            root.appendChild(createPrivateWell(doc, getSamplePrivateWell(sm)));
+            root.appendChild(toXML(doc, getSamplePrivateWell(sm)));
 
             if (getSamplePrivateWell(sm).getReportToAddress().getId() != null)
-                root.appendChild(createAddress(doc, getSamplePrivateWell(sm).getReportToAddress()));
+                root.appendChild(toXML(doc, getSamplePrivateWell(sm).getReportToAddress()));
 
             if (getSamplePrivateWell(sm).getLocationAddress().getId() != null)
-                root.appendChild(createAddress(doc, getSamplePrivateWell(sm).getLocationAddress()));
+                root.appendChild(toXML(doc, getSamplePrivateWell(sm).getLocationAddress()));
         } else if (getSampleSDWIS(sm) != null) {
-            root.appendChild(createSDWIS(doc, getSampleSDWIS(sm)));
-            root.appendChild(createPWS(doc, pws.fetchById(getSampleSDWIS(sm).getPwsId())));
+            root.appendChild(toXML(doc, getSampleSDWIS(sm)));
+            root.appendChild(toXML(doc, pws.fetchById(getSampleSDWIS(sm).getPwsId())));
         } else if (getSampleNeonatal(sm) != null) {
-            root.appendChild(createNeonatal(doc, getSampleNeonatal(sm)));
+            root.appendChild(toXML(doc, getSampleNeonatal(sm)));
 
             if (getSampleNeonatal(sm).getPatient() != null) {
-                root.appendChild(createPatient(doc, getSampleNeonatal(sm).getPatient()));
+                root.appendChild(toXML(doc, getSampleNeonatal(sm).getPatient()));
 
                 if (getSampleNeonatal(sm).getPatient().getAddress().getId() != null)
-                    root.appendChild(createAddress(doc, getSampleNeonatal(sm).getPatient()
-                                                                             .getAddress()));
+                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getPatient().getAddress()));
             }
 
             if (getSampleNeonatal(sm).getNextOfKin() != null) {
-                root.appendChild(createPatient(doc, getSampleNeonatal(sm).getNextOfKin()));
+                root.appendChild(toXML(doc, getSampleNeonatal(sm).getNextOfKin()));
 
                 if (getSampleNeonatal(sm).getNextOfKin().getAddress().getId() != null)
-                    root.appendChild(createAddress(doc, getSampleNeonatal(sm).getNextOfKin()
-                                                                             .getAddress()));
+                    root.appendChild(toXML(doc, getSampleNeonatal(sm).getNextOfKin().getAddress()));
             }
 
             if (getSampleNeonatal(sm).getProviderId() != null)
-                root.appendChild(createProvider(doc, getSampleNeonatal(sm).getProvider()));
+                root.appendChild(toXML(doc, getSampleNeonatal(sm).getProvider()));
         } else if (getSampleClinical(sm) != null) {
-            root.appendChild(createClinical(doc, getSampleClinical(sm)));
+            root.appendChild(toXML(doc, getSampleClinical(sm)));
 
             if (getSampleClinical(sm).getPatient() != null) {
-                root.appendChild(createPatient(doc, getSampleClinical(sm).getPatient()));
+                root.appendChild(toXML(doc, getSampleClinical(sm).getPatient()));
 
                 if (getSampleClinical(sm).getPatient().getAddress().getId() != null)
-                    root.appendChild(createAddress(doc, getSampleClinical(sm).getPatient()
-                                                                             .getAddress()));
+                    root.appendChild(toXML(doc, getSampleClinical(sm).getPatient().getAddress()));
             }
 
             if (getSampleClinical(sm).getProviderId() != null)
-                root.appendChild(createProvider(doc, getSampleClinical(sm).getProvider()));
+                root.appendChild(toXML(doc, getSampleClinical(sm).getProvider()));
         }
 
         sampleOverridden = false;
         if (getSampleQAs(sm) != null) {
             for (SampleQaEventViewDO sq : getSampleQAs(sm)) {
-                root.appendChild(createSampleQaEvent(doc, sq));
+                root.appendChild(toXML(doc, sq));
                 if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sq.getTypeId()))
                     sampleOverridden = true;
             }
@@ -299,7 +321,7 @@ public class DataExchangeXMLMapperBean {
 
         if (getProjects(sm) != null) {
             for (SampleProjectViewDO p : getProjects(sm))
-                root.appendChild(createSampleProject(doc, p));
+                root.appendChild(toXML(doc, p));
         }
 
         reportTo = null;
@@ -307,7 +329,7 @@ public class DataExchangeXMLMapperBean {
             for (SampleOrganizationViewDO o : getOrganizations(sm)) {
                 if (Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId()))
                     reportTo = o;
-                root.appendChild(createSampleOrganization(doc, o));
+                root.appendChild(toXML(doc, o));
             }
         }
 
@@ -318,15 +340,17 @@ public class DataExchangeXMLMapperBean {
         if (reportTo != null) {
             try {
                 orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
-                if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null || ORG_EPARTNER_AGGR == null) {
-                    log.log(Level.SEVERE, "One or more dictionary constants for electronic partner url not initialized");
+                if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null ||
+                    ORG_EPARTNER_AGGR == null) {
+                    log.log(Level.SEVERE,
+                            "One or more dictionary constants for electronic partner url not initialized");
                     return doc;
                 }
                 for (OrganizationParameterDO op : orgps) {
                     if (ORG_PROD_EPARTNER_URL.equals(op.getTypeId()) ||
                         ORG_TEST_EPARTNER_URL.equals(op.getTypeId()) ||
                         ORG_EPARTNER_AGGR.equals(op.getTypeId()))
-                        header.appendChild(createOrganizationParameter(doc, op));
+                        header.appendChild(toXML(doc, op));
                 }
             } catch (NotFoundException e) {
                 // ignore
@@ -339,19 +363,19 @@ public class DataExchangeXMLMapperBean {
              * from analysis external notes
              */
             elm = doc.createElement("sample_external_notes");
-            elm.appendChild(createNote(doc, getSampleExternalNote(sm)));
+            elm.appendChild(toXML(doc, getSampleExternalNote(sm)));
             root.appendChild(elm);
         }
 
         if (getAuxiliary(sm) != null) {
             for (AuxDataViewDO a : getAuxiliary(sm)) {
-                root.appendChild(createAuxData(doc, a));
+                root.appendChild(toXML(doc, a));
                 if (Constants.dictionary().AUX_DICTIONARY.equals(a.getTypeId()) &&
                     a.getValue() != null)
-                    root.appendChild(createLinkDictionary(doc,
-                                                          "aux_data_dictionary",
-                                                          a.getId(),
-                                                          Integer.valueOf(a.getValue())));
+                    root.appendChild(toXML(doc,
+                                           "aux_data_dictionary",
+                                           a.getId(),
+                                           Integer.valueOf(a.getValue())));
             }
         }
 
@@ -359,7 +383,7 @@ public class DataExchangeXMLMapperBean {
          * second level - sample items
          */
         for (SampleItemViewDO item : getItems(sm))
-            root.appendChild(createItem(doc, item));
+            root.appendChild(toXML(doc, item));
 
         /*
          * third level - analyses
@@ -372,7 +396,7 @@ public class DataExchangeXMLMapperBean {
                 if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
                     ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
                     continue;
-                root.appendChild(createAnalysis(doc, a));
+                root.appendChild(toXML(doc, a));
                 analyses.put(a.getId(),
                              Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()));
             }
@@ -384,7 +408,7 @@ public class DataExchangeXMLMapperBean {
         if (getAnalysisQAs(sm) != null) {
             for (AnalysisQaEventViewDO aq : getAnalysisQAs(sm)) {
                 if (analyses.containsKey(aq.getAnalysisId())) {
-                    root.appendChild(createAnalysisQaEvent(doc, aq));
+                    root.appendChild(toXML(doc, aq));
                     if (Constants.dictionary().QAEVENT_OVERRIDE.equals(aq.getTypeId()))
                         analyses.put(aq.getAnalysisId(), false);
                 }
@@ -405,13 +429,13 @@ public class DataExchangeXMLMapperBean {
                 if (showValue == null)
                     continue;
 
-                root.appendChild(createResult(doc, r, showValue && !sampleOverridden));
+                root.appendChild(toXML(doc, r, showValue && !sampleOverridden));
                 if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(r.getTypeId()) &&
                     r.getValue() != null && showValue && !sampleOverridden) {
-                    root.appendChild(createLinkDictionary(doc,
-                                                          "result_dictionary",
-                                                          r.getId(),
-                                                          Integer.valueOf(r.getValue())));
+                    root.appendChild(toXML(doc,
+                                           "result_dictionary",
+                                           r.getId(),
+                                           Integer.valueOf(r.getValue())));
                 }
             }
         }
@@ -419,7 +443,7 @@ public class DataExchangeXMLMapperBean {
         if (getUsers(sm) != null) {
             for (AnalysisUserViewDO u : getUsers(sm)) {
                 if (analyses.containsKey(u.getAnalysisId()))
-                    root.appendChild(createAnalysisUser(doc, u));
+                    root.appendChild(toXML(doc, u));
             }
         }
 
@@ -435,7 +459,21 @@ public class DataExchangeXMLMapperBean {
                         elm = doc.createElement("analysis_external_notes");
                         root.appendChild(elm);
                     }
-                    elm.appendChild(createNote(doc, n));
+                    elm.appendChild(toXML(doc, n));
+                }
+            }
+        }
+
+        /*
+         * process optional parameters
+         */
+        if (optional != null) {
+            for (Object o : optional) {
+                if (o instanceof Collection<?>) {
+                    for (Object o1 : (Collection<?>)o)
+                        root.appendChild(processOptional(doc, o1));
+                } else {
+                    root.appendChild(processOptional(doc, o));
                 }
             }
         }
@@ -445,64 +483,64 @@ public class DataExchangeXMLMapperBean {
          */
         if (projects != null) {
             for (ProjectViewDO p : project.fetchByIds(projects))
-                root.appendChild(createProject(doc, p));
+                root.appendChild(toXML(doc, p));
         }
 
         if (qas != null) {
             for (QaEventViewDO qa : qaevent.fetchByIds(qas))
-                root.appendChild(createQaEvent(doc, qa));
+                root.appendChild(toXML(doc, qa));
         }
 
         if (tests != null) {
             for (TestViewDO t : test.fetchByIds(tests))
-                root.appendChild(createTest(doc, t));
+                root.appendChild(toXML(doc, t));
         }
 
         if (methods != null) {
             for (MethodDO m : method.fetchByIds(methods))
-                root.appendChild(createMethod(doc, m));
+                root.appendChild(toXML(doc, m));
         }
 
         if (trailers != null) {
             for (TestTrailerDO t : testTrailer.fetchByIds(trailers))
-                root.appendChild(createTrailer(doc, t));
+                root.appendChild(toXML(doc, t));
         }
 
         if (testResults != null) {
             for (TestResultViewDO tr : testResult.fetchByIds(testResults))
-                root.appendChild(createTestResult(doc, tr));
+                root.appendChild(toXML(doc, tr));
         }
 
         if (users != null) {
             for (Integer id : users)
-                root.appendChild(createUser(doc, systemUserCache.getSystemUser(id)));
+                root.appendChild(toXML(doc, systemUserCache.getSystemUser(id)));
         }
 
         if (panels != null) {
             for (PanelDO p : panel.fetchByIds(panels))
-                root.appendChild(createPanel(doc, p));
+                root.appendChild(toXML(doc, p));
         }
 
         if (sections != null) {
             for (Integer id : sections)
-                root.appendChild(createSection(doc, sectionCache.getById(id)));
+                root.appendChild(toXML(doc, sectionCache.getById(id)));
         }
 
         if (organizations != null) {
             for (OrganizationViewDO org : organization.fetchByIds(organizations)) {
-                root.appendChild(createOrganization(doc, org));
-                root.appendChild(createAddress(doc, org.getAddress()));
+                root.appendChild(toXML(doc, org));
+                root.appendChild(toXML(doc, org.getAddress()));
             }
         }
 
         if (analytes != null) {
             for (AnalyteViewDO ana : analyte.fetchByIds(analytes))
-                root.appendChild(createAnalyte(doc, ana));
+                root.appendChild(toXML(doc, ana));
         }
 
         if (dicts != null) {
             for (Integer id : dicts)
-                root.appendChild(createDictionary(doc, dictionaryCache.getById(id)));
+                root.appendChild(toXML(doc, dictionaryCache.getById(id)));
         }
 
         /*
@@ -511,71 +549,59 @@ public class DataExchangeXMLMapperBean {
          */
         if (profiles != null && profiles.size() > 0) {
             if (organizations != null && organizations.size() > 0) {
-                elm = createTranslations(Constants.table().ORGANIZATION,
-                                         organizations,
-                                         profiles,
-                                         "organization_translations",
-                                         doc);
+                elm = toXML(Constants.table().ORGANIZATION,
+                            organizations,
+                            profiles,
+                            "organization_translations",
+                            doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
 
             if (tests != null && tests.size() > 0) {
-                elm = createTranslations(Constants.table().TEST,
-                                         tests,
-                                         profiles,
-                                         "test_translations",
-                                         doc);
+                elm = toXML(Constants.table().TEST, tests, profiles, "test_translations", doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
 
             if (methods != null && methods.size() > 0) {
-                elm = createTranslations(Constants.table().METHOD,
-                                         methods,
-                                         profiles,
-                                         "method_translations",
-                                         doc);
+                elm = toXML(Constants.table().METHOD, methods, profiles, "method_translations", doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
 
             if (testAnalytes != null && testAnalytes.size() > 0) {
-                elm = createTranslations(Constants.table().TEST_ANALYTE,
-                                         testAnalytes,
-                                         profiles,
-                                         "test_analyte_translations",
-                                         doc);
+                elm = toXML(Constants.table().TEST_ANALYTE,
+                            testAnalytes,
+                            profiles,
+                            "test_analyte_translations",
+                            doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
 
             if (analytes != null && analytes.size() > 0) {
-                elm = createTranslations(Constants.table().ANALYTE,
-                                         analytes,
-                                         profiles,
-                                         "analyte_translations",
-                                         doc);
+                elm = toXML(Constants.table().ANALYTE,
+                            analytes,
+                            profiles,
+                            "analyte_translations",
+                            doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
 
             if (dicts != null && dicts.size() > 0) {
-                elm = createTranslations(Constants.table().DICTIONARY,
-                                         dicts,
-                                         profiles,
-                                         "dictionary_translations",
-                                         doc);
+                elm = toXML(Constants.table().DICTIONARY,
+                            dicts,
+                            profiles,
+                            "dictionary_translations",
+                            doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
-            
+
             if (panels != null && panels.size() > 0) {
-                elm = createTranslations(Constants.table().PANEL,
-                                         panels,
-                                         profiles,
-                                         "panel_translations",
-                                         doc);
+                elm = toXML(Constants.table().PANEL, panels, profiles, "panel_translations", doc);
                 if (elm != null)
                     root.appendChild(elm);
             }
@@ -587,7 +613,7 @@ public class DataExchangeXMLMapperBean {
      * creates and returns the following element: <header> <name></name>
      * 
      */
-    public Element createHeader(Document doc, ExchangeCriteriaViewDO criteria) throws Exception {
+    public Element toXML(Document doc, ExchangeCriteriaViewDO criteria) throws Exception {
         Element elm;
 
         if (criteria == null)
@@ -603,7 +629,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createProfile(Document doc, ExchangeProfileDO exchangeProfile) throws Exception {
+    public Element toXML(Document doc, ExchangeProfileDO exchangeProfile) throws Exception {
         Element elm;
 
         elm = doc.createElement("profile");
@@ -613,7 +639,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createSample(Document doc, SampleDO sample) {
+    public Element toXML(Document doc, SampleDO sample) {
         Element elm;
 
         elm = doc.createElement("sample");
@@ -638,7 +664,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createEnviromental(Document doc, SampleEnvironmentalDO environmental) {
+    public Element toXML(Document doc, SampleEnvironmentalDO environmental) {
         Element elm;
 
         elm = doc.createElement("sample_environmental");
@@ -655,7 +681,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createPrivateWell(Document doc, SamplePrivateWellViewDO privateWell) {
+    public Element toXML(Document doc, SamplePrivateWellViewDO privateWell) {
         Element elm;
 
         elm = doc.createElement("sample_private_well");
@@ -670,7 +696,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createSDWIS(Document doc, SampleSDWISDO sdwis) {
+    public Element toXML(Document doc, SampleSDWISDO sdwis) {
         Element elm;
 
         elm = doc.createElement("sample_sdwis");
@@ -691,7 +717,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createPWS(Document doc, PWSDO pws) {
+    public Element toXML(Document doc, PWSDO pws) {
         Element elm;
 
         elm = doc.createElement("pws");
@@ -710,7 +736,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createNeonatal(Document doc, SampleNeonatalDO neonatal) {
+    public Element toXML(Document doc, SampleNeonatalDO neonatal) {
         Element elm;
 
         elm = doc.createElement("sample_neonatal");
@@ -738,8 +764,8 @@ public class DataExchangeXMLMapperBean {
 
         return elm;
     }
-    
-    public Element createClinical(Document doc, SampleClinicalDO neonatal) {
+
+    public Element toXML(Document doc, SampleClinicalDO neonatal) {
         Element elm;
 
         elm = doc.createElement("sample_clinical");
@@ -752,7 +778,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createPatient(Document doc, PatientDO patient) {
+    public Element toXML(Document doc, PatientDO patient) {
         Element elm;
 
         elm = doc.createElement("patient");
@@ -774,7 +800,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createProvider(Document doc, ProviderDO provider) {
+    public Element toXML(Document doc, ProviderDO provider) {
         Element elm;
 
         elm = doc.createElement("provider");
@@ -790,7 +816,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createSampleProject(Document doc, SampleProjectViewDO sampleProject) {
+    public Element toXML(Document doc, SampleProjectViewDO sampleProject) {
         Element elm;
 
         elm = doc.createElement("sample_project");
@@ -804,8 +830,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createSampleOrganization(Document doc,
-                                            SampleOrganizationViewDO sampleOrganization) {
+    public Element toXML(Document doc, SampleOrganizationViewDO sampleOrganization) {
         Element elm;
 
         elm = doc.createElement("sample_organization");
@@ -822,7 +847,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createSampleQaEvent(Document doc, SampleQaEventViewDO sampleQa) {
+    public Element toXML(Document doc, SampleQaEventViewDO sampleQa) {
         Element elm;
 
         elm = doc.createElement("sample_qaevent");
@@ -838,7 +863,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createAuxData(Document doc, AuxDataViewDO auxData) {
+    public Element toXML(Document doc, AuxDataViewDO auxData) {
         Element elm;
 
         elm = doc.createElement("aux_data");
@@ -858,7 +883,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createItem(Document doc, SampleItemViewDO sampleItem) {
+    public Element toXML(Document doc, SampleItemViewDO sampleItem) {
         Element elm;
 
         elm = doc.createElement("sample_item");
@@ -881,7 +906,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createAnalysis(Document doc, AnalysisViewDO analysis) {
+    public Element toXML(Document doc, AnalysisViewDO analysis) {
         Element elm;
 
         elm = doc.createElement("analysis");
@@ -915,7 +940,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createTest(Document doc, TestViewDO test) {
+    public Element toXML(Document doc, TestViewDO test) {
         Element elm;
 
         elm = doc.createElement("test");
@@ -950,7 +975,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createMethod(Document doc, MethodDO method) {
+    public Element toXML(Document doc, MethodDO method) {
         Element elm;
 
         elm = doc.createElement("method");
@@ -965,7 +990,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createSection(Document doc, SectionDO section) {
+    public Element toXML(Document doc, SectionDO section) {
         Element elm;
 
         elm = doc.createElement("section");
@@ -981,7 +1006,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Node createPanel(Document doc, PanelDO panel) {
+    public Node toXML(Document doc, PanelDO panel) {
         Element elm;
 
         elm = doc.createElement("panel");
@@ -992,7 +1017,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Node createTrailer(Document doc, TestTrailerDO trailer) {
+    public Node toXML(Document doc, TestTrailerDO trailer) {
         Element elm;
 
         elm = doc.createElement("test_trailer");
@@ -1004,7 +1029,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createTestResult(Document doc, TestResultViewDO testResult) {
+    public Element toXML(Document doc, TestResultViewDO testResult) {
         Element elm;
 
         elm = doc.createElement("test_result");
@@ -1023,7 +1048,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createAnalysisUser(Document doc, AnalysisUserViewDO analysisUser) {
+    public Element toXML(Document doc, AnalysisUserViewDO analysisUser) {
         Element elm;
 
         elm = doc.createElement("analysis_user");
@@ -1038,7 +1063,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createProject(Document doc, ProjectViewDO project) {
+    public Element toXML(Document doc, ProjectViewDO project) {
         Element elm;
 
         elm = doc.createElement("project");
@@ -1056,7 +1081,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createOrganization(Document doc, OrganizationDO organization) {
+    public Element toXML(Document doc, OrganizationDO organization) {
         Element elm;
 
         elm = doc.createElement("organization");
@@ -1068,9 +1093,8 @@ public class DataExchangeXMLMapperBean {
 
         return elm;
     }
-    
-    public Element createOrganizationParameter(Document doc,
-                                               OrganizationParameterDO organizationParameter) {
+
+    public Element toXML(Document doc, OrganizationParameterDO organizationParameter) {
         Element elm;
 
         elm = doc.createElement("organization_parameter");
@@ -1085,7 +1109,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createDictionary(Document doc, DictionaryDO dictionary) {
+    public Element toXML(Document doc, DictionaryDO dictionary) {
         Element elm;
 
         elm = doc.createElement("dictionary");
@@ -1096,7 +1120,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createAddress(Document doc, AddressDO address) {
+    public Element toXML(Document doc, AddressDO address) {
         Element elm;
 
         elm = doc.createElement("address");
@@ -1116,7 +1140,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createAnalysisQaEvent(Document doc, AnalysisQaEventViewDO sampleQaEvent) {
+    public Element toXML(Document doc, AnalysisQaEventViewDO sampleQaEvent) {
         Element elm;
 
         elm = doc.createElement("analysis_qaevent");
@@ -1132,7 +1156,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createQaEvent(Document doc, QaEventViewDO qaEvent) {
+    public Element toXML(Document doc, QaEventViewDO qaEvent) {
         Element elm;
 
         elm = doc.createElement("qaevent");
@@ -1151,7 +1175,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createAnalyte(Document doc, AnalyteViewDO analyte) {
+    public Element toXML(Document doc, AnalyteViewDO analyte) {
         Element elm;
 
         elm = doc.createElement("analyte");
@@ -1164,7 +1188,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createNote(Document doc, NoteViewDO note) {
+    public Element toXML(Document doc, NoteViewDO note) {
         Element elm;
 
         elm = doc.createElement("note");
@@ -1180,7 +1204,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createResult(Document doc, ResultViewDO result, boolean showValue) {
+    public Element toXML(Document doc, ResultViewDO result, boolean showValue) {
         Element elm;
 
         elm = doc.createElement("result");
@@ -1209,7 +1233,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createExternalTerm(Document doc, ExchangeExternalTermViewDO externalTerm) throws Exception {
+    public Element toXML(Document doc, ExchangeExternalTermViewDO externalTerm) throws Exception {
         Element elm;
 
         elm = doc.createElement("translation");
@@ -1226,7 +1250,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element createUser(Document doc, SystemUserVO user) {
+    public Element toXML(Document doc, SystemUserVO user) {
         Element elm;
 
         elm = doc.createElement("system_user");
@@ -1240,8 +1264,46 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    private Element createLinkDictionary(Document doc, String name, Integer resultId,
-                                         Integer dictionaryId) {
+    public Element toXML(Document doc, WorksheetQcResultViewVO worksheetQc) {
+        Element elm;
+
+        elm = doc.createElement("analysisQc");
+
+        setAttribute(elm, "analyte_id", worksheetQc.getAnalyteId());
+        setAttribute(elm, "qc_result_id", worksheetQc.getId());
+        setAttribute(elm, "inventory_item_id", worksheetQc.getInventoryItemId());
+        setAttribute(elm, "location_id", worksheetQc.getLocationId());
+        setAttribute(elm, "position", worksheetQc.getSortOrder());
+        setAttribute(elm, "prepared_by_id", worksheetQc.getPreparedById());
+        setAttribute(elm, "prepared_unit_id", worksheetQc.getPreparedUnitId());
+        setAttribute(elm, "prepared_volume", worksheetQc.getPreparedVolume());
+        setAttribute(elm, "qc_analyte_id", worksheetQc.getQcAnalyteId());
+        setAttribute(elm, "qc_analyte_type_id", worksheetQc.getQcAnalyteTypeId());
+        setAttribute(elm, "qc_id", worksheetQc.getQcId());
+        setAttribute(elm, "qc_lot_id", worksheetQc.getQcLotId());
+        setAttribute(elm, "qc_type_id", worksheetQc.getQcTypeId());
+        setAttribute(elm, "worksheet_analysis_id", worksheetQc.getWorksheetAnalysisId());
+        setAttribute(elm, "expired_date", worksheetQc.getExpireDate());
+        setAttribute(elm, "prepared_date", worksheetQc.getPreparedDate());
+        setAttribute(elm, "usable_date", worksheetQc.getUsableDate());
+        setText(doc, elm, "analyte_name", worksheetQc.getAnalyteName());
+        setText(doc, elm, "expected_value", worksheetQc.getExpectedValue());
+        setText(doc, elm, "is_active", worksheetQc.getQcIsActive());
+        setText(doc, elm, "is_trendable", worksheetQc.getIsTrendable());
+        setText(doc, elm, "location", worksheetQc.getLocation());
+        setText(doc, elm, "lot_number", worksheetQc.getLotNumber());
+        setText(doc, elm, "prepared_unit", worksheetQc.getPreparedUnit());
+        setText(doc, elm, "qc_analyte_type", worksheetQc.getQcAnalyteType());
+        setText(doc, elm, "qc_is_active", worksheetQc.getQcIsActive());
+        setText(doc, elm, "qc_lot_is_active", worksheetQc.getQcLotIsActive());
+        setText(doc, elm, "qc_name", worksheetQc.getQcName());
+        setText(doc, elm, "qc_type", worksheetQc.getQcType());
+        setText(doc, elm, "source", worksheetQc.getSource());
+
+        return elm;
+    }
+
+    private Element toXML(Document doc, String name, Integer resultId, Integer dictionaryId) {
         Element elm;
 
         elm = doc.createElement(name);
@@ -1253,8 +1315,8 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    private Element createTranslations(int referenceTable, HashSet<Integer> referenceIds,
-                                       ArrayList<Integer> profiles, String nodeName, Document doc) throws Exception {
+    private Element toXML(int referenceTable, HashSet<Integer> referenceIds,
+                          ArrayList<Integer> profiles, String nodeName, Document doc) throws Exception {
         Element elm;
         ArrayList<ExchangeExternalTermViewDO> terms;
 
@@ -1264,12 +1326,22 @@ public class DataExchangeXMLMapperBean {
                                                                                        referenceIds,
                                                                                        profiles);
             for (ExchangeExternalTermViewDO term : terms)
-                elm.appendChild(createExternalTerm(doc, term));
+                elm.appendChild(toXML(doc, term));
         } catch (NotFoundException e) {
             return null;
         }
 
         return elm;
+    }
+
+    /**
+     * check for possible types and process accordingly
+     */
+    private Element processOptional(Document doc, Object o) {
+        if (o instanceof WorksheetQcResultViewVO) {
+            return toXML(doc, (WorksheetQcResultViewVO)o);
+        }
+        return null;
     }
 
     private void setAttribute(Element e, String name, Object value) {

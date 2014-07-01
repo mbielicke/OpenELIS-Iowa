@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.DataExchangeReportBean;
+import org.openelis.bean.DataExchangeExportBean;
 import org.openelis.bean.ExchangeCriteriaBean;
 import org.openelis.bean.ExchangeCriteriaManagerBean;
 import org.openelis.domain.IdNameVO;
@@ -56,7 +56,7 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     ExchangeCriteriaBean        exchangeCriteria;
     
     @EJB
-    DataExchangeReportBean      dataExchangeReport;
+    DataExchangeExportBean      dataExchangeExport;
 
     public ExchangeCriteriaManager fetchById(Integer id) throws Exception {
         try {        
@@ -149,7 +149,7 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     //
     public ArrayList<Integer> getSamples(ExchangeCriteriaManager man) throws Exception {          
         try {        
-            return dataExchangeReport.getSamples(man);
+            return dataExchangeExport.getSamples(man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -157,7 +157,7 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
 
     public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager man) throws Exception {          
         try {        
-            return dataExchangeReport.export(accessions, man);
+            return dataExchangeExport.export(accessions, man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
