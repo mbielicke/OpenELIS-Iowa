@@ -27,7 +27,9 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestPrepViewDO;
@@ -53,26 +55,33 @@ public class TestManager1 implements Serializable {
 
     protected TestViewDO                            test;
     protected ArrayList<TestSectionViewDO>          sections;
-    protected ArrayList<TestTypeOfSampleDO>         types;
+    protected ArrayList<TestTypeOfSampleDO>         typeOfSamples;
     protected ArrayList<TestAnalyteViewDO>          analytes;
     protected ArrayList<TestResultViewDO>           results;
     protected ArrayList<TestPrepViewDO>             preps;
     protected ArrayList<TestReflexViewDO>           reflexes;
-    protected TestWorksheetViewDO                   worksheet;
-    protected ArrayList<TestWorksheetItemDO>        items;
+    protected TestWorksheetViewDO                   testWorksheet;
+    protected ArrayList<TestWorksheetItemDO>        worksheetItems;
     protected ArrayList<TestWorksheetAnalyteViewDO> worksheetAnalytes;
     protected ArrayList<DataObject>                 removed;
     protected int                                   nextUID          = -1;
 
     protected transient ResultFormatter             formatter;
     transient public final TestSection              section          = new TestSection();
-    transient public final TestType                 type             = new TestType();
+    transient public final TestTypeOfSample         type             = new TestTypeOfSample();
     transient public final TestAnalyte              analyte          = new TestAnalyte();
     transient public final TestResult               result           = new TestResult();
     transient public final TestPrep                 prep             = new TestPrep();
     transient public final TestReflex               reflex           = new TestReflex();
     transient public final TestWorksheetItem        item             = new TestWorksheetItem();
     transient public final TestWorksheetAnalyte     worksheetAnalyte = new TestWorksheetAnalyte();
+    transient private HashMap<String, DataObject>    uidMap;
+
+    /**
+     * Initialize an empty test manager
+     */
+    public TestManager1() {
+    }
 
     /**
      * Returns the test DO
@@ -85,7 +94,7 @@ public class TestManager1 implements Serializable {
      * Returns the test worksheet DO
      */
     public TestWorksheetViewDO getWorksheet() {
-        return worksheet;
+        return testWorksheet;
     }
 
     /**
@@ -94,6 +103,49 @@ public class TestManager1 implements Serializable {
      */
     public int getNextUID() {
         return --nextUID;
+    }
+
+    /**
+     * Returns the data object using its Uid.
+     */
+    public DataObject getObject(String uid) {
+        if (uidMap == null) {
+            uidMap = new HashMap<String, DataObject>();
+
+            if (sections != null)
+                for (TestSectionViewDO data : sections)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (typeOfSamples != null)
+                for (TestTypeOfSampleDO data : typeOfSamples)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (analytes != null)
+                for (TestAnalyteViewDO data : analytes)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (results != null)
+                for (TestResultViewDO data : results)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (preps != null)
+                for (TestPrepViewDO data : preps)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (reflexes != null)
+                for (TestReflexViewDO data : reflexes)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (worksheetItems != null)
+                for (TestWorksheetItemDO data : worksheetItems)
+                    uidMap.put(Constants.uid().get(data), data);
+
+            if (worksheetAnalytes != null)
+                for (TestWorksheetAnalyteViewDO data : worksheetAnalytes)
+                    uidMap.put(Constants.uid().get(data), data);
+
+        }
+        return uidMap.get(uid);
     }
 
     /**
@@ -107,13 +159,18 @@ public class TestManager1 implements Serializable {
             return sections.get(i);
         }
 
+        /**
+         * Returns a new section
+         */
         public TestSectionViewDO add() {
             TestSectionViewDO data;
 
             data = new TestSectionViewDO();
+            data.setId(getNextUID());
             if (sections == null)
                 sections = new ArrayList<TestSectionViewDO>();
             sections.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -138,11 +195,13 @@ public class TestManager1 implements Serializable {
 
             data = sections.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestSectionViewDO data) {
             sections.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -158,21 +217,22 @@ public class TestManager1 implements Serializable {
     /**
      * Class to manage Test Type information
      */
-    public class TestType {
+    public class TestTypeOfSample {
         /**
          * Returns the type at specified index.
          */
         public TestTypeOfSampleDO get(int i) {
-            return types.get(i);
+            return typeOfSamples.get(i);
         }
 
         public TestTypeOfSampleDO add() {
             TestTypeOfSampleDO data;
 
             data = new TestTypeOfSampleDO();
-            if (types == null)
-                types = new ArrayList<TestTypeOfSampleDO>();
-            types.add(data);
+            if (typeOfSamples == null)
+                typeOfSamples = new ArrayList<TestTypeOfSampleDO>();
+            typeOfSamples.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -194,21 +254,23 @@ public class TestManager1 implements Serializable {
         public void remove(int i) {
             TestTypeOfSampleDO data;
 
-            data = types.remove(i);
+            data = typeOfSamples.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestTypeOfSampleDO data) {
-            types.remove(data);
+            typeOfSamples.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
          * Returns the number of types associated with this test
          */
         public int count() {
-            if (types != null)
-                return types.size();
+            if (typeOfSamples != null)
+                return typeOfSamples.size();
             return 0;
         }
     }
@@ -231,6 +293,7 @@ public class TestManager1 implements Serializable {
             if (analytes == null)
                 analytes = new ArrayList<TestAnalyteViewDO>();
             analytes.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -262,11 +325,13 @@ public class TestManager1 implements Serializable {
 
             data = analytes.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestAnalyteViewDO data) {
             analytes.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -297,6 +362,7 @@ public class TestManager1 implements Serializable {
             if (results == null)
                 results = new ArrayList<TestResultViewDO>();
             results.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -327,11 +393,13 @@ public class TestManager1 implements Serializable {
 
             data = results.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestResultViewDO data) {
             results.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -362,6 +430,7 @@ public class TestManager1 implements Serializable {
             if (preps == null)
                 preps = new ArrayList<TestPrepViewDO>();
             preps.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -387,11 +456,13 @@ public class TestManager1 implements Serializable {
 
             data = preps.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestPrepViewDO data) {
             preps.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -422,6 +493,7 @@ public class TestManager1 implements Serializable {
             if (reflexes == null)
                 reflexes = new ArrayList<TestReflexViewDO>();
             reflexes.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -452,11 +524,13 @@ public class TestManager1 implements Serializable {
 
             data = reflexes.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestReflexViewDO data) {
             reflexes.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -478,16 +552,17 @@ public class TestManager1 implements Serializable {
          * Returns the reflex at specified index.
          */
         public TestWorksheetItemDO get(int i) {
-            return items.get(i);
+            return worksheetItems.get(i);
         }
 
         public TestWorksheetItemDO add() {
             TestWorksheetItemDO data;
 
             data = new TestWorksheetItemDO();
-            if (items == null)
-                items = new ArrayList<TestWorksheetItemDO>();
-            items.add(data);
+            if (worksheetItems == null)
+                worksheetItems = new ArrayList<TestWorksheetItemDO>();
+            worksheetItems.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -511,21 +586,23 @@ public class TestManager1 implements Serializable {
         public void remove(int i) {
             TestWorksheetItemDO data;
 
-            data = items.remove(i);
+            data = worksheetItems.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestWorksheetItemDO data) {
-            items.remove(data);
+            worksheetItems.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
          * Returns the number of worksheet items associated with this test
          */
         public int count() {
-            if (items != null)
-                return items.size();
+            if (worksheetItems != null)
+                return worksheetItems.size();
             return 0;
         }
     }
@@ -549,6 +626,7 @@ public class TestManager1 implements Serializable {
             if (worksheetAnalytes == null)
                 worksheetAnalytes = new ArrayList<TestWorksheetAnalyteViewDO>();
             worksheetAnalytes.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -575,11 +653,13 @@ public class TestManager1 implements Serializable {
 
             data = worksheetAnalytes.remove(i);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(TestWorksheetAnalyteViewDO data) {
             worksheetAnalytes.remove(data);
             dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -596,22 +676,39 @@ public class TestManager1 implements Serializable {
      * Returns the formatter used to format and validate this test's results
      */
     public ResultFormatter getFormatter() throws Exception {
-
         if (formatter != null)
             return formatter;
 
         formatter = new ResultFormatter();
-        for (TestResultViewDO tr : results) {
-            formatter.add(tr.getId(),
-                          tr.getResultGroup(),
-                          tr.getUnitOfMeasureId(),
-                          tr.getTypeId(),
-                          tr.getSignificantDigits(),
-                          tr.getRoundingMethodId(),
-                          tr.getValue(),
-                          tr.getDictionary());
+        if (results != null) {
+            for (TestResultViewDO tr : results) {
+                formatter.add(tr.getId(),
+                              tr.getResultGroup(),
+                              tr.getUnitOfMeasureId(),
+                              tr.getTypeId(),
+                              tr.getSignificantDigits(),
+                              tr.getRoundingMethodId(),
+                              tr.getValue(),
+                              tr.getDictionary());
+            }
         }
         return formatter;
+    }
+
+    /**
+     * adds an object to uid map
+     */
+    private void uidMapAdd(String uid, DataObject data) {
+        if (uidMap != null)
+            uidMap.put(uid, data);
+    }
+
+    /**
+     * removes the object from uid map
+     */
+    private void uidMapRemove(String uid) {
+        if (uidMap != null)
+            uidMap.remove(uid);
     }
 
     /**
@@ -621,7 +718,7 @@ public class TestManager1 implements Serializable {
     private void dataObjectRemove(Integer id, DataObject data) {
         if (removed == null)
             removed = new ArrayList<DataObject>();
-        if (id != null)
+        if (id > 0)
             removed.add(data);
     }
 }
