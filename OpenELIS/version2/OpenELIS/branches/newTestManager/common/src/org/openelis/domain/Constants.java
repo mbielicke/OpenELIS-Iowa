@@ -307,6 +307,38 @@ public class Constants implements Serializable {
         public String get(AuxDataDO data) {
             return getAuxData(data.getId());
         }
+        
+        public String get(TestSectionDO data) {
+            return getTestSection(data.getId());
+        }
+        
+        public String get(TestTypeOfSampleDO data) {
+            return getTestTypeOfSample(data.getId());
+        }
+        
+        public String get(TestAnalyteDO data) {
+            return getTestAnalyte(data.getId());
+        }
+
+        public String get(TestResultDO data) {
+            return getTestResult(data.getId());
+        }
+
+        public String get(TestPrepDO data) {
+            return getTestPrep(data.getId());
+        }
+
+        public String get(TestReflexDO data) {
+            return getTestReflex(data.getId());
+        }
+
+        public String get(TestWorksheetItemDO data) {
+            return getTestWorksheetItem(data.getId());
+        }
+        
+        public String get(TestWorksheetAnalyteDO data) {
+            return getTestWorksheetAnalyte(data.getId());
+        }
 
         /**
          * Returns the UID for a given key.
@@ -361,6 +393,38 @@ public class Constants implements Serializable {
 
         public String getAuxData(Integer id) {
             return Constants.table().AUX_DATA + ":" + id;
+        }
+        
+        private String getTestSection(Integer id) {
+            return Constants.table().TEST_SECTION + ":" + id;
+        }
+        
+        private String getTestTypeOfSample(Integer id) {
+            return Constants.table().TEST_TYPE_OF_SAMPLE + ":" + id;
+        }
+        
+        private String getTestAnalyte(Integer id) {
+            return Constants.table().TEST_ANALYTE + ":" + id;
+        }
+        
+        private String getTestResult(Integer id) {
+            return Constants.table().TEST_RESULT + ":" + id;
+        }
+        
+        private String getTestPrep(Integer id) {
+            return Constants.table().TEST_PREP + ":" + id;
+        }
+        
+        private String getTestReflex(Integer id) {
+            return Constants.table().TEST_REFLEX + ":" + id;
+        }
+        
+        private String getTestWorksheetItem(Integer id) {
+            return Constants.table().TEST_WORKSHEET_ITEM + ":" + id;
+        }
+        
+        private String getTestWorksheetAnalyte(Integer id) {
+            return Constants.table().TEST_WORKSHEET_ANALYTE + ":" + id;
         }
     }
 }
