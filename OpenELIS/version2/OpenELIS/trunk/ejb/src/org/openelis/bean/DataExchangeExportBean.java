@@ -76,7 +76,7 @@ import org.w3c.dom.Document;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class DataExchangeReportBean {
+public class DataExchangeExportBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
