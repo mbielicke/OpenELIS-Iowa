@@ -40,7 +40,7 @@ import javax.ejb.Startup;
 
 import net.lightoze.gwt.i18n.server.LocaleProxy;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.ui.common.InconsistencyException;
