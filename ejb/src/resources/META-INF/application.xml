@@ -35,9 +35,6 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
        <ejb>openelis.jar</ejb>
     </module>
     <module>
-      <ejb>security-client.jar</ejb>
-    </module>
-    <module>
       <ejb>openelis-common.jar</ejb>
     </module>
     <module>
