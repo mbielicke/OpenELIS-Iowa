@@ -25,5 +25,26 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-    
+    <inherits name="org.openelis.modules.history.History"/>
+    <inherits name="org.openelis.modules.project.ProjectService"/>
+    <inherits name="org.openelis.modules.organization.OrganizationService"/>
+    <inherits name="org.openelis.modules.pws.PWSService"/>
+    <inherits name="org.openelis.modules.test.TestService"/>
+    <inherits name="org.openelis.modules.panel.PanelService"/>
+    <inherits name="org.openelis.modules.worksheetCompletion.WorksheetCompletionService"/>
+    <inherits name="org.openelis.modules.worksheet.Worksheet"/>
+    <inherits name="org.openelis.modules.storage.StorageService"/>
+    <inherits name="org.openelis.modules.qaevent.QAEventService"/>
+    <inherits name="org.openelis.modules.auxData.AuxData"/>
+    <inherits name="org.openelis.modules.note.NoteService"/>
+    <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
+    <inherits name="org.openelis.modules.analysis.Analysis"/>
+    <inherits name="org.openelis.modules.systemvariable.SystemVariableService"/>
+    <inherits name="org.openelis.modules.instrument.InstrumentService"/>
+    <inherits name="org.openelis.modules.qc.QCService"/>
+    <inherits name="org.openelis.modules.auxiliary.AuxiliaryService"/>
+    <inherits name="org.openelis.modules.result.Result"/>
+    <inherits name="org.openelis.modules.analysisUser.AnalysisUser"/>
+    <inherits name="org.openelis.modules.order.OrderService"/>
+    <inherits name="org.openelis.modules.preferences.PreferencesService"/>
 </module>

@@ -25,5 +25,9 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-
+  <inherits name="org.openelis.modules.panel.PanelService"/>
+  <inherits name="org.openelis.modules.worksheetCompletion.WorksheetCompletionService"/>
+  <inherits name="org.openelis.modules.note.NoteService"/>
+  <inherits name="org.openelis.modules.storage.StorageService"/>
+  <inherits name="org.openelis.modules.qaevent.QAEventService"/>
 </module>
