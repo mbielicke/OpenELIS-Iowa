@@ -24,6 +24,7 @@
 		<path refid="gwt.jars"/>
     	<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar" />
+		<fileset dir="../OpenELIS-GWT/lib" includes="*.jar"/>
 	</path>
 		
 	<path id="ejb.class.path">
