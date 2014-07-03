@@ -1,1 +1,7 @@
-<module/>
+<module>
+  <inherits name="org.openelis.modules.note.NoteService"/>
+  <inherits name="org.openelis.modules.sample1.Sample1"/>
+  <inherits name="org.openelis.modules.report.ReportService"/>
+  
+  <entry-point class="org.openelis.modules.completeRelease1.client.CompleteReleaseEntry"/>
+</module>
