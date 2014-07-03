@@ -31,6 +31,7 @@
 		<path refid="ivy.lib"/>
 		<path refid="gwt.jars"/>
 		<pathelement location="../OpenELIS-Lib/bin"/>
+		<fileset dir="../OpenELIS-GWT/lib" includes="*.jar"/>
 	</path>
 	
 	<path id="gwt.class.path">
@@ -40,13 +41,14 @@
     	<pathelement location="../OpenELIS-Lib/bin"/>
 		<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
 	</path>
 	
 	<path id="common.class.path">
 		<path refid="gwt.jars"/>
     	<pathelement location="../OpenELIS-EJB/bin"/>
 		<path refid="ivy.lib"/>
-    	<fileset dir="../OpenELIS-UI/lib" includes="*.jar"/>
+    	<fileset dir="lib" includes="*.jar"/>
 	</path>	
 	
 	<path id="web.class.path">
@@ -57,6 +59,7 @@
     	<pathelement location="bin"/>
 		<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
 	</path>
 	
 	<path id="gwt.gwtc.path">
@@ -69,6 +72,7 @@
 		<pathelement location="../OpenELIS-Lib/bin"/>
 		<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
 		<path refid="ivy.lib"/>
+		<fileset dir="lib" includes="*.jar"/>
     </path>
 		
 	<path id="web.gwtc.path">
@@ -82,6 +86,7 @@
 		<pathelement location="../OpenELIS-Lib/bin"/>
 		<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
 		<path refid="ivy.lib"/>
+		<fileset dir="lib" includes="*.jar"/>
     </path>
 
 	<target name="javac" depends="clean" description="Compile java source to bytecode">
