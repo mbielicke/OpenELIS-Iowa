@@ -24,14 +24,14 @@
 		<path refid="gwt.jars"/>
     	<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar" />
-		<fileset dir="../OpenELIS-GWT/lib" includes="*.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
 	</path>
 		
 	<path id="ejb.class.path">
 		<path refid="ivy.lib"/>
 		<path refid="gwt.jars"/>
 		<pathelement location="../OpenELIS-Lib/bin"/>
-		<fileset dir="../OpenELIS-GWT/lib" includes="*.jar"/>
+		<fileset dir="lib" includes="*.jar"/>
 	</path>
 	
 	<path id="gwt.class.path">
