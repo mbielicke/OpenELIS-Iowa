@@ -33,7 +33,6 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -282,16 +281,6 @@ public class AnalysisManagerProxy {
                         errorsList.add(new FormErrorException(Messages.get()
                                                                       .startedDateAfterCompletedError(analysisDO.getTestName(),
                                                                                                       analysisDO.getMethodName())));
-                    //
-                    // started date is before available date, which could be a
-                    // problem
-                    //
-                    if (analysisDO.getAvailableDate() != null &&
-                        analysisDO.getStartedDate().compareTo(analysisDO.getAvailableDate()) == -1)
-                        errorsList.add(new FormErrorWarning(Messages.get()
-                                                                    .startedDateBeforeAvailableWarning(analysisDO.getTestName(),
-                                                                                                      analysisDO.getMethodName())));
-
                     //
                     // started date can't be in the future
                     //

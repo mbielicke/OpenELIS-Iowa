@@ -37,6 +37,7 @@ import org.openelis.gwt.services.CalendarService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.modules.analysis.client.AnalysisService;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorCaution;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.SystemUserPermission;
@@ -62,13 +63,14 @@ public class AnalysisManagerProxy {
                          Integer sampleTypeId,
                          String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
+        boolean quickEntry;
         AnalysisListItem item;
         AnalysisViewDO analysisDO;
         TestManager testMan;
-        boolean quickEntry;
+        Datetime now;
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
-
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         for (int i = 0; i < man.count(); i++ ) {
             analysisDO = man.getAnalysisAt(i);
             testMan = man.getTestAt(i);
@@ -118,11 +120,45 @@ public class AnalysisManagerProxy {
                                                           analysisDO.getTestName(),
                                                           analysisDO.getMethodName())));
     
-                if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
-                    analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
-                    errorsList.add(new FormErrorException(Messages.get().startedDateAfterCompletedError(
-                                                          analysisDO.getTestName(),
-                                                          analysisDO.getMethodName())));
+                if (analysisDO.getStartedDate() != null) {
+                    //
+                    // started date can't be after completed date
+                    //
+                    if (analysisDO.getCompletedDate() != null &&
+                        analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
+                        errorsList.add(new FormErrorException(Messages.get()
+                                                                      .startedDateAfterCompletedError(analysisDO.getTestName(),
+                                                                                                      analysisDO.getMethodName())));
+                    //
+                    // started date is before available date, which could be a
+                    // problem
+                    //
+                    if (analysisDO.getAvailableDate() != null &&
+                        analysisDO.getStartedDate().compareTo(analysisDO.getAvailableDate()) == -1)
+                        errorsList.add(new FormErrorCaution(Messages.get()
+                                                                    .startedDateBeforeAvailableCaution(analysisDO.getTestName(),
+                                                                                                      analysisDO.getMethodName())));
+
+                    //
+                    // started date can't be in the future
+                    //
+                    if (analysisDO.getStartedDate().compareTo(now) == 1) {
+                        errorsList.add(new FormErrorException(Messages.get()
+                                                                      .startedDateInFutureError(analysisDO.getTestName(),
+                                                                                                analysisDO.getMethodName())));
+                    }
+                }
+
+                if (analysisDO.getCompletedDate() != null) {
+                    //
+                    //completed date can't be in the future
+                    //
+                    if (analysisDO.getCompletedDate().compareTo(now) == 1) {
+                        errorsList.add(new FormErrorException(Messages.get()
+                                                                      .completedDateInFutureError(analysisDO.getTestName(),
+                                                                                                  analysisDO.getMethodName())));
+                    }
+                }
             }
             
             item = man.getItemAt(i);

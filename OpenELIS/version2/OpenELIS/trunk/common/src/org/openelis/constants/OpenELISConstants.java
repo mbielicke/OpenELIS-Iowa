@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -1146,8 +1146,8 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date"
    */
   @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date")
-  @Key("analysis.startedDateBeforeAvailableWarning")
-  String analysis_startedDateBeforeAvailableWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+  @Key("analysis.startedDateBeforeAvailableCaution")
+  String analysis_startedDateBeforeAvailableCaution(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future".
@@ -15780,8 +15780,8 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "{0} : {1} - Started date is before available date"
    */
   @DefaultMessage("{0} : {1} - Started date is before available date")
-  @Key("startedDateBeforeAvailableWarning")
-  String startedDateBeforeAvailableWarning(String arg0,  String arg1);
+  @Key("startedDateBeforeAvailableCaution")
+  String startedDateBeforeAvailableCaution(String arg0,  String arg1);
 
   /**
    * Translated "{0} : {1} - Started date can''t be in the future".

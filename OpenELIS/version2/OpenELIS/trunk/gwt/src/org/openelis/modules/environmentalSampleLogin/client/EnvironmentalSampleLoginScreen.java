@@ -1151,7 +1151,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
@@ -1170,7 +1170,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
@@ -1179,9 +1179,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         }
     }
 
-    protected void commitWithWarnings() {
+    protected void commitWithWarnings(ValidationErrorsList warnings) {
         clearErrors();
-        manager.setStatusWithError(true);
+        /*
+         * the passed list can contain warnings and caution, so the status of
+         * the sample needs to be set to Error only if there are warnings in the
+         * list
+         */
+        if (warnings.hasWarnings())
+            manager.setStatusWithError(true);
 
         if (state == State.ADD) {
             window.setBusy(Messages.get().adding());
@@ -1292,7 +1298,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             DataChangeEvent.fire(this);
 
             setFocus(accessionNumber);
-            
+
             /*
              * show any errors/warnings found during duplication
              */
@@ -1464,7 +1470,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
-    
+
     /**
      * Shows a list of warnings in the form of an alert and not a confirm dialog
      * like showWarningsDialog. Doesn't commit the data like that method either.
@@ -1515,7 +1521,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     private boolean canCopyFromPrevious(KeyDownEvent event) {
         return (previousManager != null) && event.getNativeKeyCode() == 113;
     }
-    
+
     private void importOrder(Integer orderId) {
         int i;
         Integer orgId;

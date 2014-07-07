@@ -125,7 +125,7 @@ public class AnalysisTabUI extends Screen {
 
     @UiField
     protected Dropdown<Integer>        section, unitOfMeasure, status, panel, samplePrep,
-                                       worksheetStatus, userAction, type;
+                    worksheetStatus, userAction, type;
 
     @UiField
     protected CheckBox                 isReportable;
@@ -285,27 +285,24 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
-        addScreenHandler(type,
-                         SampleMeta.getAnalysisTypeId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 type.setValue(getTypeId());
-                             }
+        addScreenHandler(type, SampleMeta.getAnalysisTypeId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                type.setValue(getTypeId());
+            }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setTypeId(event.getValue());
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setTypeId(event.getValue());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 type.setEnabled(isState(QUERY) ||
-                                                          (isState(ADD, UPDATE) && canEdit));
-                                 type.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                type.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                type.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? isReportable : section;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? isReportable : section;
+            }
+        });
 
         addScreenHandler(isReportable,
                          SampleMeta.getAnalysisIsReportable(),
@@ -908,7 +905,7 @@ public class AnalysisTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     /**
      * returns true if some operation performed by the tab needs to be completed
      * before the data can be committed
@@ -916,7 +913,6 @@ public class AnalysisTabUI extends Screen {
     public boolean getIsBusy() {
         return isBusy;
     }
-
 
     @UiHandler("selectWorksheetButton")
     protected void selectWorksheet(ClickEvent event) {
@@ -1041,7 +1037,7 @@ public class AnalysisTabUI extends Screen {
         return null;
     }
 
-    private void setMethod(final AutoCompleteValue value) {
+    private void setMethod(AutoCompleteValue value) {
         if (value == null) {
             /*
              * if the user blanks the field, selecting nothing, the previous
@@ -1070,7 +1066,14 @@ public class AnalysisTabUI extends Screen {
 
                     switch (event.getSelectedItem().intValue()) {
                         case 1:
-                            data = (TestMethodVO)value.getData();
+                            /*
+                             * the argument passed to setMethod is not used
+                             * here because it gets fixed for this confirm when
+                             * the confirm is created, so if that value were to
+                             * be used here, it will always be the same
+                             * regardless of what gets passed to setMethod
+                             */
+                            data = (TestMethodVO)method.getValue().getData();
                             parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
                                                                                   data.getMethodId(),
                                                                                   AnalysisChangeEvent.Action.METHOD_CHANGED),

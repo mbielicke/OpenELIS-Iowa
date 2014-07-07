@@ -1513,7 +1513,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
-                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                    if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarning)
                         if (Window.confirm(getWarnings(e.getErrorList())))
                             commitUpdate(true);
                 }

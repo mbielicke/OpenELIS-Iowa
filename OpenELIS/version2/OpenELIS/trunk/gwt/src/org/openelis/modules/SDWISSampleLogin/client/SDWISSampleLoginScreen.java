@@ -1144,7 +1144,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             } catch (ValidationErrorsList e) {
                 showErrors(e);
 
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors()  && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
@@ -1163,7 +1163,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors()  && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
@@ -1171,9 +1171,15 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         }
     }
 
-    protected void commitWithWarnings() {
+    protected void commitWithWarnings(ValidationErrorsList warnings) {
         clearErrors();
-        manager.setStatusWithError(true);
+        /*
+         * the passed list can contain warnings and caution, so the status of
+         * the sample needs to be set to Error only if there are warnings in the
+         * list
+         */
+        if (warnings.hasWarnings())
+            manager.setStatusWithError(true);
 
         if (state == State.ADD) {
             window.setBusy(Messages.get().adding());
