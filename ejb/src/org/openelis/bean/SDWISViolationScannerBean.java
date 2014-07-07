@@ -328,7 +328,7 @@ public class SDWISViolationScannerBean {
         PWSMonitorManager pwsmm;
         PWSMonitorDO data;
 
-        om = orderManager.duplicate(orderTemplate, true);
+        om = orderManager.duplicate(orderTemplate, true, false).getManager();
 
         /*
          * Find out how many bottles we need to send, and multiply each of the

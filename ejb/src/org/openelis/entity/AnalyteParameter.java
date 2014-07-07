@@ -69,10 +69,17 @@ import org.openelis.utils.AuditUtil;
     @NamedQuery( name = "AnalyteParameter.FetchForQcChartReport",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
                         "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name) " +
-                        "from AnalyteParameter ap " +
-                        "where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and" +
-                        " ap.activeBegin < :worksheetCreatedDate and ap.activeEnd > :worksheetCreatedDate")})
+                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)" +
+                        " from AnalyteParameter ap" +
+                        " where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and" +
+                        " ap.activeBegin <= :worksheetCreatedDate and ap.activeEnd >= :worksheetCreatedDate"),
+    @NamedQuery( name = "AnalyteParameter.FetchByActiveDate",
+                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
+                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)" +
+                        " from AnalyteParameter ap" +
+                        " where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and" +
+                        " ap.activeBegin <= :activeDate and ap.activeEnd >= :activeDate order by ap.analyte.name")})
 
 @Entity
 @Table(name = "analyte_parameter")

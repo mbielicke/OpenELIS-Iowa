@@ -25,11 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.getProjects;
-import static org.openelis.manager.SampleManager1Accessor.getSample;
-import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
-import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
-import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,7 +130,7 @@ public class AuxDataHelperBean {
     }
 
     /**
-     * Adds aux group specified by the id to the list of aux data. If the aux
+     * Adds aux group specified by the ids to the list of aux data. If an aux
      * data's analyte can be found in the map then the value is set from the
      * map, otherwise it's set as the default of the corresponding aux field in
      * the group.
@@ -227,7 +223,8 @@ public class AuxDataHelperBean {
             if (groupIds.contains(prevId)) {
                 do {
                     removed.add(auxiliary.remove(i));
-                } while (i < auxiliary.size() && auxiliary.get(i).getAuxFieldGroupId().equals(prevId));
+                } while (i < auxiliary.size() &&
+                         auxiliary.get(i).getAuxFieldGroupId().equals(prevId));
             }
         }
 
@@ -239,7 +236,7 @@ public class AuxDataHelperBean {
      */
     public void copyToSample(SampleManager1 sm, ArrayList<AuxDataViewDO> auxiliary,
                              ValidationErrorsList e) throws Exception {
-        Integer domainGrpId;
+        Integer accession, domainGrpId, prevGrpId;
         SampleDO data;
         ArrayList<Integer> grpIds;
         HashMap<Integer, AuxDataViewDO> auxGrp;
@@ -250,12 +247,28 @@ public class AuxDataHelperBean {
 
         data = getSample(sm);
         /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+        /*
          * make a hash of aux groups
          */
         domainGrpId = getDomainAuxGroupId(data);
         grpIds = new ArrayList<Integer>();
         auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
+        prevGrpId = null;
         for (AuxDataViewDO aux : auxiliary) {
+            /*
+             * consider this aux group only if it's active
+             */
+            if ("N".equals(aux.getAuxFieldGroupIsActive())) {
+                if (!aux.getAuxFieldGroupId().equals(prevGrpId))
+                    e.add(new FormErrorWarning(Messages.get().sample_inactiveAuxGroupWarning(accession, aux.getAuxFieldGroupName())));
+                prevGrpId = aux.getAuxFieldGroupId();
+                continue;
+            }
             auxGrp = auxGrps.get(aux.getAuxFieldGroupId());
             if (auxGrp == null) {
                 auxGrp = new HashMap<Integer, AuxDataViewDO>();
@@ -263,6 +276,7 @@ public class AuxDataHelperBean {
                 grpIds.add(aux.getAuxFieldGroupId());
             }
             auxGrp.put(aux.getAnalyteId(), aux);
+            prevGrpId = aux.getAuxFieldGroupId();
         }
 
         /*
@@ -278,6 +292,17 @@ public class AuxDataHelperBean {
             else if (Constants.domain().SDWIS.equals(data.getDomain()))
                 copySDWISFields(getSampleSDWIS(sm), auxGrp, e);
             auxGrps.remove(domainGrpId);
+            grpIds.remove(domainGrpId);
+        }
+
+        /*
+         * if there are any other aux groups in the order than add them to the
+         * sample
+         */
+        if (grpIds.size() > 0) {
+            if (getAuxiliary(sm) == null)
+                setAuxiliary(sm, new ArrayList<AuxDataViewDO>());
+            addAuxGroups(getAuxiliary(sm), grpIds, auxGrps, e);
         }
     }
 
@@ -836,10 +861,12 @@ public class AuxDataHelperBean {
     public HashMap<String, String> fillAirQualityAuxData(SampleManager1 sm) throws Exception {
         AuxDataViewDO data;
         HashMap<String, String> auxDataValues;
+        ArrayList<AuxDataViewDO> auxiliary;
 
+        auxiliary = getAuxiliary(sm);
         auxDataValues = new HashMap<String, String>();
-        for (int i = 0; i < sm.auxData.count(); i++ ) {
-            data = sm.auxData.get(i);
+        for (int i = 0; i < auxiliary.size(); i++ ) {
+            data = auxiliary.get(i);
             if (data.getDictionary() != null) {
                 if ( !NULL_DATA_CODE.equals(data.getAnalyteExternalId())) {
                     auxDataValues.put(data.getAnalyteExternalId(), data.getDictionary());

@@ -255,7 +255,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_COMPLETED_DATE = "_analysis.completedDate",
                     ANALYSIS_RELEASED_DATE = "_analysis.releasedDate",
                     ANALYSIS_PRINTED_DATE = "_analysis.printedDate",
-                    ANALYSIS_PANEL_ID = "analysisPanelId",
+                    ANALYSIS_PANEL_ID = "_analysis.panelId",
                     ANALYSIS_SAMPLE_PREP = "analysisSamplePrep",
 
                     ANALYSISQA_ID = "_analysisQaevent.id",

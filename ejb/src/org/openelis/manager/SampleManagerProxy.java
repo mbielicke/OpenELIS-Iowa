@@ -98,8 +98,7 @@ public class SampleManagerProxy {
         man.getProjects();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem()
-                                                       .fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -159,8 +158,7 @@ public class SampleManagerProxy {
         man.getAuxData();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem()
-                                                       .fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -230,8 +228,7 @@ public class SampleManagerProxy {
         man.getAuxData();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem()
-                                                       .fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -331,8 +328,8 @@ public class SampleManagerProxy {
 
         data = man.getSample();
         /*
-         * check to see if the sample or any analysis has been unreleased. 
-         * call final report e-save if they have. 
+         * check to see if the sample or any analysis has been unreleased. call
+         * final report e-save if they have.
          */
         if (man.unreleased) {
             EJBFactory.getFinalReport().runReportForESave(data.getAccessionNumber());
@@ -350,7 +347,7 @@ public class SampleManagerProxy {
 
         EJBFactory.getSample().update(man.getSample());
         sampleId = man.getSample().getId();
-        
+
         if (man.deletedDomainManager != null)
             man.getDeletedDomainManager().delete();
 
@@ -425,7 +422,6 @@ public class SampleManagerProxy {
         validateOrderId(man.getSample(), errorsList);
 
         data = man.getSample();
-        quickEntry = SampleManager.QUICK_ENTRY.equals(data.getDomain());
 
         if (data.getCollectionDate() != null) {
             cal = Calendar.getInstance();
@@ -434,17 +430,26 @@ public class SampleManagerProxy {
                 cal.add(Calendar.HOUR_OF_DAY, data.getCollectionTime().get(Datetime.HOUR));
                 cal.add(Calendar.MINUTE, data.getCollectionTime().get(Datetime.MINUTE));
             }
-            collectionDateTime = new Datetime(Datetime.YEAR,
-                                              Datetime.MINUTE,
-                                              cal.getTime());
+            collectionDateTime = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
         } else {
+            if (data.getCollectionTime() != null) {
+                errorsList.add(new FieldErrorException(Messages.get()
+                                                               .collectedTimeWithoutDateError(),
+                                                       SampleMeta.getCollectionTime()));
+            }
             collectionDateTime = null;
         }
 
-        if (collectionDateTime != null && data.getReceivedDate() != null &&
-            collectionDateTime.compareTo(data.getReceivedDate()) == 1)
-            errorsList.add(new FieldErrorException(Messages.get().collectedDateInvalidError(),
-                                                   SampleMeta.getReceivedDate()));
+        if (collectionDateTime != null) {
+            if (data.getEnteredDate() != null && collectionDateTime.compareTo(data.getEnteredDate()) == 1)
+                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterEnteredError(),
+                                                       SampleMeta.getCollectionDate()));
+            
+            if (data.getReceivedDate() != null &&
+                collectionDateTime.compareTo(data.getReceivedDate()) == 1)
+                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterReceivedError(),
+                                                       SampleMeta.getReceivedDate()));
+        }
 
         if (man.domainManager != null)
             man.getDomainManager().validate(errorsList);
@@ -452,6 +457,7 @@ public class SampleManagerProxy {
         if (man.sampleItems != null)
             man.getSampleItems().validate(errorsList);
 
+        quickEntry = SampleManager.QUICK_ENTRY.equals(data.getDomain());
         if ( !quickEntry && man.organizations != null)
             man.getOrganizations().validate(man.getSample().getDomain(), errorsList);
 

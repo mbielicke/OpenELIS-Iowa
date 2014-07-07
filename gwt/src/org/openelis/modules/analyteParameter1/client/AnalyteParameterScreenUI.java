@@ -541,29 +541,7 @@ public class AnalyteParameterScreenUI extends Screen {
                     newData.setAnalyteName(data.getAnalyteName());
                     newNode.setCell(0, newData.getAnalyteName());
                     newNode.setData(Constants.uid().get(newData));
-                } 
-//                else {
-//                    /*
-//                     * the newly added node is an analyte node, so a DO will be
-//                     * created for it with the same analyte as the currently
-//                     * selected node and that DO will be added after the DO for
-//                     * the last child of the currently selected node, if it has
-//                     * any children; otherwise it will be added after the DO for
-//                     * the currently selected node
-//                     */
-//                    if (selNode.hasChildren())
-//                        uid = selNode.getLastChild().getData();
-//                    else
-//                        uid = selNode.getData();
-//
-//                    data = manager.getObject(uid);
-//                    index = manager.analyteParameter.getIndex(data);
-//                    newData = manager.analyteParameter.add(index + 1);
-//                    newData.setAnalyteId(data.getAnalyteId());
-//                    newData.setAnalyteName(data.getAnalyteName());
-//                    newNode.setCell(0, newData.getAnalyteName());
-//                    newNode.setData(Constants.uid().get(newData));
-//                }
+                }
             }
         });
 
@@ -847,7 +825,7 @@ public class AnalyteParameterScreenUI extends Screen {
 
         newNode = new Node(3);
         newNode.setType(ANALYTE_LEAF);
-        tree.addNodeAt(index + 2, newNode);
+        tree.addNodeAt(index + 1, newNode);
         tree.refreshNode(newNode);
         tree.selectNodeAt(newNode);
     }
@@ -1166,7 +1144,7 @@ public class AnalyteParameterScreenUI extends Screen {
         return null;
     }
 
-    public void addAnalytesFromReference(Integer refId, Integer refTableId, String refName) throws Exception {
+    private void addAnalytesFromReference(Integer refId, Integer refTableId, String refName) throws Exception {
         int i, j;
         TestAnalyteViewDO ta;
         TestAnalyteManager tam;

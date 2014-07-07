@@ -41,8 +41,9 @@
       <dependency org="xalan" name="xalan" rev="2.7.1"/> 
       <dependency org="org.jfree" name="jfreechart" rev="1.0.17"/>
       <dependency org="org.jfree" name="jcommon" rev="1.0.21"/>
-      
+      <!-- 
       <dependency org="org.openelis" name="ui" rev="latest.integration"/>  
       <dependency org="org.openelis" name="security" rev="latest.integration"/>
+      -->
     </dependencies>
 </ivy-module>

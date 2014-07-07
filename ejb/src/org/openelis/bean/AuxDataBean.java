@@ -65,9 +65,6 @@ public class AuxDataBean {
     @EJB
     private DictionaryCacheBean dictionaryCache;
 
-    @EJB
-    private DictionaryBean      dictionary;
-
     private static final Logger log = Logger.getLogger("openelis");
 
     public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
@@ -175,7 +172,7 @@ public class AuxDataBean {
         query.setParameter("name", sysVariableKey);
         sysVariable = (SystemVariableDO)query.getSingleResult();
 
-        query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
+        query = manager.createNamedQuery("AuxFieldGroup.FetchByName");
         query.setParameter("name", sysVariable.getValue());
         groupDO = (AuxFieldGroupDO)query.getSingleResult();
 

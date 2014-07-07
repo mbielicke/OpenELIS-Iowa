@@ -354,7 +354,15 @@ public class AnalysisHelperBean {
         prepIds = setPrepForAnalysis(sm, ana, anaByTest, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
-                ret.addTest(sm.getSample().getId(), ana.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+                ret.addTest(sm.getSample().getId(),
+                            ana.getSampleItemId(),
+                            id,
+                            ana.getId(),
+                            null,
+                            null,
+                            null,
+                            false,
+                            null);
 
         results = getResults(sm);
         rows = null;
@@ -560,10 +568,17 @@ public class AnalysisHelperBean {
 
                 tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
 
-                /*
-                 * validate unit and sample type
-                 */
-                analysis.validate(ana, tm, accession, item);
+                try {
+                    analysis.validate(ana, tm, accession, item);
+                } catch (ValidationErrorsList err) {
+                    /*
+                     * analysis validate can throw errors, warnings and
+                     * cautions; cautions are assumed to be permissible at this
+                     * point
+                     */
+                    if (err.hasWarnings() || err.hasErrors())
+                        throw err;
+                }
 
                 if ( !resultsOverriden)
                     validateResults(sm, accession, ana, tm.getFormatter());
@@ -1157,10 +1172,10 @@ public class AnalysisHelperBean {
      * the same length and the indexes are in ascending order.
      */
     public ArrayList<Integer> addRowAnalytes(SampleManager1 sm, AnalysisViewDO ana,
-                                         ArrayList<TestAnalyteViewDO> insertAnalytes,
-                                         ArrayList<Integer> insertAt) throws Exception {
+                                             ArrayList<TestAnalyteViewDO> insertAnalytes,
+                                             ArrayList<Integer> insertAt) throws Exception {
         int i, j, rpos, pos;
-        ArrayList<Integer> positions; 
+        ArrayList<Integer> positions;
         Integer lastrg, nextrg;
         TestAnalyteViewDO insertAna;
         ResultViewDO r;
@@ -1235,7 +1250,7 @@ public class AnalysisHelperBean {
                         getResults(sm).add(j, r);
                         if ("N".equals(ta.getIsColumn()))
                             positions.add(j);
-                        j++;
+                        j++ ;
                     }
                     break;
                 }

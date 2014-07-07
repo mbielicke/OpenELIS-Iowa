@@ -268,7 +268,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall,
-                    commitUpdateCall, fetchByIdCall, unlockCall, duplicateCall;
+                    commitUpdateCall, fetchByIdCall, unlockCall;
+
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
@@ -2984,7 +2986,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
-                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                    if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarning)
                         if (Window.confirm(getWarnings(e.getErrorList())))
                             commitUpdate(true);
                 }
@@ -3119,9 +3121,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         setBusy();
 
         if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<SampleManager1>() {
-                public void success(SampleManager1 result) {
-                    if ( !Constants.domain().NEONATAL.equals(result.getSample().getDomain())) {
+            duplicateCall = new AsyncCallbackUI<SampleTestReturnVO>() {
+                public void success(SampleTestReturnVO result) {
+                    ValidationErrorsList errors;
+                    
+                    if ( !Constants.domain().NEONATAL.equals(result.getManager().getSample().getDomain())) {
                         /*
                          * the sample's domain may have changed after it was
                          * loaded on the screen, so it can't be edited here
@@ -3144,7 +3148,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     }
 
                     previousManager = manager;
-                    manager = result;
+                    manager = result.getManager();
 
                     buildCache();
                     evaluateEdit();
@@ -3152,7 +3156,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     setState(ADD);
                     fireDataChange();
                     accessionNumber.setFocus(true);
-                    setDone(Messages.get().gen_enterInformationPressCommit());
+                    
+                    /*
+                     * show any errors/warnings found during duplication
+                     */
+                    errors = result.getErrors();
+                    if (errors!= null && errors.size() > 0)
+                        showErrors(errors);
+                    else
+                        setDone(Messages.get().gen_enterInformationPressCommit());
                 }
 
                 public void failure(Throwable e) {
@@ -3625,9 +3637,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * creates a string containing the message that there are warnings on the
-     * screen, followed by all warning messages, followed by the question
-     * whether the data should be committed
+     * Creates a string containing the message that there are warnings on the
+     * screen, followed by all warning messages; if the passed flag is true then
+     * adds a line at the end for the question whether the data should be
+     * committed, otherwise not
      */
     private String getWarnings(ArrayList<Exception> warnings) {
         StringBuilder b;
@@ -3638,6 +3651,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             for (Exception ex : warnings)
                 b.append(" * ").append(ex.getMessage()).append("\n");
         }
+        
         b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
         return b.toString();
@@ -3795,10 +3809,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(String changed) {
-        runScriptlet(domainScriptletId,
-                     null,
-                     changed,
-                     Operation.NEW_DOMAIN_ADDED);
+        runScriptlet(domainScriptletId, null, changed, Operation.NEW_DOMAIN_ADDED);
     }
 
     /**
@@ -4003,12 +4014,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setData();
             fireDataChange();
             clearStatus();
+            
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
             else if (ret.getTests() == null || ret.getTests().size() == 0)
                 isBusy = false;
             else
-                showTests(ret);            
+                showTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

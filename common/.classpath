@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/bin/client/jboss-client.jar"/>
-	<classpathentry kind="lib" path="/OpenELIS-UI/lib/gwt-i18n-server-0.22.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
-	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes" sourcepath="/OpenELIS-GWT/src"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=OpenELIS-Common&amp;ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=%24%7Bworkspace_loc%3AOpenELIS-Common%2Fivysettings.xml%7D&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

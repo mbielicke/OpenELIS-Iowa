@@ -77,7 +77,6 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -1514,7 +1513,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
-                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                    if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarning)
                         if (Window.confirm(getWarnings(e.getErrorList())))
                             commitUpdate(true);
                 }

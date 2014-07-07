@@ -210,7 +210,7 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
-    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+    public SampleTestReturnVO duplicate(Integer sampleId) throws Exception {
         try {
             return sampleManager1.duplicate(sampleId);
         } catch (Exception anyE) {

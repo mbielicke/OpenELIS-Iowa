@@ -51,15 +51,15 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
@@ -92,6 +92,8 @@ import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -123,7 +125,7 @@ public class AnalysisTabUI extends Screen {
 
     @UiField
     protected Dropdown<Integer>        section, unitOfMeasure, status, panel, samplePrep,
-                                       worksheetStatus, userAction, type;
+                    worksheetStatus, userAction, type;
 
     @UiField
     protected CheckBox                 isReportable;
@@ -283,27 +285,24 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
-        addScreenHandler(type,
-                         SampleMeta.getAnalysisTypeId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 type.setValue(getTypeId());
-                             }
+        addScreenHandler(type, SampleMeta.getAnalysisTypeId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                type.setValue(getTypeId());
+            }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setTypeId(event.getValue());
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setTypeId(event.getValue());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 type.setEnabled(isState(QUERY) ||
-                                                          (isState(ADD, UPDATE) && canEdit));
-                                 type.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                type.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                type.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? isReportable : section;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? isReportable : section;
+            }
+        });
 
         addScreenHandler(isReportable,
                          SampleMeta.getAnalysisIsReportable(),
@@ -906,7 +905,7 @@ public class AnalysisTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     /**
      * returns true if some operation performed by the tab needs to be completed
      * before the data can be committed
@@ -915,23 +914,35 @@ public class AnalysisTabUI extends Screen {
         return isBusy;
     }
 
-
     @UiHandler("selectWorksheetButton")
     protected void selectWorksheet(ClickEvent event) {
-        ScreenWindow modal;
-        Row row;
-        WorksheetCompletionScreen worksheetScreen;
         AnalysisWorksheetVO ws;
+        final Integer id;
+        Row row;
+        ScheduledCommand cmd;
+        org.openelis.ui.widget.Window window;
+        final WorksheetCompletionScreenUI worksheetScreen;
 
         try {
-            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(Messages.get().worksheetCompletion());
-
             row = worksheetTable.getRowAt(worksheetTable.getSelectedRow());
             ws = (AnalysisWorksheetVO)row.getData();
-            worksheetScreen = new WorksheetCompletionScreen(ws.getId(), modal);
+            id = ws.getId();
+        
+            window = new org.openelis.ui.widget.Window();
+            window.setName(Messages.get().worksheetCompletion() + " 2");
+            window.setSize("1061px", "511px");
+            worksheetScreen = new WorksheetCompletionScreenUI(window);
+            window.setContent(worksheetScreen);
+            worksheetScreen.initialize();
+            OpenELIS.getBrowser().addWindow(window, "worksheetCompletionUI");
 
-            modal.setContent(worksheetScreen);
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    worksheetScreen.query(id);
+                }
+            };
+            Scheduler.get().scheduleDeferred(cmd);
         } catch (Exception e) {
             Window.alert("openCompletionScreen: " + e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1018,7 +1029,7 @@ public class AnalysisTabUI extends Screen {
             }
         }
     }
-
+    
     private String getTestName() {
         if (analysis != null)
             return analysis.getTestName();
@@ -1026,7 +1037,7 @@ public class AnalysisTabUI extends Screen {
         return null;
     }
 
-    private void setMethod(final AutoCompleteValue value) {
+    private void setMethod(AutoCompleteValue value) {
         if (value == null) {
             /*
              * if the user blanks the field, selecting nothing, the previous
@@ -1055,11 +1066,18 @@ public class AnalysisTabUI extends Screen {
 
                     switch (event.getSelectedItem().intValue()) {
                         case 1:
-                            data = (TestMethodVO)value.getData();
+                            /*
+                             * the argument passed to setMethod is not used
+                             * here because it gets fixed for this confirm when
+                             * the confirm is created, so if that value were to
+                             * be used here, it will always be the same
+                             * regardless of what gets passed to setMethod
+                             */
+                            data = (TestMethodVO)method.getValue().getData();
                             parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
                                                                                   data.getMethodId(),
                                                                                   AnalysisChangeEvent.Action.METHOD_CHANGED),
-                                                          this);
+                                                          screen);
                             break;
                     }
                     
