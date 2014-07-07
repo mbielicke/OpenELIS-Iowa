@@ -26,19 +26,19 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.SampleDO;
+import org.openelis.gwt.services.CalendarService;
+import org.openelis.meta.SampleMeta;
+import org.openelis.modules.sample.client.SampleService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FieldErrorWarning;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.gwt.services.CalendarService;
-import org.openelis.meta.SampleMeta;
-import org.openelis.modules.sample.client.SampleService;
 
 public class SampleManagerProxy {
     
@@ -89,6 +89,8 @@ public class SampleManagerProxy {
         SampleDomainInt domMan;
         SampleDO data;
         NoteManager noteMan;
+        Date collectionDate;
+        Datetime collectionTime, collectionDateTime;
 
         data = man.getSample();
 
@@ -106,15 +108,38 @@ public class SampleManagerProxy {
             errorsList.add(new FieldErrorWarning(Messages.get().receivedTooOldWarning(),
                                                  SampleMeta.getReceivedDate()));
 
-        if (data.getEnteredDate() != null && data.getCollectionDate() != null &&
-            data.getCollectionDate().before(data.getEnteredDate().add( -180)))
-            errorsList.add(new FieldErrorException(Messages.get().collectedTooOldWarning(),
-                                                   SampleMeta.getCollectionDate()));
-
-        if (data.getCollectionDate() != null && data.getReceivedDate() != null &&
-            data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
-            errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterReceivedError(),
-                                                   SampleMeta.getReceivedDate()));
+        collectionTime = data.getCollectionTime();
+        if (data.getCollectionDate() != null) {
+            collectionDate = (Date)data.getCollectionDate().getDate().clone();
+            if (collectionTime != null) {
+                collectionDate.setHours(collectionTime.getDate().getHours());
+                collectionDate.setMinutes(collectionTime.getDate().getMinutes());
+            }
+            collectionDateTime = new Datetime(Datetime.YEAR, Datetime.MINUTE, collectionDate);
+        } else {
+            if (collectionTime != null) {
+                errorsList.add(new FieldErrorException(Messages.get()
+                                                               .collectedTimeWithoutDateError(),
+                                                       SampleMeta.getCollectionTime()));
+            }
+            collectionDateTime = null;
+        }
+        
+        if (collectionDateTime != null) {
+            if (data.getEnteredDate() != null &&
+                            collectionDateTime.before(data.getEnteredDate().add( -180)))
+                            errorsList.add(new FieldErrorException(Messages.get().collectedTooOldWarning(),
+                                                                   SampleMeta.getCollectionDate()));
+            
+            if (data.getEnteredDate() != null && collectionDateTime.compareTo(data.getEnteredDate()) == 1)
+                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterEnteredError(),
+                                                       SampleMeta.getCollectionDate()));
+            
+            if (data.getReceivedDate() != null &&
+                collectionDateTime.compareTo(data.getReceivedDate()) == 1)
+                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterReceivedError(),
+                                                       SampleMeta.getReceivedDate()));
+        }
 
         // every unreleased sample needs an internal comment describing the
         // reason

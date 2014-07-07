@@ -53,6 +53,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorCaution;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.LastPageException;
@@ -385,8 +386,8 @@ public class AnalysisBean {
              */
             if (data.getAvailableDate() != null &&
                 data.getStartedDate().compareTo(data.getAvailableDate()) == -1)
-                e.add(new FormErrorWarning(Messages.get()
-                                                   .analysis_startedDateBeforeAvailableWarning(accession,
+                e.add(new FormErrorCaution(Messages.get()
+                                                   .analysis_startedDateBeforeAvailableCaution(accession,
                                                                                                  sequence,
                                                                                                  test,
                                                                                                  method)));

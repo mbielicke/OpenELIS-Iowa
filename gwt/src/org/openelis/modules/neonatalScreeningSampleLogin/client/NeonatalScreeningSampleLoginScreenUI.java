@@ -2988,7 +2988,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
-                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                    if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarning)
                         if (Window.confirm(getWarnings(e.getErrorList())))
                             commitUpdate(true);
                 }

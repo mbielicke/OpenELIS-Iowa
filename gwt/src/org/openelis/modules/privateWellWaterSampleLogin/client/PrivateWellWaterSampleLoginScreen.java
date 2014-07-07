@@ -1156,10 +1156,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         }
     }
 
-    protected void commitWithWarnings() {
+    protected void commitWithWarnings(ValidationErrorsList warnings) {
         clearErrors();
-        manager.setStatusWithError(true);
-
+        /*
+         * the passed list can contain warnings and caution, so the status of
+         * the sample needs to be set to Error only if there are warnings in the
+         * list
+         */
+        if (warnings.hasWarnings())
+            manager.setStatusWithError(true);
+        
         if (state == State.ADD) {
             window.setBusy(Messages.get().adding());
             try {

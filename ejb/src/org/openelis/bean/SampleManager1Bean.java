@@ -941,12 +941,20 @@ public class SampleManager1Bean {
             } catch (ValidationErrorsList err) {
                 if (err.hasErrors() || !ignoreWarnings)
                     DataBaseUtil.mergeException(e, err);
-                else
+                else if (err.hasWarnings())
                     /*
                      * force Error status because the data is to be committed
                      * with warnings
                      */
                     changeSampleStatus(sm, Constants.dictionary().SAMPLE_ERROR);
+                else
+                    /*
+                     * this makes sure that if the ValidationErrorsList only has
+                     * cautions and the sample was previously in error status,
+                     * it comes out of that status if no analyses are in error
+                     * status
+                     */
+                    changeSampleStatus(sm, null);
             } catch (Exception err) {
                 DataBaseUtil.mergeException(e, err);
             }
@@ -2476,10 +2484,24 @@ public class SampleManager1Bean {
                 amap.put(data.getId(), data);
                 if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged()) {
                     try {
-                        analysis.validate(data,
-                                          tms.get(data.getTestId()),
-                                          accession,
-                                          imap.get(data.getSampleItemId()));
+                        try {
+                            analysis.validate(data,
+                                              tms.get(data.getTestId()),
+                                              accession,
+                                              imap.get(data.getSampleItemId()));
+                        } catch (ValidationErrorsList err) {
+                            /*
+                             * analysis validate can throw errors, warnings and
+                             * cautions; the analysis can be committed as not
+                             * being in error if only cautions were thrown, but
+                             * they still need to be added to the list if they
+                             * need to be shown to the user
+                             */
+                            if (err.hasWarnings() || err.hasErrors())
+                                throw err;
+                            else
+                                DataBaseUtil.mergeException(e, err);
+                        }
                         if (data.isChanged())
                             validatePermission(getSample(sm).getAccessionNumber(), data, permission);
                         /*
