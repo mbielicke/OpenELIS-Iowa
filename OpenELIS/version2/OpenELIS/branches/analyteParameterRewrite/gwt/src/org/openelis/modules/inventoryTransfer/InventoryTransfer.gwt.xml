@@ -25,5 +25,10 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
- 
+  <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceiptService"/>
+  <inherits name="org.openelis.modules.inventoryItem.InventoryItemService"/>
+  <inherits name="org.openelis.modules.storage.StorageService"/>
+  <inherits name="org.openelis.modules.note.NoteService"/>
+  
+  <entry-point class="org.openelis.modules.inventoryTransfer.client.InventoryTransferEntry"/>
 </module>

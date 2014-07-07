@@ -26,6 +26,7 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,9 +34,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.WorksheetAnalysisViewDO;
+import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
@@ -90,10 +95,39 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("ok")
     protected void ok(ClickEvent event) {
+        ArrayList<String> userNames;
+        ArrayList<SystemUserVO> validUserVOs;
+        String validUsers;
+
+        validUsers = "";
+        if (systemUsers.getValue() != null) {
+            userNames = new ArrayList<String>(Arrays.asList(((String)systemUsers.getValue()).split(",")));
+            try {
+                validUserVOs = UserCache.validateSystemUsers(userNames);
+                for (SystemUserVO userVO : validUserVOs) {
+                    if (userNames.contains(userVO.getLoginName())) {
+                        if (validUsers.length() > 0)
+                            validUsers += ",";
+                        validUsers += userVO.getLoginName();
+                        userNames.remove(userVO.getLoginName());
+                    }
+                }
+                if (userNames.size() > 0) {
+                    Window.alert(Messages.get().worksheet_invalidUsersException(userNames.toString()));
+                    systemUsers.setValue(validUsers);
+                    return;
+                }
+            } catch (Exception anyE) {
+                Window.alert(Messages.get().worksheet_overrideUsersValidationException());
+                systemUsers.setValue(validUsers);
+                return;
+            }
+        }
+
         for (WorksheetAnalysisViewDO waVDO : analyses) {
-            if (systemUsers.getValue() != null && systemUsers.getValue().length() > 0 &&
+            if (validUsers.length() > 0 &&
                 (waVDO.getSystemUsers() == null || "N".equals(ifEmpty.getValue())))
-                waVDO.setSystemUsers(systemUsers.getValue());
+                waVDO.setSystemUsers(validUsers);
             if (startedDate.getValue() != null &&
                 (waVDO.getStartedDate() == null || "N".equals(ifEmpty.getValue())))
                 waVDO.setStartedDate(startedDate.getValue());

@@ -54,7 +54,7 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
@@ -327,23 +327,37 @@ public class OrderManager1Bean {
     }
 
     /**
+     * duplicates the order with the given order ID and commits the new order
+     */
+    public void recur(Integer id) throws Exception {
+        OrderManager1 om;
+
+        om = duplicate(id, false, true).getManager();
+        update(om, true);
+    }
+
+    /**
      * duplicates the order with the given order ID and returns the new order
      * manager
      */
-    public OrderManager1 duplicate(Integer id) throws Exception {
-        return duplicate(id, false);
+    public OrderReturnVO duplicate(Integer id) throws Exception {
+        return duplicate(id, false, false);
     }
 
     /**
      * duplicates the order with the given order ID, with or without sample
      * notes, and returns the new order manager
      */
-    public OrderManager1 duplicate(Integer id, boolean sampleNotes) throws Exception {
-        Integer oldId;
+    public OrderReturnVO duplicate(Integer id, boolean sampleNotes, boolean forRecurrence) throws Exception {
+        Integer oldId, prevGroupId;
         Datetime now;
         OrderManager1 om;
+        OrderReturnVO or;
+        ValidationErrorsList errors;
         ArrayList<Integer> ids;
         ArrayList<OrderManager1> oms;
+        ArrayList<OrderOrganizationViewDO> orgs;
+        ArrayList<AuxDataViewDO> aux;
         HashMap<Integer, Integer> tids;
 
         /*
@@ -355,23 +369,42 @@ public class OrderManager1Bean {
         ids = new ArrayList<Integer>(1);
         ids.add(id);
         oms = fetchByIds(ids,
-                         true,
+                         !forRecurrence,
                          OrderManager1.Load.SAMPLE_DATA,
                          OrderManager1.Load.ORGANIZATION,
                          OrderManager1.Load.ITEMS);
 
         om = oms.get(0);
+        errors = new ValidationErrorsList();
+        if (forRecurrence)
+            getOrder(om).setParentOrderId(getOrder(om).getId());
         getOrder(om).setId(null);
         getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         getOrder(om).setOrderedDate(now);
-        getOrder(om).setRequestedBy(User.getName(ctx));
+        if ( !forRecurrence)
+            getOrder(om).setRequestedBy(User.getName(ctx));
 
         if (getOrganizations(om) != null) {
+            orgs = new ArrayList<OrderOrganizationViewDO>();
             for (OrderOrganizationViewDO data : getOrganizations(om)) {
-                data.setId(null);
-                data.setOrderId(null);
+                if ("Y".equals(data.getOrganizationIsActive())) {
+                    data.setId(null);
+                    data.setOrderId(null);
+                    orgs.add(data);
+                } else {
+                    if (forRecurrence) {
+                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        continue;
+                    }
+                    errors.add(new FormErrorException(Messages.get()
+                                                              .order_inactiveOrganizationWarning(data.getOrganizationName())));
+                }
             }
+            if (orgs.size() > 0)
+                setOrganizations(om, orgs);
+            else
+                setOrganizations(om, null);
         }
 
         if (getItems(om) != null) {
@@ -414,10 +447,33 @@ public class OrderManager1Bean {
         }
 
         if (getAuxilliary(om) != null) {
+            aux = new ArrayList<AuxDataViewDO>();
+            prevGroupId = null;
             for (AuxDataViewDO data : getAuxilliary(om)) {
-                data.setId(null);
-                data.setReferenceId(null);
+                /*
+                 * don't duplicate the aux group if it is inactive and warn the
+                 * user
+                 */
+                if ("Y".equals(data.getAuxFieldGroupIsActive())) {
+                    data.setId(null);
+                    data.setReferenceId(null);
+                    aux.add(data);
+                } else {
+                    if (forRecurrence) {
+                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        continue;
+                    }
+                    if ( !data.getAuxFieldGroupId().equals(prevGroupId)) {
+                        errors.add(new FormErrorException(Messages.get()
+                                                                  .order_inactiveAuxGroupWarning(data.getAuxFieldGroupName())));
+                    }
+                }
+                prevGroupId = data.getAuxFieldGroupId();
             }
+            if (aux.size() > 0)
+                setAuxilliary(om, aux);
+            else
+                setAuxilliary(om, null);
         }
 
         tids = new HashMap<Integer, Integer>();
@@ -437,7 +493,10 @@ public class OrderManager1Bean {
         }
         setRecurrence(om, null);
 
-        return om;
+        or = new OrderReturnVO();
+        or.setManager(om);
+        or.setErrors(errors);
+        return or;
     }
 
     /**
@@ -740,8 +799,8 @@ public class OrderManager1Bean {
     /**
      * Adds aux groups with ids to the order based on the list of group
      */
-    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
-        OrderTestReturnVO ret;
+    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        OrderReturnVO ret;
         ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
 
@@ -751,7 +810,7 @@ public class OrderManager1Bean {
             setAuxilliary(om, auxiliary);
         }
 
-        ret = new OrderTestReturnVO();
+        ret = new OrderReturnVO();
         ret.setManager(om);
         errors = new ValidationErrorsList();
         ret.setErrors(errors);
@@ -783,9 +842,9 @@ public class OrderManager1Bean {
     /**
      * Adds a test or all the tests and aux groups from a panel to the manager
      */
-    public OrderTestReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
+    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
         ValidationErrorsList e;
-        OrderTestReturnVO ret;
+        OrderReturnVO ret;
         OrderTestViewDO ot;
         TestManager tm;
         HashMap<Integer, TestManager> tms;
@@ -794,7 +853,7 @@ public class OrderManager1Bean {
         ArrayList<OrderTestViewDO> tests;
 
         e = new ValidationErrorsList();
-        ret = new OrderTestReturnVO();
+        ret = new OrderReturnVO();
         ret.setManager(om);
         ret.setErrors(e);
         testIds = new ArrayList<Integer>();

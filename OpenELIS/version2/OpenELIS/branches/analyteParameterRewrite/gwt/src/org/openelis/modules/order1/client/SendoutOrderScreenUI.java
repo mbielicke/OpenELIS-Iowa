@@ -45,7 +45,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
@@ -121,7 +121,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiTemplate("SendoutOrder.ui.xml")
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
-
 
 
 
@@ -219,9 +218,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
     protected AsyncCallbackUI<OrderManager1>           addCall, fetchForUpdateCall, 
-                                                         updateCall, fetchByIdCall, unlockCall,
-                                                         duplicateCall;   
+                                                         updateCall, fetchByIdCall, unlockCall;   
     
+    protected AsyncCallbackUI<OrderReturnVO>   duplicateCall;
+
     // @formatter:off
     protected OrderManager1.Load             elements[] = {
                                                             OrderManager1.Load.SAMPLE_DATA,
@@ -883,7 +883,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 return auxDataTab.getQueryFields();
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
@@ -1131,7 +1131,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                OrderTestReturnVO ret;
+                OrderReturnVO ret;
                 ArrayList<Integer> ids;
 
                 if (screen == event.getSource())
@@ -1175,6 +1175,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
+            }
+        });
+
+        bus.addHandler(AddRecurrenceEvent.getType(), new AddRecurrenceEvent.Handler() {
+            public void onAddRecurrence(AddRecurrenceEvent event) {
+                status.setEnabled( !Constants.dictionary().ORDER_STATUS_RECURRING.equals(getStatusId()));
+                fireDataChange();
             }
         });
 
@@ -1495,9 +1502,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     protected void duplicate() {
         if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<OrderManager1>() {
-                public void success(OrderManager1 result) {
-                    manager = result;
+            duplicateCall = new AsyncCallbackUI<OrderReturnVO>() {
+                public void success(OrderReturnVO result) {
+                    manager = result.getManager();
+                    if (result.getErrors() != null && result.getErrors().size() > 0) {
+                        showErrors(result.getErrors());
+                    }
                     manager.getOrder().setParentOrderId(null);
                     /*
                      * the screen is in add state, so we need the cache here
@@ -1699,10 +1709,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         query = new Query();
         query.setRowsPerPage(25);
         field = new QueryData();
-        field.setKey(OrderMeta.getId());               
+        field.setKey(OrderMeta.getId());
         field.setQuery(id.toString());
         field.setType(QueryData.Type.INTEGER);
-        
+
         query.setFields(field);
         nav.setQuery(query);
         cache = null;
@@ -2191,7 +2201,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     private void addTest(Integer id, boolean isTest, Integer index) {
-        OrderTestReturnVO ret;
+        OrderReturnVO ret;
         try {
             ret = OrderService1.get().addTest(manager, id, isTest, index);
             manager = ret.getManager();

@@ -25,5 +25,9 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-
+  <inherits name="org.openelis.modules.preferences.PreferencesService"/>
+  <inherits name="org.openelis.modules.sample.Sample"/>
+  <inherits name="org.openelis.modules.report.ReportService"/>
+  
+  <entry-point class="org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintEntry"/>
 </module>

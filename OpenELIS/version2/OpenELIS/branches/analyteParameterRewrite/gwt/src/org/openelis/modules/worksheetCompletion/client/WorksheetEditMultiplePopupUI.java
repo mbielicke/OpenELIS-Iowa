@@ -46,9 +46,9 @@ import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.modules.sample1.client.ResultCell;
-import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell;
+import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell.Value;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -84,7 +84,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
     protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> qcResultsByQcAnalyteId;
     protected HashMap<Integer, ArrayList<WorksheetResultViewDO>>   resultsByTestAnalyteId;
     protected HashMap<Integer, HashMap<Integer, Integer>>          resultGroupMap;
-    protected HashMap<String, ArrayList<Item<Integer>>>            dictionaryResultMap;
+    protected HashMap<String, ArrayList<Item<String>>>             dictionaryResultMap;
     protected Integer                                              testId, unitId;
     protected ResultFormatter                                      resultFormatter;
     protected WorksheetManager1                                    manager;
@@ -114,7 +114,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
         
         analyteResultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                ArrayList<Item<Integer>> model;
+                ArrayList<Item<String>> model;
                 ArrayList<FormattedValue> values;
                 HashMap<Integer, Integer> rgRow;
                 Integer rg;
@@ -143,14 +143,14 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                             if (resultFormatter.hasAllDictionary(rg, unitId)) {
                                 values = resultFormatter.getDictionaryValues(rg, unitId);
                                 if (values != null) {
-                                    model = new ArrayList<Item<Integer>>();
+                                    model = new ArrayList<Item<String>>();
                                     for (FormattedValue v : values)
-                                        model.add(new Item<Integer>(v.getId(), v.getDisplay()));
+                                        model.add(new Item<String>(v.getDisplay(), v.getDisplay()));
                                 }
                             }
                             dictionaryResultMap.put(resultKey, model);
                         }
-                        ((ResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
+                        ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
                     }
                 }
             }
@@ -174,7 +174,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
     public void setData(WorksheetManager1 manager, Integer testId, Integer unitId,
                         ResultFormatter resultFormatter, ArrayList<WorksheetAnalysisViewDO> analyses,
                         HashMap<Integer, HashMap<Integer, Integer>> resultGroupMap,
-                        HashMap<String, ArrayList<Item<Integer>>> dictionaryResultMap) {
+                        HashMap<String, ArrayList<Item<String>>> dictionaryResultMap) {
         this.manager = manager;
         this.testId = testId;
         this.unitId = unitId;
@@ -268,7 +268,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                 analyteResultTable.addColumn();
             col = analyteResultTable.getColumnAt(i);
             col.setLabel(headers.get(i - 1).getName());
-            col.setCellRenderer(new ResultCell());
+            col.setCellRenderer(new WorksheetResultCell());
             col.setWidth(150);
         }
         while (rowSize < analyteResultTable.getColumnCount())
@@ -289,7 +289,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                             row = new Row(rowSize);
                             row.setCell(0, wrVDO.getAnalyteName());
                             for (j = 1; j < rowSize; j++)
-                                row.setCell(j, new ResultCell.Value(null, null));
+                                row.setCell(j, new WorksheetResultCell.Value(null, null));
                             row.setData("R"+wrVDO.getTestAnalyteId());
                             model.add(row);
                         }
@@ -308,7 +308,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                             row = new Row(rowSize);
                             row.setCell(0, "(QC) " + wqrVDO.getAnalyteName());
                             for (j = 1; j < rowSize; j++)
-                                row.setCell(j, new ResultCell.Value(null, null));
+                                row.setCell(j, new WorksheetResultCell.Value(null, null));
                             row.setData("Q"+wqrVDO.getQcAnalyteId());
                             model.add(row);
                         }

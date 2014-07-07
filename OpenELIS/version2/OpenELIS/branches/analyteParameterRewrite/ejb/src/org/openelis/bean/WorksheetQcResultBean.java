@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -38,9 +39,11 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.WorksheetQcResultDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetQcResultViewVO;
 import org.openelis.entity.WorksheetQcResult;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -76,6 +79,37 @@ public class WorksheetQcResultBean  {
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public WorksheetQcResultViewVO fetchViewById(Integer id) throws Exception {
+        Query query;
+        WorksheetQcResultViewVO data;
+
+        query = manager.createNamedQuery("WorksheetQcResultView.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (WorksheetQcResultViewVO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetQcResultViewVO> fetchViewByIds(ArrayList<Integer> ids) throws Exception {
+        List<WorksheetQcResultViewVO> list;
+        Query query;
+
+        query = manager.createNamedQuery("WorksheetQcResultView.FetchByIds");
+        query.setParameter("ids", ids);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
     }
 
     public WorksheetQcResultDO add(WorksheetQcResultDO data) throws Exception {

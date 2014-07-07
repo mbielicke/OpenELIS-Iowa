@@ -583,13 +583,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String adjustmentNum();
 
   /**
-   * Translated "Air Quality Report".
+   * Translated "Air Quality Export".
    * 
-   * @return translated "Air Quality Report"
+   * @return translated "Air Quality Export"
    */
-  @DefaultMessage("Air Quality Report")
-  @Key("airQuality.airQualityReport")
-  String airQuality_airQualityReport();
+  @DefaultMessage("Air Quality Export")
+  @Key("airQuality.airQualityExport")
+  String airQuality_airQualityExport();
 
   /**
    * Translated "You must specify Action for this report".
@@ -894,8 +894,17 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date"
    */
   @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date")
-  @Key("analysis.completedDateInvalidException")
-  String analysis_completedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+  @Key("analysis.completedDateAfterReleasedException")
+  String analysis_completedDateAfterReleasedException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future")
+  @Key("analysis.completedDateInFutureException")
+  String analysis_completedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}".
@@ -1033,6 +1042,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_notBillable();
 
   /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}")
+  @Key("analysis.noteException")
+  String analysis_noteException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
+
+  /**
    * Translated "Analysis Notes".
    * 
    * @return translated "Analysis Notes"
@@ -1119,8 +1137,26 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed"
    */
   @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed")
-  @Key("analysis.startedDateInvalidException")
-  String analysis_startedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+  @Key("analysis.startedDateAfterCompletedException")
+  String analysis_startedDateAfterCompletedException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date")
+  @Key("analysis.startedDateBeforeAvailableCaution")
+  String analysis_startedDateBeforeAvailableCaution(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future")
+  @Key("analysis.startedDateInFutureException")
+  String analysis_startedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Analysis Status".
@@ -2860,13 +2896,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String collected();
 
   /**
+   * Translated "Collected date can''t be after entered".
+   * 
+   * @return translated "Collected date can''t be after entered"
+   */
+  @DefaultMessage("Collected date can''t be after entered")
+  @Key("collectedDateAfterEnteredError")
+  String collectedDateAfterEnteredError();
+
+  /**
    * Translated "Collected date can''t be after received".
    * 
    * @return translated "Collected date can''t be after received"
    */
   @DefaultMessage("Collected date can''t be after received")
-  @Key("collectedDateInvalidError")
-  String collectedDateInvalidError();
+  @Key("collectedDateAfterReceivedError")
+  String collectedDateAfterReceivedError();
 
   /**
    * Translated "This sample must have a collected date".
@@ -2876,6 +2921,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("This sample must have a collected date")
   @Key("collectedDateMissingWarning")
   String collectedDateMissingWarning();
+
+  /**
+   * Translated "Collection time can''t be specified without collection date".
+   * 
+   * @return translated "Collection time can''t be specified without collection date"
+   */
+  @DefaultMessage("Collection time can''t be specified without collection date")
+  @Key("collectedTimeWithoutDateError")
+  String collectedTimeWithoutDateError();
 
   /**
    * Translated "Collected date shouldn''t be more than 180 days before entered date".
@@ -3164,6 +3218,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Completed Date")
   @Key("completedDate")
   String completedDate();
+
+  /**
+   * Translated "{0} : {1} - Completed date can''t be in the future".
+   * 
+   * @return translated "{0} : {1} - Completed date can''t be in the future"
+   */
+  @DefaultMessage("{0} : {1} - Completed date can''t be in the future")
+  @Key("completedDateInFutureError")
+  String completedDateInFutureError(String arg0,  String arg1);
 
   /**
    * Translated "Completed|Released".
@@ -7090,6 +7153,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String inProgress();
 
   /**
+   * Translated "The auxiliary group ''{0}'' is inactive and was not added to the sample ".
+   * 
+   * @return translated "The auxiliary group ''{0}'' is inactive and was not added to the sample "
+   */
+  @DefaultMessage("The auxiliary group ''{0}'' is inactive and was not added to the sample ")
+  @Key("inactiveAuxGroupWarning")
+  String inactiveAuxGroupWarning(String arg0);
+
+  /**
    * Translated "The entry {0} under category {1} has been deactivate".
    * 
    * @return translated "The entry {0} under category {1} has been deactivate"
@@ -7097,6 +7169,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("The entry {0} under category {1} has been deactivate")
   @Key("inactiveDictionaryException")
   String inactiveDictionaryException(String arg0,  String arg1);
+
+  /**
+   * Translated "The organization ''{0}'' is inactive and was not added to the sample ".
+   * 
+   * @return translated "The organization ''{0}'' is inactive and was not added to the sample "
+   */
+  @DefaultMessage("The organization ''{0}'' is inactive and was not added to the sample ")
+  @Key("inactiveOrgWarning")
+  String inactiveOrgWarning(String arg0);
+
+  /**
+   * Translated "The project ''{0}'' is inactive and was not added to the sample ".
+   * 
+   * @return translated "The project ''{0}'' is inactive and was not added to the sample "
+   */
+  @DefaultMessage("The project ''{0}'' is inactive and was not added to the sample ")
+  @Key("inactiveProjectWarning")
+  String inactiveProjectWarning(String arg0);
 
   /**
    * Translated "''{0}, {1}'' cannot be imported because there is no matching active test".
@@ -7232,6 +7322,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Instrument")
   @Key("instrument")
   String instrument();
+
+  /**
+   * Translated "Barcode Type".
+   * 
+   * @return translated "Barcode Type"
+   */
+  @DefaultMessage("Barcode Type")
+  @Key("instrumentBarcode.barcodeType")
+  String instrumentBarcode_barcodeType();
+
+  /**
+   * Translated "Instrument Barcode Report".
+   * 
+   * @return translated "Instrument Barcode Report"
+   */
+  @DefaultMessage("Instrument Barcode Report")
+  @Key("instrumentBarcode.instrumentBarcodeReport")
+  String instrumentBarcode_instrumentBarcodeReport();
+
+  /**
+   * Translated "Worksheet Id".
+   * 
+   * @return translated "Worksheet Id"
+   */
+  @DefaultMessage("Worksheet Id")
+  @Key("instrumentBarcode.worksheetId")
+  String instrumentBarcode_worksheetId();
 
   /**
    * Translated "Define instruments that can be used in the laboratory.".
@@ -8962,11 +9079,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String multipleBillToException();
 
   /**
-   * Translated "A sample can have only one new internal note ".
+   * Translated "A sample can have only one new internal note".
    * 
-   * @return translated "A sample can have only one new internal note "
+   * @return translated "A sample can have only one new internal note"
    */
-  @DefaultMessage("A sample can have only one new internal note ")
+  @DefaultMessage("A sample can have only one new internal note")
   @Key("multipleInternalNoteException")
   String multipleInternalNoteException();
 
@@ -9419,6 +9536,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Note")
   @Key("note")
   String note();
+
+  /**
+   * Translated "Internal note subject/text cannot be empty".
+   * 
+   * @return translated "Internal note subject/text cannot be empty"
+   */
+  @DefaultMessage("Internal note subject/text cannot be empty")
+  @Key("note.internalEmptyException")
+  String note_internalEmptyException();
 
   /**
    * Translated "Notes".
@@ -10049,6 +10175,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Order # \"{0,number}\": Frequency must be greater than zero")
   @Key("order.freqInvalidException")
   String order_freqInvalidException(Integer arg0);
+
+  /**
+   * Translated "The following Auxiliary Group is inactive and was not duplicated: {0}".
+   * 
+   * @return translated "The following Auxiliary Group is inactive and was not duplicated: {0}"
+   */
+  @DefaultMessage("The following Auxiliary Group is inactive and was not duplicated: {0}")
+  @Key("order.inactiveAuxGroupWarning")
+  String order_inactiveAuxGroupWarning(String arg0);
+
+  /**
+   * Translated "The following organization is inactive and was not duplicated: {0}".
+   * 
+   * @return translated "The following organization is inactive and was not duplicated: {0}"
+   */
+  @DefaultMessage("The following organization is inactive and was not duplicated: {0}")
+  @Key("order.inactiveOrganizationWarning")
+  String order_inactiveOrganizationWarning(String arg0);
 
   /**
    * Translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
@@ -13606,13 +13750,31 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_collected();
 
   /**
+   * Translated "Accession # ''{0,number}'': Collected date can''t be after entered".
+   * 
+   * @return translated "Accession # ''{0,number}'': Collected date can''t be after entered"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Collected date can''t be after entered")
+  @Key("sample.collectedDateAfterEnteredException")
+  String sample_collectedDateAfterEnteredException(Integer arg0);
+
+  /**
    * Translated "Accession # ''{0,number}'': Collected date can''t be after received".
    * 
    * @return translated "Accession # ''{0,number}'': Collected date can''t be after received"
    */
   @DefaultMessage("Accession # ''{0,number}'': Collected date can''t be after received")
-  @Key("sample.collectedDateInvalidError")
-  String sample_collectedDateInvalidError(Integer arg0);
+  @Key("sample.collectedDateAfterReceivedException")
+  String sample_collectedDateAfterReceivedException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Collection time can''t be specified without collection date".
+   * 
+   * @return translated "Accession # ''{0,number}'': Collection time can''t be specified without collection date"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Collection time can''t be specified without collection date")
+  @Key("sample.collectedTimeWithoutDateException")
+  String sample_collectedTimeWithoutDateException(Integer arg0);
 
   /**
    * Translated "Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date".
@@ -13676,6 +13838,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Environmental")
   @Key("sample.environmental")
   String sample_environmental();
+
+  /**
+   * Translated "Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample".
+   * 
+   * @return translated "Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample")
+  @Key("sample.inactiveAuxGroupWarning")
+  String sample_inactiveAuxGroupWarning(Integer arg0,  String arg1);
+
+  /**
+   * Translated "Accession # ''{0,number}'': The organization ''{1}'' is inactive and wasn''t added to the sample".
+   * 
+   * @return translated "Accession # ''{0,number}'': The organization ''{1}'' is inactive and wasn''t added to the sample"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': The organization ''{1}'' is inactive and wasn''t added to the sample")
+  @Key("sample.inactiveOrgWarning")
+  String sample_inactiveOrgWarning(Integer arg0,  String arg1);
+
+  /**
+   * Translated "Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample".
+   * 
+   * @return translated "Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample")
+  @Key("sample.inactiveProjectWarning")
+  String sample_inactiveProjectWarning(Integer arg0,  String arg1);
 
   /**
    * Translated "Items/Analyses".
@@ -13766,6 +13955,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Not a Quick Entry sample")
   @Key("sample.notQuickEntryException")
   String sample_notQuickEntryException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': {1}".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}")
+  @Key("sample.noteException")
+  String sample_noteException(Integer arg0,  String arg1);
 
   /**
    * Translated "Sample Notes".
@@ -15645,8 +15843,26 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "{0} : {1} - Started date can''t be after completed"
    */
   @DefaultMessage("{0} : {1} - Started date can''t be after completed")
-  @Key("startedDateInvalidError")
-  String startedDateInvalidError(String arg0,  String arg1);
+  @Key("startedDateAfterCompletedError")
+  String startedDateAfterCompletedError(String arg0,  String arg1);
+
+  /**
+   * Translated "{0} : {1} - Started date is before available date".
+   * 
+   * @return translated "{0} : {1} - Started date is before available date"
+   */
+  @DefaultMessage("{0} : {1} - Started date is before available date")
+  @Key("startedDateBeforeAvailableCaution")
+  String startedDateBeforeAvailableCaution(String arg0,  String arg1);
+
+  /**
+   * Translated "{0} : {1} - Started date can''t be in the future".
+   * 
+   * @return translated "{0} : {1} - Started date can''t be in the future"
+   */
+  @DefaultMessage("{0} : {1} - Started date can''t be in the future")
+  @Key("startedDateInFutureError")
+  String startedDateInFutureError(String arg0,  String arg1);
 
   /**
    * Translated "Stat Type".

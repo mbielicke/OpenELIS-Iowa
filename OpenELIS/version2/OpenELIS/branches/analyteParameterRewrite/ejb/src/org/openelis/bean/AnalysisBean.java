@@ -53,6 +53,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorCaution;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.LastPageException;
@@ -317,6 +318,7 @@ public class AnalysisBean {
         Integer sequence;
         String test, method;
         ValidationErrorsList e;
+        Datetime now;
 
         e = new ValidationErrorsList();
         test = null;
@@ -353,6 +355,7 @@ public class AnalysisBean {
             test = null;
             method = null;
         }
+
         if (data.getTestId() == null)
             e.add(new FormErrorException(Messages.get().analysis_testIdMissingException(accession,
                                                                                         sequence)));
@@ -364,20 +367,64 @@ public class AnalysisBean {
                                                                                      test,
                                                                                      method)));
 
-        if (data.getStartedDate() != null && data.getCompletedDate() != null &&
-            data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
-            e.add(new FormErrorException(Messages.get()
-                                                 .analysis_startedDateInvalidException(accession,
-                                                                                       sequence,
-                                                                                       test,
-                                                                                       method)));
-        if (data.getCompletedDate() != null && data.getReleasedDate() != null &&
-            data.getCompletedDate().compareTo(data.getReleasedDate()) == 1)
-            e.add(new FormErrorException(Messages.get()
-                                                 .analysis_completedDateInvalidException(accession,
-                                                                                         sequence,
-                                                                                         test,
-                                                                                         method)));
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+
+        if (data.getStartedDate() != null) {
+            /*
+             * started date can't be after completed date
+             */
+            if (data.getCompletedDate() != null &&
+                data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
+                e.add(new FormErrorException(Messages.get()
+                                                     .analysis_startedDateAfterCompletedException(accession,
+                                                                                                  sequence,
+                                                                                                  test,
+                                                                                                  method)));
+
+            /*
+             * started date is before available date, which could be a problem
+             */
+            if (data.getAvailableDate() != null &&
+                data.getStartedDate().compareTo(data.getAvailableDate()) == -1)
+                e.add(new FormErrorCaution(Messages.get()
+                                                   .analysis_startedDateBeforeAvailableCaution(accession,
+                                                                                                 sequence,
+                                                                                                 test,
+                                                                                                 method)));
+
+            /*
+             * started date can't be in the future
+             */
+            if (data.getStartedDate().compareTo(now) == 1)
+                e.add(new FormErrorException(Messages.get()
+                                                     .analysis_startedDateInFutureException(accession,
+                                                                                            sequence,
+                                                                                            test,
+                                                                                            method)));
+        }
+
+        if (data.getCompletedDate() != null) {
+            /*
+             * completed date can't be after released date
+             */
+            if (data.getReleasedDate() != null &&
+                data.getCompletedDate().compareTo(data.getReleasedDate()) == 1)
+                e.add(new FormErrorException(Messages.get()
+                                                     .analysis_completedDateAfterReleasedException(accession,
+                                                                                                   sequence,
+                                                                                                   test,
+                                                                                                   method)));
+            /*
+             * completed date can't be in the future
+             */
+            if (data.getCompletedDate().compareTo(now) == 1)
+                e.add(new FormErrorException(Messages.get()
+                                                     .analysis_completedDateInFutureException(accession,
+                                                                                              sequence,
+                                                                                              test,
+                                                                                              method)));
+        }
+
         if (e.size() > 0)
             throw e;
     }

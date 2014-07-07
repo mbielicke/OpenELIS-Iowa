@@ -9,7 +9,6 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 public class LoginPage {
     
     private final WebDriver driver;
-    private final String id = "main";
     private WebDriverWait wait;
         
     By user = By.name("username");

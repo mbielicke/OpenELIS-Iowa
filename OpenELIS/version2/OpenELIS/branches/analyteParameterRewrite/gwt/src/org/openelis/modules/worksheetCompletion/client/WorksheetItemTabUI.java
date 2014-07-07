@@ -65,11 +65,11 @@ import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.sample1.client.ResultCell;
-import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell;
+import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell.Value;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -134,7 +134,8 @@ public class WorksheetItemTabUI extends Screen {
     protected HashMap<Integer, HashMap<Integer, Integer>> resultGroupMap;
     protected HashMap<MenuItem, Integer>                  templateMap;
     protected HashMap<String, ArrayList<QcLotViewDO>>     qcChoices;
-    protected HashMap<String, ArrayList<Item<Integer>>>   unitModels, dictionaryResultMap;
+    protected HashMap<String, ArrayList<Item<Integer>>>   unitModels;
+    protected HashMap<String, ArrayList<Item<String>>>    dictionaryResultMap;
     protected QcLookupScreen                              qcLookupScreen;
     protected Screen                                      parentScreen;
     protected TestWorksheetDO                             testWorksheetDO;
@@ -156,7 +157,7 @@ public class WorksheetItemTabUI extends Screen {
         initialize();
         
         manager = null;
-        dictionaryResultMap = new HashMap<String, ArrayList<Item<Integer>>>();
+        dictionaryResultMap = new HashMap<String, ArrayList<Item<String>>>();
         resultGroupMap = new HashMap<Integer, HashMap<Integer, Integer>>();
         templateMap = new HashMap<MenuItem, Integer>();
         testManagers = new HashMap<Integer, TestManager>();
@@ -195,7 +196,7 @@ public class WorksheetItemTabUI extends Screen {
         
         worksheetItemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                ArrayList<Item<Integer>> model;
+                ArrayList<Item<String>> model;
                 ArrayList<FormattedValue> values;
                 DataObject data;
                 HashMap<Integer, Integer> rgRow;
@@ -244,7 +245,7 @@ public class WorksheetItemTabUI extends Screen {
                             if (waVDO.getFromOtherId() != null)
                                 event.cancel();
                             else
-                                ((ResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
+                                ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
                         }
                     } else if (data instanceof WorksheetResultViewDO) {
                         wrVDO = (WorksheetResultViewDO)data;
@@ -278,9 +279,9 @@ public class WorksheetItemTabUI extends Screen {
                                     if (rf.hasAllDictionary(rg, unitId)) {
                                         values = rf.getDictionaryValues(rg, unitId);
                                         if (values != null) {
-                                            model = new ArrayList<Item<Integer>>();
+                                            model = new ArrayList<Item<String>>();
                                             for (FormattedValue v : values)
-                                                model.add(new Item<Integer>(v.getId(), v.getDisplay()));
+                                                model.add(new Item<String>(v.getDisplay(), v.getDisplay()));
                                         }
                                     }
                                     dictionaryResultMap.put(resultKey, model);
@@ -290,7 +291,7 @@ public class WorksheetItemTabUI extends Screen {
                                     event.cancel();
                                 }
                             }
-                            ((ResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
+                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
                         }
                     }
                 }
@@ -779,7 +780,7 @@ public class WorksheetItemTabUI extends Screen {
                         worksheetItemTable.addColumn();
                     col = worksheetItemTable.getColumnAt(i);
                     col.setLabel(headers.get(i - 11).getName());
-                    col.setCellRenderer(new ResultCell());
+                    col.setCellRenderer(new WorksheetResultCell());
                     col.setWidth(150);
                 }
                 while (rowSize < worksheetItemTable.getColumnCount())
@@ -789,7 +790,7 @@ public class WorksheetItemTabUI extends Screen {
                     wiDO = (WorksheetItemDO)manager.item.get(i);
     
                     row = new Row(rowSize);
-                    row.setCell(0, "N");
+                    row.setCell(0, null);
                     row.setCell(1, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
                         waDO = manager.analysis.get(wiDO, j);
@@ -799,7 +800,7 @@ public class WorksheetItemTabUI extends Screen {
     
                         if (j > 0) {
                             row = new Row(rowSize);
-                            row.setCell(0, "N");
+                            row.setCell(0, null);
                             row.setCell(1, wiDO.getPosition());
                         }
                         row.setCell(2, waDO.getAccessionNumber());
@@ -822,6 +823,8 @@ public class WorksheetItemTabUI extends Screen {
                                     row.setCell(0, "Y");
                                     transferRowMap.put(waDO.getAnalysisId(), r);
                                 }
+                            } else {
+                                row.setCell(0, null);
                             }
                             row.setCell(3, waDO.getDescription());
                             row.setCell(4, waDO.getWorksheetAnalysisId());
@@ -839,7 +842,7 @@ public class WorksheetItemTabUI extends Screen {
                                 wrVDO = manager.result.get(waDO, k);
                                 if (k > 0) {
                                     row = new Row(rowSize);
-                                    row.setCell(0, "N");
+                                    row.setCell(0, null);
                                     row.setCell(1, "");
                                     row.setCell(2, "");
                                     row.setCell(3, "");
@@ -852,7 +855,7 @@ public class WorksheetItemTabUI extends Screen {
                                 row.setCell(9, wrVDO.getAnalyteName());
                                 row.setCell(10, wrVDO.getIsReportable());
                                 for (l = 11; l < rowSize; l++)
-                                    row.setCell(l, new ResultCell.Value(wrVDO.getValueAt(l - 11), null));
+                                    row.setCell(l, new WorksheetResultCell.Value(wrVDO.getValueAt(l - 11), wrVDO.getValueAt(l - 11)));
                                 row.setData(manager.getUid(wrVDO)); 
                                 model.add(row);
                                 r++;
@@ -861,13 +864,13 @@ public class WorksheetItemTabUI extends Screen {
                                 row.setCell(9, "NO ANAlYTES FOOUND");
                                 row.setCell(10, null);
                                 for (l = 11; l < rowSize; l++)
-                                    row.setCell(l, new ResultCell.Value(null, null));
+                                    row.setCell(l, new WorksheetResultCell.Value(null, null));
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
                                 r++;
                             }
                         } else if (waDO.getQcLotId() != null) {
-                            row.setCell(0, "N");
+                            row.setCell(0, null);
                             row.setCell(3, waDO.getDescription());
                             row.setCell(4, waDO.getWorksheetAnalysisId());
                             row.setCell(5, "");
@@ -879,7 +882,7 @@ public class WorksheetItemTabUI extends Screen {
                                 wqrVDO = manager.qcResult.get(waDO, k);
                                 if (k > 0) {
                                     row = new Row(rowSize);
-                                    row.setCell(0, "N");
+                                    row.setCell(0, null);
                                     row.setCell(1, "");
                                     row.setCell(2, "");
                                     row.setCell(3, "");
@@ -892,7 +895,7 @@ public class WorksheetItemTabUI extends Screen {
                                 row.setCell(9, wqrVDO.getAnalyteName());
                                 row.setCell(10, null);
                                 for (l = 11; l < rowSize; l++)
-                                    row.setCell(l, new ResultCell.Value(wqrVDO.getValueAt(l - 11), null));
+                                    row.setCell(l, new WorksheetResultCell.Value(wqrVDO.getValueAt(l - 11), wqrVDO.getValueAt(l - 11)));
                                 row.setData(manager.getUid(wqrVDO)); 
                                 model.add(row);
                                 r++;
@@ -901,7 +904,7 @@ public class WorksheetItemTabUI extends Screen {
                                 row.setCell(9, "NO ANAlYTES FOOUND");
                                 row.setCell(10, null);
                                 for (l = 11; l < rowSize; l++)
-                                    row.setCell(l, new ResultCell.Value(null, null));
+                                    row.setCell(l, new WorksheetResultCell.Value(null, null));
                                 row.setData(manager.getUid(waDO)); 
                                 model.add(row);
                                 r++;

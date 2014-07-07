@@ -88,6 +88,7 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.Util;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -1143,7 +1144,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             } catch (ValidationErrorsList e) {
                 showErrors(e);
 
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors()  && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
@@ -1162,7 +1163,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors()  && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
@@ -1170,9 +1171,15 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         }
     }
 
-    protected void commitWithWarnings() {
+    protected void commitWithWarnings(ValidationErrorsList warnings) {
         clearErrors();
-        manager.setStatusWithError(true);
+        /*
+         * the passed list can contain warnings and caution, so the status of
+         * the sample needs to be set to Error only if there are warnings in the
+         * list
+         */
+        if (warnings.hasWarnings())
+            manager.setStatusWithError(true);
 
         if (state == State.ADD) {
             window.setBusy(Messages.get().adding());
@@ -1259,6 +1266,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     protected void duplicate() {
+        ValidationErrorsList errors;
+        
         try {
             window.setBusy(Messages.get().fetching());
             manager = SampleManager.fetchWithAllDataById(manager.getSample().getId());
@@ -1269,7 +1278,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             previousManager = manager;
-            manager = SampleDuplicateUtil.duplicate(manager);
+            errors = new ValidationErrorsList();
+            manager = SampleDuplicateUtil.duplicate(manager, errors);           
 
             setDataInTabs();
             setState(State.ADD);
@@ -1283,7 +1293,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             DataChangeEvent.fire(this);
 
             setFocus(accessionNumber);
-            window.setDone(Messages.get().enterInformationPressCommit());
+            
+            /*
+             * show any errors/warnings found during duplication
+             */
+            if (errors.hasWarnings())
+                showWarnings(errors);
+            if (errors.hasErrors())
+                showErrors(errors);
+            else
+                window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             Window.alert("Sample duplicate: " + e.getMessage());
             e.printStackTrace();
@@ -1471,6 +1490,21 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler((ActionHandler<?>)handler, ActionEvent.getType());
     }
+    
+    /**
+     * Shows a list of warnings in the form of an alert and not a confirm dialog
+     * like showWarningsDialog. Doesn't commit the data like that method either.
+     */
+    private void showWarnings(ValidationErrorsList warnings) {
+        String warningText = "Sample duplicate: " + "\n";
+
+        for (Exception ex : warnings.getErrorList()) {
+            if (ex instanceof Warning)
+                warningText += " * " + ex.getMessage() + "\n";
+        }
+
+        Window.alert(warningText);
+    }
 
     private void setDefaults() throws Exception {
         NoteViewDO exn;
@@ -1580,8 +1614,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.clearStatus();
 
             ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, null);
-            if (errors != null && errors.size() > 0)
-                showErrors(errors);
+            
+            if (errors != null) {
+                if (errors.hasWarnings())
+                    showWarnings(errors);
+                if (errors.hasErrors())
+                    showErrors(errors);
+            }
 
             /*
              * check to see if any of the sample organizations has been marked

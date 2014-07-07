@@ -52,7 +52,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "TestPrep.FetchByTestId",
                 query = "select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) "
-                      + "  from TestPrep tp left join tp.prepTest t left join t.method m where tp.testId = :id "),
+                      + "  from TestPrep tp left join tp.prepTest t left join t.method m where tp.testId = :id order by t.name, m.name"),
     @NamedQuery( name = "TestPrep.FetchByPrepTestId",
                 query = " select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) "
                       + " from TestPrep tp left join tp.test t left join t.method m where tp.prepTestId = :testId and t.isActive = 'Y' ")})

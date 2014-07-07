@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
@@ -37,6 +37,7 @@ import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -46,6 +47,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -59,10 +61,11 @@ import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
+import org.openelis.ui.common.FormErrorWarning;
 
 public class SampleDuplicateUtil {
 
-    public static SampleManager duplicate(SampleManager oldMan) throws Exception {
+    public static SampleManager duplicate(SampleManager oldMan, ValidationErrorsList errors) throws Exception {
         Integer statusId;
         SampleManager newMan;
         SampleItemManager siMan;
@@ -73,19 +76,28 @@ public class SampleDuplicateUtil {
             anMan = siMan.getAnalysisAt(i);
             for (int j = 0; j < anMan.count(); j++ ) {
                 statusId = anMan.getAnalysisAt(j).getStatusId();
-                if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) &&
+                if ( !Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) &&
                     !Constants.dictionary().ANALYSIS_INPREP.equals(statusId) &&
                     !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId) &&
-                    !Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
+                    !Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId)) {
                     throw new Exception(Messages.get().analysisHasAdvancedStatusException());
+                }
             }
         }
         newMan = SampleManager.getInstance();
-        duplicate(newMan, oldMan);
+        /*
+         * an exception is thrown by any of the methods that this method calls
+         * only when the original sample can't be duplicated e.g. if it contains
+         * a reflexed analyis; otherwise, if some data can be duplicated but
+         * some can't be e.g. because of it being inactive, then the
+         * error/warning for that is added to the passed list and the partially
+         * duplicated manager is returned
+         */
+        duplicate(newMan, oldMan, errors);
 
         return newMan;
     }
-    
+
     public static void duplicateSampleItem(SampleItemViewDO newData, SampleItemViewDO oldData) {
         newData.setTypeOfSampleId(oldData.getTypeOfSampleId());
         newData.setSourceOfSampleId(oldData.getSourceOfSampleId());
@@ -98,14 +110,14 @@ public class SampleDuplicateUtil {
         newData.setSourceOfSample(oldData.getSourceOfSample());
         newData.setContainer(oldData.getContainer());
     }
-    
+
     public static void duplicateNotes(NoteManager newMan, NoteManager oldMan) throws Exception {
         NoteViewDO newData, oldData;
-                
-        for (int i = 0; i < oldMan.count(); i++) {
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getNoteAt(i);
             newData = new NoteViewDO();
-            
+
             newData.setIsExternal(oldData.getIsExternal());
             newData.setReferenceId(oldData.getReferenceId());
             newData.setReferenceTableId(oldData.getReferenceTableId());
@@ -116,33 +128,34 @@ public class SampleDuplicateUtil {
             newMan.addNote(newData);
         }
     }
-    
+
     public static void duplicateSampleQaEvents(SampleQaEventManager newMan,
                                                SampleQaEventManager oldMan) {
-       SampleQaEventViewDO newData, oldData;
-       
-       for (int i = 0; i < oldMan.count(); i++) {
-           oldData = oldMan.getSampleQAAt(i);
-           newData = new SampleQaEventViewDO();
-           
-           newData.setQaEventId(oldData.getQaEventId());
-           newData.setTypeId(oldData.getTypeId());
-           newData.setIsBillable(oldData.getIsBillable());
-           newData.setQaEventName(oldData.getQaEventName());
-           newData.setQaEventReportingText(oldData.getQaEventReportingText());
-           newMan.addSampleQA(newData);
-       }
-   }
-    
-    private static void duplicate(SampleManager newMan, SampleManager oldMan) throws Exception {        
+        SampleQaEventViewDO newData, oldData;
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
+            oldData = oldMan.getSampleQAAt(i);
+            newData = new SampleQaEventViewDO();
+
+            newData.setQaEventId(oldData.getQaEventId());
+            newData.setTypeId(oldData.getTypeId());
+            newData.setIsBillable(oldData.getIsBillable());
+            newData.setQaEventName(oldData.getQaEventName());
+            newData.setQaEventReportingText(oldData.getQaEventReportingText());
+            newMan.addSampleQA(newData);
+        }
+    }
+
+    private static void duplicate(SampleManager newMan, SampleManager oldMan,
+                                  ValidationErrorsList errors) throws Exception {
         String domain;
-        SampleDO newData, oldData;         
-        
+        SampleDO newData, oldData;
+
         newMan.setDefaults();
         newData = newMan.getSample();
         oldData = oldMan.getSample();
         domain = oldData.getDomain();
-        
+
         newData.setDomain(domain);
         newData.setOrderId(oldData.getOrderId());
         newData.setReceivedById(oldData.getReceivedById());
@@ -151,54 +164,64 @@ public class SampleDuplicateUtil {
         newData.setReceivedDate(oldData.getReceivedDate());
         newData.setPackageId(oldData.getPackageId());
         newData.setClientReference(oldData.getClientReference());
-        
-        duplicateSampleItems(newMan.getSampleItems(), oldMan.getSampleItems());     
-        duplicateOrganizations(newMan.getOrganizations(), oldMan.getOrganizations());
-        duplicateProjects(newMan.getProjects(), oldMan.getProjects());
+
+        duplicateSampleItems(newMan.getSampleItems(), oldMan.getSampleItems());
+        duplicateOrganizations(newMan.getOrganizations(), oldMan.getOrganizations(), errors);
+        duplicateProjects(newMan.getProjects(), oldMan.getProjects(), errors);
         duplicateSampleQaEvents(newMan.getQaEvents(), oldMan.getQaEvents());
-                
-        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain)) {           
+
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain)) {
             duplicateEnvironmental((SampleEnvironmentalManager)newMan.getDomainManager(),
                                    (SampleEnvironmentalManager)oldMan.getDomainManager());
         } else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain)) {
             duplicatePrivateWell((SamplePrivateWellManager)newMan.getDomainManager(),
-                                   (SamplePrivateWellManager)oldMan.getDomainManager());
+                                 (SamplePrivateWellManager)oldMan.getDomainManager(),
+                                 errors);
         } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain)) {
             duplicateSDWIS((SampleSDWISManager)newMan.getDomainManager(),
                            (SampleSDWISManager)oldMan.getDomainManager());
         }
-        
+
         duplicateNotes(newMan.getExternalNote(), oldMan.getExternalNote());
-        duplicateAuxData(newMan.getAuxData(), oldMan.getAuxData());
+        duplicateAuxData(newMan.getAuxData(), oldMan.getAuxData(), errors);
     }
-    
+
     private static void duplicateSampleItems(SampleItemManager newMan, SampleItemManager oldMan) throws Exception {
         int i, index;
         SampleItemViewDO newData, oldData;
         HashMap<Integer, AnalysisViewDO> oldNewAnaMap;
-        
+
         oldNewAnaMap = new HashMap<Integer, AnalysisViewDO>();
-        for (i = 0; i < oldMan.count(); i++) {
+        for (i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getSampleItemAt(i);
             index = newMan.addSampleItem();
             newData = newMan.getSampleItemAt(index);
-            
+
             duplicateSampleItem(newData, oldData);
-            
+
             duplicateAnalyses(newMan.getAnalysisAt(index), oldMan.getAnalysisAt(i), oldNewAnaMap);
         }
-        
-        setPrepAnalyses (newMan, oldMan, oldNewAnaMap);
+
+        setPrepAnalyses(newMan, oldMan, oldNewAnaMap);
     }
 
     private static void duplicateOrganizations(SampleOrganizationManager newMan,
-                                               SampleOrganizationManager oldMan) {
+                                               SampleOrganizationManager oldMan,
+                                               ValidationErrorsList errors) {
         SampleOrganizationViewDO newData, oldData;
-        
-        for (int i = 0; i < oldMan.count(); i++) {
-            newData = new SampleOrganizationViewDO();
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getOrganizationAt(i);
-            
+
+            if ("N".equals(oldData.getOrganizationIsActive())) {
+                /*
+                 * don't duplicate if the organization is inactive
+                 */
+                errors.add(new FormErrorWarning(Messages.get()
+                                                        .inactiveOrgWarning(oldData.getOrganizationName())));
+                continue;
+            }
+            newData = new SampleOrganizationViewDO();
             newData.setOrganizationId(oldData.getOrganizationId());
             newData.setOrganizationAttention(oldData.getOrganizationAttention());
             newData.setTypeId(oldData.getTypeId());
@@ -213,31 +236,40 @@ public class SampleDuplicateUtil {
             newMan.addOrganization(newData);
         }
     }
-    
-    private static void duplicateProjects(SampleProjectManager newMan, SampleProjectManager oldMan) {
+
+    private static void duplicateProjects(SampleProjectManager newMan, SampleProjectManager oldMan,
+                                          ValidationErrorsList errors) {
         SampleProjectViewDO newData, oldData;
-        
-        for (int i = 0; i < oldMan.count(); i++) {
-            newData = new SampleProjectViewDO();            
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getProjectAt(i);
-            
+            if ("N".equals(oldData.getProjectIsActive())) {
+                /*
+                 * don't duplicate if the project is inactive
+                 */
+                errors.add(new FormErrorWarning(Messages.get()
+                                                        .inactiveProjectWarning(oldData.getProjectName())));
+                continue;
+            }
+
+            newData = new SampleProjectViewDO();
             newData.setProjectId(oldData.getProjectId());
             newData.setIsPermanent(oldData.getIsPermanent());
             newData.setProjectName(oldData.getProjectName());
-            newData.setProjectDescription(oldData.getProjectDescription());            
+            newData.setProjectDescription(oldData.getProjectDescription());
             newMan.addProject(newData);
         }
     }
-    
+
     private static void duplicateAnalyses(AnalysisManager newMan, AnalysisManager oldMan,
                                           HashMap<Integer, AnalysisViewDO> newOldAnaIdMap) throws Exception {
         int index;
         Integer statusId;
         String tname, mname;
         AnalysisViewDO newData, oldData;
-        AnalysisResultManager newRM, oldRM;        
-        
-        for (int i = 0; i < oldMan.count(); i++) {
+        AnalysisResultManager newRM, oldRM;
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getAnalysisAt(i);
             statusId = oldData.getStatusId();
             tname = oldData.getTestName();
@@ -245,17 +277,21 @@ public class SampleDuplicateUtil {
             //
             // cancelled analyses are not duplicated
             //
-            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) 
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
                 continue;
             //
-            // we don't allow duplication if even one analysis has reflexed analyses
+            // we don't allow duplication if even one analysis has reflexed
+            // analyses
             //
-            if (oldData.getParentAnalysisId() != null || oldData.getParentResultId() != null) 
-                throw new Exception(Messages.get().analysisHasReflexAnalysesException(oldData.getTestName()+ ":"+oldData.getMethodName()));
+            if (oldData.getParentAnalysisId() != null || oldData.getParentResultId() != null)
+                throw new Exception(Messages.get()
+                                            .analysisHasReflexAnalysesException(oldData.getTestName() +
+                                                                                ":" +
+                                                                                oldData.getMethodName()));
             index = newMan.addAnalysis();
             newData = newMan.getAnalysisAt(index);
             newOldAnaIdMap.put(oldData.getId(), newData);
-            
+
             newData.setTestName(tname);
             newData.setMethodName(mname);
             newData.setMethodId(oldData.getMethodId());
@@ -265,64 +301,64 @@ public class SampleDuplicateUtil {
             newData.setIsReportable(oldData.getIsReportable());
             newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
             newData.setSectionId(oldData.getSectionId());
-        
+
             newRM = newMan.getAnalysisResultAt(index);
             oldRM = oldMan.getAnalysisResultAt(i);
             duplicateResults(newRM, oldRM);
             /*
-             * the test's id is set after duplicating the results to prevent them
-             * from being fetched
+             * the test's id is set after duplicating the results to prevent
+             * them from being fetched
              */
             newData.setTestId(oldData.getTestId());
-            
+
             duplicateAnalysisQaEvents(newMan.getQAEventAt(index), oldMan.getQAEventAt(i));
-            
+
             duplicateNotes(newMan.getExternalNoteAt(index), oldMan.getExternalNoteAt(i));
-        }                
+        }
     }
-    
+
     private static void duplicateResults(AnalysisResultManager newMan, AnalysisResultManager oldMan) {
         int i;
         ArrayList<ResultViewDO> newRow, oldRow;
         ResultViewDO newData, oldData;
-        
-        for (i = 0; i < oldMan.rowCount(); i++) {
+
+        for (i = 0; i < oldMan.rowCount(); i++ ) {
             oldRow = oldMan.getRowAt(i);
             newRow = new ArrayList<ResultViewDO>();
-            for (int j = 0; j < oldRow.size(); j++) {
+            for (int j = 0; j < oldRow.size(); j++ ) {
                 oldData = oldRow.get(j);
                 newData = new ResultViewDO();
-                
+
                 newData.setTestAnalyteId(oldData.getTestAnalyteId());
                 newData.setTestResultId(oldData.getTestResultId());
                 newData.setIsColumn(oldData.getIsColumn());
                 newData.setIsReportable(oldData.getIsReportable());
                 newData.setAnalyteId(oldData.getAnalyteId());
                 newData.setTypeId(oldData.getTypeId());
-                newData.setValue(oldData.getValue());   
+                newData.setValue(oldData.getValue());
                 newData.setAnalyte(oldData.getAnalyte());
                 newData.setRowGroup(oldData.getRowGroup());
                 newData.setTestAnalyteTypeId(oldData.getTestAnalyteTypeId());
-                newData.setResultGroup(oldData.getResultGroup());      
+                newData.setResultGroup(oldData.getResultGroup());
                 newRow.add(newData);
             }
             newMan.addRow(newRow);
         }
-        
+
         newMan.setAnalyteList(oldMan.getAnalyteList());
         newMan.setTestAnalyteList(oldMan.getTestAnalyteList());
-        newMan.setTestResultList(oldMan.getTestResultList());   
+        newMan.setTestResultList(oldMan.getTestResultList());
         newMan.setResultValidators(oldMan.getResultValidators());
     }
-    
-    private static void duplicateAnalysisQaEvents(AnalysisQaEventManager newMan, 
+
+    private static void duplicateAnalysisQaEvents(AnalysisQaEventManager newMan,
                                                   AnalysisQaEventManager oldMan) {
         AnalysisQaEventViewDO newData, oldData;
-        
-        for (int i = 0; i < oldMan.count(); i++) {
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getAnalysisQAAt(i);
             newData = new AnalysisQaEventViewDO();
-            
+
             newData.setAnalysisId(oldData.getAnalysisId());
             newData.setQaeventId(oldData.getQaEventId());
             newData.setTypeId(oldData.getTypeId());
@@ -330,30 +366,30 @@ public class SampleDuplicateUtil {
             newData.setQaEventName(oldData.getQaEventName());
             newData.setQaEventReportingText(oldData.getQaEventReportingText());
             newMan.addAnalysisQA(newData);
-        }               
-    }   
-    
+        }
+    }
+
     private static void setPrepAnalyses(SampleItemManager newMan, SampleItemManager oldMan,
-                                           HashMap<Integer, AnalysisViewDO> oldNewAnaMap) throws Exception {
+                                        HashMap<Integer, AnalysisViewDO> oldNewAnaMap) throws Exception {
         Integer oldId, oldPrepId;
         AnalysisViewDO newData, oldData, newPrepData;
         AnalysisManager oldAnaMan;
-        
+
         /*
          * we go through all the sample items and analyses and connect the new
          * in-prep analyses with their prep analyses
          */
-        for (int i = 0; i < oldMan.count(); i++) {    
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldAnaMan = oldMan.getAnalysisAt(i);
-            for (int j = 0; j < oldAnaMan.count(); j++) {
+            for (int j = 0; j < oldAnaMan.count(); j++ ) {
                 oldData = oldAnaMan.getAnalysisAt(j);
                 oldId = oldData.getId();
                 oldPrepId = oldData.getPreAnalysisId();
                 /*
-                 * if the old analysis, say 'O', corresponding to the new analysis,
-                 * say 'A', was in-prep then we find the new analysis, say 'P',
-                 * corresponding to O's prep analysis and set P's id as A's 
-                 * pre analysis id   
+                 * if the old analysis, say 'O', corresponding to the new
+                 * analysis, say 'A', was in-prep then we find the new analysis,
+                 * say 'P', corresponding to O's prep analysis and set P's id as
+                 * A's pre analysis id
                  */
                 if (oldPrepId != null) {
                     newData = oldNewAnaMap.get(oldId);
@@ -365,21 +401,21 @@ public class SampleDuplicateUtil {
                     newData.setPreAnalysisMethod(newPrepData.getMethodName());
                 }
             }
-        }               
+        }
     }
-    
+
     private static void duplicateEnvironmental(SampleEnvironmentalManager newMan,
                                                SampleEnvironmentalManager oldMan) {
         SampleEnvironmentalDO newData, oldData;
         AddressDO oldLoc;
-                
+
         newData = newMan.getEnvironmental();
         oldData = oldMan.getEnvironmental();
-        
-        oldLoc = oldData.getLocationAddress();   
+
+        oldLoc = oldData.getLocationAddress();
         if (oldLoc.getId() != null)
-            duplicateAddress(newData.getLocationAddress(), oldLoc);  
-        
+            duplicateAddress(newData.getLocationAddress(), oldLoc);
+
         newData.setCollector(oldData.getCollector());
         newData.setCollectorPhone(oldData.getCollectorPhone());
         newData.setDescription(oldData.getDescription());
@@ -388,38 +424,61 @@ public class SampleDuplicateUtil {
         newData.setSampleId(oldData.getSampleId());
         newData.setLocation(oldData.getLocation());
     }
-    
-    private static void duplicatePrivateWell(SamplePrivateWellManager newMan, SamplePrivateWellManager oldMan) {
+
+    private static void duplicatePrivateWell(SamplePrivateWellManager newMan,
+                                             SamplePrivateWellManager oldMan,
+                                             ValidationErrorsList errors) {
+        Integer orgId;
+        String name, attn;
+        OrganizationDO org;
         SamplePrivateWellViewDO newData, oldData;
         AddressDO oldAddr;
-        
+
         newData = newMan.getPrivateWell();
         oldData = oldMan.getPrivateWell();
-        
-        oldAddr = oldData.getLocationAddress();   
+
+        oldAddr = oldData.getLocationAddress();
         if (oldAddr.getId() != null)
             duplicateAddress(newData.getLocationAddress(), oldAddr);
-        
-        oldAddr = oldData.getReportToAddress();   
+
+        oldAddr = oldData.getReportToAddress();
         if (oldAddr.getId() != null)
             duplicateAddress(newData.getReportToAddress(), oldAddr);
-        
-        newData.setOrganizationId(oldData.getOrganizationId());
-        newData.setReportToName(oldData.getReportToName());
-        newData.setReportToAttention(oldData.getReportToAttention());
+
+        orgId = oldData.getOrganizationId();
+        name = oldData.getReportToName();
+        attn = oldData.getReportToAttention();
+        org = oldData.getOrganization();
+        if (oldData.getOrganizationId() != null) {
+            if ("N".equals(org.getIsActive())) {
+                /*
+                 * don't duplicate the organization if it's inactive
+                 */
+                errors.add(new FormErrorWarning(Messages.get().inactiveOrgWarning(org.getName())));
+                orgId = null;
+                name = null;
+                attn = null;
+                org = null;
+            }
+        }
+
+        newData.setOrganizationId(orgId);
+        newData.setReportToName(name);
+        newData.setReportToAttention(attn);
         newData.setLocation(oldData.getLocation());
         newData.setOwner(oldData.getOwner());
         newData.setCollector(oldData.getCollector());
         newData.setWellNumber(oldData.getWellNumber());
-        newData.setOrganization(oldData.getOrganization());
+        newData.setOrganization(org);
+
     }
-    
+
     private static void duplicateSDWIS(SampleSDWISManager newMan, SampleSDWISManager oldMan) {
         SampleSDWISViewDO newData, oldData;
-        
+
         newData = newMan.getSDWIS();
         oldData = oldMan.getSDWIS();
-        
+
         newData.setPwsId(oldData.getPwsId());
         newData.setStateLabId(oldData.getStateLabId());
         newData.setFacilityId(oldData.getFacilityId());
@@ -431,37 +490,52 @@ public class SampleDuplicateUtil {
         newData.setPwsName(oldData.getPwsName());
         newData.setPwsNumber0(oldData.getPwsNumber0());
     }
-    
-    private static void duplicateAuxData(AuxDataManager newMan, AuxDataManager oldMan) {
+
+    private static void duplicateAuxData(AuxDataManager newMan, AuxDataManager oldMan,
+                                         ValidationErrorsList errors) {
+        Integer prevGroupId;
         AuxDataViewDO newAD, oldAD;
         AuxFieldViewDO newAF, oldAF;
         AuxFieldValueViewDO newAFV, oldAFV;
-        ArrayList<AuxFieldValueViewDO> newList, oldList; 
+        ArrayList<AuxFieldValueViewDO> newList, oldList;
 
-        for (int i = 0; i < oldMan.count(); i++) {            
+        prevGroupId = null;
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldAD = oldMan.getAuxDataAt(i);
-            newAD = new AuxDataViewDO();           
+            if ("N".equals(oldAD.getAuxFieldGroupIsActive())) {
+                /*
+                 * don't duplicate the aux group if it's inactive; add the
+                 * warning only once for each inactive aux group
+                 */
+                if ( !oldAD.getAuxFieldGroupId().equals(prevGroupId))
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                            .inactiveAuxGroupWarning(oldAD.getAuxFieldGroupName())));
+                prevGroupId = oldAD.getAuxFieldGroupId();
+                continue;
+            }
+            newAD = new AuxDataViewDO();
             duplicateAuxData(newAD, oldAD);
-                       
+
             newAF = new AuxFieldViewDO();
-            oldAF = oldMan.getAuxFieldAt(i);            
-            duplicateAuxField(newAF, oldAF); 
-            
+            oldAF = oldMan.getAuxFieldAt(i);
+            duplicateAuxField(newAF, oldAF);
+
             newList = new ArrayList<AuxFieldValueViewDO>();
             oldList = oldMan.getAuxValuesAt(i);
-            
-            for (int j = 0; j < oldList.size(); j++) {
+
+            for (int j = 0; j < oldList.size(); j++ ) {
                 newAFV = new AuxFieldValueViewDO();
-                oldAFV = oldList.get(j);                
+                oldAFV = oldList.get(j);
                 duplicateAuxFieldValue(newAFV, oldAFV);
                 newList.add(newAFV);
             }
-            
+
             newMan.addAuxDataFieldAndValues(newAD, newAF, newList);
+            prevGroupId = oldAD.getAuxFieldGroupId();
         }
     }
-    
-    private static void duplicateAddress(AddressDO newData, AddressDO oldData) {        
+
+    private static void duplicateAddress(AddressDO newData, AddressDO oldData) {
         newData.setCellPhone(oldData.getCellPhone());
         newData.setCity(oldData.getCity());
         newData.setCountry(oldData.getCountry());
@@ -474,7 +548,7 @@ public class SampleDuplicateUtil {
         newData.setWorkPhone(oldData.getWorkPhone());
         newData.setZipCode(oldData.getZipCode());
     }
-    
+
     private static void duplicateAuxData(AuxDataViewDO newData, AuxDataViewDO oldData) {
         newData.setAuxFieldId(oldData.getAuxFieldId());
         newData.setReferenceTableId(oldData.getReferenceTableId());
@@ -487,7 +561,7 @@ public class SampleDuplicateUtil {
         newData.setAnalyteName(oldData.getAnalyteName());
         newData.setAnalyteExternalId(oldData.getAnalyteExternalId());
     }
-    
+
     private static void duplicateAuxField(AuxFieldViewDO newData, AuxFieldViewDO oldData) {
         newData.setAuxFieldGroupId(oldData.getAuxFieldGroupId());
         newData.setSortOrder(oldData.getSortOrder());
@@ -500,14 +574,14 @@ public class SampleDuplicateUtil {
         newData.setIsReportable(oldData.getIsReportable());
         newData.setScriptletId(oldData.getScriptletId());
         newData.setAnalyteName(oldData.getAnalyteName());
-        newData.setMethodName(oldData.getMethodName());       
+        newData.setMethodName(oldData.getMethodName());
         newData.setUnitOfMeasureName(oldData.getUnitOfMeasureName());
-    }   
-    
+    }
+
     private static void duplicateAuxFieldValue(AuxFieldValueViewDO entity, AuxFieldValueViewDO data) {
         entity.setAuxFieldId(data.getAuxFieldId());
         entity.setTypeId(data.getTypeId());
-        entity.setValue(data.getValue());   
+        entity.setValue(data.getValue());
         entity.setDictionary(data.getDictionary());
     }
 }

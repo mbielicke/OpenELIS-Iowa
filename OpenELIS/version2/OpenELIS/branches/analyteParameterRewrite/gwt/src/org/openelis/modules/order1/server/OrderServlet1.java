@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.OrderBean;
 import org.openelis.bean.OrderManager1Bean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderTestReturnVO;
+import org.openelis.domain.OrderReturnVO;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.OrderManager1;
 import org.openelis.manager.OrderManager1.Load;
@@ -153,7 +153,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
         }
     }
 
-    public OrderManager1 duplicate(Integer id) throws Exception {
+    public OrderReturnVO duplicate(Integer id) throws Exception {
         try {
             return orderManager1.duplicate(id);
         } catch (Exception anyE) {
@@ -179,7 +179,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
         }
     }
 
-    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
         try {
             return orderManager1.addAuxGroups(om, groupIds);
         } catch (Exception anyE) {
@@ -196,7 +196,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
     }
 
     @Override
-    public OrderTestReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
+    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
         try {
             return orderManager1.addTest(om, id, isTest, index);
         } catch (Exception anyE) {

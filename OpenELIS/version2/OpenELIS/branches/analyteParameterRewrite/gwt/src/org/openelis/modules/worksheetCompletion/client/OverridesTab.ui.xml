@@ -50,7 +50,9 @@
           <t:LabelCell/>
         </t:Column>
         <t:Column width="110" label="{msg.worksheet_overrideUsers}">
-          <t:LabelCell/>
+          <t:TextBoxCell>
+            <w:TextBox case="LOWER" field="String"/>
+          </t:TextBoxCell>
         </t:Column>
         <t:Column width="100" label="{msg.analysis_started}">
           <t:CalendarCell>
