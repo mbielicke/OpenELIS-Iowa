@@ -93,7 +93,6 @@
                 <w:MenuItem description="{msg.storageDescription}" enabled="false" icon="{res.icon.storageIcon}" ui:field="storage"
                   display="{msg.storage}" />
                 <w:MenuItem description="{msg.QCDescription}" enabled="false" icon="QCIcon" ui:field="QC" display="{msg.QC}" />
-                <w:MenuItem description="{msg.sample_sampleQcDescription}" enabled="false" icon="QCIcon" ui:field="sampleQc" display="{msg.sample_sampleQc}" />
                 <w:MenuItem description="{msg.analyteParameterDescription}" enabled="false" icon="{res.icon.QCIcon}" ui:field="analyteParameter"
                   display="{msg.analyteParameter}" />
               </w:Menu>
@@ -155,6 +154,9 @@
                   <w:MenuItem enabled="false" ui:field="finalReport" display="{msg.finalReport}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
+                </w:Menu>
+                <w:Menu display="{msg.report_dataExport}" enabled="true" showBelow="false">
+                  <w:MenuItem enabled="false" ui:field="sampleQc" display="{msg.sampleQc_sampleQc}" />
                 </w:Menu>
               </w:Menu>
               <w:Menu label="{msg.maintenance}" ui:field="maintenanceMenu">
