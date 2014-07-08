@@ -8,6 +8,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-EJB"/>
+	<classpathentry kind="lib" path="lib/gwt-i18n-server-jar-0.22.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry kind="lib" path="/usr/local/java/gwt-2.6.0/gwt-codeserver.jar"/>
