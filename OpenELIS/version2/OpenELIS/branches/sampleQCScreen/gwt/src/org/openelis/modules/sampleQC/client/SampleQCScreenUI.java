@@ -26,10 +26,6 @@
 package org.openelis.modules.sampleQC.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +37,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleItemViewDO;
@@ -51,32 +48,35 @@ import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.meta.QcMeta;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.widget.table.CheckLabelValue;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.ui.widget.table.event.CellEditedEvent;
-import org.openelis.ui.widget.table.event.CellEditedHandler;
 import org.openelis.ui.widget.tree.Node;
 import org.openelis.ui.widget.tree.Tree;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -99,14 +99,15 @@ public class SampleQCScreenUI extends Screen {
     protected ModulePermission                                     userPermission;
 
     @UiField
-    protected Button                                               query, commit, abort,
-                    optionsButton, run, checkAllButton, uncheckAllButton;
+    protected Button                                               getDataButton, exportButton,
+                    printButton, checkAllButton, uncheckAllButton, checkAllQcsButton,
+                    uncheckAllQcsButton;
 
     @UiField
-    protected TextBox<Integer>                                     id;
+    protected TextBox<Integer>                                     accessionNumber;
 
-    // @UiField
-    // protected Dropdown<Integer> printer;
+    @UiField
+    protected Dropdown<Integer>                                    printer;
 
     @UiField
     protected Table                                                table;
@@ -124,6 +125,8 @@ public class SampleQCScreenUI extends Screen {
 
     protected AsyncCallbackUI<QcManager>                           fetchQcByIdCall;
 
+    protected Integer                                              previousAccession;
+
     protected HashSet<Integer>                                     qcIds;
 
     protected HashMap<Integer, HashSet<Integer>>                   analysisWorksheets,
@@ -137,17 +140,15 @@ public class SampleQCScreenUI extends Screen {
 
     protected HashMap<Integer, Integer>                            relatedWorksheets;
 
-    protected HashMap<Integer, String>                             analysisStatus, analysisUnit,
-                    worksheetStatus, worksheetFormatName, worksheetFormatCategories, qcType;
+    protected HashMap<Integer, String>                             analysisStatus, worksheetStatus,
+                    worksheetFormatName, worksheetFormatCategories, qcType;
 
     protected HashMap<String, ArrayList<String>>                   worksheetFormat;
-    protected HashMap<Integer, String>                             qcAnalyteList;
+
+    protected DateHelper                                           dateHelper;
 
     private static final String                                    ANALYSIS_LEAF       = "analysis",
-                    WORKSHEET_LEAF = "worksheet",
-                    QC_LEAF = "qc",
-                    ANALYTE_LEAF = "qcAnalyte",
-                    VALUE_LEAF = "value";
+                    WORKSHEET_LEAF = "worksheet", QC_LEAF = "qc", ANALYTE_LEAF = "qcAnalyte";
 
     protected SampleManager1.Load                                  sampleElements[]    = {SampleManager1.Load.WORKSHEET};
 
@@ -162,11 +163,7 @@ public class SampleQCScreenUI extends Screen {
                                                   .gen_screenPermException("Sample QC Screen"));
 
         try {
-            CategoryCache.getBySystemNames("type_of_sample",
-                                           "analysis_status",
-                                           "unit_of_measure",
-                                           "worksheet_status",
-                                           "test_worksheet_format");
+            CategoryCache.getBySystemNames("type_of_sample", "analysis_status", "worksheet_status");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -177,10 +174,10 @@ public class SampleQCScreenUI extends Screen {
 
         sm = null;
         wms = null;
-        qcAnalyteList = null;
+        dateHelper = new DateHelper();
+        dateHelper.setPattern(Messages.get().dateTimePattern());
 
         initialize();
-        setState(DEFAULT);
         fireDataChange();
 
         logger.fine("Sample QC Screen Opened");
@@ -195,107 +192,54 @@ public class SampleQCScreenUI extends Screen {
         screen = this;
 
         //
-        // button panel buttons
-        //
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
-                                 userPermission.hasSelectPermission());
-                if (isState(QUERY)) {
-                    query.lock();
-                    query.setPressed(true);
-                }
-            }
-        });
-
-        addShortcut(query, 'q', CTRL);
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                commit.setEnabled(isState(QUERY));
-            }
-        });
-
-        addShortcut(commit, 'm', CTRL);
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                abort.setEnabled(isState(QUERY));
-            }
-        });
-
-        addShortcut(abort, 'o', CTRL);
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                optionsButton.setEnabled(isState(DISPLAY));
-            }
-        });
-
-        //
         // screen fields
         //
-        addScreenHandler(id, QcMeta.getId(), new ScreenHandler<Integer>() {
-            public void onStateChange(StateChangeEvent event) {
-                id.setEnabled(isState(QUERY));
-                id.setQueryMode(isState(QUERY));
-                if (sm != null)
-                    id.setText(DataBaseUtil.toString(sm.getSample().getAccessionNumber()));
-            }
+        accessionNumber.setEnabled(true);
 
-            public Widget onTab(boolean forward) {
-                return forward ? id : id;
+        accessionNumber.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                fireDataChange();
             }
         });
 
+        table.setVisible(true);
+
         addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
-            public void onStateChange(StateChangeEvent event) {
-                table.setEnabled(isState(DISPLAY));
+            public void onDataChange(DataChangeEvent event) {
+                table.setModel(getTableModel());
             }
         });
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(DISPLAY) || event.getCol() != 0)
-                    event.cancel();
+                event.cancel();
             }
         });
 
-        table.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                checkAllAnalytes((Integer)table.getRowAt(event.getRow()).getData(),
-                                 (String)table.getRowAt(event.getRow()).getCell(0));
+        tree.setEnabled(true);
+
+        tree.addSelectionHandler(new SelectionHandler<Integer>() {
+            @Override
+            public void onSelection(SelectionEvent<Integer> event) {
+                table.setModel(getTableModel());
             }
         });
 
-        addScreenHandler(tree, "tree", new ScreenHandler<String>() {
-            public void onStateChange(StateChangeEvent event) {
-                tree.setEnabled(isState(DISPLAY));
-            }
-        });
-
+        tree.setAllowMultipleSelection(false);
         tree.setVisible(true);
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                checkAllButton.setEnabled(isState(DISPLAY));
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                uncheckAllButton.setEnabled(isState(DISPLAY));
-            }
-        });
+        checkAllButton.setEnabled(false);
+        uncheckAllButton.setEnabled(false);
+        checkAllQcsButton.setEnabled(false);
+        uncheckAllQcsButton.setEnabled(false);
+        printButton.setEnabled(false);
+        exportButton.setEnabled(false);
+        getDataButton.setEnabled(true);
 
         analysisStatus = new HashMap<Integer, String>();
         for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status")) {
             analysisStatus.put(d.getId(), d.getEntry());
-        }
-
-        analysisUnit = new HashMap<Integer, String>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
-            analysisUnit.put(d.getId(), d.getEntry());
         }
 
         worksheetStatus = new HashMap<Integer, String>();
@@ -328,74 +272,29 @@ public class SampleQCScreenUI extends Screen {
     /*
      * basic button methods
      */
-    @UiHandler("query")
-    protected void query(ClickEvent event) {
-        sm = null;
-        wms = null;
-        qcAnalyteList = null;
-        worksheetNodes = null;
-        tree.setRoot(getRoot());
-        setState(QUERY);
-        fireDataChange();
-        id.setFocus(true);
-        setDone(Messages.get().gen_enterFieldsToQuery());
-    }
-
-    @UiHandler("commit")
-    protected void commit(ClickEvent event) {
+    @UiHandler("getDataButton")
+    protected void getData(ClickEvent event) {
         Validation validation;
 
         finishEditing();
-
         validation = validate();
 
-        switch (validation.getStatus()) {
-            case WARNINGS:
-                /*
-                 * show the warnings and ask the user if the data should still
-                 * be committed; commit only if the user says yes
-                 */
-                if ( !Window.confirm(getWarnings(validation.getExceptions())))
-                    return;
-                break;
-            case FLAGGED:
-                /*
-                 * some part of the screen has some operation that needs to be
-                 * completed before committing the data
-                 */
-                return;
-            case ERRORS:
-                setError(Messages.get().gen_correctErrors());
-                return;
+        if (Validation.Status.ERRORS.equals(validation.getStatus())) {
+            setError(Messages.get().gen_correctErrors());
+            return;
         }
 
-        commitQuery();
+        fetchByAccession(accessionNumber.getValue());
     }
 
-    protected void commitQuery() {
-        fetchByAccession(Integer.parseInt(id.getText()));
+    @UiHandler("exportButton")
+    protected void export(ClickEvent event) {
+        runReport();
     }
 
-    @UiHandler("abort")
-    protected void abort(ClickEvent event) {
-        finishEditing();
-        clearErrors();
-
-        if (isState(QUERY)) {
-            try {
-                sm = null;
-                wms = null;
-                qcAnalyteList = null;
-                worksheetNodes = null;
-                setState(DEFAULT);
-                fireDataChange();
-                setDone(Messages.get().gen_queryAborted());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-                clearStatus();
-            }
-        }
+    @UiHandler("printButton")
+    protected void print(ClickEvent event) {
+        // TODO
     }
 
     @UiHandler("checkAllButton")
@@ -408,39 +307,36 @@ public class SampleQCScreenUI extends Screen {
         check("N");
     }
 
+    @UiHandler("checkAllQcsButton")
+    protected void checkSimilarAnalytes(ClickEvent event) {
+        checkAllAnalytes( ((WorksheetQcResultViewDO)tree.getNodeAt(tree.getSelectedNode())
+                                                        .getData()).getQcAnalyteId(), "Y");
+    }
+
+    @UiHandler("uncheckAllQcsButton")
+    protected void uncheckSimilarAnalytes(ClickEvent event) {
+        checkAllAnalytes( ((WorksheetQcResultViewDO)tree.getNodeAt(tree.getSelectedNode())
+                                                        .getData()).getQcAnalyteId(), "N");
+    }
+
     /**
      * check all the analytes of a QC
      */
-    protected void check(String reportable) {
+    protected void check(String check) {
         int index;
         Node node, child;
 
         clearErrors();
-        if (tree.getSelectedNodes().length > 1) {
-            getWindow().setError(Messages.get().qc_multiQcCheckNotAllowed());
-            return;
-        }
         index = tree.getSelectedNode();
 
         if (index == -1)
             return;
         node = tree.getNodeAt(index);
-        /*
-         * if an analyte node is selected, get the QC node that is the parent
-         */
-        if (ANALYTE_LEAF.equals(node.getType())) {
-            node = node.getParent();
-        } else if (QC_LEAF.equals(node.getType())) {
-
-        } else {
-            getWindow().setError(Messages.get().qc_qcCheckNodeNotAllowed());
-            return;
-        }
 
         tree.open(node);
         for (int i = 0; i < node.getChildCount(); i++ ) {
             child = node.getChildAt(i);
-            child.setCell(0, reportable);
+            ((CheckLabelValue)child.getCell(0)).setChecked(check);
             tree.refreshNode(child);
         }
     }
@@ -464,7 +360,7 @@ public class SampleQCScreenUI extends Screen {
                     qnode = wnode.getChildAt(k);
                     for (l = 0; l < qnode.getChildCount(); l++ ) {
                         qanode = qnode.getChildAt(l);
-                        if ("Y".equals(qanode.getCell(0))) {
+                        if ("Y".equals( ((CheckLabelValue)qanode.getCell(0)).getChecked())) {
                             if (qcs.get( ((AnalysisViewDO)anode.getData()).getId()) == null)
                                 qcs.put( ((AnalysisViewDO)anode.getData()).getId(),
                                         new ArrayList<Object>());
@@ -485,19 +381,15 @@ public class SampleQCScreenUI extends Screen {
         if (accession == null) {
             sm = null;
             wms = null;
-            qcAnalyteList = null;
             worksheetNodes = null;
-            setState(DEFAULT);
             fireDataChange();
             clearStatus();
         } else {
             setBusy(Messages.get().gen_fetching());
-            /*
-             * fetch the sample manager
-             */
             if (fetchByIdCall == null) {
                 fetchByIdCall = new AsyncCallbackUI<SampleManager1>() {
                     public void success(SampleManager1 result) {
+                        int i, j, k;
                         Integer analysisId, worksheetId;
                         ArrayList<Integer> wids;
                         SampleItemViewDO item;
@@ -507,20 +399,21 @@ public class SampleQCScreenUI extends Screen {
                         wids = new ArrayList<Integer>();
                         analysisWorksheets = new HashMap<Integer, HashSet<Integer>>();
                         analysisRelatedWorksheets = new HashMap<Integer, HashSet<Integer>>();
-                        for (int i = 0; i < sm.item.count(); i++ ) {
+                        for (i = 0; i < sm.item.count(); i++ ) {
                             item = sm.item.get(i);
-                            for (int j = 0; j < sm.analysis.count(item); j++ ) {
+                            for (j = 0; j < sm.analysis.count(item); j++ ) {
                                 analysis = sm.analysis.get(item, j);
                                 analysisId = analysis.getId();
                                 analysisWorksheets.put(analysisId, new HashSet<Integer>());
                                 analysisRelatedWorksheets.put(analysisId, new HashSet<Integer>());
-                                for (int k = 0; k < sm.worksheet.count(analysis); k++ ) {
+                                for (k = 0; k < sm.worksheet.count(analysis); k++ ) {
                                     worksheetId = sm.worksheet.get(analysis, k).getId();
                                     wids.add(worksheetId);
                                     analysisWorksheets.get(analysisId).add(worksheetId);
                                 }
                             }
                         }
+
                         if (wids.size() > 0) {
                             qcIds = new HashSet<Integer>();
                             /*
@@ -531,6 +424,7 @@ public class SampleQCScreenUI extends Screen {
                                 fetchWorksheetsByIdsCall = new AsyncCallbackUI<ArrayList<WorksheetManager1>>() {
                                     public void success(ArrayList<WorksheetManager1> result) {
                                         Integer qcId;
+                                        Iterator<Integer> iter;
                                         ArrayList<WorksheetManager1> worksheets;
                                         ArrayList<Integer> wids;
 
@@ -545,6 +439,14 @@ public class SampleQCScreenUI extends Screen {
                                             wms = new HashMap<Integer, WorksheetManager1>();
                                         wids = new ArrayList<Integer>();
                                         for (WorksheetManager1 wm : worksheets) {
+                                            /*
+                                             * only display worksheets that have
+                                             * status working or complete
+                                             */
+                                            if ( ! (Constants.dictionary().WORKSHEET_COMPLETE.equals(wm.getWorksheet()
+                                                                                                       .getStatusId()) || Constants.dictionary().WORKSHEET_WORKING.equals(wm.getWorksheet()
+                                                                                                                                                                            .getStatusId())))
+                                                continue;
                                             getQcIds(wm);
                                             if (wms.get(wm.getWorksheet().getId()) == null)
                                                 wms.put(wm.getWorksheet().getId(), wm);
@@ -576,7 +478,7 @@ public class SampleQCScreenUI extends Screen {
                                              */
                                             qms = new HashMap<Integer, QcManager>();
 
-                                            Iterator<Integer> iter = qcIds.iterator();
+                                            iter = qcIds.iterator();
                                             while (iter.hasNext()) {
                                                 qcId = iter.next();
                                                 try {
@@ -588,7 +490,6 @@ public class SampleQCScreenUI extends Screen {
                                                 }
                                             }
 
-                                            qcAnalyteList = new HashMap<Integer, String>();
                                             worksheetNodes = new HashMap<Integer, Node>();
                                             for (Integer id : wms.keySet()) {
                                                 worksheetNodes.put(id,
@@ -633,32 +534,15 @@ public class SampleQCScreenUI extends Screen {
 
                     public void finish() {
                         fireDataChange();
-                        clearStatus();
                     }
                 };
             }
 
+            /*
+             * fetch the sample manager
+             */
             SampleService1.get().fetchByAccession(accession, sampleElements, fetchByIdCall);
         }
-    }
-
-    /**
-     * creates a string containing the message that there are warnings on the
-     * screen, followed by all warning messages, followed by the question
-     * whether the data should be committed
-     */
-    private String getWarnings(ArrayList<Exception> warnings) {
-        StringBuilder b;
-
-        b = new StringBuilder();
-        b.append(Messages.get().gen_warningDialogLine1()).append("\n");
-        if (warnings != null) {
-            for (Exception ex : warnings)
-                b.append(" * ").append(ex.getMessage()).append("\n");
-        }
-        b.append("\n").append(Messages.get().gen_warningDialogLastLine());
-
-        return b.toString();
     }
 
     /**
@@ -682,43 +566,36 @@ public class SampleQCScreenUI extends Screen {
      */
     private Node getRoot() {
         int i, j, k;
+        StringBuilder sb;
         Node root, wnode, anode;
         AnalysisViewDO analysis;
         WorksheetViewDO worksheet;
         HashSet<Integer> addedWorksheets;
 
         root = new Node();
-        if (sm == null)
+        if (sm == null || wms == null || wms.size() < 1)
             return root;
 
+        sb = new StringBuilder();
         for (i = 0; i < sm.item.count(); i++ ) {
             for (j = 0; j < sm.analysis.count(sm.item.get(i)); j++ ) {
                 analysis = sm.analysis.get(sm.item.get(i), j);
-                anode = new Node(2);
+                if (analysisWorksheets.get(analysis.getId()) == null ||
+                    analysisWorksheets.get(analysis.getId()).size() < 1)
+                    continue;
+                anode = new Node(1);
                 anode.setType(ANALYSIS_LEAF);
-
-                anode.setCell(0, analysis.getTestName() +
-                                 ", " +
-                                 analysis.getMethodName() +
-                                 "(" +
-                                 analysisStatus.get(analysis.getStatusId()) +
-                                 ", " +
-                                 sm.item.get(i).getTypeOfSample() +
-                                 ", " +
-                                 analysisUnit.get(analysis.getUnitOfMeasureId()) +
-                                 ")" +
-                                 (analysis.getStartedDate() == null ? ""
-                                                                   : "[" +
-                                                                     analysis.getStartedDate() +
-                                                                     "]"));
-                if (analysis.getPreAnalysisTest() != null)
-                    anode.setCell(1, "Prep Test - " + analysis.getPreAnalysisTest() + " : " +
-                                     analysis.getPreAnalysisMethod());
+                sb.setLength(0);
+                sb.append(analysis.getTestName())
+                  .append(", ")
+                  .append(analysis.getMethodName())
+                  .append(" [")
+                  .append(analysisStatus.get(analysis.getStatusId()))
+                  .append("]");
+                anode.setCell(0, sb.toString());
                 anode.setData(analysis);
                 root.add(anode);
 
-                if (wms == null || wms.size() == 0)
-                    continue;
                 addedWorksheets = new HashSet<Integer>();
                 for (k = 0; k < sm.worksheet.count(analysis); k++ ) {
                     worksheet = wms.get(sm.worksheet.get(analysis, k).getId()).getWorksheet();
@@ -738,8 +615,6 @@ public class SampleQCScreenUI extends Screen {
                 }
             }
         }
-        setState(DISPLAY);
-        table.setModel(getTableModel());
         return root;
     }
 
@@ -747,18 +622,141 @@ public class SampleQCScreenUI extends Screen {
      * create the table
      */
     private ArrayList<Row> getTableModel() {
+        int i, j;
         Row row;
+        Node selected;
+        AnalysisViewDO analysis;
+        SampleItemViewDO item;
+        WorksheetViewDO worksheet;
+        WorksheetAnalysisViewDO wa;
+        WorksheetItemDO witem;
+        WorksheetQcResultViewDO wq;
+        WorksheetManager1 wm;
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
-        if (qcAnalyteList == null)
+        selected = tree.getNodeAt(tree.getSelectedNode());
+        if (selected == null)
             return model;
-        for (Integer id : qcAnalyteList.keySet()) {
-            row = new Row(2);
-            row.setCell(0, "Y");
-            row.setCell(1, qcAnalyteList.get(id));
-            row.setData(id);
-            model.add(row);
+        switch (selected.getType()) {
+            case ANALYSIS_LEAF:
+                /*
+                 * build the display table for a selected analysis node
+                 */
+                analysis = selected.getData();
+                row = new Row(2);
+                row.setCell(0, Messages.get().startedDate());
+                row.setCell(1, dateHelper.format(analysis.getStartedDate()));
+                row.setData(analysis);
+                model.add(row);
+
+                row = new Row(2);
+                row.setCell(0, Messages.get().gen_sampleType());
+                item = sm.item.getById(analysis.getSampleItemId());
+                row.setCell(1, (item != null) ? DataBaseUtil.toString(item.getTypeOfSample()) : "");
+                row.setData(item);
+                model.add(row);
+                checkAllButton.setEnabled(false);
+                uncheckAllButton.setEnabled(false);
+                checkAllQcsButton.setEnabled(false);
+                uncheckAllQcsButton.setEnabled(false);
+                break;
+            case WORKSHEET_LEAF:
+                /*
+                 * build the display table for a selected worksheet node
+                 */
+                worksheet = selected.getData();
+                analysis = selected.getParent().getData();
+                wm = wms.get(worksheet.getId());
+
+                /*
+                 * display the position of the analysis on this worksheet
+                 */
+                row = null;
+                for (i = 0; i < wm.item.count(); i++ ) {
+                    for (j = 0; j < wm.analysis.count(wm.item.get(i)); j++ ) {
+                        wa = wm.analysis.get(wm.item.get(i), j);
+                        if (analysis.getId().equals(wa.getAnalysisId())) {
+                            row = new Row(2);
+                            row.setCell(0, Messages.get().sampleQc_analysisPosition());
+                            row.setCell(1, wm.item.get(i).getPosition());
+                            model.add(row);
+                            break;
+                        }
+                    }
+                    if (row != null)
+                        break;
+                }
+                row = new Row(2);
+                row.setCell(0, Messages.get().gen_description());
+                row.setCell(1, DataBaseUtil.toString(worksheet.getDescription()));
+                row.setData(worksheet);
+                model.add(row);
+                checkAllButton.setEnabled(false);
+                uncheckAllButton.setEnabled(false);
+                checkAllQcsButton.setEnabled(false);
+                uncheckAllQcsButton.setEnabled(false);
+                break;
+            case QC_LEAF:
+                /*
+                 * build the display table for a selected QC node
+                 */
+                wa = selected.getData();
+                row = new Row(2);
+                row.setCell(0, Messages.get().worksheet_position());
+                witem = null;
+                try {
+                    witem = wms.get(wa.getWorksheetId()).item.getById(wa.getWorksheetItemId());
+                    row.setCell(1, DataBaseUtil.toString(witem.getPosition()));
+                } catch (NullPointerException e) {
+                    row.setCell(1, "");
+                }
+                row.setData(witem);
+                model.add(row);
+
+                row = new Row(2);
+                row.setCell(0, Messages.get().sample_accessionNum());
+                row.setCell(1, DataBaseUtil.toString(wa.getAccessionNumber()));
+                row.setData(wa);
+                model.add(row);
+
+                row = new Row(2);
+                row.setCell(0, Messages.get().gen_type());
+                try {
+                    row.setCell(1, DataBaseUtil.toString(qcType.get(qms.get(wa.getQcId())
+                                                                       .getQc()
+                                                                       .getTypeId())));
+                } catch (NullPointerException e) {
+                    row.setCell(1, "");
+                }
+                row.setData(qms.get(wa.getQcId()));
+                model.add(row);
+                checkAllButton.setEnabled(true);
+                uncheckAllButton.setEnabled(true);
+                checkAllQcsButton.setEnabled(false);
+                uncheckAllQcsButton.setEnabled(false);
+                break;
+            case ANALYTE_LEAF:
+                /*
+                 * build the display table for a selected QC analyte node
+                 */
+                wq = selected.getData();
+                worksheet = selected.getParent().getParent().getData();
+                i = 0;
+                for (String field : worksheetFormat.get(worksheetFormatCategories.get(worksheet.getFormatId()))) {
+                    if (wq.getValueAt(i) != null) {
+                        row = new Row(2);
+                        row.setCell(0, field);
+                        row.setCell(1, wq.getValueAt(i));
+                        model.add(row);
+                    }
+                    i++ ;
+                }
+                checkAllButton.setEnabled(false);
+                uncheckAllButton.setEnabled(false);
+                checkAllQcsButton.setEnabled(true);
+                uncheckAllQcsButton.setEnabled(true);
+                break;
         }
 
         return model;
@@ -789,33 +787,25 @@ public class SampleQCScreenUI extends Screen {
      * Create nodes from the data in this worksheet manager
      */
     private Node createWorksheetNode(WorksheetManager1 wm) {
-        int i, j, k, l;
-        Node qanode, qnode, wnode, vnode;
+        int i, j, k;
+        StringBuilder sb;
+        Node qanode, qnode, wnode;
         WorksheetQcResultViewDO wq;
         WorksheetViewDO worksheet;
         WorksheetItemDO item;
         WorksheetAnalysisViewDO wa;
 
         worksheet = wm.getWorksheet();
-        wnode = new Node(2);
+        wnode = new Node(1);
         wnode.setType(WORKSHEET_LEAF);
-        wnode.setCell(0, "Worksheet:  ");
-        wnode.setCell(1,
-                      worksheet.getId() +
-                                      "(" +
-                                      worksheetStatus.get(worksheet.getStatusId()) +
-                                      ", " +
-                                      worksheet.getSystemUser() +
-                                      "|" +
-                                      worksheet.getDescription() +
-                                      ")" +
-                                      "[" +
-                                      worksheet.getCreatedDate() +
-                                      "]" +
-
-                                      (worksheet.getFormatId() == null ? ""
-                                                                      : " - " +
-                                                                        worksheetFormatName.get(worksheet.getFormatId())));
+        sb = new StringBuilder();
+        sb.append(Messages.get().gen_worksheet())
+          .append(" ")
+          .append(worksheet.getId())
+          .append(" [")
+          .append(worksheetStatus.get(worksheet.getStatusId()))
+          .append("]");
+        wnode.setCell(0, sb.toString());
         wnode.setData(worksheet);
 
         for (i = 0; i < wm.item.count(); i++ ) {
@@ -824,32 +814,19 @@ public class SampleQCScreenUI extends Screen {
                 wa = wm.analysis.get(item, j);
                 if (wa.getQcLotId() == null)
                     continue;
-                qnode = new Node(2);
+                qnode = new Node(1);
                 qnode.setType(QC_LEAF);
-                qnode.setCell(0, wa.getDescription() + "(" + item.getPosition() + ", " +
-                                 wa.getAccessionNumber() + ")");
-                qnode.setCell(1, qcType.get(qms.get(wa.getQcId()).getQc().getTypeId()));
+                sb.setLength(0);
+                sb.append(Messages.get().QC()).append(" ").append(wa.getDescription());
+                qnode.setCell(0, sb.toString());
                 qnode.setData(wa);
                 wnode.add(qnode);
 
                 for (k = 0; k < wm.qcResult.count(wa); k++ ) {
                     wq = wm.qcResult.get(wa, k);
-                    qanode = new Node(2);
+                    qanode = new Node(1);
                     qanode.setType(ANALYTE_LEAF);
-                    qanode.setCell(0, "Y");
-                    qanode.setCell(1, wq.getAnalyteName());
-                    l = 0;
-                    for (String field : worksheetFormat.get(worksheetFormatCategories.get(worksheet.getFormatId()))) {
-                        if (wq.getValueAt(l) != null) {
-                            vnode = new Node(1);
-                            vnode.setType(VALUE_LEAF);
-                            vnode.setCell(0, field + ":" + wq.getValueAt(l));
-                            qanode.add(vnode);
-                        }
-                        l++ ;
-                    }
-                    if (qcAnalyteList.get(wq.getQcAnalyteId()) == null)
-                        qcAnalyteList.put(wq.getQcAnalyteId(), wq.getAnalyteName());
+                    qanode.setCell(0, new CheckLabelValue("Y", wq.getAnalyteName()));
                     qanode.setData(wq);
                     qnode.add(qanode);
                 }
@@ -874,7 +851,7 @@ public class SampleQCScreenUI extends Screen {
                     for (l = 0; l < qnode.getChildCount(); l++ ) {
                         qanode = qnode.getChildAt(l);
                         if (qcAnalyteId.equals( ((WorksheetQcResultViewDO)qanode.getData()).getQcAnalyteId())) {
-                            qanode.setCell(0, check);
+                            ((CheckLabelValue)qanode.getCell(0)).setChecked(check);
                             if (tree.isDisplayed(qanode))
                                 tree.refreshNode(qanode);
                         }

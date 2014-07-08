@@ -5947,6 +5947,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_previous();
 
   /**
+   * Translated "Print".
+   * 
+   * @return translated "Print"
+   */
+  @DefaultMessage("Print")
+  @Key("gen.print")
+  String gen_print();
+
+  /**
    * Translated "Printer".
    * 
    * @return translated "Printer"
@@ -12031,6 +12040,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String qaeventTestComboUnique();
 
   /**
+   * Translated "Get Data".
+   * 
+   * @return translated "Get Data"
+   */
+  @DefaultMessage("Get Data")
+  @Key("qc.getData")
+  String qc_getData();
+
+  /**
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
@@ -12038,15 +12056,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Invalid value for selected type")
   @Key("qc.invalidValueException")
   String qc_invalidValueException();
-
-  /**
-   * Translated "Check All/Uncheck All for more than one QC is not allowed".
-   * 
-   * @return translated "Check All/Uncheck All for more than one QC is not allowed"
-   */
-  @DefaultMessage("Check All/Uncheck All for more than one QC is not allowed")
-  @Key("qc.multiQcCheckNotAllowed")
-  String qc_multiQcCheckNotAllowed();
 
   /**
    * Translated "You must first select a table row before clicking add".
@@ -12065,15 +12074,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("QC Analyte")
   @Key("qc.qcAnalyte")
   String qc_qcAnalyte();
-
-  /**
-   * Translated "Select a QC or QC analyte node to Check All/Uncheck All".
-   * 
-   * @return translated "Select a QC or QC analyte node to Check All/Uncheck All"
-   */
-  @DefaultMessage("Select a QC or QC analyte node to Check All/Uncheck All")
-  @Key("qc.qcCheckNodeNotAllowed")
-  String qc_qcCheckNodeNotAllowed();
 
   /**
    * Translated "QC Lookup".
@@ -12866,6 +12866,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Report")
   @Key("report")
   String report();
+
+  /**
+   * Translated "Data Export".
+   * 
+   * @return translated "Data Export"
+   */
+  @DefaultMessage("Data Export")
+  @Key("report.dataExport")
+  String report_dataExport();
+
+  /**
+   * Translated "Export".
+   * 
+   * @return translated "Export"
+   */
+  @DefaultMessage("Export")
+  @Key("report.export")
+  String report_export();
 
   /**
    * Translated "Reset".
@@ -13777,24 +13795,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_sampleItemTypeRequired();
 
   /**
-   * Translated "Sample QC".
-   * 
-   * @return translated "Sample QC"
-   */
-  @DefaultMessage("Sample QC")
-  @Key("sample.sampleQc")
-  String sample_sampleQc();
-
-  /**
-   * Translated "Report quality control items".
-   * 
-   * @return translated "Report quality control items"
-   */
-  @DefaultMessage("Report quality control items")
-  @Key("sample.sampleQcDescription")
-  String sample_sampleQcDescription();
-
-  /**
    * Translated "SDWIS".
    * 
    * @return translated "SDWIS"
@@ -14396,6 +14396,51 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Type is required for QA Event ''{1}''")
   @Key("sampleQAEvent.typeRequiredException")
   String sampleQAEvent_typeRequiredException(Integer arg0,  String arg1);
+
+  /**
+   * Translated "Analysis Position".
+   * 
+   * @return translated "Analysis Position"
+   */
+  @DefaultMessage("Analysis Position")
+  @Key("sampleQc.analysisPosition")
+  String sampleQc_analysisPosition();
+
+  /**
+   * Translated "Check All QCs".
+   * 
+   * @return translated "Check All QCs"
+   */
+  @DefaultMessage("Check All QCs")
+  @Key("sampleQc.checkAllQcs")
+  String sampleQc_checkAllQcs();
+
+  /**
+   * Translated "Analysis/Worksheet/QC/QC Analyte".
+   * 
+   * @return translated "Analysis/Worksheet/QC/QC Analyte"
+   */
+  @DefaultMessage("Analysis/Worksheet/QC/QC Analyte")
+  @Key("sampleQc.label")
+  String sampleQc_label();
+
+  /**
+   * Translated "Sample QC".
+   * 
+   * @return translated "Sample QC"
+   */
+  @DefaultMessage("Sample QC")
+  @Key("sampleQc.sampleQc")
+  String sampleQc_sampleQc();
+
+  /**
+   * Translated "Uncheck All QCs".
+   * 
+   * @return translated "Uncheck All QCs"
+   */
+  @DefaultMessage("Uncheck All QCs")
+  @Key("sampleQc.uncheckAllQcs")
+  String sampleQc_uncheckAllQcs();
 
   /**
    * Translated "Sample Qty".

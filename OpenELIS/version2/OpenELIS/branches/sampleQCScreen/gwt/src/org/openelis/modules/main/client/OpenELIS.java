@@ -144,14 +144,14 @@ public class OpenELIS extends Screen {
                     ptSampleLogin, testSampleManager, project, provider, organization,
                     worksheetBuilder,/* worksheetCreation, */worksheetCompletion,
                     worksheetCompletionUI, addOrCancel, reviewAndRelease, toDo, labelFor, storage,
-                    QC, sampleQc, analyteParameter, internalOrder, vendorOrder, sendoutOrder,
-                    fillOrder, shipping, buildKits, inventoryTransfer, inventoryReceipt,
-                    inventoryAdjustment, inventoryItem, verificationReport, testRequestFormReport,
-                    orderRequestForm, holdRefuseOrganization, testReport, billingReport,
-                    sampleInhouseReport, volumeReport, toDoAnalyteReport, sampleDataExport,
-                    QASummaryReport, testCountByFacility, turnaround, turnAroundStatisticReport,
-                    kitTrackingReport, airQualityReport, sdwisUnloadReport, dataView, qcChart,
-                    finalReport, finalReportBatch, finalReportBatchReprint, test, method, panel,
+                    QC, analyteParameter, internalOrder, vendorOrder, sendoutOrder, fillOrder,
+                    shipping, buildKits, inventoryTransfer, inventoryReceipt, inventoryAdjustment,
+                    inventoryItem, verificationReport, testRequestFormReport, orderRequestForm,
+                    holdRefuseOrganization, testReport, billingReport, sampleInhouseReport,
+                    volumeReport, toDoAnalyteReport, sampleDataExport, QASummaryReport,
+                    testCountByFacility, turnaround, turnAroundStatisticReport, kitTrackingReport,
+                    airQualityReport, sdwisUnloadReport, dataView, qcChart, finalReport,
+                    finalReportBatch, finalReportBatchReprint, sampleQc, test, method, panel,
                     QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
                     exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
                     trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
@@ -782,30 +782,6 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new QcScreen(window));
                             browser.addWindow(window, "QC");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE, e.getMessage(), e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addCommand(sampleQc, "sampletracking", new Command() {
-            public void execute() {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(msg.sample_sampleQc());
-                            window.setSize("1000px", "600px");
-                            window.setContent(new SampleQCScreenUI(window));
-                            browser.addWindow(window, "sampleQc");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
@@ -2009,6 +1985,30 @@ public class OpenELIS extends Screen {
                             window.setSize("20px", "20px");
                             window.setContent(new HoldRefuseOrganizationReportScreen(window));
                             browser.addWindow(window, "holdRefuseOrganization");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(sampleQc, "sampletracking", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.sampleQc_sampleQc());
+                            window.setSize("800px", "400px");
+                            window.setContent(new SampleQCScreenUI(window));
+                            browser.addWindow(window, "sampleQc");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
