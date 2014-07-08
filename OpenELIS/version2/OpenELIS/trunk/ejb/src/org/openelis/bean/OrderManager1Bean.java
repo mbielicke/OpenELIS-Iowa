@@ -385,6 +385,17 @@ public class OrderManager1Bean {
         if ( !forRecurrence)
             getOrder(om).setRequestedBy(User.getName(ctx));
 
+        if ( !"Y".equals(getOrder(om).getOrganization().getIsActive())) {
+            if (forRecurrence) {
+                getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+            }
+            errors.add(new FormErrorException(Messages.get()
+                                                      .order_inactiveOrganizationWarning(getOrder(om).getOrganization()
+                                                                                                     .getName())));
+            getOrder(om).setOrganization(null);
+            getOrder(om).setOrganizationId(null);
+        }
+
         if (getOrganizations(om) != null) {
             orgs = new ArrayList<OrderOrganizationViewDO>();
             for (OrderOrganizationViewDO data : getOrganizations(om)) {
