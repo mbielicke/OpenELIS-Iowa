@@ -71,6 +71,7 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
     }
 
     public void initialize() {
+        ifEmpty.setEnabled(true);
         systemUsers.setEnabled(true);
         startedDate.setEnabled(true);
         completedDate.setEnabled(true);
