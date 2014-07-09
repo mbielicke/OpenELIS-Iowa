@@ -94,6 +94,8 @@ import org.openelis.ui.widget.tree.event.NodeAddedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -151,6 +153,8 @@ public class AnalyteParameterScreenUI extends Screen {
                     allUnitsModel;
 
     protected HashMap<Integer, HashSet<Integer>>                   unitTypesMap;
+
+    protected ArrayList<Node>                                      selectedNodes;
 
     public AnalyteParameterScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -443,6 +447,17 @@ public class AnalyteParameterScreenUI extends Screen {
             }
         });
 
+        tree.addSelectionHandler(new SelectionHandler<Integer>() {
+            @Override
+            public void onSelection(SelectionEvent<Integer> event) {
+                Node node;
+
+                node = tree.getNodeAt(event.getSelectedItem());
+                addAnalyteButton.setEnabled(ANALYTE_LEAF.equals(node.getType()) &&
+                                            tree.getSelectedNodes().length == 1);
+            }
+        });
+
         tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -516,11 +531,12 @@ public class AnalyteParameterScreenUI extends Screen {
                 int index;
                 String uid;
                 AnalyteParameterViewDO data, newData;
-                Node selNode, newNode;
+                Node node, newNode;
 
-                selNode = tree.getNodeAt(tree.getSelectedNode());
                 newNode = event.getNode();
                 if (ANALYTE_LEAF.equals(newNode.getType())) {
+                    node = selectedNodes.get(0);
+
                     /*
                      * the newly added node is an analyte node, so a DO will be
                      * created for it with the same analyte as the currently
@@ -529,11 +545,10 @@ public class AnalyteParameterScreenUI extends Screen {
                      * any children; otherwise it will be added after the DO for
                      * the currently selected node
                      */
-                    if (selNode.hasChildren())
-                        uid = selNode.getLastChild().getData();
+                    if (node.hasChildren())
+                        uid = node.getLastChild().getData();
                     else
-                        uid = selNode.getData();
-
+                        uid = node.getData();
                     data = manager.getObject(uid);
                     index = manager.analyteParameter.getIndex(data);
                     newData = manager.analyteParameter.add(index + 1);
@@ -545,9 +560,11 @@ public class AnalyteParameterScreenUI extends Screen {
             }
         });
 
+        tree.setAllowMultipleSelection(true);
+
         addScreenHandler(addAnalyteButton, "addAnalyteButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                addAnalyteButton.setEnabled(isState(ADD, UPDATE));
+                addAnalyteButton.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
@@ -813,15 +830,9 @@ public class AnalyteParameterScreenUI extends Screen {
         Node node, newNode;
 
         index = tree.getSelectedNode();
-        if (index == -1)
-            return;
-
         node = tree.getNodeAt(index);
-        /*
-         * if a child node was selected then add the new node after its parent
-         */
-        if (PARAMETER_LEAF.equals(node.getType()))
-            index = tree.getNodeViewIndex(node.getParent());
+        selectedNodes = new ArrayList<Node>();
+        selectedNodes.add(node);
 
         newNode = new Node(3);
         newNode.setType(ANALYTE_LEAF);
