@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.worksheetCompletion.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.*;
@@ -68,8 +68,8 @@ import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell;
-import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell.Value;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell.Value;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;

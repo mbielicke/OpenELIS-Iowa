@@ -59,7 +59,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;

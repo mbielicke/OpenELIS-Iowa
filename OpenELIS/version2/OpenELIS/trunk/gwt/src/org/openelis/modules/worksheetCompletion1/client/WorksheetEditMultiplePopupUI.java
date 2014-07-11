@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheetCompletion.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 
@@ -47,8 +47,8 @@ import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell;
-import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell.Value;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell.Value;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
