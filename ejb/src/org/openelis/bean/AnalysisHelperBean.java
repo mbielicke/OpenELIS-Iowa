@@ -67,6 +67,7 @@ import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultHelper;
 
 /**
  * This class is used to provide various functionalities related to analyses in
@@ -246,8 +247,8 @@ public class AnalysisHelperBean {
         ArrayList<DataObject> removed;
         ArrayList<ResultViewDO> results;
         HashMap<Integer, AnalysisViewDO> anaByTest;
-        HashMap<Integer, String> row;
-        HashMap<Integer, HashMap<Integer, String>> rows;
+        HashMap<Integer, ResultViewDO> row;
+        HashMap<Integer, HashMap<Integer, ResultViewDO>> rows;
 
         m = method.fetchById(methodId);
         ana = null;
@@ -388,14 +389,14 @@ public class AnalysisHelperBean {
                  */
                 if (r.getValue() != null) {
                     if (rows == null)
-                        rows = new HashMap<Integer, HashMap<Integer, String>>();
+                        rows = new HashMap<Integer, HashMap<Integer, ResultViewDO>>();
                     /*
                      * the top level groups analytes and values by their row
                      * analyte
                      */
                     row = rows.get(rowAnaId);
                     if (row == null) {
-                        row = new HashMap<Integer, String>();
+                        row = new HashMap<Integer, ResultViewDO>();
                         rows.put(rowAnaId, row);
                     }
 
@@ -404,7 +405,7 @@ public class AnalysisHelperBean {
                      * individual analytes
                      */
                     if (row.get(r.getAnalyteId()) == null)
-                        row.put(r.getAnalyteId(), r.getValue());
+                        row.put(r.getAnalyteId(), r);
                 }
 
                 /*
@@ -1104,14 +1105,16 @@ public class AnalysisHelperBean {
      */
     public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO ana,
                            ArrayList<Integer> analyteIds,
-                           HashMap<Integer, HashMap<Integer, String>> oldResults) throws Exception {
-        boolean addRow;
-        String reportable, oldVal;
+                           HashMap<Integer, HashMap<Integer, ResultViewDO>> oldResults) throws Exception {
+        boolean addRow;        
+        Integer dictId;
+        String reportable, value;
+        ResultViewDO oldr;
         TestAnalyteManager tam;
         HashSet<Integer> ids;
         ResultViewDO r;
         ResultFormatter rf;
-        HashMap<Integer, String> oldRow;
+        HashMap<Integer, ResultViewDO> oldRow;
 
         ids = null;
         if (analyteIds != null)
@@ -1152,13 +1155,29 @@ public class AnalysisHelperBean {
                 r = createResult(sm, ana, data, reportable, rf);
 
                 if (oldRow != null && r.getValue() == null) {
-                    oldVal = oldRow.get(r.getAnalyteId());
+                    oldr = oldRow.get(r.getAnalyteId());
                     /*
                      * if the old results had a value for this analyte then set
                      * it in this result
                      */
-                    if (oldVal != null)
-                        r.setValue(oldVal);
+                    if (oldr.getValue() != null) {
+                        r.setValue(oldr.getValue());
+                        r.setTypeId(null);
+                        try {
+                            /*
+                             * validate the old value so that the type gets set
+                             */
+                            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(oldr.getTypeId())) {
+                                dictId = Integer.valueOf(oldr.getValue());
+                                value = dictionaryCache.getById(dictId).getEntry();
+                            } else {
+                                value = oldr.getValue();
+                            }
+                            ResultHelper.formatValue(r, value, ana.getUnitOfMeasureId(), rf);
+                        } catch (Exception e) {
+                            // ignore because the value will get validated later
+                        }
+                    }
                 }
 
                 addResult(sm, r);
@@ -1301,16 +1320,26 @@ public class AnalysisHelperBean {
 
     /**
      * If a default is defined for the result's result group and this unit then
-     * sets it as the value; otherwise value is not changed. Sets the type to
-     * null in both cases to force validation.
+     * sets it as the value; otherwise value is not changed. Validates the
+     * default and sets it as the value if it's valid and also sets the type.
      */
     private void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
         String def;
 
+        if (r.getTypeId() != null)
+            r.setTypeId(null);
         def = rf.getDefault(r.getResultGroup(), unitId);
-        if (def != null)
+        if (def != null) {
             r.setValue(def);
-        r.setTypeId(null);
+            try {
+                /*
+                 * validate the default so that the type gets set
+                 */
+                ResultHelper.formatValue(r, def, unitId, rf);
+            } catch (Exception e) {
+                // ignore because the value will get validated later
+            }
+        }
     }
 
     /**
