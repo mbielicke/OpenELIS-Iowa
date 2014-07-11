@@ -126,9 +126,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                 } else {
                     row = analyteResultTable.getRowAt(event.getRow());
                     data = row.getData();
-                    if (!data.startsWith("R")) {
-                        event.cancel();
-                    } else {
+                    if (data.startsWith("R")) {
                         rgRow = resultGroupMap.get(Integer.valueOf(data.substring(1)));
                         rg = rgRow.get(event.getCol() + 9);
     
@@ -151,6 +149,8 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                             dictionaryResultMap.put(resultKey, model);
                         }
                         ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
+                    } else {
+                        ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
                     }
                 }
             }
