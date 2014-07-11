@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheetCompletion.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
@@ -314,17 +314,17 @@ public class WorksheetCompletionScreenUI extends Screen {
         addDataChangeHandler(new DataChangeEvent.Handler() {
             public void onDataChange(DataChangeEvent event) {
                 boolean enable;
-                
+
                 enable = isState(DISPLAY) && canEdit() && userPermission.hasUpdatePermission();
                 exportToExcelButton.setEnabled(enable);
                 importFromExcelButton.setEnabled(enable);
             }
         });
-        
+
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 boolean enable;
-                
+
                 enable = isState(DISPLAY) && canEdit() && userPermission.hasUpdatePermission();
                 exportToExcelButton.setEnabled(enable);
                 importFromExcelButton.setEnabled(enable);
@@ -1620,7 +1620,7 @@ public class WorksheetCompletionScreenUI extends Screen {
 
     private AuxFieldGroupManager getAuxManager(Integer auxId) throws Exception {
         AuxFieldGroupManager afgMan;
-        
+
         afgMan = auxManagers.get(auxId);
         if (afgMan == null) {
             afgMan = AuxiliaryService.get().fetchById(auxId);

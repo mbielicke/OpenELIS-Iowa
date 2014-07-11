@@ -260,6 +260,12 @@ public class OpenELIS extends Screen {
             }
         });
 
+        addCommand(worksheetCompletionUI, "worksheet", new Command() {
+            public void execute() {
+                showScreen(WORKSHEET_COMPLETION2);
+            }
+        });
+
         addCommand(addOrCancel, null, new Command() {
             public void execute() {
                 // browser.addScreen(new )

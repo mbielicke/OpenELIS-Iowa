@@ -43,7 +43,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;

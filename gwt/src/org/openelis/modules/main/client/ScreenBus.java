@@ -27,6 +27,7 @@ public class ScreenBus extends SimpleEventBus {
                     WORKSHEET_CREATION = new ShowScreenType("Worksheet Creation"),
                     WORKSHEET_BUILDER = new ShowScreenType("Worksheet Builder"),
                     WORKSHEET_COMPLETION = new ShowScreenType("Worksheet Completion"),
+                    WORKSHEET_COMPLETION2 = new ShowScreenType("Worksheet Completion 2"),
                     STORAGE = new ShowScreenType("Storage"),
                     STORAGE_LOCATION = new ShowScreenType("Storage Location"),
                     TO_DO = new ShowScreenType("To Do"),

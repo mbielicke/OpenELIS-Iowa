@@ -33,7 +33,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.note.client.EditNoteLookupUI;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
