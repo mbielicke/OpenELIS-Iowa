@@ -754,15 +754,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cancelMessage();
 
   /**
-   * Translated "Analysis is released. You cannot add non-internal QA events.".
-   * 
-   * @return translated "Analysis is released. You cannot add non-internal QA events."
-   */
-  @DefaultMessage("Analysis is released. You cannot add non-internal QA events.")
-  @Key("analysis.cantAddQAEvent")
-  String analysis_cantAddQAEvent();
-
-  /**
    * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
    * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
@@ -7081,6 +7072,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String inProgress();
 
   /**
+   * Translated "The unit ''{0}'' is inactive and was not assigned to ''{1}, {2}''".
+   * 
+   * @return translated "The unit ''{0}'' is inactive and was not assigned to ''{1}, {2}''"
+   */
+  @DefaultMessage("The unit ''{0}'' is inactive and was not assigned to ''{1}, {2}''")
+  @Key("inactiveAnalysisUnitWarning")
+  String inactiveAnalysisUnitWarning(String arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "The auxiliary group ''{0}'' is inactive and was not added to the sample ".
    * 
    * @return translated "The auxiliary group ''{0}'' is inactive and was not added to the sample "
@@ -7088,6 +7088,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("The auxiliary group ''{0}'' is inactive and was not added to the sample ")
   @Key("inactiveAuxGroupWarning")
   String inactiveAuxGroupWarning(String arg0);
+
+  /**
+   * Translated "The container ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * 
+   * @return translated "The container ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   */
+  @DefaultMessage("The container ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @Key("inactiveContainerWarning")
+  String inactiveContainerWarning(String arg0,  Integer arg1);
 
   /**
    * Translated "The entry {0} under category {1} has been deactivate".
@@ -7117,6 +7126,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String inactiveProjectWarning(String arg0);
 
   /**
+   * Translated "The unit ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * 
+   * @return translated "The unit ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   */
+  @DefaultMessage("The unit ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @Key("inactiveSampleItemUnitWarning")
+  String inactiveSampleItemUnitWarning(String arg0,  Integer arg1);
+
+  /**
+   * Translated "The sample type ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * 
+   * @return translated "The sample type ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   */
+  @DefaultMessage("The sample type ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @Key("inactiveSampleTypeWarning")
+  String inactiveSampleTypeWarning(String arg0,  Integer arg1);
+
+  /**
+   * Translated "The source ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * 
+   * @return translated "The source ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   */
+  @DefaultMessage("The source ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @Key("inactiveSourceWarning")
+  String inactiveSourceWarning(String arg0,  Integer arg1);
+
+  /**
    * Translated "''{0}, {1}'' cannot be imported because there is no matching active test".
    * 
    * @return translated "''{0}, {1}'' cannot be imported because there is no matching active test"
@@ -7124,6 +7160,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("''{0}, {1}'' cannot be imported because there is no matching active test")
   @Key("inactiveTestOnOrderException")
   String inactiveTestOnOrderException(String arg0,  String arg1);
+
+  /**
+   * Translated "''{0}, {1}'' is inactive and was not added to the sample ".
+   * 
+   * @return translated "''{0}, {1}'' is inactive and was not added to the sample "
+   */
+  @DefaultMessage("''{0}, {1}'' is inactive and was not added to the sample ")
+  @Key("inactiveTestWarning")
+  String inactiveTestWarning(String arg0,  String arg1);
 
   /**
    * Translated "Include".
@@ -13552,11 +13597,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_cantAddOrgTypeToDomainException();
 
   /**
-   * Translated "Sample is released. You cannot add non-internal QA events.".
+   * Translated "Sample and/or analysis is released. You cannot add non-internal QA events.".
    * 
-   * @return translated "Sample is released. You cannot add non-internal QA events."
+   * @return translated "Sample and/or analysis is released. You cannot add non-internal QA events."
    */
-  @DefaultMessage("Sample is released. You cannot add non-internal QA events.")
+  @DefaultMessage("Sample and/or analysis is released. You cannot add non-internal QA events.")
   @Key("sample.cantAddQAEvent")
   String sample_cantAddQAEvent();
 
