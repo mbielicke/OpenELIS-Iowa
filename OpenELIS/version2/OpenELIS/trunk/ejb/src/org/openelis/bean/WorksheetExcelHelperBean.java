@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -969,11 +970,16 @@ public class WorksheetExcelHelperBean {
         int c, i, r;
         String cellNameIndex, name;
         ArrayList<AnalyteParameterViewDO> anaParams;
+        DecimalFormat df;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
 
+        df = new DecimalFormat();
+        df.setGroupingUsed(false);
+        df.setMaximumFractionDigits(10);
+        
         i = 0;
         r = row.getRowNum();
         for (WorksheetResultViewDO wrVDO : wrList) {
@@ -1053,11 +1059,11 @@ public class WorksheetExcelHelperBean {
 
                         apVDO = pMap.get(wrVDO.getAnalyteId());
                         if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP1()));
+                            setCellValue(cell, df.format(apVDO.getP1()));
                         } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP2()));
+                            setCellValue(cell, df.format(apVDO.getP2()));
                         } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP3()));
+                            setCellValue(cell, df.format(apVDO.getP3()));
                         }
                     }
                 }
@@ -1081,14 +1087,18 @@ public class WorksheetExcelHelperBean {
         int c, i, r;
         String cellNameIndex, name;
         ArrayList<AnalyteParameterViewDO> anaParams;
+        DecimalFormat df;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
 
+        df = new DecimalFormat();
+        df.setGroupingUsed(false);
+        df.setMaximumFractionDigits(10);
+
         i = 0;
         r = row.getRowNum();
-
         for (WorksheetQcResultViewDO wqrVDO : wqrList) {
             if (i != 0) {
                 row = sheet.createRow(r);
