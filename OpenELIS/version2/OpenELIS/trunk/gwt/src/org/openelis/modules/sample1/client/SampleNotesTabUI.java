@@ -110,7 +110,7 @@ public class SampleNotesTabUI extends Screen {
 
         addScreenHandler(addNoteButton, "sampleIntNoteButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                addNoteButton.setEnabled(canEdit && isState(ADD, UPDATE));
+                addNoteButton.setEnabled(isState(ADD, UPDATE));
             }
         });
 

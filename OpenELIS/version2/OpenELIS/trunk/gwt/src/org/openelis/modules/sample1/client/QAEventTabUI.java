@@ -109,8 +109,7 @@ public class QAEventTabUI extends Screen {
 
     protected AnalysisViewDO           analysis;
 
-    protected boolean                  sampleOrAnyAnaReleased, canEditAnalysisQA, isVisible,
-                    redraw;
+    protected boolean                  isVisible, redraw;
 
     protected String                   displayedUid;
 
@@ -151,7 +150,7 @@ public class QAEventTabUI extends Screen {
 
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() == 0 || sampleOrAnyAnaReleased)
+                if ( !isState(ADD, UPDATE) || !canEditSampleQA())
                     event.cancel();
             }
         });
@@ -236,7 +235,7 @@ public class QAEventTabUI extends Screen {
 
         analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() == 0 || !canEditAnalysisQA)
+                if ( !isState(ADD, UPDATE) || !canEditAnalysisQA())
                     event.cancel();
             }
         });
@@ -297,7 +296,7 @@ public class QAEventTabUI extends Screen {
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  analysisQALookupButton.setEnabled(isState(ADD, UPDATE) &&
-                                                                   canEditAnalysisQA);
+                                                                   getTestId() != null);
                              }
                          });
 
@@ -431,41 +430,8 @@ public class QAEventTabUI extends Screen {
     }
 
     public void setState(State state) {
-        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    private void evaluateEdit() {
-        Integer sectId, statId;
-        SectionPermission perm;
-        SectionViewDO sect;
-
-        sampleOrAnyAnaReleased = false;
-        canEditAnalysisQA = false;
-
-        if (manager != null) {
-            sampleOrAnyAnaReleased = Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                          .getStatusId()) ||
-                                     manager.analysis.hasReleasedAnalysis();
-
-            perm = null;
-            sectId = getSectionId();
-            statId = getStatusId();
-
-            try {
-                if (sectId != null) {
-                    sect = SectionCache.getById(sectId);
-                    perm = UserCache.getPermission().getSection(sect.getName());
-                }
-                canEditAnalysisQA = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
-                                    perm != null &&
-                                    (perm.hasAssignPermission() || perm.hasCompletePermission());
-            } catch (Exception e) {
-                Window.alert("canEdit:" + e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
     }
 
     private void displayQAEvents() {
@@ -476,6 +442,13 @@ public class QAEventTabUI extends Screen {
             redraw = false;
             fireDataChange();
         }
+    }
+    
+    private Integer getTestId() {
+        if (analysis != null)
+            return analysis.getTestId();
+
+        return null;
     }
 
     private Integer getStatusId() {
@@ -511,8 +484,7 @@ public class QAEventTabUI extends Screen {
          * allow removal of only internal qa events if sample is released or any
          * analysis is released
          */
-        if (sampleOrAnyAnaReleased &&
-            !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
+        if ( !canEditSampleQA(data.getTypeId())) {
             parentScreen.setError(Messages.get().sample_cantRemoveQAEvent());
         } else {
             sampleQATable.removeRowAt(r);
@@ -539,8 +511,7 @@ public class QAEventTabUI extends Screen {
         /*
          * allow removal of only internal qa events if the analysis is released
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(getStatusId()) &&
-            !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
+        if ( !canEditAnalysisQA(data.getTypeId())) {
             parentScreen.setError(Messages.get().analysis_cantRemoveQAEvent());
         } else {
             analysisQATable.removeRowAt(r);
@@ -598,8 +569,7 @@ public class QAEventTabUI extends Screen {
 
                 @Override
                 public void ok() {
-                    boolean released, showError;
-                    String error;
+                    boolean showError;
                     AnalysisQaEventViewDO aqa;
                     SampleQaEventViewDO sqa;
                     Row row;
@@ -608,21 +578,17 @@ public class QAEventTabUI extends Screen {
                         return;
 
                     showError = false;
-                    error = null;
                     if (qaEventLookup.getTestId() != null) {
                         /*
                          * add analysis qa events
                          */
-                        released = Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId());
                         for (QaEventDO data : qaEventLookup.getSelectedQAEvents()) {
                             /*
                              * if the analysis is released then only internal qa
                              * events can be added to it
                              */
-                            if (released &&
-                                !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
+                            if ( !canEditAnalysisQA(data.getTypeId()) ) {
                                 showError = true;
-                                error = Messages.get().analysis_cantAddQAEvent();
                                 continue;
                             }
 
@@ -639,17 +605,13 @@ public class QAEventTabUI extends Screen {
                         /*
                          * add sample qa events
                          */
-                        released = Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                        .getStatusId());
                         for (QaEventDO data : qaEventLookup.getSelectedQAEvents()) {
                             /*
                              * if the sample is released then only internal qa
                              * events can be added to it
                              */
-                            if (released &&
-                                !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
+                            if (!canEditSampleQA(data.getTypeId())) {
                                 showError = true;
-                                error = Messages.get().sample_cantAddQAEvent();
                                 continue;
                             }
 
@@ -665,7 +627,7 @@ public class QAEventTabUI extends Screen {
                     }
 
                     if (showError)
-                        parentScreen.setError(error);
+                        parentScreen.setError(Messages.get().sample_cantAddQAEvent());
                 }
 
                 @Override
@@ -683,6 +645,40 @@ public class QAEventTabUI extends Screen {
 
         qaEventLookup.setWindow(modal);
         qaEventLookup.setData(testId);
+    }
+
+    private boolean canEditSampleQA() {
+        return canEditSampleQA(null);
+    }
+
+    private boolean canEditSampleQA(Integer typeId) {
+        return ( ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()) && !manager.analysis.hasReleasedAnalysis()) || Constants.dictionary().QAEVENT_INTERNAL.equals(typeId));
+    }
+
+    private boolean canEditAnalysisQA() {
+        return canEditAnalysisQA(null);
+    }
+
+    private boolean canEditAnalysisQA(Integer typeId) {
+        Integer sectId, statId;
+        SectionPermission perm;
+        SectionViewDO sect;
+
+        sectId = getSectionId();
+        statId = getStatusId();
+        if (sectId != null) {
+            try {
+                sect = SectionCache.getById(sectId);
+                perm = UserCache.getPermission().getSection(sect.getName());
+                return !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
+                       ( !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) || Constants.dictionary().QAEVENT_INTERNAL.equals(typeId)) &&
+                       perm != null && (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception e) {
+                Window.alert("canEditAnalysisQA:" + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return false;
     }
 
     private void showSampleBillableMessage() {
