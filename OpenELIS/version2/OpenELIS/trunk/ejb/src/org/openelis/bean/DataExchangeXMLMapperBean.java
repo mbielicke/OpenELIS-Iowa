@@ -1271,33 +1271,20 @@ public class DataExchangeXMLMapperBean {
 
         setAttribute(elm, "analyte_id", worksheetQc.getAnalyteId());
         setAttribute(elm, "qc_result_id", worksheetQc.getId());
-        setAttribute(elm, "inventory_item_id", worksheetQc.getInventoryItemId());
         setAttribute(elm, "location_id", worksheetQc.getLocationId());
         setAttribute(elm, "position", worksheetQc.getSortOrder());
         setAttribute(elm, "prepared_by_id", worksheetQc.getPreparedById());
         setAttribute(elm, "prepared_unit_id", worksheetQc.getPreparedUnitId());
         setAttribute(elm, "prepared_volume", worksheetQc.getPreparedVolume());
-        setAttribute(elm, "qc_analyte_id", worksheetQc.getQcAnalyteId());
         setAttribute(elm, "qc_analyte_type_id", worksheetQc.getQcAnalyteTypeId());
-        setAttribute(elm, "qc_id", worksheetQc.getQcId());
-        setAttribute(elm, "qc_lot_id", worksheetQc.getQcLotId());
         setAttribute(elm, "qc_type_id", worksheetQc.getQcTypeId());
         setAttribute(elm, "worksheet_analysis_id", worksheetQc.getWorksheetAnalysisId());
         setAttribute(elm, "expired_date", worksheetQc.getExpireDate());
         setAttribute(elm, "prepared_date", worksheetQc.getPreparedDate());
         setAttribute(elm, "usable_date", worksheetQc.getUsableDate());
-        setText(doc, elm, "analyte_name", worksheetQc.getAnalyteName());
         setText(doc, elm, "expected_value", worksheetQc.getExpectedValue());
-        setText(doc, elm, "is_active", worksheetQc.getQcIsActive());
-        setText(doc, elm, "is_trendable", worksheetQc.getIsTrendable());
-        setText(doc, elm, "location", worksheetQc.getLocation());
         setText(doc, elm, "lot_number", worksheetQc.getLotNumber());
-        setText(doc, elm, "prepared_unit", worksheetQc.getPreparedUnit());
-        setText(doc, elm, "qc_analyte_type", worksheetQc.getQcAnalyteType());
-        setText(doc, elm, "qc_is_active", worksheetQc.getQcIsActive());
-        setText(doc, elm, "qc_lot_is_active", worksheetQc.getQcLotIsActive());
         setText(doc, elm, "qc_name", worksheetQc.getQcName());
-        setText(doc, elm, "qc_type", worksheetQc.getQcType());
         setText(doc, elm, "source", worksheetQc.getSource());
 
         return elm;
