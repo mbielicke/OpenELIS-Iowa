@@ -42,40 +42,19 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 @NamedQueries( {                  
-    @NamedQuery( name = "WorksheetQcResultView.FetchById",
-                query = "select new org.openelis.domain.WorksheetQcResultViewVO(wqrv.id," +
-                		"wqrv.worksheetAnalysisId,wqrv.sortOrder,wqrv.qcAnalyteId," +
-                		"wqrv.value1,wqrv.value2,wqrv.value3,wqrv.value4,wqrv.value5," +
-                		"wqrv.value6,wqrv.value7,wqrv.value8,wqrv.value9,wqrv.value10," +
-                		"wqrv.value11,wqrv.value12,wqrv.value13,wqrv.value14,wqrv.value15," +
-                		"wqrv.value16,wqrv.value17,wqrv.value18,wqrv.value19,wqrv.value20," +
-                		"wqrv.value21,wqrv.value22,wqrv.value23,wqrv.value24,wqrv.value25," +
-                		"wqrv.value26,wqrv.value27,wqrv.value28,wqrv.value29,wqrv.value30," +
-                		"wqrv.qcId,wqrv.qcName,wqrv.qcTypeId,wqrv.inventoryItemId," +
-                		"wqrv.source,wqrv.qcIsActive,wqrv.qcLotId,wqrv.lotNumber," +
-                		"wqrv.locationId,wqrv.preparedDate,wqrv.preparedVolume,wqrv.preparedUnitId," +
-                		"wqrv.preparedById,wqrv.usableDate,wqrv.expireDate,wqrv.qcLotIsActive," +
-                		"wqrv.analyteId,wqrv.qcAnalyteTypeId,wqrv.expectedValue," +
-                		"wqrv.isTrendable,wqrv.qcType,wqrv.location,wqrv.preparedUnit," +
-                		"wqrv.analyteName,wqrv.qcAnalyteType)"
-                      + " from WorksheetQcResultView wqrv"+
-                        " where wqrv.id = :id"),
     @NamedQuery( name = "WorksheetQcResultView.FetchByIds",
                 query = "select distinct new org.openelis.domain.WorksheetQcResultViewVO(wqrv.id," +
-                        "wqrv.worksheetAnalysisId,wqrv.sortOrder,wqrv.qcAnalyteId," +
-                        "wqrv.value1,wqrv.value2,wqrv.value3,wqrv.value4,wqrv.value5," +
-                        "wqrv.value6,wqrv.value7,wqrv.value8,wqrv.value9,wqrv.value10," +
-                        "wqrv.value11,wqrv.value12,wqrv.value13,wqrv.value14,wqrv.value15," +
-                        "wqrv.value16,wqrv.value17,wqrv.value18,wqrv.value19,wqrv.value20," +
-                        "wqrv.value21,wqrv.value22,wqrv.value23,wqrv.value24,wqrv.value25," +
-                        "wqrv.value26,wqrv.value27,wqrv.value28,wqrv.value29,wqrv.value30," +
-                        "wqrv.qcId,wqrv.qcName,wqrv.qcTypeId,wqrv.inventoryItemId," +
-                        "wqrv.source,wqrv.qcIsActive,wqrv.qcLotId,wqrv.lotNumber," +
-                        "wqrv.locationId,wqrv.preparedDate,wqrv.preparedVolume,wqrv.preparedUnitId," +
-                        "wqrv.preparedById,wqrv.usableDate,wqrv.expireDate,wqrv.qcLotIsActive," +
-                        "wqrv.analyteId,wqrv.qcAnalyteTypeId,wqrv.expectedValue," +
-                        "wqrv.isTrendable,wqrv.qcType,wqrv.location,wqrv.preparedUnit," +
-                        "wqrv.analyteName,wqrv.qcAnalyteType)"
+                        "wqrv.worksheetAnalysisId,wqrv.sortOrder,wqrv.value1,wqrv.value2," +
+                        "wqrv.value3,wqrv.value4,wqrv.value5,wqrv.value6,wqrv.value7," +
+                        "wqrv.value8,wqrv.value9,wqrv.value10,wqrv.value11,wqrv.value12," +
+                        "wqrv.value13,wqrv.value14,wqrv.value15,wqrv.value16,wqrv.value17," +
+                        "wqrv.value18,wqrv.value19,wqrv.value20,wqrv.value21,wqrv.value22," +
+                        "wqrv.value23,wqrv.value24,wqrv.value25,wqrv.value26,wqrv.value27," +
+                        "wqrv.value28,wqrv.value29,wqrv.value30,wqrv.qcName,wqrv.qcTypeId," +
+                        "wqrv.source,wqrv.lotNumber,wqrv.locationId,wqrv.preparedDate," +
+                        "wqrv.preparedVolume,wqrv.preparedUnitId,wqrv.preparedById," +
+                        "wqrv.usableDate,wqrv.expireDate,wqrv.analyteId,wqrv.qcAnalyteTypeId," +
+                        "wqrv.expectedValue)"
                       + " from WorksheetQcResultView wqrv"+
                         " where wqrv.id = :id order by wqrv.sortOrder")})
 @Entity
@@ -91,9 +70,6 @@ public class WorksheetQcResultView  {
 
     @Column(name = "sort_order")
     private Integer sortOrder;
-
-    @Column(name = "qc_analyte_id")
-    private Integer qcAnalyteId;
 
     @Column(name = "value_1")
     private String  value1;
@@ -185,26 +161,14 @@ public class WorksheetQcResultView  {
     @Column(name = "value_30")
     private String  value30;
 
-    @Column(name = "qc_id")
-    private Integer qcId;
-
     @Column(name = "qc_name")
     private String  qcName;
 
     @Column(name = "qc_type_id")
     private Integer qcTypeId;
 
-    @Column(name = "inventory_item_id")
-    private Integer inventoryItemId;
-
     @Column(name = "source")
     private String  source;
-
-    @Column(name = "qc_is_active")
-    private String  qcIsActive;
-
-    @Column(name = "qc_lot_id")
-    private Integer qcLotId;
 
     @Column(name = "lot_number")
     private String  lotNumber;
@@ -230,9 +194,6 @@ public class WorksheetQcResultView  {
     @Column(name = "expire_date")
     private Date    expireDate;
 
-    @Column(name = "qc_lot_is_active")
-    private String  qcLotIsActive;
-
     @Column(name = "analyte_id")
     private Integer analyteId;
 
@@ -241,24 +202,6 @@ public class WorksheetQcResultView  {
 
     @Column(name = "expected_value")
     private String  expectedValue;
-
-    @Column(name = "is_trendable")
-    private String  isTrendable;
-
-    @Column(name = "qc_type")
-    private String  qcType;
-
-    @Column(name = "location")
-    private String  location;
-
-    @Column(name = "prepared_unit")
-    private String  preparedUnit;
-
-    @Column(name = "analyte_name")
-    private String  analyteName;
-
-    @Column(name = "qc_analyte_type")
-    private String  qcAnalyteType;
 
     public Integer getId() {
         return id;
@@ -285,15 +228,6 @@ public class WorksheetQcResultView  {
     public void setSortOrder(Integer sortOrder) {
         if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
             this.sortOrder = sortOrder;
-    }
-
-    public Integer getQcAnalyteId() {
-        return qcAnalyteId;
-    }
-
-    public void setQcAnalyteId(Integer qcAnalyteId) {
-        if (DataBaseUtil.isDifferent(qcAnalyteId, this.qcAnalyteId))
-            this.qcAnalyteId = qcAnalyteId;
     }
 
     public String getValue1() {
@@ -566,11 +500,6 @@ public class WorksheetQcResultView  {
             this.value30 = value30;
     }
     
-    protected void setQcId(Integer qcId) {
-        if (DataBaseUtil.isDifferent(qcId, this.qcId))
-            this.qcId = qcId;
-    }
-
     public String getQcName() {
         return qcName;
     }
@@ -589,15 +518,6 @@ public class WorksheetQcResultView  {
             this.qcTypeId = qcTypeId;
     }
 
-    public Integer getInventoryItemId() {
-        return inventoryItemId;
-    }
-
-    public void setInventoryItemId(Integer inventoryItemId) {
-        if (DataBaseUtil.isDifferent(inventoryItemId, this.inventoryItemId))
-            this.inventoryItemId = inventoryItemId;
-    }
-
     public String getSource() {
         return source;
     }
@@ -605,24 +525,6 @@ public class WorksheetQcResultView  {
     public void setSource(String source) {
         if (DataBaseUtil.isDifferent(source, this.source))
             this.source = source;
-    }
-
-    public String getQcIsActive() {
-        return qcIsActive;
-    }
-
-    public void setQcIsActive(String qcIsActive) {
-        if (DataBaseUtil.isDifferent(qcIsActive, this.qcIsActive))
-            this.qcIsActive = qcIsActive;
-    }
-
-    public Integer getQcLotId() {
-        return qcLotId;
-    }
-
-    protected void setQcLotId(Integer qcLotId) {
-        if (DataBaseUtil.isDifferent(qcLotId, this.qcLotId))
-            this.qcLotId = qcLotId;
     }
 
     public String getLotNumber() {
@@ -697,15 +599,6 @@ public class WorksheetQcResultView  {
             this.expireDate = DataBaseUtil.toDate(expireDate);
     }
 
-    public String getQcLotIsActive() {
-        return qcLotIsActive;
-    }
-
-    public void setQcLotIsActive(String qcLotIsActive) {
-        if (DataBaseUtil.isDifferent(qcLotIsActive, this.qcLotIsActive))
-            this.qcLotIsActive = qcLotIsActive;
-    }
-
     public Integer getAnalyteId() {
         return analyteId;
     }
@@ -731,59 +624,5 @@ public class WorksheetQcResultView  {
     public void setExpectedValue(String expectedValue) {
         if (DataBaseUtil.isDifferent(expectedValue, this.expectedValue))
             this.expectedValue = expectedValue;
-    }
-
-    public String getIsTrendable() {
-        return isTrendable;
-    }
-
-    public void setIsTrendable(String isTrendable) {
-        if (DataBaseUtil.isDifferent(isTrendable, this.isTrendable))
-            this.isTrendable = isTrendable;
-    }
-
-    public String getQcType() {
-        return qcType;
-    }
-
-    public void setQcType(String qcType) {
-        if (DataBaseUtil.isDifferent(qcType, this.qcType))
-            this.qcType = qcType;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        if (DataBaseUtil.isDifferent(location, this.location))
-            this.location = location;
-    }
-
-    public String getPreparedUnit() {
-        return preparedUnit;
-    }
-
-    public void setPreparedUnit(String preparedUnit) {
-        if (DataBaseUtil.isDifferent(preparedUnit, this.preparedUnit))
-            this.preparedUnit = preparedUnit;
-    }
-
-    public String getAnalyteName() {
-        return analyteName;
-    }
-
-    public void setAnalyteName(String analyteName) {
-        if (DataBaseUtil.isDifferent(analyteName, this.analyteName))
-            this.analyteName = analyteName;
-    }
-
-    public String getQcAnalyteType() {
-        return qcAnalyteType;
-    }
-
-    public void setQcAnayteType(String qcAnalyteType) {
-        if (DataBaseUtil.isDifferent(qcAnalyteType, this.qcAnalyteType))
-            this.qcAnalyteType = qcAnalyteType;
     }
 }
