@@ -184,6 +184,7 @@ public class WorksheetItemTabUI extends Screen {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
         Column column;
+        Item<Integer> item;
         MenuItem sortAsc, sortDesc;
 
         screen = this;
@@ -581,8 +582,15 @@ public class WorksheetItemTabUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO resultDO : dictList)
-            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        for (DictionaryDO resultDO : dictList) {
+            item = new Item<Integer>(resultDO.getId(),resultDO.getEntry());
+            if (!"analysis_initiated".equals(resultDO.getSystemName()) ||
+                !"analysis_oh_hold".equals(resultDO.getSystemName()) ||
+                !"analysis_requeue".equals(resultDO.getSystemName()) ||
+                !"analysis_completed".equals(resultDO.getSystemName()))
+                item.setEnabled(false);
+            model.add(item);
+        }
         analysisStatusId.setModel(model);
     }
     
