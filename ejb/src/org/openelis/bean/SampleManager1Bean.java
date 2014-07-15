@@ -2396,9 +2396,16 @@ public class SampleManager1Bean {
         }
 
         /*
-         * samples have to have one report to.
+         * private well report-to is part of the domain information
          */
         cnt = 0;
+        if (getSamplePrivateWell(sm) != null &&
+            (getSamplePrivateWell(sm).getOrganizationId() != null || getSamplePrivateWell(sm).getReportToAddress() != null))
+            cnt = 1;        
+
+        /*
+         * samples have to have one report to.
+         */
         if (getOrganizations(sm) != null) {
             for (SampleOrganizationViewDO data : getOrganizations(sm))
                 if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))

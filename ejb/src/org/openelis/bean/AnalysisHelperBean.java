@@ -154,8 +154,8 @@ public class AnalysisHelperBean {
         ts = null;
 
         /*
-         * if section id is specified, then use it for checking permissions
-         * otherwise use the default section
+         * if section id is specified, then use it for checking permissions;
+         * otherwise, use the default section
          */
         if (sectionId != null) {
             for (int i = 0; i < tsm.count(); i++ ) {
@@ -558,7 +558,6 @@ public class AnalysisHelperBean {
                 /*
                  * the analysis is being completed
                  */
-
                 if (ana.getSectionName() == null ||
                     !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
                     throw new InconsistencyException(Messages.get()
@@ -567,6 +566,13 @@ public class AnalysisHelperBean {
                                                                                                                ana.getMethodName()));
                 }
 
+                /*
+                 * we're validating the analysis here as well as the manager
+                 * bean, because we want to throw exceptions on some analyses
+                 * that can't be completed while allowing others on the same
+                 * sample to be completed. This applies to cases when multiple
+                 * analyses on the same sample are getting completed.
+                 */
                 tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
 
                 try {
@@ -1106,7 +1112,7 @@ public class AnalysisHelperBean {
     public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO ana,
                            ArrayList<Integer> analyteIds,
                            HashMap<Integer, HashMap<Integer, ResultViewDO>> oldResults) throws Exception {
-        boolean addRow;        
+        boolean addRow;
         Integer dictId;
         String reportable, value;
         ResultViewDO oldr;
