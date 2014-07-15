@@ -272,12 +272,14 @@ public class WorksheetManager1Bean {
                 arMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
                 if (!anaIds.isEmpty()) {
                     for (ResultViewDO rVDO : result.fetchByAnalysisIds(new ArrayList<Integer>(anaIds))) {
-                        resultList = arMap.get(rVDO.getAnalysisId());
-                        if (resultList == null) {
-                            resultList = new ArrayList<ResultViewDO>();
-                            arMap.put(rVDO.getAnalysisId(), resultList);
+                        if ("N".equals(rVDO.getIsColumn())) {
+                            resultList = arMap.get(rVDO.getAnalysisId());
+                            if (resultList == null) {
+                                resultList = new ArrayList<ResultViewDO>();
+                                arMap.put(rVDO.getAnalysisId(), resultList);
+                            }
+                            resultList.add(rVDO);
                         }
-                        resultList.add(rVDO);
                     }
                 }
                     
