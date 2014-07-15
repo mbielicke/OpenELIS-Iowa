@@ -66,7 +66,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -88,10 +87,11 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet.client.WorksheetService;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -101,6 +101,8 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
@@ -911,18 +913,31 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         selectWkshtButton = (AppButton)def.getWidget("selectWkshtButton");
         addScreenHandler(selectWkshtButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                ScreenWindow modal;
+                final Integer id;
+                ScheduledCommand cmd;
                 TableDataRow row;
-                WorksheetCompletionScreen worksheetScreen;
+                org.openelis.ui.widget.Window window;
+                final WorksheetCompletionScreenUI worksheetScreen;
                 
                 try {
-                    modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                    modal.setName(Messages.get().worksheetCompletion());
-                    
                     row = worksheetTable.getSelection();
-                    worksheetScreen = new WorksheetCompletionScreen((Integer)row.key,modal);
+                    id = (Integer)row.key;
                     
-                    modal.setContent(worksheetScreen);
+                    window = new org.openelis.ui.widget.Window();
+                    window.setName(Messages.get().worksheetCompletion());
+                    window.setSize("1061px", "511px");
+                    worksheetScreen = new WorksheetCompletionScreenUI(window);
+                    window.setContent(worksheetScreen);
+                    worksheetScreen.initialize();
+                    OpenELIS.getBrowser().addWindow(window, "worksheetCompletionUI");
+
+                    cmd = new ScheduledCommand() {
+                        @Override
+                        public void execute() {
+                            worksheetScreen.query(id);
+                        }
+                    };
+                    Scheduler.get().scheduleDeferred(cmd);
                 } catch (Exception e) {
                     Window.alert("openCompletionScreen: " + e.getMessage());
                 }

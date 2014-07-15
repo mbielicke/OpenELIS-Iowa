@@ -383,7 +383,7 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         final WorksheetCompletionScreenUI wcScreen;
         
         window = new org.openelis.ui.widget.Window();
-        window.setName(Messages.get().worksheetCompletion() + " 2");
+        window.setName(Messages.get().worksheetCompletion());
         window.setSize("1061px", "511px");
         wcScreen = new WorksheetCompletionScreenUI(window);
         window.setContent(wcScreen);

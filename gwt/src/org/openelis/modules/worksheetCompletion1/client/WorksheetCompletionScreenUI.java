@@ -634,7 +634,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                             setError(Messages.get().gen_noMoreRecordInDir());
                         }
     
-                        public void onFailure(Throwable error) {
+                        public void failure(Throwable error) {
                             setQueryResult(null);
                             Window.alert("Error: Worksheet call query failed; " +
                                          error.getMessage());
