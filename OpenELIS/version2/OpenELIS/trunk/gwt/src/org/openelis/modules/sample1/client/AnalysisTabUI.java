@@ -929,7 +929,7 @@ public class AnalysisTabUI extends Screen {
             id = ws.getId();
         
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().worksheetCompletion() + " 2");
+            window.setName(Messages.get().worksheetCompletion());
             window.setSize("1061px", "511px");
             worksheetScreen = new WorksheetCompletionScreenUI(window);
             window.setContent(worksheetScreen);
