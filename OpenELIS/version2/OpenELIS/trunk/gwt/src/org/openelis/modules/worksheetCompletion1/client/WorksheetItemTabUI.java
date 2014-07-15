@@ -242,10 +242,7 @@ public class WorksheetItemTabUI extends Screen {
                         } else {
                             wqrVDO = (WorksheetQcResultViewDO)data;
                             waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wqrVDO.getWorksheetAnalysisId()));
-                            if (waVDO.getFromOtherId() != null)
-                                event.cancel();
-                            else
-                                ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
+                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
                         }
                     } else if (data instanceof WorksheetResultViewDO) {
                         wrVDO = (WorksheetResultViewDO)data;
