@@ -1602,11 +1602,11 @@ public class WorksheetManager1Bean {
                         toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
                         if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
                             for (i = 0; i < 30; i++) {
-                                fromName = fromColumnMap.get(i + 9);
+                                fromName = fromColumnMap.get(i + 10);
                                 if (fromName != null) {
                                     toIndex = toColumnMap.get(fromName);
                                     if (toIndex != null)
-                                        toWrVDO.setValueAt(toIndex.intValue() - 9, fromWrVDO.getValueAt(i));
+                                        toWrVDO.setValueAt(toIndex.intValue() - 10, fromWrVDO.getValueAt(i));
                                 }
                             }
                         } else {
@@ -1632,11 +1632,11 @@ public class WorksheetManager1Bean {
                         toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
                         if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
                             for (i = 0; i < 30; i++) {
-                                fromName = fromColumnMap.get(i + 9);
+                                fromName = fromColumnMap.get(i + 10);
                                 if (fromName != null) {
                                     toIndex = toColumnMap.get(fromName);
                                     if (toIndex != null)
-                                        toWqrVDO.setValueAt(toIndex.intValue() - 9, fromWqrVDO.getValueAt(i));
+                                        toWqrVDO.setValueAt(toIndex.intValue() - 10, fromWqrVDO.getValueAt(i));
                                 }
                             }
                         } else {
@@ -1855,6 +1855,7 @@ public class WorksheetManager1Bean {
                             auVDO.setSystemUserId(userVO.getId());
                             auVDO.setSystemUser(userVO.getLoginName());
                             SampleManager1Accessor.addUser(sMan, auVDO);
+                            completeUserIds.add(userVO.getId());
                             update = true;
                         }
                     } else {
