@@ -72,9 +72,9 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder,/* worksheetCreation,*/ worksheetCompletion, worksheetCompletionUI, addOrCancel,
-                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
-                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
+                    worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
+                    labelFor, storage, QC, analyteParameter, internalOrder, vendorOrder,
+                    sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
@@ -223,31 +223,6 @@ public class OpenELIS extends Screen {
             }
         });
 
-//        addCommand(worksheetCreation, "worksheet", new Command() {
-//            public void execute() {
-//
-//                GWT.runAsync(new RunAsyncCallback() {
-//                    public void onSuccess() {
-//                        try {
-//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-//                            window.setName(msg.worksheetCreation());
-//                            window.setSize("20px", "20px");
-//                            window.setContent(new WorksheetCreationScreen(window));
-//                            browser.addWindow(window, "worksheetCreation");
-//                        } catch (Throwable e) {
-//                            remote().log(Level.SEVERE, e.getMessage(), e);
-//                            Window.alert(e.getMessage());
-//                        }
-//                    }
-//
-//                    public void onFailure(Throwable caught) {
-//                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-//                        Window.alert(caught.getMessage());
-//                    }
-//                });
-//            }
-//        });
-
         addCommand(worksheetBuilder, "worksheetbuilder", new Command() {
             public void execute() {
                 showScreen(WORKSHEET_BUILDER);
@@ -257,12 +232,6 @@ public class OpenELIS extends Screen {
         addCommand(worksheetCompletion, "worksheet", new Command() {
             public void execute() {
                 showScreen(WORKSHEET_COMPLETION);
-            }
-        });
-
-        addCommand(worksheetCompletionUI, "worksheet", new Command() {
-            public void execute() {
-                showScreen(WORKSHEET_COMPLETION2);
             }
         });
 
