@@ -18,7 +18,7 @@ public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
     
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION2, this);        
+        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION, this);        
     }
     
     @Override
@@ -34,7 +34,7 @@ public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
                     screen = new WorksheetCompletionScreenUI(window);
                     window.setContent(screen);
                     screen.initialize();
-                    OpenELIS.getBrowser().addWindow(window, "worksheetCompletionUI");
+                    OpenELIS.getBrowser().addWindow(window, "worksheetCompletion");
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
