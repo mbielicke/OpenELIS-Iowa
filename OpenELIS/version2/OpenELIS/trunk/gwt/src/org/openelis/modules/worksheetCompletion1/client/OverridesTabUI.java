@@ -139,8 +139,7 @@ public class OverridesTabUI extends Screen {
                                                                    .getData());
                     if (data instanceof WorksheetAnalysisViewDO) {
                         waVDO = (WorksheetAnalysisViewDO)data;
-                        if (waVDO.getFromOtherId() != null ||
-                            (waVDO.getQcLotId() != null && event.getCol() == 7)) {
+                        if (waVDO.getQcLotId() != null && event.getCol() == 7) {
                             event.cancel();
                         } else if (waVDO.getAnalysisId() != null) {
                             if (Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
