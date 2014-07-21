@@ -248,8 +248,7 @@ public class WorksheetItemTabUI extends Screen {
                         wrVDO = (WorksheetResultViewDO)data;
                         waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wrVDO.getWorksheetAnalysisId()));
                         perm = UserCache.getPermission().getSection(waVDO.getSectionName());
-                        if (waVDO.getFromOtherId() != null ||
-                            Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
+                        if (Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
                             Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
                             event.cancel();
                         } else if (perm == null || !perm.hasCompletePermission()) {
