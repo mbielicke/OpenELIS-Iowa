@@ -53,6 +53,7 @@
 			<xs:element name="client_reference" minOccurs="0" type="xs:string" />
 			<xs:element name="received_by" minOccurs="0" type="systemUser" />
 			<xs:element name="status" type="dictionary" />
+			<xs:element name="eorder" minOccurs="0" type="eOrder" />
 			<xs:choice>
 				<xs:element name="sample_environmental" type="sampleEnvironmental" />
 				<xs:element name="sample_private_well" type="samplePrivateWell" />
@@ -87,6 +88,29 @@
 		<xs:attribute name="released_date" type="xs:dateTime" />
 		<xs:attribute name="received_by_id" type="xs:integer" />
 		<xs:attribute name="status_id" type="xs:integer" />
+	</xs:complexType>
+
+	<xs:complexType name="eOrder">
+		<xs:sequence>
+			<xs:element name="paper_order_validator" minOccurs="1"
+				type="xs:string" />
+			<xs:element name="description" minOccurs="0" type="xs:string" />
+			<xs:element name="eorder_link" minOccurs="0" maxOccurs="unbounded"
+				type="eOrderLink" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:integer" use="required" />
+		<xs:attribute name="entered_date" type="xs:dateTime" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="eOrderLink">
+		<xs:sequence>
+			<xs:element name="reference" minOccurs="0" type="xs:string" />
+			<xs:element name="sub_id" minOccurs="0" type="xs:string" />
+			<xs:element name="name" minOccurs="1" type="xs:string" />
+			<xs:element name="value" minOccurs="0" type="xs:string" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:integer" use="required" />
+		<xs:attribute name="eorder_id" type="xs:integer" use="required" />
 	</xs:complexType>
 
 	<xs:complexType name="sampleEnvironmental">
@@ -325,8 +349,7 @@
 				maxOccurs="unbounded" />
 			<xs:element name="result" minOccurs="0" maxOccurs="unbounded"
 				type="result" />
-			<xs:element name="analysis_qc" type="analysisQc"
-				minOccurs="0" />
+			<xs:element name="analysis_qc" minOccurs="0" type="analysisQc" />
 		</xs:sequence>
 		<xs:attribute name="id" use="required" type="xs:integer" />
 		<xs:attribute name="sample_item_id" type="xs:integer"
@@ -602,47 +625,45 @@
 
 	<xs:complexType name="analysisQc">
 		<xs:sequence>
-			<xs:element name="analyte_name" minOccurs="1" type="xs:string" />
-			<xs:element name="expected_value" minOccurs="1" type="xs:string" />
-			<xs:element name="is_active" minOccurs="1" type="xs:string" />
-			<xs:element name="is_trendable" minOccurs="0" type="xs:string" />
-			<xs:element name="location" minOccurs="1" type="xs:string" />
-			<xs:element name="lot_number" minOccurs="1" type="xs:string" />
-			<xs:element name="prepared_unit" minOccurs="1" type="xs:string" />
-			<xs:element name="qc_analyte_type" minOccurs="1" type="xs:string" />
-			<xs:element name="qc_is_active" minOccurs="1" type="xs:string" />
-			<xs:element name="qc_lot_is_active" minOccurs="1" type="xs:string" />
 			<xs:element name="qc_name" minOccurs="1" type="xs:string" />
-			<xs:element name="qc_type" minOccurs="1" type="xs:string" />
 			<xs:element name="source" minOccurs="0" type="xs:string" />
-			<xsd:any processContents="skip" maxOccurs="30" minOccurs="0" />
+			<xs:element name="lot_number" minOccurs="1" type="xs:string" />
+			<xs:element name="expected_value" minOccurs="1" type="xs:string" />
+			<xs:element name="qc_result" maxOccurs="30" minOccurs="0"
+				type="qcResult" />
+			<xs:element name="qc_type" minOccurs="0" type="dictionary" />
+			<xs:element name="location" minOccurs="0" type="dictionary" />
+			<xs:element name="prepared_unit" minOccurs="0" type="dictionary" />
+			<xs:element name="prepared_by" minOccurs="0" type="systemUser" />
+			<xs:element name="analyte" minOccurs="1" type="analyte" />
+			<xs:element name="qc_analyte_type" minOccurs="1" type="dictionary" />
 		</xs:sequence>
-		<xs:attribute name="analyte_id" type="xs:integer" use="required" />
-		<xs:attribute name="qc_result_id" type="xs:integer" use="required" />
-		<xs:attribute name="inventory_item_id" type="xs:integer" />
-		<xs:attribute name="location_id" type="xs:integer" use="required" />
-		<xs:attribute name="position" type="xs:integer" use="required" />
-		<xs:attribute name="prepared_by_id" type="xs:integer"
-			use="required" />
-		<xs:attribute name="prepared_unit_id" type="xs:integer"
-			use="required" />
-		<xs:attribute name="prepared_volume" type="xs:double"
-			use="required" />
-		<xs:attribute name="qc_analyte_id" type="xs:integer" use="required" />
-		<xs:attribute name="qc_analyte_type_id" type="xs:integer"
-			use="required" />
-		<xs:attribute name="qc_id" type="xs:integer" use="required" />
-		<xs:attribute name="qc_lot_id" type="xs:integer" use="required" />
-		<xs:attribute name="qc_type_id" type="xs:integer" />
+		<xs:attribute name="id" type="xs:integer" use="required" />
 		<xs:attribute name="worksheet_analysis_id" type="xs:integer"
 			use="required" />
-		<xs:attribute name="expired_date" type="xs:dateTime" use="required" />
+		<xs:attribute name="position" type="xs:integer" use="required" />
+		<xs:attribute name="qc_type_id" type="xs:integer" />
+		<xs:attribute name="location_id" type="xs:integer" />
 		<xs:attribute name="prepared_date" type="xs:dateTime"
 			use="required" />
+		<xs:attribute name="prepared_volume" type="xs:double" />
+		<xs:attribute name="prepared_unit_id" type="xs:integer" />
+		<xs:attribute name="prepared_by_id" type="xs:integer" />
 		<xs:attribute name="usable_date" type="xs:dateTime" use="required" />
+		<xs:attribute name="expired_date" type="xs:dateTime" use="required" />
+		<xs:attribute name="analyte_id" type="xs:integer" use="required" />
+		<xs:attribute name="qc_analyte_type_id" type="xs:integer"
+			use="required" />
+		<xs:attribute name="analysis_id" type="xs:integer" use="required" />
 	</xs:complexType>
 
-	<!-- <xs:complexType name="qcResult"> <xs:sequence> <xs:element name="name" 
-		type="xs:string" /> <xs:element name="value" type="xs:string" /> </xs:sequence> 
-		</xs:complexType> -->
+	<xs:complexType name="qcResult">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
+		</xs:sequence>
+		<xs:attribute name="worksheet_qc_result_id" type="xs:integer"
+			use="required" />
+		<xs:attribute name="sequence" type="xs:integer" use="required" />
+	</xs:complexType>
 </xs:schema>

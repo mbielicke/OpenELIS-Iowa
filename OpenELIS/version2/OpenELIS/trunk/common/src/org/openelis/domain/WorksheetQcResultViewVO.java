@@ -39,8 +39,8 @@ public class WorksheetQcResultViewVO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, worksheetAnalysisId, sortOrder, qcTypeId, locationId,
-                              preparedUnitId, preparedById, analyteId, qcAnalyteTypeId;
-    protected String          values[], qcName, source, lotNumber, expectedValue;
+                    preparedUnitId, preparedById, analyteId, qcAnalyteTypeId, formatId;
+    protected String          names[], values[], qcName, source, lotNumber, expectedValue;
     protected Datetime        preparedDate, usableDate, expireDate;
     protected Double          preparedVolume;
 
@@ -51,18 +51,17 @@ public class WorksheetQcResultViewVO extends DataObject {
     public WorksheetQcResultViewVO(Integer id, Integer worksheetAnalysisId, Integer sortOrder,
                                    String v1, String v2, String v3, String v4, String v5,
                                    String v6, String v7, String v8, String v9, String v10,
-                                   String v11, String v12, String v13, String v14,
-                                   String v15, String v16, String v17, String v18,
-                                   String v19, String v20, String v21, String v22,
-                                   String v23, String v24, String v25, String v26,
-                                   String v27, String v28, String v29, String v30,
+                                   String v11, String v12, String v13, String v14, String v15,
+                                   String v16, String v17, String v18, String v19, String v20,
+                                   String v21, String v22, String v23, String v24, String v25,
+                                   String v26, String v27, String v28, String v29, String v30,
                                    String qcName, Integer qcTypeId, String source,
                                    String lotNumber, Integer locationId, Date preparedDate,
                                    Double preparedVolume, Integer preparedUnitId,
                                    Integer preparedById, Date usableDate, Date expireDate,
                                    Integer analyteId, Integer qcAnalyteTypeId, String expectedValue) {
         values = new String[30];
-        
+
         setId(id);
         setWorksheetAnalysisId(worksheetAnalysisId);
         setSortOrder(sortOrder);
@@ -136,12 +135,24 @@ public class WorksheetQcResultViewVO extends DataObject {
         this.sortOrder = sortOrder;
     }
 
+    public String[] getNames() {
+        return names;
+    }
+
+    public void setNames(String[] names) {
+        this.names = names;
+    }
+
+    public String getNameAt(int index) {
+        return names[index];
+    }
+
     public String getValueAt(int index) {
         return values[index];
     }
 
     public void setValueAt(int index, String value) {
-        this.values[index] =  DataBaseUtil.trim(value);
+        this.values[index] = DataBaseUtil.trim(value);
     }
 
     public String getQcName() {
@@ -175,7 +186,7 @@ public class WorksheetQcResultViewVO extends DataObject {
     public void setLotNumber(String lotNumber) {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
-    
+
     public Integer getLocationId() {
         return locationId;
     }
@@ -254,5 +265,13 @@ public class WorksheetQcResultViewVO extends DataObject {
 
     public void setExpectedValue(String expectedValue) {
         this.expectedValue = DataBaseUtil.trim(expectedValue);
+    }
+
+    public Integer getFormatId() {
+        return formatId;
+    }
+
+    public void setFormatId(Integer formatId) {
+        this.formatId = formatId;
     }
 }

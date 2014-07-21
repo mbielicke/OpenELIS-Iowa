@@ -25,6 +25,8 @@
  */
 package org.openelis.bean;
 
+import static org.openelis.manager.SampleManager1Accessor.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +37,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,8 +61,13 @@ import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.EOrderDO;
+import org.openelis.domain.EOrderLinkDO;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleQcVO;
+import org.openelis.domain.WorksheetQcResultViewVO;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.SampleManager1;
@@ -94,7 +103,26 @@ public class DataExchangeExportBean {
     private DataExchangeXMLMapperBean dataExchangeXMLMapper;
 
     @EJB
+    private SystemVariableBean        systemVariable;
+
+    @EJB
     private SampleManager1Bean        sampleManager;
+
+    @EJB
+    private DictionaryBean            dictionary;
+
+    @EJB
+    private WorksheetQcResultBean     worksheetQcResult;
+
+    @EJB
+    private EOrderBean                eOrder;
+
+    @EJB
+    private EOrderLinkBean            eOrderLink;
+
+    private Transformer               transformer;
+
+    private ByteArrayOutputStream     transformerStream;
 
     private static final Logger       log = Logger.getLogger("openelis");
 
@@ -108,14 +136,16 @@ public class DataExchangeExportBean {
     @Asynchronous
     @TransactionTimeout(600)
     public void export(String name) {
+        int accession;
+        EOrderDO eo;
         Calendar cal;
         Date releaseStart, releaseEnd;
         StringBuilder sb;
         ArrayList<Integer> ids;
+        ArrayList<EOrderLinkDO> eols;
         ArrayList<EventLogDO> elogs;
         ArrayList<SampleManager1> sms;
         ExchangeCriteriaManager cm;
-        ArrayList<Integer> accessions;
 
         try {
             cm = ExchangeCriteriaManager.fetchByName(name);
@@ -170,7 +200,6 @@ public class DataExchangeExportBean {
                                            SampleManager1.Load.NOTE,
                                            SampleManager1.Load.ANALYSISUSER,
                                            SampleManager1.Load.RESULT);
-            accessions = message(sms, cm);
 
             /*
              * log all the accession numbers; the ones generated with the
@@ -178,11 +207,32 @@ public class DataExchangeExportBean {
              * failure are logged as negative numbers
              */
             sb = new StringBuilder();
-            for (Integer accession : accessions) {
+            messageStart();
+            for (SampleManager1 sm : sms) {
+                eo = null;
+                eols = null;
+                accession = getSample(sm).getAccessionNumber();
+                if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
+                    getSample(sm).getOrderId() != null) {
+                    try {
+                        eo = eOrder.fetchById(getSample(sm).getOrderId());
+                        eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
+                    } catch (NotFoundException e) {
+                        log.log(Level.SEVERE,
+                                "E-Order/E-OrderLink record not found for accession " + accession,
+                                e);
+                    }
+                }
+                try {
+                    messageOutput(sm, cm, eo, eols);
+                } catch (Exception e) {
+                    accession = -accession;
+                }
                 if (sb.length() > 0)
                     sb.append(",");
                 sb.append(accession);
             }
+
             addEventLog(Messages.get().dataExchange_executedCriteria(name),
                         cm.getExchangeCriteria().getId(),
                         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION,
@@ -195,6 +245,8 @@ public class DataExchangeExportBean {
                         null);
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            messageEnd();
         }
     }
 
@@ -205,8 +257,10 @@ public class DataExchangeExportBean {
      * by the list.
      */
     public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager cm) throws Exception {
+        EOrderDO eo;
         ReportStatus status;
         ArrayList<Integer> ids;
+        ArrayList<EOrderLinkDO> eols;
         ArrayList<SampleManager1> sms;
 
         if (accessions == null || accessions.size() == 0)
@@ -216,13 +270,13 @@ public class DataExchangeExportBean {
             throw new Exception(Messages.get().dataExchange_noUriException());
 
         status = new ReportStatus();
-        status.setMessage("Initializing report");
+        status.setMessage(Messages.get().gen_initializing());
         session.setAttribute("DataExchange", status);
 
         ids = getSamples(accessions);
         if (ids.size() == 0)
-            throw new NotFoundException();        
-            
+            throw new NotFoundException();
+
         sms = sampleManager.fetchByIds(ids,
                                        SampleManager1.Load.ORGANIZATION,
                                        SampleManager1.Load.PROJECT,
@@ -232,7 +286,163 @@ public class DataExchangeExportBean {
                                        SampleManager1.Load.NOTE,
                                        SampleManager1.Load.ANALYSISUSER,
                                        SampleManager1.Load.RESULT);
-        message(sms, cm);
+
+        messageStart();
+        status.setMessage(Messages.get().gen_generatingReport());
+        for (SampleManager1 sm : sms) {
+            eo = null;
+            eols = null;
+            if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
+                getSample(sm).getOrderId() != null) {
+                try {
+                    eo = eOrder.fetchById(getSample(sm).getOrderId());
+                    eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
+                } catch (NotFoundException e) {
+                    status.setMessage(status.getMessage() +
+                                      "; E-Order/E-OrderLink record not found for accession " +
+                                      getSample(sm).getAccessionNumber());
+                }
+            }
+            messageOutput(sm, cm, eo, eols);
+        }
+        messageEnd();
+
+        return status;
+    }
+
+    /**
+     * The method is called from the screen interface to message a set of QC
+     * data and an accession number. The exchange criteria is used for creating
+     * the message; it is not used to query for samples since that is already
+     * given.
+     */
+    public ReportStatus export(SampleQcVO sqc) throws Exception {
+        String name;
+        EOrderDO eo;
+        ReportStatus status;
+        ExchangeCriteriaManager cm;
+        SampleManager1 sm;
+        ArrayList<String> names;
+        ArrayList<Integer> ids, accessions, qcAnalyteIds;
+        ArrayList<EOrderLinkDO> eols;
+        ArrayList<WorksheetQcResultViewVO> qcAnalytes, analysisQcAnalytes;
+        ArrayList<DictionaryViewDO> dictList;
+        HashSet<Integer> formatIds;
+        HashMap<Integer, String[]> formats;
+
+        if (sqc == null || sqc.getAccession() == null)
+            throw new Exception(Messages.get().dataExchange_noAccessionException());
+
+        try {
+            name = systemVariable.fetchByName("sample_qc_exchange_criteria_name").getValue();
+        } catch (Exception e) {
+            log.log(Level.SEVERE,
+                    Messages.get()
+                            .systemVariable_missingInvalidSystemVariable("sample_qc_exchange_criteria_name"),
+                    e);
+            throw e;
+        }
+
+        status = new ReportStatus();
+        session.setAttribute("DataExchange", status);
+
+        try {
+            cm = ExchangeCriteriaManager.fetchByName(name);
+        } catch (NotFoundException e) {
+            addEventLog(Messages.get().dataExchange_noCriteriaFoundException(name),
+                        Constants.dictionary().LOG_LEVEL_ERROR);
+            log.log(Level.SEVERE, Messages.get().dataExchange_noCriteriaFoundException(name), e);
+            status.setMessage("Messages.get().dataExchange_noCriteriaFoundException(name)");
+            return status;
+        } catch (Exception e) {
+            addEventLog(e.getMessage(), Constants.dictionary().LOG_LEVEL_ERROR);
+            log.log(Level.SEVERE, e.getMessage(), e);
+            status.setMessage(e.getMessage());
+            return status;
+        }
+
+        if (DataBaseUtil.isEmpty(cm.getExchangeCriteria().getDestinationUri()))
+            throw new Exception(Messages.get().dataExchange_noUriException());
+
+        status.setMessage(Messages.get().gen_initializing());
+
+        accessions = new ArrayList<Integer>();
+        accessions.add(sqc.getAccession());
+        ids = getSamples(accessions);
+        if (ids.size() == 0)
+            throw new NotFoundException();
+
+        sm = sampleManager.fetchById(ids.get(0),
+                                     SampleManager1.Load.ORGANIZATION,
+                                     SampleManager1.Load.PROJECT,
+                                     SampleManager1.Load.QA,
+                                     SampleManager1.Load.AUXDATA,
+                                     SampleManager1.Load.STORAGE,
+                                     SampleManager1.Load.NOTE,
+                                     SampleManager1.Load.ANALYSISUSER,
+                                     SampleManager1.Load.RESULT);
+
+        formatIds = new HashSet<Integer>();
+        qcAnalyteIds = new ArrayList<Integer>();
+
+        /*
+         * get the analytes
+         */
+        for (ArrayList<Integer> qcaids : sqc.getQcAnalyteIds())
+            qcAnalyteIds.addAll(qcaids);
+        qcAnalytes = worksheetQcResult.fetchViewByIds(qcAnalyteIds);
+        for (ArrayList<Integer> qcaids : sqc.getQcAnalyteIds()) {
+            analysisQcAnalytes = new ArrayList<WorksheetQcResultViewVO>();
+            for (Integer qcaid : qcaids) {
+                for (WorksheetQcResultViewVO wqcrvvo : qcAnalytes) {
+                    if (wqcrvvo.getId().equals(qcaid)) {
+                        analysisQcAnalytes.add(wqcrvvo);
+                    }
+                }
+            }
+            sqc.addQcAnalytes(analysisQcAnalytes);
+        }
+
+        /*
+         * get the analyte result column names
+         */
+        for (WorksheetQcResultViewVO wqcrvvo : qcAnalytes)
+            formatIds.add(wqcrvvo.getFormatId());
+        formats = new HashMap<Integer, String[]>();
+        for (Integer i : formatIds) {
+            dictList = dictionary.fetchByCategoryId(i);
+            names = new ArrayList<String>();
+            for (DictionaryViewDO dict : dictList)
+                names.add(dict.getEntry());
+            formats.put(i, (String[])names.toArray());
+        }
+
+        for (WorksheetQcResultViewVO wqcrvvo : qcAnalytes) {
+            wqcrvvo.setNames(formats.get(wqcrvvo.getFormatId()));
+        }
+
+        eo = null;
+        eols = null;
+        if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
+            getSample(sm).getOrderId() != null) {
+            try {
+                eo = eOrder.fetchById(getSample(sm).getOrderId());
+                eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
+            } catch (NotFoundException e) {
+                log.log(Level.SEVERE, "E-Order/E-OrderLink record not found for accession " +
+                                      getSample(sm).getAccessionNumber(), e);
+            }
+        }
+
+        try {
+            messageStart();
+            messageOutput(sm, cm, eo, eols, sqc);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to generate xml for accession number:  " +
+                                  getSample(sm).getAccessionNumber(), e);
+        } finally {
+            messageEnd();
+        }
 
         return status;
     }
@@ -314,11 +524,12 @@ public class DataExchangeExportBean {
             builder.addWhere("(" + SampleMeta.getReleasedDate() + " between '" +
                              ReportUtil.toString(start, Messages.get().dateTimeSecondPattern()) +
                              "' and '" +
-                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) + "' or " +
-                             SampleMeta.getAnalysisReleasedDate() + " between '" +
+                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) +
+                             "' or " + SampleMeta.getAnalysisReleasedDate() + " between '" +
                              ReportUtil.toString(start, Messages.get().dateTimeSecondPattern()) +
                              "' and '" +
-                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) + "')");
+                             ReportUtil.toString(end, Messages.get().dateTimeSecondPattern()) +
+                             "')");
         }
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
@@ -327,11 +538,11 @@ public class DataExchangeExportBean {
 
         query = manager.createQuery(builder.getEJBQL());
         QueryBuilderV2.setQueryParams(query, fields);
-        
+
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-       
+
         return DataBaseUtil.toArrayList(list);
     }
 
@@ -350,84 +561,80 @@ public class DataExchangeExportBean {
     }
 
     /**
-     * The method exports each sample using the criteria manager's information.
-     * The returned list consists of the accessions numbers of the samples being
-     * exported such that if a sample could be exported then its accession
-     * number is added as is to the list otherwise the negative number
-     * corresponding to the accession number is added
+     * initializes the xslt transformer and the output buffer
      */
-    private ArrayList<Integer> message(ArrayList<SampleManager1> sms, ExchangeCriteriaManager cm) throws Exception {
-        Integer accession;
-        URI uri;
-        Document doc;
+    private void messageStart() throws Exception {
         ClassLoader loader;
-        Transformer transformer;
-        DOMSource dom;
         InputStream xslt;
-        File outfile;
-        Socket outsocket;
-        OutputStream out;
-        ByteArrayOutputStream ba;
-        ArrayList<Integer> accessions;
 
-        /*
-         * the xslt transforms the simple flat xml to an organized
-         * sample/analysis/result nested structure.
-         */
         loader = Thread.currentThread().getContextClassLoader();
         xslt = loader.getResourceAsStream("dataExchangeDefault.xsl");
         transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
 
-        ba = new ByteArrayOutputStream();
-        accessions = new ArrayList<Integer>();
-        for (SampleManager1 sm : sms) {
-            out = null;
-            outsocket = null;
-            accession = sm.getSample().getAccessionNumber();
-            try {
-                /*
-                 * generate a simple xml and use a simple buffer in case we have
-                 * an error
-                 */
-                doc = dataExchangeXMLMapper.getXML(sm, cm);
-                dom = new DOMSource(doc);
-                transformer.transform(dom, new StreamResult(ba));
+        transformerStream = new ByteArrayOutputStream();
+    }
 
-                /*
-                 * open and copy to destination
-                 */
-                uri = new URI(cm.getExchangeCriteria().getDestinationUri());
-                if ("file".equals(uri.getScheme())) {
-                    outfile = new File(uri.getPath() + File.separator + accession.toString() +
-                                       "_exchange.xml");
-                    outfile.setExecutable(false, false);
-                    outfile.setReadable(true, false);
-                    outfile.setWritable(true, false);
-                    outfile.createNewFile();
-                    out = new FileOutputStream(outfile);
-                    out.write(ba.toByteArray());
-                } else if ("socket".equals(uri.getScheme())) {
-                    outsocket = new Socket(uri.getHost(), uri.getPort());
-                    out = outsocket.getOutputStream();
-                    out.write(ba.toByteArray());
-                }
-                ba.reset();
-                accessions.add(accession);
-                log.fine("Generated xml for accession number: " + accession);
-            } catch (Exception e) {
-                accessions.add( -accession);
-                log.log(Level.SEVERE,
-                        "Failed to generate xml for accession number:  " + accession,
-                        e);
-            } finally {
-                if (out != null)
-                    out.close();
-                if (outsocket != null)
-                    outsocket.close();
-            }
+    private void messageEnd() {
+        transformer = null;
+        try {
+            if (transformerStream != null)
+                transformerStream.close();
+        } catch (Exception e) {
+        } finally {
+            transformerStream = null;
         }
+    }
 
-        return accessions;
+    /**
+     * The method exports a sample using the criteria manager's information.
+     */
+    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Object... optional) throws Exception {
+        Integer accession;
+        URI uri;
+        Document doc;
+        DOMSource dom;
+        File outfile;
+        Socket outsocket;
+        OutputStream out;
+
+        out = null;
+        outsocket = null;
+        accession = sm.getSample().getAccessionNumber();
+
+        try {
+            /*
+             * generate a simple xml and use a simple buffer in case we have an
+             * error
+             */
+            doc = dataExchangeXMLMapper.getXML(sm, cm, optional);
+            dom = new DOMSource(doc);
+            transformer.transform(dom, new StreamResult(transformerStream));
+
+            /*
+             * open and copy to destination
+             */
+            uri = new URI(cm.getExchangeCriteria().getDestinationUri());
+            if ("file".equals(uri.getScheme())) {
+                outfile = new File(uri.getPath() + File.separator + accession.toString() +
+                                   "_exchange.xml");
+                outfile.setExecutable(false, false);
+                outfile.setReadable(true, false);
+                outfile.setWritable(true, false);
+                outfile.createNewFile();
+                out = new FileOutputStream(outfile);
+                out.write(transformerStream.toByteArray());
+            } else if ("socket".equals(uri.getScheme())) {
+                outsocket = new Socket(uri.getHost(), uri.getPort());
+                out = outsocket.getOutputStream();
+                out.write(transformerStream.toByteArray());
+            }
+            transformerStream.reset();
+        } finally {
+            if (out != null)
+                out.close();
+            if (outsocket != null)
+                outsocket.close();
+        }
     }
 
     /*
