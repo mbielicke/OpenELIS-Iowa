@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -10150,22 +10150,58 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_freqInvalidException(Integer arg0);
 
   /**
-   * Translated "The following Auxiliary Group is inactive and was not duplicated: {0}".
+   * Translated "The auxiliary group {0} is inactive and was not duplicated".
    * 
-   * @return translated "The following Auxiliary Group is inactive and was not duplicated: {0}"
+   * @return translated "The auxiliary group {0} is inactive and was not duplicated"
    */
-  @DefaultMessage("The following Auxiliary Group is inactive and was not duplicated: {0}")
+  @DefaultMessage("The auxiliary group {0} is inactive and was not duplicated")
   @Key("order.inactiveAuxGroupWarning")
   String order_inactiveAuxGroupWarning(String arg0);
 
   /**
-   * Translated "The following organization is inactive and was not duplicated: {0}".
+   * Translated "The container {0} is inactive and should be changed".
    * 
-   * @return translated "The following organization is inactive and was not duplicated: {0}"
+   * @return translated "The container {0} is inactive and should be changed"
    */
-  @DefaultMessage("The following organization is inactive and was not duplicated: {0}")
+  @DefaultMessage("The container {0} is inactive and should be changed")
+  @Key("order.inactiveContainerWarning")
+  String order_inactiveContainerWarning(String arg0);
+
+  /**
+   * Translated "The inventory item {0} is inactive and was not duplicated".
+   * 
+   * @return translated "The inventory item {0} is inactive and was not duplicated"
+   */
+  @DefaultMessage("The inventory item {0} is inactive and was not duplicated")
+  @Key("order.inactiveItemWarning")
+  String order_inactiveItemWarning(String arg0);
+
+  /**
+   * Translated "The organization {0} is inactive and was not duplicated".
+   * 
+   * @return translated "The organization {0} is inactive and was not duplicated"
+   */
+  @DefaultMessage("The organization {0} is inactive and was not duplicated")
   @Key("order.inactiveOrganizationWarning")
   String order_inactiveOrganizationWarning(String arg0);
+
+  /**
+   * Translated "The sample type {0} is inactive and was not duplicated".
+   * 
+   * @return translated "The sample type {0} is inactive and was not duplicated"
+   */
+  @DefaultMessage("The sample type {0} is inactive and was not duplicated")
+  @Key("order.inactiveSampleTypeWarning")
+  String order_inactiveSampleTypeWarning(String arg0);
+
+  /**
+   * Translated "The test {0}, {1} is inactive and was not duplicated".
+   * 
+   * @return translated "The test {0}, {1} is inactive and was not duplicated"
+   */
+  @DefaultMessage("The test {0}, {1} is inactive and was not duplicated")
+  @Key("order.inactiveTestWarning")
+  String order_inactiveTestWarning(String arg0,  String arg1);
 
   /**
    * Translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
@@ -10454,6 +10490,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Recur")
   @Key("order.recur")
   String order_recur();
+
+  /**
+   * Translated "Errors ocurred while recuring the order".
+   * 
+   * @return translated "Errors ocurred while recuring the order"
+   */
+  @DefaultMessage("Errors ocurred while recuring the order")
+  @Key("order.recurError")
+  String order_recurError();
 
   /**
    * Translated "Order # \"{0,number}\": Recurrence Active Begin is required".
