@@ -66,6 +66,8 @@ import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.EOrderDO;
+import org.openelis.domain.EOrderLinkDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.ExchangeExternalTermViewDO;
 import org.openelis.domain.ExchangeProfileDO;
@@ -90,6 +92,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.SampleQcVO;
 import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestResultViewDO;
@@ -470,10 +473,14 @@ public class DataExchangeXMLMapperBean {
         if (optional != null) {
             for (Object o : optional) {
                 if (o instanceof Collection<?>) {
-                    for (Object o1 : (Collection<?>)o)
-                        root.appendChild(processOptional(doc, o1));
-                } else {
-                    root.appendChild(processOptional(doc, o));
+                    for (Object o1 : (Collection<?>)o) {
+                        for (Element e : processOptional(doc, o1))
+                            root.appendChild(e);
+                    }
+                } else if (o != null) {
+                    for (Element e : processOptional(doc, o)) {
+                        root.appendChild(e);
+                    }
                 }
             }
         }
@@ -1264,41 +1271,82 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element toXML(Document doc, WorksheetQcResultViewVO worksheetQc) {
+    public ArrayList<Element> toXML(Document doc, Integer analysisId,
+                                    WorksheetQcResultViewVO wqcrvvo) {
+        int i;
         Element elm;
+        ArrayList<Element> elements;
 
         elm = doc.createElement("analysisQc");
 
-        setAttribute(elm, "analyte_id", worksheetQc.getAnalyteId());
-        setAttribute(elm, "qc_result_id", worksheetQc.getId());
-        setAttribute(elm, "inventory_item_id", worksheetQc.getInventoryItemId());
-        setAttribute(elm, "location_id", worksheetQc.getLocationId());
-        setAttribute(elm, "position", worksheetQc.getSortOrder());
-        setAttribute(elm, "prepared_by_id", worksheetQc.getPreparedById());
-        setAttribute(elm, "prepared_unit_id", worksheetQc.getPreparedUnitId());
-        setAttribute(elm, "prepared_volume", worksheetQc.getPreparedVolume());
-        setAttribute(elm, "qc_analyte_id", worksheetQc.getQcAnalyteId());
-        setAttribute(elm, "qc_analyte_type_id", worksheetQc.getQcAnalyteTypeId());
-        setAttribute(elm, "qc_id", worksheetQc.getQcId());
-        setAttribute(elm, "qc_lot_id", worksheetQc.getQcLotId());
-        setAttribute(elm, "qc_type_id", worksheetQc.getQcTypeId());
-        setAttribute(elm, "worksheet_analysis_id", worksheetQc.getWorksheetAnalysisId());
-        setAttribute(elm, "expired_date", worksheetQc.getExpireDate());
-        setAttribute(elm, "prepared_date", worksheetQc.getPreparedDate());
-        setAttribute(elm, "usable_date", worksheetQc.getUsableDate());
-        setText(doc, elm, "analyte_name", worksheetQc.getAnalyteName());
-        setText(doc, elm, "expected_value", worksheetQc.getExpectedValue());
-        setText(doc, elm, "is_active", worksheetQc.getQcIsActive());
-        setText(doc, elm, "is_trendable", worksheetQc.getIsTrendable());
-        setText(doc, elm, "location", worksheetQc.getLocation());
-        setText(doc, elm, "lot_number", worksheetQc.getLotNumber());
-        setText(doc, elm, "prepared_unit", worksheetQc.getPreparedUnit());
-        setText(doc, elm, "qc_analyte_type", worksheetQc.getQcAnalyteType());
-        setText(doc, elm, "qc_is_active", worksheetQc.getQcIsActive());
-        setText(doc, elm, "qc_lot_is_active", worksheetQc.getQcLotIsActive());
-        setText(doc, elm, "qc_name", worksheetQc.getQcName());
-        setText(doc, elm, "qc_type", worksheetQc.getQcType());
-        setText(doc, elm, "source", worksheetQc.getSource());
+        setAttribute(elm, "id", wqcrvvo.getId());
+        setAttribute(elm, "worksheet_analysis_id", wqcrvvo.getWorksheetAnalysisId());
+        setAttribute(elm, "position", wqcrvvo.getSortOrder());
+        setAttribute(elm, "qc_type_id", wqcrvvo.getQcTypeId());
+        setAttribute(elm, "location_id", wqcrvvo.getLocationId());
+        setAttribute(elm, "prepared_date", wqcrvvo.getPreparedDate());
+        setAttribute(elm, "prepared_volume", wqcrvvo.getPreparedVolume());
+        setAttribute(elm, "prepared_unit_id", wqcrvvo.getPreparedUnitId());
+        setAttribute(elm, "prepared_by_id", wqcrvvo.getPreparedById());
+        setAttribute(elm, "usable_date", wqcrvvo.getUsableDate());
+        setAttribute(elm, "expired_date", wqcrvvo.getExpireDate());
+        setAttribute(elm, "analyte_id", wqcrvvo.getAnalyteId());
+        setAttribute(elm, "qc_analyte_type_id", wqcrvvo.getQcAnalyteTypeId());
+        setAttribute(elm, "analysis_id", analysisId);
+        setText(doc, elm, "qc_name", wqcrvvo.getQcName());
+        setText(doc, elm, "source", wqcrvvo.getSource());
+        setText(doc, elm, "lot_number", wqcrvvo.getLotNumber());
+        setText(doc, elm, "expected_value", wqcrvvo.getExpectedValue());
+
+        elements = new ArrayList<Element>();
+        elements.add(elm);
+        for (i = 0; i < 30; i++ ) {
+            if (wqcrvvo.getValueAt(i) != null) {
+                elm = doc.createElement("qcResult");
+                setAttribute(elm, "worksheet_qc_result_id", wqcrvvo.getId());
+                setAttribute(elm, "sequence", i);
+                try {
+                    setText(doc, elm, "name", wqcrvvo.getNameAt(i));
+                    setText(doc, elm, "value", wqcrvvo.getValueAt(i));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    break;
+                }
+                elements.add(elm);
+            }
+        }
+
+        addAnalyte(wqcrvvo.getAnalyteId());
+        addDictionary(wqcrvvo.getLocationId());
+        addUser(wqcrvvo.getPreparedById());
+        addDictionary(wqcrvvo.getPreparedUnitId());
+        addDictionary(wqcrvvo.getQcAnalyteTypeId());
+        addDictionary(wqcrvvo.getQcTypeId());
+
+        return elements;
+    }
+
+    public Element toXML(Document doc, EOrderDO eOrder) {
+        Element elm;
+
+        elm = doc.createElement("eOrder");
+        setAttribute(elm, "id", eOrder.getId());
+        setAttribute(elm, "entered_date", eOrder.getEnteredDate());
+        setText(doc, elm, "paper_order_validator", eOrder.getPaperOrderValidator());
+        setText(doc, elm, "description", eOrder.getDescription());
+
+        return elm;
+    }
+
+    public Element toXML(Document doc, EOrderLinkDO eOrderLink) {
+        Element elm;
+
+        elm = doc.createElement("eOrder");
+        setAttribute(elm, "id", eOrderLink.getId());
+        setAttribute(elm, "eorder_id", eOrderLink.getEOrderId());
+        setText(doc, elm, "reference", eOrderLink.getReference());
+        setText(doc, elm, "sub_id", eOrderLink.getSubId());
+        setText(doc, elm, "name", eOrderLink.getName());
+        setText(doc, elm, "value", eOrderLink.getValue());
 
         return elm;
     }
@@ -1337,11 +1385,26 @@ public class DataExchangeXMLMapperBean {
     /**
      * check for possible types and process accordingly
      */
-    private Element processOptional(Document doc, Object o) {
-        if (o instanceof WorksheetQcResultViewVO) {
-            return toXML(doc, (WorksheetQcResultViewVO)o);
+    private ArrayList<Element> processOptional(Document doc, Object o) {
+        int i;
+        SampleQcVO sqc;
+        ArrayList<Element> elements;
+
+        elements = new ArrayList<Element>();
+        if (o instanceof SampleQcVO) {
+            sqc = (SampleQcVO)o;
+            for (i = 0; i < sqc.getAnalysisIds().size(); i++ ) {
+                for (WorksheetQcResultViewVO wqcrvvo : sqc.getQcAnalytes().get(i)) {
+                    elements.addAll(toXML(doc, sqc.getAnalysisIds().get(i), wqcrvvo));
+                }
+            }
+
+        } else if (o instanceof EOrderDO) {
+            elements.add(toXML(doc, (EOrderDO)o));
+        } else if (o instanceof EOrderLinkDO) {
+            elements.add(toXML(doc, (EOrderLinkDO)o));
         }
-        return null;
+        return elements;
     }
 
     private void setAttribute(Element e, String name, Object value) {

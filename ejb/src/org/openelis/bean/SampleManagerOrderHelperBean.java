@@ -276,6 +276,7 @@ public class SampleManagerOrderHelperBean {
      */
     private void copySampleItems(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
         int i;
+        Integer accession;
         OrderContainerDO oc;
         DictionaryDO dict;
         SampleItemViewDO item;
@@ -286,6 +287,13 @@ public class SampleManagerOrderHelperBean {
         if (ocs == null)
             return;
 
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+        
         /*
          * if a sample item is found at the sequence specified in a container
          * then it's filled from the container otherwise a new sample item is
@@ -316,13 +324,13 @@ public class SampleManagerOrderHelperBean {
                         item.setContainerId(oc.getContainerId());
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                           .sample_orderImportException(accession,
                                                                                         "container",
                                                                                         dict.getEntry())));
                     }
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                       .sample_orderImportException(accession,
                                                                                     "container id = ",
                                                                                     oc.getContainerId()
                                                                                       .toString())));
@@ -342,13 +350,13 @@ public class SampleManagerOrderHelperBean {
                         item.setTypeOfSample(dict.getEntry());
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                           .sample_orderImportException(accession,
                                                                                         "sample type",
                                                                                         dict.getEntry())));
                     }
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                       .sample_orderImportException(accession,
                                                                                     "sample type id = ",
                                                                                     oc.getTypeOfSampleId()
                                                                                       .toString())));

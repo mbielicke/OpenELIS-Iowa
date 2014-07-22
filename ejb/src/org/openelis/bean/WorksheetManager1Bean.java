@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import static org.openelis.manager.WorksheetManager1Accessor.*;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -271,12 +272,14 @@ public class WorksheetManager1Bean {
                 arMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
                 if (!anaIds.isEmpty()) {
                     for (ResultViewDO rVDO : result.fetchByAnalysisIds(new ArrayList<Integer>(anaIds))) {
-                        resultList = arMap.get(rVDO.getAnalysisId());
-                        if (resultList == null) {
-                            resultList = new ArrayList<ResultViewDO>();
-                            arMap.put(rVDO.getAnalysisId(), resultList);
+                        if ("N".equals(rVDO.getIsColumn())) {
+                            resultList = arMap.get(rVDO.getAnalysisId());
+                            if (resultList == null) {
+                                resultList = new ArrayList<ResultViewDO>();
+                                arMap.put(rVDO.getAnalysisId(), resultList);
+                            }
+                            resultList.add(rVDO);
                         }
-                        resultList.add(rVDO);
                     }
                 }
                     
@@ -461,6 +464,7 @@ public class WorksheetManager1Bean {
         ArrayList<TestAnalyteViewDO> analytes;
         ArrayList<WorksheetResultViewDO> wResults;
         Datetime createdDate, startedDate;
+        DecimalFormat df;
         HashMap<Integer, AnalyteDO> analyteMap;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         HashMap<Integer, ArrayList<Integer>> excludedMap;
@@ -883,6 +887,15 @@ public class WorksheetManager1Bean {
 
         // add/update qc results
         if (getQcResults(wm) != null) {
+            //
+            // Double.toString() which is used by String.valueOf(double) uses scientific
+            // notation for decimal with 4 or more digits after the decimal.  To
+            // get an exact string we need to use a DecimalFormat.
+            //
+            df = new DecimalFormat();
+            df.setGroupingUsed(false);
+            df.setMaximumFractionDigits(10);
+
             qcAnalyteMap = new HashMap<Integer, QcAnalyteViewDO>();
             for (WorksheetQcResultViewDO data : getQcResults(wm)) {
                 if (data.getId() < 0) {
@@ -925,14 +938,17 @@ public class WorksheetManager1Bean {
                         apVDO = pMap.get(data.getAnalyteId());
                         if (apVDO != null) {
                             col = formatColumnMap.get("p_1");
-                            if (col != null && data.getId() <= 0 && (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
-                                data.setValueAt(col, String.valueOf(apVDO.getP1()));
+                            if (apVDO.getP1() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP1()));
                             col = formatColumnMap.get("p_2");
-                            if (col != null && data.getId() <= 0 && (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
-                                data.setValueAt(col, String.valueOf(apVDO.getP2()));
+                            if (apVDO.getP2() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP2()));
                             col = formatColumnMap.get("p_3");
-                            if (col != null && data.getId() <= 0 && (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
-                                data.setValueAt(col, String.valueOf(apVDO.getP3()));
+                            if (apVDO.getP3() != null && col != null && data.getId() <= 0 &&
+                                (data.getValueAt(col) == null || data.getValueAt(col).length() == 0))
+                                data.setValueAt(col, df.format(apVDO.getP3()));
                         }
                     }
                     wqResult.add(data);
@@ -1586,11 +1602,11 @@ public class WorksheetManager1Bean {
                         toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
                         if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
                             for (i = 0; i < 30; i++) {
-                                fromName = fromColumnMap.get(i + 9);
+                                fromName = fromColumnMap.get(i + 10);
                                 if (fromName != null) {
                                     toIndex = toColumnMap.get(fromName);
                                     if (toIndex != null)
-                                        toWrVDO.setValueAt(toIndex.intValue() - 9, fromWrVDO.getValueAt(i));
+                                        toWrVDO.setValueAt(toIndex.intValue() - 10, fromWrVDO.getValueAt(i));
                                 }
                             }
                         } else {
@@ -1616,11 +1632,11 @@ public class WorksheetManager1Bean {
                         toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
                         if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
                             for (i = 0; i < 30; i++) {
-                                fromName = fromColumnMap.get(i + 9);
+                                fromName = fromColumnMap.get(i + 10);
                                 if (fromName != null) {
                                     toIndex = toColumnMap.get(fromName);
                                     if (toIndex != null)
-                                        toWqrVDO.setValueAt(toIndex.intValue() - 9, fromWqrVDO.getValueAt(i));
+                                        toWqrVDO.setValueAt(toIndex.intValue() - 10, fromWqrVDO.getValueAt(i));
                                 }
                             }
                         } else {
@@ -1839,6 +1855,7 @@ public class WorksheetManager1Bean {
                             auVDO.setSystemUserId(userVO.getId());
                             auVDO.setSystemUser(userVO.getLoginName());
                             SampleManager1Accessor.addUser(sMan, auVDO);
+                            completeUserIds.add(userVO.getId());
                             update = true;
                         }
                     } else {
@@ -2105,6 +2122,7 @@ public class WorksheetManager1Bean {
         AnalyteParameterViewDO apVDO;
         ArrayList<AnalyteParameterViewDO> anaParams;
         ArrayList<WorksheetResultViewDO> wrList;
+        DecimalFormat df;
         DictionaryDO dDO;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wrMap;
@@ -2112,6 +2130,10 @@ public class WorksheetManager1Bean {
         ResultViewDO rVDO;
         WorksheetResultViewDO wrVDO;
         
+        df = new DecimalFormat();
+        df.setGroupingUsed(false);
+        df.setMaximumFractionDigits(10);
+
         wrMap = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
         for (WorksheetResultViewDO data : wResults) {
             wrList = wrMap.get(data.getTestAnalyteId());
@@ -2188,14 +2210,17 @@ public class WorksheetManager1Bean {
                 apVDO = pMap.get(wrVDO.getAnalyteId());
                 if (apVDO != null) {
                     col = formatColumnMap.get("p_1");
-                    if (col != null && wrVDO.getId() <= 0 && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
-                        wrVDO.setValueAt(col, String.valueOf(apVDO.getP1()));
+                    if (apVDO.getP1() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP1()));
                     col = formatColumnMap.get("p_2");
-                    if (col != null && wrVDO.getId() <= 0 && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
-                        wrVDO.setValueAt(col, String.valueOf(apVDO.getP2()));
+                    if (apVDO.getP2() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP2()));
                     col = formatColumnMap.get("p_3");
-                    if (col != null && wrVDO.getId() <= 0 && (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
-                        wrVDO.setValueAt(col, String.valueOf(apVDO.getP3()));
+                    if (apVDO.getP3() != null && col != null && wrVDO.getId() <= 0 &&
+                        (wrVDO.getValueAt(col) == null || wrVDO.getValueAt(col).length() == 0))
+                        wrVDO.setValueAt(col, df.format(apVDO.getP3()));
                 }
             }
             

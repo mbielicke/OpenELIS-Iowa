@@ -32,13 +32,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -564,6 +565,8 @@ public class WorksheetExcelHelperBean {
     public WorksheetManager1 importFromExcel(WorksheetManager1 manager) throws Exception {
         boolean editLocked;
         int a, i, c, r, rowIndex;
+        ArrayList<String> userNames;
+        ArrayList<SystemUserVO> validUserVOs;
         ArrayList<WorksheetAnalysisViewDO> waList;
         ArrayList<WorksheetResultViewDO> wrList;
         ArrayList<WorksheetQcResultViewDO> wqrList;
@@ -577,9 +580,7 @@ public class WorksheetExcelHelperBean {
         Object value;
         SectionPermission perm;
         SimpleDateFormat format;
-        String userToken, validUsers;
-        StringTokenizer tokenizer;
-        SystemUserVO userVO;
+        String validUsers;
         ValidationErrorsList errorList;
 
         manager = worksheetManager.fetchForUpdate(manager.getWorksheet().getId());
@@ -635,27 +636,27 @@ public class WorksheetExcelHelperBean {
                                                                "analysis_users." + i + "." + a);
                                 validUsers = "";
                                 if (value != null) {
-                                    tokenizer = new StringTokenizer((String)value, ",");
-                                    while (tokenizer.hasMoreTokens()) {
-                                        userToken = tokenizer.nextToken();
-                                        try {
-                                            userVO = userCache.getSystemUser(userToken);
-                                            if (userVO != null) {
+                                    userNames = new ArrayList<String>(Arrays.asList(((String)value).split(",")));
+                                    try {
+                                        validUserVOs = userCache.validateSystemUsers(userNames);
+                                        for (SystemUserVO userVO : validUserVOs) {
+                                            if (userNames.contains(userVO.getLoginName())) {
                                                 if (validUsers.length() > 0)
                                                     validUsers += ",";
                                                 validUsers += userVO.getLoginName();
-                                            } else {
-                                                errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
-                                                                                     userToken,
-                                                                                     String.valueOf(wiDO.getPosition()),
-                                                                                     String.valueOf(a + 1))));
+                                                userNames.remove(userVO.getLoginName());
                                             }
-                                        } catch (Exception anyE) {
+                                        }
+                                        if (userNames.size() > 0)
                                             errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
-                                                                                 userToken,
+                                                                                 userNames.toString(),
                                                                                  String.valueOf(wiDO.getPosition()),
                                                                                  String.valueOf(a + 1))));
-                                        }
+                                    } catch (Exception anyE) {
+                                        errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
+                                                                             userNames.toString(),
+                                                                             String.valueOf(wiDO.getPosition()),
+                                                                             String.valueOf(a + 1))));
                                     }
                                 }
                                 waVDO.setSystemUsers(validUsers);
@@ -701,8 +702,8 @@ public class WorksheetExcelHelperBean {
                                     waVDO.setCompletedDate(null);
                                 }
 
+                                r = 0;
                                 if (wrList != null && wrList.size() > 0) {
-                                    r = 0;
                                     for (WorksheetResultViewDO wrVDO : wrList) {
                                         for (c = 0; c < 30; c++ ) {
                                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
@@ -729,8 +730,8 @@ public class WorksheetExcelHelperBean {
                             }
                         } else if (waVDO.getQcLotId() != null) {
                             wqrList = wqrMap.get(waVDO.getId());
+                            r = 0;
                             if (wqrList != null && wqrList.size() > 0) {
-                                r = 0;
                                 for (WorksheetQcResultViewDO wqrVDO : wqrList) {
                                     for (c = 0; c < 30; c++) {
                                         value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
@@ -751,27 +752,27 @@ public class WorksheetExcelHelperBean {
                                                            a);
                             validUsers = "";
                             if (value != null) {
-                                tokenizer = new StringTokenizer((String)value, ",");
-                                if (tokenizer.hasMoreTokens()) {
-                                    userToken = tokenizer.nextToken();
-                                    try {
-                                        userVO = userCache.getSystemUser(userToken);
-                                        if (userVO != null) {
+                                userNames = new ArrayList<String>(Arrays.asList(((String)value).split(",")));
+                                try {
+                                    validUserVOs = userCache.validateSystemUsers(userNames);
+                                    for (SystemUserVO userVO : validUserVOs) {
+                                        if (userNames.contains(userVO.getLoginName())) {
                                             if (validUsers.length() > 0)
                                                 validUsers += ",";
                                             validUsers += userVO.getLoginName();
-                                        } else {
-                                            errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
-                                                                                 userToken,
-                                                                                 String.valueOf(wiDO.getPosition()),
-                                                                                 String.valueOf(a + 1))));
+                                            userNames.remove(userVO.getLoginName());
                                         }
-                                    } catch (Exception anyE) {
+                                    }
+                                    if (userNames.size() > 0)
                                         errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
-                                                                             userToken,
+                                                                             userNames.toString(),
                                                                              String.valueOf(wiDO.getPosition()),
                                                                              String.valueOf(a + 1))));
-                                    }
+                                } catch (Exception anyE) {
+                                    errorList.add(new FormErrorException(Messages.get().worksheet_illegalWorksheetUserFormException(
+                                                                         userNames.toString(),
+                                                                         String.valueOf(wiDO.getPosition()),
+                                                                         String.valueOf(a + 1))));
                                 }
                             }
                             waVDO.setSystemUsers(validUsers);
@@ -969,11 +970,16 @@ public class WorksheetExcelHelperBean {
         int c, i, r;
         String cellNameIndex, name;
         ArrayList<AnalyteParameterViewDO> anaParams;
+        DecimalFormat df;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
 
+        df = new DecimalFormat();
+        df.setGroupingUsed(false);
+        df.setMaximumFractionDigits(10);
+        
         i = 0;
         r = row.getRowNum();
         for (WorksheetResultViewDO wrVDO : wrList) {
@@ -1053,11 +1059,11 @@ public class WorksheetExcelHelperBean {
 
                         apVDO = pMap.get(wrVDO.getAnalyteId());
                         if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP1()));
+                            setCellValue(cell, df.format(apVDO.getP1()));
                         } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP2()));
+                            setCellValue(cell, df.format(apVDO.getP2()));
                         } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
-                            setCellValue(cell, String.valueOf(apVDO.getP3()));
+                            setCellValue(cell, df.format(apVDO.getP3()));
                         }
                     }
                 }
@@ -1081,14 +1087,18 @@ public class WorksheetExcelHelperBean {
         int c, i, r;
         String cellNameIndex, name;
         ArrayList<AnalyteParameterViewDO> anaParams;
+        DecimalFormat df;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
 
+        df = new DecimalFormat();
+        df.setGroupingUsed(false);
+        df.setMaximumFractionDigits(10);
+
         i = 0;
         r = row.getRowNum();
-
         for (WorksheetQcResultViewDO wqrVDO : wqrList) {
             if (i != 0) {
                 row = sheet.createRow(r);
