@@ -59,7 +59,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
@@ -929,7 +929,7 @@ public class AnalysisTabUI extends Screen {
             id = ws.getId();
         
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().worksheetCompletion() + " 2");
+            window.setName(Messages.get().worksheetCompletion());
             window.setSize("1061px", "511px");
             worksheetScreen = new WorksheetCompletionScreenUI(window);
             window.setContent(worksheetScreen);
@@ -1317,6 +1317,7 @@ public class AnalysisTabUI extends Screen {
      * specific to the sample item's sample type are returned.
      */
     private ArrayList<Item<Integer>> getUnitsModel() {
+        Item<Integer> row;
         ArrayList<Item<Integer>> model;
         DictionaryDO d;
         TestTypeOfSampleDO type;
@@ -1338,7 +1339,9 @@ public class AnalysisTabUI extends Screen {
                 if (type.getUnitOfMeasureId() != null &&
                     DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(), type.getTypeOfSampleId())) {
                     d = DictionaryCache.getById(type.getUnitOfMeasureId());
-                    model.add(new Item<Integer>(d.getId(), d.getEntry()));
+                    row = new Item<Integer>(d.getId(), d.getEntry());
+                    row.setEnabled("Y".equals(d.getIsActive()));
+                    model.add(row);
                 }
             }
         } catch (Exception e) {

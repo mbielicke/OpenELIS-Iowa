@@ -114,7 +114,7 @@ public abstract class ImportOrder {
 
         loadFieldsFromAuxData(auxDataList, auxGroupId, manager, errors);
         loadOrganizations(orderId, manager, errors);
-        loadSampleItems(orderId, manager);
+        loadSampleItems(orderId, manager, errors);
         loadAnalyses(orderId, manager, errors);
         loadNotes(orderId, manager, errors);
 
@@ -212,12 +212,13 @@ public abstract class ImportOrder {
         }
     }
 
-    protected void loadSampleItems(Integer orderId, SampleManager man) throws Exception {
+    protected void loadSampleItems(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
         int addedIndex;
         OrderContainerManager containerMan;
         OrderContainerDO container;
         SampleItemManager itemMan;
         SampleItemViewDO item;
+        DictionaryDO dict;
 
         if (orderMan == null)
             orderMan = OrderManager.fetchById(orderId);
@@ -229,12 +230,31 @@ public abstract class ImportOrder {
             container = containerMan.getContainerAt(i);
             addedIndex = itemMan.addSampleItem();
             item = itemMan.getSampleItemAt(addedIndex);
-            item.setContainerId(container.getContainerId());
-            item.setContainer(DictionaryCache.getById(container.getContainerId()).getEntry());
-            item.setTypeOfSampleId(container.getTypeOfSampleId());
-            if (container.getTypeOfSampleId() != null)
-                item.setTypeOfSample(DictionaryCache.getById(container.getTypeOfSampleId())
-                                                    .getEntry());
+            //
+            // don't set the container if it's inactive
+            //
+            dict = DictionaryCache.getById(container.getContainerId());
+            if ("Y".equals(dict.getIsActive())) {
+                item.setContainerId(container.getContainerId());
+                item.setContainer(dict.getEntry());
+            } else { 
+                errors.add(new FormErrorWarning(Messages.get()
+                                                .inactiveContainerWarning(dict.getEntry(), item.getItemSequence())));
+            }
+            
+            if (container.getTypeOfSampleId() != null) {
+                //
+                // don't set the sample type if it's inactive
+                //
+                dict = DictionaryCache.getById(container.getTypeOfSampleId());
+                if ("Y".equals(dict.getIsActive())) {
+                    item.setTypeOfSampleId(container.getTypeOfSampleId());
+                    item.setTypeOfSample(dict.getEntry());
+                } else { 
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                    .inactiveSampleTypeWarning(dict.getEntry(), item.getItemSequence())));
+                }
+            }
         }
 
         //

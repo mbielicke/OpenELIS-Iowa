@@ -35,7 +35,6 @@ import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.modules.logging.client.LoggingScreen;
 import org.openelis.modules.main.client.event.ShowScreenEvent;
-import org.openelis.modules.report.client.InstrumentBarcodeReportScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
@@ -72,9 +71,9 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder,/* worksheetCreation,*/ worksheetCompletion, worksheetCompletionUI, addOrCancel,
-                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
-                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
+                    worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
+                    labelFor, storage, QC, analyteParameter, internalOrder, vendorOrder,
+                    sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
@@ -222,31 +221,6 @@ public class OpenELIS extends Screen {
                 showScreen(ORGANIZATION);
             }
         });
-
-//        addCommand(worksheetCreation, "worksheet", new Command() {
-//            public void execute() {
-//
-//                GWT.runAsync(new RunAsyncCallback() {
-//                    public void onSuccess() {
-//                        try {
-//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-//                            window.setName(msg.worksheetCreation());
-//                            window.setSize("20px", "20px");
-//                            window.setContent(new WorksheetCreationScreen(window));
-//                            browser.addWindow(window, "worksheetCreation");
-//                        } catch (Throwable e) {
-//                            remote().log(Level.SEVERE, e.getMessage(), e);
-//                            Window.alert(e.getMessage());
-//                        }
-//                    }
-//
-//                    public void onFailure(Throwable caught) {
-//                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-//                        Window.alert(caught.getMessage());
-//                    }
-//                });
-//            }
-//        });
 
         addCommand(worksheetBuilder, "worksheetbuilder", new Command() {
             public void execute() {

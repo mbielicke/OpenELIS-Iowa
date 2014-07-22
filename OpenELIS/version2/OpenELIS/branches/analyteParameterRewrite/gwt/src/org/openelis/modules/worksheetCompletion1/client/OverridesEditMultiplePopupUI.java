@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.worksheetCompletion.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +71,7 @@ public abstract class OverridesEditMultiplePopupUI extends Screen {
     }
 
     public void initialize() {
+        ifEmpty.setEnabled(true);
         systemUsers.setEnabled(true);
         startedDate.setEnabled(true);
         completedDate.setEnabled(true);

@@ -453,7 +453,8 @@ public class AnalyteParameterScreenUI extends Screen {
                 Node node;
 
                 node = tree.getNodeAt(event.getSelectedItem());
-                addAnalyteButton.setEnabled(ANALYTE_LEAF.equals(node.getType()) &&
+                addAnalyteButton.setEnabled(isState(ADD, UPDATE) &&
+                                            ANALYTE_LEAF.equals(node.getType()) &&
                                             tree.getSelectedNodes().length == 1);
             }
         });
@@ -836,7 +837,7 @@ public class AnalyteParameterScreenUI extends Screen {
 
         newNode = new Node(3);
         newNode.setType(ANALYTE_LEAF);
-        tree.addNodeAt(index + 1, newNode);
+        tree.addNodeAfter(node, newNode);
         tree.refreshNode(newNode);
         tree.selectNodeAt(newNode);
     }

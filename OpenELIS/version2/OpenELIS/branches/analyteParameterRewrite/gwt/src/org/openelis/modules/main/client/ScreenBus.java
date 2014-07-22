@@ -24,7 +24,6 @@ public class ScreenBus extends SimpleEventBus {
                     SAMPLE_COMPLETE_RELEASE = new ShowScreenType("Sample Complete Release"),
                     PROJECT = new ShowScreenType("Project"),
                     PROVIDER = new ShowScreenType("Provider"),
-                    WORKSHEET_CREATION = new ShowScreenType("Worksheet Creation"),
                     WORKSHEET_BUILDER = new ShowScreenType("Worksheet Builder"),
                     WORKSHEET_COMPLETION = new ShowScreenType("Worksheet Completion"),
                     STORAGE = new ShowScreenType("Storage"),

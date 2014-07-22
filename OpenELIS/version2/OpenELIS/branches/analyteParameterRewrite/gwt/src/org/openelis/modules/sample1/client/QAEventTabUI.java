@@ -109,8 +109,7 @@ public class QAEventTabUI extends Screen {
 
     protected AnalysisViewDO           analysis;
 
-    protected boolean                  sampleOrAnyAnaReleased, canEditAnalysisQA, isVisible,
-                    redraw;
+    protected boolean                  isVisible, redraw;
 
     protected String                   displayedUid;
 
@@ -136,6 +135,7 @@ public class QAEventTabUI extends Screen {
         addScreenHandler(sampleQATable, "sampleQATable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleQATable.setModel(getSampleQATableModel());
+                showSampleBillableMessage();
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -151,7 +151,7 @@ public class QAEventTabUI extends Screen {
 
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() == 0 || sampleOrAnyAnaReleased)
+                if ( !isState(ADD, UPDATE) || !canChangeSampleQA())
                     event.cancel();
             }
         });
@@ -211,12 +211,6 @@ public class QAEventTabUI extends Screen {
             }
         });
 
-        addScreenHandler(sampleBillableLabel, "sampleBillableLabel", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                showSampleBillableMessage();
-            }
-        });
-
         addScreenHandler(analysisQATable, "analysisQATable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisQATable.setModel(getAnalysisQATableModel());
@@ -236,7 +230,7 @@ public class QAEventTabUI extends Screen {
 
         analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE) || event.getCol() == 0 || !canEditAnalysisQA)
+                if ( !isState(ADD, UPDATE) || !canChangeAnalysisQA())
                     event.cancel();
             }
         });
@@ -297,7 +291,7 @@ public class QAEventTabUI extends Screen {
                          new ScreenHandler<Object>() {
                              public void onStateChange(StateChangeEvent event) {
                                  analysisQALookupButton.setEnabled(isState(ADD, UPDATE) &&
-                                                                   canEditAnalysisQA);
+                                                                   getTestId() != null);
                              }
                          });
 
@@ -431,41 +425,8 @@ public class QAEventTabUI extends Screen {
     }
 
     public void setState(State state) {
-        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    private void evaluateEdit() {
-        Integer sectId, statId;
-        SectionPermission perm;
-        SectionViewDO sect;
-
-        sampleOrAnyAnaReleased = false;
-        canEditAnalysisQA = false;
-
-        if (manager != null) {
-            sampleOrAnyAnaReleased = Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                          .getStatusId()) ||
-                                     manager.analysis.hasReleasedAnalysis();
-
-            perm = null;
-            sectId = getSectionId();
-            statId = getStatusId();
-
-            try {
-                if (sectId != null) {
-                    sect = SectionCache.getById(sectId);
-                    perm = UserCache.getPermission().getSection(sect.getName());
-                }
-                canEditAnalysisQA = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
-                                    perm != null &&
-                                    (perm.hasAssignPermission() || perm.hasCompletePermission());
-            } catch (Exception e) {
-                Window.alert("canEdit:" + e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
     }
 
     private void displayQAEvents() {
@@ -476,6 +437,13 @@ public class QAEventTabUI extends Screen {
             redraw = false;
             fireDataChange();
         }
+    }
+
+    private Integer getTestId() {
+        if (analysis != null)
+            return analysis.getTestId();
+
+        return null;
     }
 
     private Integer getStatusId() {
@@ -511,9 +479,8 @@ public class QAEventTabUI extends Screen {
          * allow removal of only internal qa events if sample is released or any
          * analysis is released
          */
-        if (sampleOrAnyAnaReleased &&
-            !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
-            parentScreen.setError(Messages.get().sample_cantRemoveQAEvent());
+        if ( !canChangeSampleQA(data.getTypeId())) {
+            parentScreen.setError(Messages.get().sample_cantRemoveQA());
         } else {
             sampleQATable.removeRowAt(r);
             notifyQAChanged(null);
@@ -537,11 +504,14 @@ public class QAEventTabUI extends Screen {
         data = manager.qaEvent.get(analysis, r);
         parentScreen.clearStatus();
         /*
-         * allow removal of only internal qa events if the analysis is released
+         * allow removal of only internal qa events if the analysis is released;
+         * don't allow removal of any qa events if the analysis is cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(getStatusId()) &&
-            !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
-            parentScreen.setError(Messages.get().analysis_cantRemoveQAEvent());
+        if ( !canChangeAnalysisQA(data.getTypeId())) {
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(getStatusId()))
+                parentScreen.setError(Messages.get().analysis_cantRemoveQACancelled());
+            else
+                parentScreen.setError(Messages.get().analysis_cantRemoveQAReleased());
         } else {
             analysisQATable.removeRowAt(r);
             notifyQAChanged(analysis.getId());
@@ -598,8 +568,8 @@ public class QAEventTabUI extends Screen {
 
                 @Override
                 public void ok() {
-                    boolean released, showError;
-                    String error;
+                    boolean hasNonBillableQA, hasReleasedAna;
+                    String error, message;
                     AnalysisQaEventViewDO aqa;
                     SampleQaEventViewDO sqa;
                     Row row;
@@ -607,26 +577,46 @@ public class QAEventTabUI extends Screen {
                     if (qaEventLookup.getSelectedQAEvents() == null)
                         return;
 
-                    showError = false;
                     error = null;
+                    message = null;
                     if (qaEventLookup.getTestId() != null) {
+                        /*
+                         * find out if the analysis has any non-billable qa
+                         * events
+                         */
+                        hasNonBillableQA = manager.qaEvent.hasNonBillable(analysis);
+
                         /*
                          * add analysis qa events
                          */
-                        released = Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId());
                         for (QaEventDO data : qaEventLookup.getSelectedQAEvents()) {
-                            /*
-                             * if the analysis is released then only internal qa
-                             * events can be added to it
-                             */
-                            if (released &&
-                                !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
-                                showError = true;
-                                error = Messages.get().analysis_cantAddQAEvent();
+                            if ( !canChangeAnalysisQA(data.getTypeId())) {
+                                /*
+                                 * if the analysis is cancelled then no qa
+                                 * events can be added to it; if it's released
+                                 * then only internal qa events can be added to
+                                 * it
+                                 */
+                                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(getStatusId()))
+                                    error = Messages.get().analysis_cantAddQACancelled();
+                                else
+                                    error = Messages.get().sample_cantAddQA();
                                 continue;
                             }
 
                             aqa = manager.qaEvent.add(analysis, data);
+                            /*
+                             * if the analysis is released and has only billable
+                             * qa events and the qa event to be added is
+                             * not-billable then make it billable to prevent it
+                             * from making a billable analysis not-billable
+                             */
+                            if (Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId()) &&
+                                !hasNonBillableQA && "N".equals(data.getIsBillable())) {
+                                aqa.setIsBillable("Y");
+                                message = Messages.get()
+                                                  .sample_changedToBillable(aqa.getQaEventName());
+                            }
                             row = new Row(3);
                             row.setCell(0, aqa.getQaEventName());
                             row.setCell(1, aqa.getTypeId());
@@ -637,23 +627,41 @@ public class QAEventTabUI extends Screen {
                         notifyQAChanged(analysis.getId());
                     } else {
                         /*
+                         * find out if the sample has any non-billable qa events
+                         * and released analyses
+                         */
+                        hasNonBillableQA = manager.qaEvent.hasNonBillable();
+                        hasReleasedAna = manager.analysis.hasReleasedAnalysis();
+
+                        /*
                          * add sample qa events
                          */
-                        released = Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                        .getStatusId());
                         for (QaEventDO data : qaEventLookup.getSelectedQAEvents()) {
                             /*
-                             * if the sample is released then only internal qa
-                             * events can be added to it
+                             * if the sample is released or any of its analyses
+                             * is released then only internal qa events can be
+                             * added to it
                              */
-                            if (released &&
-                                !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
-                                showError = true;
-                                error = Messages.get().sample_cantAddQAEvent();
+                            if ( !canChangeSampleQA(data.getTypeId())) {
+                                error = Messages.get().sample_cantAddQA();
                                 continue;
                             }
 
                             sqa = manager.qaEvent.add(data);
+                            /*
+                             * if the sample is released and has only billable
+                             * qa events and the qa event to be added is
+                             * not-billable then make it billableto prevent it
+                             * from making a billable sample, and its analyses,
+                             * not-billable
+                             */
+                            if ( (Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                       .getStatusId()) || hasReleasedAna) &&
+                                !hasNonBillableQA && "N".equals(data.getIsBillable())) {
+                                sqa.setIsBillable("Y");
+                                message = Messages.get()
+                                                  .sample_changedToBillable(sqa.getQaEventName());
+                            }
                             row = new Row(3);
                             row.setCell(0, sqa.getQaEventName());
                             row.setCell(1, sqa.getTypeId());
@@ -664,8 +672,12 @@ public class QAEventTabUI extends Screen {
                         notifyQAChanged(null);
                     }
 
-                    if (showError)
+                    if (error != null)
                         parentScreen.setError(error);
+                    else if (message != null)
+                        parentScreen.setDone(message);
+                    else
+                        parentScreen.clearStatus();
                 }
 
                 @Override
@@ -683,6 +695,40 @@ public class QAEventTabUI extends Screen {
 
         qaEventLookup.setWindow(modal);
         qaEventLookup.setData(testId);
+    }
+
+    private boolean canChangeSampleQA() {
+        return canChangeSampleQA(null);
+    }
+
+    private boolean canChangeSampleQA(Integer typeId) {
+        return ( ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()) && !manager.analysis.hasReleasedAnalysis()) || Constants.dictionary().QAEVENT_INTERNAL.equals(typeId));
+    }
+
+    private boolean canChangeAnalysisQA() {
+        return canChangeAnalysisQA(null);
+    }
+
+    private boolean canChangeAnalysisQA(Integer typeId) {
+        Integer sectId, statId;
+        SectionPermission perm;
+        SectionViewDO sect;
+
+        sectId = getSectionId();
+        statId = getStatusId();
+        if (sectId != null) {
+            try {
+                sect = SectionCache.getById(sectId);
+                perm = UserCache.getPermission().getSection(sect.getName());
+                return !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
+                       ( !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) || Constants.dictionary().QAEVENT_INTERNAL.equals(typeId)) &&
+                       perm != null && (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception e) {
+                Window.alert("canEditAnalysisQA:" + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return false;
     }
 
     private void showSampleBillableMessage() {

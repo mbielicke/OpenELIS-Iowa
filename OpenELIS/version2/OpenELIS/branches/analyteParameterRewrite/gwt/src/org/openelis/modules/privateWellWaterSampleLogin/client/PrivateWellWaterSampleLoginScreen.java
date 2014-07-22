@@ -455,6 +455,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 Integer oldNumber, orderId;
                 SampleManager quickEntryMan;
                 NoteViewDO exn;
+                ValidationErrorsList errors;
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
@@ -491,10 +492,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                         return;
                     }
 
+                    errors = null;
                     if (state == State.ADD) {
                         orderId = manager.getSample().getOrderId();
                         if (orderId != null) {
-                            SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                            errors = new ValidationErrorsList();
+                            SampleMergeUtility.mergeTests(manager, quickEntryMan, errors);
                             manager.setSample(quickEntryMan.getSample());
                             manager.getSample().setOrderId(orderId);
                         } else {
@@ -525,6 +528,15 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                 quickUpdate = true;
                             }
                         });
+                        
+                        if (errors != null) {
+                            if (errors.hasWarnings())
+                                showWarnings(errors);
+                            if (errors.hasErrors())
+                                showErrors(errors);
+                        } else {
+                            window.clearStatus();
+                        }
                     } else {
                         quickEntryMan.abortUpdate();
                         window.clearStatus();
@@ -1128,7 +1140,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
@@ -1147,7 +1159,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                if ( !e.hasErrors() && e.hasWarnings())
+                if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()))
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
@@ -1676,7 +1688,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             errors = wellOrderImport.importOrderInfo(orderId, manager);
 
             if (quickEntryMan != null)
-                SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                SampleMergeUtility.mergeTests(manager, quickEntryMan, errors);
 
             manager.getSample().setOrderId(orderId);
             setDataInTabs();

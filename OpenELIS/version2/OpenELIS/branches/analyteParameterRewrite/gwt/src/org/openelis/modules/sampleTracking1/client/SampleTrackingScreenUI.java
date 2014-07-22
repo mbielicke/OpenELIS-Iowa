@@ -195,7 +195,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     protected HashMap<Integer, SampleManager1>           managers;
 
-    protected boolean                                    canEdit, isBusy;
+    protected boolean                                    canEdit, isBusy, unrelease;
 
     protected ModulePermission                           userPermission, unreleasePermission,
                     changeDomainPermission;
@@ -810,13 +810,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
          */
         privateWellTab.setCanQuery(true);
-        
+
         addScreenHandler(sdwisTab, "sdwisTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisTab.onDataChange();
@@ -835,13 +835,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     super.isValid(validation);
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
          */
         sdwisTab.setCanQuery(true);
-        
+
         addScreenHandler(neonatalTab, "neonatalTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 neonatalTab.onDataChange();
@@ -882,7 +882,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
@@ -1225,7 +1225,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * the screen and if it is passed as an argument then its value doesn't
          * change in the call after the call has been instantiated
          */
-        update(false);
+        unrelease = false;
+        update();
     }
 
     /**
@@ -1578,6 +1579,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                      * user wants to change any data
                      */
                     cache = null;
+                    unrelease = false;
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -1666,6 +1668,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        unrelease = false;
                     }
 
                     public void failure(Throwable e) {
@@ -1673,6 +1676,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        unrelease = false;
                     }
                 };
             }
@@ -1808,7 +1812,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                              * as an argument then its value doesn't change in
                              * the call after the call has been instantiated
                              */
-                            update(true);
+                            unrelease = true;
+                            update();
                             break;
                     }
                 }
@@ -2160,7 +2165,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * Puts the screen in update state and loads the tabs with a locked manager.
      * Builds the cache from the manager.
      */
-    private void update(final boolean unrelease) {
+    private void update() {
         setBusy(Messages.get().gen_lockForUpdate());
 
         if (fetchForUpdateCall == null) {
@@ -2168,6 +2173,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 public void success(SampleManager1 result) {
                     Node node;
 
+                    /*
+                     * "unrelease" is a class variable and not an argument to
+                     * update() because it's used in this anonymous class and if
+                     * it's passed to update() as a final variable, its value
+                     * won't change here after the first time update() was
+                     * called
+                     */
                     if (unrelease) {
                         /*
                          * unrelease the sample
@@ -3086,9 +3098,25 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         tests = new ArrayList<SampleTestRequestVO>();
         if (methodId != null)
-            test = new SampleTestRequestVO(manager.getSample().getId(), item.getId(), addId, null, null, null, null, false, null);
+            test = new SampleTestRequestVO(manager.getSample().getId(),
+                                           item.getId(),
+                                           addId,
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           false,
+                                           null);
         else
-            test = new SampleTestRequestVO(manager.getSample().getId(), item.getId(), null, null, null, null, addId, false, null);
+            test = new SampleTestRequestVO(manager.getSample().getId(),
+                                           item.getId(),
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           addId,
+                                           false,
+                                           null);
 
         tests.add(test);
         addAnalyses(tests);

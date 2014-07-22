@@ -14,7 +14,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
-public class QuickEntry implements EntryPoint, ShowScreenHandler {
+public class QuickEntryEntry implements EntryPoint, ShowScreenHandler {
 
     @Override
     public void onModuleLoad() {

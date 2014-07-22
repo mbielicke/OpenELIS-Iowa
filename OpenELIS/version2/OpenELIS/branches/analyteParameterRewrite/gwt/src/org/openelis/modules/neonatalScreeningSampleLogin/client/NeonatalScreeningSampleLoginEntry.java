@@ -28,7 +28,7 @@ public class NeonatalScreeningSampleLoginEntry implements EntryPoint, ShowScreen
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().neonatalScreeningSampleLogin());
-                    window.setSize("890px", "850px");
+                    window.setSize("900px", "850px");
                     window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "neonatalScreeningSampleLogin");
                 } catch (Throwable e) {
