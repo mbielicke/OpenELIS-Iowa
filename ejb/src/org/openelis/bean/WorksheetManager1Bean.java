@@ -658,93 +658,100 @@ public class WorksheetManager1Bean {
                                                            SampleManager1.Load.ORGANIZATION,
                                                            SampleManager1.Load.QA,
                                                            SampleManager1.Load.SINGLERESULT);
-            } catch (EntityLockedException elE) {
-                ctx.setRollbackOnly();
-                throw elE;
-            }
-            for (SampleManager1 sMan : sMans) {
-                for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
-                    if (updateAnalysisIds.contains(ana.getId())) {
-                        userPermission = userCache.getPermission().getSection(ana.getSectionName());
-                        if (userPermission == null || !userPermission.hasCompletePermission())
-                            throw new EJBException(Messages.get()
-                                                           .analysis_noCompletePermission(DataBaseUtil.toString(sMan.getSample()
-                                                                                                                    .getAccessionNumber()),
-                                                                                          ana.getTestName(),
-                                                                                          ana.getMethodName()));
-                        if (WorksheetManager1.ANALYSIS_UPDATE.FAILED_RUN.equals(updateFlag)) {
-                            if (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
-                                Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()))
-                                aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_REQUEUE);
-                        } else if (WorksheetManager1.ANALYSIS_UPDATE.VOID.equals(updateFlag)) {
-                            if (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
-                                Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId())) {
-                                startedDate = ana.getStartedDate();
-                                if (startedDate == null || !startedDate.before(createdDate))
-                                    aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
-                            }
-                        } else {
-                            waVDO = updatedWorksheetAnalyses.get(ana.getId());
-                            if (initAnalysisIds.contains(ana.getId())) {
-                                if (!Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) &&
-                                    !Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId()))
-                                     aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
-                            } else if (DataBaseUtil.isDifferent(waVDO.getStatusId(),
-                                                                ana.getStatusId())) {
-                                aHelper.changeAnalysisStatus(sMan, ana.getId(), waVDO.getStatusId());
-                            } 
-                            if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
-                                                         ana.getUnitOfMeasureId()))
-                                aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
-
-                            results = newResults.get(ana.getId());
-                            if (results != null && results.size() > 0) {
-                                analytes = new ArrayList<TestAnalyteViewDO>();
-                                analyteIndexes = new ArrayList<Integer>();
-                                for (ResultViewDO res : results) {
-                                    taVDO = new TestAnalyteViewDO();
-                                    taVDO.setId(res.getTestAnalyteId());
-                                    taVDO.setRowGroup(res.getRowGroup());
-                                    taVDO.setAnalyteId(res.getAnalyteId());
-                                    taVDO.setIsReportable(res.getIsReportable());
-                                    taVDO.setAnalyteName(res.getAnalyte());
-                                    analytes.add(taVDO);
-                                    analyteIndexes.add(res.getSortOrder());
+                for (SampleManager1 sMan : sMans) {
+                    for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
+                        if (updateAnalysisIds.contains(ana.getId())) {
+                            userPermission = userCache.getPermission().getSection(ana.getSectionName());
+                            if (userPermission == null || !userPermission.hasCompletePermission())
+                                throw new EJBException(Messages.get()
+                                                               .analysis_noCompletePermission(DataBaseUtil.toString(sMan.getSample()
+                                                                                                                        .getAccessionNumber()),
+                                                                                              ana.getTestName(),
+                                                                                              ana.getMethodName()));
+                            if (WorksheetManager1.ANALYSIS_UPDATE.FAILED_RUN.equals(updateFlag)) {
+                                if (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
+                                    Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()))
+                                    try {
+                                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_REQUEUE);
+                                    } catch (ValidationErrorsList vel) {
+                                        if (vel.hasErrors())
+                                            throw vel;
+                                    }
+                            } else if (WorksheetManager1.ANALYSIS_UPDATE.VOID.equals(updateFlag)) {
+                                if (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
+                                    Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId())) {
+                                    startedDate = ana.getStartedDate();
+                                    if (startedDate == null || !startedDate.before(createdDate)) {
+                                        try {
+                                            aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
+                                        } catch (ValidationErrorsList vel) {
+                                            if (vel.hasErrors())
+                                                throw vel;
+                                        }
+                                    }
                                 }
-                                aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
+                            } else {
+                                waVDO = updatedWorksheetAnalyses.get(ana.getId());
+                                if (initAnalysisIds.contains(ana.getId()) &&
+                                    !Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) &&
+                                    !Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId())) {
+                                    try {
+                                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
+                                    } catch (ValidationErrorsList vel) {
+                                        if (vel.hasErrors())
+                                            throw vel;
+                                    }
+                                } 
+                                if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
+                                                             ana.getUnitOfMeasureId())) {
+                                    try {
+                                        aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                                    } catch (ValidationErrorsList vel) {
+                                        if (vel.hasErrors())
+                                            throw vel;
+                                    }
+                                }
+                                results = newResults.get(ana.getId());
+                                if (results != null && results.size() > 0) {
+                                    analytes = new ArrayList<TestAnalyteViewDO>();
+                                    analyteIndexes = new ArrayList<Integer>();
+                                    for (ResultViewDO res : results) {
+                                        taVDO = new TestAnalyteViewDO();
+                                        taVDO.setId(res.getTestAnalyteId());
+                                        taVDO.setRowGroup(res.getRowGroup());
+                                        taVDO.setAnalyteId(res.getAnalyteId());
+                                        taVDO.setIsReportable(res.getIsReportable());
+                                        taVDO.setAnalyteName(res.getAnalyte());
+                                        analytes.add(taVDO);
+                                        analyteIndexes.add(res.getSortOrder());
+                                    }
+                                    aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
+                                }
+                            }
+                        }
+                    }
+                    if (WorksheetManager1.ANALYSIS_UPDATE.UPDATE.equals(updateFlag)) {
+                        for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
+                            if (updatedResults.containsKey(res.getId())) {
+                                rVDO = updatedResults.get(res.getId());
+                                if (DataBaseUtil.isDifferent(rVDO.getIsReportable(), res.getIsReportable()))
+                                    res.setIsReportable(rVDO.getIsReportable());
                             }
                         }
                     }
                 }
-                if (WorksheetManager1.ANALYSIS_UPDATE.UPDATE.equals(updateFlag)) {
-                    for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
-                        if (updatedResults.containsKey(res.getId())) {
-                            rVDO = updatedResults.get(res.getId());
-                            if (DataBaseUtil.isDifferent(rVDO.getIsReportable(), res.getIsReportable()))
-                                res.setIsReportable(rVDO.getIsReportable());
-                        }
-                    }
-                }
-            }
-            
-            try {
+
                 sampleMan.update(sMans, true);
             } catch (Exception anyE) {
-                unlock = true;
+                errors = null;
                 if (anyE instanceof ValidationErrorsList) {
-                    errors = (ValidationErrorsList)anyE;
-                    if (!errors.hasErrors())
-                        unlock = false;
+                    if (((ValidationErrorsList)anyE).hasErrors())
+                        errors = (ValidationErrorsList)anyE;
                 } else {
                     errors = new ValidationErrorsList();
                     errors.add(anyE);
                 }
-                if (unlock) {
-                    try {
-                        unlockSamples(sMans);
-                    } catch (Exception anyE1) {
-                        errors.add(anyE1);
-                    }
+                if (errors != null) {
                     ctx.setRollbackOnly();
                     throw errors;
                 }
@@ -1999,7 +2006,12 @@ public class WorksheetManager1Bean {
                         // of the sample manager.
                     }
                 } else if (DataBaseUtil.isDifferent(waVDO.getStatusId(), aVDO.getStatusId())) {
-                    aHelper.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
+                    try {
+                        aHelper.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
+                    } catch (ValidationErrorsList vel) {
+                        if (vel.hasErrors())
+                            throw vel;
+                    }
                     update = true;
                 }
             } catch (ValidationErrorsList vel) {
