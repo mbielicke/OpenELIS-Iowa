@@ -548,15 +548,15 @@ public class AnalysisManager implements Serializable {
     public void validate() throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
 
-        proxy().validate(this, errorsList);
+        proxy().validate(sampleItemBundle.sampleManager, this, errorsList);
 
         if (errorsList.size() > 0)
             throw errorsList;
     }
 
-    public void validate(String sampleItemSequence, Integer sampleTypeId, String sampleDomain,
+    public void validate(SampleManager man, String sampleItemSequence, Integer sampleTypeId, String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, sampleItemSequence, sampleTypeId, sampleDomain, errorsList);
+        proxy().validate(man, this, sampleItemSequence, sampleTypeId, sampleDomain, errorsList);
     }
 
     public void setDefaultsAt(int index) {

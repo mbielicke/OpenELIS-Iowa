@@ -38,12 +38,9 @@ public class WorksheetQcResultViewVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, worksheetAnalysisId, sortOrder, qcAnalyteId, qcId,
-                              qcTypeId, inventoryItemId, qcLotId, locationId, preparedUnitId,
-                              preparedById, analyteId, qcAnalyteTypeId;
-    protected String          values[], qcName, source, qcIsActive, lotNumber, qcLotIsActive,
-                              expectedValue, isTrendable, qcType, location, preparedUnit,
-                              analyteName, qcAnalyteType;
+    protected Integer         id, worksheetAnalysisId, sortOrder, qcTypeId, locationId,
+                    preparedUnitId, preparedById, analyteId, qcAnalyteTypeId, formatId;
+    protected String          names[], values[], qcName, source, lotNumber, expectedValue;
     protected Datetime        preparedDate, usableDate, expireDate;
     protected Double          preparedVolume;
 
@@ -52,27 +49,22 @@ public class WorksheetQcResultViewVO extends DataObject {
     }
 
     public WorksheetQcResultViewVO(Integer id, Integer worksheetAnalysisId, Integer sortOrder,
-                               Integer qcAnalyteId, String v1, String v2, String v3,
-                               String v4, String v5, String v6, String v7, String v8,
-                               String v9, String v10, String v11, String v12, String v13,
-                               String v14, String v15, String v16, String v17, String v18,
-                               String v19, String v20, String v21, String v22, String v23,
-                               String v24, String v25, String v26, String v27, String v28,
-                               String v29, String v30, Integer qcId, String qcName,
-                               Integer qcTypeId, Integer inventoryItemId, String source,
-                               String qcIsActive, Integer qcLotId, String lotNumber,
-                               Integer locationId, Date preparedDate, Double preparedVolume,
-                               Integer preparedUnitId, Integer preparedById, Date usableDate,
-                               Date expireDate, String qcLotIsActive, Integer analyteId,
-                               Integer qcAnalyteTypeId, String expectedValue, String isTrendable,
-                               String qcType, String location, String preparedUnit,
-                               String analyteName, String qcAnalyteType) {
+                                   String v1, String v2, String v3, String v4, String v5,
+                                   String v6, String v7, String v8, String v9, String v10,
+                                   String v11, String v12, String v13, String v14, String v15,
+                                   String v16, String v17, String v18, String v19, String v20,
+                                   String v21, String v22, String v23, String v24, String v25,
+                                   String v26, String v27, String v28, String v29, String v30,
+                                   String qcName, Integer qcTypeId, String source,
+                                   String lotNumber, Integer locationId, Date preparedDate,
+                                   Double preparedVolume, Integer preparedUnitId,
+                                   Integer preparedById, Date usableDate, Date expireDate,
+                                   Integer analyteId, Integer qcAnalyteTypeId, String expectedValue) {
         values = new String[30];
-        
+
         setId(id);
         setWorksheetAnalysisId(worksheetAnalysisId);
         setSortOrder(sortOrder);
-        setQcAnalyteId(qcAnalyteId);
         setValueAt(0, v1);
         setValueAt(1, v2);
         setValueAt(2, v3);
@@ -103,13 +95,9 @@ public class WorksheetQcResultViewVO extends DataObject {
         setValueAt(27, v28);
         setValueAt(28, v29);
         setValueAt(29, v30);
-        setQcId(qcId);
         setQcName(qcName);
         setQcTypeId(qcTypeId);
-        setInventoryItemId(inventoryItemId);
         setSource(source);
-        setQcIsActive(qcIsActive);
-        setQcLotId(qcLotId);
         setLotNumber(lotNumber);
         setLocationId(locationId);
         setPreparedDate(DataBaseUtil.toYM(preparedDate));
@@ -118,16 +106,9 @@ public class WorksheetQcResultViewVO extends DataObject {
         setPreparedById(preparedById);
         setUsableDate(DataBaseUtil.toYM(usableDate));
         setExpireDate(DataBaseUtil.toYM(expireDate));
-        setQcLotIsActive(qcLotIsActive);
         setAnalyteId(analyteId);
         setQcAnalyteTypeId(qcAnalyteTypeId);
         setExpectedValue(expectedValue);
-        setIsTrendable(isTrendable);
-        setQcType(qcType);
-        setLocation(location);
-        setPreparedUnit(preparedUnit);
-        setAnalyteName(analyteName);
-        setQcAnalyteType(qcAnalyteType);
     }
 
     public Integer getId() {
@@ -154,12 +135,16 @@ public class WorksheetQcResultViewVO extends DataObject {
         this.sortOrder = sortOrder;
     }
 
-    public Integer getQcAnalyteId() {
-        return qcAnalyteId;
+    public String[] getNames() {
+        return names;
     }
 
-    public void setQcAnalyteId(Integer qcAnalyteId) {
-        this.qcAnalyteId = qcAnalyteId;
+    public void setNames(String[] names) {
+        this.names = names;
+    }
+
+    public String getNameAt(int index) {
+        return names[index];
     }
 
     public String getValueAt(int index) {
@@ -167,15 +152,7 @@ public class WorksheetQcResultViewVO extends DataObject {
     }
 
     public void setValueAt(int index, String value) {
-        this.values[index] =  DataBaseUtil.trim(value);
-    }
-
-    public Integer getQcId() {
-        return qcId;
-    }
-
-    public void setQcId(Integer qcId) {
-        this.qcId = qcId;
+        this.values[index] = DataBaseUtil.trim(value);
     }
 
     public String getQcName() {
@@ -194,36 +171,12 @@ public class WorksheetQcResultViewVO extends DataObject {
         this.qcTypeId = qcTypeId;
     }
 
-    public Integer getInventoryItemId() {
-        return inventoryItemId;
-    }
-
-    public void setInventoryItemId(Integer inventoryItemId) {
-        this.inventoryItemId = inventoryItemId;
-    }
-
     public String getSource() {
         return source;
     }
 
     public void setSource(String source) {
         this.source = DataBaseUtil.trim(source);
-    }
-
-    public String getQcIsActive() {
-        return qcIsActive;
-    }
-
-    public void setQcIsActive(String qcIsActive) {
-        this.qcIsActive = DataBaseUtil.trim(qcIsActive);
-    }
-
-    public Integer getQcLotId() {
-        return qcLotId;
-    }
-
-    public void setQcLotId(Integer qcLotId) {
-        this.qcLotId = qcLotId;
     }
 
     public String getLotNumber() {
@@ -233,7 +186,7 @@ public class WorksheetQcResultViewVO extends DataObject {
     public void setLotNumber(String lotNumber) {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
-    
+
     public Integer getLocationId() {
         return locationId;
     }
@@ -290,14 +243,6 @@ public class WorksheetQcResultViewVO extends DataObject {
         this.expireDate = DataBaseUtil.toYM(expireDate);
     }
 
-    public String getQcLotIsActive() {
-        return qcLotIsActive;
-    }
-
-    public void setQcLotIsActive(String qcLotIsAtive) {
-        this.qcLotIsActive = DataBaseUtil.trim(qcLotIsAtive);
-    }
-
     public Integer getAnalyteId() {
         return analyteId;
     }
@@ -322,51 +267,11 @@ public class WorksheetQcResultViewVO extends DataObject {
         this.expectedValue = DataBaseUtil.trim(expectedValue);
     }
 
-    public String getIsTrendable() {
-        return isTrendable;
+    public Integer getFormatId() {
+        return formatId;
     }
 
-    public void setIsTrendable(String isTrendable) {
-        this.isTrendable = DataBaseUtil.trim(isTrendable);
-    }
-
-    public String getQcType() {
-        return qcType;
-    }
-
-    public void setQcType(String qcType) {
-        this.qcType = DataBaseUtil.trim(qcType);
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = DataBaseUtil.trim(location);
-    }
-
-    public String getPreparedUnit() {
-        return preparedUnit;
-    }
-
-    public void setPreparedUnit(String preparedUnit) {
-        this.preparedUnit = DataBaseUtil.trim(preparedUnit);
-    }
-
-    public String getAnalyteName() {
-        return analyteName;
-    }
-
-    public void setAnalyteName(String analyteName) {
-        this.analyteName = DataBaseUtil.trim(analyteName);
-    }
-
-    public String getQcAnalyteType() {
-        return qcAnalyteType;
-    }
-
-    public void setQcAnalyteType(String qcAnalyteType) {
-        this.qcAnalyteType = DataBaseUtil.trim(qcAnalyteType);
+    public void setFormatId(Integer formatId) {
+        this.formatId = formatId;
     }
 }
