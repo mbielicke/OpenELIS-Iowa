@@ -49,6 +49,7 @@ import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
@@ -70,6 +71,7 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.PostProcessing;
@@ -187,6 +189,9 @@ public class SampleManager1Bean {
 
     @EJB
     private DictionaryCacheBean          dictionaryCache;
+
+    @EJB
+    private TestBean                     test;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -1538,13 +1543,19 @@ public class SampleManager1Bean {
         SampleOrganizationViewDO sorg;
         SampleProjectViewDO sproj;
         AuxDataViewDO aux;
+        SampleItemViewDO item;
         AnalysisViewDO ana;
+        DictionaryDO dict;
         ResultViewDO res;
         NoteViewDO n;
         AnalysisQaEventViewDO aqa;
         SampleTestReturnVO ret;
-        ValidationErrorsList errors;
-        HashMap<Integer, Integer> imap, amap;
+        ValidationErrorsList e;
+        HashMap<Integer, Integer> amap;
+        HashMap<Integer, SampleItemViewDO> imap;
+        HashMap<Integer, TestViewDO> tmap;
+        ArrayList<Integer> tids;
+        ArrayList<TestViewDO> tests;
         ArrayList<SampleOrganizationViewDO> sorgs;
         ArrayList<SampleProjectViewDO> sprojs;
         ArrayList<AuxDataViewDO> auxiliary;
@@ -1572,8 +1583,8 @@ public class SampleManager1Bean {
 
         ret = new SampleTestReturnVO();
         ret.setManager(sm);
-        errors = new ValidationErrorsList();
-        ret.setErrors(errors);
+        e = new ValidationErrorsList();
+        ret.setErrors(e);
 
         getSample(sm).setId(null);
         getSample(sm).setAccessionNumber(null);
@@ -1630,7 +1641,7 @@ public class SampleManager1Bean {
                     sorg.setSampleId(null);
                     i++ ;
                 } else {
-                    errors.add(new FormErrorWarning(Messages.get()
+                    e.add(new FormErrorWarning(Messages.get()
                                                             .sample_inactiveOrgWarning(newAccession,
                                                                                        sorg.getOrganizationName())));
                     sorgs.remove(i);
@@ -1652,7 +1663,7 @@ public class SampleManager1Bean {
                     sproj.setSampleId(null);
                     i++ ;
                 } else {
-                    errors.add(new FormErrorWarning(Messages.get()
+                    e.add(new FormErrorWarning(Messages.get()
                                                             .sample_inactiveProjectWarning(newAccession,
                                                                                            sproj.getProjectName())));
                     sprojs.remove(i);
@@ -1684,7 +1695,7 @@ public class SampleManager1Bean {
                     i++ ;
                 } else {
                     if ( !aux.getAuxFieldGroupId().equals(prevGroupId))
-                        errors.add(new FormErrorWarning(Messages.get()
+                        e.add(new FormErrorWarning(Messages.get()
                                                                 .sample_inactiveAuxGroupWarning(newAccession,
                                                                                                 aux.getAuxFieldGroupName())));
                     auxiliary.remove(i);
@@ -1708,13 +1719,73 @@ public class SampleManager1Bean {
         /*
          * level 2: everything is based on item ids
          */
-        imap = new HashMap<Integer, Integer>();
+        imap = new HashMap<Integer, SampleItemViewDO>();
         seq = 0;
         for (SampleItemViewDO data : getItems(sm)) {
             tmpId = data.getId();
             data.setId(sm.getNextUID());
             data.setItemSequence(seq++ );
-            imap.put(tmpId, data.getId());
+
+            if (data.getTypeOfSampleId() != null) {
+                /*
+                 * don't duplicate the sample type if it's inactive
+                 */
+                dict = dictionaryCache.getById(data.getTypeOfSampleId());
+                if ("N".equals(dict.getIsActive())) {
+                    data.setTypeOfSampleId(null);
+                    data.setTypeOfSample(null);
+                    e.add(new FormErrorWarning(Messages.get()
+                                                            .sampleItem_inactiveSampleTypeWarning(newAccession,
+                                                                                                  data.getItemSequence(),
+                                                                                                  dict.getEntry())));
+
+                }
+            }
+
+            if (data.getSourceOfSampleId() != null) {
+                /*
+                 * don't duplicate the source if it's inactive
+                 */
+                dict = dictionaryCache.getById(data.getSourceOfSampleId());
+                if ("N".equals(dict.getIsActive())) {
+                    data.setSourceOfSampleId(null);
+                    data.setSourceOfSample(null);
+                    e.add(new FormErrorWarning(Messages.get()
+                                                            .sampleItem_inactiveSourceWarning(newAccession,
+                                                                                              data.getItemSequence(),
+                                                                                              dict.getEntry())));
+                }
+            }
+
+            if (data.getContainerId() != null) {
+                /*
+                 * don't duplicate the container if it's inactive
+                 */
+                dict = dictionaryCache.getById(data.getContainerId());
+                if ("N".equals(dict.getIsActive())) {
+                    data.setContainerId(null);
+                    data.setContainer(null);
+                    e.add(new FormErrorWarning(Messages.get()
+                                                            .sampleItem_inactiveContainerWarning(newAccession,
+                                                                                                 data.getItemSequence(),
+                                                                                                 dict.getEntry())));
+                }
+            }
+
+            if (data.getUnitOfMeasureId() != null) {
+                /*
+                 * don't duplicate the unit if it's inactive
+                 */
+                dict = dictionaryCache.getById(data.getUnitOfMeasureId());
+                if ("N".equals(dict.getIsActive())) {
+                    data.setUnitOfMeasureId(null);
+                    e.add(new FormErrorWarning(Messages.get()
+                                                            .sampleItem_inactiveUnitWarning(newAccession,
+                                                                                            data.getItemSequence(),
+                                                                                            dict.getEntry())));
+                }
+            }
+            imap.put(tmpId, data);
         }
         getSample(sm).setNextItemSequence(seq);
 
@@ -1724,6 +1795,29 @@ public class SampleManager1Bean {
         amap = new HashMap<Integer, Integer>();
         analyses = getAnalyses(sm);
         if (analyses != null) {
+            /*
+             * analyses linked to inactive tests are not duplicated; so fetch
+             * the tests to find out which of them are inactive
+             */
+            tids = new ArrayList<Integer>();
+            for (AnalysisViewDO a : analyses) {
+                /*
+                 * only add a test id to the list for fetching the tests if it's
+                 * linked to an analysis that could be duplicated
+                 */
+                if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(a.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(a.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_INPREP.equals(a.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(a.getStatusId()))
+                    tids.add(a.getTestId());
+            }
+            tmap = new HashMap<Integer, TestViewDO>();
+            if (tids.size() > 0) {
+                tests = test.fetchByIds(tids);
+                for (TestViewDO t : tests)
+                    tmap.put(t.getId(), t);
+            }
+
             i = 0;
             now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
             while (i < analyses.size()) {
@@ -1741,14 +1835,39 @@ public class SampleManager1Bean {
                                                                  .sample_cantDuplicateReflexAnaException(accession,
                                                                                                          ana.getTestName(),
                                                                                                          ana.getMethodName()));
+                    } else if ("N".equals(tmap.get(ana.getTestId()).getIsActive())) {
+                        /*
+                         * don't duplicate the analysis if its test is inactive
+                         */
+                        e.add(new FormErrorWarning(Messages.get()
+                                                                .sample_inactiveTestWarning(accession,
+                                                                                            ana.getTestName(),
+                                                                                            ana.getMethodName())));
+                        analyses.remove(i);
                     } else {
                         tmpId = ana.getId();
                         ana.setId(sm.getNextUID());
-                        ana.setSampleItemId(imap.get(ana.getSampleItemId()));
+                        item = imap.get(ana.getSampleItemId());
+                        ana.setSampleItemId(item.getId());
                         ana.setRevision(0);
                         if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
                             Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()))
                             ana.setAvailableDate(now);
+                        if (ana.getUnitOfMeasureId() != null) {
+                            /*
+                             * don't duplicate the unit if it's inactive
+                             */
+                            dict = dictionaryCache.getById(ana.getUnitOfMeasureId());
+                            if ("N".equals(dict.getIsActive())) {
+                                ana.setUnitOfMeasureId(null);
+                                e.add(new FormErrorWarning(Messages.get()
+                                                                        .analysis_inactiveUnitWarning(accession,
+                                                                                                      item.getItemSequence(),
+                                                                                                      ana.getTestName(),
+                                                                                                      ana.getMethodName(),
+                                                                                                      dict.getEntry())));
+                            }
+                        }
                         amap.put(tmpId, ana.getId());
                         i++ ;
                     }
@@ -2396,9 +2515,16 @@ public class SampleManager1Bean {
         }
 
         /*
-         * samples have to have one report to.
+         * private well report-to is part of the domain information
          */
         cnt = 0;
+        if (getSamplePrivateWell(sm) != null &&
+            (getSamplePrivateWell(sm).getOrganizationId() != null || getSamplePrivateWell(sm).getReportToAddress() != null))
+            cnt = 1;        
+
+        /*
+         * samples have to have one report to.
+         */
         if (getOrganizations(sm) != null) {
             for (SampleOrganizationViewDO data : getOrganizations(sm))
                 if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
@@ -2487,7 +2613,7 @@ public class SampleManager1Bean {
                         try {
                             analysis.validate(data,
                                               tms.get(data.getTestId()),
-                                              accession,
+                                              sm,
                                               imap.get(data.getSampleItemId()));
                         } catch (ValidationErrorsList err) {
                             /*

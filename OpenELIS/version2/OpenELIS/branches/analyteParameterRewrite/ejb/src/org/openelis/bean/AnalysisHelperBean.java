@@ -67,6 +67,7 @@ import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultHelper;
 
 /**
  * This class is used to provide various functionalities related to analyses in
@@ -153,8 +154,8 @@ public class AnalysisHelperBean {
         ts = null;
 
         /*
-         * if section id is specified, then use it for checking permissions
-         * otherwise use the default section
+         * if section id is specified, then use it for checking permissions;
+         * otherwise, use the default section
          */
         if (sectionId != null) {
             for (int i = 0; i < tsm.count(); i++ ) {
@@ -246,8 +247,8 @@ public class AnalysisHelperBean {
         ArrayList<DataObject> removed;
         ArrayList<ResultViewDO> results;
         HashMap<Integer, AnalysisViewDO> anaByTest;
-        HashMap<Integer, String> row;
-        HashMap<Integer, HashMap<Integer, String>> rows;
+        HashMap<Integer, ResultViewDO> row;
+        HashMap<Integer, HashMap<Integer, ResultViewDO>> oldResults;
 
         m = method.fetchById(methodId);
         ana = null;
@@ -365,7 +366,7 @@ public class AnalysisHelperBean {
                             null);
 
         results = getResults(sm);
-        rows = null;
+        oldResults = null;
         if (results != null) {
             row = null;
             removed = getRemoved(sm);
@@ -387,16 +388,16 @@ public class AnalysisHelperBean {
                  * value
                  */
                 if (r.getValue() != null) {
-                    if (rows == null)
-                        rows = new HashMap<Integer, HashMap<Integer, String>>();
+                    if (oldResults == null)
+                        oldResults = new HashMap<Integer, HashMap<Integer, ResultViewDO>>();
                     /*
                      * the top level groups analytes and values by their row
                      * analyte
                      */
-                    row = rows.get(rowAnaId);
+                    row = oldResults.get(rowAnaId);
                     if (row == null) {
-                        row = new HashMap<Integer, String>();
-                        rows.put(rowAnaId, row);
+                        row = new HashMap<Integer, ResultViewDO>();
+                        oldResults.put(rowAnaId, row);
                     }
 
                     /*
@@ -404,7 +405,7 @@ public class AnalysisHelperBean {
                      * individual analytes
                      */
                     if (row.get(r.getAnalyteId()) == null)
-                        row.put(r.getAnalyteId(), r.getValue());
+                        row.put(r.getAnalyteId(), r);
                 }
 
                 /*
@@ -425,7 +426,7 @@ public class AnalysisHelperBean {
         /*
          * add the results from the new test and merge them with the old ones
          */
-        addResults(sm, tm, ana, null, rows);
+        addResults(sm, tm, ana, null, oldResults);
 
         return ret;
     }
@@ -557,7 +558,6 @@ public class AnalysisHelperBean {
                 /*
                  * the analysis is being completed
                  */
-
                 if (ana.getSectionName() == null ||
                     !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
                     throw new InconsistencyException(Messages.get()
@@ -566,10 +566,17 @@ public class AnalysisHelperBean {
                                                                                                                ana.getMethodName()));
                 }
 
+                /*
+                 * we're validating the analysis here as well as the manager
+                 * bean, because we want to throw exceptions on some analyses
+                 * that can't be completed while allowing others on the same
+                 * sample to be completed. This applies to cases when multiple
+                 * analyses on the same sample are getting completed.
+                 */
                 tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
 
                 try {
-                    analysis.validate(ana, tm, accession, item);
+                    analysis.validate(ana, tm, sm, item);
                 } catch (ValidationErrorsList err) {
                     /*
                      * analysis validate can throw errors, warnings and
@@ -1104,14 +1111,16 @@ public class AnalysisHelperBean {
      */
     public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO ana,
                            ArrayList<Integer> analyteIds,
-                           HashMap<Integer, HashMap<Integer, String>> oldResults) throws Exception {
+                           HashMap<Integer, HashMap<Integer, ResultViewDO>> oldResults) throws Exception {
         boolean addRow;
-        String reportable, oldVal;
+        Integer dictId;
+        String reportable, value;
+        ResultViewDO oldr;
         TestAnalyteManager tam;
         HashSet<Integer> ids;
         ResultViewDO r;
         ResultFormatter rf;
-        HashMap<Integer, String> oldRow;
+        HashMap<Integer, ResultViewDO> oldRow;
 
         ids = null;
         if (analyteIds != null)
@@ -1152,13 +1161,29 @@ public class AnalysisHelperBean {
                 r = createResult(sm, ana, data, reportable, rf);
 
                 if (oldRow != null && r.getValue() == null) {
-                    oldVal = oldRow.get(r.getAnalyteId());
+                    oldr = oldRow.get(r.getAnalyteId());
                     /*
                      * if the old results had a value for this analyte then set
                      * it in this result
                      */
-                    if (oldVal != null)
-                        r.setValue(oldVal);
+                    if (oldr != null && oldr.getValue() != null) {
+                        r.setValue(oldr.getValue());
+                        r.setTypeId(null);
+                        try {
+                            /*
+                             * validate the old value so that the type gets set
+                             */
+                            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(oldr.getTypeId())) {
+                                dictId = Integer.valueOf(oldr.getValue());
+                                value = dictionaryCache.getById(dictId).getEntry();
+                            } else {
+                                value = oldr.getValue();
+                            }
+                            ResultHelper.formatValue(r, value, ana.getUnitOfMeasureId(), rf);
+                        } catch (Exception e) {
+                            // ignore because the value will get validated later
+                        }
+                    }
                 }
 
                 addResult(sm, r);
@@ -1301,16 +1326,26 @@ public class AnalysisHelperBean {
 
     /**
      * If a default is defined for the result's result group and this unit then
-     * sets it as the value; otherwise value is not changed. Sets the type to
-     * null in both cases to force validation.
+     * sets it as the value; otherwise value is not changed. Validates the
+     * default and sets it as the value if it's valid and also sets the type.
      */
     private void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
         String def;
 
+        if (r.getTypeId() != null)
+            r.setTypeId(null);
         def = rf.getDefault(r.getResultGroup(), unitId);
-        if (def != null)
+        if (def != null) {
             r.setValue(def);
-        r.setTypeId(null);
+            try {
+                /*
+                 * validate the default so that the type gets set
+                 */
+                ResultHelper.formatValue(r, def, unitId, rf);
+            } catch (Exception e) {
+                // ignore because the value will get validated later
+            }
+        }
     }
 
     /**
