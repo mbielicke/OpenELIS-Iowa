@@ -29,7 +29,7 @@ public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
                 
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().worksheetCompletion() + " 2");
+                    window.setName(Messages.get().worksheetCompletion());
                     window.setSize("1061px", "511px");
                     screen = new WorksheetCompletionScreenUI(window);
                     window.setContent(screen);
@@ -48,5 +48,4 @@ public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
         });
         
     }
-
 }
