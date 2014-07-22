@@ -31,23 +31,12 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.Util;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.Warning;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -91,7 +80,16 @@ import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample.client.StorageTab;
 import org.openelis.modules.standardnote.client.StandardNoteService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -477,6 +475,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             public void onValueChange(final ValueChangeEvent<Integer> event) {
                 Integer oldNumber, orderId;
                 SampleManager quickEntryMan;
+                ValidationErrorsList errors;
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
@@ -513,10 +512,12 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                         return;
                     }
 
+                    errors = null;
                     if (state == State.ADD) {
                         orderId = manager.getSample().getOrderId();
                         if (orderId != null) {
-                            SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                            errors = new ValidationErrorsList();
+                            SampleMergeUtility.mergeTests(manager, quickEntryMan, errors);
                             manager.setSample(quickEntryMan.getSample());
                             manager.getSample().setOrderId(orderId);
                         } else {
@@ -543,10 +544,18 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                 setDataInTabs();
                                 setState(State.UPDATE);
                                 DataChangeEvent.fire(screen);
-                                window.clearStatus();
                                 quickUpdate = true;
                             }
                         });
+                        
+                        if (errors != null) {
+                            if (errors.hasWarnings())
+                                showWarnings(errors);
+                            if (errors.hasErrors())
+                                showErrors(errors);
+                        } else {
+                            window.clearStatus();
+                        }
                     } else {
                         quickEntryMan.abortUpdate();
                         window.clearStatus();
@@ -1608,7 +1617,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             errors = envOrderImport.importOrderInfo(orderId, manager);
 
             if (quickEntryMan != null)
-                SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                SampleMergeUtility.mergeTests(manager, quickEntryMan, errors);
 
             manager.getSample().setOrderId(orderId);
             setDataInTabs();
