@@ -25,7 +25,9 @@
  */
 package org.openelis.bean;
 
+import static org.openelis.manager.SampleManager1Accessor.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +52,7 @@ import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.entity.Analysis;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -72,8 +75,8 @@ public class AnalysisBean {
     private EntityManager           manager;
 
     private static final SampleMeta meta = new SampleMeta();
-    
-    private static final Logger          log = Logger.getLogger("openelis");
+
+    private static final Logger     log  = Logger.getLogger("openelis");
 
     @SuppressWarnings("unchecked")
     public ArrayList<IdAccessionVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -318,16 +321,24 @@ public class AnalysisBean {
             manager.remove(entity);
     }
 
-    public void validate(AnalysisDO data, TestManager tm, Integer accession, SampleItemDO item) throws Exception {
-        Integer sequence;
+    public void validate(AnalysisDO data, TestManager tm, SampleManager1 sm, SampleItemDO item) throws Exception {
+        Integer accession, sequence;
         String test, method;
         ValidationErrorsList e;
         Date now;
+        Calendar ent;
 
         e = new ValidationErrorsList();
         test = null;
         method = null;
         sequence = null;
+
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
 
         if (item != null)
             sequence = item.getItemSequence();
@@ -372,7 +383,6 @@ public class AnalysisBean {
                                                                                      method)));
 
         now = new Date();
-
         if (data.getStartedDate() != null) {
             /*
              * started date can't be after completed date
@@ -386,15 +396,21 @@ public class AnalysisBean {
                                                                                                   method)));
 
             /*
-             * started date is before available date, which could be a problem
+             * if the started date is more than 3 days before entered date and
+             * also before available date, then that could be a problem
              */
             if (data.getAvailableDate() != null &&
-                data.getStartedDate().before(data.getAvailableDate()))
-                e.add(new FormErrorCaution(Messages.get()
-                                                   .analysis_startedDateBeforeAvailableCaution(accession,
-                                                                                                 sequence,
-                                                                                                 test,
-                                                                                                 method)));
+                data.getStartedDate().before(data.getAvailableDate())) {
+                ent = Calendar.getInstance();
+                ent.setTime(getSample(sm).getEnteredDate().getDate());
+                ent.add(Calendar.DATE, -3);
+                if (data.getStartedDate().before(ent.getTime()))
+                    e.add(new FormErrorCaution(Messages.get()
+                                                       .analysis_startedDateBeforeAvailableCaution(accession,
+                                                                                                   sequence,
+                                                                                                   test,
+                                                                                                   method)));
+            }
 
             /*
              * started date can't be in the future
@@ -405,7 +421,9 @@ public class AnalysisBean {
                                                                                             sequence,
                                                                                             test,
                                                                                             method)));
-                log.log(Level.SEVERE, "Future Started date "+ data.getStartedDate().getDate().getTime()+ " Now "+ now.getTime());
+                log.log(Level.SEVERE, "Future Started date " +
+                                      data.getStartedDate().getDate().getTime() + " Now " +
+                                      now.getTime());
             }
         }
 
@@ -429,7 +447,9 @@ public class AnalysisBean {
                                                                                               sequence,
                                                                                               test,
                                                                                               method)));
-                log.log(Level.SEVERE, "Future Completed date "+ data.getCompletedDate().getDate().getTime()+ " Now "+ now.getTime());
+                log.log(Level.SEVERE, "Future Completed date " +
+                                      data.getCompletedDate().getDate().getTime() + " Now " +
+                                      now.getTime());
             }
         }
 

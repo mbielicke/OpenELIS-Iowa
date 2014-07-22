@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.openelis.constants.Messages;
@@ -221,23 +222,23 @@ public class AnalysisManagerProxy {
         }
     }
 
-    public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
-        validate(man, null, null, null, errorsList);
+    public void validate(SampleManager man, AnalysisManager anaMan, ValidationErrorsList errorsList) throws Exception {
+        validate(man, anaMan, null, null, null, errorsList);
     }
 
-    public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId,
+    public void validate(SampleManager man, AnalysisManager anaMan, String sampleItemSequence, Integer sampleTypeId,
                          String sampleDomain, ValidationErrorsList errorsList) throws Exception {
         boolean quickEntry;
         AnalysisListItem item;
         AnalysisViewDO analysisDO;
         TestManager testMan;
-        Datetime now;
+        Date now;
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        for (int i = 0; i < man.count(); i++ ) {
-            analysisDO = man.getAnalysisAt(i);
-            testMan = man.getTestAt(i);
+        now = new Date();
+        for (int i = 0; i < anaMan.count(); i++ ) {
+            analysisDO = anaMan.getAnalysisAt(i);
+            testMan = anaMan.getTestAt(i);
 
             //
             // We do NOT need to validate analyses that are in cancelled or
@@ -277,14 +278,14 @@ public class AnalysisManagerProxy {
                     // started date can't be after completed date
                     //
                     if (analysisDO.getCompletedDate() != null &&
-                        analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
+                        analysisDO.getStartedDate().after(analysisDO.getCompletedDate()))
                         errorsList.add(new FormErrorException(Messages.get()
                                                                       .startedDateAfterCompletedError(analysisDO.getTestName(),
                                                                                                       analysisDO.getMethodName())));
                     //
                     // started date can't be in the future
                     //
-                    if (analysisDO.getStartedDate().compareTo(now) == 1) {
+                    if (analysisDO.getStartedDate().after(now)) {
                         errorsList.add(new FormErrorException(Messages.get()
                                                                       .startedDateInFutureError(analysisDO.getTestName(),
                                                                                                 analysisDO.getMethodName())));
@@ -295,7 +296,7 @@ public class AnalysisManagerProxy {
                     //
                     //completed date can't be in the future
                     //
-                    if (analysisDO.getCompletedDate().compareTo(now) == 1) {
+                    if (analysisDO.getCompletedDate().after(now)) {
                         errorsList.add(new FormErrorException(Messages.get()
                                                                       .completedDateInFutureError(analysisDO.getTestName(),
                                                                                                   analysisDO.getMethodName())));
@@ -303,19 +304,19 @@ public class AnalysisManagerProxy {
                 }
             }
 
-            item = man.getItemAt(i);
+            item = anaMan.getItemAt(i);
             // validate the children
 
             // we want to always run through validate so it loads the data
             // if the user didn't click on the tab
             if ( !quickEntry)
-                man.getAnalysisResultAt(i).validate(analysisDO, errorsList);
+                anaMan.getAnalysisResultAt(i).validate(analysisDO, errorsList);
 
             if ( !quickEntry && item.qaEvents != null)
-                man.getQAEventAt(i).validate(errorsList);
+                anaMan.getQAEventAt(i).validate(errorsList);
 
             if ( !quickEntry && item.storages != null)
-                man.getStorageAt(i).validate(errorsList);
+                anaMan.getStorageAt(i).validate(errorsList);
         }
     }
 

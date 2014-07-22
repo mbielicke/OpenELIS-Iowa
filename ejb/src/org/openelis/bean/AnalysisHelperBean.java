@@ -248,7 +248,7 @@ public class AnalysisHelperBean {
         ArrayList<ResultViewDO> results;
         HashMap<Integer, AnalysisViewDO> anaByTest;
         HashMap<Integer, ResultViewDO> row;
-        HashMap<Integer, HashMap<Integer, ResultViewDO>> rows;
+        HashMap<Integer, HashMap<Integer, ResultViewDO>> oldResults;
 
         m = method.fetchById(methodId);
         ana = null;
@@ -366,7 +366,7 @@ public class AnalysisHelperBean {
                             null);
 
         results = getResults(sm);
-        rows = null;
+        oldResults = null;
         if (results != null) {
             row = null;
             removed = getRemoved(sm);
@@ -388,16 +388,16 @@ public class AnalysisHelperBean {
                  * value
                  */
                 if (r.getValue() != null) {
-                    if (rows == null)
-                        rows = new HashMap<Integer, HashMap<Integer, ResultViewDO>>();
+                    if (oldResults == null)
+                        oldResults = new HashMap<Integer, HashMap<Integer, ResultViewDO>>();
                     /*
                      * the top level groups analytes and values by their row
                      * analyte
                      */
-                    row = rows.get(rowAnaId);
+                    row = oldResults.get(rowAnaId);
                     if (row == null) {
                         row = new HashMap<Integer, ResultViewDO>();
-                        rows.put(rowAnaId, row);
+                        oldResults.put(rowAnaId, row);
                     }
 
                     /*
@@ -426,7 +426,7 @@ public class AnalysisHelperBean {
         /*
          * add the results from the new test and merge them with the old ones
          */
-        addResults(sm, tm, ana, null, rows);
+        addResults(sm, tm, ana, null, oldResults);
 
         return ret;
     }
@@ -576,7 +576,7 @@ public class AnalysisHelperBean {
                 tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
 
                 try {
-                    analysis.validate(ana, tm, accession, item);
+                    analysis.validate(ana, tm, sm, item);
                 } catch (ValidationErrorsList err) {
                     /*
                      * analysis validate can throw errors, warnings and
@@ -1166,7 +1166,7 @@ public class AnalysisHelperBean {
                      * if the old results had a value for this analyte then set
                      * it in this result
                      */
-                    if (oldr.getValue() != null) {
+                    if (oldr != null && oldr.getValue() != null) {
                         r.setValue(oldr.getValue());
                         r.setTypeId(null);
                         try {

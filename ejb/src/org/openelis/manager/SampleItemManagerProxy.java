@@ -127,29 +127,29 @@ public class SampleItemManagerProxy {
         return man;
     }
 
-    public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(SampleManager man, SampleItemManager itemMan, ValidationErrorsList errorsList) throws Exception {
         String sequenceNum;
         SampleItemListItem item;
         // you have to have at least 1 sample item
-        if (man.count() == 0)
+        if (itemMan.count() == 0)
             errorsList.add(new FormErrorException(Messages.get().minOneSampleItemException()));
 
-        for (int i = 0; i < man.count(); i++ ) {
-            sequenceNum = man.getSampleItemAt(i).getItemSequence().toString();
+        for (int i = 0; i < itemMan.count(); i++ ) {
+            sequenceNum = itemMan.getSampleItemAt(i).getItemSequence().toString();
             // validate the sample item
-            if (man.getSampleItemAt(i).getTypeOfSampleId() == null)
+            if (itemMan.getSampleItemAt(i).getTypeOfSampleId() == null)
                 errorsList.add(new FormErrorException(Messages.get().sampleItemTypeMissing(
                                                       sequenceNum)));
 
-            item = man.getItemAt(i);
+            item = itemMan.getItemAt(i);
             // validate the children
             if (item.storage != null)
-                man.getStorageAt(i).validate(errorsList);
+                itemMan.getStorageAt(i).validate(errorsList);
 
             if (item.analysis != null)
-                man.getAnalysisAt(i).validate(sequenceNum,
-                                              man.getSampleItemAt(i).getTypeOfSampleId(),
-                                              man.getSampleManager()
+                itemMan.getAnalysisAt(i).validate(man, sequenceNum,
+                                              itemMan.getSampleItemAt(i).getTypeOfSampleId(),
+                                              itemMan.getSampleManager()
                                                  .getSample()
                                                  .getDomain(),
                                               errorsList);
