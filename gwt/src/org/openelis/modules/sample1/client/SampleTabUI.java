@@ -22,7 +22,6 @@ import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
-import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;

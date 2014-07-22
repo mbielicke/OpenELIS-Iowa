@@ -43,7 +43,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -383,7 +383,7 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         final WorksheetCompletionScreenUI wcScreen;
         
         window = new org.openelis.ui.widget.Window();
-        window.setName(Messages.get().worksheetCompletion() + " 2");
+        window.setName(Messages.get().worksheetCompletion());
         window.setSize("1061px", "511px");
         wcScreen = new WorksheetCompletionScreenUI(window);
         window.setContent(wcScreen);

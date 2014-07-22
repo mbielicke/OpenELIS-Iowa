@@ -6,7 +6,7 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.main.client.ScreenBus;
+//import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -18,7 +18,7 @@ public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
     
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION, this);        
+//        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION, this);        
     }
     
     @Override

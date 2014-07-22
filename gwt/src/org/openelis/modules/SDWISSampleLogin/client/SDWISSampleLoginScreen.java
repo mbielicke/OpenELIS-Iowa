@@ -465,6 +465,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
                 Integer oldNumber, orderId;
                 SampleManager quickEntryMan;
+                ValidationErrorsList errors;
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
@@ -500,10 +501,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                         return;
                     }
 
+                    errors = null;
                     if (state == State.ADD) {
                         orderId = manager.getSample().getOrderId();
                         if (orderId != null) {
-                            SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                            errors = new ValidationErrorsList();
+                            SampleMergeUtility.mergeTests(manager, quickEntryMan, errors);
                             manager.setSample(quickEntryMan.getSample());
                             manager.getSample().setOrderId(orderId);
                         } else {
@@ -529,6 +532,15 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                 quickUpdate = true;
                             }
                         });
+                        
+                        if (errors != null) {
+                            if (errors.hasWarnings())
+                                showWarnings(errors);
+                            if (errors.hasErrors())
+                                showErrors(errors);
+                        } else {
+                            window.clearStatus();
+                        }
                     } else {
                         quickEntryMan.abortUpdate();
                         window.clearStatus();
@@ -1606,7 +1618,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             errors = sdwisOrderImport.importOrderInfo(orderId, manager);
 
             if (quickEntryMan != null)
-                SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                SampleMergeUtility.mergeTests(manager, quickEntryMan, errors);
 
             manager.getSample().setOrderId(orderId);
             setDataInTabs();

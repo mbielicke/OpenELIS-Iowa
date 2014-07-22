@@ -1,4 +1,4 @@
-package org.openelis.modules.sampleTracking.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.remote;
 
@@ -14,24 +14,27 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
-
-public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
-
+public class WorksheetCompletionEntry implements EntryPoint, ShowScreenHandler {
+    
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.SAMPLE_TRACKING, this);
+        ScreenBus.get().addHandler(ScreenBus.WORKSHEET_COMPLETION, this);        
     }
     
     @Override
     public void showScreen() {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
+                WorksheetCompletionScreenUI screen;
+                
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                    window.setName(Messages.get().tracking());
-                    window.setSize("1074px", "435px");
-                    window.setContent(new SampleTrackingScreen(window));
-                    OpenELIS.getBrowser().addWindow(window, "tracking");
+                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                    window.setName(Messages.get().worksheetCompletion() + " 2");
+                    window.setSize("1061px", "511px");
+                    screen = new WorksheetCompletionScreenUI(window);
+                    window.setContent(screen);
+                    screen.initialize();
+                    OpenELIS.getBrowser().addWindow(window, "worksheetCompletion");
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
@@ -43,7 +46,7 @@ public class SampleTrackingEntry implements EntryPoint, ShowScreenHandler {
                 Window.alert(caught.getMessage());
             }
         });
+        
     }
-    
 
 }

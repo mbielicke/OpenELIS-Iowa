@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheetCompletion.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
@@ -52,11 +52,13 @@ import org.openelis.cache.UserCache;
 import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
@@ -64,11 +66,13 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetResultsTransferVO;
 import org.openelis.domain.WorksheetViewDO;
+import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.meta.WorksheetMeta;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
@@ -119,6 +123,8 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
+import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultHelper;
 
 public class WorksheetCompletionScreenUI extends Screen {
 
@@ -181,6 +187,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                                                           unlockTransferCall, updateCall;
     protected AsyncCallbackUI<WorksheetResultsTransferVO> fetchForTransferCall, transferCall;
     protected EditNoteLookupUI                            failedNoteLookup;
+    protected HashMap<Integer, AuxFieldGroupManager>      auxManagers;
     protected HashMap<Integer, TestManager>               testManagers;
     protected SampleManager1.Load                         sampleElements[] = {SampleManager1.Load.ORGANIZATION,
                                                                               SampleManager1.Load.QA,
@@ -218,6 +225,7 @@ public class WorksheetCompletionScreenUI extends Screen {
         
         manager = null;
         updateTransferMode = false;
+        auxManagers = new HashMap<Integer, AuxFieldGroupManager>();
         testManagers = new HashMap<Integer, TestManager>();
     }
 
@@ -303,17 +311,35 @@ public class WorksheetCompletionScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                exportToExcelButton.setEnabled(isState(DISPLAY) && canEdit() &&
-                                               userPermission.hasUpdatePermission());
+        addDataChangeHandler(new DataChangeEvent.Handler() {
+            public void onDataChange(DataChangeEvent event) {
+                boolean enable;
+
+                enable = isState(DISPLAY) && canEdit() && userPermission.hasUpdatePermission();
+                exportToExcelButton.setEnabled(enable);
+                importFromExcelButton.setEnabled(enable);
             }
         });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                importFromExcelButton.setEnabled(isState(DISPLAY) && canEdit() &&
-                                                 userPermission.hasUpdatePermission());
+                boolean enable;
+
+                enable = isState(DISPLAY) && canEdit() && userPermission.hasUpdatePermission();
+                exportToExcelButton.setEnabled(enable);
+                importFromExcelButton.setEnabled(enable);
+            }
+        });
+
+        addDataChangeHandler(new DataChangeEvent.Handler() {
+            public void onDataChange(DataChangeEvent event) {
+                transferResultsButton.setEnabled((isState(UPDATE) && updateTransferMode) ||
+                                                 (isState(DISPLAY) && canEdit() &&
+                                                  userPermission.hasUpdatePermission()));
+                if (isState(UPDATE) && updateTransferMode) {
+                    transferResultsButton.setPressed(true);
+                    transferResultsButton.lock();
+                }
             }
         });
 
@@ -608,7 +634,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                             setError(Messages.get().gen_noMoreRecordInDir());
                         }
     
-                        public void onFailure(Throwable error) {
+                        public void failure(Throwable error) {
                             setQueryResult(null);
                             Window.alert("Error: Worksheet call query failed; " +
                                          error.getMessage());
@@ -1490,6 +1516,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                                 if (samId != null) {
                                     try {
                                         returnVO = SampleService1.get().addAnalyses(sMansById.get(samId), samTests);
+                                        validateAuxDataAndResults(returnVO.getManager(), returnVO.getErrors());
+                                        if (returnVO.getErrors() != null && returnVO.getErrors().size() > 0)
+                                            throw returnVO.getErrors();
                                         sMansById.put(samId, returnVO.getManager());
                                         samTests.clear();
                                         if (returnVO.getTests() != null && returnVO.getTests().size() > 0)
@@ -1510,6 +1539,9 @@ public class WorksheetCompletionScreenUI extends Screen {
                         if (samTests.size() > 0) {
                             try {
                                 returnVO = SampleService1.get().addAnalyses(sMansById.get(samId), samTests);
+                                validateAuxDataAndResults(returnVO.getManager(), returnVO.getErrors());
+                                if (returnVO.getErrors() != null && returnVO.getErrors().size() > 0)
+                                    throw returnVO.getErrors();
                                 sMansById.put(samId, returnVO.getManager());
                                 if (returnVO.getTests() != null && returnVO.getTests().size() > 0)
                                     prepTests.addAll(returnVO.getTests());
@@ -1584,6 +1616,84 @@ public class WorksheetCompletionScreenUI extends Screen {
             testManagers.put(testId, tMan);
         }
         return tMan;
+    }
+
+    private AuxFieldGroupManager getAuxManager(Integer auxId) throws Exception {
+        AuxFieldGroupManager afgMan;
+
+        afgMan = auxManagers.get(auxId);
+        if (afgMan == null) {
+            afgMan = AuxiliaryService.get().fetchById(auxId);
+            auxManagers.put(auxId, afgMan);
+        }
+        return afgMan;
+    }
+
+    private void validateAuxDataAndResults(SampleManager1 man, ValidationErrorsList errors) {
+        int i, j, k, l;
+        AnalysisViewDO aVDO;
+        AuxDataViewDO adVDO;
+        AuxFieldGroupManager afgMan;
+        Integer groupId;
+        ResultFormatter rf;
+        ResultViewDO rVDO;
+        SampleItemViewDO siVDO;
+        TestManager tMan;
+
+        groupId = null;
+        rf = null;
+        for (i = 0; i < man.auxData.count(); i++) {
+            adVDO = man.auxData.get(i);
+            if (adVDO.getValue() != null && adVDO.getTypeId() == null) {
+                try {
+                    if (!adVDO.getAuxFieldGroupId().equals(groupId)) {
+                        afgMan = getAuxManager(adVDO.getAuxFieldGroupId());
+                        rf = afgMan.getFormatter();
+                        groupId = adVDO.getAuxFieldGroupId();
+                    }
+                    ResultHelper.formatValue(adVDO, adVDO.getValue(), rf);
+                } catch (Exception anyE) {
+                    errors.add(new Exception(Messages.get().aux_defaultValueInvalidException(man.getSample().getAccessionNumber(),
+                                                                                             adVDO.getAnalyteName(),
+                                                                                             adVDO.getValue())));
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                }
+            }
+        }
+
+        for (i = 0; i < man.item.count(); i++) {
+            siVDO = man.item.get(i);
+            for (j = 0; j < man.analysis.count(siVDO); j++) {
+                aVDO = man.analysis.get(siVDO, j);
+                try {
+                    tMan = getTestManager(aVDO.getTestId());
+                    rf = tMan.getFormatter();
+                    for (k = 0; k < man.result.count(aVDO); k++) {
+                        for (l = 0; l < man.result.count(aVDO, k); l++) {
+                            rVDO = man.result.get(aVDO, k, l);
+                            if (rVDO.getValue() != null && rVDO.getTypeId() == null) {
+                                try {
+                                    ResultHelper.formatValue(rVDO,
+                                                             rVDO.getValue(),
+                                                             aVDO.getUnitOfMeasureId(),
+                                                             rf);
+                                } catch (Exception anyE1) {
+                                    errors.add(new Exception(Messages.get().result_defaultValueInvalidException(man.getSample().getAccessionNumber(),
+                                                                                                                aVDO.getTestName(),
+                                                                                                                aVDO.getMethodName(),
+                                                                                                                rVDO.getAnalyte(),
+                                                                                                                rVDO.getValue())));
+                                    logger.log(Level.SEVERE, anyE1.getMessage(), anyE1);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception anyE) {
+                    errors.add(anyE);
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                }
+            }
+        }
     }
 
     private Integer getWorksheetId() {

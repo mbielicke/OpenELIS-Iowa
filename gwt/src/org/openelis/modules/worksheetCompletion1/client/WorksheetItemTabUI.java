@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.worksheetCompletion.client;
+package org.openelis.modules.worksheetCompletion1.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.*;
@@ -68,8 +68,8 @@ import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell;
-import org.openelis.modules.worksheetCompletion.client.WorksheetResultCell.Value;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell;
+import org.openelis.modules.worksheetCompletion1.client.WorksheetResultCell.Value;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -242,17 +242,13 @@ public class WorksheetItemTabUI extends Screen {
                         } else {
                             wqrVDO = (WorksheetQcResultViewDO)data;
                             waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wqrVDO.getWorksheetAnalysisId()));
-                            if (waVDO.getFromOtherId() != null)
-                                event.cancel();
-                            else
-                                ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
+                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
                         }
                     } else if (data instanceof WorksheetResultViewDO) {
                         wrVDO = (WorksheetResultViewDO)data;
                         waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wrVDO.getWorksheetAnalysisId()));
                         perm = UserCache.getPermission().getSection(waVDO.getSectionName());
-                        if (waVDO.getFromOtherId() != null ||
-                            Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
+                        if (Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) ||
                             Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId())) {
                             event.cancel();
                         } else if (perm == null || !perm.hasCompletePermission()) {
