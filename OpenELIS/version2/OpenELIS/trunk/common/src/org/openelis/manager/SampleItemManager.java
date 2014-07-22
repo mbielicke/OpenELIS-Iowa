@@ -149,14 +149,14 @@ public class SampleItemManager implements Serializable {
     public void validate() throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
 
-        proxy().validate(this, errorsList);
+        proxy().validate(sampleManager, this, errorsList);
 
         if (errorsList.size() > 0)
             throw errorsList;
     }
 
     public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+        proxy().validate(sampleManager, this, errorsList);
     }
 
     public void setDefaultsAt(int index) {

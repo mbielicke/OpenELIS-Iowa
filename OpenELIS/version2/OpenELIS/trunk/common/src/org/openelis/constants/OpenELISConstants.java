@@ -754,6 +754,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cancelMessage();
 
   /**
+   * Translated "Analysis is cancelled. You cannot add QA events.".
+   * 
+   * @return translated "Analysis is cancelled. You cannot add QA events."
+   */
+  @DefaultMessage("Analysis is cancelled. You cannot add QA events.")
+  @Key("analysis.cantAddQACancelled")
+  String analysis_cantAddQACancelled();
+
+  /**
    * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
    * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
@@ -835,13 +844,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantRemoveInUpdateException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Analysis has been cancelled. You cannot remove QA events.".
+   * 
+   * @return translated "Analysis has been cancelled. You cannot remove QA events."
+   */
+  @DefaultMessage("Analysis has been cancelled. You cannot remove QA events.")
+  @Key("analysis.cantRemoveQACancelled")
+  String analysis_cantRemoveQACancelled();
+
+  /**
    * Translated "Analysis has been released. You cannot remove non-internal QA events.".
    * 
    * @return translated "Analysis has been released. You cannot remove non-internal QA events."
    */
   @DefaultMessage("Analysis has been released. You cannot remove non-internal QA events.")
-  @Key("analysis.cantRemoveQAEvent")
-  String analysis_cantRemoveQAEvent();
+  @Key("analysis.cantRemoveQAReleased")
+  String analysis_cantRemoveQAReleased();
 
   /**
    * Translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}".
@@ -896,6 +914,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future")
   @Key("analysis.completedDateInFutureException")
   String analysis_completedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated")
+  @Key("analysis.inactiveUnitWarning")
+  String analysis_inactiveUnitWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}".
@@ -13647,8 +13674,8 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "Sample and/or analysis is released. You cannot add non-internal QA events."
    */
   @DefaultMessage("Sample and/or analysis is released. You cannot add non-internal QA events.")
-  @Key("sample.cantAddQAEvent")
-  String sample_cantAddQAEvent();
+  @Key("sample.cantAddQA")
+  String sample_cantAddQA();
 
   /**
    * Translated "The domain cannot be changed because the sample does not exist in the system".
@@ -13728,8 +13755,17 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * @return translated "One or more analysis have been released. You cannot remove non-internal sample QA events."
    */
   @DefaultMessage("One or more analysis have been released. You cannot remove non-internal sample QA events.")
-  @Key("sample.cantRemoveQAEvent")
-  String sample_cantRemoveQAEvent();
+  @Key("sample.cantRemoveQA")
+  String sample_cantRemoveQA();
+
+  /**
+   * Translated "The non-billable QA Event ''{0}'' was made billable because sample and/or analysis is released. ".
+   * 
+   * @return translated "The non-billable QA Event ''{0}'' was made billable because sample and/or analysis is released. "
+   */
+  @DefaultMessage("The non-billable QA Event ''{0}'' was made billable because sample and/or analysis is released. ")
+  @Key("sample.changedToBillable")
+  String sample_changedToBillable(String arg0);
 
   /**
    * Translated "Please choose a test or panel".
@@ -13883,6 +13919,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveProjectWarning")
   String sample_inactiveProjectWarning(Integer arg0,  String arg1);
+
+  /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} is inactive and was not added to the sample ".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} is inactive and was not added to the sample "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} is inactive and was not added to the sample ")
+  @Key("sample.inactiveTestWarning")
+  String sample_inactiveTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "Items/Analyses".
@@ -14360,6 +14405,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Container Reference")
   @Key("sampleItem.containerReference")
   String sampleItem_containerReference();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - Container ''{2}'' is inactive and was not assigned".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - Container ''{2}'' is inactive and was not assigned"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Container ''{2}'' is inactive and was not assigned")
+  @Key("sampleItem.inactiveContainerWarning")
+  String sampleItem_inactiveContainerWarning(Integer arg0,  Integer arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - Sample type ''{2}'' is inactive and was not assigned ".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - Sample type ''{2}'' is inactive and was not assigned "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Sample type ''{2}'' is inactive and was not assigned ")
+  @Key("sampleItem.inactiveSampleTypeWarning")
+  String sampleItem_inactiveSampleTypeWarning(Integer arg0,  Integer arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - Source ''{2}'' is inactive and was not assigned".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - Source ''{2}'' is inactive and was not assigned"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Source ''{2}'' is inactive and was not assigned")
+  @Key("sampleItem.inactiveSourceWarning")
+  String sampleItem_inactiveSourceWarning(Integer arg0,  Integer arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - Unit ''{2}'' is inactive and was not assigned".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - Unit ''{2}'' is inactive and was not assigned"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Unit ''{2}'' is inactive and was not assigned")
+  @Key("sampleItem.inactiveUnitWarning")
+  String sampleItem_inactiveUnitWarning(Integer arg0,  Integer arg1,  String arg2);
 
   /**
    * Translated "Sample Item".
