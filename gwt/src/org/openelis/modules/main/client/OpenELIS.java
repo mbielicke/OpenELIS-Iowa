@@ -35,7 +35,6 @@ import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.modules.logging.client.LoggingScreen;
 import org.openelis.modules.main.client.event.ShowScreenEvent;
-import org.openelis.modules.report.client.InstrumentBarcodeReportScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;

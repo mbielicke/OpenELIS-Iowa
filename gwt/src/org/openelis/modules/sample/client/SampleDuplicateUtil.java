@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -36,6 +37,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ResultViewDO;
@@ -47,6 +49,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -61,6 +64,7 @@ import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
+import org.openelis.manager.TestManager;
 import org.openelis.ui.common.FormErrorWarning;
 
 public class SampleDuplicateUtil {
@@ -98,17 +102,67 @@ public class SampleDuplicateUtil {
         return newMan;
     }
 
-    public static void duplicateSampleItem(SampleItemViewDO newData, SampleItemViewDO oldData) {
-        newData.setTypeOfSampleId(oldData.getTypeOfSampleId());
-        newData.setSourceOfSampleId(oldData.getSourceOfSampleId());
+    public static void duplicateSampleItem(SampleItemViewDO newData, SampleItemViewDO oldData, ValidationErrorsList errors) throws Exception {
+        DictionaryDO dict;
+        
+        if (oldData.getTypeOfSampleId() != null) {
+            //
+            // don't duplicate the sample type if it's inactive
+            //
+            dict = DictionaryCache.getById(oldData.getTypeOfSampleId());
+            if ("Y".equals(dict.getIsActive())) {
+                newData.setTypeOfSampleId(oldData.getTypeOfSampleId());
+                newData.setTypeOfSample(oldData.getTypeOfSample());
+            } else { 
+                errors.add(new FormErrorWarning(Messages.get()
+                                                .inactiveSampleTypeWarning(dict.getEntry(), newData.getItemSequence())));
+            }
+        }
+        
+        if (oldData.getSourceOfSampleId() != null) {
+            //
+            // don't duplicate the source if it's inactive
+            //
+            dict = DictionaryCache.getById(oldData.getSourceOfSampleId());
+            if ("Y".equals(dict.getIsActive())) {
+                newData.setSourceOfSampleId(oldData.getSourceOfSampleId());
+                newData.setSourceOfSample(oldData.getSourceOfSample());
+            } else { 
+                errors.add(new FormErrorWarning(Messages.get()
+                                                .inactiveSourceWarning(dict.getEntry(), newData.getItemSequence())));
+            }
+        }
+        
         newData.setSourceOther(oldData.getSourceOther());
-        newData.setContainerId(oldData.getContainerId());
+        
+        if (oldData.getContainerId() != null) {
+            //
+            // don't duplicate the container if it's inactive
+            //
+            dict = DictionaryCache.getById(oldData.getContainerId());
+            if ("Y".equals(dict.getIsActive())) {
+                newData.setContainerId(oldData.getContainerId());
+                newData.setContainer(oldData.getContainer());
+            } else { 
+                errors.add(new FormErrorWarning(Messages.get()
+                                                .inactiveContainerWarning(dict.getEntry(), newData.getItemSequence())));
+            }
+        }
+        
         newData.setContainerReference(oldData.getContainerReference());
         newData.setQuantity(oldData.getQuantity());
-        newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
-        newData.setTypeOfSample(oldData.getTypeOfSample());
-        newData.setSourceOfSample(oldData.getSourceOfSample());
-        newData.setContainer(oldData.getContainer());
+        
+        if (oldData.getUnitOfMeasureId() != null) {
+            //
+            // don't duplicate the unit if it's inactive
+            //
+            dict = DictionaryCache.getById(oldData.getUnitOfMeasureId());
+            if ("Y".equals(dict.getIsActive()))
+                newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
+            else
+                errors.add(new FormErrorWarning(Messages.get()
+                                                .inactiveSampleItemUnitWarning(dict.getEntry(), newData.getItemSequence())));            
+        }
     }
 
     public static void duplicateNotes(NoteManager newMan, NoteManager oldMan) throws Exception {
@@ -165,7 +219,7 @@ public class SampleDuplicateUtil {
         newData.setPackageId(oldData.getPackageId());
         newData.setClientReference(oldData.getClientReference());
 
-        duplicateSampleItems(newMan.getSampleItems(), oldMan.getSampleItems());
+        duplicateSampleItems(newMan.getSampleItems(), oldMan.getSampleItems(), errors);
         duplicateOrganizations(newMan.getOrganizations(), oldMan.getOrganizations(), errors);
         duplicateProjects(newMan.getProjects(), oldMan.getProjects(), errors);
         duplicateSampleQaEvents(newMan.getQaEvents(), oldMan.getQaEvents());
@@ -186,7 +240,8 @@ public class SampleDuplicateUtil {
         duplicateAuxData(newMan.getAuxData(), oldMan.getAuxData(), errors);
     }
 
-    private static void duplicateSampleItems(SampleItemManager newMan, SampleItemManager oldMan) throws Exception {
+    private static void duplicateSampleItems(SampleItemManager newMan, SampleItemManager oldMan,
+                                             ValidationErrorsList errors) throws Exception {
         int i, index;
         SampleItemViewDO newData, oldData;
         HashMap<Integer, AnalysisViewDO> oldNewAnaMap;
@@ -197,9 +252,12 @@ public class SampleDuplicateUtil {
             index = newMan.addSampleItem();
             newData = newMan.getSampleItemAt(index);
 
-            duplicateSampleItem(newData, oldData);
+            duplicateSampleItem(newData, oldData, errors);
 
-            duplicateAnalyses(newMan.getAnalysisAt(index), oldMan.getAnalysisAt(i), oldNewAnaMap);
+            duplicateAnalyses(newMan.getAnalysisAt(index),
+                              oldMan.getAnalysisAt(i),
+                              oldNewAnaMap,
+                              errors);
         }
 
         setPrepAnalyses(newMan, oldMan, oldNewAnaMap);
@@ -262,12 +320,15 @@ public class SampleDuplicateUtil {
     }
 
     private static void duplicateAnalyses(AnalysisManager newMan, AnalysisManager oldMan,
-                                          HashMap<Integer, AnalysisViewDO> newOldAnaIdMap) throws Exception {
+                                          HashMap<Integer, AnalysisViewDO> newOldAnaIdMap,
+                                          ValidationErrorsList errors) throws Exception {
         int index;
         Integer statusId;
         String tname, mname;
         AnalysisViewDO newData, oldData;
         AnalysisResultManager newRM, oldRM;
+        DictionaryDO dict;
+        TestManager tm;
 
         for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getAnalysisAt(i);
@@ -280,7 +341,7 @@ public class SampleDuplicateUtil {
             if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
                 continue;
             //
-            // we don't allow duplication if even one analysis has reflexed
+            // don't allow duplication if even one analysis has reflexed
             // analyses
             //
             if (oldData.getParentAnalysisId() != null || oldData.getParentResultId() != null)
@@ -288,6 +349,18 @@ public class SampleDuplicateUtil {
                                             .analysisHasReflexAnalysesException(oldData.getTestName() +
                                                                                 ":" +
                                                                                 oldData.getMethodName()));
+
+            //
+            // don't duplicate the analysis if its test is inactive
+            //
+            tm = oldMan.getTestAt(i);            
+            if ("N".equals(tm.getTest().getIsActive())) {
+                errors.add(new FormErrorWarning(Messages.get()
+                                                          .inactiveTestWarning(oldData.getTestName(),
+                                                                                          oldData.getMethodName())));
+                continue;
+            }
+
             index = newMan.addAnalysis();
             newData = newMan.getAnalysisAt(index);
             newOldAnaIdMap.put(oldData.getId(), newData);
@@ -299,7 +372,19 @@ public class SampleDuplicateUtil {
             newData.setPanelName(oldData.getPanelName());
             newData.setTypeId(oldData.getTypeId());
             newData.setIsReportable(oldData.getIsReportable());
-            newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
+            if (oldData.getUnitOfMeasureId() != null) {
+                //
+                // don't duplicate the unit if it's inactive
+                //
+                dict = DictionaryCache.getById(oldData.getUnitOfMeasureId());
+                if ("Y".equals(dict.getIsActive()))
+                    newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
+                else 
+                    errors.add(new FormErrorWarning(Messages.get()
+                                                    .inactiveAnalysisUnitWarning(dict.getEntry(), oldData.getTestName(),
+                                                                                    oldData.getMethodName())));
+            }
+            
             newData.setSectionId(oldData.getSectionId());
 
             newRM = newMan.getAnalysisResultAt(index);

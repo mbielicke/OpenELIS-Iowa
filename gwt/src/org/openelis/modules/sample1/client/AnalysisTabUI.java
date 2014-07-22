@@ -1317,6 +1317,7 @@ public class AnalysisTabUI extends Screen {
      * specific to the sample item's sample type are returned.
      */
     private ArrayList<Item<Integer>> getUnitsModel() {
+        Item<Integer> row;
         ArrayList<Item<Integer>> model;
         DictionaryDO d;
         TestTypeOfSampleDO type;
@@ -1338,7 +1339,9 @@ public class AnalysisTabUI extends Screen {
                 if (type.getUnitOfMeasureId() != null &&
                     DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(), type.getTypeOfSampleId())) {
                     d = DictionaryCache.getById(type.getUnitOfMeasureId());
-                    model.add(new Item<Integer>(d.getId(), d.getEntry()));
+                    row = new Item<Integer>(d.getId(), d.getEntry());
+                    row.setEnabled("Y".equals(d.getIsActive()));
+                    model.add(row);
                 }
             }
         } catch (Exception e) {

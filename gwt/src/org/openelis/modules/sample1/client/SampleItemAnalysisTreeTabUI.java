@@ -73,6 +73,8 @@ import org.openelis.ui.widget.tree.event.NodeDeletedEvent;
 import org.openelis.ui.widget.tree.event.NodeDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -432,7 +434,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             @Override
             public void onAddTest(AddTestEvent event) {
                 if (event.getSource() != screen)
-                    onDataChange();
+                    testsAdded(event.getTests());
             }
         });
 
@@ -614,7 +616,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         /*
          * this prevents any problems with trying to show the errors that were
-         * added to the previous nodes and not to the latest ones added below 
+         * added to the previous nodes and not to the latest ones added below
          */
         tree.clearExceptions();
 
@@ -675,12 +677,73 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         tests = new ArrayList<SampleTestRequestVO>();
         if (methodId != null)
-            test = new SampleTestRequestVO(item.getSampleId(), item.getId(), addId, null, null, null, null, false, null);
+            test = new SampleTestRequestVO(item.getSampleId(),
+                                           item.getId(),
+                                           addId,
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           false,
+                                           null);
         else
-            test = new SampleTestRequestVO(item.getSampleId(), item.getId(), null, null, null, null, addId, false, null);
+            test = new SampleTestRequestVO(item.getSampleId(),
+                                           item.getId(),
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           addId,
+                                           false,
+                                           null);
 
         tests.add(test);
         parentBus.fireEventFromSource(new AddTestEvent(tests), this);
+    }
+
+    private void testsAdded(ArrayList<SampleTestRequestVO> tests) {
+        String uid;
+        Node node;
+        SelectedType type;
+        ScheduledCommand cmd;
+
+        /*
+         * this reloads the tab
+         */
+        fireDataChange();
+
+        uid = null;
+        if (tests != null && tests.size() > 0)
+            uid = Constants.uid().getSampleItem(tests.get(0).getSampleItemId());
+        /*
+         * select the sample item to which the tests were added
+         */
+        for (int i = 0; i < tree.getRoot().getChildCount(); i++ ) {
+            node = tree.getRoot().getChildAt(i);
+            if (uid.equals(node.getData())) {
+                tree.selectNodeAt(node);
+                break;
+            }
+        }
+
+        /*
+         * notify the other parts of the main screen that depend on the
+         * selection in the tree that a sample item is selected
+         */
+        type = uid != null ? SelectedType.SAMPLE_ITEM : SelectedType.NONE;
+        parentBus.fireEvent(new SelectionEvent(type, uid));
+
+        /*
+         * set the focus to the autocomplete for adding tests, so that the user
+         * can add more, if need be
+         */
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                test.setFocus(true);
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }
 
     private void sampleItemChanged(String itemUid, SampleItemChangeEvent.Action action) {

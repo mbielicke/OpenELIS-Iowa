@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -39,28 +40,30 @@ import org.openelis.manager.StorageManager;
 
 public class SampleMergeUtility {
 
-    public static void mergeTests(SampleManager fromOrderMan, SampleManager quickEntryMan) throws Exception {
+    public static void mergeTests(SampleManager fromOrderMan, SampleManager quickEntryMan,
+                                  ValidationErrorsList errors) throws Exception {
         int i, j, orderAnaIndex;
         boolean analysisFound;
         Integer testId, sequence;
         SampleItemManager fromOrderItemMan, quickEntryItemMan;
         SampleItemViewDO orderSampleItem, qeSampleItem;
-        AnalysisManager orderAnaMan, qeAnaMan;        
+        AnalysisManager orderAnaMan, qeAnaMan;
         AnalysisViewDO orderAna, qeAna;
         ArrayList<Integer> indexes;
         HashMap<Integer, ArrayList<Integer>> sequenceMap;
-        
+
         fromOrderItemMan = fromOrderMan.getSampleItems();
         quickEntryItemMan = quickEntryMan.getSampleItems();
-        
+
         if (fromOrderItemMan.count() == 0) {
-            for (i = 0; i < quickEntryItemMan.count(); i++) {
+            for (i = 0; i < quickEntryItemMan.count(); i++ ) {
                 orderSampleItem = fromOrderItemMan.getSampleItemAt(fromOrderItemMan.addSampleItem());
                 qeSampleItem = quickEntryItemMan.getSampleItemAt(i);
-                SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem);
+                SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem, errors);
                 orderSampleItem.setSampleId(quickEntryMan.getSample().getId());
                 fromOrderItemMan.setAnalysisAt(quickEntryItemMan.getAnalysisAt(i), i);
-                duplicateStorage(fromOrderItemMan.getStorageAt(i) ,quickEntryItemMan.getStorageAt(i));
+                duplicateStorage(fromOrderItemMan.getStorageAt(i),
+                                 quickEntryItemMan.getStorageAt(i));
             }
             fromOrderMan.getSample().setNextItemSequence(quickEntryMan.getSample()
                                                                       .getNextItemSequence());
@@ -97,13 +100,14 @@ public class SampleMergeUtility {
                 }
             }
         }
-        
+
         for (i = 0; i < quickEntryItemMan.count(); i++ ) {
             qeAnaMan = quickEntryItemMan.getAnalysisAt(i);
-            
-            if (i < fromOrderItemMan.count()) 
-                duplicateStorage(fromOrderItemMan.getStorageAt(i), quickEntryItemMan.getStorageAt(i));
-            
+
+            if (i < fromOrderItemMan.count())
+                duplicateStorage(fromOrderItemMan.getStorageAt(i),
+                                 quickEntryItemMan.getStorageAt(i));
+
             for (j = 0; j < qeAnaMan.count(); j++ ) {
                 qeAna = qeAnaMan.getAnalysisAt(j);
                 /*
@@ -128,22 +132,22 @@ public class SampleMergeUtility {
 
                 if (indexes != null) {
                     /*
-                     * go through the tests added at each index 
+                     * go through the tests added at each index
                      */
                     for (Integer index : indexes) {
                         orderAnaMan = fromOrderItemMan.getAnalysisAt(index);
                         /*
-                         * see if there's an analysis with this test id and a null
-                         * or negative analysis id at this index
+                         * see if there's an analysis with this test id and a
+                         * null or negative analysis id at this index
                          */
-                        orderAnaIndex = getUnitializedByTestId(orderAnaMan, qeAna.getTestId());                        
-                        
+                        orderAnaIndex = getUnitializedByTestId(orderAnaMan, qeAna.getTestId());
+
                         if (orderAnaIndex != -1) {
                             /*
-                             * if such an analysis is found, then set the various
-                             * parts of that analysis' manager like notes and qa
-                             * events to be the ones from the analysis in the manager
-                             * filled from quick entry 
+                             * if such an analysis is found, then set the
+                             * various parts of that analysis' manager like
+                             * notes and qa events to be the ones from the
+                             * analysis in the manager filled from quick entry
                              */
                             orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex);
                             setAnalysisInfo(j, orderAnaIndex, qeAnaMan, orderAnaMan);
@@ -152,15 +156,15 @@ public class SampleMergeUtility {
                         }
                     }
                 }
-                
+
                 if ( !analysisFound) {
                     /*
                      * if the analysis isn't found at this index or if it isn't
                      * found anywhere in the manager filled from the order, then
                      * create a new analysis, add it to the sample item at this
-                     * index or index zero and set the various parts of that analysis'
-                     * manager like notes and qa events to be the ones from the
-                     * analysis in the manager filled from quick entry                      
+                     * index or index zero and set the various parts of that
+                     * analysis' manager like notes and qa events to be the ones
+                     * from the analysis in the manager filled from quick entry
                      */
                     sequence = quickEntryItemMan.getSampleItemAt(i).getItemSequence();
                     if (sequence >= fromOrderItemMan.count())
@@ -174,14 +178,13 @@ public class SampleMergeUtility {
         }
     }
 
-
     private static void setAnalysisInfo(int qeAnaIndex, int orderAnaIndex,
-                                          AnalysisManager qeAnaMan,  AnalysisManager orderAnaMan) throws Exception {
+                                        AnalysisManager qeAnaMan, AnalysisManager orderAnaMan) throws Exception {
         AnalysisViewDO orderAna, qeAna;
-        
+
         qeAna = qeAnaMan.getAnalysisAt(qeAnaIndex);
-        orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex); 
-        
+        orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex);
+
         orderAna.setId(qeAna.getId());
         orderAna.setTestId(qeAna.getTestId());
         orderAna.setTestName(qeAna.getTestName());
@@ -205,7 +208,7 @@ public class SampleMergeUtility {
         orderAna.setAvailableDate(qeAna.getAvailableDate());
         orderAna.setStartedDate(qeAna.getStartedDate());
         orderAna.setCompletedDate(qeAna.getCompletedDate());
-                
+
         orderAnaMan.setTestManagerAt(qeAnaMan.getTestAt(qeAnaIndex), orderAnaIndex);
         orderAnaMan.setAnalysisResultAt(qeAnaMan.getAnalysisResultAt(qeAnaIndex), orderAnaIndex);
         orderAnaMan.setQAEventAt(qeAnaMan.getQAEventAt(qeAnaIndex), orderAnaIndex);
@@ -215,24 +218,24 @@ public class SampleMergeUtility {
         orderAnaMan.setAnalysisUserAt(qeAnaMan.getAnalysisUserAt(qeAnaIndex), orderAnaIndex);
     }
 
-    
     private static int getUnitializedByTestId(AnalysisManager orderAnaMan, Integer testId) {
         Integer id;
         AnalysisViewDO ana;
-        
-        for (int i = 0; i < orderAnaMan.count(); i++) {
+
+        for (int i = 0; i < orderAnaMan.count(); i++ ) {
             ana = orderAnaMan.getAnalysisAt(i);
             id = ana.getId();
-            if ((id == null || id < 0) && DataBaseUtil.isSame(testId, ana.getTestId()))
-                return i;            
+            if ( (id == null || id < 0) && DataBaseUtil.isSame(testId, ana.getTestId()))
+                return i;
         }
         return -1;
     }
-    
-    private static void duplicateStorage(StorageManager orderItemStorageMan, StorageManager qeItemStorageMan) throws Exception {
+
+    private static void duplicateStorage(StorageManager orderItemStorageMan,
+                                         StorageManager qeItemStorageMan) throws Exception {
         StorageViewDO orderItemStorage, qeItemStorage;
-        
-        for (int i = 0; i < qeItemStorageMan.count(); i++) {
+
+        for (int i = 0; i < qeItemStorageMan.count(); i++ ) {
             qeItemStorage = qeItemStorageMan.getStorageAt(i);
             orderItemStorage = new StorageViewDO();
             orderItemStorage.setReferenceTableId(qeItemStorage.getReferenceTableId());
