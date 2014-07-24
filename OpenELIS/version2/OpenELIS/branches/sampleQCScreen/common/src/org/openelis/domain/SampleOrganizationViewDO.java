@@ -38,7 +38,7 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String organizationName, organizationMultipleUnit, organizationStreetAddress,
+    protected String organizationName, organizationIsActive, organizationMultipleUnit, organizationStreetAddress,
                      organizationCity, organizationState, organizationZipCode, organizationWorkPhone,
                      organizationFaxPhone, organizationCountry;
 
@@ -47,13 +47,14 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     public SampleOrganizationViewDO(Integer id, Integer sampleId, Integer organizationId,
                                     String organizationAttention, Integer typeId,
-                                    String organizationName, String organizationMultipleUnit,
+                                    String organizationName, String organizationIsActive, String organizationMultipleUnit,
                                     String organizationStreetAddress, String organizationCity,
                                     String organizationState, String organizationZipCode,
                                     String organizationWorkPhone, String organizationFaxPhone,
                                     String organizationCountry) {
         super(id, sampleId, organizationId, organizationAttention, typeId);
         setOrganizationName(organizationName);
+        setOrganizationIsActive(organizationIsActive);
         setOrganizationMultipleUnit(organizationMultipleUnit);
         setOrganizationStreetAddress(organizationStreetAddress);
         setOrganizationCity(organizationCity);
@@ -70,6 +71,14 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     public void setOrganizationName(String organizationName) {
         this.organizationName = DataBaseUtil.trim(organizationName);
+    }
+
+    public String getOrganizationIsActive() {
+        return organizationIsActive;
+    }
+
+    public void setOrganizationIsActive(String organizationIsActive) {
+        this.organizationIsActive = DataBaseUtil.trim(organizationIsActive);
     }
 
     public String getOrganizationMultipleUnit() {

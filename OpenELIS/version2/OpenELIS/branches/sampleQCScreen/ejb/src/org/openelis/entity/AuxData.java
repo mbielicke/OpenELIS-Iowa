@@ -1,33 +1,33 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.entity;
 
 /**
-  * AuxData Entity POJO for database 
-  */
+ * AuxData Entity POJO for database
+ */
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,40 +50,39 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-   @NamedQuery( name = "AuxData.FetchById",
-               query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
-                       "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
-                       "a.value, '', afg.id, afg.name, an.id, an.name, an.externalId) "
-                     + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
-                     + " where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder "),
-   @NamedQuery( name = "AuxData.FetchByIds",
-               query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
-                       "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
-                       "a.value, '', afg.id, afg.name, an.id, an.name, an.externalId) "
-                     + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
-                     + " where a.referenceId in (:ids) and a.referenceTableId = :tableId order by a.referenceId, a.sortOrder "),                      
-   @NamedQuery( name = "AuxData.FetchByIdAnalyteName",
-               query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
-                       "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
-                       "a.value, '', afg.id, afg.name, an.id, an.name, an.externalId) "
-                     + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
-                     + " where a.referenceId = :id and a.referenceTableId = :tableId and an.name = :analyteName order by a.sortOrder "), 
-   @NamedQuery( name = "AuxData.FetchByRefIdRefTableIdGroupName",
-               query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
-                       "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
-                       "a.value, '', afg.id, afg.name, an.id, an.name, an.externalId) "
-                     + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
-                     + " where a.referenceId = :referenceId and a.referenceTableId = :referenceTableId and"
-                     + " afg.name = :auxFieldGroupName order by a.sortOrder"),                      
-    @NamedQuery( name = "AuxData.FetchForDataView",
-                query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
-                        "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
-                        "a.value, '', afg.id, afg.name, an.id, an.name, an.externalId) "
-                      + " from AuxData a, AuxField af, Analyte an, AuxFieldGroup afg"
-                      +	" where a.auxFieldId = af.id and af.analyteId = an.id and af.auxFieldGroupId = afg.id"
-                      + " and a.referenceId in (:ids) and a.referenceTableId = :tableId and a.isReportable = 'Y'"
-                      +	" and a.value != null order by an.name")})
-                    
+               @NamedQuery(name = "AuxData.FetchById",
+                           query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, "
+                                   + "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, "
+                                   + "a.value, '', afg.id, afg.name, afg.isActive, an.id, an.name, an.externalId) "
+                                   + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
+                                   + " where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder "),
+               @NamedQuery(name = "AuxData.FetchByIds",
+                           query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, "
+                                   + "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, "
+                                   + "a.value, '', afg.id, afg.name, afg.isActive, an.id, an.name, an.externalId) "
+                                   + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
+                                   + " where a.referenceId in (:ids) and a.referenceTableId = :tableId order by a.referenceId, a.sortOrder "),
+               @NamedQuery(name = "AuxData.FetchByIdAnalyteName",
+                           query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, "
+                                   + "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, "
+                                   + "a.value, '', afg.id, afg.name, afg.isActive, an.id, an.name, an.externalId) "
+                                   + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
+                                   + " where a.referenceId = :id and a.referenceTableId = :tableId and an.name = :analyteName order by a.sortOrder "),
+               @NamedQuery(name = "AuxData.FetchByRefIdRefTableIdGroupName",
+                           query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, "
+                                   + "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, "
+                                   + "a.value, '', afg.id, afg.name, afg.isActive, an.id, an.name, an.externalId) "
+                                   + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
+                                   + " where a.referenceId = :referenceId and a.referenceTableId = :referenceTableId and"
+                                   + " afg.name = :auxFieldGroupName order by a.sortOrder"),
+               @NamedQuery(name = "AuxData.FetchForDataView",
+                           query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, "
+                                   + "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, "
+                                   + "a.value, '', afg.id, afg.name, afg.isActive, an.id, an.name, an.externalId) "
+                                   + " from AuxData a, AuxField af, Analyte an, AuxFieldGroup afg"
+                                   + " where a.auxFieldId = af.id and af.analyteId = an.id and af.auxFieldGroupId = afg.id"
+                                   + " and a.referenceId in (:ids) and a.referenceTableId = :tableId and a.isReportable = 'Y'"
+                                   + " and a.value != null order by an.name")})
 @Entity
 @Table(name = "aux_data")
 @EntityListeners({AuditUtil.class})

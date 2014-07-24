@@ -913,16 +913,16 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             public void onClick(ClickEvent event) {
                 ScreenWindow modal;
                 TableDataRow row;
-                WorksheetCompletionScreen worksheetScreen;
+//                WorksheetCompletionScreen worksheetScreen;
                 
                 try {
                     modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
                     modal.setName(Messages.get().worksheetCompletion());
                     
                     row = worksheetTable.getSelection();
-                    worksheetScreen = new WorksheetCompletionScreen((Integer)row.key,modal);
+//                    worksheetScreen = new WorksheetCompletionScreen((Integer)row.key,modal);
                     
-                    modal.setContent(worksheetScreen);
+//                    modal.setContent(worksheetScreen);
                 } catch (Exception e) {
                     Window.alert("openCompletionScreen: " + e.getMessage());
                 }

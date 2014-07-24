@@ -78,10 +78,10 @@
 <!--                   ui:field="worksheetCreation" display="{msg.worksheetCreation}" /> -->
                 <w:MenuItem description="{msg.worksheetBuilderDescription}" enabled="false" icon="{res.icon.worksheetCreationIcon}" ui:field="worksheetBuilder"
                   display="{msg.worksheetBuilder}" />
+               <!--  <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
+                  ui:field="worksheetCompletion" display="{msg.worksheetCompletion}" /> 
                 <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
-                  ui:field="worksheetCompletion" display="{msg.worksheetCompletion}" />
-                <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.icon.worksheetCompletionIcon}"
-                  ui:field="worksheetCompletionUI" display="{msg.worksheetCompletion} 2" />
+                  ui:field="worksheetCompletionUI" display="{msg.worksheetCompletion} 2" /> -->
                 <w:MenuItem description="{msg.addOrCancelDescription}" enabled="false" icon="{res.icon.addOrCancelIcon}"
                   ui:field="addOrCancel" display="{msg.manageMultipleSamples}" />
                 <w:MenuItem description="{msg.completeRelease_description}" enabled="false" icon="{res.icon.reviewAndReleaseIcon}"
@@ -147,7 +147,7 @@
                   <w:MenuItem enabled="false" ui:field="turnaround" display="{msg.turnaround}" />
                   <w:MenuItem enabled="false" ui:field="turnAroundStatisticReport" display="{msg.turnAroundStatisticReport}" />
                   <w:MenuItem enabled="false" ui:field="kitTrackingReport" display="{msg.kitTracking_kitTrackingReport}" />
-                  <w:MenuItem enabled="false" ui:field="airQualityReport" display="{msg.airQuality_airQualityReport}" />
+                  <w:MenuItem enabled="false" ui:field="airQualityReport" display="{msg.airQuality_airQualityExport}" />
                   <w:MenuItem enabled="false" ui:field="sdwisUnloadReport" display="{msg.sdwisUnloadReport}" />
                   <w:MenuItem enabled="false" ui:field="dataView" display="{msg.dataView}" />
                   <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart}" />

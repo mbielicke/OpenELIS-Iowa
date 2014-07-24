@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sampleQC.client;
+package org.openelis.modules.sampleQc.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 
@@ -41,6 +41,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleQcVO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
@@ -54,6 +55,7 @@ import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
@@ -84,10 +86,10 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SampleQCScreenUI extends Screen {
+public class SampleQcScreenUI extends Screen {
 
-    @UiTemplate("SampleQCScreen.ui.xml")
-    interface SampleQcUiBinder extends UiBinder<Widget, SampleQCScreenUI> {
+    @UiTemplate("SampleQcScreen.ui.xml")
+    interface SampleQcUiBinder extends UiBinder<Widget, SampleQcScreenUI> {
     };
 
     public static final SampleQcUiBinder                           uiBinder            = GWT.create(SampleQcUiBinder.class);
@@ -115,7 +117,7 @@ public class SampleQCScreenUI extends Screen {
     @UiField
     protected Tree                                                 tree;
 
-    protected SampleQCScreenUI                                     screen;
+    protected SampleQcScreenUI                                     screen;
 
     protected AsyncCallbackUI<ArrayList<IdNameVO>>                 queryCall;
 
@@ -154,7 +156,7 @@ public class SampleQCScreenUI extends Screen {
 
     protected WorksheetManager1.Load                               worksheetElements[] = {WorksheetManager1.Load.DETAIL};
 
-    public SampleQCScreenUI(WindowInt window) throws Exception {
+    public SampleQcScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("sampletracking");
@@ -234,7 +236,7 @@ public class SampleQCScreenUI extends Screen {
         checkAllQcsButton.setEnabled(false);
         uncheckAllQcsButton.setEnabled(false);
         printButton.setEnabled(false);
-        exportButton.setEnabled(false);
+        exportButton.setEnabled(true);
         getDataButton.setEnabled(true);
 
         analysisStatus = new HashMap<Integer, String>();
@@ -289,7 +291,8 @@ public class SampleQCScreenUI extends Screen {
 
     @UiHandler("exportButton")
     protected void export(ClickEvent event) {
-        runReport();
+        if (sm != null)
+            runReport();
     }
 
     @UiHandler("printButton")
@@ -341,18 +344,22 @@ public class SampleQCScreenUI extends Screen {
         }
     }
 
-    // TODO
     /**
      * create a list of worksheet managers an results with QC data for the
      * checked QCs
      */
-    protected HashMap<Integer, ArrayList<Object>> runReport() {
+    protected ReportStatus runReport() {
         int i, j, k, l;
         Node anode, wnode, qnode, qanode;
-        HashMap<Integer, ArrayList<Object>> qcs;
+        SampleQcVO sqc;
+        ReportStatus status;
+        ArrayList<Integer> qcAnalyteIds;
 
-        qcs = new HashMap<Integer, ArrayList<Object>>();
+        status = null;
+        sqc = new SampleQcVO();
+        sqc.setAccession(sm.getSample().getAccessionNumber());
         for (i = 0; i < tree.getRoot().getChildCount(); i++ ) {
+            qcAnalyteIds = new ArrayList<Integer>();
             anode = tree.getRoot().getChildAt(i);
             for (j = 0; j < anode.getChildCount(); j++ ) {
                 wnode = anode.getChildAt(j);
@@ -360,18 +367,20 @@ public class SampleQCScreenUI extends Screen {
                     qnode = wnode.getChildAt(k);
                     for (l = 0; l < qnode.getChildCount(); l++ ) {
                         qanode = qnode.getChildAt(l);
-                        if ("Y".equals( ((CheckLabelValue)qanode.getCell(0)).getChecked())) {
-                            if (qcs.get( ((AnalysisViewDO)anode.getData()).getId()) == null)
-                                qcs.put( ((AnalysisViewDO)anode.getData()).getId(),
-                                        new ArrayList<Object>());
-                            qcs.get( ((AnalysisViewDO)anode.getData()).getId())
-                               .add(wms.get(wnode.getCell(0)));
-                        }
+                        if ("Y".equals( ((CheckLabelValue)qanode.getCell(0)).getChecked()))
+                            qcAnalyteIds.add( ((WorksheetQcResultViewDO)qanode.getData()).getId());
                     }
                 }
             }
+            sqc.add( ((AnalysisViewDO)anode.getData()).getId(), qcAnalyteIds);
         }
-        return qcs;
+        try {
+            status = SampleQcService.get().export(sqc);
+        } catch (Exception e) {
+            window.setError(Messages.get().gen_failed());
+            Window.alert(e.getMessage());
+        }
+        return status;
     }
 
     /**

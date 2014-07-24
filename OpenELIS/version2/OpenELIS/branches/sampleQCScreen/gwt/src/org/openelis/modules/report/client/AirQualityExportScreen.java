@@ -41,7 +41,7 @@ public class AirQualityExportScreen extends ReportScreen<Query> {
     public AirQualityExportScreen(WindowInt window) throws Exception {
         setWindow(window);
         drawScreen(new ScreenDef());        
-        setName(Messages.get().airQuality_airQualityReport());
+        setName(Messages.get().airQuality_airQualityExport());
     }
 
     @Override

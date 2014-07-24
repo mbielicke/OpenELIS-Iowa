@@ -159,18 +159,18 @@ public class SampleManager1Accessor {
         sm.analysisQAs.add(analysisQA);
     }
     
-    public static ArrayList<AuxDataViewDO> getAuxilliary(SampleManager1 sm) {
-        return sm.auxilliary;
+    public static ArrayList<AuxDataViewDO> getAuxiliary(SampleManager1 sm) {
+        return sm.auxiliary;
     }
     
-    public static void setAuxilliary(SampleManager1 sm, ArrayList<AuxDataViewDO> auxilliary) {
-        sm.auxilliary = auxilliary;
+    public static void setAuxiliary(SampleManager1 sm, ArrayList<AuxDataViewDO> auxiliary) {
+        sm.auxiliary = auxiliary;
     }
     
-    public static void addAuxilliary(SampleManager1 sm, AuxDataViewDO auxilliary) {
-        if (sm.auxilliary == null)
-            sm.auxilliary = new ArrayList<AuxDataViewDO>();
-        sm.auxilliary.add(auxilliary);
+    public static void addAuxiliary(SampleManager1 sm, AuxDataViewDO auxiliary) {
+        if (sm.auxiliary == null)
+            sm.auxiliary = new ArrayList<AuxDataViewDO>();
+        sm.auxiliary.add(auxiliary);
     }
     
     public static NoteViewDO getSampleExternalNote(SampleManager1 sm) {

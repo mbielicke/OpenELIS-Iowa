@@ -23,20 +23,38 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sampleQC.client;
+package org.openelis.domain;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import org.openelis.manager.OrderManager1;
+import org.openelis.ui.common.ValidationErrorsList;
 
 /**
- * ScreenServiceInt is a GWT RemoteService interface for the Screen Widget. GWT
- * RemoteServiceServlets that want to provide server side logic for Screens must
- * implement this interface.
+ * This class is used for transporting the data needed for adding tests to a
+ * order and any errors or warnings resulting from trying to do so
  */
-@RemoteServiceRelativePath("sampleQC")
-public interface SampleQCServiceInt extends RemoteService {
+public class OrderReturnVO implements Serializable {
 
-    public ArrayList<Object> fetchByAccessionNumber(Integer accession) throws Exception;
+    private static final long      serialVersionUID = 1L;
+
+    protected OrderManager1        manager;
+
+    protected ValidationErrorsList errors;
+
+    public OrderManager1 getManager() {
+        return manager;
+    }
+
+    public void setManager(OrderManager1 manager) {
+        this.manager = manager;
+    }
+
+    public ValidationErrorsList getErrors() {
+        return errors;
+    }
+
+    public void setErrors(ValidationErrorsList errors) {
+        this.errors = errors;
+    }
 }
