@@ -54,7 +54,7 @@ import org.openelis.ui.common.Datetime;
                         "wqrv.source,wqrv.lotNumber,wqrv.locationId,wqrv.preparedDate," +
                         "wqrv.preparedVolume,wqrv.preparedUnitId,wqrv.preparedById," +
                         "wqrv.usableDate,wqrv.expireDate,wqrv.analyteId,wqrv.qcAnalyteTypeId," +
-                        "wqrv.expectedValue)"
+                        "wqrv.expectedValue, wqrv.formatId)"
                       + " from WorksheetQcResultView wqrv"+
                         " where wqrv.id = :id order by wqrv.sortOrder")})
 @Entity
@@ -202,6 +202,9 @@ public class WorksheetQcResultView  {
 
     @Column(name = "expected_value")
     private String  expectedValue;
+
+    @Column(name = "format_id")
+    private Integer formatId;
 
     public Integer getId() {
         return id;
@@ -624,5 +627,14 @@ public class WorksheetQcResultView  {
     public void setExpectedValue(String expectedValue) {
         if (DataBaseUtil.isDifferent(expectedValue, this.expectedValue))
             this.expectedValue = expectedValue;
+    }
+
+    public Integer getFormatId() {
+        return formatId;
+    }
+
+    public void setFormatId(Integer formatId) {
+        if (DataBaseUtil.isDifferent(formatId, this.formatId))
+            this.formatId = formatId;
     }
 }
