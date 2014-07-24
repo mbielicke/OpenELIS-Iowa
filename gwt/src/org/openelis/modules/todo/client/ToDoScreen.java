@@ -352,7 +352,7 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     private void showTrackingScreen(final Integer id) throws Exception {
         Browser browser;
         WindowInt window;
-        final SampleTrackingScreen trackingScreen;
+//        final SampleTrackingScreen trackingScreen;
 
         browser = OpenELIS.getBrowser();
         window = browser.getScreenByKey("tracking");
@@ -360,28 +360,28 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         if (window == null) {
             window = new org.openelis.ui.widget.Window(false);
             window.setName("Tracking");
-            trackingScreen = new SampleTrackingScreen(window);
-            window.setContent(trackingScreen);
+//            trackingScreen = new SampleTrackingScreen(window);
+//            window.setContent(trackingScreen);
             browser.addWindow(window, "tracking");
             DeferredCommand.addCommand(new Command() {
                 public void execute() {
-                    trackingScreen.query(id);
+//                    trackingScreen.query(id);
                 }
             });
         } else {
-            trackingScreen = (SampleTrackingScreen)window.getContent();
-            trackingScreen.query(id);
+//            trackingScreen = (SampleTrackingScreen)window.getContent();
+//            trackingScreen.query(id);
         }        
     }
         
     private void showCompletionScreen(Integer id) throws Exception {
         ScreenWindow modal;    
-        WorksheetCompletionScreen wcScreen;
+//        WorksheetCompletionScreen wcScreen;
         
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
         modal.setName(Messages.get().worksheetCompletion());
-        wcScreen = new WorksheetCompletionScreen(id,modal);
-        modal.setContent(wcScreen);
+//        wcScreen = new WorksheetCompletionScreen(id,modal);
+//        modal.setContent(wcScreen);
         window.clearStatus();
     }       
 }

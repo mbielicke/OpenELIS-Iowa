@@ -23,49 +23,45 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sampleQC.client;
+package org.openelis.modules.sampleQc.client;
 
-import java.util.ArrayList;
-
-import org.openelis.gwt.screen.Callback;
+import org.openelis.domain.SampleQcVO;
+import org.openelis.modules.order1.client.OrderServiceInt1;
+import org.openelis.modules.order1.client.OrderServiceInt1Async;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-/**
- * This class implements and provides clients with the standard Sync and Async
- * service calls
- */
-public class SampleQCService implements SampleQCServiceInt, SampleQCServiceIntAsync {
-    /**
-     * GWT.created service to make calls to the server
-     */
-    private SampleQCServiceIntAsync service;
+public class SampleQcService implements SampleQcServiceInt, SampleQcServiceIntAsync {
 
-    private static SampleQCService  instance;
+    private static SampleQcService  instance;
 
-    public static SampleQCService get() {
+    private SampleQcServiceIntAsync service;
+
+    public static SampleQcService get() {
         if (instance == null)
-            instance = new SampleQCService();
+            instance = new SampleQcService();
 
         return instance;
     }
 
-    private SampleQCService() {
-        service = (SampleQCServiceIntAsync)GWT.create(SampleQCServiceInt.class);
+    private SampleQcService() {
+        service = (SampleQcServiceIntAsync)GWT.create(SampleQcServiceInt.class);
     }
 
     @Override
-    public ArrayList<Object> fetchByAccessionNumber(Integer accession) throws Exception {
-        Callback<ArrayList<Object>> callback;
+    public void export(SampleQcVO sqc, AsyncCallback<ReportStatus> callback) {
+        service.export(sqc, callback);
+    }
 
-        callback = new Callback<ArrayList<Object>>();
-        service.fetchByAccessionNumber(accession, callback);
+    @Override
+    public ReportStatus export(SampleQcVO sqc) throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.export(sqc, callback);
         return callback.getResult();
-    }
-
-    @Override
-    public void fetchByAccessionNumber(Integer accession, AsyncCallback<ArrayList<Object>> callback) {
-        service.fetchByAccessionNumber(accession, callback);
     }
 }

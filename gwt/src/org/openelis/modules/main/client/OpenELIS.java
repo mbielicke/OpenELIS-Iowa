@@ -87,7 +87,7 @@ import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
-import org.openelis.modules.sampleQC.client.SampleQCScreenUI;
+import org.openelis.modules.sampleQc.client.SampleQcScreenUI;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
 import org.openelis.modules.scriptlet.client.ScriptletScreen;
 import org.openelis.modules.section.client.SectionScreen;
@@ -102,8 +102,8 @@ import org.openelis.modules.testTrailer.client.TestTrailerScreen;
 import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
+//import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+//import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreenUI;
 // import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.screen.Screen;
@@ -142,8 +142,8 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetBuilder,/* worksheetCreation, */worksheetCompletion,
-                    worksheetCompletionUI, addOrCancel, reviewAndRelease, toDo, labelFor, storage,
+                    worksheetBuilder,/* worksheetCreation, worksheetCompletion,
+                    worksheetCompletionUI,*/ addOrCancel, reviewAndRelease, toDo, labelFor, storage,
                     QC, analyteParameter, internalOrder, vendorOrder, sendoutOrder, fillOrder,
                     shipping, buildKits, inventoryTransfer, inventoryReceipt, inventoryAdjustment,
                     inventoryItem, verificationReport, testRequestFormReport, orderRequestForm,
@@ -604,59 +604,59 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(worksheetCompletion, "worksheet", new Command() {
-            public void execute() {
+//        addCommand(worksheetCompletion, "worksheet", new Command() {
+//            public void execute() {
+//
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        try {
+//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+//                            window.setName(msg.worksheetCompletion());
+//                            window.setSize("20px", "20px");
+//                            window.setContent(new WorksheetCompletionScreen(window));
+//                            browser.addWindow(window, "worksheetCompletion");
+//                        } catch (Throwable e) {
+//                            remote().log(Level.SEVERE, e.getMessage(), e);
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
 
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.worksheetCompletion());
-                            window.setSize("20px", "20px");
-                            window.setContent(new WorksheetCompletionScreen(window));
-                            browser.addWindow(window, "worksheetCompletion");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE, e.getMessage(), e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addCommand(worksheetCompletionUI, "worksheetcompletion", new Command() {
-            public void execute() {
-
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        WorksheetCompletionScreenUI screen;
-
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(msg.worksheetCompletion() + " 2");
-                            window.setSize("1061px", "511px");
-                            screen = new WorksheetCompletionScreenUI(window);
-                            window.setContent(screen);
-                            screen.initialize();
-                            browser.addWindow(window, "worksheetCompletionUI");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE, e.getMessage(), e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
+//        addCommand(worksheetCompletionUI, "worksheetcompletion", new Command() {
+//            public void execute() {
+//
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        WorksheetCompletionScreenUI screen;
+//
+//                        try {
+//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+//                            window.setName(msg.worksheetCompletion() + " 2");
+//                            window.setSize("1061px", "511px");
+//                            screen = new WorksheetCompletionScreenUI(window);
+//                            window.setContent(screen);
+//                            screen.initialize();
+//                            browser.addWindow(window, "worksheetCompletionUI");
+//                        } catch (Throwable e) {
+//                            remote().log(Level.SEVERE, e.getMessage(), e);
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
 
         addCommand(addOrCancel, null, new Command() {
             public void execute() {
@@ -1957,7 +1957,7 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.airQuality_airQualityReport());
+                            window.setName(msg.airQuality_airQualityExport());
                             window.setSize("20px", "20px");
                             window.setContent(new AirQualityExportScreen(window));
                             browser.addWindow(window, "airQualityReport");
@@ -2007,7 +2007,7 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.sampleQc_sampleQc());
                             window.setSize("800px", "400px");
-                            window.setContent(new SampleQCScreenUI(window));
+                            window.setContent(new SampleQcScreenUI(window));
                             browser.addWindow(window, "sampleQc");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);

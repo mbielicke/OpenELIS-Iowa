@@ -101,8 +101,8 @@ public class QcDO extends DataObject {
         return isActive;
     }
 
-    public void setIsActive(String isAtive) {
-        this.isActive = DataBaseUtil.trim(isAtive);
+    public void setIsActive(String isActive) {
+        this.isActive = DataBaseUtil.trim(isActive);
         _changed = true;
     }
 }

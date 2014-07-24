@@ -23,11 +23,10 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sampleQC.client;
+package org.openelis.modules.sampleQc.client;
 
-import java.util.ArrayList;
-
-import org.openelis.manager.WorksheetManager1;
+import org.openelis.domain.SampleQcVO;
+import org.openelis.ui.common.ReportStatus;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -35,8 +34,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * ScreenServiceIntAsync is the Asynchronous version of the ScreenServiceInt
  * interface.
  */
-public interface SampleQCServiceIntAsync {
+public interface SampleQcServiceIntAsync {
 
-    public void fetchByAccessionNumber(Integer accession,
-                                       AsyncCallback<ArrayList<Object>> callback);
+    void export(SampleQcVO sqc, AsyncCallback<ReportStatus> callback);
 }

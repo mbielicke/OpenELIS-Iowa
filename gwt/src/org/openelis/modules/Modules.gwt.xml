@@ -84,13 +84,11 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.worksheet.Worksheet"/>
     <inherits name="org.openelis.modules.worksheet1.Worksheet1"/>
     <inherits name="org.openelis.modules.worksheetBuilder.WorksheetBuilder"/>
-    <inherits name="org.openelis.modules.worksheetCompletion.WorksheetCompletion"/>
-    <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
+    <inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.modules.sampleTracking1.SampleTracking1"/>
-    <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
     <inherits name="org.openelis.modules.sample1.Sample1"/>
-    <inherits name="org.openelis.modules.sampleQC.SampleQC"/>
+    <inherits name="org.openelis.modules.sampleQc.SampleQc"/>
     <inherits name="org.openelis.modules.report.Report"/>
     <inherits name="org.openelis.modules.report.dataView.DataView"/>
     <inherits name="org.openelis.modules.report.finalReportSingleReprint.FinalReportSingleReprint"/>

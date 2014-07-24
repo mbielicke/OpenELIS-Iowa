@@ -920,7 +920,7 @@ public class AnalysisTabUI extends Screen {
     protected void selectWorksheet(ClickEvent event) {
         ScreenWindow modal;
         Row row;
-        WorksheetCompletionScreen worksheetScreen;
+//        WorksheetCompletionScreen worksheetScreen;
         AnalysisWorksheetVO ws;
 
         try {
@@ -929,9 +929,9 @@ public class AnalysisTabUI extends Screen {
 
             row = worksheetTable.getRowAt(worksheetTable.getSelectedRow());
             ws = (AnalysisWorksheetVO)row.getData();
-            worksheetScreen = new WorksheetCompletionScreen(ws.getId(), modal);
+//            worksheetScreen = new WorksheetCompletionScreen(ws.getId(), modal);
 
-            modal.setContent(worksheetScreen);
+//            modal.setContent(worksheetScreen);
         } catch (Exception e) {
             Window.alert("openCompletionScreen: " + e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

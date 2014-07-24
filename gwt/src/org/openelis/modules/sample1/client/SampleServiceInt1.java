@@ -92,7 +92,7 @@ public interface SampleServiceInt1 extends RemoteService {
     
     public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception;
     
-    public SampleManager1 duplicate(Integer sampleId) throws Exception;
+    public SampleTestReturnVO duplicate(Integer sampleId) throws Exception;
     
     public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception;
     
