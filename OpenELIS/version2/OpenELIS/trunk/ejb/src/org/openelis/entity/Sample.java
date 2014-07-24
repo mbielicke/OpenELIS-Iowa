@@ -89,14 +89,8 @@ import org.openelis.utils.Auditable;
                                    + "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate,"
                                    + "s.receivedById, s.collectionDate, s.collectionTime, s.statusId, s.packageId,"
                                    + "s.clientReference, s.releasedDate)"
-                                   + " from Sample s where s.domain = 'S' and s.releasedDate between :startDate and :endDate"),
-               @NamedQuery(name = "Sample.FetchForBillingReport",
-                           query = "select s.id, s.accessionNumber, s.domain, s.clientReference, s.receivedDate, a.id, t.id, t.name, m.name, se.name, arf.billedDate, arf.billedAnalytes, arf.billedOverride, a.isReportable, a.statusId"
-                                   + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, AnalysisReportFlags arf"
-                                   + " where s.releasedDate between :startDate and :endDate and s.statusId = (select id from Dictionary where systemName = ('sample_released')) and"
-                                   + " si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and a.sectionId = se.id and"
-                                   + " a.id = arf.analysisId order by s.accessionNumber, a.id")})
-@NamedNativeQueries({
+                                   + " from Sample s where s.domain = 'S' and s.releasedDate between :startDate and :endDate")})
+               @NamedNativeQueries({
                      @NamedNativeQuery(name = "Sample.FetchForFinalReportBatch",
                                        query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                                                + " from sample s, sample_item si, analysis a, sample_organization so, organization o"

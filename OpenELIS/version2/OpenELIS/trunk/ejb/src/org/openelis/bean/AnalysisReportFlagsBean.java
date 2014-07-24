@@ -72,6 +72,18 @@ public class AnalysisReportFlagsBean {
         return data;
     }
 
+    public ArrayList<AnalysisReportFlagsDO> fetchByAnalysisIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        if (ids.size() == 0)
+            return new ArrayList<AnalysisReportFlagsDO>();
+
+        query = manager.createNamedQuery("AnalysisReportFlags.FetchByAnalysisIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public AnalysisReportFlagsDO add(AnalysisReportFlagsDO data) throws Exception {
         AnalysisReportFlags entity;
 
@@ -97,8 +109,6 @@ public class AnalysisReportFlagsBean {
             lock.unlock(Constants.table().ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
             return data;
         }
-
-        validate(data);
 
         lock.validateLock(Constants.table().ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
 
@@ -146,8 +156,5 @@ public class AnalysisReportFlagsBean {
         entity = manager.find(AnalysisReportFlags.class, data.getAnalysisId());
         if (entity != null)
             manager.remove(entity);
-    }
-
-    public void validate(AnalysisReportFlagsDO data) throws Exception {
     }
 }

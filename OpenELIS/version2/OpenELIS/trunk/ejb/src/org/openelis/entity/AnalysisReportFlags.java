@@ -42,7 +42,11 @@ import org.openelis.ui.common.Datetime;
                 query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
                         "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedOverride)"
                       + " from AnalysisReportFlags rf where rf.analysisId = :id"),
-   @NamedQuery( name = "AnalysisReportFlags.FetchBySampleAccessionNumbers",
+    @NamedQuery( name = "AnalysisReportFlags.FetchByAnalysisIds",
+                query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
+                        "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedOverride)"
+                      + " from AnalysisReportFlags rf where rf.analysisId in (:ids)"),
+    @NamedQuery( name = "AnalysisReportFlags.FetchBySampleAccessionNumbers",
                 query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
                        "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedOverride)" +
                        " from Sample s, SampleItem si, Analysis a, AnalysisReportFlags rf where s.id = si.sampleId and" +
