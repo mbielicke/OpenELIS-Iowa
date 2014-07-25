@@ -142,7 +142,7 @@ public class MCLViolationReportBean {
         ReportStatus status;
         ResultViewDO rowResult, colResult;
         SimpleDateFormat format;
-        String lastPWSId, resultSign, resultString, toEmail;
+        String lastFO, lastPWSId, resultSign, resultString, toEmail;
         StringBuilder bactPosBody, dnrMCLBody, shlMCLBody;
         SystemVariableDO lastRun;
 
@@ -176,6 +176,7 @@ public class MCLViolationReportBean {
                 analysisList = new ArrayList<MCLViolationReportVO>();
             }
 
+            lastFO = "xyzzy";
             lastPWSId = "xyzzy";
             lastSectionId = -1;
             bactPosBody = new StringBuilder();
@@ -218,11 +219,11 @@ public class MCLViolationReportBean {
                 
                 if (!lastPWSId.equals(analysis.getPwsId()) || !lastSectionId.equals(analysis.getSectionId())) {
                     if (!"xyzzy".equals(lastPWSId) && bactPosBody.length() > 0) {
-                        sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                        sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + lastFO,
                                   "\r\nThis is an automatic notification for Bacterial Positive. " +
                                   "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
                                   bactPosBody.toString());
-                        sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                        sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + lastFO,
                                   "\r\n" + bactPosBody.toString());
                         log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
                         bactPosBody.setLength(0);
@@ -243,6 +244,7 @@ public class MCLViolationReportBean {
                         continue;
                     }
 
+                    lastFO = analysis.getFieldOffice();
                     lastPWSId = analysis.getPwsId();
                     lastSectionId = analysis.getSectionId();
                 }
@@ -302,11 +304,11 @@ public class MCLViolationReportBean {
             }
 
             if (bactPosBody.length() > 0) {
-                sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                sendEmail(toEmail, "POSITIVE BACTERIAL FOR F.O. " + lastFO,
                           "\r\nThis is an automatic notification for Bacterial Positive. " +
                           "NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n<br>\r\n" +
                           bactPosBody.toString());
-                sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + analysis.getFieldOffice(),
+                sendEmail(dnrEmail, "POSITIVE BACTERIAL FOR F.O. " + lastFO,
                           "\r\n" + bactPosBody.toString());
                 log.fine("Bacterial Positive email sent for PWS ID " + lastPWSId);
             }
