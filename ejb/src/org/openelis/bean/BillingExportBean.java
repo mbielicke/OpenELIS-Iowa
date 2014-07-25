@@ -380,7 +380,7 @@ public class BillingExportBean {
              */
             if (getAuxiliary(sm) != null) {
                 for (AuxDataViewDO aux : getAuxiliary(sm)) {
-                    if (aux.getAuxFieldId().equals(BILLING_INS_GROUPID) && aux.getAnalyteExternalId() != null) {
+                    if (aux.getAuxFieldGroupId().equals(BILLING_INS_GROUPID) && aux.getAnalyteExternalId() != null) {
                         ins.isValid = true;
                         switch (aux.getAnalyteExternalId()) {
                             case "ins_company":
@@ -403,7 +403,7 @@ public class BillingExportBean {
                                 break;
                         }
                     }
-                    if (aux.getAuxFieldId().equals(BILLING_PO_GROUPID) && "purchase_order".equals(aux.getAnalyteExternalId()))
+                    if (aux.getAuxFieldGroupId().equals(BILLING_PO_GROUPID) && "purchase_order".equals(aux.getAnalyteExternalId()))
                         hdr.po = aux.getValue();
                 }
             }
