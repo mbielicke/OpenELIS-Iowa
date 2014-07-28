@@ -2147,13 +2147,15 @@ public class WorksheetManager1Bean {
         df.setMaximumFractionDigits(10);
 
         wrMap = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
-        for (WorksheetResultViewDO data : wResults) {
-            wrList = wrMap.get(data.getTestAnalyteId());
-            if (wrList == null) {
-                wrList = new ArrayList<WorksheetResultViewDO>();
-                wrMap.put(data.getTestAnalyteId(), wrList);
+        if (wResults != null) {
+            for (WorksheetResultViewDO data : wResults) {
+                wrList = wrMap.get(data.getTestAnalyteId());
+                if (wrList == null) {
+                    wrList = new ArrayList<WorksheetResultViewDO>();
+                    wrMap.put(data.getTestAnalyteId(), wrList);
+                }
+                wrList.add(data);
             }
-            wrList.add(data);
         }
         
         rowIndex = -1;
