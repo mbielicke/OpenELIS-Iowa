@@ -43,8 +43,7 @@
 			</xsl:apply-templates>
 
 			<!-- electronic order information -->
-			<!-- <xsl:apply-templates select="//eorder[@id = current()/@order_id]" 
-				/> -->
+			 <xsl:apply-templates select="//eorder[@id = current()/@order_id]" /> 
 
 			<!-- domain information -->
 			<xsl:apply-templates select="//sample_environmental[@sample_id = $id]" />
