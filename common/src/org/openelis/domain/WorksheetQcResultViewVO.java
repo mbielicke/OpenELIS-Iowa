@@ -59,7 +59,8 @@ public class WorksheetQcResultViewVO extends DataObject {
                                    String lotNumber, Integer locationId, Date preparedDate,
                                    Double preparedVolume, Integer preparedUnitId,
                                    Integer preparedById, Date usableDate, Date expireDate,
-                                   Integer analyteId, Integer qcAnalyteTypeId, String expectedValue) {
+                                   Integer analyteId, Integer qcAnalyteTypeId, String expectedValue,
+                                   Integer formatId) {
         values = new String[30];
 
         setId(id);
@@ -109,6 +110,7 @@ public class WorksheetQcResultViewVO extends DataObject {
         setAnalyteId(analyteId);
         setQcAnalyteTypeId(qcAnalyteTypeId);
         setExpectedValue(expectedValue);
+        setFormatId(formatId);
     }
 
     public Integer getId() {

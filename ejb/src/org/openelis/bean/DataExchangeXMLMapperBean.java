@@ -1277,7 +1277,7 @@ public class DataExchangeXMLMapperBean {
         Element elm;
         ArrayList<Element> elements;
 
-        elm = doc.createElement("analysisQc");
+        elm = doc.createElement("analysis_qc");
 
         setAttribute(elm, "id", wqcrvvo.getId());
         setAttribute(elm, "worksheet_analysis_id", wqcrvvo.getWorksheetAnalysisId());
@@ -1302,7 +1302,7 @@ public class DataExchangeXMLMapperBean {
         elements.add(elm);
         for (i = 0; i < 30; i++ ) {
             if (wqcrvvo.getValueAt(i) != null) {
-                elm = doc.createElement("qcResult");
+                elm = doc.createElement("qc_result");
                 setAttribute(elm, "worksheet_qc_result_id", wqcrvvo.getId());
                 setAttribute(elm, "sequence", i);
                 try {
@@ -1328,7 +1328,7 @@ public class DataExchangeXMLMapperBean {
     public Element toXML(Document doc, EOrderDO eOrder) {
         Element elm;
 
-        elm = doc.createElement("eOrder");
+        elm = doc.createElement("eorder");
         setAttribute(elm, "id", eOrder.getId());
         setAttribute(elm, "entered_date", eOrder.getEnteredDate());
         setText(doc, elm, "paper_order_validator", eOrder.getPaperOrderValidator());
@@ -1340,7 +1340,7 @@ public class DataExchangeXMLMapperBean {
     public Element toXML(Document doc, EOrderLinkDO eOrderLink) {
         Element elm;
 
-        elm = doc.createElement("eOrder");
+        elm = doc.createElement("eorder_link");
         setAttribute(elm, "id", eOrderLink.getId());
         setAttribute(elm, "eorder_id", eOrderLink.getEOrderId());
         setText(doc, elm, "reference", eOrderLink.getReference());
