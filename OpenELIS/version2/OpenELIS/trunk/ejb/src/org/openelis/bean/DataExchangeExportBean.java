@@ -61,7 +61,7 @@ import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.EOrderDO;
 import org.openelis.domain.EOrderLinkDO;
 import org.openelis.domain.EventLogDO;
@@ -326,7 +326,7 @@ public class DataExchangeExportBean {
         ArrayList<Integer> ids, accessions, qcAnalyteIds;
         ArrayList<EOrderLinkDO> eols;
         ArrayList<WorksheetQcResultViewVO> qcAnalytes, analysisQcAnalytes;
-        ArrayList<DictionaryViewDO> dictList;
+        ArrayList<DictionaryDO> dictList;
         HashSet<Integer> formatIds;
         HashMap<Integer, String[]> formats;
 
@@ -334,7 +334,7 @@ public class DataExchangeExportBean {
             throw new Exception(Messages.get().dataExchange_noAccessionException());
 
         try {
-            name = systemVariable.fetchByName("sample_qc_exchange_criteria_name").getValue();
+            name = systemVariable.fetchByName("sample_qc_exchange_criteria").getValue();
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     Messages.get()
@@ -410,11 +410,11 @@ public class DataExchangeExportBean {
             formatIds.add(wqcrvvo.getFormatId());
         formats = new HashMap<Integer, String[]>();
         for (Integer i : formatIds) {
-            dictList = dictionary.fetchByCategoryId(i);
+            dictList = dictionary.fetchByCategorySystemName(dictionary.fetchById(i).getSystemName());
             names = new ArrayList<String>();
-            for (DictionaryViewDO dict : dictList)
+            for (DictionaryDO dict : dictList)
                 names.add(dict.getEntry());
-            formats.put(i, (String[])names.toArray());
+            formats.put(i, names.toArray(new String[names.size()]));
         }
 
         for (WorksheetQcResultViewVO wqcrvvo : qcAnalytes) {
