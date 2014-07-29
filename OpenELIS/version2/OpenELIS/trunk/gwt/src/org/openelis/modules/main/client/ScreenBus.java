@@ -6,9 +6,9 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.event.shared.GwtEvent.Type;
 
 public class ScreenBus extends SimpleEventBus {
-    
+
     public static ScreenBus instance;
-    
+
     public static final ShowScreenType ORGANIZATION = new ShowScreenType("Organization"),
                     PREFERENCE = new ShowScreenType("Preference"),
                     QUICK_ENTRY = new ShowScreenType("Quick Entry"),
@@ -67,6 +67,7 @@ public class ScreenBus extends SimpleEventBus {
                     SINGLE_FINAL_REPORT_REPRINT = new ShowScreenType("Single Final Report Reprint"),
                     BATCH_FINAL_REPORT = new ShowScreenType("Batch Final Report"),
                     BATCH_FINAL_REPORT_REPRINT = new ShowScreenType("Batch Final Report Reprint"),
+                    SAMPLE_QC = new ShowScreenType("Sample QC Export"),
                     VERIFICATION_REPORT = new ShowScreenType("Verification Report"),
                     REQUEST_FORM_REPORT = new ShowScreenType("Request Form Report"),
                     SAMPLE_IN_HOUSE_REPORT = new ShowScreenType("Sample In House Report"),
@@ -81,27 +82,25 @@ public class ScreenBus extends SimpleEventBus {
                     HOLD_REFUSE_REPORT = new ShowScreenType("Hold Refuse Report"),
                     INSTRUMENT_BARCODE_REPORT = new ShowScreenType("Instrument Barcode Report"),
                     AIR_QUALITY_EXPORT = new ShowScreenType("Air Quality Export");
-    
-    
+
     public static ScreenBus get() {
-        if(instance == null)
+        if (instance == null)
             instance = new ScreenBus();
-        
+
         return instance;
     }
-    
-    
+
     private ScreenBus() {
-        
+
     }
-    
+
     public static class ShowScreenType extends Type<ShowScreenHandler> {
         String screen;
-        
+
         public ShowScreenType(String screen) {
             this.screen = screen;
         }
-        
+
         public String getScreen() {
             return screen;
         }
