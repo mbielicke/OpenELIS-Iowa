@@ -39,6 +39,7 @@ public class WorksheetQcResultViewDO extends WorksheetQcResultDO {
     protected String  analyteName;
 
     public WorksheetQcResultViewDO() {
+        super();
     }
 
     public WorksheetQcResultViewDO(Integer id, Integer worksheetAnalysisId, Integer sortOrder,

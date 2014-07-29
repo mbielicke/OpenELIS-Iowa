@@ -402,7 +402,8 @@ public class InstrumentInterfaceImportBean {
                                             if (rf == null) {
                                                 try {
                                                     tMan = testManager.fetchWithAnalytesAndResults(taVDO.getTestId());
-                                                    rfMap.put(taVDO.getTestId(), tMan.getFormatter());
+                                                    rf = tMan.getFormatter();
+                                                    rfMap.put(taVDO.getTestId(), rf);
                                                 } catch (Exception anyE) {
                                                     throw new Exception("Error loading result formatter for '" +
                                                                         waVDO.getTestName() + ", " +
@@ -457,37 +458,39 @@ public class InstrumentInterfaceImportBean {
                     }
                 }
                 
-                value = data[fileColumnMap.get(Messages.get().instrumentInterface_analyst())];
-                if (value != null && value.length() > 0) {
-                    value.replaceAll(";", ",");
-                    waVDO.setSystemUsers(value);
+                if (fileColumnMap.get(Messages.get().instrumentInterface_analyst()) != null) {
+                    value = data[fileColumnMap.get(Messages.get().instrumentInterface_analyst())];
+                    if (value != null && value.length() > 0) {
+                        value = value.replaceAll(";", ",");
+                        waVDO.setSystemUsers(value);
+                    }
                 }
                 
-                value = data[fileColumnMap.get(Messages.get().instrumentInterface_startOfAnalysis())];
-                if (value != null && value.length() > 0) {
-                    waVDO.setStartedDate(new Datetime(Datetime.YEAR,
-                                                      Datetime.MINUTE,
-                                                      format.parse((String)value)));
-                }
-                value = data[fileColumnMap.get(Messages.get().instrumentInterface_startedDateTime())];
-                if (value != null && value.length() > 0) {
-                    waVDO.setStartedDate(new Datetime(Datetime.YEAR,
-                                                      Datetime.MINUTE,
-                                                      format.parse((String)value)));
-                }
-                value = data[fileColumnMap.get(Messages.get().instrumentInterface_instrumentId())];
-                if (!setInstrument && value != null && value.length() > 0) {
-                    instruments = instrument.fetchActiveByName(value, 1);
-                    if (instruments.size() != 1) 
-                        throw new Exception(Messages.get().instrumentInterface_invalidInstrumentName(value));
-                    if (manager.getWorksheet().getInstrumentId() != null &&
-                        DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value))
-                        throw new Exception(Messages.get().instrumentInterface_differentInstrumentName(value, manager.getWorksheet().getInstrumentName()));
-                    if (manager.getWorksheet().getInstrumentId() == null) {
-                        manager.getWorksheet().setInstrumentId(instruments.get(0).getId());
-                        manager.getWorksheet().setInstrumentName(instruments.get(0).getName());
+                if (fileColumnMap.get(Messages.get().instrumentInterface_injectionDateTime()) != null) {
+                    value = data[fileColumnMap.get(Messages.get().instrumentInterface_injectionDateTime())];
+                    if (value != null && value.length() > 0) {
+                        value = value.replaceAll("/", "-");
+                        waVDO.setStartedDate(new Datetime(Datetime.YEAR,
+                                                          Datetime.MINUTE,
+                                                          format.parse((String)value)));
                     }
-                    setInstrument = true;
+                }
+                
+                if (fileColumnMap.get(Messages.get().instrumentInterface_instrumentId()) != null) {
+                    value = data[fileColumnMap.get(Messages.get().instrumentInterface_instrumentId())];
+                    if (!setInstrument && value != null && value.length() > 0) {
+                        instruments = instrument.fetchActiveByName(value, 1);
+                        if (instruments.size() != 1) 
+                            throw new Exception(Messages.get().instrumentInterface_invalidInstrumentName(value));
+                        if (manager.getWorksheet().getInstrumentId() != null &&
+                            DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value))
+                            throw new Exception(Messages.get().instrumentInterface_differentInstrumentName(value, manager.getWorksheet().getInstrumentName()));
+                        if (manager.getWorksheet().getInstrumentId() == null) {
+                            manager.getWorksheet().setInstrumentId(instruments.get(0).getId());
+                            manager.getWorksheet().setInstrumentName(instruments.get(0).getName());
+                        }
+                        setInstrument = true;
+                    }
                 }
             }
         }

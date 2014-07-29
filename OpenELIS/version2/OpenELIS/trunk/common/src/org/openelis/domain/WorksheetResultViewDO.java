@@ -39,6 +39,7 @@ public class WorksheetResultViewDO extends WorksheetResultDO {
     protected String  analyteName, analyteExternalId, isReportable;
 
     public WorksheetResultViewDO() {
+        super();
     }
 
     public WorksheetResultViewDO(Integer id, Integer worksheetAnalysisId, Integer testAnalyteId,

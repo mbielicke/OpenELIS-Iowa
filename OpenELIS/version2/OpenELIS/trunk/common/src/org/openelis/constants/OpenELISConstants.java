@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -7396,11 +7396,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String instrumentHistory();
 
   /**
-   * Translated "Accession #".
+   * Translated "Accession".
    * 
-   * @return translated "Accession #"
+   * @return translated "Accession"
    */
-  @DefaultMessage("Accession #")
+  @DefaultMessage("Accession")
   @Key("instrumentInterface.accessionNumber")
   String instrumentInterface_accessionNumber();
 
@@ -7421,6 +7421,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.")
   @Key("instrumentInterface.differentInstrumentName")
   String instrumentInterface_differentInstrumentName(String arg0,  String arg1);
+
+  /**
+   * Translated "Injection".
+   * 
+   * @return translated "Injection"
+   */
+  @DefaultMessage("Injection")
+  @Key("instrumentInterface.injectionDateTime")
+  String instrumentInterface_injectionDateTime();
 
   /**
    * Translated "Instrument ID".
@@ -7466,24 +7475,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Missing required column ''{0}''.")
   @Key("instrumentInterface.missingRequiredColumn")
   String instrumentInterface_missingRequiredColumn(String arg0);
-
-  /**
-   * Translated "Start of Analysis".
-   * 
-   * @return translated "Start of Analysis"
-   */
-  @DefaultMessage("Start of Analysis")
-  @Key("instrumentInterface.startOfAnalysis")
-  String instrumentInterface_startOfAnalysis();
-
-  /**
-   * Translated "Started Date/Time".
-   * 
-   * @return translated "Started Date/Time"
-   */
-  @DefaultMessage("Started Date/Time")
-  @Key("instrumentInterface.startedDateTime")
-  String instrumentInterface_startedDateTime();
 
   /**
    * Translated "Worksheet #{0,number} has no analyses at position #{1,number}.".
