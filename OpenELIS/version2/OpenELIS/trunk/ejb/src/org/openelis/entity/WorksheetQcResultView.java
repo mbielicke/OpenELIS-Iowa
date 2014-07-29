@@ -56,7 +56,7 @@ import org.openelis.ui.common.Datetime;
                         "wqrv.usableDate,wqrv.expireDate,wqrv.analyteId,wqrv.qcAnalyteTypeId," +
                         "wqrv.expectedValue, wqrv.formatId)"
                       + " from WorksheetQcResultView wqrv"+
-                        " where wqrv.id = :id order by wqrv.sortOrder")})
+                        " where wqrv.id in (:ids) order by wqrv.sortOrder")})
 @Entity
 @Table(name = "worksheet_qc_result_view")
 public class WorksheetQcResultView  {

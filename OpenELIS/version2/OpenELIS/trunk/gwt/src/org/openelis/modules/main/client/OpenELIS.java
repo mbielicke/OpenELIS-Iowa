@@ -80,7 +80,7 @@ public class OpenELIS extends Screen {
                     sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
                     turnAroundStatisticReport, kitTrackingReport, airQualityExport,
                     sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
-                    finalReportBatchReprint, test, method, panel, QAEvent, labSection, analyte,
+                    finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection, analyte,
                     dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
                     label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
                     scriptlet, systemVariable, pws, cron, logs, instrumentBarcodeReport;
@@ -497,7 +497,7 @@ public class OpenELIS extends Screen {
                 showScreen(BATCH_FINAL_REPORT_REPRINT);
             }
         });
-
+        
         addCommand(verificationReport, "verification", new Command() {
             public void execute() {
                 showScreen(VERIFICATION_REPORT);
@@ -579,6 +579,12 @@ public class OpenELIS extends Screen {
         addCommand(instrumentBarcodeReport, "worksheet", new Command() {
             public void execute() {
                 showScreen(INSTRUMENT_BARCODE_REPORT);
+            }
+        });
+        
+        addCommand(sampleQc, "sampletracking", new Command() {
+            public void execute() {
+                showScreen(SAMPLE_QC);
             }
         });
     }
