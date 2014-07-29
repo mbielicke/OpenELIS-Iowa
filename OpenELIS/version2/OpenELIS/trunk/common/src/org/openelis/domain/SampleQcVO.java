@@ -44,6 +44,11 @@ public class SampleQcVO implements Serializable {
 
     protected ArrayList<ArrayList<WorksheetQcResultViewVO>> qcAnalytes;
 
+    public SampleQcVO() {
+        analysisIds = new ArrayList<Integer>();
+        qcAnalyteIds = new ArrayList<ArrayList<Integer>>();
+    }
+
     public Integer getAccession() {
         return accession;
     }
