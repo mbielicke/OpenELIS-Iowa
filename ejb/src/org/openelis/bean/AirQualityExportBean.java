@@ -31,6 +31,7 @@ import static org.openelis.manager.SampleManager1Accessor.getResults;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -929,12 +930,16 @@ public class AirQualityExportBean {
         StringBuilder ssb, nsb;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO sulfateParameter, nitrateParameter;
-        DecimalFormat threeDigits;
+        DecimalFormat threeDigits, twoDecimals;
         HashMap<String, String> auxData;
         HashMap<String, ArrayList<String>> sulfateNitrateStrings;
 
         threeDigits = new DecimalFormat("#");
         threeDigits.setMinimumIntegerDigits(3);
+        twoDecimals = new DecimalFormat("#");
+        twoDecimals.setMaximumFractionDigits(2);
+        twoDecimals.setMinimumIntegerDigits(1);
+        twoDecimals.setRoundingMode(RoundingMode.HALF_UP);
         sulfateValue = nitrateValue = sulfateCode = nitrateCode = reportedUnit = sulfateAlternateMethodDetectableLimit = nitrateAlternateMethodDetectableLimit = null;
         sulfateDurationCd = nitrateDurationCd = sulfateMethodCd = nitrateMethodCd = 0;
         dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
@@ -965,8 +970,8 @@ public class AirQualityExportBean {
                     sulfateMethodCd = sulfateParameter.getP2().intValue();
                     sulfateDurationCd = sulfateParameter.getP3().intValue();
                     if (DataBaseUtil.isEmpty(nullDataCd))
-                        sulfateValue = truncateDecimal(Double.parseDouble(data.getValue()) /
-                                                       Double.parseDouble(volume), 2);
+                        sulfateValue = twoDecimals.format(Double.parseDouble(data.getValue()) /
+                                                          Double.parseDouble(volume));
                     sulfateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -982,9 +987,8 @@ public class AirQualityExportBean {
                     nitrateMethodCd = nitrateParameter.getP2().intValue();
                     nitrateDurationCd = nitrateParameter.getP3().intValue();
                     if (DataBaseUtil.isEmpty(nullDataCd))
-                        nitrateValue = truncateDecimal( (Double.parseDouble(data.getValue()) * nitrateConstant) /
-                                                                       Double.parseDouble(volume),
-                                                       2);
+                        nitrateValue = twoDecimals.format( (Double.parseDouble(data.getValue()) * nitrateConstant) /
+                                                          Double.parseDouble(volume));
                     nitrateCode = analyteCodes.get(data.getAnalyteId());
                     if (reportedUnit == null) {
                         for (AnalysisViewDO a : getAnalyses(sm)) {
