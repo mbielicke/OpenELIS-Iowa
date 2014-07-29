@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -6044,6 +6044,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Previous")
   @Key("gen.previous")
   String gen_previous();
+
+  /**
+   * Translated "Print".
+   * 
+   * @return translated "Print"
+   */
+  @DefaultMessage("Print")
+  @Key("gen.print")
+  String gen_print();
 
   /**
    * Translated "Printer".
@@ -12337,6 +12346,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String qc_expireDate();
 
   /**
+   * Translated "Get Data".
+   * 
+   * @return translated "Get Data"
+   */
+  @DefaultMessage("Get Data")
+  @Key("qc.getData")
+  String qc_getData();
+
+  /**
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
@@ -12398,6 +12416,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Prepared Volume")
   @Key("qc.preparedVolume")
   String qc_preparedVolume();
+
+  /**
+   * Translated "QC Analyte".
+   * 
+   * @return translated "QC Analyte"
+   */
+  @DefaultMessage("QC Analyte")
+  @Key("qc.qcAnalyte")
+  String qc_qcAnalyte();
 
   /**
    * Translated "QC Lookup".
@@ -13199,6 +13226,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Report")
   @Key("report")
   String report();
+
+  /**
+   * Translated "Data Export".
+   * 
+   * @return translated "Data Export"
+   */
+  @DefaultMessage("Data Export")
+  @Key("report.dataExport")
+  String report_dataExport();
+
+  /**
+   * Translated "Export".
+   * 
+   * @return translated "Export"
+   */
+  @DefaultMessage("Export")
+  @Key("report.export")
+  String report_export();
 
   /**
    * Translated "Reset".
@@ -14819,6 +14864,51 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Type is required for QA Event ''{1}''")
   @Key("sampleQAEvent.typeRequiredException")
   String sampleQAEvent_typeRequiredException(Integer arg0,  String arg1);
+
+  /**
+   * Translated "Analysis Position".
+   * 
+   * @return translated "Analysis Position"
+   */
+  @DefaultMessage("Analysis Position")
+  @Key("sampleQc.analysisPosition")
+  String sampleQc_analysisPosition();
+
+  /**
+   * Translated "Check All QCs".
+   * 
+   * @return translated "Check All QCs"
+   */
+  @DefaultMessage("Check All QCs")
+  @Key("sampleQc.checkAllQcs")
+  String sampleQc_checkAllQcs();
+
+  /**
+   * Translated "Analysis/Worksheet/QC/QC Analyte".
+   * 
+   * @return translated "Analysis/Worksheet/QC/QC Analyte"
+   */
+  @DefaultMessage("Analysis/Worksheet/QC/QC Analyte")
+  @Key("sampleQc.label")
+  String sampleQc_label();
+
+  /**
+   * Translated "Sample QC".
+   * 
+   * @return translated "Sample QC"
+   */
+  @DefaultMessage("Sample QC")
+  @Key("sampleQc.sampleQc")
+  String sampleQc_sampleQc();
+
+  /**
+   * Translated "Uncheck All QCs".
+   * 
+   * @return translated "Uncheck All QCs"
+   */
+  @DefaultMessage("Uncheck All QCs")
+  @Key("sampleQc.uncheckAllQcs")
+  String sampleQc_uncheckAllQcs();
 
   /**
    * Translated "Sample Qty".
@@ -16457,6 +16547,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("test.noSelectedRow")
   String test_noSelectedRow();
+
+  /**
+   * Translated "Prep Test".
+   * 
+   * @return translated "Prep Test"
+   */
+  @DefaultMessage("Prep Test")
+  @Key("test.prepTest")
+  String test_prepTest();
 
   /**
    * Translated "Test Results".

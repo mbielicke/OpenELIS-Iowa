@@ -152,6 +152,9 @@
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
                 </w:Menu>
+                <w:Menu display="{msg.report_dataExport}" enabled="true" showBelow="false">
+                  <w:MenuItem enabled="false" ui:field="sampleQc" display="{msg.sampleQc_sampleQc}" />
+                </w:Menu>
               </w:Menu>
               <w:Menu label="{msg.maintenance}" ui:field="maintenanceMenu">
                 <w:MenuItem description="{msg.testDescription}" enabled="false" icon="{res.icon.testIcon}" ui:field="test"
