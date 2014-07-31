@@ -222,7 +222,7 @@ order by 1,5;]]>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{qc_link} != null ? DataBaseUtil.concatWithSeparator($F{qc_link}, "@", $F{qc_code}) : $F{qc_name} != null ? $F{qc_name}.trim() : $F{accession_number}.toString()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{qc_link} != null ? $F{qc_code} != null ? DataBaseUtil.concatWithSeparator($F{qc_link}, "@", $F{qc_code}) : DataBaseUtil.concat($F{qc_link}, "@") : $F{qc_name} != null ? $F{qc_name}.trim() : $F{accession_number}.toString()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="187" y="0" width="60" height="12"/>
@@ -288,7 +288,7 @@ order by 1,5;]]>
 					<printWhenExpression><![CDATA[Boolean.valueOf("L".equals($P{BARCODE_TYPE}))]]></printWhenExpression>
 				</reportElement>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false">
-					<jr:codeExpression><![CDATA[$F{qc_link} != null ? DataBaseUtil.concatWithSeparator($F{qc_link}, "@", $F{qc_code}) : $F{qc_name} != null ? $F{qc_name}.trim() : $F{accession_number}.toString()]]></jr:codeExpression>
+					<jr:codeExpression><![CDATA[$F{qc_link} != null ? $F{qc_code} != null ? DataBaseUtil.concatWithSeparator($F{qc_link}, "@", $F{qc_code}) : DataBaseUtil.concat($F{qc_link}, "@") : $F{qc_name} != null ? $F{qc_name}.trim() : $F{accession_number}.toString()]]></jr:codeExpression>
 				</jr:barbecue>
 			</componentElement>
 		</band>
