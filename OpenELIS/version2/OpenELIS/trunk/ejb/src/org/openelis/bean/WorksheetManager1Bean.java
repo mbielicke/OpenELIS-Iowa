@@ -2036,7 +2036,9 @@ public class WorksheetManager1Bean {
                     rVDO = SampleManager1Accessor.getResults(sMan).get(c);
                     do {
                         resultRow.add(rVDO);
-                        rVDO = SampleManager1Accessor.getResults(sMan).get(++c);
+                        if (++c == SampleManager1Accessor.getResults(sMan).size())
+                            break;
+                        rVDO = SampleManager1Accessor.getResults(sMan).get(c);
                     } while ("Y".equals(rVDO.getIsColumn())) ;
                     resultRows.add(resultRow);
                     
