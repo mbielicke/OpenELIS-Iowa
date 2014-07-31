@@ -25,20 +25,16 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.addOrganization;
 import static org.openelis.manager.OrderManager1Accessor.getAnalytes;
 import static org.openelis.manager.OrderManager1Accessor.getAuxilliary;
 import static org.openelis.manager.OrderManager1Accessor.getContainers;
-import static org.openelis.manager.OrderManager1Accessor.getOrder;
 import static org.openelis.manager.OrderManager1Accessor.getOrganizations;
 import static org.openelis.manager.OrderManager1Accessor.getSampleNote;
 import static org.openelis.manager.OrderManager1Accessor.getTests;
-import static org.openelis.manager.OrderManager1Accessor.setOrganizations;
 import static org.openelis.manager.SampleManager1Accessor.addItem;
 import static org.openelis.manager.SampleManager1Accessor.addOrganization;
 import static org.openelis.manager.SampleManager1Accessor.addSampleInternalNote;
 import static org.openelis.manager.SampleManager1Accessor.getItems;
-import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
 import static org.openelis.manager.SampleManager1Accessor.getSample;
 import static org.openelis.manager.SampleManager1Accessor.getSampleInternalNotes;
 import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
@@ -61,7 +57,6 @@ import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -75,7 +70,6 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
-import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -156,116 +150,6 @@ public class SampleManagerOrderHelperBean {
             auxDataHelper.copyToSample(sm, getAuxilliary(om), e);
 
         return ret;
-    }
-
-    /**
-     * Creates an order in the database from the data in the order manager
-     * merged with the data in the sample manager; the merged data includes
-     * organizations and aux data specified by the list of analytes. Any empty
-     * required fields are also set with default values.
-     */
-    public void createOrderFromSample(OrderManager1 om, SampleManager1 sm,
-                                      ArrayList<String> analytes) throws Exception {
-        Integer accession;
-        SampleOrganizationViewDO sRepOrg, sBillOrg;
-        OrderViewDO data;
-        ArrayList<SampleOrganizationViewDO> sSecOrgs;
-
-        data = getOrder(om);
-
-        /*
-         * set default values
-         */
-        if (data.getShipFromId() == null)
-            data.setShipFromId(Constants.dictionary().LABORATORY_LOCATION_IC);
-        data.setStatusId(Constants.dictionary().ORDER_STATUS_ON_HOLD);
-        data.setOrderedDate(Datetime.getInstance());
-        if (data.getRequestedBy() == null)
-            data.setRequestedBy("system");
-        if (data.getCostCenterId() == null)
-            data.setCostCenterId(Constants.dictionary().COST_CENTER_UNKNOWN);
-        if (data.getNeededInDays() == null)
-            data.setNeededInDays(0);
-
-        sRepOrg = null;
-        sBillOrg = null;
-        sSecOrgs = null;
-        setOrganizations(om, null);
-
-        /*
-         * find out if organizations of various types are specified in the
-         * sample
-         */
-        for (SampleOrganizationViewDO sorg : getOrganizations(sm)) {
-            if (Constants.dictionary().ORG_REPORT_TO.equals(sorg.getTypeId())) {
-                sRepOrg = sorg;
-            } else if (Constants.dictionary().ORG_BILL_TO.equals(sorg.getTypeId())) {
-                sBillOrg = sorg;
-            } else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(sorg.getTypeId())) {
-                if (sSecOrgs == null)
-                    sSecOrgs = new ArrayList<SampleOrganizationViewDO>();
-                sSecOrgs.add(sorg);
-            }
-        }
-
-        /*
-         * check if the sample has any organizations to set as the ship to
-         */
-        if (sRepOrg == null) {
-            accession = getSample(sm).getAccessionNumber();
-            log.log(Level.SEVERE, Messages.get().sample_reportToMissingWarning(accession));
-            if (sBillOrg == null) {
-                if (sSecOrgs == null) {
-                    if (data.getOrganization() == null) {
-                        log.log(Level.SEVERE, Messages.get()
-                                                      .sdwisScan_noSampleOrgsException(accession));
-                        throw new InconsistencyException(Messages.get()
-                                                                 .sdwisScan_noSampleOrgsException(accession));
-                    }
-                } else {
-                    sRepOrg = sSecOrgs.get(0);
-                }
-            } else {
-                sRepOrg = sBillOrg;
-            }
-        } else {
-            addOrganization(om, createOrderOrganization(sRepOrg));
-        }
-
-        /*
-         * set the ship to
-         */
-        data.setOrganizationId(sRepOrg.getOrganizationId());
-        data.setOrganizationAttention(sRepOrg.getOrganizationAttention());
-
-        if (sBillOrg != null && !sRepOrg.getOrganizationId().equals(sBillOrg.getOrganizationId()))
-            addOrganization(om, createOrderOrganization(sBillOrg));
-
-        if (sSecOrgs != null) {
-            for (SampleOrganizationViewDO sorg : sSecOrgs)
-                addOrganization(om, createOrderOrganization(sorg));
-        }
-
-        /*
-         * we assume the order template has an aux group added to it
-         */
-        auxDataHelper.copyFromSample(sm, getAuxilliary(om), analytes);
-        orderManager1.update(om, true);
-    }
-
-    /**
-     * create a new order organization object from the data in a sample
-     * organization object
-     */
-    private OrderOrganizationViewDO createOrderOrganization(SampleOrganizationViewDO sorg) {
-        OrderOrganizationViewDO oorg;
-
-        oorg = new OrderOrganizationViewDO();
-        oorg.setOrganizationId(sorg.getOrganizationId());
-        oorg.setOrganizationAttention(sorg.getOrganizationAttention());
-        oorg.setTypeId(sorg.getTypeId());
-
-        return oorg;
     }
 
     /**
