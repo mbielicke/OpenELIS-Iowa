@@ -62,12 +62,16 @@ import static org.openelis.manager.OrderManager1Accessor.setRemoved;
 import static org.openelis.manager.OrderManager1Accessor.setSampleNote;
 import static org.openelis.manager.OrderManager1Accessor.setShippingNote;
 import static org.openelis.manager.OrderManager1Accessor.setTests;
+import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
@@ -97,9 +101,11 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderManager1;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.ui.common.DataBaseUtil;
@@ -174,6 +180,8 @@ public class OrderManager1Bean {
 
     @EJB
     private InventoryItemCacheBean inventoryItem;
+
+    private static final Logger    log = Logger.getLogger("openelis");
 
     public OrderManager1 getInstance(String type) throws Exception {
         OrderManager1 om;
@@ -1086,6 +1094,116 @@ public class OrderManager1Bean {
             }
         }
         return om;
+    }
+
+    /**
+     * Creates an order in the database from the data in the order manager
+     * merged with the data in the sample manager; the merged data includes
+     * organizations and aux data specified by the list of analytes. Any empty
+     * required fields are also set with default values.
+     */
+    public void createOrderFromSample(OrderManager1 om, SampleManager1 sm,
+                                      ArrayList<String> analytes) throws Exception {
+        Integer accession;
+        SampleOrganizationViewDO sRepOrg, sBillOrg;
+        OrderViewDO data;
+        ArrayList<SampleOrganizationViewDO> sSecOrgs;
+
+        data = getOrder(om);
+
+        /*
+         * set default values
+         */
+        if (data.getShipFromId() == null)
+            data.setShipFromId(Constants.dictionary().LABORATORY_LOCATION_IC);
+        data.setStatusId(Constants.dictionary().ORDER_STATUS_ON_HOLD);
+        data.setOrderedDate(Datetime.getInstance());
+        if (data.getRequestedBy() == null)
+            data.setRequestedBy("system");
+        if (data.getCostCenterId() == null)
+            data.setCostCenterId(Constants.dictionary().COST_CENTER_UNKNOWN);
+        if (data.getNeededInDays() == null)
+            data.setNeededInDays(0);
+
+        sRepOrg = null;
+        sBillOrg = null;
+        sSecOrgs = null;
+        setOrganizations(om, null);
+
+        /*
+         * find out if organizations of various types are specified in the
+         * sample
+         */
+        for (SampleOrganizationViewDO sorg : getOrganizations(sm)) {
+            if (Constants.dictionary().ORG_REPORT_TO.equals(sorg.getTypeId())) {
+                sRepOrg = sorg;
+            } else if (Constants.dictionary().ORG_BILL_TO.equals(sorg.getTypeId())) {
+                sBillOrg = sorg;
+            } else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(sorg.getTypeId())) {
+                if (sSecOrgs == null)
+                    sSecOrgs = new ArrayList<SampleOrganizationViewDO>();
+                sSecOrgs.add(sorg);
+            }
+        }
+
+        /*
+         * check if the sample has any organizations to set as the ship to
+         */
+        if (sRepOrg == null) {
+            accession = getSample(sm).getAccessionNumber();
+            log.log(Level.SEVERE, Messages.get().sample_reportToMissingWarning(accession));
+            if (sBillOrg == null) {
+                if (sSecOrgs == null) {
+                    if (data.getOrganization() == null) {
+                        log.log(Level.SEVERE, Messages.get()
+                                                      .sdwisScan_noSampleOrgsException(accession));
+                        throw new InconsistencyException(Messages.get()
+                                                                 .sdwisScan_noSampleOrgsException(accession));
+                    }
+                } else {
+                    sRepOrg = sSecOrgs.get(0);
+                }
+            } else {
+                sRepOrg = sBillOrg;
+            }
+        } else {
+            addOrganization(om, createOrderOrganization(sRepOrg));
+        }
+
+        /*
+         * set the ship to
+         */
+        data.setOrganizationId(sRepOrg.getOrganizationId());
+        data.setOrganizationAttention(sRepOrg.getOrganizationAttention());
+
+        if (sBillOrg != null && !sRepOrg.getOrganizationId().equals(sBillOrg.getOrganizationId()))
+            addOrganization(om, createOrderOrganization(sBillOrg));
+
+        if (sSecOrgs != null) {
+            for (SampleOrganizationViewDO sorg : sSecOrgs)
+                addOrganization(om, createOrderOrganization(sorg));
+        }
+
+        /*
+         * we assume the order template has an aux group added to it
+         */
+        auxDataHelper.copyFromSample(sm, getAuxilliary(om), analytes);
+        update(om, true);
+    }
+
+    /**
+     * create a new order organization object from the data in a sample
+     * organization object
+     */
+    private OrderOrganizationViewDO createOrderOrganization(SampleOrganizationViewDO sorg) {
+        OrderOrganizationViewDO oorg;
+
+        oorg = new OrderOrganizationViewDO();
+        oorg.setOrganizationId(sorg.getOrganizationId());
+        oorg.setOrganizationAttention(sorg.getOrganizationAttention());
+        oorg.setTypeId(sorg.getTypeId());
+
+        return oorg;
     }
 
     private ArrayList<OrderManager1> fetchByIds(ArrayList<Integer> orderIds, boolean isUpdate,

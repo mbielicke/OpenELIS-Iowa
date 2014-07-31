@@ -64,26 +64,23 @@ import org.openelis.ui.common.Datetime;
 public class SDWISAdditionalScannerBean {
 
     @EJB
-    private SystemVariableBean           systemVariable;
+    private SystemVariableBean  systemVariable;
 
     @EJB
-    private SampleManagerOrderHelperBean sampleManagerOrderHelper;
+    private OrderManager1Bean   orderManager;
 
     @EJB
-    private OrderManager1Bean            orderManager;
+    private SampleManager1Bean  sampleManager;
+    @EJB
+    private PWSManagerBean      pwsManager;
 
     @EJB
-    private SampleManager1Bean           sampleManager;
-    @EJB
-    private PWSManagerBean               pwsManager;
+    private PWSViolationBean    pwsViolation;
 
     @EJB
-    private PWSViolationBean             pwsViolation;
+    private PWSBean             pws;
 
-    @EJB
-    private PWSBean                      pws;
-
-    private static final Logger          log = Logger.getLogger("openelis");
+    private static final Logger log = Logger.getLogger("openelis");
 
     /**
      * Finds samples with positive results and creates orders for repeat samples
@@ -293,7 +290,7 @@ public class SDWISAdditionalScannerBean {
                 item.setQuantity(item.getQuantity() * multiplier);
         }
 
-        sampleManagerOrderHelper.createOrderFromSample(om, sm, analytes);
+        orderManager.createOrderFromSample(om, sm, analytes);
     }
 
     /**

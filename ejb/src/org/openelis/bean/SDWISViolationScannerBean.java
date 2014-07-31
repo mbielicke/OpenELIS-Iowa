@@ -82,9 +82,6 @@ public class SDWISViolationScannerBean {
     private SystemVariableBean           systemVariable;
 
     @EJB
-    private SampleManagerOrderHelperBean sampleManagerOrderHelper;
-
-    @EJB
     private SampleManager1Bean           sampleManager;
 
     @EJB
@@ -259,11 +256,12 @@ public class SDWISViolationScannerBean {
                     tr = positives.get(r.getTestResultId());
                     if (tr != null) {
                         series = seriesMap.get(tr.getTestId());
-                        for (Integer oid : repeatTemplates.get(tr.getTestId()))
-                            createOrder(sm, pwsm, oid, series, analytes, false);
-                        for (Integer oid : triggerTemplates.get(tr.getTestId()))
-                            createOrder(sm, pwsm, oid, series, analytes, true);
                         try {
+                            for (Integer oid : repeatTemplates.get(tr.getTestId()))
+                                createOrder(sm, pwsm, oid, series, analytes, false);
+                            for (Integer oid : triggerTemplates.get(tr.getTestId()))
+                                createOrder(sm, pwsm, oid, series, analytes, true);
+
                             updateViolation(sdwis.getFacilityId(),
                                             series,
                                             pwsm.getPWS().getTinwsysIsNumber(),
@@ -354,7 +352,7 @@ public class SDWISViolationScannerBean {
                 item.setQuantity(item.getQuantity() * multi);
         }
 
-        sampleManagerOrderHelper.createOrderFromSample(om, sm, analytes);
+        orderManager.createOrderFromSample(om, sm, analytes);
     }
 
     /**
