@@ -558,7 +558,7 @@ public class BillingExportBean {
                 charge.testId = a.getTestId();
                 charge.testMethodDescription = a.getTestName() + ", "+ a.getMethodName();
                 charge.type = "CH";
-                charge.billedAnalytes = resultMap.get(a.getId()).size(); 
+                charge.billedAnalytes = resultMap.get(a.getId()) != null ? resultMap.get(a.getId()).size() : 0; 
                 charge.labSection = a.getSectionName();
 
                 /*
@@ -591,19 +591,22 @@ public class BillingExportBean {
                  */
                 if (!cancelled && (a.getTestId().equals(BILLING_MISC_ID) ||
                                    a.getTestId().equals(BILLING_RUSH_ID))) {
+                    charge.billedOverride = 0.0;
                     charge.isValid = true;
-                    for (ResultViewDO r : resultMap.get(a.getId())) {
-                        if (r.getAnalyteId().equals(SECTION_ANALYTE_ID) && r.getDictionary() != null) {
-                            charge.labSection = r.getDictionary();
-                        } else {
-                            try {
-                                charge.billedOverride += Double.parseDouble(r.getValue());
-                            } catch (NumberFormatException numE) {
-                                log.severe("Accession #"+hdr.accession+" has an"+
-                                                " invalid price for miscellaneous or rush billing");
-                                charge.billedOverride = -9.99;
-                                break;
-                            }                         
+                    if (resultMap.get(a.getId()) != null) {
+                        for (ResultViewDO r : resultMap.get(a.getId())) {
+                            if (r.getAnalyteId().equals(SECTION_ANALYTE_ID) && r.getDictionary() != null) {
+                                charge.labSection = r.getDictionary();
+                            } else {
+                                try {
+                                    charge.billedOverride += Double.parseDouble(r.getValue());
+                                } catch (NumberFormatException numE) {
+                                    log.severe("Accession #"+hdr.accession+" has an"+
+                                                    " invalid price for miscellaneous or rush billing");
+                                    charge.billedOverride = -9.99;
+                                    break;
+                                }                         
+                            }
                         }
                     }
                 }
