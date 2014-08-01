@@ -117,8 +117,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
             event.getNativeEvent().preventDefault();
 
         if (event.getTypeInt() == Event.ONKEYDOWN && (event.getNativeEvent().getCtrlKey() ||
-                                                      event.getNativeEvent().getShiftKey() ||
-                                                      event.getNativeEvent().getAltKey())) {
+                                                      event.getNativeEvent().getAltKey()) ) {
             KeyDownEvent.fireNativeEvent(event.getNativeEvent(), OpenELIS.browser); 
         }
             
