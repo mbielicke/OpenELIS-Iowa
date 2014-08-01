@@ -51,6 +51,7 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ResultViewDO;
@@ -217,6 +218,7 @@ public class BillingExportBean {
         Integer BILLING_PO_GROUPID, BILLING_INS_GROUPID, BILLING_MISC_ID, BILLING_RUSH_ID, SECTION_ANALYTE_ID,
                 MALE_ID, FEMALE_ID, TYPE_PRELIM_ID, TYPE_DILUTION_ID; 
         Datetime currentDate;
+        DictionaryDO dictDO;
         PatientDO patient;
         ProviderDO provider;
         AnalysisReportFlagsDO flags;
@@ -595,14 +597,22 @@ public class BillingExportBean {
                     charge.isValid = true;
                     if (resultMap.get(a.getId()) != null) {
                         for (ResultViewDO r : resultMap.get(a.getId())) {
-                            if (r.getAnalyteId().equals(SECTION_ANALYTE_ID) && r.getDictionary() != null) {
-                                charge.labSection = r.getDictionary();
+                            if (r.getAnalyteId().equals(SECTION_ANALYTE_ID) && r.getValue() != null) {
+                                try {
+                                    dictDO = dictionary.getById(Integer.valueOf(r.getValue()));
+                                    charge.labSection = dictDO.getEntry();
+                                } catch (Exception anyE) {
+                                    // log the fact that there was a invalid section
+                                    // and continue as if no section was chosen
+                                    log.severe("Accession #" + hdr.accession +
+                                               " has an invalid section for miscellaneous or rush billing");
+                                }
                             } else {
                                 try {
                                     charge.billedOverride += Double.parseDouble(r.getValue());
                                 } catch (NumberFormatException numE) {
-                                    log.severe("Accession #"+hdr.accession+" has an"+
-                                                    " invalid price for miscellaneous or rush billing");
+                                    log.severe("Accession #" + hdr.accession +
+                                               " has an invalid price for miscellaneous or rush billing");
                                     charge.billedOverride = -9.99;
                                     break;
                                 }                         
