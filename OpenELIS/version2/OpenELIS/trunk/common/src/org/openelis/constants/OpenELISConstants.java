@@ -2185,11 +2185,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String backToSearch();
 
   /**
-   * Translated "Barcode   ".
+   * Translated "Barcode".
    * 
-   * @return translated "Barcode   "
+   * @return translated "Barcode"
    */
-  @DefaultMessage("Barcode   ")
+  @DefaultMessage("Barcode")
   @Key("barcode")
   String barcode();
 
@@ -5290,11 +5290,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_analytes();
 
   /**
-   * Translated "Barcode              ".
+   * Translated "Barcode".
    * 
-   * @return translated "Barcode              "
+   * @return translated "Barcode"
    */
-  @DefaultMessage("Barcode              ")
+  @DefaultMessage("Barcode")
   @Key("gen.barcode")
   String gen_barcode();
 
