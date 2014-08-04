@@ -72,6 +72,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.PatientChangeEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -92,7 +93,6 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
@@ -102,6 +102,7 @@ import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
+import org.openelis.ui.event.ShortcutHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
@@ -125,6 +126,8 @@ import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -235,14 +238,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
     protected PatientLookupUI                           patientLookup;
 
-    protected Widget                                    patientQueryWidget;
+    protected Focusable                                 focusedWidget;
 
     protected HashMap<String, Object>                   cache;
 
     protected AsyncCallbackUI<ArrayList<IdAccessionVO>> queryCall;
 
     protected AsyncCallbackUI<SampleManager1>           addCall, fetchForUpdateCall,
-                    commitUpdateCall, fetchByIdCall, unlockCall;
+                    commitUpdateCall, fetchByIdCall, unlockCall, mergeQuickEntryCall;
+
+    protected AsyncCallbackUI<Void>                     validateAccessionNumberCall;
 
     protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
 
@@ -633,7 +638,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : clientReference;
+                                 return forward ? orderId : billToName;
                              }
                          });
 
@@ -1172,6 +1177,25 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
                          });
 
+        bus.addHandler(PatientChangeEvent.getType(), new PatientChangeEvent.Handler() {
+            @Override
+            public void onPatientChange(PatientChangeEvent event) {
+                patientId.setValue(getPatientId());
+                patientLastName.setValue(getPatientLastName());
+                patientFirstName.setValue(getPatientFirstName());
+                patientBirthDate.setValue(getPatientBirthDate());
+                patientNationalId.setValue(getPatientNationalId());
+                patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
+                patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
+                patientAddrCity.setValue(getPatientAddressCity());
+                patientAddrState.setValue(getPatientAddressState());
+                patientAddrZipCode.setValue(getPatientAddressZipCode());
+                patientGender.setValue(getPatientGenderId());
+                patientRace.setValue(getPatientRaceId());
+                patientEthnicity.setValue(getPatientEthnicityId());
+            }
+        });
+
         addScreenHandler(providerLastName,
                          SampleMeta.getClinicalProviderLastName(),
                          new ScreenHandler<AutoCompleteValue>() {
@@ -1204,7 +1228,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             public void onKeyUp(KeyUpEvent event) {
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     setProvider(previousManager.getSampleClinical().getProvider());
-                    screen.focusNextWidget((Focusable)projectName, true);
+                    screen.focusNextWidget((Focusable)providerLastName, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
@@ -1702,6 +1726,140 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
          * screens
          */
         auxDataTab.setCanQuery(true);
+        
+        /*
+         * add shortcuts to select the tabs on the screen by using the Ctrl key
+         * and a number, e.g. Ctrl+'1' for the first tab, and so on; the
+         * ScheduledCommands make sure that the tab is opened before the focus
+         * is set
+         */
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(0);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        sampleItemTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '1', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(1);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        analysisTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '2', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(2);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        resultTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '3', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(3);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        analysisNotesTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '4', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(4);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        sampleNotesTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '5', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(5);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        storageTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '6', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(6);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        qaEventTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '7', CTRL);
+
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(7);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        auxDataTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '8', CTRL);
 
         //
         // navigation panel
@@ -2312,7 +2470,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             duplicateCall = new AsyncCallbackUI<SampleTestReturnVO>() {
                 public void success(SampleTestReturnVO result) {
                     ValidationErrorsList errors;
-                    
+
                     if ( !Constants.domain().CLINICAL.equals(result.getManager()
                                                                    .getSample()
                                                                    .getDomain())) {
@@ -2351,10 +2509,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                      * show any errors/warnings found during duplication
                      */
                     errors = result.getErrors();
-                    if (errors != null && errors.size() > 0)
-                        showErrors(errors);
-                    else
+                    if (errors != null) {
+                        if (errors.hasWarnings())
+                            Window.alert(getWarnings(errors.getErrorList()));
+                        if (errors.hasErrors())
+                            showErrors(errors);
+                        else
+                            setDone(Messages.get().gen_enterInformationPressCommit());
+                    } else {
                         setDone(Messages.get().gen_enterInformationPressCommit());
+                    }
                 }
 
                 public void failure(Throwable e) {
@@ -2499,17 +2663,35 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     @UiHandler("emptySearchButton")
     protected void emptySearch(ClickEvent event) {
-        if ( !isBusy)
+        if ( !isBusy) {
+            /*
+             * this makes sure that the focus gets set to some widget after the
+             * patient selection is over, because in this case, patient lookup
+             * screen is brought up by clicking this button instead of by making
+             * an editable widget lose focus
+             */
+            focusedWidget = (Focusable)patientId;
+
             lookupPatient(null, false);
+        }
     }
 
     /**
      * Shows the popup for patient lookup to search by the patient's fields
      */
     @UiHandler("fieldSearchButton")
-    protected void searchByField(ClickEvent event) {
-        if ( !isBusy)
+    protected void fieldSearch(ClickEvent event) {
+        if ( !isBusy) {
+            /*
+             * this makes sure that the focus gets set to some widget after the
+             * patient selection is over, because in this case, patient lookup
+             * screen is brought up by clicking this button instead of by making
+             * an editable widget lose focus
+             */
+            focusedWidget = (Focusable)patientId;
+            
             lookupPatient(manager.getSampleClinical().getPatient(), false);
+        }
     }
 
     /**
@@ -2531,7 +2713,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         evaluateEdit();
         setData();
         setState(state);
-        fireDataChange();
+        bus.fireEvent(new PatientChangeEvent());
         patientLastName.setFocus(true);
     }
 
@@ -2561,7 +2743,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         evaluateEdit();
         setData();
         setState(state);
-        fireDataChange();
+        bus.fireEvent(new PatientChangeEvent());
         patientLastName.setFocus(true);
     }
 
@@ -2813,34 +2995,84 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         manager.getSample().setAccessionNumber(accession);
         setBusy(Messages.get().gen_fetching());
         if (isState(ADD)) {
-            try {
-                manager = SampleService1.get().mergeQuickEntry(manager);
-                setData();
-                setState(UPDATE);
-                fireDataChange();
-            } catch (NotFoundException e) {
-                manager.getSample().setAccessionNumber(accession);
-            } catch (InconsistencyException e) {
-                accessionNumber.addException(e);
-            } catch (Exception e) {
-                manager.getSample().setAccessionNumber(null);
-                accessionNumber.setValue(null);
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
+            if (mergeQuickEntryCall == null) {
+                mergeQuickEntryCall = new AsyncCallbackUI<SampleManager1>() {
+                    @Override
+                    public void success(SampleManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(UPDATE);
+                        fireDataChange();
+                    }
+
+                    public void notFound() {
+                        /*
+                         * ignore because there's no sample with the accession
+                         * number entered by the user
+                         */
+                    }
+
+                    public void failure(Throwable e) {
+                        if (e instanceof InconsistencyException) {
+                            accessionNumber.addException((InconsistencyException)e);
+                        } else {
+                            manager.getSample().setAccessionNumber(null);
+                            accessionNumber.setValue(null);
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                        }
+                    }
+
+                    public void finish() {
+                        clearStatus();
+                        isBusy = false;
+                    }
+                };
             }
+            isBusy = true;
+            /*
+             * this is an async call to make sure that the focus gets set to the
+             * field next in the tabbing order to accession number, regardless
+             * of the browser and OS, which may not happen with a sync call
+             */
+            SampleService1.get().mergeQuickEntry(manager, mergeQuickEntryCall);
         } else if (isState(UPDATE)) {
-            try {
-                SampleService1.get().validateAccessionNumber(manager);
-            } catch (InconsistencyException e) {
-                accessionNumber.addException(e);
-            } catch (Exception e) {
-                manager.getSample().setAccessionNumber(null);
-                accessionNumber.setValue(null);
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
+            if (validateAccessionNumberCall == null) {
+                validateAccessionNumberCall = new AsyncCallbackUI<Void>() {
+                    @Override
+                    public void success(Void result) {
+                        /*
+                         * ignore because the accession number is valid, as no
+                         * exceptions were thrown
+                         */
+                    }
+
+                    public void failure(Throwable e) {
+                        if (e instanceof InconsistencyException) {
+                            accessionNumber.addException((InconsistencyException)e);
+                        } else {
+                            manager.getSample().setAccessionNumber(null);
+                            accessionNumber.setValue(null);
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                        }
+                    }
+
+                    public void finish() {
+                        clearStatus();
+                        isBusy = false;
+                    }
+                };
             }
+
+            isBusy = true;
+            /*
+             * this is an async call to make sure that the focus gets set to the
+             * field next in the tabbing order to accession number, regardless
+             * of the browser and OS, which may not happen with a sync call
+             */
+            SampleService1.get().validateAccessionNumber(manager, validateAccessionNumberCall);
         }
-        clearStatus();
     }
 
     /**
@@ -3246,13 +3478,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * Sets the busy flag and the passed widget as the current one with focus;
      * looks up the patients matching the data entered in the patient's fields
      */
-    private void patientQueryChanged(Widget queryWidget) {
+    private void patientQueryChanged(Focusable widget) {
         /*
          * look up patients only if the current patient is not locked
          */
         if ( !isPatientLocked) {
             isBusy = true;
-            patientQueryWidget = queryWidget;
+            focusedWidget = widget;
             lookupPatient(manager.getSampleClinical().getPatient(), true);
         }
     }
@@ -3278,19 +3510,17 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         evaluateEdit();
         setData();
         setState(state);
-        fireDataChange();
+        bus.fireEvent(new PatientChangeEvent());
         setFocusToNext();
-        //editPatientButton.setFocus(true);
     }
 
+    /**
+     * sets the focus to the first enabled widget in the tabbing order after
+     * "focusedWidget"
+     */
     private void setFocusToNext() {
-        Widget next;
-
-        if (patientQueryWidget != null) {
-            next = widgets.get(patientQueryWidget).onTab(true);
-            ((Focusable)next).setFocus(true);
-            patientQueryWidget = null;
-        }
+        focusNextWidget(focusedWidget, true);
+        focusedWidget = null;
     }
 
     /**
@@ -3570,6 +3800,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void addAuxGroups(ArrayList<Integer> ids) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         setBusy();
         try {
@@ -3579,8 +3810,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
+            errors = ret.getErrors();
+            if (errors != null) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3612,17 +3848,23 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         setBusy();
         try {
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() == null || ret.getTests().size() == 0)
+            errors = ret.getErrors();
+            if (errors != null) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
-            else
+            } else {
                 showTests(ret);
+            }
 
             setData();
             setState(state);
@@ -3646,6 +3888,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void changeAnalysisMethod(String uid, Integer methodId) {
         AnalysisViewDO ana;
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         ana = (AnalysisViewDO)manager.getObject(uid);
         try {
@@ -3670,8 +3913,12 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              * the pop up for selecting the prep/reflex tests for the tests
              * added
              */
-            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
-                showErrors(ret.getErrors());
+            errors = ret.getErrors();
+            if (errors != null) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
                 isBusy = false;
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;

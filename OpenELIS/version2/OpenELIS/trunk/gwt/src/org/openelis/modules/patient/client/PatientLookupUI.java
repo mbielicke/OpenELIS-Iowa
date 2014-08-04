@@ -185,7 +185,7 @@ public abstract class PatientLookupUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? select : nationalId;
+                return forward ? patientTable : nationalId;
             }
         });
 
@@ -260,7 +260,7 @@ public abstract class PatientLookupUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? cancel : search;
+                return forward ? cancel : patientTable;
             }
         });
 

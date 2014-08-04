@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -11320,6 +11320,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_cityRequiredException();
 
   /**
+   * Translated "Edit".
+   * 
+   * @return translated "Edit"
+   */
+  @DefaultMessage("Edit")
+  @Key("patient.edit")
+  String patient_edit();
+
+  /**
    * Translated "Ethnicity".
    * 
    * @return translated "Ethnicity"
@@ -11327,6 +11336,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Ethnicity")
   @Key("patient.ethnicity")
   String patient_ethnicity();
+
+  /**
+   * Translated "Full Window Search".
+   * 
+   * @return translated "Full Window Search"
+   */
+  @DefaultMessage("Full Window Search")
+  @Key("patient.fullWindowSearch")
+  String patient_fullWindowSearch();
 
   /**
    * Translated "Gender".
@@ -11401,6 +11419,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_relation();
 
   /**
+   * Translated "Search By Fields".
+   * 
+   * @return translated "Search By Fields"
+   */
+  @DefaultMessage("Search By Fields")
+  @Key("patient.searchByFields")
+  String patient_searchByFields();
+
+  /**
    * Translated "Street Address is required for a patient ".
    * 
    * @return translated "Street Address is required for a patient "
@@ -11408,6 +11435,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Street Address is required for a patient ")
   @Key("patient.streetAddressRequiredException")
   String patient_streetAddressRequiredException();
+
+  /**
+   * Translated "Unlink".
+   * 
+   * @return translated "Unlink"
+   */
+  @DefaultMessage("Unlink")
+  @Key("patient.unlink")
+  String patient_unlink();
 
   /**
    * Translated "Patient description".

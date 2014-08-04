@@ -68,6 +68,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ClinicalTabUI extends Screen {
@@ -108,6 +109,8 @@ public class ClinicalTabUI extends Screen {
     protected ClinicalTabUI            screen;
 
     protected PatientLookupUI          patientLookup;
+
+    protected Focusable                focusedWidget;
 
     protected EventBus                 parentBus;
 
@@ -189,11 +192,11 @@ public class ClinicalTabUI extends Screen {
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientLastName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
-                                     patientQueryChanged();
+                                     patientQueryChanged(patientLastName);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientLastName.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientLastName.setEnabled( (isState(QUERY) && canQuery) ||
                                                             (canEditSample && canEditPatient && isState(ADD,
                                                                                                         UPDATE)));
                                  patientLastName.setQueryMode(isState(QUERY));
@@ -214,14 +217,14 @@ public class ClinicalTabUI extends Screen {
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientFirstName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
-                                     patientQueryChanged();
+                                     patientQueryChanged(patientFirstName);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientFirstName.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientFirstName.setEnabled( (isState(QUERY) && canQuery) ||
                                                              (canEditSample && canEditPatient && isState(ADD,
                                                                                                          UPDATE)));
-                                 patientFirstName.setQueryMode((isState(QUERY) && canQuery));
+                                 patientFirstName.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -241,10 +244,10 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientBirthDate.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientBirthDate.setEnabled( (isState(QUERY) && canQuery) ||
                                                              (canEditSample && canEditPatient && isState(ADD,
                                                                                                          UPDATE)));
-                                 patientBirthDate.setQueryMode((isState(QUERY) && canQuery));
+                                 patientBirthDate.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -262,14 +265,14 @@ public class ClinicalTabUI extends Screen {
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientNationalId(event.getValue());
                                  if (getPatientNationalId() != null)
-                                     patientQueryChanged();
+                                     patientQueryChanged(patientNationalId);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientNationalId.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientNationalId.setEnabled( (isState(QUERY) && canQuery) ||
                                                               (canEditSample && canEditPatient && isState(ADD,
                                                                                                           UPDATE)));
-                                 patientNationalId.setQueryMode((isState(QUERY) && canQuery));
+                                 patientNationalId.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -289,11 +292,11 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientAddrMultipleUnit.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientAddrMultipleUnit.setEnabled( (isState(QUERY) && canQuery) ||
                                                                     (canEditSample &&
                                                                      canEditPatient && isState(ADD,
                                                                                                UPDATE)));
-                                 patientAddrMultipleUnit.setQueryMode((isState(QUERY) && canQuery));
+                                 patientAddrMultipleUnit.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -313,11 +316,11 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientAddrStreetAddress.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientAddrStreetAddress.setEnabled( (isState(QUERY) && canQuery) ||
                                                                      (canEditSample &&
                                                                       canEditPatient && isState(ADD,
                                                                                                 UPDATE)));
-                                 patientAddrStreetAddress.setQueryMode((isState(QUERY) && canQuery));
+                                 patientAddrStreetAddress.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -337,10 +340,10 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientAddrCity.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientAddrCity.setEnabled( (isState(QUERY) && canQuery) ||
                                                             (canEditSample && canEditPatient && isState(ADD,
                                                                                                         UPDATE)));
-                                 patientAddrCity.setQueryMode((isState(QUERY) && canQuery));
+                                 patientAddrCity.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -360,10 +363,10 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientAddrState.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientAddrState.setEnabled( (isState(QUERY) && canQuery) ||
                                                              (canEditSample && canEditPatient && isState(ADD,
                                                                                                          UPDATE)));
-                                 patientAddrState.setQueryMode((isState(QUERY) && canQuery));
+                                 patientAddrState.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -383,10 +386,10 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientAddrZipCode.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientAddrZipCode.setEnabled( (isState(QUERY) && canQuery) ||
                                                                (canEditSample && canEditPatient && isState(ADD,
                                                                                                            UPDATE)));
-                                 patientAddrZipCode.setQueryMode((isState(QUERY) && canQuery));
+                                 patientAddrZipCode.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -406,10 +409,10 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientGender.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientGender.setEnabled( (isState(QUERY) && canQuery) ||
                                                           (canEditSample && canEditPatient && isState(ADD,
                                                                                                       UPDATE)));
-                                 patientGender.setQueryMode((isState(QUERY) && canQuery));
+                                 patientGender.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -429,10 +432,10 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientRace.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientRace.setEnabled( (isState(QUERY) && canQuery) ||
                                                         (canEditSample && canEditPatient && isState(ADD,
                                                                                                     UPDATE)));
-                                 patientRace.setQueryMode((isState(QUERY) && canQuery));
+                                 patientRace.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -452,16 +455,35 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 patientEthnicity.setEnabled((isState(QUERY) && canQuery) ||
+                                 patientEthnicity.setEnabled( (isState(QUERY) && canQuery) ||
                                                              (canEditSample && canEditPatient && isState(ADD,
                                                                                                          UPDATE)));
-                                 patientEthnicity.setQueryMode((isState(QUERY) && canQuery));
+                                 patientEthnicity.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
                                  return forward ? providerLastName : patientRace;
                              }
                          });
+
+        bus.addHandler(PatientChangeEvent.getType(), new PatientChangeEvent.Handler() {
+            @Override
+            public void onPatientChange(PatientChangeEvent event) {
+                patientId.setValue(getPatientId());
+                patientLastName.setValue(getPatientLastName());
+                patientFirstName.setValue(getPatientFirstName());
+                patientBirthDate.setValue(getPatientBirthDate());
+                patientNationalId.setValue(getPatientNationalId());
+                patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
+                patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
+                patientAddrCity.setValue(getPatientAddressCity());
+                patientAddrState.setValue(getPatientAddressState());
+                patientAddrZipCode.setValue(getPatientAddressZipCode());
+                patientGender.setValue(getPatientGenderId());
+                patientRace.setValue(getPatientRaceId());
+                patientEthnicity.setValue(getPatientEthnicityId());
+            }
+        });
 
         addScreenHandler(providerLastName,
                          SampleMeta.getClinicalProviderLastName(),
@@ -480,9 +502,9 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 providerLastName.setEnabled((isState(QUERY) && canQuery) ||
+                                 providerLastName.setEnabled( (isState(QUERY) && canQuery) ||
                                                              (canEditSample && isState(ADD, UPDATE)));
-                                 providerLastName.setQueryMode((isState(QUERY) && canQuery));
+                                 providerLastName.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -532,9 +554,9 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 providerFirstName.setEnabled((isState(QUERY) && canQuery) ||
+                                 providerFirstName.setEnabled( (isState(QUERY) && canQuery) ||
                                                               (canEditSample && isState(ADD, UPDATE)));
-                                 providerFirstName.setQueryMode((isState(QUERY) && canQuery));
+                                 providerFirstName.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -554,9 +576,9 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 providerPhone.setEnabled((isState(QUERY) && canQuery) ||
+                                 providerPhone.setEnabled( (isState(QUERY) && canQuery) ||
                                                           (canEditSample && isState(ADD, UPDATE)));
-                                 providerPhone.setQueryMode((isState(QUERY) && canQuery));
+                                 providerPhone.setQueryMode( (isState(QUERY) && canQuery));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -595,7 +617,7 @@ public class ClinicalTabUI extends Screen {
 
                 isPatientLocked = (event.getAction() == PatientLockEvent.Action.LOCK);
                 setState(state);
-                fireDataChange();
+                bus.fireEvent(new PatientChangeEvent());
 
                 if (patientLastName.isEnabled())
                     patientLastName.setFocus(true);
@@ -660,7 +682,7 @@ public class ClinicalTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     public void setCanQuery(boolean canQuery) {
         this.canQuery = canQuery;
     }
@@ -687,9 +709,18 @@ public class ClinicalTabUI extends Screen {
      * shows the popup for patient lookup with no initial search specified
      */
     @UiHandler("emptySearchButton")
-    protected void fullSearch(ClickEvent event) {
-        if ( !isBusy)
+    protected void emptySearch(ClickEvent event) {
+        if ( !isBusy) {
+            /*
+             * this makes sure that the focus gets set to some widget after the
+             * patient selection is over, because in this case, patient lookup
+             * screen is brought up by clicking this button instead of by making
+             * an editable widget lose focus
+             */
+            focusedWidget = (Focusable)patientId;
+
             lookupPatient(null, false);
+        }
     }
 
     /**
@@ -698,8 +729,17 @@ public class ClinicalTabUI extends Screen {
      */
     @UiHandler("fieldSearchButton")
     protected void nameSearch(ClickEvent event) {
-        if ( !isBusy)
+        if ( !isBusy) {
+            /*
+             * this makes sure that the focus gets set to some widget after the
+             * patient selection is over, because in this case, patient lookup
+             * screen is brought up by clicking this button instead of by making
+             * an editable widget lose focus
+             */
+            focusedWidget = (Focusable)patientId;
+
             lookupPatient(manager.getSampleClinical().getPatient(), false);
+        }
     }
 
     /**
@@ -721,7 +761,7 @@ public class ClinicalTabUI extends Screen {
             unlinkPatient = false;
 
             setState(state);
-            fireDataChange();
+            bus.fireEvent(new PatientChangeEvent());
             patientLastName.setFocus(true);
         }
     }
@@ -1032,12 +1072,11 @@ public class ClinicalTabUI extends Screen {
             patientLookup = new PatientLookupUI() {
                 public void select() {
                     setPatient(patientLookup.getSelectedPatient());
-                    // setFocusToNext();
                     isBusy = false;
                 }
 
                 public void cancel() {
-                    // setFocusToNext();
+                    setFocusToNext();
                     isBusy = false;
                 }
             };
@@ -1050,12 +1089,13 @@ public class ClinicalTabUI extends Screen {
      * sets the busy flag and looks up the patients matching the data entered in
      * the patient's fields
      */
-    private void patientQueryChanged() {
+    private void patientQueryChanged(Focusable queryWidget) {
         /*
          * look up patients only if the current patient is not locked
          */
         if ( !isPatientLocked) {
             isBusy = true;
+            focusedWidget = queryWidget;
             lookupPatient(manager.getSampleClinical().getPatient(), true);
         }
     }
@@ -1075,6 +1115,16 @@ public class ClinicalTabUI extends Screen {
 
         evaluateEdit();
         setState(state);
-        fireDataChange();
+        bus.fireEvent(new PatientChangeEvent());
+        setFocusToNext();
+    }
+
+    /**
+     * sets the focus to the first enabled widget in the tabbing order after
+     * "focusedWidget"
+     */
+    private void setFocusToNext() {
+        focusNextWidget(focusedWidget, true);
+        focusedWidget = null;
     }
 }

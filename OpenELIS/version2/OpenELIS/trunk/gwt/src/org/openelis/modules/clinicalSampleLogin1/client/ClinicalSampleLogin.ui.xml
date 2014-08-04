@@ -121,7 +121,7 @@
                   <ui:text from="{msg.sample_clntRef}:" />
                 </td>
                 <td colspan="3">
-                  <w:TextBox ui:field="clientReference" width="196px" case="UPPER" field="String"
+                  <w:TextBox ui:field="clientReference" width="196px" case="LOWER" field="String"
                     maxLength="20" />
                 </td>
               </tr>
@@ -142,13 +142,13 @@
                         <g:HorizontalPanel>
                           <w:TextBox ui:field="patientId" width="50px" field="Integer" />
                           <w:Button ui:field="emptySearchButton" leftIcon="{res.icon.QueryButtonImage}"
-                            text="" css="{res.FormFieldButton}" />
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_fullWindowSearch}"/>
                           <w:Button ui:field="fieldSearchButton" leftIcon="{res.icon.refreshButtonImage}"
-                            text="" css="{res.FormFieldButton}" />
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_searchByFields}"/>
                           <w:Button ui:field="unlinkPatientButton" leftIcon="{res.icon.DeleteButtonImage}"
-                            text="" css="{res.FormFieldButton}" />
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_unlink}"/>
                           <w:Button ui:field="editPatientButton" leftIcon="{res.icon.UpdateButtonImage}"
-                            text="" css="{res.FormFieldButton}" />
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_edit}"/>
                         </g:HorizontalPanel>
                       </td>
                     </tr>
@@ -304,8 +304,8 @@
                         <ui:text from="{msg.address_phone}:" />
                       </td>
                       <td colspan="3">
-                        <w:TextBox ui:field="providerPhone" width="80px" field="String"
-                          maxLength="10" mask="{msg.gen_phonePattern}" />
+                        <w:TextBox ui:field="providerPhone" width="110px" field="String"
+                          maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
                       </td>
                     </tr>
                     <tr>

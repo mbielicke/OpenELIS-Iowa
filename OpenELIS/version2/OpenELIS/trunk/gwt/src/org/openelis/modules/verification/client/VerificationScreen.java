@@ -113,29 +113,29 @@ public class VerificationScreen extends Screen {
         if (code.matches("[0-9]+-[0-9]+"))
             code = code.substring(0, code.indexOf("-"));
 
+        manager = null;
         if (code.matches("[0-9]+")) {
             try {
                 window.setBusy(Messages.get().updating());
 
                 manager = SampleService.get().fetchByAccessionNumber(new Integer(code));
-                if (!Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
-                                                                              .getStatusId())) {
+                if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
+                                                                               .getStatusId())) {
                     window.setError(Messages.get().wrongStatusForVerifying());
                     return;
-                } else if (Constants.domain().QUICKENTRY.equals(manager.getSample()
-                                                                             .getDomain())) {
-                   window.setError(Messages.get().cantVerifyQuickEntry());
-                   return;
+                } else if (Constants.domain().QUICKENTRY.equals(manager.getSample().getDomain())) {
+                    window.setError(Messages.get().cantVerifyQuickEntry());
+                    return;
                 }
-                
-                for (i = 0; i < manager.getSampleItems().count(); i++) {
+
+                for (i = 0; i < manager.getSampleItems().count(); i++ ) {
                     if (manager.getSampleItems().getAnalysisAt(0).count() > 0)
                         break;
                 }
                 if (i >= manager.getSampleItems().count()) {
                     window.setError(Messages.get().mustHaveAnalysesToVerify());
                     return;
-                }                    
+                }
 
                 manager = manager.fetchForUpdate();
                 manager.getSample().setStatusId(Constants.dictionary().SAMPLE_LOGGED_IN);
@@ -146,6 +146,7 @@ public class VerificationScreen extends Screen {
                 } catch (ValidationErrorsList e) {
                     if (e.hasErrors()) {
                         showErrors(e);
+                        manager.abortUpdate();
                     } else if (e.hasWarnings()) {
                         manager.setStatusWithError(true);
                         manager.update();
@@ -155,6 +156,17 @@ public class VerificationScreen extends Screen {
             } catch (NotFoundException nfE) {
                 le = new Exception(Messages.get().invalidEntryException(code));
                 window.setError(le.getMessage());
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+                try {
+                    /*
+                     * if update with warnings fails because of some validation
+                     * errors then the sample needs to be unlocked
+                     */
+                    manager.abortUpdate();
+                } catch (Exception anyE) {
+                    // ignore
+                }
             } catch (Exception anyE) {
                 Window.alert(anyE.getMessage());
                 anyE.printStackTrace();

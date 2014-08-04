@@ -3129,6 +3129,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         setBusy();
         try {
@@ -3149,10 +3150,15 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             reloadSample(findAncestorByType(SAMPLE_LEAF));
 
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else
+            errors = ret.getErrors();
+            if (errors != null) {
+                if (errors.hasWarnings())
+                   Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
+            } else {
                 showTests(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

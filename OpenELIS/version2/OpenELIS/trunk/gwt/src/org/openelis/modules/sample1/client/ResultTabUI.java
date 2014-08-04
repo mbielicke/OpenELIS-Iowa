@@ -75,6 +75,8 @@ import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultHelper;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -154,6 +156,10 @@ public class ResultTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? addResultButton : uncheckAllButton;
             }
         });
 
@@ -353,12 +359,13 @@ public class ResultTabUI extends Screen {
 
                     if (data.getValue() == null)
                         return;
-                    
+
                     /*
                      * execute any scriptlet specified for the test
                      */
                     if (tm.getTest().getScriptletId() != null) {
-                        parentBus.fireEventFromSource(new RunScriptletEvent(tm.getTest().getScriptletId(),
+                        parentBus.fireEventFromSource(new RunScriptletEvent(tm.getTest()
+                                                                              .getScriptletId(),
                                                                             Constants.uid()
                                                                                      .getResult(data.getId()),
                                                                             data.getAnalyteExternalId(),
@@ -442,11 +449,19 @@ public class ResultTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 addResultButton.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? removeResultButton : table;
+            }
         });
 
         addScreenHandler(removeResultButton, "removeResultButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 removeResultButton.setEnabled(false);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? checkAllButton : addResultButton;
             }
         });
 
@@ -454,11 +469,19 @@ public class ResultTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 checkAllButton.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? uncheckAllButton : removeResultButton;
+            }
         });
 
         addScreenHandler(uncheckAllButton, "uncheckAllButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 uncheckAllButton.setEnabled(false);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? table : checkAllButton;
             }
         });
 
@@ -549,7 +572,7 @@ public class ResultTabUI extends Screen {
                     isBusy = false;
             }
         });
-        
+
         parentBus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
             @Override
             public void onQAEventChange(QAEventChangeEvent event) {
@@ -574,6 +597,38 @@ public class ResultTabUI extends Screen {
      */
     public boolean getIsBusy() {
         return isBusy;
+    }
+
+    public void setFocus() {
+        Row row;
+        ScheduledCommand cmd;
+
+        /*
+         * if no widget is in focus, then set the first enabled widget in the
+         * tabbing order in focus, i.e. the first editable cell in the table
+         */
+        if (isState(ADD, UPDATE) && table.getRowCount() > 0) {
+            for (int i = 0; i < table.getRowCount(); i++ ) {
+                row = table.getRowAt(i);
+                final int index = i;
+                if ( ! (row instanceof HeaderRow)) {
+                    /*
+                     * this scheduled command makes sure that the focus gets set
+                     * only after the table has had a chance to resize because
+                     * otherwise if the cell getting focused is in the last
+                     * column then the widget in it doesn't have the right width
+                     */
+                    cmd = new ScheduledCommand() {
+                        @Override
+                        public void execute() {
+                            table.startEditing(index, 2);
+                        }
+                    };
+                    Scheduler.get().scheduleDeferred(cmd);
+                    break;
+                }
+            }
+        }
     }
 
     private void evaluateEdit() {

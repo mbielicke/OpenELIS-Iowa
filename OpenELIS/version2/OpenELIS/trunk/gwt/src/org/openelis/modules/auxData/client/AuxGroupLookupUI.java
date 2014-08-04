@@ -41,6 +41,8 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -85,6 +87,10 @@ public abstract class AuxGroupLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? okButton : cancelButton;
+            }
         });
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
@@ -99,11 +105,19 @@ public abstract class AuxGroupLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 okButton.setEnabled(true);
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? cancelButton : table;
+            }
         });
 
         addScreenHandler(cancelButton, "cancelButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 cancelButton.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? table : okButton;
             }
         });
     }
@@ -113,8 +127,24 @@ public abstract class AuxGroupLookupUI extends Screen {
      * the widgets
      */
     public void setData() {
+        ScheduledCommand cmd;
+        
         setState(state);
         fireDataChange();
+        /*
+         * without this scheduled command, setting focus on the table doesn't
+         * work
+         */
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                if (table.getRowCount() > 0) {
+                    table.selectRowAt(0);
+                    table.setFocus(true);
+                }
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }
 
     public void setState(State state) {

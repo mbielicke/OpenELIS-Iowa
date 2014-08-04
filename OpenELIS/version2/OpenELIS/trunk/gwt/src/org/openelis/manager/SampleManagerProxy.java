@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.services.CalendarService;
 import org.openelis.meta.SampleMeta;
@@ -127,17 +128,20 @@ public class SampleManagerProxy {
         
         if (collectionDateTime != null) {
             if (data.getEnteredDate() != null &&
-                            collectionDateTime.before(data.getEnteredDate().add( -180)))
-                            errorsList.add(new FieldErrorException(Messages.get().collectedTooOldWarning(),
-                                                                   SampleMeta.getCollectionDate()));
-            
-            if (data.getEnteredDate() != null && collectionDateTime.compareTo(data.getEnteredDate()) == 1)
-                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterEnteredError(),
+                collectionDateTime.before(data.getEnteredDate().add( -180)))
+                errorsList.add(new FieldErrorException(Messages.get().collectedTooOldWarning(),
                                                        SampleMeta.getCollectionDate()));
-            
+
+            if (data.getEnteredDate() != null &&
+                collectionDateTime.compareTo(data.getEnteredDate()) == 1)
+                errorsList.add(new FieldErrorException(Messages.get()
+                                                               .collectedDateAfterEnteredError(),
+                                                       SampleMeta.getCollectionDate()));
+
             if (data.getReceivedDate() != null &&
                 collectionDateTime.compareTo(data.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterReceivedError(),
+                errorsList.add(new FieldErrorException(Messages.get()
+                                                               .collectedDateAfterReceivedError(),
                                                        SampleMeta.getReceivedDate()));
         }
 
@@ -193,10 +197,17 @@ public class SampleManagerProxy {
         if (data.getOrderId() == null)
             return;
         try {
-            man = OrderManager.fetchById(data.getOrderId());
-            if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
-                errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
-                                                       SampleMeta.getOrderId()));
+            /*
+             * only validate order for domains that use send-out orders
+             */
+            if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
+                Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
+                Constants.domain().SDWIS.equals(data.getDomain())) {
+                man = OrderManager.fetchById(data.getOrderId());
+                if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
+                    errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
+                                                           SampleMeta.getOrderId()));
+            }
         } catch (NotFoundException e) {
             errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
                                                    SampleMeta.getOrderId()));
