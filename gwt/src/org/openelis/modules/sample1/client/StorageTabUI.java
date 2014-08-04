@@ -126,6 +126,10 @@ public class StorageTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? addStorageButton : removeStorageButton;
+            }
         });
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
@@ -288,11 +292,19 @@ public class StorageTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 addStorageButton.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? removeStorageButton : table;
+            }
         });
 
         addScreenHandler(removeStorageButton, "removeStorageButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 removeStorageButton.setEnabled(false);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? table : addStorageButton;
             }
         });
 
@@ -327,7 +339,7 @@ public class StorageTabUI extends Screen {
                     else if (obj instanceof SampleItemViewDO)
                         sampleItem = (SampleItemViewDO)obj;
                 }
-                
+
                 if (analysis != null) {
                     /*
                      * compare analysis storages
@@ -380,7 +392,8 @@ public class StorageTabUI extends Screen {
                      * enable or disable the widgets in the tab
                      */
                     analysis = (AnalysisViewDO)manager.getObject(event.getUid());
-                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
+                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid()
+                                                                              .getSampleItem(analysis.getSampleItemId()));
                     setState(state);
                 }
             }
@@ -395,6 +408,20 @@ public class StorageTabUI extends Screen {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void setFocus() {
+        /*
+         * set the first editable cell in the table in focus if there are any
+         * rows, or the button for adding storages if a sample item or analysis
+         * is selected in the tree
+         */
+        if (isState(ADD, UPDATE)) {
+            if (table.getRowCount() > 0)
+                table.startEditing(0, 2);
+            else if (analysis != null || sampleItem != null)
+                addStorageButton.setFocus(true);
+        }
     }
 
     @UiHandler("addStorageButton")
@@ -527,7 +554,11 @@ public class StorageTabUI extends Screen {
     }
 
     private String getLocationDisplay(String name, String description, String location) {
-        return DataBaseUtil.concatWithSeparator(name, ", ", DataBaseUtil.concatWithSeparator(description, " ", location));
+        return DataBaseUtil.concatWithSeparator(name,
+                                                ", ",
+                                                DataBaseUtil.concatWithSeparator(description,
+                                                                                 " ",
+                                                                                 location));
     }
 
     /**

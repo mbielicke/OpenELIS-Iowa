@@ -29,13 +29,13 @@
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="patientId" width="50px" field="Integer" />
                     <w:Button ui:field="emptySearchButton" leftIcon="{res.icon.QueryButtonImage}"
-                      text="" css="{res.FormFieldButton}" />
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_fullWindowSearch}" />
                     <w:Button ui:field="fieldSearchButton" leftIcon="{res.icon.refreshButtonImage}"
-                      text="" css="{res.FormFieldButton}" />
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_searchByFields}" />
                     <w:Button ui:field="unlinkPatientButton" leftIcon="{res.icon.DeleteButtonImage}"
-                      text="" css="{res.FormFieldButton}" />
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_unlink}" />
                     <w:Button ui:field="editPatientButton" leftIcon="{res.icon.UpdateButtonImage}"
-                      text="" css="{res.FormFieldButton}" />
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_edit}" />
                   </g:HorizontalPanel>
                 </td>
               </tr>

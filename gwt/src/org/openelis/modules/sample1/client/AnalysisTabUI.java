@@ -560,7 +560,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? userTable : revision;
+                return forward ? selectWorksheetButton : revision;
             }
         });
 
@@ -580,6 +580,10 @@ public class AnalysisTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 selectWorksheetButton.setEnabled(false);
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? userTable : worksheetTable;
+            }
         });
 
         addScreenHandler(userTable, "userTable", new ScreenHandler<ArrayList<Row>>() {
@@ -592,7 +596,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? test : worksheetTable;
+                return forward ? addActionButton : selectWorksheetButton;
             }
         });
 
@@ -680,11 +684,19 @@ public class AnalysisTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 addActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? removeActionButton : userTable;
+            }
         });
 
         addScreenHandler(removeActionButton, "removeActionButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 removeActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? test : addActionButton;
             }
         });
 
@@ -914,6 +926,17 @@ public class AnalysisTabUI extends Screen {
         return isBusy;
     }
 
+    public void setFocus() {
+        /*
+         * set the first enabled widget in the tabbing order in focus, i.e. test
+         * or method if it's enabled
+         */
+        if (isState(QUERY))
+            test.setFocus(true);
+        else if (isState(ADD, UPDATE))
+            method.setFocus(method.isEnabled());
+    }
+
     @UiHandler("selectWorksheetButton")
     protected void selectWorksheet(ClickEvent event) {
         AnalysisWorksheetVO ws;
@@ -927,7 +950,7 @@ public class AnalysisTabUI extends Screen {
             row = worksheetTable.getRowAt(worksheetTable.getSelectedRow());
             ws = (AnalysisWorksheetVO)row.getData();
             id = ws.getId();
-        
+
             window = new org.openelis.ui.widget.Window();
             window.setName(Messages.get().worksheetCompletion());
             window.setSize("1061px", "511px");
@@ -1029,7 +1052,7 @@ public class AnalysisTabUI extends Screen {
             }
         }
     }
-    
+
     private String getTestName() {
         if (analysis != null)
             return analysis.getTestName();
@@ -1067,11 +1090,11 @@ public class AnalysisTabUI extends Screen {
                     switch (event.getSelectedItem().intValue()) {
                         case 1:
                             /*
-                             * the argument passed to setMethod is not used
-                             * here because it gets fixed for this confirm when
-                             * the confirm is created, so if that value were to
-                             * be used here, it will always be the same
-                             * regardless of what gets passed to setMethod
+                             * the argument passed to setMethod is not used here
+                             * because it gets fixed for this confirm when the
+                             * confirm is created, so if that value were to be
+                             * used here, it will always be the same regardless
+                             * of what gets passed to setMethod
                              */
                             data = (TestMethodVO)method.getValue().getData();
                             parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
@@ -1080,7 +1103,7 @@ public class AnalysisTabUI extends Screen {
                                                           screen);
                             break;
                     }
-                    
+
                     isBusy = false;
                 }
             });

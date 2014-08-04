@@ -26,6 +26,7 @@
 package org.openelis.modules.sample1.client;
 
 import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import org.openelis.ui.event.BeforeGetMatchesHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
+import org.openelis.ui.event.ShortcutHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
@@ -141,6 +143,10 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 tree.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? addItemButton : popoutTreeButton;
             }
         });
 
@@ -239,7 +245,22 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 addItemButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? test : tree;
+            }
         });
+
+        /*
+         * this is for being able to set focus to the button for adding sample
+         * items using Ctrl+'i'
+         */
+        parentScreen.addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                addItemButton.setFocus(true);
+            }
+        }, 'i', CTRL);
 
         addScreenHandler(test, "test", new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent event) {
@@ -262,9 +283,20 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? tree : tree;
+                return forward ? removeRowButton : addItemButton;
             }
         });
+
+        /*
+         * this is for being able to set focus in the autocomplete for adding
+         * tests using Ctrl+'t'
+         */
+        parentScreen.addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                test.setFocus(isState(ADD, UPDATE));
+            }
+        }, 't', CTRL);
 
         test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
             public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
@@ -412,11 +444,19 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 removeRowButton.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? popoutTreeButton : test;
+            }
         });
 
         addScreenHandler(popoutTreeButton, "popoutTree", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 popoutTreeButton.setEnabled(isState(DISPLAY, ADD, UPDATE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? tree : removeRowButton;
             }
         });
 
@@ -702,9 +742,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     }
 
     private void testsAdded(ArrayList<SampleTestRequestVO> tests) {
-        String uid;
-        Node node;
-        SelectedType type;
+        String itemUid, anaUid;
+        Node node, child;
         ScheduledCommand cmd;
 
         /*
@@ -712,30 +751,45 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
          */
         fireDataChange();
 
-        uid = null;
-        if (tests != null && tests.size() > 0)
-            uid = Constants.uid().getSampleItem(tests.get(0).getSampleItemId());
         /*
-         * select the sample item to which the tests were added
+         * this is for finding the sample item to which the tests were requested
+         * to be added
          */
+        itemUid = Constants.uid().getSampleItem(tests.get(0).getSampleItemId());
+
+        /*
+         * select the last child of the sample item's node, because that child
+         * shows the analysis added most recently; if the item's node doesn't
+         * have any children, because no analyses were added to it, then select
+         * the node itself
+         */
+        anaUid = null;
         for (int i = 0; i < tree.getRoot().getChildCount(); i++ ) {
             node = tree.getRoot().getChildAt(i);
-            if (uid.equals(node.getData())) {
-                tree.selectNodeAt(node);
+            if (itemUid.equals(node.getData())) {
+                if (node.hasChildren()) {
+                    child = node.getLastChild();
+                    anaUid = child.getData();
+                    tree.selectNodeAt(child);
+                } else {
+                    tree.selectNodeAt(node);
+                }
                 break;
             }
         }
 
         /*
          * notify the other parts of the main screen that depend on the
-         * selection in the tree that a sample item is selected
+         * selection in the tree that a sample item or analysis is selected
          */
-        type = uid != null ? SelectedType.SAMPLE_ITEM : SelectedType.NONE;
-        parentBus.fireEvent(new SelectionEvent(type, uid));
+        if (anaUid != null)
+            parentBus.fireEvent(new SelectionEvent(SelectedType.ANALYSIS, anaUid));
+        else
+            parentBus.fireEvent(new SelectionEvent(SelectedType.SAMPLE_ITEM, itemUid));
 
         /*
          * set the focus to the autocomplete for adding tests, so that the user
-         * can add more, if need be
+         * can add more tests, if need be
          */
         cmd = new ScheduledCommand() {
             @Override

@@ -115,6 +115,10 @@ public class AnalysisNotesTabUI extends Screen {
                                           canEdit &&
                                           !Constants.dictionary().ANALYSIS_RELEASED.equals(getStatusId()));
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? addNoteButton : addNoteButton;
+            }
         });
 
         addScreenHandler(internalNotePanel, "analysisIntNotePanel", new ScreenHandler<String>() {
@@ -126,6 +130,10 @@ public class AnalysisNotesTabUI extends Screen {
         addScreenHandler(addNoteButton, "addNoteButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? editNoteButton : editNoteButton;
             }
         });
 
@@ -221,6 +229,15 @@ public class AnalysisNotesTabUI extends Screen {
         evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void setFocus() {
+        /*
+         * set the first enabled widget in the tabbing order in focus, i.e. edit
+         * note button if it's enabled
+         */
+        if (isState(ADD, UPDATE))
+            editNoteButton.setFocus(editNoteButton.isEnabled());
     }
 
     @UiHandler("editNoteButton")

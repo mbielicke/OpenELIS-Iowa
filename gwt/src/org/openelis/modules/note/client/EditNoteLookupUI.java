@@ -56,6 +56,8 @@ import org.openelis.ui.widget.tree.event.BeforeNodeOpenEvent;
 import org.openelis.ui.widget.tree.event.BeforeNodeOpenHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -107,9 +109,9 @@ public abstract class EditNoteLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 subject.setEnabled(hasSubject);
             }
-            
+
             public Widget onTab(boolean forward) {
-                return forward ? text : find;
+                return forward ? text : cancelButton;
             }
         });
 
@@ -121,7 +123,7 @@ public abstract class EditNoteLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 text.setEnabled(true);
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? find : subject;
             }
@@ -135,9 +137,9 @@ public abstract class EditNoteLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 find.setEnabled(true);
             }
-            
+
             public Widget onTab(boolean forward) {
-                return forward ? subject : text;
+                return forward ? findButton : text;
             }
         });
 
@@ -145,14 +147,22 @@ public abstract class EditNoteLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 findButton.setEnabled(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? pasteButton : find;
+            }
         });
 
         addScreenHandler(pasteButton, "pasteButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 pasteButton.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? noteTree : findButton;
+            }
         });
-        
+
         addScreenHandler(noteTree, "noteTree", new ScreenHandler<ArrayList<Node>>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -169,6 +179,10 @@ public abstract class EditNoteLookupUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 noteTree.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? preview : pasteButton;
             }
         });
 
@@ -220,17 +234,29 @@ public abstract class EditNoteLookupUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 preview.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? okButton : noteTree;
+            }
         });
 
         addScreenHandler(okButton, "okButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 okButton.setEnabled(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? cancelButton : preview;
+            }
         });
 
         addScreenHandler(cancelButton, "cancelButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 cancelButton.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? subject : okButton;
             }
         });
     }
@@ -269,7 +295,7 @@ public abstract class EditNoteLookupUI extends Screen {
 
     public Validation validate() {
         Validation valid = new Validation();
-        
+
         if (hasSubject) {
             if (DataBaseUtil.isEmpty(subject.getValue()) && !DataBaseUtil.isEmpty(text.getValue())) {
                 subject.addException(new FieldErrorException(Messages.get()
@@ -412,14 +438,26 @@ public abstract class EditNoteLookupUI extends Screen {
     }
 
     private void refresh() {
+        ScheduledCommand cmd;
+
         setState(state);
         fireDataChange();
         clearErrors();
 
-        if (hasSubject)
-            subject.setFocus(true);
-        else
-            text.setFocus(true);
+        /*
+         * without this scheduled command, setting focus on the subject or text
+         * doesn't work
+         */
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                if (hasSubject)
+                    subject.setFocus(true);
+                else
+                    text.setFocus(true);
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }
 
     private void getNotesForCategory(final Node node, Integer categoryId) {

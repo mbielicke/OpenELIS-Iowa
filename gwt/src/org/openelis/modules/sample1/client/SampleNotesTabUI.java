@@ -25,7 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
+
+import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
@@ -46,7 +49,6 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -100,6 +102,10 @@ public class SampleNotesTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 editNoteButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? addNoteButton : addNoteButton;
+            }
         });
 
         addScreenHandler(internalNotePanel, "sampleIntNotesPanel", new ScreenHandler<String>() {
@@ -111,6 +117,10 @@ public class SampleNotesTabUI extends Screen {
         addScreenHandler(addNoteButton, "sampleIntNoteButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 addNoteButton.setEnabled(isState(ADD, UPDATE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? editNoteButton : editNoteButton;
             }
         });
 
@@ -176,6 +186,15 @@ public class SampleNotesTabUI extends Screen {
             redraw = DataBaseUtil.isDifferent(id1, id2);
         }
         displayNotes();
+    }
+
+    public void setFocus() {
+        /*
+         * set the first enabled widget in the tabbing order in focus, i.e. edit
+         * note button
+         */
+        if (isState(ADD, UPDATE))
+            editNoteButton.setFocus(true);
     }
 
     @UiHandler("editNoteButton")

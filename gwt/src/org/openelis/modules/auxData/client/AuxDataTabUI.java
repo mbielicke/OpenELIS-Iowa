@@ -101,7 +101,7 @@ public abstract class AuxDataTabUI extends Screen {
     protected TextBox<String>                           auxMethod, auxUnits, auxDesc;
 
     @UiField
-    protected Button                                    addAuxButton, removeAuxButton;
+    protected Button                                    removeAuxButton, addAuxButton;
 
     @UiField
     protected AutoComplete                              analyte;
@@ -143,6 +143,10 @@ public abstract class AuxDataTabUI extends Screen {
                  */
                 if (isState(QUERY))
                     table.setModel(null);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? removeAuxButton : addAuxButton;
             }
         });
 
@@ -336,11 +340,19 @@ public abstract class AuxDataTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 removeAuxButton.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? addAuxButton : table;
+            }
         });
 
         addScreenHandler(addAuxButton, "addAuxButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 addAuxButton.setEnabled(canEdit && isState(ADD, UPDATE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? table : removeAuxButton;
             }
         });
 
@@ -452,11 +464,11 @@ public abstract class AuxDataTabUI extends Screen {
             /*
              * In Query state, the table shows only one row but it's not in
              * query mode, because the manager cache can't be used in query
-             * mode. In the row, a dropdown is shown for the analyte (aux field)
-             * and a dropdown or textbox is shown for the value. The widget for
-             * the value is determined using the analyte chosen and the cache.
-             * Thus the table needs to be reloaded to show that one row,
-             * regardless of the previous data.
+             * mode. In the row, an autocomplete is shown for the analyte (aux
+             * field) and a dropdown or textbox is shown for the value. The
+             * widget for the value is determined using the analyte chosen and
+             * the cache. Thus the table needs to be reloaded to show that one
+             * row, regardless of the previous data.
              */
             redraw = true;
         } else {
@@ -550,6 +562,22 @@ public abstract class AuxDataTabUI extends Screen {
         }
 
         return fields;
+    }
+
+    public void setFocus() {
+        /*
+         * set the first editable cell in the table in focus if there are any
+         * rows (in query mode a row is added by default), or the button for
+         * adding aux groups if the table can be edited
+         */
+        if (isState(ADD, UPDATE)) {
+            if (table.getRowCount() > 0)
+                table.startEditing(0, 2);
+            else
+                addAuxButton.setFocus(true);
+        } else if (isState(QUERY)) {
+            table.startEditing(0, 1);
+        }
     }
 
     @UiHandler("addAuxButton")

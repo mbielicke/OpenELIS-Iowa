@@ -67,6 +67,8 @@ import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -141,6 +143,10 @@ public class QAEventTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 sampleQATable.setEnabled(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? removeSampleQAButton : analysisQALookupButton;
+            }
         });
 
         sampleQATable.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -203,11 +209,19 @@ public class QAEventTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 removeSampleQAButton.setEnabled(false);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? sampleQALookupButton : sampleQATable;
+            }
         });
 
         addScreenHandler(sampleQALookupButton, "sampleQALookupButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 sampleQALookupButton.setEnabled(isState(ADD, UPDATE));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? analysisQATable : removeSampleQAButton;
             }
         });
 
@@ -219,6 +233,10 @@ public class QAEventTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 analysisQATable.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? removeAnalysisQAButton : sampleQALookupButton;
             }
         });
 
@@ -284,6 +302,10 @@ public class QAEventTabUI extends Screen {
                              public void onStateChange(StateChangeEvent event) {
                                  removeAnalysisQAButton.setEnabled(false);
                              }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? analysisQALookupButton : analysisQATable;
+                             }
                          });
 
         addScreenHandler(analysisQALookupButton,
@@ -292,6 +314,10 @@ public class QAEventTabUI extends Screen {
                              public void onStateChange(StateChangeEvent event) {
                                  analysisQALookupButton.setEnabled(isState(ADD, UPDATE) &&
                                                                    getTestId() != null);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sampleQATable : removeAnalysisQAButton;
                              }
                          });
 
@@ -429,6 +455,14 @@ public class QAEventTabUI extends Screen {
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
+    public void setFocus() {
+        /*
+         * set the button for sample qa lookup in focus
+         */
+        if (isState(ADD, UPDATE))
+            sampleQALookupButton.setFocus(true);
+    }
+
     private void displayQAEvents() {
         if ( !isVisible)
             return;
@@ -560,7 +594,7 @@ public class QAEventTabUI extends Screen {
         return model;
     }
 
-    private void showQAEventLookup(Integer testId) {
+    private void showQAEventLookup(final Integer testId) {
         ModalWindow modal;
 
         if (qaEventLookup == null) {
