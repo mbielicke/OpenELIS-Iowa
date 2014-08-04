@@ -304,7 +304,7 @@
                         <ui:text from="{msg.address_phone}:" />
                       </td>
                       <td colspan="3">
-                        <w:TextBox ui:field="providerPhone" width="110px" field="String"
+                        <w:TextBox ui:field="providerPhone" width="115px" field="String"
                           maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
                       </td>
                     </tr>

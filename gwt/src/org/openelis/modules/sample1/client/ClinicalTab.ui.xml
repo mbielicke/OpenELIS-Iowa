@@ -183,8 +183,8 @@
               <ui:text from="{msg.address_phone}:" />
             </td>
             <td colspan="3">
-              <w:TextBox ui:field="providerPhone" width="80px" field="String" maxLength="10"
-                mask="{msg.gen_phonePattern}" />
+              <w:TextBox ui:field="providerPhone" width="115px" field="String" maxLength="17"
+                mask="{msg.gen_phoneWithExtensionPattern}" />
             </td>
           </tr>
         </table>
