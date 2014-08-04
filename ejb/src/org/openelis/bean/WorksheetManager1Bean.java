@@ -520,7 +520,7 @@ public class WorksheetManager1Bean {
         boolean locked, nodep;
         AnalyteParameterViewDO apVDO;
         ArrayList<AnalyteParameterViewDO> anaParams;
-        ArrayList<Integer> analyteIndexes, excludedIds;
+        ArrayList<Integer> analyteIndexes, excludedIds, testAnalyteIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
         ArrayList<TestAnalyteViewDO> analytes;
@@ -529,7 +529,7 @@ public class WorksheetManager1Bean {
         DecimalFormat df;
         HashMap<Integer, AnalyteDO> analyteMap;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
-        HashMap<Integer, ArrayList<Integer>> excludedMap;
+        HashMap<Integer, ArrayList<Integer>> excludedMap, testAnalyteIdMap;
         HashMap<Integer, ArrayList<ResultViewDO>> newResults, resultHash;
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wResultHash;
         HashMap<Integer, Integer> imap, amap;
@@ -850,6 +850,7 @@ public class WorksheetManager1Bean {
         apMap = new HashMap<String, HashMap<Integer, AnalyteParameterViewDO>>();
         excludedMap = new HashMap<Integer, ArrayList<Integer>>();
         formatColumnMap = new HashMap<String, Integer>();
+        testAnalyteIdMap = new HashMap<Integer, ArrayList<Integer>>();
         wResultHash = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
         for (IdNameVO column : getColumnNames(wm.getWorksheet().getFormatId()))
             formatColumnMap.put(column.getName(), column.getId() - 10);
@@ -885,6 +886,17 @@ public class WorksheetManager1Bean {
                             if (sManager != null) {
                                 for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sManager)) {
                                     if (data.getAnalysisId().equals(aVDO.getId())) {
+                                        testAnalyteIds = testAnalyteIdMap.get(aVDO.getTestId());
+                                        if (testAnalyteIds == null) {
+                                            testAnalyteIds = new ArrayList<Integer>();
+                                            try {
+                                                for (TestAnalyteViewDO data2 : testAnalyte.fetchRowAnalytesByTestId(aVDO.getTestId()))
+                                                    testAnalyteIds.add(data2.getId());
+                                            } catch (Exception anyE) {
+                                                throw new Exception("Error loading test analytes: " + anyE.getMessage());
+                                            }
+                                            testAnalyteIdMap.put(aVDO.getTestId(), testAnalyteIds);
+                                        }
                                         excludedIds = excludedMap.get(aVDO.getTestId());
                                         if (excludedIds == null) {
                                             excludedIds = new ArrayList<Integer>();
@@ -900,6 +912,7 @@ public class WorksheetManager1Bean {
                                                            data,
                                                            resultHash.get(aVDO.getId()),
                                                            wResultHash.get(data.getId()),
+                                                           testAnalyteIds,
                                                            excludedIds,
                                                            formatColumnMap,
                                                            analyteMap,
@@ -2187,11 +2200,9 @@ public class WorksheetManager1Bean {
     }
     
     private void synchronizeResults(WorksheetManager1 wm, WorksheetAnalysisViewDO waVDO,
-                                    ArrayList<ResultViewDO> results,
-                                    ArrayList<WorksheetResultViewDO> wResults,
-                                    ArrayList<Integer> excludedIds,
-                                    HashMap<String, Integer> formatColumnMap,
-                                    HashMap<Integer, AnalyteDO> analyteMap,
+                                    ArrayList<ResultViewDO> results, ArrayList<WorksheetResultViewDO> wResults,
+                                    ArrayList<Integer> testAnalyteIds, ArrayList<Integer> excludedIds,
+                                    HashMap<String, Integer> formatColumnMap, HashMap<Integer, AnalyteDO> analyteMap,
                                     HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) throws Exception {
         int i, rowIndex;
         AnalyteDO anaDO;
@@ -2202,7 +2213,8 @@ public class WorksheetManager1Bean {
         DictionaryDO dDO;
         HashMap<Integer, AnalyteParameterViewDO> pMap;
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wrMap;
-        Integer col;
+        Integer col, taId;
+        Iterator<Integer> iter;
         ResultViewDO rVDO;
         WorksheetResultViewDO wrVDO;
         
@@ -2338,6 +2350,23 @@ public class WorksheetManager1Bean {
                 }
             }
             i--;
+        }
+        
+        /*
+         * Remove any results that may have been left over due to a method change  
+         */
+        iter = wrMap.keySet().iterator();
+        while (iter.hasNext()) {
+            taId = iter.next();
+            if (!testAnalyteIds.contains(taId)) {
+                wrList = wrMap.get(taId);
+                for (WorksheetResultViewDO data : wrList) {
+                    if (data.getId() > 0)
+                        wResult.delete(data);
+                    getResults(wm).remove(data);
+                }
+                iter.remove();
+            }
         }
     }
     
