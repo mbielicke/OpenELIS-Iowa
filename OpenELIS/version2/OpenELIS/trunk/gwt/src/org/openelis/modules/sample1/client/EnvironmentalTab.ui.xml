@@ -44,7 +44,7 @@
               <ui:text from="{msg.address_phone}:" />
             </td>
             <td>
-              <w:TextBox ui:field="collectorPhone" field="String" width="115px" maxLength="21"/>
+              <w:TextBox ui:field="collectorPhone" field="String" width="115px" maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}"/>
             </td>
           </tr>
           <tr>
