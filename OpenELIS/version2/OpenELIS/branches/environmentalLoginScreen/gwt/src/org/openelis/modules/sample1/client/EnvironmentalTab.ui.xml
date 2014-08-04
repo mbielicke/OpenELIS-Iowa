@@ -1,0 +1,122 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0" bottom="25">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="isHazardous" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_priority}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="priority" field="Integer" width="24px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.sample_collector}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="collector" field="String" width="280px" maxLength="40"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_phone}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="collectorPhone" field="String" width="115px" maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_location}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="location" width="280px" field="String" case="LOWER" maxLength="40"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_desc}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="description" field="String" width="285px" maxLength="40"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_aptSuite}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="locationAddressMultipleUnit" field="String" width="215px"
+                case="UPPER" maxLength="30" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_address}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="locationAddressStreetAddress" field="String" width="215px"
+                case="UPPER" maxLength="30" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_city}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="locationAddressCity" field="String" width="215px" case="UPPER"
+                maxLength="30" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_state}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="locationAddressState" field="String" width="40px"
+                case="UPPER" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_zipcode}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="locationAddressZipCode" field="String" width="75px"
+                case="UPPER" maxLength="10" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_country}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="locationAddressCountry" field="String" width="215px"
+                case="UPPER" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
