@@ -441,13 +441,16 @@ public class SampleManagerProxy {
         }
 
         if (collectionDateTime != null) {
-            if (data.getEnteredDate() != null && collectionDateTime.compareTo(data.getEnteredDate()) == 1)
-                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterEnteredError(),
+            if (data.getEnteredDate() != null &&
+                collectionDateTime.compareTo(data.getEnteredDate()) == 1)
+                errorsList.add(new FieldErrorException(Messages.get()
+                                                               .collectedDateAfterEnteredError(),
                                                        SampleMeta.getCollectionDate()));
-            
+
             if (data.getReceivedDate() != null &&
                 collectionDateTime.compareTo(data.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException(Messages.get().collectedDateAfterReceivedError(),
+                errorsList.add(new FieldErrorException(Messages.get()
+                                                               .collectedDateAfterReceivedError(),
                                                        SampleMeta.getReceivedDate()));
         }
 
@@ -487,9 +490,16 @@ public class SampleManagerProxy {
         OrderViewDO order;
         if (data.getOrderId() == null)
             return;
-        order = EJBFactory.getOrder().fetchById(data.getOrderId());
-        if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
-            errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
-                                                   SampleMeta.getOrderId()));
+        /*
+         * only validate order for domains that use send-out orders 
+         */
+        if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
+            Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
+            Constants.domain().SDWIS.equals(data.getDomain())) {
+            order = EJBFactory.getOrder().fetchById(data.getOrderId());
+            if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
+                errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
+                                                       SampleMeta.getOrderId()));
+        }
     }
 }
