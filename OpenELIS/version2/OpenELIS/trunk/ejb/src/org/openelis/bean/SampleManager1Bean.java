@@ -887,8 +887,10 @@ public class SampleManager1Bean {
         for (SampleManager1 sm : sms) {
             if (getSampleSDWIS(sm) != null)
                 ids2.add(getSampleSDWIS(sm).getPwsId());
-            for (AnalysisViewDO an : getAnalyses(sm))
-                ids.add(an.getTestId());
+            if (getAnalyses(sm) != null) {
+                for (AnalysisViewDO an : getAnalyses(sm))
+                    ids.add(an.getTestId());
+            }
             if (getAuxiliary(sm) != null) {
                 for (AuxDataViewDO aux : getAuxiliary(sm))
                     ids1.add(aux.getAuxFieldGroupId());
@@ -900,8 +902,10 @@ public class SampleManager1Bean {
          * validation
          */
         tms = new HashMap<Integer, TestManager>();
-        for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids)))
-            tms.put(tm.getTest().getId(), tm);
+        if (ids.size() > 0) {
+            for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids)))
+                tms.put(tm.getTest().getId(), tm);
+        }
 
         ams = null;
         if (ids1.size() > 0) {
@@ -1203,101 +1207,104 @@ public class SampleManager1Bean {
              * also detects infinite loops by ensuring every iteration resolves
              * some dependency
              */
-            dep = ldep = 0;
-            do {
-                ldep = dep;
-                dep = 0;
-                // add/update analysis
-                for (AnalysisViewDO data : getAnalyses(sm)) {
-                    nodep = true;
+            if (getAnalyses(sm) != null) {
+                dep = ldep = 0;
+                do {
+                    ldep = dep;
+                    dep = 0;
+                    // add/update analysis
+                    for (AnalysisViewDO data : getAnalyses(sm)) {
+                        nodep = true;
 
-                    if (data.getPreAnalysisId() != null && data.getPreAnalysisId() < 0) {
-                        id = amap.get(data.getPreAnalysisId());
-                        if (id != null)
-                            data.setPreAnalysisId(id);
-                        else
-                            nodep = false;
-                    }
-
-                    if (data.getParentAnalysisId() != null && data.getParentAnalysisId() < 0) {
-                        id = amap.get(data.getParentAnalysisId());
-                        if (id != null)
-                            data.setParentAnalysisId(id);
-                        else
-                            nodep = false;
-                    }
-
-                    if (data.getParentResultId() != null && data.getParentResultId() < 0) {
-                        id = rmap.get(data.getParentResultId());
-                        if (id != null)
-                            data.setParentResultId(id);
-                        else
-                            nodep = false;
-                    }
-
-                    if (nodep) {
-                        if (data.getId() < 0) {
-                            tmpid = data.getId();
-                            data.setSampleItemId(imap.get(data.getSampleItemId()));
-                            analysis.add(data);
-
-                            defaultARF.setAnalysisId(data.getId());
-                            analysisReportFlags.add(defaultARF);
-
-                            amap.put(tmpid, data.getId());
-                            amap.put(data.getId(), data.getId());
-                        } else if ( !amap.containsKey(data.getId())) {
-                            tmpid = data.getId();
-                            /*
-                             * set the released date if this analysis is
-                             * currently being released
-                             */
-                            if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
-                                data.getReleasedDate() == null)
-                                data.setReleasedDate(now);
-                            analysis.update(data);
-                            amap.put(tmpid, data.getId());
-                        }
-                    } else {
-                        dep++ ;
-                    }
-                }
-
-                // add/update results
-                if (getResults(sm) != null) {
-                    for (ResultViewDO data : getResults(sm)) {
-                        id = data.getAnalysisId();
-                        if (id < 0)
-                            id = amap.get(id);
-                        if (id != null && !rmap.containsKey(data.getId())) {
-                            // sort order is per analysis. avoid updating sort
-                            // order
-                            // if numbers are ascending
-                            so = seq.get(id);
-                            if (so == null)
-                                so = 1;
-                            if (data.getSortOrder() != null && data.getSortOrder() >= so)
-                                so = data.getSortOrder();
+                        if (data.getPreAnalysisId() != null && data.getPreAnalysisId() < 0) {
+                            id = amap.get(data.getPreAnalysisId());
+                            if (id != null)
+                                data.setPreAnalysisId(id);
                             else
-                                data.setSortOrder(so);
-                            seq.put(id, so + 1);
+                                nodep = false;
+                        }
 
-                            tmpid = data.getId();
-                            if (tmpid < 0) {
-                                data.setAnalysisId(id);
-                                result.add(data);
-                            } else {
-                                result.update(data);
+                        if (data.getParentAnalysisId() != null && data.getParentAnalysisId() < 0) {
+                            id = amap.get(data.getParentAnalysisId());
+                            if (id != null)
+                                data.setParentAnalysisId(id);
+                            else
+                                nodep = false;
+                        }
+
+                        if (data.getParentResultId() != null && data.getParentResultId() < 0) {
+                            id = rmap.get(data.getParentResultId());
+                            if (id != null)
+                                data.setParentResultId(id);
+                            else
+                                nodep = false;
+                        }
+
+                        if (nodep) {
+                            if (data.getId() < 0) {
+                                tmpid = data.getId();
+                                data.setSampleItemId(imap.get(data.getSampleItemId()));
+                                analysis.add(data);
+
+                                defaultARF.setAnalysisId(data.getId());
+                                analysisReportFlags.add(defaultARF);
+
+                                amap.put(tmpid, data.getId());
+                                amap.put(data.getId(), data.getId());
+                            } else if ( !amap.containsKey(data.getId())) {
+                                tmpid = data.getId();
+                                /*
+                                 * set the released date if this analysis is
+                                 * currently being released
+                                 */
+                                if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
+                                    data.getReleasedDate() == null)
+                                    data.setReleasedDate(now);
+                                analysis.update(data);
+                                amap.put(tmpid, data.getId());
                             }
-                            rmap.put(tmpid, data.getId());
+                        } else {
+                            dep++ ;
                         }
                     }
-                }
 
-            } while (dep > 0 && ldep != dep);
+                    // add/update results
+                    if (getResults(sm) != null) {
+                        for (ResultViewDO data : getResults(sm)) {
+                            id = data.getAnalysisId();
+                            if (id < 0)
+                                id = amap.get(id);
+                            if (id != null && !rmap.containsKey(data.getId())) {
+                                // sort order is per analysis. avoid updating
+                                // sort
+                                // order
+                                // if numbers are ascending
+                                so = seq.get(id);
+                                if (so == null)
+                                    so = 1;
+                                if (data.getSortOrder() != null && data.getSortOrder() >= so)
+                                    so = data.getSortOrder();
+                                else
+                                    data.setSortOrder(so);
+                                seq.put(id, so + 1);
 
-            if (dep > 0 && ldep == dep)
-                throw new InconsistencyException(Messages.get().analysis_circularReference());
+                                tmpid = data.getId();
+                                if (tmpid < 0) {
+                                    data.setAnalysisId(id);
+                                    result.add(data);
+                                } else {
+                                    result.update(data);
+                                }
+                                rmap.put(tmpid, data.getId());
+                            }
+                        }
+                    }
+
+                } while (dep > 0 && ldep != dep);
+
+                if (dep > 0 && ldep == dep)
+                    throw new InconsistencyException(Messages.get().analysis_circularReference());
+            }
 
             // add analysis notes; no updates allowed
             if (getAnalysisInternalNotes(sm) != null) {
@@ -1642,8 +1649,8 @@ public class SampleManager1Bean {
                     i++ ;
                 } else {
                     e.add(new FormErrorWarning(Messages.get()
-                                                            .sample_inactiveOrgWarning(newAccession,
-                                                                                       sorg.getOrganizationName())));
+                                                       .sample_inactiveOrgWarning(newAccession,
+                                                                                  sorg.getOrganizationName())));
                     sorgs.remove(i);
                 }
             }
@@ -1664,8 +1671,8 @@ public class SampleManager1Bean {
                     i++ ;
                 } else {
                     e.add(new FormErrorWarning(Messages.get()
-                                                            .sample_inactiveProjectWarning(newAccession,
-                                                                                           sproj.getProjectName())));
+                                                       .sample_inactiveProjectWarning(newAccession,
+                                                                                      sproj.getProjectName())));
                     sprojs.remove(i);
                 }
             }
@@ -1696,8 +1703,8 @@ public class SampleManager1Bean {
                 } else {
                     if ( !aux.getAuxFieldGroupId().equals(prevGroupId))
                         e.add(new FormErrorWarning(Messages.get()
-                                                                .sample_inactiveAuxGroupWarning(newAccession,
-                                                                                                aux.getAuxFieldGroupName())));
+                                                           .sample_inactiveAuxGroupWarning(newAccession,
+                                                                                           aux.getAuxFieldGroupName())));
                     auxiliary.remove(i);
                 }
 
@@ -1735,9 +1742,9 @@ public class SampleManager1Bean {
                     data.setTypeOfSampleId(null);
                     data.setTypeOfSample(null);
                     e.add(new FormErrorWarning(Messages.get()
-                                                            .sampleItem_inactiveSampleTypeWarning(newAccession,
-                                                                                                  data.getItemSequence(),
-                                                                                                  dict.getEntry())));
+                                                       .sampleItem_inactiveSampleTypeWarning(newAccession,
+                                                                                             data.getItemSequence(),
+                                                                                             dict.getEntry())));
 
                 }
             }
@@ -1751,9 +1758,9 @@ public class SampleManager1Bean {
                     data.setSourceOfSampleId(null);
                     data.setSourceOfSample(null);
                     e.add(new FormErrorWarning(Messages.get()
-                                                            .sampleItem_inactiveSourceWarning(newAccession,
-                                                                                              data.getItemSequence(),
-                                                                                              dict.getEntry())));
+                                                       .sampleItem_inactiveSourceWarning(newAccession,
+                                                                                         data.getItemSequence(),
+                                                                                         dict.getEntry())));
                 }
             }
 
@@ -1766,9 +1773,9 @@ public class SampleManager1Bean {
                     data.setContainerId(null);
                     data.setContainer(null);
                     e.add(new FormErrorWarning(Messages.get()
-                                                            .sampleItem_inactiveContainerWarning(newAccession,
-                                                                                                 data.getItemSequence(),
-                                                                                                 dict.getEntry())));
+                                                       .sampleItem_inactiveContainerWarning(newAccession,
+                                                                                            data.getItemSequence(),
+                                                                                            dict.getEntry())));
                 }
             }
 
@@ -1780,9 +1787,9 @@ public class SampleManager1Bean {
                 if ("N".equals(dict.getIsActive())) {
                     data.setUnitOfMeasureId(null);
                     e.add(new FormErrorWarning(Messages.get()
-                                                            .sampleItem_inactiveUnitWarning(newAccession,
-                                                                                            data.getItemSequence(),
-                                                                                            dict.getEntry())));
+                                                       .sampleItem_inactiveUnitWarning(newAccession,
+                                                                                       data.getItemSequence(),
+                                                                                       dict.getEntry())));
                 }
             }
             imap.put(tmpId, data);
@@ -1840,9 +1847,9 @@ public class SampleManager1Bean {
                          * don't duplicate the analysis if its test is inactive
                          */
                         e.add(new FormErrorWarning(Messages.get()
-                                                                .sample_inactiveTestWarning(accession,
-                                                                                            ana.getTestName(),
-                                                                                            ana.getMethodName())));
+                                                           .sample_inactiveTestWarning(accession,
+                                                                                       ana.getTestName(),
+                                                                                       ana.getMethodName())));
                         analyses.remove(i);
                     } else {
                         tmpId = ana.getId();
@@ -1861,11 +1868,11 @@ public class SampleManager1Bean {
                             if ("N".equals(dict.getIsActive())) {
                                 ana.setUnitOfMeasureId(null);
                                 e.add(new FormErrorWarning(Messages.get()
-                                                                        .analysis_inactiveUnitWarning(accession,
-                                                                                                      item.getItemSequence(),
-                                                                                                      ana.getTestName(),
-                                                                                                      ana.getMethodName(),
-                                                                                                      dict.getEntry())));
+                                                                   .analysis_inactiveUnitWarning(accession,
+                                                                                                 item.getItemSequence(),
+                                                                                                 ana.getTestName(),
+                                                                                                 ana.getMethodName(),
+                                                                                                 dict.getEntry())));
                             }
                         }
                         amap.put(tmpId, ana.getId());
@@ -2243,7 +2250,6 @@ public class SampleManager1Bean {
          */
         testIds = new ArrayList<Integer>();
         groupIds = null;
-        e = new ValidationErrorsList();
         panelTests = null;
         for (SampleTestRequestVO test : tests) {
             if (test.getTestId() != null) {
@@ -2285,6 +2291,7 @@ public class SampleManager1Bean {
         if (panelTests != null)
             tests.addAll(panelTests);
 
+        e = new ValidationErrorsList();
         tms = analysisHelper.getTestManagers(testIds, e);
 
         ret = new SampleTestReturnVO();
