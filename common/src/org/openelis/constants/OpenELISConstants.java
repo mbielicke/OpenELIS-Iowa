@@ -2185,11 +2185,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String backToSearch();
 
   /**
-   * Translated "Barcode   ".
+   * Translated "Barcode".
    * 
-   * @return translated "Barcode   "
+   * @return translated "Barcode"
    */
-  @DefaultMessage("Barcode   ")
+  @DefaultMessage("Barcode")
   @Key("barcode")
   String barcode();
 
@@ -5290,11 +5290,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_analytes();
 
   /**
-   * Translated "Barcode              ".
+   * Translated "Barcode".
    * 
-   * @return translated "Barcode              "
+   * @return translated "Barcode"
    */
-  @DefaultMessage("Barcode              ")
+  @DefaultMessage("Barcode")
   @Key("gen.barcode")
   String gen_barcode();
 
@@ -14416,6 +14416,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleDomainChangedException();
 
   /**
+   * Translated "Environmental Info".
+   * 
+   * @return translated "Environmental Info"
+   */
+  @DefaultMessage("Environmental Info")
+  @Key("sampleEnvironmental.envInfo")
+  String sampleEnvironmental_envInfo();
+
+  /**
    * Translated "Hazardous".
    * 
    * @return translated "Hazardous"
@@ -14423,6 +14432,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Hazardous")
   @Key("sampleEnvironmental.hazardous")
   String sampleEnvironmental_hazardous();
+
+  /**
+   * Translated "Environmental Sample Login".
+   * 
+   * @return translated "Environmental Sample Login"
+   */
+  @DefaultMessage("Environmental Sample Login")
+  @Key("sampleEnvironmental.login")
+  String sampleEnvironmental_login();
+
+  /**
+   * Translated "Fully login environmental sample and analysis related information.".
+   * 
+   * @return translated "Fully login environmental sample and analysis related information."
+   */
+  @DefaultMessage("Fully login environmental sample and analysis related information.")
+  @Key("sampleEnvironmental.loginDescription")
+  String sampleEnvironmental_loginDescription();
+
+  /**
+   * Translated "Organization Info".
+   * 
+   * @return translated "Organization Info"
+   */
+  @DefaultMessage("Organization Info")
+  @Key("sampleEnvironmental.organizationInfo")
+  String sampleEnvironmental_organizationInfo();
 
   /**
    * Translated "Smp Ext Comment".
