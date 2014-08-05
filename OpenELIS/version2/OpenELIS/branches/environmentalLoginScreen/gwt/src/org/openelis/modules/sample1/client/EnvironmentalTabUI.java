@@ -213,7 +213,7 @@ public class EnvironmentalTabUI extends Screen {
         });
         
         addScreenHandler(locationAddressMultipleUnit,
-                         SampleMeta.getWellLocationAddrMultipleUnit(),
+                         SampleMeta.getLocationAddrMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  locationAddressMultipleUnit.setValue(getLocationAddressMultipleUnit());
@@ -236,7 +236,7 @@ public class EnvironmentalTabUI extends Screen {
                          });
 
         addScreenHandler(locationAddressStreetAddress,
-                         SampleMeta.getWellLocationAddrStreetAddress(),
+                         SampleMeta.getLocationAddrStreetAddress(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  locationAddressStreetAddress.setValue(getLocationAddressStreetAddress());
@@ -259,7 +259,7 @@ public class EnvironmentalTabUI extends Screen {
                          });
 
         addScreenHandler(locationAddressCity,
-                         SampleMeta.getWellLocationAddrCity(),
+                         SampleMeta.getLocationAddrCity(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  locationAddressCity.setValue(getLocationAddressCity());
@@ -281,7 +281,7 @@ public class EnvironmentalTabUI extends Screen {
                          });
 
         addScreenHandler(locationAddressState,
-                         SampleMeta.getWellLocationAddrState(),
+                         SampleMeta.getLocationAddrState(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  locationAddressState.setValue(getLocationAddressState());
@@ -303,7 +303,7 @@ public class EnvironmentalTabUI extends Screen {
                          });
 
         addScreenHandler(locationAddressZipCode,
-                         SampleMeta.getWellLocationAddrZipCode(),
+                         SampleMeta.getLocationAddrZipCode(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  locationAddressZipCode.setValue(getLocationAddressZipCode());
@@ -325,7 +325,7 @@ public class EnvironmentalTabUI extends Screen {
                          });
         
         addScreenHandler(locationAddressCountry,
-                         SampleMeta.getWellLocationAddrState(),
+                         SampleMeta.getLocationAddrCountry(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  locationAddressCountry.setValue(getLocationAddressCountry());
