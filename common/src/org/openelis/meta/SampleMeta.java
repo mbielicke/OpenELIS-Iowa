@@ -1834,8 +1834,11 @@ public class SampleMeta implements Meta, MetaMap {
         String from = "Sample _sample ";
 
         // sample env
-        if (where.indexOf("sampleEnvironmental.") > -1)
+        if (where.indexOf("sampleEnvironmental.") > -1 || where.indexOf("locationAddress.") > -1)
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
+        
+        if (where.indexOf("locationAddress.") > -1)
+            from += ", IN (_sampleEnvironmental.locationAddress) _locationAddress ";        
 
         // sample private well
         if (where.indexOf("samplePrivateWell.") > -1 ||
