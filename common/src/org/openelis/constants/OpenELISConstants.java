@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -16556,6 +16556,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Turn Around")
   @Key("test.turnaround")
   String test_turnaround();
+
+  /**
+   * Translated "Unit of Measure".
+   * 
+   * @return translated "Unit of Measure"
+   */
+  @DefaultMessage("Unit of Measure")
+  @Key("test.unitOfMeasure")
+  String test_unitOfMeasure();
 
   /**
    * Translated "Worksheet Layout".

@@ -100,6 +100,7 @@ public class TestScreenUI extends Screen {
     interface TestScreenUiBinder extends UiBinder<Widget, TestScreenUI> {
     };
 
+
     public static final TestScreenUiBinder         uiBinder = GWT.create(TestScreenUiBinder.class);
 
     protected TestManager1                         manager;
@@ -191,16 +192,6 @@ public class TestScreenUI extends Screen {
         }
 
         detailsTab = new DetailsTabUI(this);
-        // organizationTab = new OrganizationTabUI(this);
-        // testTab = new TestTabUI(this);
-        // containerTab = new ContainerTabUI(this);
-        // itemTab = new SendoutOrderItemTabUI(this);
-        // shippingNotesTab = new ShippingNotesTabUI(this);
-        // customerNotesTab = new CustomerNotesTabUI(this);
-        // internalNotesTab = new InternalNotesTabUI(this);
-        // sampleNotesTab = new SampleNotesTabUI(this);
-        // recurrenceTab = new RecurrenceTabUI(this);
-        // fillTab = new SendoutOrderFillTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 

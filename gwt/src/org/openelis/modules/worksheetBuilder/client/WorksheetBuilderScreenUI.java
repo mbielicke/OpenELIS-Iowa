@@ -562,7 +562,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                             setError(Messages.get().gen_noMoreRecordInDir());
                         }
     
-                        public void onFailure(Throwable error) {
+                        public void failure(Throwable error) {
                             setQueryResult(null);
                             Window.alert("Error: Worksheet call query failed; " +
                                          error.getMessage());
@@ -1252,7 +1252,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                     setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                                 }
                     
-                                public void onFailure(Throwable e) {
+                                public void failure(Throwable e) {
                                     analyteTable.setModel(null);
                                     Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+e.getMessage());
                                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1295,7 +1295,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                     setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                                 }
                                 
-                                public void onFailure(Throwable e) {
+                                public void failure(Throwable e) {
                                     analyteTable.setModel(null);
                                     Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+e.getMessage());
                                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1335,7 +1335,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                 setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                             }
                             
-                            public void onFailure(Throwable e) {
+                            public void failure(Throwable e) {
                                 analyteTable.setModel(null);
                                 Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+e.getMessage());
                                 logger.log(Level.SEVERE, e.getMessage(), e);
