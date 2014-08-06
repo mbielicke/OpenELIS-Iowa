@@ -108,7 +108,7 @@
                     <w:Dropdown ui:field="patientAddrState" field="String" width="42px" />
                     <g:HorizontalPanel width="4px" />
                     <w:TextBox ui:field="patientAddrZipCode" field="String" width="75px"
-                      mask="{msg.gen_zipcodePattern}" case="UPPER" />
+                      case="UPPER" mask="{msg.gen_zipcodePattern}" />
                   </g:HorizontalPanel>
                 </td>
               </tr>

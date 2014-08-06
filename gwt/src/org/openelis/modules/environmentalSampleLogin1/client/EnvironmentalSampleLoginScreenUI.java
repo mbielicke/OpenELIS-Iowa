@@ -60,6 +60,7 @@ import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
@@ -82,6 +83,7 @@ import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
@@ -105,6 +107,7 @@ import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.KeyCodes;
@@ -151,16 +154,22 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     receivedDate;
 
     @UiField
-    protected TextBox<Integer>                          accessionNumber, orderId;
+    protected TextBox<Integer>                          accessionNumber, orderId, priority;
 
     @UiField
-    protected TextBox<String>                           clientReference, locationAddressMultipleUnit,
-    locationAddressStreetAddress, locationAddressCity, locationAddressZipCode;
+    protected TextBox<String>                           clientReference, collector, collectorPhone,
+                    description, location, locationAddressMultipleUnit,
+                    locationAddressStreetAddress, locationAddressCity, locationAddressZipCode;
 
     @UiField
     protected Dropdown<Integer>                         status;
 
-    protected Dropdown<String>                          locationAddressState, locationAddressCountry;
+    @UiField
+    protected CheckBox                                  isHazardous;
+
+    @UiField
+    protected Dropdown<String>                          locationAddressState,
+                    locationAddressCountry;
 
     @UiField
     protected AutoComplete                              projectName, reportToName, billToName;
@@ -175,10 +184,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     @UiField
     protected MenuItem                                  duplicate, historySample,
-                    historySampleEnvironmental, historyPatient, historySampleProject,
-                    historySampleOrganization, historySampleItem, historyAnalysis,
-                    historyCurrentResult, historyStorage, historySampleQA, historyAnalysisQA,
-                    historyAuxData;
+                    historySampleEnvironmental, historySampleProject, historySampleOrganization,
+                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
+                    historySampleQA, historyAnalysisQA, historyAuxData;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -619,30 +627,42 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disabled until the functionality for the orders for this
-                 * domain has been implemented
-                 */
-                // orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD,
-                // UPDATE)));
-                // orderId.setQueryMode(isState(QUERY));
-                orderId.setEnabled(false);
+                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                orderId.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
                 return forward ? collectionDate : accessionNumber;
             }
         });
+        
+        orderId.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                Integer ordId, prevOrdId;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    ordId = manager.getSample().getOrderId();
+                    prevOrdId = previousManager.getSample().getOrderId();
+                    /*
+                     * we don't want to incur the cost of importing the order if
+                     * the order id in the previous manager is the same as the
+                     * one in the current manager
+                     */
+                    if ( !DataBaseUtil.isSame(ordId, prevOrdId)) {
+                        setOrderId(ordId);
+                        orderId.setValue(ordId);
+                    }
+                    screen.focusNextWidget((Focusable)orderId, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disabled until the functionality for the orders for this
-                 * domain has been implemented
-                 */
-                // orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit &&
-                // isState(ADD, UPDATE)));
-                orderLookupButton.setEnabled(false);
+                orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
             }
         });
 
@@ -792,9 +812,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  clientReference.setQueryMode(isState(QUERY));
                              }
 
-                             // public Widget onTab(boolean forward) {
-                             // return forward ? patientId : status;
-                             // }
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isHazardous : status;
+                             }
                          });
 
         clientReference.addKeyUpHandler(new KeyUpHandler() {
@@ -807,6 +827,219 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     setClientReference(cr);
                     clientReference.setValue(cr);
                     screen.focusNextWidget((Focusable)clientReference, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(isHazardous, SampleMeta.getEnvIsHazardous(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isHazardous.setValue(getIsHazardous());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                setIsHazardous(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                isHazardous.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                isHazardous.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? priority : clientReference;
+            }
+        });
+        
+        isHazardous.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String ih;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    ih = previousManager.getSampleEnvironmental().getIsHazardous();
+                    setIsHazardous(ih);
+                    isHazardous.setValue(ih);
+                    screen.focusNextWidget((Focusable)isHazardous, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(priority, SampleMeta.getEnvPriority(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                priority.setValue(getPriority());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setPriority(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                priority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                priority.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? collector : isHazardous;
+            }
+        });
+        
+        priority.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                Integer p;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    p = previousManager.getSampleEnvironmental().getPriority();
+                    setPriority(p);
+                    priority.setValue(p);
+                    screen.focusNextWidget((Focusable)priority, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(collector, SampleMeta.getEnvCollector(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                collector.setValue(getCollector());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                setCollector(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                collector.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? collectorPhone : priority;
+            }
+        });
+        
+        collector.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String col;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    col = previousManager.getSampleEnvironmental().getCollector();
+                    setCollector(col);
+                    collector.setValue(col);
+                    screen.focusNextWidget((Focusable)collector, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(collectorPhone,
+                         SampleMeta.getEnvCollectorPhone(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 collectorPhone.setValue(getCollectorPhone());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setCollectorPhone(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 collectorPhone.setEnabled(isState(QUERY) ||
+                                                           (canEdit && isState(ADD, UPDATE)));
+                                 collectorPhone.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? description : collector;
+                             }
+                         });
+        
+        collectorPhone.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String cp;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    cp = previousManager.getSampleEnvironmental().getCollectorPhone();
+                    setCollectorPhone(cp);
+                    collectorPhone.setValue(cp);
+                    screen.focusNextWidget((Focusable)collectorPhone, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(description, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                description.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                description.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? location : collectorPhone;
+            }
+        });
+        
+        description.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String d;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    d = previousManager.getSampleEnvironmental().getDescription();
+                    setDescription(d);
+                    description.setValue(d);
+                    screen.focusNextWidget((Focusable)description, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(location, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                location.setValue(getLocation());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                setLocation(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                location.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? locationAddressMultipleUnit : description;
+            }
+        });
+        
+        location.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String l;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    l = previousManager.getSampleEnvironmental().getLocation();
+                    setLocation(l);
+                    location.setValue(l);
+                    screen.focusNextWidget((Focusable)location, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
@@ -830,11 +1063,27 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                                                                             UPDATE)));
                                  locationAddressMultipleUnit.setQueryMode(isState(QUERY));
                              }
-                             
-                             //public Widget onTab(boolean forward) {
-                               //  return forward ? locationAddressStreetAddress : description;
-                             //}
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? locationAddressStreetAddress : location;
+                             }
                          });
+        
+        locationAddressMultipleUnit.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String mu;                
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    mu = previousManager.getSampleEnvironmental().getLocationAddress().getMultipleUnit();
+                    setLocationAddressMultipleUnit(mu);
+                    locationAddressMultipleUnit.setValue(mu);
+                    screen.focusNextWidget((Focusable)locationAddressMultipleUnit, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(locationAddressStreetAddress,
                          SampleMeta.getLocationAddrStreetAddress(),
@@ -848,16 +1097,32 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressStreetAddress.setEnabled((isState(QUERY)) ||
+                                 locationAddressStreetAddress.setEnabled(isState(QUERY) ||
                                                                          (canEdit && isState(ADD,
                                                                                              UPDATE)));
-                                 locationAddressStreetAddress.setQueryMode((isState(QUERY)));
+                                 locationAddressStreetAddress.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? locationAddressCity : locationAddressMultipleUnit;
                              }
                          });
+        
+        locationAddressStreetAddress.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String sa;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    sa = previousManager.getSampleEnvironmental().getLocationAddress().getStreetAddress();
+                    setLocationAddressStreetAddress(sa);
+                    locationAddressStreetAddress.setValue(sa);
+                    screen.focusNextWidget((Focusable)locationAddressStreetAddress, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(locationAddressCity,
                          SampleMeta.getLocationAddrCity(),
@@ -871,15 +1136,32 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressCity.setEnabled((isState(QUERY)) ||
+                                 locationAddressCity.setEnabled(isState(QUERY) ||
                                                                 (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressCity.setQueryMode((isState(QUERY)));
+                                 locationAddressCity.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? locationAddressState : locationAddressStreetAddress;
+                                 return forward ? locationAddressState
+                                               : locationAddressStreetAddress;
                              }
                          });
+        
+        locationAddressCity.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String c;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    c = previousManager.getSampleEnvironmental().getLocationAddress().getCity();
+                    setLocationAddressCity(c);
+                    locationAddressCity.setValue(c);
+                    screen.focusNextWidget((Focusable)locationAddressCity, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(locationAddressState,
                          SampleMeta.getLocationAddrState(),
@@ -893,15 +1175,31 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressState.setEnabled((isState(QUERY)) ||
+                                 locationAddressState.setEnabled(isState(QUERY) ||
                                                                  (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressState.setQueryMode((isState(QUERY)));
+                                 locationAddressState.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? locationAddressZipCode : locationAddressCity;
                              }
                          });
+        
+        locationAddressState.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String st;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    st = previousManager.getSampleEnvironmental().getLocationAddress().getState();
+                    setLocationAddressState(st);
+                    locationAddressState.setValue(st);
+                    screen.focusNextWidget((Focusable)locationAddressState, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(locationAddressZipCode,
                          SampleMeta.getLocationAddrZipCode(),
@@ -915,16 +1213,32 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressZipCode.setEnabled((isState(QUERY)) ||
+                                 locationAddressZipCode.setEnabled( (isState(QUERY)) ||
                                                                    (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressZipCode.setQueryMode((isState(QUERY)));
+                                 locationAddressZipCode.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? locationAddressCountry : locationAddressState;
                              }
                          });
         
+        locationAddressZipCode.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String zip;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    zip = previousManager.getSampleEnvironmental().getLocationAddress().getZipCode();
+                    setLocationAddressZipCode(zip);
+                    locationAddressZipCode.setValue(zip);
+                    screen.focusNextWidget((Focusable)locationAddressZipCode, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
         addScreenHandler(locationAddressCountry,
                          SampleMeta.getLocationAddrCountry(),
                          new ScreenHandler<String>() {
@@ -937,15 +1251,31 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 locationAddressCountry.setEnabled((isState(QUERY)) ||
-                                                                 (canEdit && isState(ADD, UPDATE)));
-                                 locationAddressCountry.setQueryMode((isState(QUERY)));
+                                 locationAddressCountry.setEnabled(isState(QUERY) ||
+                                                                   (canEdit && isState(ADD, UPDATE)));
+                                 locationAddressCountry.setQueryMode(isState(QUERY));
                              }
-                             
-                             //public Widget onTab(boolean forward) {
-                               //  return forward ? isHazardous : locationAddressZipCode;
-                             //}
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? projectName : locationAddressZipCode;
+                             }
                          });
+        
+        locationAddressCountry.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String c;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    c = previousManager.getSampleEnvironmental().getLocationAddress().getCountry();
+                    setLocationAddressCountry(c);
+                    locationAddressCountry.setValue(c);
+                    screen.focusNextWidget((Focusable)locationAddressCountry, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
 
         addScreenHandler(projectName,
                          SampleMeta.getProjectName(),
@@ -969,10 +1299,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  projectName.setQueryMode(isState(QUERY));
                              }
 
-                             // public Widget onTab(boolean forward) {
-                             // return forward ? reportToName : providerPhone;
-                             // }
-                         });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? reportToName : locationAddressCountry;
+                             }
+                         });       
 
         projectName.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -1167,7 +1497,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     event.stopPropagation();
                 }
             }
-        });
+        });       
 
         addScreenHandler(billToButton, "billToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
@@ -1673,7 +2003,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
 
         locationAddressState.setModel(stmodel);
-        
+
         stmodel = new ArrayList<Item<String>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("country")) {
             strow = new Item<String>(d.getEntry(), d.getEntry());
@@ -2049,6 +2379,46 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
 
         SampleService1.get().duplicate(manager.getSample().getId(), duplicateCall);
+    }
+    
+    /**
+     * Shows the order linked to the sample on the screen corresponding to the
+     * type of order e.g. Send-out order screen for environmental samples
+     */
+    @UiHandler("orderLookupButton")
+    protected void orderLookup(ClickEvent event) {
+        String domain;
+        org.openelis.ui.widget.Window window;
+        final SendoutOrderScreenUI orderScreen;
+        ScheduledCommand cmd;
+
+        if (getOrderId() == null)
+            return;
+
+        domain = manager.getSample().getDomain();
+
+        if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
+            Constants.domain().PRIVATEWELL.equals(domain) ||
+            Constants.domain().SDWIS.equals(domain)) {
+            try {
+                window = new org.openelis.ui.widget.Window();
+                window.setName(Messages.get().order_sendoutOrder());
+                window.setSize("1020px", "588px");
+                orderScreen = new SendoutOrderScreenUI(window);
+                window.setContent(orderScreen);
+                OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        orderScreen.query(manager.getSample().getOrderId());
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            } catch (Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
     }
 
     /**
@@ -2527,13 +2897,13 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
 
         if (getAccessionNumber() == null) {
-            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
+            Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             orderId.setValue(null);
             return;
         }
 
         try {
-            setBusy(Messages.get().fetching());
+            setBusy(Messages.get().gen_fetching());
             ret = SampleService1.get().importOrder(manager, ordId);
             manager = ret.getManager();
             setData();
@@ -2631,7 +3001,113 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     private void setClientReference(String clientReference) {
         manager.getSample().setClientReference(clientReference);
     }
-    
+
+    /*
+     * getters and setters for the fields at the domain level
+     */
+
+    /**
+     * returns is hazardous or null if the manager is null or if this is not an
+     * environmental sample
+     */
+    private String getIsHazardous() {
+        if (manager == null || manager.getSampleEnvironmental() == null)
+            return null;
+        return manager.getSampleEnvironmental().getIsHazardous();
+    }
+
+    /**
+     * sets is hazardous
+     */
+    private void setIsHazardous(String isHazardous) {
+        manager.getSampleEnvironmental().setIsHazardous(isHazardous);
+    }
+
+    /**
+     * returns the priority or null if the manager is null or if this is not an
+     * environmental sample
+     */
+    private Integer getPriority() {
+        if (manager == null || manager.getSampleEnvironmental() == null)
+            return null;
+        return manager.getSampleEnvironmental().getPriority();
+    }
+
+    /**
+     * sets the priority
+     */
+    private void setPriority(Integer priority) {
+        manager.getSampleEnvironmental().setPriority(priority);
+    }
+
+    /**
+     * returns the collector or null if the manager is null or if this is not an
+     * environmental sample
+     */
+    private String getCollector() {
+        if (manager == null || manager.getSampleEnvironmental() == null)
+            return null;
+        return manager.getSampleEnvironmental().getCollector();
+    }
+
+    /**
+     * sets the priority
+     */
+    private void setCollector(String collector) {
+        manager.getSampleEnvironmental().setCollector(collector);
+    }
+
+    /**
+     * returns the collector phone or null if the manager is null or if this is
+     * not an environmental sample
+     */
+    private String getCollectorPhone() {
+        if (manager == null || manager.getSampleEnvironmental() == null)
+            return null;
+        return manager.getSampleEnvironmental().getCollectorPhone();
+    }
+
+    /**
+     * sets the collector phone
+     */
+    private void setCollectorPhone(String collectorPhone) {
+        manager.getSampleEnvironmental().setCollectorPhone(collectorPhone);
+    }
+
+    /**
+     * returns the location or null if the manager is null or if this is not an
+     * environmental sample
+     */
+    private String getLocation() {
+        if (manager == null || manager.getSampleEnvironmental() == null)
+            return null;
+        return manager.getSampleEnvironmental().getLocation();
+    }
+
+    /**
+     * sets the location
+     */
+    private void setLocation(String location) {
+        manager.getSampleEnvironmental().setLocation(location);
+    }
+
+    /**
+     * returns the description or null if the manager is null or if this is not
+     * an environmental sample
+     */
+    private String getDescription() {
+        if (manager == null || manager.getSampleEnvironmental() == null)
+            return null;
+        return manager.getSampleEnvironmental().getDescription();
+    }
+
+    /**
+     * sets the description
+     */
+    private void setDescription(String description) {
+        manager.getSampleEnvironmental().setDescription(description);
+    }
+
     /**
      * returns the location's multiple unit (apt/suite) or null if the manager
      * is null or if this is not an environmental sample
@@ -2719,7 +3195,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     private void setLocationAddressZipCode(String zipCode) {
         manager.getSampleEnvironmental().getLocationAddress().setZipCode(zipCode);
     }
-    
+
     /**
      * returns the location's country or null if the manager is null or if this
      * is not an environmental sample

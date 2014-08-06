@@ -6685,11 +6685,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String history_sampleClinical();
 
   /**
-   * Translated "History - Sample Environmental".
+   * Translated "Sample Environmental".
    * 
-   * @return translated "History - Sample Environmental"
+   * @return translated "Sample Environmental"
    */
-  @DefaultMessage("History - Sample Environmental")
+  @DefaultMessage("Sample Environmental")
   @Key("history.sampleEnvironmental")
   String history_sampleEnvironmental();
 
