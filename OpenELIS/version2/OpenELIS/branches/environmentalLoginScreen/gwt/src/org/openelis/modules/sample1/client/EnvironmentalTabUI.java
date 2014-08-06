@@ -95,7 +95,7 @@ public class EnvironmentalTabUI extends Screen {
         Item<String> row;
         ArrayList<Item<String>> model;
         
-        addScreenHandler(isHazardous, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
+        addScreenHandler(isHazardous, SampleMeta.getEnvIsHazardous(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isHazardous.setValue(getIsHazardous());
             }

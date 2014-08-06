@@ -53,7 +53,7 @@ public class EnvironmentalSampleLoginEntry implements EntryPoint,ShowScreenHandl
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().environmentalSampleLogin());
-                    window.setSize("770px", "740px");
+                    window.setSize("755px", "740px");
                     window.setContent(new EnvironmentalSampleLoginScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "environmentalSampleLogin");
                 } catch (Throwable e) {

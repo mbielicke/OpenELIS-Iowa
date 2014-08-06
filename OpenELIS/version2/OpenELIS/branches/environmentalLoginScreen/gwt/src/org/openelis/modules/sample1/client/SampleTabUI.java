@@ -746,7 +746,7 @@ public class SampleTabUI extends Screen {
         final SendoutOrderScreenUI orderScreen;
         ScheduledCommand cmd;
 
-        if (manager.getSample().getOrderId() == null)
+        if (getOrderId() == null)
             return;
 
         domain = manager.getSample().getDomain();
@@ -756,7 +756,7 @@ public class SampleTabUI extends Screen {
             Constants.domain().SDWIS.equals(domain)) {
             try {
                 window = new org.openelis.ui.widget.Window();
-                window.setName(Messages.get().sendoutOrder());
+                window.setName(Messages.get().order_sendoutOrder());
                 window.setSize("1020px", "588px");
                 orderScreen = new SendoutOrderScreenUI(window);
                 window.setContent(orderScreen);
