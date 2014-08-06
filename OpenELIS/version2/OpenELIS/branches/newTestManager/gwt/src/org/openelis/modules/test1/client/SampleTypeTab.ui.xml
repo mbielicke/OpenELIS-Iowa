@@ -20,6 +20,31 @@
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
 	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
 		field="res" />
+	<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+		<g:layer top="0px" bottom="25px">
+			<t:Table ui:field="table" horizontalScroll="ALWAYS"
+				verticalScroll="ALWAYS" width="697px" header="true"
+				styleName="{res.table.ScreenTableWithSides}">
+				<t:Column width="301" label="{msg.sample_type}" required="true">
+					<t:DropdownCell>
+						<w:Dropdown width="301" field="Integer" ui:field="typeOfSample" />
+					</t:DropdownCell>
+				</t:Column>
+				<t:Column width="300" label="{msg.test_unitOfMeasure}">
+					<t:DropdownCell>
+						<w:Dropdown width="300" field="Integer" ui:field="unitOfMeasure" />
+					</t:DropdownCell>
+				</t:Column>
+			</t:Table>
+		</g:layer>
+		<g:layer bottom="0px" height="25px">
+			<g:HorizontalPanel>
+				<w:Button ui:field="addButton" leftIcon="{res.icon.addRowIcon}"
+					text="{msg.gen_addRow}" />
+				<w:Button ui:field="removeButton" leftIcon="{res.icon.removeRowIcon}"
+					text="{msg.gen_removeRow}" />
+			</g:HorizontalPanel>
+		</g:layer>
+	</g:LayoutPanel>
 
-	
 </ui:UiBinder>
