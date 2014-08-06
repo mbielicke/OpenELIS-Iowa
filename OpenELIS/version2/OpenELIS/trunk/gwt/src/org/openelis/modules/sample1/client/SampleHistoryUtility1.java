@@ -128,11 +128,11 @@ public class SampleHistoryUtility1 {
      */
     public static void clinical(SampleManager1 manager) {
         IdNameVO hist;
-        SampleNeonatalDO data;
+        SampleClinicalDO data;
 
-        data = manager.getSampleNeonatal();
+        data = manager.getSampleClinical();
         hist = new IdNameVO(data.getId(), "");
-        HistoryScreen.showHistory(Messages.get().history_sampleNeonatal(),
+        HistoryScreen.showHistory(Messages.get().history_sampleClinical(),
                                   Constants.table().SAMPLE_CLINICAL,
                                   hist);
     }
