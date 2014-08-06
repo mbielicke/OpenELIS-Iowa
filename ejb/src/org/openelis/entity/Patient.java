@@ -252,7 +252,7 @@ public class Patient implements Auditable, Cloneable {
                  .setField("gender_id", genderId, original.genderId, Constants.table().DICTIONARY)
                  .setField("race_id", raceId, original.raceId, Constants.table().DICTIONARY)
                  .setField("ethnicity_id", ethnicityId, original.ethnicityId, Constants.table().DICTIONARY)
-                 .setField("nationalId", nationalId, nationalId);
+                 .setField("nationalId", nationalId, original.nationalId);
 
         return audit;
     }
