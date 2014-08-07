@@ -130,6 +130,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     private Integer                                       origStatusId;
     private ModulePermission                              userPermission;
     private ScreenNavigator<IdNameVO>                     nav;
+    private String                                        selectedUid;
     private WorksheetManager1                             manager;
 
     @UiField
@@ -1200,13 +1201,14 @@ public class WorksheetBuilderScreenUI extends Screen {
     }
 
     @SuppressWarnings("unchecked")
-    private void showAnalytes(final String uid) {
+    private void showAnalytes(String uid) {
         ArrayList<Object> analyteList;
         SectionPermission perm;
         WorksheetAnalysisViewDO data;
         
-        if (uid != null) {
-            analyteList = analytesMap.get(uid);
+        selectedUid = uid;
+        if (selectedUid != null) {
+            analyteList = analytesMap.get(selectedUid);
             if (analyteList != null) {
                 analyteTable.setModel((ArrayList<Row>)analyteList.get(1));
                 if (!isState(ADD, UPDATE) || Boolean.FALSE.equals(analyteList.get(0))) {
@@ -1218,7 +1220,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 }
                 clearStatus();
             } else {
-                data = (WorksheetAnalysisViewDO)manager.getObject(uid);
+                data = (WorksheetAnalysisViewDO)manager.getObject(selectedUid);
                 if (data.getAnalysisId() != null) {
                     perm = UserCache.getPermission().getSection(data.getSectionName());
                     if (isState(ADD, UPDATE) && perm.hasCompletePermission()) {
@@ -1241,7 +1243,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                     analyteTable.setModel(model);
                                     analyteList.add(Boolean.TRUE);
                                     analyteList.add(model);
-                                    analytesMap.put(uid, analyteList);
+                                    analytesMap.put(selectedUid, analyteList);
                                     checkAllAnalytes.setEnabled(true);
                                     uncheckAllAnalytes.setEnabled(true);
                                     clearStatus();
@@ -1286,7 +1288,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                     analyteTable.setModel(model);
                                     analyteList.add(Boolean.FALSE);
                                     analyteList.add(model);
-                                    analytesMap.put(uid, analyteList);
+                                    analytesMap.put(selectedUid, analyteList);
                                     clearStatus();
                                 }
                                 
@@ -1326,7 +1328,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                 analyteTable.setModel(model);
                                 analyteList.add(Boolean.FALSE);
                                 analyteList.add(model);
-                                analytesMap.put(uid, analyteList);
+                                analytesMap.put(selectedUid, analyteList);
                                 clearStatus();
                             }
                             

@@ -25,5 +25,7 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-
+  <inherits name="org.openelis.modules.analyte.AnalyteService"/>
+  <inherits name="org.openelis.modules.worksheetBuilder.WorksheetBuilder"/>
+  <inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1"/>
 </module>
