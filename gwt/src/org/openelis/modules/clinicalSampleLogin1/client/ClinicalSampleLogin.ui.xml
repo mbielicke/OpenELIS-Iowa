@@ -49,7 +49,7 @@
               selfShow="true" showBelow="false"
             >
               <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
-              <w:MenuItem ui:field="historySampleClinical" display="{msg.history_sampleClinical}" />
+              <w:MenuItem ui:field="historySampleClinical" display="{msg.sampleClinical_sampleClinical}" />
               <w:MenuItem ui:field="historyPatient" display="{msg.patient_patient}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
