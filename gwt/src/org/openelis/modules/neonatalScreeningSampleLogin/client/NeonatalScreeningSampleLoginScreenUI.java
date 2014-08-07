@@ -2463,7 +2463,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * screens
          */
         auxDataTab.setCanQuery(true);
-        
+
         /*
          * add shortcuts to select the tabs on the screen by using the Ctrl key
          * and a number, e.g. Ctrl+'1' for the first tab, and so on; the
@@ -3344,7 +3344,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                      * show any errors/warnings found during duplication
                      */
                     errors = result.getErrors();
-                    if (errors != null) {
+                    if (errors != null && errors.size() > 0) {
                         if (errors.hasWarnings())
                             Window.alert(getWarnings(errors.getErrorList()));
                         if (errors.hasErrors())
@@ -3507,7 +3507,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * an editable widget lose focus
              */
             focusedWidget = (Focusable)patientId;
-            
+
             lookupPatient(null, false);
         }
     }
@@ -3526,7 +3526,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * an editable widget lose focus
              */
             focusedWidget = (Focusable)patientId;
-            
+
             lookupPatient(manager.getSampleNeonatal().getPatient(), false);
         }
     }
@@ -3598,7 +3598,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * an editable widget lose focus
              */
             focusedWidget = (Focusable)nextOfKinId;
-            
+
             lookupPatient(null, false);
         }
     }
@@ -3617,7 +3617,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * an editable widget lose focus
              */
             focusedWidget = (Focusable)nextOfKinId;
-            
+
             lookupPatient(manager.getSampleNeonatal().getNextOfKin(), false);
         }
     }
@@ -4266,6 +4266,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void setOrderId(Integer ordId) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
@@ -4273,25 +4274,35 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         if (getAccessionNumber() == null) {
-            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
+            Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             orderId.setValue(null);
             return;
         }
 
         try {
-            setBusy(Messages.get().fetching());
+            setBusy(Messages.get().gen_fetching());
             ret = SampleService1.get().importOrder(manager, ordId);
             manager = ret.getManager();
             setData();
             fireDataChange();
             clearStatus();
-
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() == null || ret.getTests().size() == 0)
+            /*
+             * show any validation errors encountered while importing the order
+             * or the pop up for selecting the prep/reflex tests for the tests
+             * added during the import
+             */
+            errors = ret.getErrors();
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
                 isBusy = false;
-            else
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+            } else {
                 showTests(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -5537,7 +5548,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             addScriptlets(getAuxScriptlets(true));
 
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())
@@ -5583,6 +5594,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             bt = Datetime.getInstance();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            setData();
+            setState(state);
+            /*
+             * notify the tabs that some new tests have been added
+             */
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
+            clearStatus();
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -5603,16 +5621,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             et = Datetime.getInstance();
             logger.log(Level.FINE, "Adding tests took " +
                                    (et.getDate().getTime() - bt.getDate().getTime()));
-
-            setData();
-            setState(state);
-
-            /*
-             * notify the tabs that some new tests have been added
-             */
-            bus.fireEventFromSource(new AddTestEvent(tests), this);
-            clearStatus();
-
+            
             /*
              * add scriptlets for any newly added tests and aux data
              */
@@ -5656,12 +5665,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
+             * show any validation errors encountered while changing the method
+             * or the pop up for selecting the prep/reflex tests for the tests
              * added
              */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())

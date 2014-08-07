@@ -635,7 +635,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return forward ? collectionDate : accessionNumber;
             }
         });
-        
+
         orderId.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -851,7 +851,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return forward ? priority : clientReference;
             }
         });
-        
+
         isHazardous.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -886,7 +886,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return forward ? collector : isHazardous;
             }
         });
-        
+
         priority.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -921,7 +921,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return forward ? collectorPhone : priority;
             }
         });
-        
+
         collector.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -959,7 +959,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  return forward ? description : collector;
                              }
                          });
-        
+
         collectorPhone.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -994,7 +994,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return forward ? location : collectorPhone;
             }
         });
-        
+
         description.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1029,7 +1029,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return forward ? locationAddressMultipleUnit : description;
             }
         });
-        
+
         location.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1068,14 +1068,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  return forward ? locationAddressStreetAddress : location;
                              }
                          });
-        
+
         locationAddressMultipleUnit.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
-                String mu;                
+                String mu;
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    mu = previousManager.getSampleEnvironmental().getLocationAddress().getMultipleUnit();
+                    mu = previousManager.getSampleEnvironmental()
+                                        .getLocationAddress()
+                                        .getMultipleUnit();
                     setLocationAddressMultipleUnit(mu);
                     locationAddressMultipleUnit.setValue(mu);
                     screen.focusNextWidget((Focusable)locationAddressMultipleUnit, true);
@@ -1107,14 +1109,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  return forward ? locationAddressCity : locationAddressMultipleUnit;
                              }
                          });
-        
+
         locationAddressStreetAddress.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String sa;
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    sa = previousManager.getSampleEnvironmental().getLocationAddress().getStreetAddress();
+                    sa = previousManager.getSampleEnvironmental()
+                                        .getLocationAddress()
+                                        .getStreetAddress();
                     setLocationAddressStreetAddress(sa);
                     locationAddressStreetAddress.setValue(sa);
                     screen.focusNextWidget((Focusable)locationAddressStreetAddress, true);
@@ -1146,7 +1150,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                                : locationAddressStreetAddress;
                              }
                          });
-        
+
         locationAddressCity.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1184,16 +1188,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  return forward ? locationAddressZipCode : locationAddressCity;
                              }
                          });
-        
+
         locationAddressState.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
-                String st;
+                String s;
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    st = previousManager.getSampleEnvironmental().getLocationAddress().getState();
-                    setLocationAddressState(st);
-                    locationAddressState.setValue(st);
+                    s = previousManager.getSampleEnvironmental().getLocationAddress().getState();
+                    setLocationAddressState(s);
+                    locationAddressState.setValue(s);
                     screen.focusNextWidget((Focusable)locationAddressState, true);
                     event.preventDefault();
                     event.stopPropagation();
@@ -1222,14 +1226,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  return forward ? locationAddressCountry : locationAddressState;
                              }
                          });
-        
+
         locationAddressZipCode.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String zip;
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
-                    zip = previousManager.getSampleEnvironmental().getLocationAddress().getZipCode();
+                    zip = previousManager.getSampleEnvironmental()
+                                         .getLocationAddress()
+                                         .getZipCode();
                     setLocationAddressZipCode(zip);
                     locationAddressZipCode.setValue(zip);
                     screen.focusNextWidget((Focusable)locationAddressZipCode, true);
@@ -1260,7 +1266,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                  return forward ? projectName : locationAddressZipCode;
                              }
                          });
-        
+
         locationAddressCountry.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1302,7 +1308,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              public Widget onTab(boolean forward) {
                                  return forward ? reportToName : locationAddressCountry;
                              }
-                         });       
+                         });
 
         projectName.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -1497,7 +1503,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     event.stopPropagation();
                 }
             }
-        });       
+        });
 
         addScreenHandler(billToButton, "billToButton", new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
@@ -2358,7 +2364,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                      * show any errors/warnings found during duplication
                      */
                     errors = result.getErrors();
-                    if (errors != null) {
+                    if (errors != null && errors.size() > 0) {
                         if (errors.hasWarnings())
                             Window.alert(getWarnings(errors.getErrorList()));
                         if (errors.hasErrors())
@@ -2380,7 +2386,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         SampleService1.get().duplicate(manager.getSample().getId(), duplicateCall);
     }
-    
+
     /**
      * Shows the order linked to the sample on the screen corresponding to the
      * type of order e.g. Send-out order screen for environmental samples
@@ -2890,6 +2896,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
      */
     private void setOrderId(Integer ordId) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
@@ -2909,12 +2916,23 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             setData();
             fireDataChange();
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() == null || ret.getTests().size() == 0)
+            /*
+             * show any validation errors encountered while importing the order
+             * or the pop up for selecting the prep/reflex tests for the tests
+             * added during the import
+             */
+            errors = ret.getErrors();
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
                 isBusy = false;
-            else
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+            } else {
                 showTests(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3432,7 +3450,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())
@@ -3475,8 +3493,20 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         try {
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            setData();
+            setState(state);
+            /*
+             * notify the tabs that some new tests have been added
+             */
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
+            clearStatus();
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())
@@ -3486,14 +3516,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             } else {
                 showTests(ret);
             }
-
-            setData();
-            setState(state);
-            /*
-             * notify the tabs that some new tests have been added
-             */
-            bus.fireEventFromSource(new AddTestEvent(tests), this);
-            clearStatus();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3530,12 +3552,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
+             * show any validation errors encountered while changing the method
+             * or the pop up for selecting the prep/reflex tests for the tests
              * added
              */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())

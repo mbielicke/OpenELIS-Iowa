@@ -2617,6 +2617,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void addAuxGroups(ArrayList<Integer> ids) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         setBusy();
         try {
@@ -2627,8 +2628,18 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
+            errors = ret.getErrors();
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2698,12 +2709,19 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
-                   Window.alert(getWarnings(errors.getErrorList()));
+                    Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())
                     showErrors(errors);
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
             } else {
                 showTests(ret);
             }
@@ -2722,6 +2740,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     private void changeAnalysisMethod(String uid, Integer methodId) {
         AnalysisViewDO ana;
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         ana = (AnalysisViewDO)manager.getObject(uid);
         try {
@@ -2748,8 +2767,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              * the pop up for selecting the prep/reflex tests for the tests
              * added
              */
-            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
-                showErrors(ret.getErrors());
+            errors = ret.getErrors();
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
+                isBusy = false;
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
             } else {
                 showTests(ret);
@@ -2881,11 +2906,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     private void showTests(SampleTestReturnVO ret) {
         ModalWindow modal;
-
-        if (ret.getTests() == null || ret.getTests().size() == 0) {
-            isBusy = false;
-            return;
-        }
 
         /*
          * show the pop for selecting prep/reflex tests
