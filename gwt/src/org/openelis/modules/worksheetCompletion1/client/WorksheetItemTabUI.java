@@ -170,6 +170,7 @@ public class WorksheetItemTabUI extends Screen {
     private void initialize() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
+        Item item;
 
         addScreenHandler(worksheetItemTable, "worksheetItemTable", new ScreenHandler<ArrayList<Item<String>>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -531,8 +532,15 @@ public class WorksheetItemTabUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO resultDO : dictList)
+        for (DictionaryDO resultDO : dictList) {
+            item = new Item<Integer>(resultDO.getId(),resultDO.getEntry());
+            if (!Constants.dictionary().ANALYSIS_INITIATED.equals(resultDO.getId()) &&
+                !Constants.dictionary().ANALYSIS_ON_HOLD.equals(resultDO.getId()) &&
+                !Constants.dictionary().ANALYSIS_REQUEUE.equals(resultDO.getId()) &&
+                !Constants.dictionary().ANALYSIS_COMPLETED.equals(resultDO.getId()))
+                item.setEnabled(false);
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        }
         analysisStatusId.setModel(model);
     }
     
