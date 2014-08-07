@@ -2154,7 +2154,7 @@ public class SampleManager1Bean {
      */
     public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         SampleTestReturnVO ret;
-        ValidationErrorsList errors;
+        ValidationErrorsList e;
         ArrayList<AuxDataViewDO> auxiliary;
 
         auxiliary = getAuxiliary(sm);
@@ -2165,10 +2165,10 @@ public class SampleManager1Bean {
 
         ret = new SampleTestReturnVO();
         ret.setManager(sm);
-        errors = new ValidationErrorsList();
-        ret.setErrors(errors);
+        e = new ValidationErrorsList();
+        ret.setErrors(e);
 
-        auxDataHelper.addAuxGroups(auxiliary, groupIds, errors);
+        auxDataHelper.addAuxGroups(auxiliary, groupIds, e);
 
         /*
          * set negative ids in the newly added aux data
