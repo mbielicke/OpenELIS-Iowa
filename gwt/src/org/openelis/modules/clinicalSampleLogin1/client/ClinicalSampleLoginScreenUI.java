@@ -88,6 +88,7 @@ import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -95,6 +96,7 @@ import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -2225,7 +2227,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                  * show the warnings and ask the user if the data should still
                  * be committed; commit only if the user says yes
                  */
-                if ( !Window.confirm(getWarnings(validation.getExceptions())))
+                if ( !Window.confirm(getWarnings(validation.getExceptions(), true)))
                     return;
                 break;
             case FLAGGED:
@@ -2356,7 +2358,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
                     if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarning)
-                        if (Window.confirm(getWarnings(e.getErrorList())))
+                        if (Window.confirm(getWarnings(e.getErrorList(), true)))
                             commitUpdate(true);
                 }
 
@@ -2509,9 +2511,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                      * show any errors/warnings found during duplication
                      */
                     errors = result.getErrors();
-                    if (errors != null) {
+                    if (errors != null && errors.size() > 0) {
                         if (errors.hasWarnings())
-                            Window.alert(getWarnings(errors.getErrorList()));
+                            Window.alert(getWarnings(errors.getErrorList(), false));
                         if (errors.hasErrors())
                             showErrors(errors);
                         else
@@ -2927,20 +2929,24 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     }
 
     /**
-     * Creates a string containing the message that there are warnings on the
-     * screen, followed by all warning messages, followed by the question
-     * whether the data should be committed
+     * Creates a string containing, the message that there are warnings on the
+     * screen, all warning messages; if "isConfirm" is true then shows the
+     * message whether the data should be committed, otherwise not
      */
-    private String getWarnings(ArrayList<Exception> warnings) {
+    private String getWarnings(ArrayList<Exception> warnings, boolean isConfirm) {
         StringBuilder b;
 
         b = new StringBuilder();
         b.append(Messages.get().gen_warningDialogLine1()).append("\n");
         if (warnings != null) {
-            for (Exception ex : warnings)
-                b.append(" * ").append(ex.getMessage()).append("\n");
+            for (Exception ex : warnings) {
+                if (ex instanceof Warning || ex instanceof Caution)
+                    b.append(" * ").append(ex.getMessage()).append("\n");
+            }
         }
-        b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+
+        if (isConfirm)
+            b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
         return b.toString();
     }
@@ -3091,6 +3097,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void setOrderId(Integer ordId) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
@@ -3098,7 +3105,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         }
 
         if (getAccessionNumber() == null) {
-            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
+            Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             orderId.setValue(null);
             return;
         }
@@ -3110,12 +3117,23 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             setData();
             fireDataChange();
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() == null || ret.getTests().size() == 0)
+            /*
+             * show any validation errors encountered while importing the order
+             * or the pop up for selecting the prep/reflex tests for the tests
+             * added during the import
+             */
+            errors = ret.getErrors();
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList(), false));
+                if (errors.hasErrors())
+                    showErrors(errors);
                 isBusy = false;
-            else
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+            } else {
                 showTests(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3811,9 +3829,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList()));
+                    Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
             }
@@ -3855,17 +3873,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
             errors = ret.getErrors();
-            if (errors != null) {
-                if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList()));
-                if (errors.hasErrors())
-                    showErrors(errors);
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
-            }
-
             setData();
             setState(state);
             /*
@@ -3873,6 +3880,21 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
             clearStatus();
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList(), false));
+                if (errors.hasErrors())
+                    showErrors(errors);
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+            } else {
+                showTests(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3909,14 +3931,14 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
+             * show any validation errors encountered while changing the method
+             * or the pop up for selecting the prep/reflex tests for the tests
              * added
              */
             errors = ret.getErrors();
             if (errors != null) {
                 if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList()));
+                    Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
                 isBusy = false;
