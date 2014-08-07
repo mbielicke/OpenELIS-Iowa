@@ -1520,7 +1520,7 @@ public class SampleManager1Bean {
 
         data = getSample(sm);
         if (data.getAccessionNumber() == null)
-            throw new FormErrorException(Messages.get().enterAccNumBeforeOrderLoad());
+            throw new FormErrorException(Messages.get().sample_enterAccNumBeforeOrderLoad());
 
         e = new ValidationErrorsList();
 

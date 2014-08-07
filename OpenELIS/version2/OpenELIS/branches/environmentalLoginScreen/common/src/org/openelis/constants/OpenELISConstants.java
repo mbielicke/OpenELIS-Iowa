@@ -6676,20 +6676,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String history_sample();
 
   /**
-   * Translated "Sample Clinical".
+   * Translated "History - Sample Clinical".
    * 
-   * @return translated "Sample Clinical"
+   * @return translated "History - Sample Clinical"
    */
-  @DefaultMessage("Sample Clinical")
+  @DefaultMessage("History - Sample Clinical")
   @Key("history.sampleClinical")
   String history_sampleClinical();
 
   /**
-   * Translated "Sample Environmental".
+   * Translated "History - Sample Environmental".
    * 
-   * @return translated "Sample Environmental"
+   * @return translated "History - Sample Environmental"
    */
-  @DefaultMessage("Sample Environmental")
+  @DefaultMessage("History - Sample Environmental")
   @Key("history.sampleEnvironmental")
   String history_sampleEnvironmental();
 
@@ -6703,11 +6703,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String history_sampleItem();
 
   /**
-   * Translated "Sample Neonatal".
+   * Translated "History - Sample Neonatal".
    * 
-   * @return translated "Sample Neonatal"
+   * @return translated "History - Sample Neonatal"
    */
-  @DefaultMessage("Sample Neonatal")
+  @DefaultMessage("History - Sample Neonatal")
   @Key("history.sampleNeonatal")
   String history_sampleNeonatal();
 
@@ -14389,6 +14389,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleClinical_providerOrganizationInfo();
 
   /**
+   * Translated "Sample Clinical".
+   * 
+   * @return translated "Sample Clinical"
+   */
+  @DefaultMessage("Sample Clinical")
+  @Key("sampleClinical.sampleClinical")
+  String sampleClinical_sampleClinical();
+
+  /**
    * Translated "Since there are containers already present in the sample, the \ntests and sample types may not get assigned as defined in the order.\nWould you still like to load the order?".
    * 
    * @return translated "Since there are containers already present in the sample, the \ntests and sample types may not get assigned as defined in the order.\nWould you still like to load the order?"
@@ -14747,6 +14756,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("NICU")
   @Key("sampleNeonatal.nicu")
   String sampleNeonatal_nicu();
+
+  /**
+   * Translated "Sample Neonatal".
+   * 
+   * @return translated "Sample Neonatal"
+   */
+  @DefaultMessage("Sample Neonatal")
+  @Key("sampleNeonatal.sampleNeonatal")
+  String sampleNeonatal_sampleNeonatal();
 
   /**
    * Translated "Trans Age".

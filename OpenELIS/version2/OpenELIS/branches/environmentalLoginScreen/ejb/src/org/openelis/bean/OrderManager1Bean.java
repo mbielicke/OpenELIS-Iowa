@@ -1214,6 +1214,7 @@ public class OrderManager1Bean {
         ArrayList<OrderManager1> oms;
         ArrayList<OrderTestAnalyteViewDO> otas;
         ArrayList<OrganizationViewDO> orgs;
+        ArrayList<OrderViewDO> orders;
         HashMap<Integer, OrganizationViewDO> orgMap;
         HashMap<Integer, OrderManager1> map1, map2;
         HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> otaMap;
@@ -1229,6 +1230,13 @@ public class OrderManager1Bean {
             el = EnumSet.noneOf(OrderManager1.Load.class);
 
         /*
+         * if there are no orders, then return an empty list
+         */
+        orders = order.fetchByIds(orderIds);
+        if (orders.size() < 1)
+            return oms;
+
+        /*
          * build level 1, everything is based on order ids
          */
         ids1 = new ArrayList<Integer>();
@@ -1236,7 +1244,7 @@ public class OrderManager1Bean {
         map1 = new HashMap<Integer, OrderManager1>();
         orgIds = new ArrayList<Integer>();
 
-        for (OrderViewDO data : order.fetchByIds(orderIds)) {
+        for (OrderViewDO data : orders) {
             om = new OrderManager1();
             setOrder(om, data);
             oms.add(om);

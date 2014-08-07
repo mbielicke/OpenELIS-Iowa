@@ -2509,7 +2509,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                      * show any errors/warnings found during duplication
                      */
                     errors = result.getErrors();
-                    if (errors != null) {
+                    if (errors != null && errors.size() > 0) {
                         if (errors.hasWarnings())
                             Window.alert(getWarnings(errors.getErrorList()));
                         if (errors.hasErrors())
@@ -3091,6 +3091,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void setOrderId(Integer ordId) {
         SampleTestReturnVO ret;
+        ValidationErrorsList errors;
 
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
@@ -3098,7 +3099,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         }
 
         if (getAccessionNumber() == null) {
-            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
+            Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             orderId.setValue(null);
             return;
         }
@@ -3110,12 +3111,23 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             setData();
             fireDataChange();
             clearStatus();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() == null || ret.getTests().size() == 0)
+            /*
+             * show any validation errors encountered while importing the order
+             * or the pop up for selecting the prep/reflex tests for the tests
+             * added during the import
+             */
+            errors = ret.getErrors();
+            if (errors != null && errors.size() > 0) {
+                if (errors.hasWarnings())
+                    Window.alert(getWarnings(errors.getErrorList()));
+                if (errors.hasErrors())
+                    showErrors(errors);
                 isBusy = false;
-            else
+            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                isBusy = false;
+            } else {
                 showTests(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3811,7 +3823,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
             errors = ret.getErrors();
-            if (errors != null) {
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())
@@ -3855,7 +3867,19 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
             errors = ret.getErrors();
-            if (errors != null) {
+            setData();
+            setState(state);
+            /*
+             * notify the tabs that some new tests have been added
+             */
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
+            clearStatus();
+            /*
+             * show any validation errors encountered while adding the tests or
+             * the pop up for selecting the prep/reflex tests for the tests
+             * added
+             */
+            if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList()));
                 if (errors.hasErrors())
@@ -3865,14 +3889,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             } else {
                 showTests(ret);
             }
-
-            setData();
-            setState(state);
-            /*
-             * notify the tabs that some new tests have been added
-             */
-            bus.fireEventFromSource(new AddTestEvent(tests), this);
-            clearStatus();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3909,8 +3925,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
             /*
-             * show any validation errors encountered while adding the tests or
-             * the pop up for selecting the prep/reflex tests for the tests
+             * show any validation errors encountered while changing the method
+             * or the pop up for selecting the prep/reflex tests for the tests
              * added
              */
             errors = ret.getErrors();
