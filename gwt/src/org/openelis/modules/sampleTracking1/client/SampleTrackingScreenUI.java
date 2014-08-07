@@ -72,6 +72,7 @@ import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
@@ -80,6 +81,7 @@ import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -1369,7 +1371,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                  * show the warnings and ask the user if the data should still
                  * be committed; commit only if the user says yes
                  */
-                if ( !Window.confirm(getWarnings(validation.getExceptions())))
+                if ( !Window.confirm(getWarnings(validation.getExceptions(), true)))
                     return;
                 break;
             case FLAGGED:
@@ -1585,7 +1587,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
                     if ( !e.hasErrors() && (e.hasWarnings() || e.hasCautions()) && !ignoreWarning)
-                        if (Window.confirm(getWarnings(e.getErrorList())))
+                        if (Window.confirm(getWarnings(e.getErrorList(), true)))
                             commitUpdate(true);
                 }
 
@@ -2072,20 +2074,24 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * creates a string containing, the message that there are warnings on the
-     * screen, all warning messages and the question whether the data should be
-     * committed
+     * Creates a string containing, the message that there are warnings on the
+     * screen, all warning messages; if "isConfirm" is true then shows the
+     * message whether the data should be committed, otherwise not
      */
-    private String getWarnings(ArrayList<Exception> warnings) {
+    private String getWarnings(ArrayList<Exception> warnings, boolean isConfirm) {
         StringBuilder b;
 
         b = new StringBuilder();
         b.append(Messages.get().gen_warningDialogLine1()).append("\n");
         if (warnings != null) {
-            for (Exception ex : warnings)
-                b.append(" * ").append(ex.getMessage()).append("\n");
+            for (Exception ex : warnings) {
+                if (ex instanceof Warning || ex instanceof Caution)
+                    b.append(" * ").append(ex.getMessage()).append("\n");
+            }
         }
-        b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+
+        if (isConfirm)
+            b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
         return b.toString();
     }
@@ -3000,7 +3006,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList()));
+                    Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
             }
@@ -3169,7 +3175,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList()));
+                    Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
@@ -3233,7 +3239,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList()));
+                    Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
                 isBusy = false;
