@@ -126,18 +126,15 @@ public class SampleManagerOrderHelperBean {
         if (accession == null)
             accession = 0;
 
-        try {
-            om = orderManager1.fetchById(orderId,
-                                         OrderManager1.Load.SAMPLE_DATA,
-                                         OrderManager1.Load.ORGANIZATION);
-            if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
-                throw new FormErrorException(Messages.get()
-                                                     .sample_orderIdInvalidException(accession,
-                                                                                     orderId));
-        } catch (NotFoundException ex) {
+        om = orderManager1.fetchById(orderId,
+                                     OrderManager1.Load.SAMPLE_DATA,
+                                     OrderManager1.Load.ORGANIZATION);
+        if (om == null)
+            throw new FormErrorException(Messages.get().sample_orderIdInvalidException(accession,
+                                                                                       orderId));        
+        else if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
             throw new FormErrorException(Messages.get().sample_orderIdInvalidException(accession,
                                                                                        orderId));
-        }
 
         data.setOrderId(orderId);
 
@@ -177,7 +174,7 @@ public class SampleManagerOrderHelperBean {
         accession = getSample(sm).getAccessionNumber();
         if (accession == null)
             accession = 0;
-        
+
         /*
          * if a sample item is found at the sequence specified in a container
          * then it's filled from the container otherwise a new sample item is
