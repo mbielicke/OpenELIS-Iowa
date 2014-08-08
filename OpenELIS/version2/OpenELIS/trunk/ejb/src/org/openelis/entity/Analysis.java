@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -40,10 +41,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -95,6 +100,37 @@ import org.openelis.utils.Auditable;
                       + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Section se, Dictionary d1, Dictionary d2, Dictionary d3"
                       + " where a.sampleItemId = si.id and si.sampleId = s.id and ss.sampleId = s.id and ss.pwsId = p.id and ss.sampleTypeId = d1.id and so.sampleId = s.id and so.organizationId = o.id and a.testId = t.id and a.sectionId = se.id and a.unitOfMeasureId = d2.id and"
                       + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate order by p.number0, s.accessionNumber, a.sectionId, a.releasedDate")})
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Analysis.FetchForTurnaroundWarningReport",
+                     query = "select a.id a_id, a.available_date, t.time_ta_warning, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
+                             " from analysis a, test t, dictionary d1, section se, section_parameter sp, dictionary d2" +
+                             " where a.test_id = t.id and a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and" +
+                             " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_warn' and" +
+                             " a.released_date is null and a.available_date is not null" +
+                             " order by se.name, a.available_date, a.id",
+		  resultSetMapping = "Analysis.FetchForTurnaroundWarningReportMapping"),
+    @NamedNativeQuery(name = "Analysis.FetchForTurnaroundMaximumReport",
+                     query = "select a.id a_id, a.available_date, t.time_ta_max, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
+                             " from analysis a, test t, dictionary d1, section se, section_parameter sp, dictionary d2" +
+                             " where a.test_id = t.id and a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and" +
+                             " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_max' and" +
+                             " a.released_date is null and a.available_date is not null" +
+                             " order by se.name, a.available_date, a.id",
+            resultSetMapping = "Analysis.FetchForTurnaroundMaximumReportMapping")})
+@SqlResultSetMappings({
+    @SqlResultSetMapping(name = "Analysis.FetchForTurnaroundWarningReportMapping",
+                      columns = {@ColumnResult(name = "a_id"),
+                                 @ColumnResult(name = "available_date"),
+                                 @ColumnResult(name = "time_ta_warning"),
+                                 @ColumnResult(name = "se_id"),
+                                 @ColumnResult(name = "se_name")}),
+    @SqlResultSetMapping(name = "Analysis.FetchForTurnaroundMaximumReportMapping",
+                      columns = {@ColumnResult(name = "a_id"),
+                                 @ColumnResult(name = "available_date"),
+                                 @ColumnResult(name = "time_ta_max"),
+                                 @ColumnResult(name = "se_id"),
+                                 @ColumnResult(name = "se_name")})})
+
 //@formatter:on
 @Entity
 @Table(name = "analysis")

@@ -216,6 +216,22 @@ public class AnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    public ArrayList<Object[]> fetchForTurnaroundWarningReport() throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Analysis.FetchForTurnaroundWarningReport");
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<Object[]> fetchForTurnaroundMaximumReport() throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Analysis.FetchForTurnaroundMaximumReport");
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public AnalysisDO add(AnalysisDO data) throws Exception {
         Analysis entity;
 
