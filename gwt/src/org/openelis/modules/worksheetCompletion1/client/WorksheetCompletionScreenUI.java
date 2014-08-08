@@ -1591,7 +1591,7 @@ public class WorksheetCompletionScreenUI extends Screen {
                         
                         WorksheetService1.get().unlock(manager.getWorksheet().getId(),
                                                        elements,
-                                                       unlockTransferCall);
+                                                       unlockReflexPopupCall);
                     }
                 }
             };
