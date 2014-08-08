@@ -3724,6 +3724,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String dictionary();
 
   /**
+   * Translated "Dictionary".
+   * 
+   * @return translated "Dictionary"
+   */
+  @DefaultMessage("Dictionary")
+  @Key("dictionary.dictionary")
+  String dictionary_dictionary();
+
+  /**
    * Translated "One or more dictionary entries cannot be deleted, other entries are linked to them".
    * 
    * @return translated "One or more dictionary entries cannot be deleted, other entries are linked to them"
@@ -16270,6 +16279,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_activity();
 
   /**
+   * Translated "Add Group".
+   * 
+   * @return translated "Add Group"
+   */
+  @DefaultMessage("Add Group")
+  @Key("test.addGroup")
+  String test_addGroup();
+
+  /**
    * Translated "Additional Label".
    * 
    * @return translated "Additional Label"
@@ -16277,6 +16295,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Additional Label")
   @Key("test.additionalLabel")
   String test_additionalLabel();
+
+  /**
+   * Translated "Flags".
+   * 
+   * @return translated "Flags"
+   */
+  @DefaultMessage("Flags")
+  @Key("test.flags")
+  String test_flags();
 
   /**
    * Translated "No matching active test found for ''{0}, {1}''".
@@ -16369,6 +16396,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_revisionMethod();
 
   /**
+   * Translated "Rdng. Method".
+   * 
+   * @return translated "Rdng. Method"
+   */
+  @DefaultMessage("Rdng. Method")
+  @Key("test.roundingMethod")
+  String test_roundingMethod();
+
+  /**
    * Translated "Sections".
    * 
    * @return translated "Sections"
@@ -16378,6 +16414,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String test_sections();
 
   /**
+   * Translated "S.D.".
+   * 
+   * @return translated "S.D."
+   */
+  @DefaultMessage("S.D.")
+  @Key("test.significantDigits")
+  String test_significantDigits();
+
+  /**
    * Translated "Sort Method".
    * 
    * @return translated "Sort Method"
@@ -16385,6 +16430,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sort Method")
   @Key("test.sortingMethod")
   String test_sortingMethod();
+
+  /**
+   * Translated "Table Options".
+   * 
+   * @return translated "Table Options"
+   */
+  @DefaultMessage("Table Options")
+  @Key("test.tableOptions")
+  String test_tableOptions();
 
   /**
    * Translated "History - Analyte ".
