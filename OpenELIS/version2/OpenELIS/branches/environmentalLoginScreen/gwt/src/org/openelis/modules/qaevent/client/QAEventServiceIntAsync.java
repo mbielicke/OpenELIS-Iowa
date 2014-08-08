@@ -28,4 +28,6 @@ public interface QAEventServiceIntAsync {
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void update(QaEventViewDO data, AsyncCallback<QaEventViewDO> callback);
+
+    void fetchByNames(ArrayList<String> names, AsyncCallback<ArrayList<QaEventDO>> callback);
 }

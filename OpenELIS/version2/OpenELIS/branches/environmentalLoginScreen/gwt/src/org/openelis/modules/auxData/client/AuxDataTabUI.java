@@ -212,8 +212,7 @@ public abstract class AuxDataTabUI extends Screen {
                                 event.cancel();
                             }
                         } else {
-                            parentScreen.getWindow()
-                                        .setError(Messages.get().aux_selectAnalyteBeforeValue());
+                            parentScreen.setError(Messages.get().aux_selectAnalyteBeforeValue());
                             event.cancel();
                         }
                     }
@@ -267,8 +266,7 @@ public abstract class AuxDataTabUI extends Screen {
                                     af = afm.getAuxFieldAt(i);
                                     if (data.getAuxFieldId().equals(af.getId()) &&
                                         af.getScriptletId() != null)
-                                        parentBus.fireEventFromSource(new RunScriptletEvent(af.getScriptletId(),
-                                                                                            Constants.uid()
+                                        parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                                      .getAuxData(data.getId()),
                                                                                             getValueMetaKey(),
                                                                                             Operation.AUX_DATA_CHANGED),

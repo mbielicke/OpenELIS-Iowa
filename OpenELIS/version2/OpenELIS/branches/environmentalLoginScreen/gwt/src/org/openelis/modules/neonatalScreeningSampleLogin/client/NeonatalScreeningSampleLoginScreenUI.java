@@ -2760,8 +2760,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             @Override
             public void onRunScriptlet(RunScriptletEvent event) {
                 if (screen != event.getSource())
-                    runScriptlet(event.getScriptletId(),
-                                 event.getUid(),
+                    runScriptlet(event.getUid(),
                                  event.getChanged(),
                                  event.getOperation());
             }
@@ -3945,7 +3944,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet with the passed id for the passed operation performed
      * on the field "changed" of the record with the passed uid.
      */
-    private void runScriptlet(Integer scriptletId, String uid, String changed, Operation operation) {
+    private void runScriptlet(String uid, String changed, Operation operation) {
         Object obj;
         SampleSO data;
         AnalysisViewDO ana;
@@ -4033,14 +4032,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(String changed) {
-        runScriptlet(domainScriptletId, null, changed, Operation.NEW_DOMAIN_ADDED);
+        runScriptlet(null, changed, Operation.NEW_DOMAIN_ADDED);
     }
 
     /**
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(Operation operation) {
-        runScriptlet(domainScriptletId, null, null, operation);
+        runScriptlet(null, null, operation);
     }
 
     /**

@@ -53,6 +53,14 @@ public class QaEventServlet extends RemoteServlet implements QAEventServiceInt {
             throw serializeForGWT(anyE);
         }
     }
+    
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
+        try {        
+            return qaEvent.fetchByNames(names);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 
     public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception {
         try {        

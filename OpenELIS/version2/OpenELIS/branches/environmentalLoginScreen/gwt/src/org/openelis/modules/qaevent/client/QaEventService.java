@@ -77,11 +77,25 @@ public class QaEventService implements QAEventServiceInt, QAEventServiceIntAsync
     }
 
     @Override
+    public void fetchByNames(ArrayList<String> names, AsyncCallback<ArrayList<QaEventDO>> callback) {
+        service.fetchByNames(names, callback);
+    }
+
+    @Override
     public QaEventViewDO fetchById(Integer id) throws Exception {
         Callback<QaEventViewDO> callback;
         
         callback = new Callback<QaEventViewDO>();
         service.fetchById(id, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
+        Callback<ArrayList<QaEventDO>> callback;
+        
+        callback = new Callback<ArrayList<QaEventDO>>();
+        service.fetchByNames(names, callback);
         return callback.getResult();
     }
 
