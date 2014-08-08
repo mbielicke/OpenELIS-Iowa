@@ -28,6 +28,7 @@ package org.openelis.scriptlet;
 import static org.openelis.scriptlet.SampleSO.Operation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -103,7 +104,9 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
 
     @Override
     public SampleSO run(SampleSO data) {
+        String changed;
         SampleNeonatalDO sn;
+        SampleManager1 sm;
 
         proxy.log(Level.FINE, "In NeonatalDomainScriptlet1.run");
 
@@ -111,9 +114,22 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
          * if the sample doesn't have any items then add an item with the most
          * common sample type for neonatal samples
          */
-        addDefaultSampleItem(data.getManager());
+        sm = data.getManager();
+        if (sm.item.count() == 0)
+            addDefaultSampleItem(sm);
 
-        sn = data.getManager().getSampleNeonatal();
+        changed = data.getChanged();
+        /*
+         * if either the collection date/time or patient birth date/time has
+         * changed then reset the collection age
+         */
+        if (SampleMeta.getCollectionDate().equals(changed) ||
+            SampleMeta.getCollectionTime().equals(changed) ||
+            SampleMeta.getNeonatalPatientBirthDate().equals(changed) ||
+            SampleMeta.getNeonatalPatientBirthTime().equals(changed))
+            resetCollectionAge(data);
+
+        sn = sm.getSampleNeonatal();
         /*
          * don't do anything if it's an existing neonatal sample or if it
          * doesn't have a patient
@@ -122,7 +138,7 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
             return data;
 
         try {
-            if (data.getChanged() != null)
+            if (changed != null)
                 /*
                  * set this sample as repeat if there's another sample entered
                  * previously for its patient
@@ -150,13 +166,73 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
     private void addDefaultSampleItem(SampleManager1 sm) {
         SampleItemViewDO item;
 
-        if (sm.item.count() == 0) {
-            proxy.log(Level.FINE, "Adding a sample item by default with sample type: " +
-                                  driedBloodSpotDict.getSystemName());
-            item = sm.item.add();
-            item.setTypeOfSampleId(driedBloodSpotDict.getId());
-            item.setTypeOfSample(driedBloodSpotDict.getEntry());
+        proxy.log(Level.FINE, "Adding a sample item by default with sample type: " +
+                              driedBloodSpotDict.getSystemName());
+        item = sm.item.add();
+        item.setTypeOfSampleId(driedBloodSpotDict.getId());
+        item.setTypeOfSample(driedBloodSpotDict.getEntry());
+    }
+
+    /**
+     * Calculates and resets the collection age as the difference between the
+     * collection date-time and patient birth date-time
+     */
+    private void resetCollectionAge(SampleSO data) {
+        Datetime cdt, ct, bdt, bt;
+        Date cd, bd;
+        Long diff;
+        Integer age;
+        SampleManager1 sm;
+        SampleNeonatalDO sn;
+
+        sm = data.getManager();
+        sn = sm.getSampleNeonatal();
+
+        proxy.log(Level.FINE, "Resetting collection age");
+
+        cdt = sm.getSample().getCollectionDate();
+        ct = sm.getSample().getCollectionTime();
+        bdt = sn.getPatient().getBirthDate();
+        bt = sn.getPatient().getBirthTime();
+
+        if (cdt == null || bdt == null) {
+            age = null;
+        } else {
+            /*
+             * combine collection date and time
+             */
+            cd = (Date)cdt.getDate().clone();
+            if (ct == null) {
+                cd.setHours(0);
+                cd.setMinutes(0);
+            } else {
+                cd.setHours(ct.getDate().getHours());
+                cd.setMinutes(ct.getDate().getMinutes());
+            }
+            cdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, cd);
+
+            /*
+             * combine patient birth date and time
+             */
+            bd = (Date)bdt.getDate().clone();
+            if (bt == null) {
+                bd.setHours(0);
+                bd.setMinutes(0);
+            } else {
+                bd.setHours(bt.getDate().getHours());
+                bd.setMinutes(bt.getDate().getMinutes());
+            }
+            bdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, bd);
+
+            /*
+             * calculate the collection age in minutes
+             */
+            diff = ( (cdt.getDate().getTime() - bdt.getDate().getTime()) / 60000);
+            age = diff.intValue();
         }
+
+        sn.setCollectionAge(age);
+        data.addRerun(SampleMeta.getNeonatalCollectionAge());
     }
 
     /**
