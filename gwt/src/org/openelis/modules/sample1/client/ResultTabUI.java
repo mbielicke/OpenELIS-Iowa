@@ -359,14 +359,12 @@ public class ResultTabUI extends Screen {
 
                     if (data.getValue() == null)
                         return;
-
+                    
                     /*
                      * execute any scriptlet specified for the test
                      */
                     if (tm.getTest().getScriptletId() != null) {
-                        parentBus.fireEventFromSource(new RunScriptletEvent(tm.getTest()
-                                                                              .getScriptletId(),
-                                                                            Constants.uid()
+                        parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                      .getResult(data.getId()),
                                                                             data.getAnalyteExternalId(),
                                                                             Operation.RESULT_CHANGED),
@@ -572,7 +570,7 @@ public class ResultTabUI extends Screen {
                     isBusy = false;
             }
         });
-
+        
         parentBus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
             @Override
             public void onQAEventChange(QAEventChangeEvent event) {
