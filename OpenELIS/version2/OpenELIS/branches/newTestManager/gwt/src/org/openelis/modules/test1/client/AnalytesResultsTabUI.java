@@ -35,15 +35,26 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.manager.TestManager1;
+import org.openelis.meta.CategoryMeta;
+import org.openelis.meta.TestMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -53,6 +64,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.ScrollableTabBar;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
@@ -66,6 +78,8 @@ import org.openelis.ui.widget.table.event.RowAddedEvent;
 import org.openelis.ui.widget.table.event.RowAddedHandler;
 import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
+import org.openelis.utilcommon.ResultRangeNumeric;
+import org.openelis.utilcommon.ResultRangeTiter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -77,7 +91,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
@@ -94,27 +108,27 @@ public class AnalytesResultsTabUI extends Screen {
         ANALYTE_CHANGED, ANALYTE_DELETED, RESULT_CHANGED, RESULT_DELETED
     };
 
-    // @UiField
+     @UiField
     protected Table                                        analyteTable, resultTable;
 
-    // @UiField
+     @UiField
     protected Dropdown<Integer>                            analyteType, scriptlet, resultType,
                     resultFlag, roundingMethod, unitOfMeasure;
 
-    // @UiField
+     @UiField
     protected Dropdown<String>                             tableActions;
 
-    // @UiField
+//     @UiField
     protected AutoComplete                                 auto;
 
-    // @UiField
+     @UiField
     protected ScrollableTabBar                             resultTabPanel;
 
-    // @UiField
+     @UiField
     protected CheckBox                                     isReportable;
 
-    // @UiField
-    protected Button                                       addButton, removeButton;
+     @UiField
+    protected Button                                       addAnalyteButton, removeAnalyteButton, addResultTabButton, addTestResultButton, removeTestResultButton, dictionaryLookupButton;
 
     protected DictionaryLookupScreen                       dictLookup;
 
@@ -132,6 +146,9 @@ public class AnalytesResultsTabUI extends Screen {
                     headerAddedInTheMiddle, canAddRemoveColumn, isVisible;
 
     protected int                                          anaSelCol, tempId;
+
+    protected ResultRangeNumeric                           rangeNumeric;
+    protected ResultRangeTiter                             rangeTiter;
 
     public AnalytesResultsTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -162,6 +179,9 @@ public class AnalytesResultsTabUI extends Screen {
             }
         });
 
+        rangeNumeric = new ResultRangeNumeric();
+        rangeTiter = new ResultRangeTiter();
+
         analyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 Integer selRow, selections[];
@@ -189,11 +209,11 @@ public class AnalytesResultsTabUI extends Screen {
                         Window.alert(Messages.get().headerCantSelWithAnalytes());
                         event.cancel();
                     }
-                    addButton.setEnabled(false);
-                    removeButton.setEnabled(false);
+                    addAnalyteButton.setEnabled(false);
+                    removeAnalyteButton.setEnabled(false);
                 } else {
-                    addButton.setEnabled(true);
-                    removeButton.setEnabled(true);
+                    addAnalyteButton.setEnabled(true);
+                    removeAnalyteButton.setEnabled(true);
                 }
             }
         });
@@ -383,7 +403,7 @@ public class AnalytesResultsTabUI extends Screen {
                                 // its value is not null
                                 //
                                 dindex = displayManager.getDataRowIndex(r);
-                                displayManager.setDataGrid(manager.analyte);
+//                                displayManager.setDataGrid(manager.analyte);
                             }
                         } else {
                             //
@@ -394,7 +414,7 @@ public class AnalytesResultsTabUI extends Screen {
                                 if (displayManager.isHeaderRow(i))
                                     break;
                                 data = displayManager.getObjectAt(i, c - 1);
-                                data.setAnalyteId(key);
+//                                data.setAnalyteId(key);
                                 data.setAnalyteName(auto.getDisplay());
                             }
                         }
@@ -418,7 +438,7 @@ public class AnalytesResultsTabUI extends Screen {
                             // in the DO at the appropriate location in the grid
                             //
                             data = displayManager.getObjectAt(r, c);
-                            data.setAnalyteId(key);
+//                            data.setAnalyteId(key);
                             data.setAnalyteName(auto.getDisplay());
                             // ActionEvent.fire(screen, Action.ANALYTE_CHANGED,
                             // data);
@@ -432,11 +452,12 @@ public class AnalytesResultsTabUI extends Screen {
                                 data = displayManager.getObjectAt(rows[i], c - 1);
                                 if (data == null)
                                     continue;
-                                data.setResultGroup(val);
-                                if (val == null)
+//                                data.setResultGroup(val);
+                                if (val == null){
                                     name = "";
-                                else
-                                    name = key.toString();
+                                }else{
+//                                    name = key.toString();
+                                }
                                 analyteTable.setValueAt(rows[i], c, new Row(val, val));
                             }
                         }
@@ -539,7 +560,7 @@ public class AnalytesResultsTabUI extends Screen {
                                     manager.analyte.add();
                                     // .addRowAt(dindex, false, false,
                                     // getNextTempId());
-                                    displayManager.setDataGrid(manager.analyte);
+//                                    displayManager.setDataGrid(manager.analyte);
                                     analyteTable.selectRowAt(index);
                                     return;
                                 }
@@ -565,7 +586,7 @@ public class AnalytesResultsTabUI extends Screen {
                             // getNextTempId());
                             manager.analyte.add();
                         }
-                        displayManager.setDataGrid(manager.analyte);
+//                        displayManager.setDataGrid(manager.analyte);
                         analyteTable.selectRowAt(index);
                     } else if (addAnalyteRow) {
                         //
@@ -608,7 +629,7 @@ public class AnalytesResultsTabUI extends Screen {
                     dindex = displayManager.getDataRowIndex(index);
                     data = manager.analyte.get(dindex);
                     manager.analyte.remove(dindex);
-                    displayManager.setDataGrid(manager.analyte);
+//                    displayManager.setDataGrid(manager.analyte);
                     // ActionEvent.fire(screen, Action.ANALYTE_DELETED, data);
                     fireDataChange();
                 }
@@ -853,7 +874,7 @@ public class AnalytesResultsTabUI extends Screen {
                 showErrorsForResultGroup(tab);
             }
         });
-        
+
         addScreenHandler(resultTable, "resultTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 int selTab;
@@ -862,7 +883,7 @@ public class AnalytesResultsTabUI extends Screen {
                 // this table is not queried by,so it needs to be cleared in
                 // query mode
                 //
-                if (!isState(QUERY)) {
+                if ( !isState(QUERY)) {
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
                     resultTable.setModel(getResultTableModel(selTab));
                 } else {
@@ -875,169 +896,142 @@ public class AnalytesResultsTabUI extends Screen {
             }
         });
 
-//        resultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-//            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-//                int r, c, group;
-//
-//                if (state != State.ADD && state != State.UPDATE)
-//                    event.cancel();
-//
-//                r = event.getRow();
-//                c = event.getCol();
-//                group = resultTabPanel.getTabBar().getSelectedTab();
-//
-//                switch (c) {
-//                    case 0:
-//                        clearResultCellError(group,
-//                                             r,
-//                                             TestMeta.getResultUnitOfMeasureId());
-//                        break;
-//                    case 1:
-//                        clearResultCellError(group, r, TestMeta.getResultTypeId());
-//                        break;
-//                    case 2:
-//                        clearResultCellError(group, r, TestMeta.getResultValue());
-//                        break;
-//                }
-//            }
-//
-//        });
-//
-//        resultTable.addCellEditedHandler(new CellEditedHandler() {
-//            public void onCellUpdated(CellEditedEvent event) {
-//                int r, c, group;
-//                TestResultViewDO data;
-//                Object val;
-//                TestResultManager man;
-//
-//                r = event.getRow();
-//                c = event.getCol();
-//                val = resultTable.getObject(r, c);
-//                group = resultTabPanel.getTabBar().getSelectedTab();
-//
-//                man = null;
-//                try {
-//                    man = manager.getTestResults();
-//                } catch (Exception e) {
-//                    Window.alert(e.getMessage());
-//                    e.printStackTrace();
-//                }
-//
-//                data = man.getResultAt(group + 1, r);
-//
-//                switch (c) {
-//                    case 0:
-//                        if (val != null)
-//                            data.setUnitOfMeasureId((Integer)val);
-//                        else
-//                            data.setUnitOfMeasureId(null);
-//                        break;
-//                    case 1:
-//                        if (val != null)
-//                            data.setTypeId((Integer)val);
-//                        else
-//                            data.setTypeId(null);
-//
-//                        resultTable.clearCellExceptions(r, 2);
-//                        try {
-//                            validateValue(data, (String)resultTable.getObject(r, 2));
-//                        } catch (Exception e) {
-//                            resultTable.setCellException(r, 2, e);
-//                            addToResultErrorList(group,
-//                                                 r,
-//                                                 TestMeta.getResultValue(),
-//                                                 e.getMessage());
-//                        }
-//                        break;
-//                    case 2:
-//                        resultTable.clearCellExceptions(r, c);
-//                        try {
-//                            validateValue(data, (String)val);
-//                        } catch (Exception e) {
-//                            resultTable.setCellException(r, c, e);
-//                            addToResultErrorList(group,
-//                                                 r,
-//                                                 TestMeta.getResultValue(),
-//                                                 e.getMessage());
-//                        }
-//                        ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
-//                        break;
-//                    case 3:
-//                        if (val != null)
-//                            data.setFlagsId((Integer)val);
-//                        else
-//                            data.setFlagsId(null);
-//                        break;
-//                    case 4:
-//                        if (val != null)
-//                            data.setSignificantDigits((Integer)val);
-//                        else
-//                            data.setSignificantDigits(null);
-//                        break;
-//                    case 5:
-//                        if (val != null)
-//                            data.setRoundingMethodId((Integer)val);
-//                        else
-//                            data.setRoundingMethodId(null);
-//                        break;
-//                }
-//            }
-//        });
-//
-//        resultTable.addRowAddedHandler(new RowAddedHandler() {
-//            public void onRowAdded(RowAddedEvent event) {
-//                int selTab;
-//                TestResultManager man;
-//
-//                man = null;
-//                try {
-//                    man = manager.getTestResults();
-//                } catch (Exception e) {
-//                    Window.alert(e.getMessage());
-//                    e.printStackTrace();
-//                }
-//
-//                if (man.groupCount() == 0)
-//                    man.addResultGroup();
-//
-//                selTab = resultTabPanel.getTabBar().getSelectedTab();
-//                man.addResult(selTab + 1, getNextTempId());
-//            }
-//        });
-//
-//        resultTable.addRowDeletedHandler(new RowDeletedHandler() {
-//            public void onRowDeleted(RowDeletedEvent event) {
-//                int r, selTab;
-//                TestResultViewDO data;
-//                TestResultManager man;
-//
-//                man = null;
-//                try {
-//                    man = manager.getTestResults();
-//                } catch (Exception e) {
-//                    Window.alert(e.getMessage());
-//                    e.printStackTrace();
-//                }
-//
-//                selTab = resultTabPanel.getTabBar().getSelectedTab();
-//                r = event.getIndex();
-//                data = man.getResultAt(selTab + 1, r);
-//
-//                man.removeResultAt(selTab + 1, r);
-//
-//                ActionEvent.fire(screen, Action.RESULT_DELETED, data);
-//            }
-//        });
+        resultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                int r, c, group;
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                removeButton.setEnabled(isState(ADD, UPDATE));
+                if ( !isState(ADD, UPDATE))
+                    event.cancel();
+
+                r = event.getRow();
+                c = event.getCol();
+                group = resultTabPanel.getTabBar().getSelectedTab();
+
+                switch (c) {
+                    case 0:
+                        clearResultCellError(group, r, TestMeta.getResultUnitOfMeasureId());
+                        break;
+                    case 1:
+                        clearResultCellError(group, r, TestMeta.getResultTypeId());
+                        break;
+                    case 2:
+                        clearResultCellError(group, r, TestMeta.getResultValue());
+                        break;
+                }
+            }
+
+        });
+
+        resultTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c, group;
+                TestResultViewDO data;
+                Object val;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = resultTable.getValueAt(r, c);
+                group = resultTabPanel.getTabBar().getSelectedTab();
+
+                data = manager.result.get(group + 1);
+
+                switch (c) {
+                    case 0:
+                        if (val != null)
+                            data.setUnitOfMeasureId((Integer)val);
+                        else
+                            data.setUnitOfMeasureId(null);
+                        break;
+                    case 1:
+                        if (val != null)
+                            data.setTypeId((Integer)val);
+                        else
+                            data.setTypeId(null);
+
+                        resultTable.clearExceptions(r, 2);
+                        try {
+                            validateValue(data, (String)resultTable.getValueAt(r, 2));
+                        } catch (Exception e) {
+                            resultTable.addException(r, 2, e);
+                            addToResultErrorList(group,
+                                                 r,
+                                                 TestMeta.getResultValue(),
+                                                 e.getMessage());
+                        }
+                        break;
+                    case 2:
+                        resultTable.clearExceptions(r, c);
+                        try {
+                            validateValue(data, (String)val);
+                        } catch (Exception e) {
+                            resultTable.addException(r, c, e);
+                            addToResultErrorList(group,
+                                                 r,
+                                                 TestMeta.getResultValue(),
+                                                 e.getMessage());
+                        }
+                        // ActionEvent.fire(screen, Action.RESULT_CHANGED,
+                        // data);
+                        fireDataChange();
+                        break;
+                    case 3:
+                        if (val != null)
+                            data.setFlagsId((Integer)val);
+                        else
+                            data.setFlagsId(null);
+                        break;
+                    case 4:
+                        if (val != null)
+                            data.setSignificantDigits((Integer)val);
+                        else
+                            data.setSignificantDigits(null);
+                        break;
+                    case 5:
+                        if (val != null)
+                            data.setRoundingMethodId((Integer)val);
+                        else
+                            data.setRoundingMethodId(null);
+                        break;
+                }
+            }
+        });
+
+        resultTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                int selTab;
+
+                if (manager.result.count() == 0)
+                    manager.result.add();
+
+                selTab = resultTabPanel.getTabBar().getSelectedTab();
+                // man.addResult(selTab + 1, getNextTempId());
+            }
+        });
+
+        resultTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                int r;
+                TestResultViewDO data;
+
+                r = event.getIndex();
+                data = manager.result.get(r);
+
+                manager.result.remove(r);
+
+                // ActionEvent.fire(screen, Action.RESULT_DELETED, data);
+                fireDataChange();
             }
         });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addButton.setEnabled(isState(ADD, UPDATE));
+                removeAnalyteButton.setEnabled(isState(ADD, UPDATE));
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                addAnalyteButton.setEnabled(isState(ADD, UPDATE));
             }
         });
 
@@ -1112,7 +1106,7 @@ public class AnalytesResultsTabUI extends Screen {
         setUnitsOfMeasure();
     }
 
-    @UiHandler("addButton")
+    // @UiHandler("addButton")
     protected void addOrganization(ClickEvent event) {
         analyteTable.finishEditing();
         if ("analyte".equals(tableActions.getValue())) {
@@ -1126,7 +1120,7 @@ public class AnalytesResultsTabUI extends Screen {
         tableActions.setValue("analyte");
     }
 
-    @UiHandler("removeButton")
+    // @UiHandler("removeButton")
     protected void removeOrganization(ClickEvent event) {
         analyteTable.finishEditing();
         if ("analyte".equals(tableActions.getValue())) {
@@ -1227,6 +1221,87 @@ public class AnalytesResultsTabUI extends Screen {
 
     }
 
+    private IdNameVO getDictionary(String entry) {
+        ArrayList<IdNameVO> list;
+        Query query;
+        QueryData field;
+        ArrayList<QueryData> fields;
+
+        entry = DataBaseUtil.trim(entry);
+        if (entry == null)
+            return null;
+
+        query = new Query();
+        fields = new ArrayList<QueryData>();
+        field = new QueryData();
+        field.setKey(CategoryMeta.getDictionaryEntry());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(entry);
+        fields.add(field);
+
+        field = new QueryData();
+        field.setKey(CategoryMeta.getIsSystem());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery("N");
+        fields.add(field);
+
+        query.setFields(fields);
+
+        try {
+            list = DictionaryService.get().fetchByEntry(query);
+            if (list.size() == 1)
+                return list.get(0);
+            else if (list.size() > 1)
+                showDictionary(entry, list);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        return null;
+    }
+
+    private void validateValue(TestResultViewDO data, String value) throws Exception {
+        IdNameVO dict;
+
+        if (value == null)
+            return;
+
+        try {
+            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
+                dict = getDictionary((String)value);
+                if (dict != null) {
+                    data.setValue(dict.getId().toString());
+                    data.setDictionary(dict.getName());
+                } else {
+                    data.setDictionary(null);
+                    throw new Exception(Messages.get().test_invalidValue());
+                }
+            } else if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(data.getTypeId())) {
+                rangeNumeric.setRange((String)value);
+                data.setValue(rangeNumeric.toString());
+            } else if (Constants.dictionary().TEST_RES_TYPE_TITER.equals(data.getTypeId())) {
+                rangeTiter.setRange((String)value);
+                data.setValue(rangeTiter.toString());
+            } else if (Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_DATE.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_TIME.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(data.getTypeId())) {
+                data.setValue((String)value);
+            } else {
+                throw new Exception(Messages.get().test_invalidValue());
+            }
+        } catch (Exception e) {
+            data.setValue(null);
+            data.setDictionary(null);
+            throw e;
+        }
+    }
+
     private Row createHeaderRow() {
         Row row;
 
@@ -1275,6 +1350,33 @@ public class AnalytesResultsTabUI extends Screen {
         isReportable.setEnabled(enable);
         analyteType.setEnabled(enable);
         scriptlet.setEnabled(enable);
+    }
+
+    private void clearResultCellError(int group, int row, String field) {
+        GridFieldErrorException error;
+        int i;
+
+        if (resultErrorList == null)
+            return;
+
+        for (i = 0; i < resultErrorList.size(); i++ ) {
+            error = resultErrorList.get(i);
+            if (error.getRowIndex() == group && error.getColumnIndex() == row &&
+                field.equals(error.getFieldName())) {
+                resultErrorList.remove(error);
+            }
+        }
+    }
+
+    private void addToResultErrorList(int group, int row, String field, String message) {
+        GridFieldErrorException error;
+
+        if ( !errorExistsInList(group, row, field, message)) {
+            error = new GridFieldErrorException(message, group, row, field, "resultTable");
+            if (resultErrorList == null)
+                resultErrorList = new ArrayList<GridFieldErrorException>();
+            resultErrorList.add(error);
+        }
     }
 
     private void addAnalyte() {
@@ -1352,7 +1454,7 @@ public class AnalytesResultsTabUI extends Screen {
             if (anaSelCol != -1 && r != -1) {
                 index = displayManager.getDataRowIndex(r);
                 manager.analyte.add(null);
-                displayManager.setDataGrid(manager.analyte);
+//                displayManager.setDataGrid(manager.analyte);
 
                 addColumnToRow(r);
                 addColumnToRowsBelow(r);
@@ -1383,8 +1485,8 @@ public class AnalytesResultsTabUI extends Screen {
                 // analyteTable.refresh();
 
                 index = displayManager.getDataRowIndex(r);
-                // man.removeColumnAt(index, anaSelCol - 1);
-                displayManager.setDataGrid(manager.analyte);
+                manager.analyte.remove(index);
+//                displayManager.setDataGrid(manager.analyte);
 
                 anaSelCol = -1;
             }
@@ -1498,19 +1600,19 @@ public class AnalytesResultsTabUI extends Screen {
 
         if (r == -1 || r == num - 1) {
             analyteTable.addRow(createHeaderRow());
-//            analyteTable.scrollToSelection();
+            // analyteTable.scrollToSelection();
         } else {
             row = analyteTable.getRowAt(r);
             if ((Boolean)row.getData()) {
                 headerAddedInTheMiddle = true;
                 analyteTable.addRowAt(r, createHeaderRow());
-//                analyteTable.scrollToSelection();
+                // analyteTable.scrollToSelection();
             } else {
                 row = analyteTable.getRowAt(r + 1);
                 if ((Boolean)row.getData()) {
                     headerAddedInTheMiddle = true;
                     analyteTable.addRowAt(r + 1, createHeaderRow());
-//                    analyteTable.scrollToSelection();
+                    // analyteTable.scrollToSelection();
                 } else {
                     Window.alert(Messages.get().headerCantBeAddedInsideGroup());
                 }
@@ -1566,5 +1668,109 @@ public class AnalytesResultsTabUI extends Screen {
                 }
             }
         }
+    }
+
+    private void showDictionary(String entry, ArrayList<IdNameVO> list) {
+        ModalWindow modal;
+
+        if (dictLookup == null) {
+            try {
+                dictLookup = new DictionaryLookupScreen();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("DictionaryLookup error: " + e.getMessage());
+                return;
+            }
+
+            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
+                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+                    int selTab, r;
+                    ArrayList<IdNameVO> list;
+                    TestResultViewDO data;
+                    IdNameVO entry;
+
+                    selTab = resultTabPanel.getTabBar().getSelectedTab();
+                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                        list = (ArrayList<IdNameVO>)event.getData();
+                        if (list != null) {
+                            r = resultTable.getSelectedRow();
+                            if (r == -1) {
+                                window.setError(Messages.get().test_noSelectedRow());
+                                return;
+                            }
+
+                            //
+                            // set the first dictionary value in the row that
+                            // was
+                            // selected when the lookup screen was brought up
+                            //
+                            entry = list.get(0);
+                            data = manager.result.get(r);
+                            data.setValue(entry.getId().toString());
+                            data.setDictionary(entry.getName());
+                            data.setTypeId(Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
+                            resultTable.getRowAt(r)
+                                       .setCell(1, Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
+                            resultTable.clearExceptions(r, 1);
+                            resultTable.getRowAt(r).setCell(2, data.getDictionary());
+                            resultTable.clearExceptions(r, 2);
+                            clearResultCellError(selTab, r, TestMeta.getResultValue());
+                            // ActionEvent.fire(screen, Action.RESULT_CHANGED,
+                            // data);
+                            fireDataChange();
+
+                            //
+                            // set the rest of the dictionary values in newly
+                            // added rows at the end of the table
+                            //
+                            for (int i = 1; i < list.size(); i++ ) {
+                                resultTable.addRow();
+                                entry = list.get(i);
+                                r = resultTable.getRowCount() - 1;
+                                data = manager.result.get(r);
+                                data.setValue(entry.getId().toString());
+                                data.setDictionary(entry.getName());
+                                data.setTypeId(Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
+                                resultTable.getRowAt(r)
+                                           .setCell(1,
+                                                    Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
+                                resultTable.getRowAt(r).setCell(2, data.getDictionary());
+                            }
+
+                        }
+                    }
+                }
+
+            });
+
+        }
+        modal = new ModalWindow();
+        modal.setName(Messages.get().chooseDictEntry());
+        modal.setContent(dictLookup);
+        dictLookup.setScreenState(State.DEFAULT);
+        if (list != null) {
+            dictLookup.clearFields();
+            dictLookup.setQueryResult(entry, list);
+        } else if (entry != null) {
+            dictLookup.clearFields();
+            dictLookup.executeQuery(entry);
+        }
+    }
+
+    private boolean errorExistsInList(int group, int row, String field, String message) {
+        GridFieldErrorException ex;
+
+        if (resultErrorList == null)
+            return false;
+
+        for (int i = 0; i < resultErrorList.size(); i++ ) {
+            ex = resultErrorList.get(i);
+            if ( (ex.getRowIndex() == group) && (ex.getColumnIndex() == row) &&
+                (ex.getFieldName().equals(field)) && (ex.getMessage().equals(message))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
