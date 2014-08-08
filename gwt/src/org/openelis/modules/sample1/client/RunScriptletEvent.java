@@ -40,12 +40,10 @@ public class RunScriptletEvent extends GwtEvent<RunScriptletEvent.Handler> {
 
     private static Type<RunScriptletEvent.Handler> TYPE;
 
-    private Integer                                scriptletId;
     private String                                 uid, changed;
     private Operation                              operation;
 
-    public RunScriptletEvent(Integer scriptletId, String uid, String changed, Operation operation) {
-        this.scriptletId = scriptletId;
+    public RunScriptletEvent(String uid, String changed, Operation operation) {
         this.uid = uid;
         this.changed = changed;
         this.operation = operation;
@@ -66,10 +64,6 @@ public class RunScriptletEvent extends GwtEvent<RunScriptletEvent.Handler> {
 
     public static interface Handler extends EventHandler {
         public void onRunScriptlet(RunScriptletEvent event);
-    }
-
-    public Integer getScriptletId() {
-        return scriptletId;
     }
 
     public String getUid() {
