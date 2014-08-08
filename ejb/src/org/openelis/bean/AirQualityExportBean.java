@@ -1189,6 +1189,9 @@ public class AirQualityExportBean {
 
         if ("duplicate".equals(sm.getSampleEnvironmental().getDescription()) &&
             DataBaseUtil.isEmpty(nullDataCd)) {
+            if (airToxicPrecisionStrings.get(key) == null)
+                airToxicPrecisionStrings.put(key, new ArrayList<String>());
+
             airToxicPrecisionStrings.get(key).addAll(getAirToxicsPrecisionString(sm,
                                                                                  testId,
                                                                                  action,
@@ -1227,6 +1230,20 @@ public class AirQualityExportBean {
                         else
                             value = "0";
                         parameter = analyteCodes.get(data.getAnalyteId());
+
+                        if (parameter == null) {
+                            /*
+                             * We do not create a string for this analyte. Add
+                             * the result value to the extra analyte values if
+                             * applicable.
+                             */
+                            if (addTds && analyte.contains(tolualdehyde) && !value.contains("<"))
+                                ttds += Double.parseDouble(value);
+                            if (addAll && !value.contains("<"))
+                                tmnoc += Double.parseDouble(value);
+                            value = null;
+                            continue;
+                        }
                         analyte = data.getAnalyte();
                         ap = analyteParameters.get(data.getAnalyteId());
                         if (ap.getP2() != null && ap.getP3() != null) {
@@ -1248,26 +1265,6 @@ public class AirQualityExportBean {
                         qualifier = data.getValue();
                     else
                         qualifier = "";
-                }
-
-                /*
-                 * we do not create a string for this analyte
-                 */
-                if (parameter == null) {
-                    /*
-                     * add the result value to the extra analyte values if
-                     * applicable
-                     */
-                    if (addTds && analyte.contains(tolualdehyde) && !value.contains("<"))
-                        ttds += Double.parseDouble(value);
-                    if (addAll && !value.contains("<"))
-                        tmnoc += Double.parseDouble(value);
-                    value = null;
-                    mdl = null;
-                    qualifier = null;
-                    parameter = null;
-                    analyte = null;
-                    continue;
                 }
 
                 /*
