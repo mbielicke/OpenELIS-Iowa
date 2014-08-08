@@ -486,6 +486,7 @@ public class WorksheetManager1Bean {
                 sms = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(analysisIds),
                                                          SampleManager1.Load.ORGANIZATION,
                                                          SampleManager1.Load.QA,
+                                                         SampleManager1.Load.ANALYSISUSER,
                                                          SampleManager1.Load.SINGLERESULT);
         }
         
@@ -719,6 +720,7 @@ public class WorksheetManager1Bean {
                 sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds),
                                                            SampleManager1.Load.ORGANIZATION,
                                                            SampleManager1.Load.QA,
+                                                           SampleManager1.Load.ANALYSISUSER,
                                                            SampleManager1.Load.SINGLERESULT);
                 for (SampleManager1 sMan : sMans) {
                     for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {

@@ -191,6 +191,7 @@ public class WorksheetCompletionScreenUI extends Screen {
     protected HashMap<Integer, TestManager>               testManagers;
     protected SampleManager1.Load                         sampleElements[] = {SampleManager1.Load.ORGANIZATION,
                                                                               SampleManager1.Load.QA,
+                                                                              SampleManager1.Load.ANALYSISUSER,
                                                                               SampleManager1.Load.SINGLERESULT};
     protected String                                      displayExcelDirectory;
     protected TestReflexUtility1                          testReflexUtility;
