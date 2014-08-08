@@ -45,11 +45,6 @@ public class NbsBtProxy1 implements NbsBtScriptlet1.Proxy {
     }
 
     @Override
-    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
-        return DictionaryCache.getBySystemName(systemName);
-    }
-
-    @Override
     public void log(Level level, String message) {
         logger.log(level, message);
     }
