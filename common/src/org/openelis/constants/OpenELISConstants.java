@@ -14758,6 +14758,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleNeonatal_nicu();
 
   /**
+   * Translated "Accession # ''{0,number}'': Patient birth date must not be after collection date".
+   * 
+   * @return translated "Accession # ''{0,number}'': Patient birth date must not be after collection date"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Patient birth date must not be after collection date")
+  @Key("sampleNeonatal.patBirthDateAfterCollectDateException")
+  String sampleNeonatal_patBirthDateAfterCollectDateException(Integer arg0);
+
+  /**
    * Translated "Sample Neonatal".
    * 
    * @return translated "Sample Neonatal"
