@@ -484,7 +484,11 @@ public class ResultFormatter implements Serializable {
             }
             try {
                 d = Double.parseDouble(value);
-                if (d < min || d >= max) {
+                /*
+                 * If the user specifies a "<" in front of the result, we want to
+                 * try an match the upper bounds.
+                 */
+                if (d < min || d > max || (d == max && !"<".equals(sign))) {
                     err = true;
                 } else {
                     if (Constants.dictionary().ROUND_SIG_FIG.equals(rounding)) {
