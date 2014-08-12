@@ -14,109 +14,116 @@
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0" bottom="25">
-      <g:HTMLPanel>
-        <table class="{res.style.Form}">
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
-            </td>
-            <td>
-              <w:CheckBox ui:field="isHazardous" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_priority}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="priority" field="Integer" width="24px" />
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sample_collector}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="collector" field="String" width="280px" maxLength="40"/>
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_phone}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="collectorPhone" field="String" width="115px" maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}"/>
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_location}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="location" width="280px" field="String" case="LOWER" maxLength="40"/>
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_desc}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="description" field="String" width="285px" maxLength="40"/>
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_aptSuite}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="locationAddressMultipleUnit" field="String" width="215px"
-                case="UPPER" maxLength="30" />
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_address}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="locationAddressStreetAddress" field="String" width="215px"
-                case="UPPER" maxLength="30" />
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_city}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="locationAddressCity" field="String" width="215px" case="UPPER"
-                maxLength="30" />
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_state}:" />
-            </td>
-            <td>
-              <w:Dropdown ui:field="locationAddressState" field="String" width="40px"
-                case="UPPER" />
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_zipcode}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="locationAddressZipCode" field="String" width="75px"
-                case="UPPER" maxLength="10" />
-            </td>
-          </tr>
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.address_country}:" />
-            </td>
-            <td>
-              <w:Dropdown ui:field="locationAddressCountry" field="String" width="215px"
-                case="UPPER" />
-            </td>
-          </tr>
-        </table>
-      </g:HTMLPanel>
+      <g:LayoutPanel>
+        <g:layer top="0px" bottom="0px" left="0px" width="52%">
+          <g:HTMLPanel width="100%">
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="isHazardous" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_priority}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="priority" field="Integer" width="24px" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.sample_collector}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="collector" field="String" width="235px" maxLength="40" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_phone}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="collectorPhone" field="String" width="115px"
+                    maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_description}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="description" field="String" width="280px"
+                    maxLength="40" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="0px" bottom="0px" right="0px" width="48%">
+          <g:HTMLPanel width="100%">
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_location}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="location" width="231px" field="String" case="LOWER"
+                    maxLength="40" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_aptSuite}:" />
+                </td>
+                <td colspan="5">
+                  <w:TextBox ui:field="locationAddressMultipleUnit" field="String" width="231px"
+                    case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_address}:" />
+                </td>
+                <td colspan="5">
+                  <w:TextBox ui:field="locationAddressStreetAddress" field="String" width="231px"
+                    case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_cityStateZip}:" />
+                </td>
+                <td colspan="3">
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="locationAddressCity" field="String" width="100px"
+                      case="UPPER" />
+                    <g:HorizontalPanel width="4px" />
+                    <w:Dropdown ui:field="locationAddressState" field="String" width="42px"
+                      case="UPPER" />
+                    <g:HorizontalPanel width="4px" />
+                    <w:TextBox ui:field="locationAddressZipCode" field="String" width="75px"
+                      case="UPPER" mask="{msg.gen_zipcodePattern}" />
+                  </g:HorizontalPanel>
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_country}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="locationAddressCountry" field="String" width="229px" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

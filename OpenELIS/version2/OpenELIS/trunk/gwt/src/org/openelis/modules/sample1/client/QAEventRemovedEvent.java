@@ -25,61 +25,46 @@
  */
 package org.openelis.modules.sample1.client;
 
-import org.openelis.scriptlet.SampleSO.Operation;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The event used to inform the handler that a scriptlet should be executed on
- * the data specified in the event. The scriptlet to be executed is specified by
- * scriptletId, the field whose value was changed is specified by "changed" and
- * the record that was changed is specified by "uid".
+ * The event is used to inform the handler that a qa event was removed from
+ * either the sample or an analysis. The unique identifier for the qa event is
+ * specified through uid.
  */
-public class RunScriptletEvent extends GwtEvent<RunScriptletEvent.Handler> {
+public class QAEventRemovedEvent extends GwtEvent<QAEventRemovedEvent.Handler> {
 
-    private static Type<RunScriptletEvent.Handler> TYPE;
+    private static Type<QAEventRemovedEvent.Handler> TYPE;
+    private String                                   uid;
 
-    private String                                 uid, changed;
-    private Operation                              operation;
-
-    public RunScriptletEvent(String uid, String changed, Operation operation) {
+    public QAEventRemovedEvent(String uid) {
         this.uid = uid;
-        this.changed = changed;
-        this.operation = operation;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<RunScriptletEvent.Handler> getAssociatedType() {
+    public Type<QAEventRemovedEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<RunScriptletEvent.Handler> getType() {
+    public static Type<QAEventRemovedEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<RunScriptletEvent.Handler>();
+            TYPE = new Type<QAEventRemovedEvent.Handler>();
         }
         return TYPE;
     }
 
     public static interface Handler extends EventHandler {
-        public void onRunScriptlet(RunScriptletEvent event);
+        public void onQAEventRemoved(QAEventRemovedEvent event);
     }
 
     public String getUid() {
         return uid;
     }
 
-    public String getChanged() {
-        return changed;
-    }
-    
-    public Operation getOperation() {
-        return operation;
-    }
-
     @Override
     protected void dispatch(Handler handler) {
-        handler.onRunScriptlet(this);
+        handler.onQAEventRemoved(this);
     }
 }

@@ -29,19 +29,18 @@ import static org.openelis.modules.main.client.Logger.*;
 
 import java.util.logging.Level;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.NbsBtScriptlet1;
+import org.openelis.domain.StandardNoteDO;
+import org.openelis.modules.standardnote.client.StandardNoteService;
+import org.openelis.scriptlet.EnvironmentalIAScriptlet1;
 
 /**
- * This class is used for providing the front-end functionality for "nbs bt"
- * scriptlet
+ * This class is used for providing the front-end functionality for
+ * environmental iowa scriptlet
  */
-public class NbsBtProxy1 implements NbsBtScriptlet1.Proxy {
-
+public class EnvironmentalIAProxy1 implements EnvironmentalIAScriptlet1.Proxy {
     @Override
-    public DictionaryDO getDictionaryById(Integer id) throws Exception {
-        return DictionaryCache.getById(id);
+    public StandardNoteDO fetchBySystemVariableName(String name) throws Exception {
+        return StandardNoteService.get().fetchBySystemVariableName(name);
     }
 
     @Override
