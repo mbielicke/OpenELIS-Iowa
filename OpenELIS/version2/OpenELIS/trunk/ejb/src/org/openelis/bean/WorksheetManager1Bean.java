@@ -2073,9 +2073,19 @@ public class WorksheetManager1Bean {
             }
             
             try {
-                if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(waVDO.getStatusId()) ||
-                    Constants.dictionary().ANALYSIS_INITIATED.equals(waVDO.getStatusId()) ||
-                    Constants.dictionary().ANALYSIS_COMPLETED.equals(waVDO.getStatusId())) {
+                if (DataBaseUtil.isDifferent(waVDO.getStatusId(), aVDO.getStatusId()) &&
+                    sMan.analysis.canChangeStatus(aVDO.getStatusId(), waVDO.getStatusId())) {
+                    try {
+                        aHelper.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
+                    } catch (ValidationErrorsList vel) {
+                        if (vel.hasErrors())
+                            throw vel;
+                    }
+                    update = true;
+                }
+                
+                if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(aVDO.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_INITIATED.equals(aVDO.getStatusId())) {
                     try {
                         aHelper.changeAnalysisStatus(sMan, aVDO.getId(), Constants.dictionary().ANALYSIS_COMPLETED);
                         update = true;
@@ -2086,14 +2096,6 @@ public class WorksheetManager1Bean {
                         // other error, we will catch it on validation during update
                         // of the sample manager.
                     }
-                } else if (DataBaseUtil.isDifferent(waVDO.getStatusId(), aVDO.getStatusId())) {
-                    try {
-                        aHelper.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
-                    } catch (ValidationErrorsList vel) {
-                        if (vel.hasErrors())
-                            throw vel;
-                    }
-                    update = true;
                 }
             } catch (ValidationErrorsList vel) {
                 for (Exception e : vel.getErrorList()) {
