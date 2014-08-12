@@ -184,6 +184,12 @@ public class SampleSDWISBean {
         
         e = new ValidationErrorsList();
         
+        /*
+         * for display
+         */
+        if (accession == null)
+            accession = 0;
+        
         if (data.getPwsId() == null)
             e.add(new FormErrorException(Messages.get().sampleSDWIS_pwsIdRequiredException(accession)));        
         

@@ -50,58 +50,61 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "QaEvent.FetchById",
-                query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
-                		"q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
-                      + " from QaEvent q left join q.test t left join q.test.method m where q.id = :id"),
-    @NamedQuery( name = "QaEvent.FetchByIds",
-                query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
-                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
-                      + " from QaEvent q left join q.test t left join q.test.method m where q.id in (:ids)"),
-    @NamedQuery( name = "QaEvent.FetchByName",
-                query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
-                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
-                      + " from QaEvent q left join q.test t left join q.test.method m where q.name = :name"),
-    @NamedQuery( name = "QaEvent.FetchByTestId",
-                query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                      + " from QaEvent q where q.testId = :testId" +
-                      		" or (q.testId is null and q.name not in " +
-                      		    "(select q2.name from QaEvent q2 where q2.testId=:testId)) order by q.name"),
-    @NamedQuery( name = "QaEvent.FetchByCommon",
-                query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                      + " from QaEvent q where q.testId is null order by q.name"),
-    @NamedQuery( name = "QaEvent.FetchAll",
-                query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                      + " from QaEvent q order by q.name, q.testId"),                   
-    @NamedQuery( name = "QaEvent.FetchByAnalysisId",
-                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                       + " from AnalysisQaevent aq left join aq.qaEvent q"
-                       + " where aq.analysisId = :id order by aq.id"),                  
-    @NamedQuery( name = "QaEvent.FetchNotInternalByAnalysisId",                
-                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                       + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
-                       + " where aq.analysisId = :id and d.id not in"
-                       + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by aq.id"),
-    @NamedQuery( name = "QaEvent.FetchBySampleId",
-                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                       + " from SampleQaevent sq left join sq.qaEvent q"
-                       + " where sq.sampleId = :id order by sq.id"),                  
-    @NamedQuery( name = "QaEvent.FetchNotInternalBySampleId",                
-                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
-                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                       + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"
-                       + " where sq.sampleId = :id and d.id not in"
-                       + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by sq.id")})
-
+               @NamedQuery(name = "QaEvent.FetchById",
+                           query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
+                                   + " from QaEvent q left join q.test t left join q.test.method m where q.id = :id"),
+               @NamedQuery(name = "QaEvent.FetchByIds",
+                           query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
+                                   + " from QaEvent q left join q.test t left join q.test.method m where q.id in (:ids)"),
+               @NamedQuery(name = "QaEvent.FetchByName",
+                           query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
+                                   + " from QaEvent q left join q.test t left join q.test.method m where q.name = :name"),
+               @NamedQuery(name = "QaEvent.FetchByNames",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from QaEvent q where q.name in (:names)"),
+               @NamedQuery(name = "QaEvent.FetchByTestId",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from QaEvent q where q.testId = :testId"
+                                   + " or (q.testId is null and q.name not in "
+                                   + "(select q2.name from QaEvent q2 where q2.testId=:testId)) order by q.name"),
+               @NamedQuery(name = "QaEvent.FetchByCommon",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from QaEvent q where q.testId is null order by q.name"),
+               @NamedQuery(name = "QaEvent.FetchAll",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from QaEvent q order by q.name, q.testId"),
+               @NamedQuery(name = "QaEvent.FetchByAnalysisId",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from AnalysisQaevent aq left join aq.qaEvent q"
+                                   + " where aq.analysisId = :id order by aq.id"),
+               @NamedQuery(name = "QaEvent.FetchNotInternalByAnalysisId",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
+                                   + " where aq.analysisId = :id and d.id not in"
+                                   + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by aq.id"),
+               @NamedQuery(name = "QaEvent.FetchBySampleId",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from SampleQaevent sq left join sq.qaEvent q"
+                                   + " where sq.sampleId = :id order by sq.id"),
+               @NamedQuery(name = "QaEvent.FetchNotInternalBySampleId",
+                           query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,"
+                                   + "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                                   + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"
+                                   + " where sq.sampleId = :id and d.id not in"
+                                   + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by sq.id")})
 @Entity
 @Table(name = "qaevent")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class QaEvent implements Auditable, Cloneable {
 
     @Id

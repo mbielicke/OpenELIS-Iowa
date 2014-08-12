@@ -41,7 +41,7 @@ import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.entity.SampleNeonatal;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

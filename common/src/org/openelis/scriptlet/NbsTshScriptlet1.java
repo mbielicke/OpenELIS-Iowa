@@ -32,6 +32,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -44,23 +45,25 @@ import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultHelper;
 
 /**
- * The scriptlet for performing operations for "nbs bt (Biotinidase)" test
+ * The scriptlet for performing operations for
+ * "nbs tsh (Thyroid Stimulating Hormone)" test
  */
-public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
+public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
 
     private ScriptletUtility scriptletUtility;
 
     private Proxy            proxy;
 
-    private static final String TEST_NAME = "nbs bt", METHOD_NAME = "enzymatic assay",
-                    BIOTINIDASE = "nbs_biotinidase", INTERPRETATION = "nbs_bt_inter",
-                    OVERRIDE_INTER = "nbs_override_inter", NO = "no";
+    private static final String TEST_NAME = "nbs tsh", METHOD_NAME = "immunoassay",
+                    TSH = "nbs_tsh", OVERRIDE_INTER = "nbs_override_inter",
+                    INTERPRETATION = "nbs_tsh_inter", NO = "no", LOWER_LIMIT = "nbs_lower_limit",
+                    UPPER_LIMIT = "nbs_upper_limit";
 
-    public NbsBtScriptlet1(ScriptletUtility scriptletUtility, Proxy proxy) {
+    public NbsTshScriptlet1(ScriptletUtility scriptletUtility, Proxy proxy) {
         this.scriptletUtility = scriptletUtility;
         this.proxy = proxy;
 
-        proxy.log(Level.FINE, "Initializing NbsBtScriptlet1");
+        proxy.log(Level.FINE, "Initializing NbsTshScriptlet1");
     }
 
     @Override
@@ -69,7 +72,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         AnalysisViewDO ana;
         TestManager tm;
 
-        proxy.log(Level.FINE, "In NbsBtScriptlet1.run");
+        proxy.log(Level.FINE, "In NbsTshScriptlet1.run");
 
         if (data.getOperations().contains(Operation.RESULT_CHANGED)) {
             /*
@@ -87,12 +90,10 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
             tm = data.getResults().get(res.getId());
         } else if (data.getOperations().contains(Operation.SAMPLE_QA_ADDED) ||
                    data.getOperations().contains(Operation.SAMPLE_QA_REMOVED) ||
-                   SampleMeta.getNeonatalIsTransfused().equals(data.getChanged()) ||
-                   SampleMeta.getNeonatalTransfusionDate().equals(data.getChanged())) {
+                   SampleMeta.getNeonatalCollectionAge().equals(data.getChanged())) {
             /*
-             * a sample qa event was added or removed or a field related to
-             * transfusion changed; find the analysis that's linked to the
-             * active vesrion of this test
+             * a sample qa event was added or removed or the collection age
+             * changed
              */
             ana = scriptletUtility.getAnalysis(data, TEST_NAME, METHOD_NAME);
             if (ana == null)
@@ -111,7 +112,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         /*
          * set the value of interpretation based on the value of this result
          */
-        setInterpretion(data, ana, tm);
+        setInterpretation(data, ana, tm);
 
         return data;
     }
@@ -121,41 +122,53 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
      * the passed result, if the value to be set is different from the current
      * value
      */
-    private void setInterpretion(SampleSO data, AnalysisViewDO ana, TestManager tm) {
+    private void setInterpretation(SampleSO data, AnalysisViewDO ana, TestManager tm) {
         int i, j;
-        Integer interp;
-        String bioVal, sysName;
+        boolean lt;
+        Integer interp, colAge;
+        String sign;
+        Double tshVal, lower, upper;
         SampleManager1 sm;
-        ResultViewDO res, resOver, resInter;
+        SampleNeonatalDO sn;
+        ResultViewDO res, resTsh, resOver, resInter;
         DictionaryDO dict;
         QaEventDO qa;
         FormattedValue fv;
         ResultFormatter rf;
 
-        /*
-         * find the analysis for the result and the values for the various
-         * analytes
-         */
         sm = data.getManager();
-        bioVal = null;
+        sn = sm.getSampleNeonatal();
+        resTsh = null;
         resOver = null;
         resInter = null;
+        lower = null;
+        upper = null;
+
         proxy.log(Level.FINE,
-                  "Going through the SO to find the result that trigerred the scriptlet");
+                  "Going through the manager to find the result that triggered the scriptlet");
+        /*
+         * find the values for the various analytes
+         */
         for (i = 0; i < sm.result.count(ana); i++ ) {
             for (j = 0; j < sm.result.count(ana, i); j++ ) {
                 res = sm.result.get(ana, i, j);
-                if (BIOTINIDASE.equals(res.getAnalyteExternalId()))
-                    bioVal = res.getValue();
+                if (TSH.equals(res.getAnalyteExternalId()))
+                    resTsh = res;
                 else if (OVERRIDE_INTER.equals(res.getAnalyteExternalId()))
                     resOver = res;
                 else if (INTERPRETATION.equals(res.getAnalyteExternalId()))
                     resInter = res;
+                /*
+                 * else if (LOWER_LIMIT.equals(res.getAnalyteExternalId()))
+                 * lower = getDoubleValue(res.getValue()); else if
+                 * (UPPER_LIMIT.equals(res.getAnalyteExternalId())) upper =
+                 * getDoubleValue(res.getValue());
+                 */
             }
         }
 
         try {
-            proxy.log(Level.FINE, "Finding the values of override interretation");
+            proxy.log(Level.FINE, "Finding the values of override interpretation");
             /*
              * proceed only if the value for override interpretation has been
              * validated and is "No"
@@ -164,44 +177,58 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
                 return;
 
             dict = getDictionaryByValue(resOver.getValue());
-            if (dict == null || !NO.equals(dict.getSystemName()))
+            if (dict == null || !NO.equals(dict.getSystemName()) || resTsh.getValue() == null)
                 return;
 
-            proxy.log(Level.FINE, "Finding the value of biotinidase");
+            tshVal = getDoubleValue(resTsh.getValue());
+            sign = null;
             /*
-             * get the value for biotinidase
+             * reset the value of the "tsh" analyte if the current value is
+             * outside the range of lower and upper limits
              */
-            dict = getDictionaryByValue(bioVal);
-            if (dict == null)
-                return;
+            /*
+             * if (tshVal < lower) { tshVal = lower; sign = "<"; } else if
+             * (tshVal > upper) { tshVal = upper; sign = ">"; }
+             * 
+             * rf = tm.getFormatter(); if (sign != null) {
+             * ResultHelper.formatValue(resTsh, DataBaseUtil.concat(sign,
+             * tshVal), ana.getUnitOfMeasureId(), rf); }
+             */
 
+            lt = "<".equals(sign);
             /*
-             * determine the initial interpretation based on weight and the
-             * value for biotinidase
+             * the value of interpretation is "presumptive positive" if the
+             * value of tsh is between 60 and 9998, the value of interpretation
+             * is "borderline" if the value of tsh is between 25 and 59, the
+             * value of interpretation is "within normal limits" if the value of
+             * tsh is between 0 and 24
              */
-            proxy.log(Level.FINE,
-                      "Getting the value for interretation based on the value of biotinidase");
-            sysName = dict.getSystemName();
-            interp = null;
-            if (sysName.endsWith("1+") || sysName.endsWith("0"))
-                interp = scriptletUtility.INTER_PP_NR;
-            else if (sysName.endsWith("2+") || sysName.endsWith("3+"))
+            proxy.log(Level.FINE, "Getting the value for interretation based on the value for tsh");
+
+            if ( (tshVal >= 0 && tshVal < 25.0) || (tshVal == 25.0 && lt))
                 interp = scriptletUtility.INTER_N;
+            else if (tshVal < 60.0 || (tshVal == 60.0 && lt))
+                interp = scriptletUtility.INTER_BORD;
+            else
+                interp = scriptletUtility.INTER_PP_NR;
 
             proxy.log(Level.FINE, "Finding the qa event to be added to the analysis");
             /*
              * find the qa event to be added to the analysis
              */
             qa = null;
-            if ("Y".equals(sm.getSampleNeonatal().getIsTransfused())) {
+            colAge = sn.getCollectionAge();
+            if (colAge != null && (colAge / 60) < 24) {
                 /*
-                 * the sample is transfused; add "transfused" if the transfusion
-                 * date has been specified, otherwise add "transfused unknown"
+                 * the collection age is less than 24 hours so if either
+                 * collection time or patient birth time is specified then add
+                 * "early collection" otherwise add "early collection unknown"
                  */
-                if (sm.getSampleNeonatal().getTransfusionDate() != null)
-                    qa = scriptletUtility.getQaEvent(scriptletUtility.QA_TRAN, ana.getTestId());
+                if (sm.getSample().getCollectionTime() != null ||
+                    sn.getPatient().getBirthTime() != null)
+                    qa = scriptletUtility.getQaEvent(scriptletUtility.QA_EC, ana.getTestId());
                 else
-                    qa = scriptletUtility.getQaEvent(scriptletUtility.QA_TRANU, ana.getTestId());
+                    qa = scriptletUtility.getQaEvent(scriptletUtility.QA_ECU, ana.getTestId());
             }
 
             /*
@@ -224,16 +251,23 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
                      * "poor quality"
                      */
                     interp = scriptletUtility.INTER_PQ;
-                } else if (qa != null) {
+                } else if ( !scriptletUtility.INTER_BORD.equals(interp)) {
                     /*
-                     * the sample is transfused so if a transfusion date is
-                     * specified then set "transfused" as the interpretation,
-                     * otherwise set "transfused unknown" as the interpretation
+                     * the interpretation is "borderline - resubmit sample",
+                     * then it has higher priority than "collection age"
                      */
-                    if (scriptletUtility.QA_TRAN.equals(qa.getName()))
-                        interp = scriptletUtility.INTER_TRAN;
-                    else if (scriptletUtility.QA_TRANU.equals(qa.getName()))
-                        interp = scriptletUtility.INTER_TRANU;
+                    if (qa != null) {
+                        /*
+                         * the collection age is less than 24 hours so if either
+                         * collection time or patient birth time is specified
+                         * then the interpretation is "early collection"
+                         * otherwise it's "early collection unknown"
+                         */
+                        if (scriptletUtility.QA_EC.equals(qa.getName()))
+                            interp = scriptletUtility.INTER_EC;
+                        else if (scriptletUtility.QA_ECU.equals(qa.getName()))
+                            interp = scriptletUtility.INTER_ECU;
+                    }
                 }
             }
 
@@ -273,8 +307,24 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         return proxy.getDictionaryById(Integer.valueOf(value));
     }
 
+    /**
+     * If the passed value is not null, removes any "<" or ">" from it, converts
+     * the remaining string to a double and returns it; otherwise returns null
+     */
+    private Double getDoubleValue(String value) {
+        if (value != null) {
+            if (value.startsWith(">") || value.startsWith("<"))
+                value = value.substring(1);
+            return Double.valueOf(value);
+        }
+
+        return null;
+    }
+
     public static interface Proxy {
         public DictionaryDO getDictionaryById(Integer id) throws Exception;
+
+        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
 
         public void log(Level level, String message);
     }

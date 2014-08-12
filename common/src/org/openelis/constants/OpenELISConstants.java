@@ -14425,6 +14425,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleDomainChangedException();
 
   /**
+   * Translated "Environmental Info".
+   * 
+   * @return translated "Environmental Info"
+   */
+  @DefaultMessage("Environmental Info")
+  @Key("sampleEnvironmental.envInfo")
+  String sampleEnvironmental_envInfo();
+
+  /**
    * Translated "Hazardous".
    * 
    * @return translated "Hazardous"
@@ -14432,6 +14441,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Hazardous")
   @Key("sampleEnvironmental.hazardous")
   String sampleEnvironmental_hazardous();
+
+  /**
+   * Translated "Environmental Sample Login".
+   * 
+   * @return translated "Environmental Sample Login"
+   */
+  @DefaultMessage("Environmental Sample Login")
+  @Key("sampleEnvironmental.login")
+  String sampleEnvironmental_login();
+
+  /**
+   * Translated "Fully login environmental sample and analysis related information.".
+   * 
+   * @return translated "Fully login environmental sample and analysis related information."
+   */
+  @DefaultMessage("Fully login environmental sample and analysis related information.")
+  @Key("sampleEnvironmental.loginDescription")
+  String sampleEnvironmental_loginDescription();
+
+  /**
+   * Translated "Organization Info".
+   * 
+   * @return translated "Organization Info"
+   */
+  @DefaultMessage("Organization Info")
+  @Key("sampleEnvironmental.organizationInfo")
+  String sampleEnvironmental_organizationInfo();
+
+  /**
+   * Translated "Sample Environmental".
+   * 
+   * @return translated "Sample Environmental"
+   */
+  @DefaultMessage("Sample Environmental")
+  @Key("sampleEnvironmental.sampleEnvironmental")
+  String sampleEnvironmental_sampleEnvironmental();
 
   /**
    * Translated "Smp Ext Comment".
@@ -14720,6 +14765,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("NICU")
   @Key("sampleNeonatal.nicu")
   String sampleNeonatal_nicu();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Patient birth date must not be after collection date".
+   * 
+   * @return translated "Accession # ''{0,number}'': Patient birth date must not be after collection date"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Patient birth date must not be after collection date")
+  @Key("sampleNeonatal.patBirthDateAfterCollectDateException")
+  String sampleNeonatal_patBirthDateAfterCollectDateException(Integer arg0);
 
   /**
    * Translated "Sample Neonatal".

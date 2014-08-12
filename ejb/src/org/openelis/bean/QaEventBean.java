@@ -103,6 +103,15 @@ public class QaEventBean {
         query.setParameter("name", name);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchByNames");
+        query.setParameter("names", names);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception {
