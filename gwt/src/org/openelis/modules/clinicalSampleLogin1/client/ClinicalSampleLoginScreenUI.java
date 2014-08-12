@@ -289,7 +289,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                            "analysis_status",
                                            "user_action",
                                            "unit_of_measure",
-                                           "qaevent_type");
+                                           "qaevent_type",
+                                           "worksheet_status");
         } catch (Exception e) {
             window.close();
             throw e;
@@ -2349,7 +2350,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                     /*
                      * the cache is set to null only if the add/update succeeds
-                     * because otherwise, it can't be used by any tabs if the
+                     * because otherwise, they can't be used by any tabs if the
                      * user wants to change any data
                      */
                     cache = null;

@@ -14470,6 +14470,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleEnvironmental_organizationInfo();
 
   /**
+   * Translated "Sample Environmental".
+   * 
+   * @return translated "Sample Environmental"
+   */
+  @DefaultMessage("Sample Environmental")
+  @Key("sampleEnvironmental.sampleEnvironmental")
+  String sampleEnvironmental_sampleEnvironmental();
+
+  /**
    * Translated "Smp Ext Comment".
    * 
    * @return translated "Smp Ext Comment"

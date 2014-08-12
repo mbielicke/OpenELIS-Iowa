@@ -26,6 +26,7 @@
 package org.openelis.modules.scriptlet.client;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.scriptlet.EnvironmentalIAScriptlet1;
 import org.openelis.scriptlet.NbsBtScriptlet1;
 import org.openelis.scriptlet.NbsCahScriptlet1;
 import org.openelis.scriptlet.NbsGaltScriptlet1;
@@ -54,7 +55,10 @@ public class ScriptletFactory {
         
         script = null;
         switch (systemName) {
-            case "scriptlet_neonatal_domain1":
+            case "scriptlet_environmental_ia1":
+                script = (T)new EnvironmentalIAScriptlet1(new EnvironmentalIAProxy1());
+                break;
+            case "scriptlet_neonatal_ia1":
                 script = (T)new NeonatalDomainScriptlet1(new NeonatalDomainProxy1());
                 break;
             case "scriptlet_nbs_bt1":

@@ -49,7 +49,7 @@
               selfShow="true" showBelow="false"
             >
               <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
-              <w:MenuItem ui:field="historySampleEnvironmental" display="{msg.history_sampleEnvironmental}" />
+              <w:MenuItem ui:field="historySampleEnvironmental" display="{msg.sampleEnvironmental_sampleEnvironmental}" />
               <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
               <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
               <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem_sampleItem}" />
@@ -138,7 +138,7 @@
                         <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
                       </td>
                       <td>
-                        <w:CheckBox ui:field="isHazardous" />
+                        <w:CheckBox ui:field="envIsHazardous" />
                       </td>
                     </tr>
                     <tr>
@@ -146,7 +146,7 @@
                         <ui:text from="{msg.gen_priority}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="priority" field="Integer" width="24px" />
+                        <w:TextBox ui:field="envPriority" field="Integer" width="24px" />
                       </td>
                     </tr>
                     <tr>
@@ -154,7 +154,7 @@
                         <ui:text from="{msg.sample_collector}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="collector" field="String" width="235px"
+                        <w:TextBox ui:field="envCollector" field="String" width="235px"
                           maxLength="40" />
                       </td>
                     </tr>
@@ -163,16 +163,16 @@
                         <ui:text from="{msg.address_phone}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="collectorPhone" field="String" width="115px"
+                        <w:TextBox ui:field="envCollectorPhone" field="String" width="115px"
                           maxLength="17" mask="{msg.gen_phoneWithExtensionPattern}" />
                       </td>
                     </tr>
                     <tr>
                       <td class="{res.style.Prompt}">
-                        <ui:text from="{msg.gen_desc}:" />
+                        <ui:text from="{msg.gen_description}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="description" field="String" width="280px"
+                        <w:TextBox ui:field="envDescription" field="String" width="280px"
                           maxLength="40" />
                       </td>
                     </tr>
@@ -187,7 +187,7 @@
                         <ui:text from="{msg.gen_location}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="location" width="231px" field="String" case="LOWER"
+                        <w:TextBox ui:field="envLocation" width="231px" field="String" case="LOWER"
                           maxLength="40" />
                       </td>
                     </tr>
@@ -232,7 +232,7 @@
                       </td>
                       <td>
                         <w:Dropdown ui:field="locationAddressCountry" field="String"
-                          width="229px" case="UPPER" />
+                          width="229px"/>
                       </td>
                     </tr>
                   </table>
