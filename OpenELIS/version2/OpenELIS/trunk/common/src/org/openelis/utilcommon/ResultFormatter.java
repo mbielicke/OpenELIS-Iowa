@@ -248,7 +248,7 @@ public class ResultFormatter implements Serializable {
             l = new ArrayList<FormattedValue>();
             for (Item item : u.items) {
                 if (isTypeDictionary(item.type))
-                    l.add(new FormattedValue( ((DictionaryItem)item).id,
+                    l.add(new FormattedValue(((DictionaryItem)item).id,
                                              item.type,
                                              ((DictionaryItem)item).text));
             }
@@ -278,6 +278,28 @@ public class ResultFormatter implements Serializable {
         return (u != null) ? u.onlyDictionary : false;
     }
 
+    /**
+     * Returns true if the only result for this group and unit is of type alpha
+     * upper, false otherwise
+     */
+    public boolean hasOnlyAlphaUpper(Integer group, Integer unitId) {
+        Unit u;
+
+        u = getMap(group, unitId);
+        return (u != null) ? u.onlyAlphaUpper : false;
+    }
+
+    /**
+     * Returns true if the only result for this group and unit is of type alpha
+     * lower, false otherwise
+     */
+    public boolean hasOnlyAlphaLower(Integer group, Integer unitId) {
+        Unit u;
+
+        u = getMap(group, unitId);
+        return (u != null) ? u.onlyAlphaLower : false;
+    }
+
     /*
      * Builds a map using group and unitId
      */
@@ -299,8 +321,18 @@ public class ResultFormatter implements Serializable {
                     u.def = (DefaultItem)item;
                 } else {
                     u.items.add(item);
-                    if ( !isTypeDictionary(item.type))
+                    if (!isTypeDictionary(item.type))
                         u.onlyDictionary = false;
+                    if (isTypeAlphaLower(item.type) && u.items.size() == 1) {
+                        u.onlyAlphaLower = true;
+                        u.onlyAlphaUpper = false;
+                    } else if (isTypeAlphaUpper(item.type) && u.items.size() == 1) {
+                        u.onlyAlphaLower = false;
+                        u.onlyAlphaUpper = true;
+                    } else {
+                        u.onlyAlphaLower = false;
+                        u.onlyAlphaUpper = false;
+                    }
                 }
             }
         }
@@ -486,7 +518,7 @@ public class ResultFormatter implements Serializable {
                 d = Double.parseDouble(value);
                 /*
                  * If the user specifies a "<" in front of the result, we want to
-                 * try an match the upper bounds.
+                 * try to match the upper bounds.
                  */
                 if (d < min || d > max || (d == max && !"<".equals(sign))) {
                     err = true;
@@ -688,9 +720,11 @@ public class ResultFormatter implements Serializable {
 
         DefaultItem               def;
         ArrayList<Item>           items;
-        boolean                   onlyDictionary;
+        boolean                   onlyAlphaLower, onlyAlphaUpper, onlyDictionary;
 
         public Unit() {
+            onlyAlphaLower = false;
+            onlyAlphaUpper = false;
             onlyDictionary = true;
         }
     }

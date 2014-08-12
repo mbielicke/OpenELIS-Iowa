@@ -954,8 +954,10 @@ public class WorksheetManager1Bean {
             }
         } while (dep > 0 && ldep != dep);
 
-        if (dep > 0 && ldep == dep)
+        if (dep > 0 && ldep == dep) {
+            ctx.setRollbackOnly();
             throw new InconsistencyException(Messages.get().worksheetAnalysisLinkError());
+        }
 
         // add/update results
         if (getResults(wm) != null) {
