@@ -31,11 +31,14 @@ import static org.openelis.ui.screen.Screen.Validation.Status.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
@@ -50,6 +53,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
@@ -82,7 +86,11 @@ import org.openelis.modules.sample1.client.SampleProjectLookupUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
+import org.openelis.modules.scriptlet.client.ScriptletFactory;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.scriptlet.SampleSO;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
@@ -104,6 +112,8 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -154,18 +164,18 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     receivedDate;
 
     @UiField
-    protected TextBox<Integer>                          accessionNumber, orderId, priority;
+    protected TextBox<Integer>                          accessionNumber, orderId, envPriority;
 
     @UiField
-    protected TextBox<String>                           clientReference, collector, collectorPhone,
-                    description, location, locationAddressMultipleUnit,
+    protected TextBox<String>                           clientReference, envCollector, envCollectorPhone,
+                    envDescription, envLocation, locationAddressMultipleUnit,
                     locationAddressStreetAddress, locationAddressCity, locationAddressZipCode;
 
     @UiField
     protected Dropdown<Integer>                         status;
 
     @UiField
-    protected CheckBox                                  isHazardous;
+    protected CheckBox                                  envIsHazardous;
 
     @UiField
     protected Dropdown<String>                          locationAddressState,
@@ -241,6 +251,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
 
+    protected ScriptletRunner<SampleSO>                 scriptletRunner;
+
+    protected SystemVariableDO                          domainScriptletVariable;
+
+    protected Integer                                   domainScriptletId;
+
     protected static final SampleManager1.Load          elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
@@ -275,8 +291,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                            "user_action",
                                            "unit_of_measure",
                                            "qaevent_type",
-                                           "worksheet_status",
-                                           "parameter_type");
+                                           "worksheet_status");
         } catch (Exception e) {
             window.close();
             throw e;
@@ -650,8 +665,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                      * one in the current manager
                      */
                     if ( !DataBaseUtil.isSame(ordId, prevOrdId)) {
-                        setOrderId(ordId);
-                        orderId.setValue(ordId);
+                        setOrderId(prevOrdId);
+                        orderId.setValue(prevOrdId);
                     }
                     screen.focusNextWidget((Focusable)orderId, true);
                     event.preventDefault();
@@ -813,7 +828,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? isHazardous : status;
+                                 return forward ? envIsHazardous : status;
                              }
                          });
 
@@ -833,9 +848,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
-        addScreenHandler(isHazardous, SampleMeta.getEnvIsHazardous(), new ScreenHandler<String>() {
+        addScreenHandler(envIsHazardous, SampleMeta.getEnvIsHazardous(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isHazardous.setValue(getIsHazardous());
+                envIsHazardous.setValue(getIsHazardous());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -843,16 +858,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public void onStateChange(StateChangeEvent event) {
-                isHazardous.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                isHazardous.setQueryMode(isState(QUERY));
+                envIsHazardous.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                envIsHazardous.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? priority : clientReference;
+                return forward ? envPriority : clientReference;
             }
         });
 
-        isHazardous.addKeyUpHandler(new KeyUpHandler() {
+        envIsHazardous.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String ih;
@@ -860,17 +875,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     ih = previousManager.getSampleEnvironmental().getIsHazardous();
                     setIsHazardous(ih);
-                    isHazardous.setValue(ih);
-                    screen.focusNextWidget((Focusable)isHazardous, true);
+                    envIsHazardous.setValue(ih);
+                    screen.focusNextWidget((Focusable)envIsHazardous, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
             }
         });
 
-        addScreenHandler(priority, SampleMeta.getEnvPriority(), new ScreenHandler<Integer>() {
+        addScreenHandler(envPriority, SampleMeta.getEnvPriority(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                priority.setValue(getPriority());
+                envPriority.setValue(getPriority());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -878,16 +893,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public void onStateChange(StateChangeEvent event) {
-                priority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                priority.setQueryMode(isState(QUERY));
+                envPriority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                envPriority.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? collector : isHazardous;
+                return forward ? envCollector : envIsHazardous;
             }
         });
 
-        priority.addKeyUpHandler(new KeyUpHandler() {
+        envPriority.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 Integer p;
@@ -895,17 +910,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     p = previousManager.getSampleEnvironmental().getPriority();
                     setPriority(p);
-                    priority.setValue(p);
-                    screen.focusNextWidget((Focusable)priority, true);
+                    envPriority.setValue(p);
+                    screen.focusNextWidget((Focusable)envPriority, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
             }
         });
 
-        addScreenHandler(collector, SampleMeta.getEnvCollector(), new ScreenHandler<String>() {
+        addScreenHandler(envCollector, SampleMeta.getEnvCollector(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collector.setValue(getCollector());
+                envCollector.setValue(getCollector());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -913,16 +928,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public void onStateChange(StateChangeEvent event) {
-                collector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                collector.setQueryMode(isState(QUERY));
+                envCollector.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                envCollector.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? collectorPhone : priority;
+                return forward ? envCollectorPhone : envPriority;
             }
         });
 
-        collector.addKeyUpHandler(new KeyUpHandler() {
+        envCollector.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String col;
@@ -930,19 +945,19 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     col = previousManager.getSampleEnvironmental().getCollector();
                     setCollector(col);
-                    collector.setValue(col);
-                    screen.focusNextWidget((Focusable)collector, true);
+                    envCollector.setValue(col);
+                    screen.focusNextWidget((Focusable)envCollector, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
             }
         });
 
-        addScreenHandler(collectorPhone,
+        addScreenHandler(envCollectorPhone,
                          SampleMeta.getEnvCollectorPhone(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 collectorPhone.setValue(getCollectorPhone());
+                                 envCollectorPhone.setValue(getCollectorPhone());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -950,17 +965,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 collectorPhone.setEnabled(isState(QUERY) ||
+                                 envCollectorPhone.setEnabled(isState(QUERY) ||
                                                            (canEdit && isState(ADD, UPDATE)));
-                                 collectorPhone.setQueryMode(isState(QUERY));
+                                 envCollectorPhone.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? description : collector;
+                                 return forward ? envDescription : envCollector;
                              }
                          });
 
-        collectorPhone.addKeyUpHandler(new KeyUpHandler() {
+        envCollectorPhone.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String cp;
@@ -968,17 +983,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     cp = previousManager.getSampleEnvironmental().getCollectorPhone();
                     setCollectorPhone(cp);
-                    collectorPhone.setValue(cp);
-                    screen.focusNextWidget((Focusable)collectorPhone, true);
+                    envCollectorPhone.setValue(cp);
+                    screen.focusNextWidget((Focusable)envCollectorPhone, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
             }
         });
 
-        addScreenHandler(description, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
+        addScreenHandler(envDescription, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setValue(getDescription());
+                envDescription.setValue(getDescription());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -986,16 +1001,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                description.setQueryMode(isState(QUERY));
+                envDescription.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                envDescription.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? location : collectorPhone;
+                return forward ? envLocation : envCollectorPhone;
             }
         });
 
-        description.addKeyUpHandler(new KeyUpHandler() {
+        envDescription.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String d;
@@ -1003,17 +1018,17 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     d = previousManager.getSampleEnvironmental().getDescription();
                     setDescription(d);
-                    description.setValue(d);
-                    screen.focusNextWidget((Focusable)description, true);
+                    envDescription.setValue(d);
+                    screen.focusNextWidget((Focusable)envDescription, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
             }
         });
 
-        addScreenHandler(location, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
+        addScreenHandler(envLocation, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                location.setValue(getLocation());
+                envLocation.setValue(getLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -1021,16 +1036,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             public void onStateChange(StateChangeEvent event) {
-                location.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                location.setQueryMode(isState(QUERY));
+                envLocation.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                envLocation.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? locationAddressMultipleUnit : description;
+                return forward ? locationAddressMultipleUnit : envDescription;
             }
         });
 
-        location.addKeyUpHandler(new KeyUpHandler() {
+        envLocation.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 String l;
@@ -1038,8 +1053,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     l = previousManager.getSampleEnvironmental().getLocation();
                     setLocation(l);
-                    location.setValue(l);
-                    screen.focusNextWidget((Focusable)location, true);
+                    envLocation.setValue(l);
+                    screen.focusNextWidget((Focusable)envLocation, true);
                     event.preventDefault();
                     event.stopPropagation();
                 }
@@ -1065,7 +1080,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? locationAddressStreetAddress : location;
+                                 return forward ? locationAddressStreetAddress : envLocation;
                              }
                          });
 
@@ -2072,6 +2087,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     previousManager = manager;
                     manager = result;
                     cache = new HashMap<String, Object>();
+                    addScriptlet(null);
+                    runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
                     evaluateEdit();
                     setData();
                     setState(ADD);
@@ -2221,11 +2238,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     clearStatus();
 
                     /*
-                     * the cache is set to null only if the add/update succeeds
-                     * because otherwise, it can't be used by any tabs if the
-                     * user wants to change any data
+                     * the cache and scriptlet runner are set to null only if
+                     * the add/update succeeds because otherwise, they can't be
+                     * used by any tabs if the user wants to change any data
                      */
                     cache = null;
+                    scriptletRunner = null;
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -2276,6 +2294,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
+            scriptletRunner = null;
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<SampleManager1>() {
@@ -2300,6 +2319,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        scriptletRunner = null;
                     }
 
                     public void failure(Throwable e) {
@@ -2307,6 +2327,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        scriptletRunner = null;
                     }
                 };
             }
@@ -2759,6 +2780,102 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         return previousManager != null && KeyCodes.KEY_F2 == keyCode;
     }
 
+    /**
+     * If the passed id is not null then adds the scriptlet with the id to the
+     * scriptlet runner; otherwise adds the scriptlets for the domain and for
+     * all the records in the manager to the scriptlet runner
+     */
+    private void addScriptlet(Integer scriptletId) {
+        HashSet<Integer> scids;
+
+        if (scriptletRunner == null)
+            scriptletRunner = new ScriptletRunner<SampleSO>();
+
+        try {
+            scids = new HashSet<Integer>();
+            if (scriptletId == null) {
+                /*
+                 * add the scriptlet for the domain, which is the value of this
+                 * system variable
+                 */
+                if (domainScriptletVariable == null) {
+                    domainScriptletVariable = SystemVariableService.get()
+                                                                   .fetchByExactName("environmental_ia_scriptlet_1");
+                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                }
+                scids.add(domainScriptletId);
+            } else {
+                scids.add(scriptletId);
+            }
+
+            addScriptlets(scids);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Adds the scriptlet with the passed ids to the scriptlet runner
+     */
+    private void addScriptlets(HashSet<Integer> ids) throws Exception {
+        for (Integer id : ids)
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(id));
+    }
+
+    /**
+     * Runs the scriptlet with the passed id for the passed operation performed
+     * on the field "changed" of the record with the passed uid.
+     */
+    private void runScriptlet(String uid, String changed, Operation operation) {
+        SampleSO data;
+        EnumSet<Operation> operations;
+        ValidationErrorsList errors;
+
+        /*
+         * create the sciptlet object
+         */
+        data = new SampleSO();
+        operations = EnumSet.of(operation);
+        if (manager.getSampleEnvironmental().getId() == null &&
+            Operation.NEW_DOMAIN_ADDED != operation)
+            /*
+             * this is either an uncommitted sample or was a quick-entry sample
+             * before being loaded on the screen
+             */
+            operations.add(Operation.NEW_DOMAIN_ADDED);
+        data.setOperations(operations);
+        data.setChanged(changed);
+        data.setManager(manager);
+
+        /*
+         * run the scritplet and show the errors and the changed data
+         */
+        data = scriptletRunner.run(data);
+
+        if (data.getExceptions() != null && data.getExceptions().size() > 0) {
+            errors = new ValidationErrorsList();
+            for (Exception e : data.getExceptions())
+                errors.add(e);
+            showErrors(errors);
+        } else {
+            clearErrors();
+        }
+
+        manager = data.getManager();
+        evaluateEdit();
+        setData();
+        setState(state);
+        fireDataChange();
+    }
+
+    /**
+     * Runs the scriptlet for the environmental domain
+     */
+    private void runDomainScriptlet(Operation operation) {
+        runScriptlet(null, null, operation);
+    }
+
     /*
      * getters and setters for the fields at the sample or domain level
      */
@@ -2805,6 +2922,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     @Override
                     public void success(SampleManager1 result) {
                         manager = result;
+                        runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
                         setData();
                         setState(UPDATE);
                         fireDataChange();

@@ -170,29 +170,10 @@ public class EnvironmentalTabUI extends Screen {
                              }
                              
                              public Widget onTab(boolean forward) {
-                                 return forward ? location : collector;
+                                 return forward ? description : collector;
                              }
                          });
 
-        addScreenHandler(location, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                location.setValue(getLocation());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setLocation(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                location.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
-                location.setQueryMode((isState(QUERY) && canQuery));
-            }
-            
-            public Widget onTab(boolean forward) {
-                return forward ? description : collectorPhone;
-            }
-        });
-        
         addScreenHandler(description, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(getDescription());
@@ -208,7 +189,26 @@ public class EnvironmentalTabUI extends Screen {
             }
             
             public Widget onTab(boolean forward) {
-                return forward ? locationAddressMultipleUnit : location;
+                return forward ? location : collectorPhone;
+            }
+        });
+        
+        addScreenHandler(location, SampleMeta.getEnvLocation(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                location.setValue(getLocation());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                setLocation(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                location.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
+                location.setQueryMode((isState(QUERY) && canQuery));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? locationAddressMultipleUnit : description;
             }
         });
         
@@ -231,7 +231,7 @@ public class EnvironmentalTabUI extends Screen {
                              }
                              
                              public Widget onTab(boolean forward) {
-                                 return forward ? locationAddressStreetAddress : description;
+                                 return forward ? locationAddressStreetAddress : location;
                              }
                          });
 

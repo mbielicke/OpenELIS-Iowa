@@ -269,6 +269,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                            "sample_container",
                                            "unit_of_measure",
                                            "qaevent_type",
+                                           "worksheet_status",
                                            "aux_field_value_type",
                                            "organization_type",
                                            "sdwis_sample_type",

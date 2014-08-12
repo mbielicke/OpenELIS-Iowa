@@ -327,6 +327,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                            "user_action",
                                            "unit_of_measure",
                                            "qaevent_type",
+                                           "worksheet_status",
                                            "scriptlet_domain",
                                            "scriptlet_test",
                                            "scriptlet_test_analyte",
@@ -3159,7 +3160,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                     /*
                      * the cache and scriptlet runner are set to null only if
-                     * the add/update succeeds because otherwise, it can't be
+                     * the add/update succeeds because otherwise, they can't be
                      * used by any tabs if the user wants to change any data
                      */
                     cache = null;
@@ -3909,7 +3910,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  */
                 if (domainScriptletVariable == null) {
                     domainScriptletVariable = SystemVariableService.get()
-                                                                   .fetchByExactName("neonatal_domain_scriptlet");
+                                                                   .fetchByExactName("neonatal_ia_scriptlet_1");
                     domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
                 }
 
@@ -4177,6 +4178,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     @Override
                     public void success(SampleManager1 result) {
                         manager = result;
+                        runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
                         setData();
                         setState(UPDATE);
                         fireDataChange();
