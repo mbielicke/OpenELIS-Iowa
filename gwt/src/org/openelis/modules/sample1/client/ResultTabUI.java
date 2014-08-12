@@ -61,6 +61,8 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Label;
 import org.openelis.ui.widget.ModalWindow;
+import org.openelis.ui.widget.TextBase;
+import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.table.Column;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
@@ -187,7 +189,7 @@ public class ResultTabUI extends Screen {
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int index, c;
-                Integer rg, testId, unitId;
+                Integer caseFlag, rg, testId, unitId;
                 Row row;
                 ResultViewDO data;
                 ArrayList<Item<Integer>> model;
@@ -233,6 +235,7 @@ public class ResultTabUI extends Screen {
                     rg = data.getResultGroup();
                     unitId = analysis.getUnitOfMeasureId();
 
+                    caseFlag = null;
                     key = testId + ":" + rg + ":" + (unitId == null ? 0 : unitId);
                     model = dictionaryModel.get(key);
                     if (model == null) {
@@ -251,6 +254,10 @@ public class ResultTabUI extends Screen {
                                     for (FormattedValue v : values)
                                         model.add(new Item<Integer>(v.getId(), v.getDisplay()));
                                 }
+                            } else if (rf.hasOnlyAlphaLower(rg, unitId)) {
+                                caseFlag = Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER;
+                            } else if (rf.hasOnlyAlphaUpper(rg, unitId)) {
+                                caseFlag = Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER;
                             }
                             dictionaryModel.put(key, model);
                         } catch (Exception e) {
@@ -262,6 +269,14 @@ public class ResultTabUI extends Screen {
                     }
                     rc = (ResultCell)table.getColumnAt(event.getCol()).getCellEditor();
                     rc.setModel(model);
+                    if (rc.getWidget() instanceof TextBox) {
+                        if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(caseFlag))
+                            ((TextBox)rc.getWidget()).setCase(TextBase.Case.LOWER);
+                        else if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(caseFlag))
+                            ((TextBox)rc.getWidget()).setCase(TextBase.Case.UPPER);
+                        else
+                            ((TextBox)rc.getWidget()).setCase(TextBase.Case.MIXED);
+                    }
                 }
             }
         });

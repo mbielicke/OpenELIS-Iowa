@@ -473,7 +473,7 @@ public class WorksheetCompletionScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                lookupWorksheetButton.setEnabled(isState(DISPLAY) || (isState(UPDATE) && canEdit()));
+                lookupWorksheetButton.setEnabled(isState(DISPLAY) || (isState(UPDATE) && !updateTransferMode && canEdit()));
             }
         });
 

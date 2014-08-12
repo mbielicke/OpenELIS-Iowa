@@ -62,6 +62,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
+import org.openelis.ui.widget.TextBase;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
@@ -747,6 +748,7 @@ public abstract class AuxDataTabUI extends Screen {
     }
 
     private void setDictionaryModel(int col, Integer groupId, Integer fieldId) throws Exception {
+        Integer caseFlag;
         String key;
         ResultCell rc;
         ResultFormatter rf;
@@ -757,6 +759,7 @@ public abstract class AuxDataTabUI extends Screen {
         if (dictionaryModel == null)
             dictionaryModel = new HashMap<String, ArrayList<Item<Integer>>>();
 
+        caseFlag = null;
         key = groupId + ":" + fieldId;
         model = dictionaryModel.get(key);
         if (model == null) {
@@ -773,6 +776,10 @@ public abstract class AuxDataTabUI extends Screen {
                     for (FormattedValue v : values)
                         model.add(new Item<Integer>(v.getId(), v.getDisplay()));
                 }
+            } else if (rf.hasOnlyAlphaLower(fieldId, null)) {
+                caseFlag = Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER;
+            } else if (rf.hasOnlyAlphaUpper(fieldId, null)) {
+                caseFlag = Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER;
             }
         }
         /*
@@ -782,6 +789,14 @@ public abstract class AuxDataTabUI extends Screen {
         dictionaryModel.put(key, model);
         rc = (ResultCell)table.getColumnAt(col).getCellEditor();
         rc.setModel(model);
+        if (rc.getWidget() instanceof TextBox) {
+            if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(caseFlag))
+                ((TextBox)rc.getWidget()).setCase(TextBase.Case.LOWER);
+            else if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(caseFlag))
+                ((TextBox)rc.getWidget()).setCase(TextBase.Case.UPPER);
+            else
+                ((TextBox)rc.getWidget()).setCase(TextBase.Case.MIXED);
+        }
     }
 
     private AuxFieldGroupManager getAuxFieldGroupManager(Integer groupId) throws Exception {
