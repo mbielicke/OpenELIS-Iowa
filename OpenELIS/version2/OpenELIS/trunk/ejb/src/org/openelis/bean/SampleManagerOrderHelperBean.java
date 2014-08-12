@@ -200,6 +200,9 @@ public class SampleManagerOrderHelperBean {
                 !DataBaseUtil.isSame(item.getContainerId(), oc.getContainerId())) {
                 try {
                     dict = dictionaryCache.getById(oc.getContainerId());
+                    /*
+                     * set the container only if it's active
+                     */
                     if ("Y".equals(dict.getIsActive())) {
                         item.setContainer(dict.getEntry());
                         item.setContainerId(oc.getContainerId());
@@ -226,6 +229,9 @@ public class SampleManagerOrderHelperBean {
                 !DataBaseUtil.isSame(item.getTypeOfSampleId(), oc.getTypeOfSampleId())) {
                 try {
                     dict = dictionaryCache.getById(oc.getTypeOfSampleId());
+                    /*
+                     * set the sample type only if it's active
+                     */
                     if ("Y".equals(dict.getIsActive())) {
                         item.setTypeOfSampleId(oc.getTypeOfSampleId());
                         item.setTypeOfSample(dict.getEntry());

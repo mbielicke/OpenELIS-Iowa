@@ -25,6 +25,7 @@
  */
 package org.openelis.scriptlet;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.openelis.domain.AnalysisViewDO;
@@ -32,9 +33,11 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.scriptlet.NbsTshScriptlet1.Proxy;
 import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.scriptlet.ScriptletInt;
@@ -44,23 +47,24 @@ import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultHelper;
 
 /**
- * The scriptlet for performing operations for "nbs bt (Biotinidase)" test
+ * The scriptlet for performing operations for "nbs galt (Galactosemia)" test
  */
-public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
+public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
 
     private ScriptletUtility scriptletUtility;
+    
+    private Proxy proxy;
 
-    private Proxy            proxy;
+    private static final String TEST_NAME = "nbs galt", METHOD_NAME = "enzymatic assay",
+                    GALT = "nbs_galt", OVERRIDE_INTER = "nbs_override_inter",
+                    INTERPRETATION = "nbs_galt_inter", NO = "no", LOWER_LIMIT = "nbs_lower_limit",
+                                    UPPER_LIMIT = "nbs_upper_limit";
 
-    private static final String TEST_NAME = "nbs bt", METHOD_NAME = "enzymatic assay",
-                    BIOTINIDASE = "nbs_biotinidase", INTERPRETATION = "nbs_bt_inter",
-                    OVERRIDE_INTER = "nbs_override_inter", NO = "no";
-
-    public NbsBtScriptlet1(ScriptletUtility scriptletUtility, Proxy proxy) {
+    public NbsGaltScriptlet1(ScriptletUtility scriptletUtility, Proxy proxy) {
         this.scriptletUtility = scriptletUtility;
         this.proxy = proxy;
 
-        proxy.log(Level.FINE, "Initializing NbsBtScriptlet1");
+        proxy.log(Level.FINE, "Initializing NbsGaltScriptlet1");
     }
 
     @Override
@@ -69,8 +73,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         AnalysisViewDO ana;
         TestManager tm;
 
-        proxy.log(Level.FINE, "In NbsBtScriptlet1.run");
-
+        proxy.log(Level.FINE, "In NbsGaltScriptlet1.run");
         if (data.getOperations().contains(Operation.RESULT_CHANGED)) {
             /*
              * find the result that made this scriptlet get executed
@@ -107,13 +110,39 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
              */
             return data;
         }
-
         /*
          * set the value of interpretation based on the value of this result
          */
         setInterpretion(data, ana, tm);
 
         return data;
+    }
+
+    /**
+     * Returns the result whose value was changed to make this scriptlet get
+     * executed, but only if belongs to the active version of this test;
+     * otherwise returns null
+     */
+    private ResultViewDO getChangedResult(SampleSO data) {
+        ResultViewDO res;
+        TestViewDO test;
+        TestManager tm;
+
+        res = null;
+        proxy.log(Level.FINE,
+                  "Going through the scriptlet object to find the result that trigerred the scriptlet");
+        for (Map.Entry<Integer, TestManager> entry : data.getResults().entrySet()) {
+            tm = entry.getValue();
+            test = tm.getTest();
+            if (TEST_NAME.equals(test.getName()) && METHOD_NAME.equals(test.getMethodName()) &&
+                "Y".equals(test.getIsActive())) {
+                res = (ResultViewDO)data.getManager()
+                                        .getObject(Constants.uid().getResult(entry.getKey()));
+                break;
+            }
+        }
+
+        return res;
     }
 
     /**
@@ -124,70 +153,69 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
     private void setInterpretion(SampleSO data, AnalysisViewDO ana, TestManager tm) {
         int i, j;
         Integer interp;
-        String bioVal, sysName;
+        String resVal, overVal;
+        Double galtVal;
         SampleManager1 sm;
-        ResultViewDO res, resOver, resInter;
+        ResultViewDO res, resInter;
         DictionaryDO dict;
         QaEventDO qa;
         FormattedValue fv;
         ResultFormatter rf;
 
         /*
-         * find the analysis for the result and the values for the various
-         * analytes
+         * find the analysis for the result
          */
         sm = data.getManager();
-        bioVal = null;
-        resOver = null;
+        galtVal = null;
+        overVal = null;
         resInter = null;
         proxy.log(Level.FINE,
-                  "Going through the SO to find the result that trigerred the scriptlet");
+                  "Going through the scriptlet object to find the result that trigerred the scriptlet");
+        /*
+         * find the values for the various analytes
+         */
         for (i = 0; i < sm.result.count(ana); i++ ) {
             for (j = 0; j < sm.result.count(ana, i); j++ ) {
                 res = sm.result.get(ana, i, j);
-                if (BIOTINIDASE.equals(res.getAnalyteExternalId()))
-                    bioVal = res.getValue();
-                else if (OVERRIDE_INTER.equals(res.getAnalyteExternalId()))
-                    resOver = res;
-                else if (INTERPRETATION.equals(res.getAnalyteExternalId()))
+                if (GALT.equals(res.getAnalyteExternalId())) {
+                    resVal = res.getValue();
+                    if (resVal != null) {
+                        if (resVal.startsWith(">") || resVal.startsWith("<"))
+                            resVal = resVal.substring(1);
+                        galtVal = Double.valueOf(resVal);
+                    }
+                } else if (OVERRIDE_INTER.equals(res.getAnalyteExternalId())) {
+                    overVal = res.getValue();
+                } else if (INTERPRETATION.equals(res.getAnalyteExternalId())) {                    
                     resInter = res;
+                }
             }
         }
 
         try {
             proxy.log(Level.FINE, "Finding the values of override interretation");
             /*
-             * proceed only if the value for override interpretation has been
-             * validated and is "No"
+             * proceed only if the value for override interpretation is "No"
              */
-            if (resOver.getTypeId() == null)
-                return;
-
-            dict = getDictionaryByValue(resOver.getValue());
-            if (dict == null || !NO.equals(dict.getSystemName()))
-                return;
-
-            proxy.log(Level.FINE, "Finding the value of biotinidase");
-            /*
-             * get the value for biotinidase
-             */
-            dict = getDictionaryByValue(bioVal);
-            if (dict == null)
+            dict = getDictionaryByValue(overVal);
+            if (dict == null || !NO.equals(dict.getSystemName()) || galtVal == null)
                 return;
 
             /*
-             * determine the initial interpretation based on weight and the
-             * value for biotinidase
+             * the value of interpretation is "presumptive positive" if the
+             * value of tsh is between 3.8 and 99, the value of interpretation
+             * is "borderline" if the value of tsh is between 3.2 and 3.7, the
+             * value of interpretation is "within normal limits" if the value of
+             * tsh is between 0 and 3.1
              */
-            proxy.log(Level.FINE,
-                      "Getting the value for interretation based on the value of biotinidase");
-            sysName = dict.getSystemName();
-            interp = null;
-            if (sysName.endsWith("1+") || sysName.endsWith("0"))
+            proxy.log(Level.FINE, "Getting the value for interpretation based on the value for biotinidase");
+            if (galtVal >= 0 && galtVal < 3.2)
                 interp = scriptletUtility.INTER_PP_NR;
-            else if (sysName.endsWith("2+") || sysName.endsWith("3+"))
+            else if (galtVal < 3.8)
+                interp = scriptletUtility.INTER_BORD;
+            else
                 interp = scriptletUtility.INTER_N;
-
+            
             proxy.log(Level.FINE, "Finding the qa event to be added to the analysis");
             /*
              * find the qa event to be added to the analysis
@@ -202,14 +230,6 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
                     qa = scriptletUtility.getQaEvent(scriptletUtility.QA_TRAN, ana.getTestId());
                 else
                     qa = scriptletUtility.getQaEvent(scriptletUtility.QA_TRANU, ana.getTestId());
-            }
-
-            /*
-             * add the qa event if it's not already added
-             */
-            if (qa != null && !scriptletUtility.analysisHasQA(sm, ana, qa.getName())) {
-                proxy.log(Level.FINE, "Adding the qa event: " + qa.getName());
-                sm.qaEvent.add(ana, qa);
             }
 
             /*
@@ -275,6 +295,8 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
 
     public static interface Proxy {
         public DictionaryDO getDictionaryById(Integer id) throws Exception;
+
+        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
 
         public void log(Level level, String message);
     }
