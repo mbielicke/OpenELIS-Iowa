@@ -49,8 +49,8 @@
                 <g:HTML>
                   <hr />
                 </g:HTML>
-                <w:MenuItem description="{msg.environmentalSampleLoginDescription}" enabled="false"
-                  icon="{res.icon.environmentalSampleLoginIcon}" ui:field="environmentalSampleLogin" display="{msg.environmentalSampleLogin}" />
+                <w:MenuItem description="{msg.sampleEnvironmental_loginDescription}" enabled="false"
+                  icon="{res.icon.environmentalSampleLoginIcon}" ui:field="environmentalSampleLogin" display="{msg.sampleEnvironmental_login}" />
                 <w:MenuItem description="{msg.privateWellWaterSampleLoginDescription}" enabled="false"
                   icon="{res.icon.privateWellWaterSampleLoginIcon}" ui:field="privateWellWaterSampleLogin" display="{msg.privateWellWaterSampleLogin}" />
                 <w:MenuItem description="{msg.sdwisSampleLoginDescription}" enabled="false" icon="{res.icon.sdwisSampleLoginIcon}"

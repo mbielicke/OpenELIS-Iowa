@@ -327,6 +327,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                            "user_action",
                                            "unit_of_measure",
                                            "qaevent_type",
+                                           "worksheet_status",
                                            "scriptlet_domain",
                                            "scriptlet_test",
                                            "scriptlet_test_analyte",
@@ -2760,8 +2761,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             @Override
             public void onRunScriptlet(RunScriptletEvent event) {
                 if (screen != event.getSource())
-                    runScriptlet(event.getScriptletId(),
-                                 event.getUid(),
+                    runScriptlet(event.getUid(),
                                  event.getChanged(),
                                  event.getOperation());
             }
@@ -3160,7 +3160,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                     /*
                      * the cache and scriptlet runner are set to null only if
-                     * the add/update succeeds because otherwise, it can't be
+                     * the add/update succeeds because otherwise, they can't be
                      * used by any tabs if the user wants to change any data
                      */
                     cache = null;
@@ -3910,7 +3910,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  */
                 if (domainScriptletVariable == null) {
                     domainScriptletVariable = SystemVariableService.get()
-                                                                   .fetchByExactName("neonatal_domain_scriptlet");
+                                                                   .fetchByExactName("neonatal_ia_scriptlet_1");
                     domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
                 }
 
@@ -3945,7 +3945,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet with the passed id for the passed operation performed
      * on the field "changed" of the record with the passed uid.
      */
-    private void runScriptlet(Integer scriptletId, String uid, String changed, Operation operation) {
+    private void runScriptlet(String uid, String changed, Operation operation) {
         Object obj;
         SampleSO data;
         AnalysisViewDO ana;
@@ -4033,14 +4033,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(String changed) {
-        runScriptlet(domainScriptletId, null, changed, Operation.NEW_DOMAIN_ADDED);
+        runScriptlet(null, changed, Operation.NEW_DOMAIN_ADDED);
     }
 
     /**
      * Runs the scriptlet for the neonatal domain
      */
     private void runDomainScriptlet(Operation operation) {
-        runScriptlet(domainScriptletId, null, null, operation);
+        runScriptlet(null, null, operation);
     }
 
     /**
@@ -4178,6 +4178,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     @Override
                     public void success(SampleManager1 result) {
                         manager = result;
+                        runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
                         setData();
                         setState(UPDATE);
                         fireDataChange();

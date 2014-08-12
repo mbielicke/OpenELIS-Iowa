@@ -31,17 +31,22 @@ import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.NbsBtScriptlet1;
+import org.openelis.scriptlet.NbsTshScriptlet1;
 
 /**
- * This class is used for providing the front-end functionality for "nbs bt"
+ * This class is used for providing the front-end functionality for "nbs tsh"
  * scriptlet
  */
-public class NbsBtProxy1 implements NbsBtScriptlet1.Proxy {
+public class NbsTshProxy1 implements NbsTshScriptlet1.Proxy {
 
     @Override
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
         return DictionaryCache.getById(id);
+    }
+
+    @Override
+    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
+        return DictionaryCache.getBySystemName(systemName);
     }
 
     @Override

@@ -379,9 +379,7 @@ public class ResultTabUI extends Screen {
                      * execute any scriptlet specified for the test
                      */
                     if (tm.getTest().getScriptletId() != null) {
-                        parentBus.fireEventFromSource(new RunScriptletEvent(tm.getTest()
-                                                                              .getScriptletId(),
-                                                                            Constants.uid()
+                        parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                      .getResult(data.getId()),
                                                                             data.getAnalyteExternalId(),
                                                                             Operation.RESULT_CHANGED),

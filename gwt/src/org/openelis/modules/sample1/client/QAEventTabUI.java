@@ -44,6 +44,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.qaevent.client.QAEventLookupUI;
+import org.openelis.scriptlet.SampleSO.Operation;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -517,6 +518,10 @@ public class QAEventTabUI extends Screen {
             parentScreen.setError(Messages.get().sample_cantRemoveQA());
         } else {
             sampleQATable.removeRowAt(r);
+            parentBus.fireEventFromSource(new RunScriptletEvent(null,
+                                                                null,
+                                                                Operation.SAMPLE_QA_REMOVED),
+                                          screen);
             notifyQAChanged(null);
         }
     }
@@ -702,6 +707,11 @@ public class QAEventTabUI extends Screen {
                             row.setCell(2, sqa.getIsBillable());
                             sampleQATable.addRow(row);
                             showSampleBillableMessage();
+                            parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
+                                                                                         .getSampleQAEvent(sqa.getId()),
+                                                                                null,
+                                                                                Operation.SAMPLE_QA_ADDED),
+                                                          screen);
                         }
                         notifyQAChanged(null);
                     }
