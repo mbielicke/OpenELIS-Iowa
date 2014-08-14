@@ -192,30 +192,18 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         tree.addNodeAddedHandler(new NodeAddedHandler() {
             public void onNodeAdded(NodeAddedEvent event) {
+                String uid;
                 Node node;
-                DictionaryDO dict;
                 SampleItemViewDO item;
 
                 node = event.getNode();
 
                 if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
                     item = manager.item.add();
-                    /*
-                     * if the domain of the sample is sdwis then we set the
-                     * sample type for the newly added item to "Drinking Water"
-                     */
-                    if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
-                        try {
-                            dict = DictionaryCache.getBySystemName("drinking_water");
-                            item.setTypeOfSampleId(dict.getId());
-                            item.setTypeOfSample(dict.getEntry());
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            logger.log(Level.SEVERE, e.getMessage(), e);
-                        }
-                    }
-                    node.setData(Constants.uid().get(item));
+                    uid = Constants.uid().get(item);
+                    node.setData(uid);
                     setItemDisplay(node, item);
+                    parentBus.fireEventFromSource(new SampleItemAddedEvent(uid), screen);
                 }
             }
         });
@@ -463,6 +451,12 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
+        parentBus.addHandler(SampleItemAddedEvent.getType(), new SampleItemAddedEvent.Handler() {
+            public void onSampleItemAdded(SampleItemAddedEvent event) {
+                if (screen != event.getSource())
+                    sampleItemAdded(event.getUid());
+            }
+        });
 
         parentBus.addHandler(SampleItemChangeEvent.getType(), new SampleItemChangeEvent.Handler() {
             public void onSampleItemChange(SampleItemChangeEvent event) {
@@ -798,6 +792,24 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             }
         };
         Scheduler.get().scheduleDeferred(cmd);
+    }
+    
+    private void sampleItemAdded(String uid) {
+        Node node;
+        SampleItemViewDO item;
+        
+        for (int i = 0; i < tree.getRoot().getChildCount(); i++ ) {
+            /*
+             * find the node showing the sample item that was added
+             * using the uid and refresh its display
+             */
+            node = tree.getRoot().getChildAt(i);
+            if (uid.equals(node.getData())) {
+                item = (SampleItemViewDO)manager.getObject(uid);
+                setItemDisplay(node, item);
+                break;
+            }
+        }
     }
 
     private void sampleItemChanged(String itemUid, SampleItemChangeEvent.Action action) {

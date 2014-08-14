@@ -42,7 +42,7 @@ public class SampleSO extends ScriptletObject {
     private static final long serialVersionUID = 1L;
 
     public enum Operation {
-        NEW_DOMAIN_ADDED, TEST_ADDED, RESULT_CHANGED, AUX_DATA_CHANGED, SAMPLE_QA_ADDED, SAMPLE_QA_REMOVED
+        NEW_DOMAIN_ADDED, TEST_ADDED, RESULT_CHANGED, AUX_DATA_CHANGED, SAMPLE_QA_ADDED, SAMPLE_QA_REMOVED, SAMPLE_ITEM_ADDED
     }
 
     protected EnumSet<Operation>                    operations;
@@ -52,6 +52,8 @@ public class SampleSO extends ScriptletObject {
     protected HashMap<Integer, TestManager>          analyses, results;
 
     protected HashMap<Integer, AuxFieldGroupManager> auxData;
+    
+    protected String                                 uid;
 
     public EnumSet<Operation> getOperations() {
         return operations;
@@ -91,5 +93,13 @@ public class SampleSO extends ScriptletObject {
 
     public void setAuxData(HashMap<Integer, AuxFieldGroupManager> auxData) {
         this.auxData = auxData;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

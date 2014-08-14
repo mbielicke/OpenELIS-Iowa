@@ -29,34 +29,38 @@ import static org.openelis.scriptlet.SampleSO.Operation.*;
 
 import java.util.logging.Level;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
 /**
- * The scriptlet for performing operations for the environmental domain e.g. the
- * one related to adding a default note
+ * The scriptlet for performing operations for the sdwis domain e.g. the one
+ * related to adding a default note
  */
-public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
+public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Proxy                 proxy;
 
     private static StandardNoteDO defaultNote;
 
-    public EnvironmentalIAScriptlet1(Proxy proxy) throws Exception {
+    private static DictionaryDO   drinkingWaterDict;
+
+    public SDWISIAScriptlet1(Proxy proxy) throws Exception {
         this.proxy = proxy;
 
-        proxy.log(Level.FINE, "Initializing EnvironmentalIAScriptlet1");
+        proxy.log(Level.FINE, "Initializing SDWISIAScriptlet1");
         /*
          * the default note for the domain
          */
         if (defaultNote == null) {
             proxy.log(Level.FINE,
-                      "Fetching the note whose name is specified by the system variable 'auto_comment_environmental'");
+                      "Fetching the note whose name is specified by the system variable 'auto_comment_sdwis'");
             try {
-                defaultNote = proxy.fetchBySystemVariableName("auto_comment_environmental");
+                defaultNote = proxy.fetchBySystemVariableName("auto_comment_sdwis");
             } catch (NotFoundException nfE) {
                 /*
                  * ignore not found exception, as this domain may not have a
@@ -65,11 +69,19 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
                 proxy.log(Level.FINE, "Note not found");
             }
         }
+
+        /*
+         * the dictionary entry for the most common sample type for sdwis domain
+         */
+        if (drinkingWaterDict == null) {
+            proxy.log(Level.FINE, "Getting the dictionary for 'drinking_water'");
+            drinkingWaterDict = proxy.getDictionaryBySystemName("drinking_water");
+        }
     }
 
     @Override
     public SampleSO run(SampleSO data) {
-        proxy.log(Level.FINE, "In EnvironmentalIAScriptlet1.run");
+        proxy.log(Level.FINE, "In SDWISIAScriptlet1.run");
 
         /*
          * if a default note was found then add it if it's either an uncommitted
@@ -77,6 +89,13 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
          */
         if (defaultNote != null && data.getOperations().contains(NEW_DOMAIN_ADDED))
             addDefaultNote(data.getManager());
+
+        /*
+         * if an item was added to the sample then set its sample type to
+         * "Drinking Water"
+         */
+        if (data.getOperations().contains(SAMPLE_ITEM_ADDED))
+            setSampleType(data.getUid(), data.getManager());        
 
         return data;
     }
@@ -86,16 +105,32 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
      */
     private void addDefaultNote(SampleManager1 sm) {
         NoteViewDO note;
-        
+
         proxy.log(Level.FINE, "Adding the default note for this domain to the sample");
-        
+
         note = sm.sampleExternalNote.getEditing();
         note.setIsExternal("Y");
         note.setText(defaultNote.getText());
     }
 
+    /**
+     * Sets the sample type of the sample item whose uid is the passed value, as
+     * 'drinking water'
+     */
+    private void setSampleType(String uid, SampleManager1 sm) {
+        SampleItemViewDO item;
+
+        item = (SampleItemViewDO)sm.getObject(uid);
+        proxy.log(Level.FINE, "Setting the sample type of the sample item with uid:  " + uid +
+                              " as " + drinkingWaterDict.getSystemName());
+        item.setTypeOfSampleId(drinkingWaterDict.getId());
+        item.setTypeOfSample(drinkingWaterDict.getEntry());
+    }
+
     public static interface Proxy {
         public StandardNoteDO fetchBySystemVariableName(String name) throws Exception;
+
+        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
 
         public void log(Level level, String message);
     }
