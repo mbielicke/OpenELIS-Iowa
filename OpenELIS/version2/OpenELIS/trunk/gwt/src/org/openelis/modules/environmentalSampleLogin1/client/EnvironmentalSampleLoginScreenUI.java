@@ -3384,10 +3384,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * otherwise the first project is modified or a new one is created
              * if no project existed
              */
-            if (data == null) {
-                data = manager.project.add();
-                data.setIsPermanent("N");
-            }
+            if (data == null)
+                data = manager.project.add();            
 
             data.setProjectId(proj.getId());
             data.setProjectName(proj.getName());

@@ -12229,6 +12229,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String ptntInfo();
 
   /**
+   * Translated "PWS Id".
+   * 
+   * @return translated "PWS Id"
+   */
+  @DefaultMessage("PWS Id")
+  @Key("pws.id")
+  String pws_id();
+
+  /**
    * Translated "PWS ID".
    * 
    * @return translated "PWS ID"
@@ -15037,6 +15046,51 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleRevision();
 
   /**
+   * Translated "Collector/Organization Info".
+   * 
+   * @return translated "Collector/Organization Info"
+   */
+  @DefaultMessage("Collector/Organization Info")
+  @Key("sampleSDWIS.collectorOrgInfo")
+  String sampleSDWIS_collectorOrgInfo();
+
+  /**
+   * Translated "Facility Id".
+   * 
+   * @return translated "Facility Id"
+   */
+  @DefaultMessage("Facility Id")
+  @Key("sampleSDWIS.facilityId")
+  String sampleSDWIS_facilityId();
+
+  /**
+   * Translated "SDWIS Sample Login".
+   * 
+   * @return translated "SDWIS Sample Login"
+   */
+  @DefaultMessage("SDWIS Sample Login")
+  @Key("sampleSDWIS.login")
+  String sampleSDWIS_login();
+
+  /**
+   * Translated "Fully login safe drinking water sample and analysis related information.".
+   * 
+   * @return translated "Fully login safe drinking water sample and analysis related information."
+   */
+  @DefaultMessage("Fully login safe drinking water sample and analysis related information.")
+  @Key("sampleSDWIS.loginDescription")
+  String sampleSDWIS_loginDescription();
+
+  /**
+   * Translated "Point Desc".
+   * 
+   * @return translated "Point Desc"
+   */
+  @DefaultMessage("Point Desc")
+  @Key("sampleSDWIS.pointDesc")
+  String sampleSDWIS_pointDesc();
+
+  /**
    * Translated "Accession # ''{0,number}'': PWS ID is required".
    * 
    * @return translated "Accession # ''{0,number}'': PWS ID is required"
@@ -15044,6 +15098,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': PWS ID is required")
   @Key("sampleSDWIS.pwsIdRequiredException")
   String sampleSDWIS_pwsIdRequiredException(Integer arg0);
+
+  /**
+   * Translated "PWS Name".
+   * 
+   * @return translated "PWS Name"
+   */
+  @DefaultMessage("PWS Name")
+  @Key("sampleSDWIS.pwsName")
+  String sampleSDWIS_pwsName();
+
+  /**
+   * Translated "Sample Cat".
+   * 
+   * @return translated "Sample Cat"
+   */
+  @DefaultMessage("Sample Cat")
+  @Key("sampleSDWIS.sampleCat")
+  String sampleSDWIS_sampleCat();
 
   /**
    * Translated "Accession # ''{0,number}'': SDWIS Sample Category is required".
@@ -15055,6 +15127,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleSDWIS_sampleCatRequiredException(Integer arg0);
 
   /**
+   * Translated "Sample Pt Id".
+   * 
+   * @return translated "Sample Pt Id"
+   */
+  @DefaultMessage("Sample Pt Id")
+  @Key("sampleSDWIS.samplePtId")
+  String sampleSDWIS_samplePtId();
+
+  /**
    * Translated "Accession # ''{0,number}'': SDWIS Sample Pt Id is required".
    * 
    * @return translated "Accession # ''{0,number}'': SDWIS Sample Pt Id is required"
@@ -15064,6 +15145,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleSDWIS_samplePtIdRequiredException(Integer arg0);
 
   /**
+   * Translated "Sample SDWIS".
+   * 
+   * @return translated "Sample SDWIS"
+   */
+  @DefaultMessage("Sample SDWIS")
+  @Key("sampleSDWIS.sampleSDWIS")
+  String sampleSDWIS_sampleSDWIS();
+
+  /**
    * Translated "Accession # ''{0,number}'': SDWIS Sample Type is required".
    * 
    * @return translated "Accession # ''{0,number}'': SDWIS Sample Type is required"
@@ -15071,6 +15161,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Type is required")
   @Key("sampleSDWIS.sampleTypeRequiredException")
   String sampleSDWIS_sampleTypeRequiredException(Integer arg0);
+
+  /**
+   * Translated "SDWIS Info".
+   * 
+   * @return translated "SDWIS Info"
+   */
+  @DefaultMessage("SDWIS Info")
+  @Key("sampleSDWIS.sdwisInfo")
+  String sampleSDWIS_sdwisInfo();
+
+  /**
+   * Translated "State Lab #".
+   * 
+   * @return translated "State Lab #"
+   */
+  @DefaultMessage("State Lab #")
+  @Key("sampleSDWIS.stateLabNo")
+  String sampleSDWIS_stateLabNo();
 
   /**
    * Translated "Sample Selection Criteria".
@@ -15107,6 +15215,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Change Domain")
   @Key("sampleTracking.changeDomain")
   String sampleTracking_changeDomain();
+
+  /**
+   * Translated "Lookup and manage general sample information.".
+   * 
+   * @return translated "Lookup and manage general sample information."
+   */
+  @DefaultMessage("Lookup and manage general sample information.")
+  @Key("sampleTracking.description")
+  String sampleTracking_description();
 
   /**
    * Translated "Cannot lookup the sample requested because the screen is busy".
