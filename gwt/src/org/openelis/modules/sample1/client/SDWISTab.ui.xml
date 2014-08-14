@@ -21,11 +21,11 @@
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.pwsId}:" />
+              <ui:text from="{msg.pws_id}:" />
             </td>
             <td>
               <g:HorizontalPanel>
-                <w:TextBox ui:field="pwsNumber0" width="75px" case="UPPER" field="String"
+                <w:TextBox ui:field="sdwisPwsNumber0" width="75px" case="UPPER" field="String"
                   maxLength="9" />
                 <g:AbsolutePanel>
                   <w:Button ui:field="pwsLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
@@ -34,62 +34,62 @@
               </g:HorizontalPanel>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.pwsName}:" />
+              <ui:text from="{msg.sampleSDWIS_pwsName}:" />
             </td>
             <td>
-              <w:TextBox ui:field="pwsName" width="250px" field="String" />
+              <w:TextBox ui:field="sdwisPwsName" width="250px" field="String" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.stateLabNo}:" />
+              <ui:text from="{msg.sampleSDWIS_stateLabNo}:" />
             </td>
             <td>
-              <w:TextBox ui:field="stateLabId" width="102px" field="Integer" />
+              <w:TextBox ui:field="sdwisStateLabId" width="102px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.facilityId}:" />
+              <ui:text from="{msg.sampleSDWIS_facilityId}:" />
             </td>
             <td>
-              <w:TextBox ui:field="facilityId" width="75px" case="UPPER" field="String"
+              <w:TextBox ui:field="sdwisFacilityId" width="75px" case="UPPER" field="String"
                 maxLength="12" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleType}:" />
+              <ui:text from="{msg.gen_sampleType}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="sampleType" width="120px" field="Integer" />
+              <w:Dropdown ui:field="sdwisSampleTypeId" width="120px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleCat}:" />
+              <ui:text from="{msg.sampleSDWIS_sampleCat}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="sampleCategory" width="108px" field="Integer" />
+              <w:Dropdown ui:field="sdwisSampleCategoryId" width="108px" field="Integer" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.samplePtId}:" />
+              <ui:text from="{msg.sampleSDWIS_samplePtId}:" />
             </td>
             <td>
-              <w:TextBox ui:field="samplePointId" width="75px" case="UPPER" field="String"
+              <w:TextBox ui:field="sdwisSamplePointId" width="75px" case="UPPER" field="String"
                 maxLength="11" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.location}:" />
+              <ui:text from="{msg.gen_location}:" />
             </td>
             <td>
-              <w:TextBox ui:field="location" width="250px" field="String" maxLength="40" />
+              <w:TextBox ui:field="sdwisLocation" width="250px" field="String" maxLength="40" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.collector}:" />
+              <ui:text from="{msg.sample_collector}:" />
             </td>
             <td>
-              <w:TextBox ui:field="collector" width="162px" case="LOWER" field="String"
+              <w:TextBox ui:field="sdwisCollector" width="162px" case="LOWER" field="String"
                 maxLength="20" />
             </td>
           </tr>

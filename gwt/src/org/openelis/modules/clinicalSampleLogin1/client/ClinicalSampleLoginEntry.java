@@ -56,7 +56,7 @@ public class ClinicalSampleLoginEntry implements EntryPoint,ShowScreenHandler {
             public void onSuccess() {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                    window.setName(Messages.get().clinicalSampleLogin());
+                    window.setName(Messages.get().sampleClinical_login());
                     window.setSize("770px", "740px");
                     window.setContent(new ClinicalSampleLoginScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "clinicalSampleLogin");

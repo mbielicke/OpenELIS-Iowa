@@ -31,6 +31,7 @@ import java.util.logging.Level;
 
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
@@ -40,9 +41,9 @@ import org.openelis.ui.scriptlet.ScriptletInt;
  */
 public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
 
-    private Proxy          proxy;
+    private Proxy                 proxy;
 
-    private StandardNoteDO autoNote;
+    private static StandardNoteDO defaultNote;
 
     public EnvironmentalIAScriptlet1(Proxy proxy) throws Exception {
         this.proxy = proxy;
@@ -51,11 +52,11 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
         /*
          * the default note for the domain
          */
-        if (autoNote == null) {
+        if (defaultNote == null) {
             proxy.log(Level.FINE,
                       "Fetching the note whose name is specified by the system variable 'auto_comment_environmental'");
             try {
-                autoNote = proxy.fetchBySystemVariableName("auto_comment_environmental");
+                defaultNote = proxy.fetchBySystemVariableName("auto_comment_environmental");
             } catch (NotFoundException nfE) {
                 /*
                  * ignore not found exception, as this domain may not have a
@@ -68,21 +69,29 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
 
     @Override
     public SampleSO run(SampleSO data) {
-        NoteViewDO note;
-
         proxy.log(Level.FINE, "In EnvironmentalIAScriptlet1.run");
 
         /*
          * if a default note was found then add it if it's either an uncommitted
          * sample or was previously a quick-entry sample
          */
-        if (autoNote != null && data.getOperations().contains(NEW_DOMAIN_ADDED)) {
-            note = data.getManager().sampleExternalNote.getEditing();
-            note.setIsExternal("Y");
-            note.setText(autoNote.getText());
-        }
+        if (defaultNote != null && data.getOperations().contains(NEW_DOMAIN_ADDED))
+            addDefaultNote(data.getManager());
 
         return data;
+    }
+
+    /**
+     * Adds the default note for this domain to the sample
+     */
+    private void addDefaultNote(SampleManager1 sm) {
+        NoteViewDO note;
+        
+        proxy.log(Level.FINE, "Adding the default note for this domain to the sample");
+        
+        note = sm.sampleExternalNote.getEditing();
+        note.setIsExternal("Y");
+        note.setText(defaultNote.getText());
     }
 
     public static interface Proxy {

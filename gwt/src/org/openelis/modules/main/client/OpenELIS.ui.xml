@@ -44,8 +44,8 @@
                   display="{msg.quickEntry}" />
                 <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
                   display="{msg.verification}" />
-                <w:MenuItem description="{msg.trackingDescription}" enabled="false" icon="{res.icon.trackingIcon}" ui:field="tracking"
-                  display="{msg.tracking}" />
+                <w:MenuItem description="{msg.sampleTracking_description}" enabled="false" icon="{res.icon.trackingIcon}" ui:field="tracking"
+                  display="{msg.sampleTracking_tracking}" />
                 <g:HTML>
                   <hr />
                 </g:HTML>
@@ -53,8 +53,8 @@
                   icon="{res.icon.environmentalSampleLoginIcon}" ui:field="environmentalSampleLogin" display="{msg.sampleEnvironmental_login}" />
                 <w:MenuItem description="{msg.privateWellWaterSampleLoginDescription}" enabled="false"
                   icon="{res.icon.privateWellWaterSampleLoginIcon}" ui:field="privateWellWaterSampleLogin" display="{msg.privateWellWaterSampleLogin}" />
-                <w:MenuItem description="{msg.sdwisSampleLoginDescription}" enabled="false" icon="{res.icon.sdwisSampleLoginIcon}"
-                  ui:field="sdwisSampleLogin" display="{msg.sdwisSampleLogin}" />
+                <w:MenuItem description="{msg.sampleSDWIS_loginDescription}" enabled="false" icon="{res.icon.sdwisSampleLoginIcon}"
+                  ui:field="sdwisSampleLogin" display="{msg.sampleSDWIS_login}" />
                 <w:MenuItem description="{msg.sampleClinical_loginDescription}" enabled="false" ui:field="clinicalSampleLogin"
                   display="{msg.sampleClinical_login}" />
                 <w:MenuItem description="{msg.sampleNeonatal_loginDescription}" enabled="false" ui:field="neonatalScreeningSampleLogin"
