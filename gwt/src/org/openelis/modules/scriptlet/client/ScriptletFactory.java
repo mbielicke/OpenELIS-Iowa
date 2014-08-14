@@ -33,6 +33,7 @@ import org.openelis.scriptlet.NbsGaltScriptlet1;
 import org.openelis.scriptlet.NbsTshScriptlet1;
 import org.openelis.scriptlet.NeonatalDomainScriptlet1;
 import org.openelis.scriptlet.PwsValidateScriptlet1;
+import org.openelis.scriptlet.SDWISIAScriptlet1;
 import org.openelis.scriptlet.ScriptletUtility;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
@@ -57,6 +58,9 @@ public class ScriptletFactory {
         switch (systemName) {
             case "scriptlet_environmental_ia1":
                 script = (T)new EnvironmentalIAScriptlet1(new EnvironmentalIAProxy1());
+                break;
+            case "scriptlet_sdwis_ia1":
+                script = (T)new SDWISIAScriptlet1(new SDWISIAProxy1());
                 break;
             case "scriptlet_neonatal_ia1":
                 script = (T)new NeonatalDomainScriptlet1(new NeonatalDomainProxy1());
