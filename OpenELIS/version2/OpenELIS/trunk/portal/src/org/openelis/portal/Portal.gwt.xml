@@ -5,10 +5,19 @@
 -->
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.0//EN"
   "http://google-web-toolkit.googlecode.com/svn/tags/2.6.0/distro-source/core/src/gwt-module.dtd">
+
 <module rename-to='portal'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
-  <inherits name='com.google.gwt.user.User'/>
-
+	<inherits name='com.google.gwt.user.User'/>
+	<inherits name="com.google.gwt.xml.XML"/>
+    <inherits name="com.google.gwt.i18n.I18N"/> 
+    <inherits name="org.openelis.gwt.Widget"/>
+    <inherits name="org.openelis.gwt.Common"/>
+    <inherits name="org.openelis.gwt.Screen"/> 
+    <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
+    <inherits name="org.openelis.ELISCommonWeb"/>
+    <inherits name="org.openelis.ui.UI"/>
+    <inherits name="org.openelis.Manager"/>
 
   <!-- Other module inherits                                      -->
 
@@ -17,6 +26,17 @@
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
+  
+  <set-property name="gwt.logging.logLevel" value="SEVERE"/>
+  <set-property name="gwt.logging.consoleHandler" value="DISABLED"/>
+  <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED"/>
+  <set-property name="gwt.logging.popupHandler" value="DISABLED"/>
+  <set-property name="gwt.logging.systemHandler" value="DISABLED"/>
+  <set-property name="gwt.logging.firebugHandler" value="DISABLED"/>
+    
+  <set-property name="compiler.stackMode" value="emulated" />
+  <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true"/>
+  <set-configuration-property name="compiler.emulatedStack.recordFileNames"   value="true"/>  
 
   <!-- allow Super Dev Mode -->
   <add-linker name="xsiframe"/>
