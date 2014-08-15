@@ -1,0 +1,4 @@
+<module>
+  <inherits name="org.openelis.portal.desktop.Desktop"/>
+  <inherits name="org.openelis.portal.mobile.Mobile"/>
+</module>

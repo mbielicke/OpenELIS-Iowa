@@ -32,5 +32,6 @@
       <dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.41.0"/>
       <dependency org="org.openelis" name="ui" rev="latest.integration"/>
       <dependency org="com.googlecode.mgwt" name="mgwt" rev="1.1.2" transitive="false"/>
+      <dependency org="org.jboss.spec" name="jboss-javaee-6.0" rev="3.0.2.Final"/>
     </dependencies>
 </ivy-module>
