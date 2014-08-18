@@ -135,7 +135,7 @@ public class AirQualityExportBean {
                     assessmentType = "Duplicate", assessmentNumber = "1", to11 = "to-11",
                     to12 = "to-12", tolualdehyde = "Tolualdehyde", md = "MD", sq = "SQ", cb = "CB",
                     da = "DA", fb = "FB", primaryPOC = "01", secondaryPOC = "02",
-                    duplicatePOC = "03", mdlAnalyte = "MDL";
+                    duplicatePOC = "03", mdlAnalyte = "MDL", mnUnitCode = "108";
 
     private String                                   ttdsDurationCode, ttdsMethodCode, ttdsMDL,
                     ttdsParameterCode, tnmocDurationCode, tnmocMethodCode, tnmocMDL,
@@ -1789,12 +1789,18 @@ public class AirQualityExportBean {
            .append(delim)
            .append(time)
            .append(delim);
-        if (DataBaseUtil.isEmpty(nullDataCode)) {
+        if ( !DataBaseUtil.isEmpty(nullDataCode)) {
+            if (DataBaseUtil.isEmpty(pressure))
+                psb.append(delim).append(nullDataCode).append(delim);
+            else
+                psb.append(pressure).append(delim).append(delim);
+            if (DataBaseUtil.isEmpty(temperature))
+                tsb.append(delim).append(nullDataCode).append(delim);
+            else
+                tsb.append(temperature).append(delim).append(delim);
+        } else {
             psb.append(pressure).append(delim).append(delim);
             tsb.append(temperature).append(delim).append(delim);
-        } else {
-            psb.append(delim).append(nullDataCode).append(delim);
-            tsb.append(delim).append(nullDataCode).append(delim);
         }
         psb.append(collectionFreq)
            .append(delim)
@@ -1825,11 +1831,11 @@ public class AirQualityExportBean {
            .append(delim)
            .append(delim);
 
-        if (pressure == null)
+        if (pressure == null && DataBaseUtil.isEmpty(nullDataCode))
             metalStrings.add(null);
         else
             metalStrings.add(psb.toString());
-        if (temperature == null)
+        if (temperature == null && DataBaseUtil.isEmpty(nullDataCode))
             metalStrings.add(null);
         else
             metalStrings.add(tsb.toString());
@@ -1889,10 +1895,17 @@ public class AirQualityExportBean {
                 continue;
 
             buildSiteInfo(sb, rawDataType, action, stateCode, countyCode, siteId, parameter, poc);
-            sb.append(durationCode)
-              .append(delim)
-              .append(reportedUnit)
-              .append(delim)
+            sb.append(durationCode).append(delim);
+
+            /*
+             * Manganese uses a different unit code but uses the same unit, so
+             * it has to be set separately
+             */
+            if (lead)
+                sb.append(reportedUnit);
+            else
+                sb.append(mnUnitCode);
+            sb.append(delim)
               .append(threeDigits.format(methodCode))
               .append(delim)
               .append(date)
@@ -1964,6 +1977,7 @@ public class AirQualityExportBean {
                 if ( !lead) {
                     sb.append(truncateDecimal(1000 * metalManganeseFilterLotBlank / sampleVolume, 2));
                 }
+                break;
             } else {
                 sb.append(delim)
                   .append(nullDataCode)
@@ -1982,6 +1996,7 @@ public class AirQualityExportBean {
                   .append(delim)
                   .append(delim)
                   .append(delim);
+                break;
             }
 
         }
