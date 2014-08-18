@@ -170,7 +170,7 @@ public class SessionTimer {
             Window.alert(e.getMessage());
         }
 
-        Window.open("/openelis/OpenELIS.html", "_self", null);
+        Window.open("/portal/Portal.html", "_self", null);
     }
 
 }
