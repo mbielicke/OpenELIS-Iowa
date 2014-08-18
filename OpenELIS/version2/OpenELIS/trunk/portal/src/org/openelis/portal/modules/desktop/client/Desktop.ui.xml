@@ -13,10 +13,19 @@
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
   <g:LayoutPanel>
-    <g:layer>
+    <g:layer top="0px" height="40px">
       <g:HTML>
         <p>This is the Desktop Version of Portal</p>
       </g:HTML>
+    </g:layer>
+    <g:layer top="40px" height="30px">
+      <g:HTMLPanel>
+        <g:Anchor ui:field="exampleLink" text="Example Screen"/>
+        <hr/>
+      </g:HTMLPanel>
+    </g:layer>
+    <g:layer top="70px" bottom="0px">
+      <g:LayoutPanel ui:field="main"/>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

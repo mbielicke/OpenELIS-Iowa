@@ -15,7 +15,9 @@
     <inherits name="org.openelis.ELISCommonWeb"/>
     <inherits name="org.openelis.ui.UI"/>
     <inherits name="org.openelis.Manager"/>
+    <inherits name="org.openelis.portal.Mobile"/>
     <inherits name="org.openelis.portal.modules.Modules"/>
+    
 
   <!-- Other module inherits                                      -->
 
@@ -35,16 +37,7 @@
   <set-property name="compiler.stackMode" value="emulated" />
   <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true"/>
   <set-configuration-property name="compiler.emulatedStack.recordFileNames"   value="true"/>  
-  
-  <define-property name="mobile.user.agent" values="mobile, not_mobile" />
-  <property-provider name="mobile.user.agent"><![CDATA[
-  {
-    var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.indexOf('android') != -1) { return 'mobile'; }
-    if (ua.indexOf('iphone') != -1) { return 'mobile'; }
-    return 'not_mobile';
-  }
-  ]]></property-provider>
+ 
   
   <replace-with class="org.openelis.portal.modules.desktop.client.DesktopScreen">
     <when-type-is class="org.openelis.portal.client.PortalEntry"/>
