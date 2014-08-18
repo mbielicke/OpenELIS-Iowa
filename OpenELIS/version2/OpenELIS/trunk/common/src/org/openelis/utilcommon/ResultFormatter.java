@@ -612,7 +612,11 @@ public class ResultFormatter implements Serializable {
             
             try {
                 d = Integer.parseInt(value);
-                if (d < min || d > max)
+                /*
+                 * If the user specifies a "<" in front of the result, we want to
+                 * try to match the upper bounds.
+                 */
+                if (d < min || d > max || (d == max && !"<1:".equals(fmt)))
                     err = true;
                 else
                     fmt += d;
