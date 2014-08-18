@@ -94,8 +94,8 @@ public class ResultRangeTiter implements ResultRange {
 
         if (value instanceof ResultRangeTiter && valid) {
             r = (ResultRangeTiter)value;
-            return (r.getMin() >= min && r.getMin() <= max) ||
-                   (r.getMax() >= min && r.getMax() <= max) ||
+            return (r.getMin() >= min && r.getMin() < max) ||
+                   (r.getMax() > min && r.getMax() <= max) ||
                    (r.getMax() >= max && r.getMin() <= min);
         }
         return false;
