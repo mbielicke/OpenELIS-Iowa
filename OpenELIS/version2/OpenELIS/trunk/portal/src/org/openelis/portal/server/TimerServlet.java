@@ -36,7 +36,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * This servlet needs to extend RemoteServiceServlet instead of RemoteServlet so that it does not update
  *last_access when checking for last_access;
  */
-@WebServlet("/openelis/timer")
+@WebServlet("/portal/timer")
 public class TimerServlet extends RemoteServiceServlet implements TimerServiceInt {
     
     private static final long serialVersionUID = 1L;
