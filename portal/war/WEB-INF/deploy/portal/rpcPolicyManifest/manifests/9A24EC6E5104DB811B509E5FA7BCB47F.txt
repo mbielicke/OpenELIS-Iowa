@@ -1,0 +1,2 @@
+serviceClass: org.openelis.portal.client.TimerServiceInt
+path: 2E12DF38E35DB97FB9B76320DDDCF825.gwt.rpc
