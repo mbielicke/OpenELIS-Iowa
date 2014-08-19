@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.entity;
 
 import javax.persistence.Column;
@@ -49,14 +49,15 @@ import org.openelis.utils.Auditable;
  * Sample SDWIS Entity POJO for database
  */
 
-@NamedQueries( {
-    @NamedQuery(name = "SampleSDWIS.FetchBySampleId", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId," +
-                       "s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, p.name, p.number0) " +
-                       " from SampleSDWIS s left join s.pws p where s.sampleId = :id"),
-    @NamedQuery(name = "SampleSDWIS.FetchBySampleIds", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId," +
-                       "s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, p.name, p.number0) "
-                     + " from SampleSDWIS s left join s.pws p where s.sampleId in (:ids)")})
-                       
+@NamedQueries({
+               @NamedQuery(name = "SampleSDWIS.FetchBySampleId",
+                           query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId,"
+                                   + "s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.priority, s.location, s.collector, p.name, p.number0) "
+                                   + " from SampleSDWIS s left join s.pws p where s.sampleId = :id"),
+               @NamedQuery(name = "SampleSDWIS.FetchBySampleIds",
+                           query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId,"
+                                   + "s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.priority, s.location, s.collector, p.name, p.number0) "
+                                   + " from SampleSDWIS s left join s.pws p where s.sampleId in (:ids)")})
 @Entity
 @Table(name = "sample_sdwis")
 @EntityListeners({AuditUtil.class})
@@ -86,6 +87,9 @@ public class SampleSDWIS implements Auditable, Cloneable {
 
     @Column(name = "sample_point_id")
     private String      samplePointId;
+
+    @Column(name = "priority")
+    private Integer     priority;
 
     @Column(name = "location")
     private String      location;
@@ -172,6 +176,15 @@ public class SampleSDWIS implements Auditable, Cloneable {
             this.samplePointId = samplePointId;
     }
 
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        if (DataBaseUtil.isDifferent(priority, this.priority))
+            this.priority = priority;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -218,9 +231,16 @@ public class SampleSDWIS implements Auditable, Cloneable {
                  .setField("pws_id", pwsId, original.pwsId)
                  .setField("state_lab_id", stateLabId, original.stateLabId)
                  .setField("facility_id", facilityId, original.facilityId)
-                 .setField("sample_type_id", sampleTypeId, original.sampleTypeId, Constants.table().DICTIONARY)
-                 .setField("sample_category_id", sampleCategoryId, original.sampleCategoryId, Constants.table().DICTIONARY)
+                 .setField("sample_type_id",
+                           sampleTypeId,
+                           original.sampleTypeId,
+                           Constants.table().DICTIONARY)
+                 .setField("sample_category_id",
+                           sampleCategoryId,
+                           original.sampleCategoryId,
+                           Constants.table().DICTIONARY)
                  .setField("sample_point_id", samplePointId, original.samplePointId)
+                 .setField("priority", priority, original.priority)
                  .setField("location", location, original.location)
                  .setField("collector", collector, original.collector);
 

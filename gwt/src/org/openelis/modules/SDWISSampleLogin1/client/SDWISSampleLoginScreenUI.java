@@ -170,14 +170,16 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     receivedDate;
 
     @UiField
-    protected TextBox<Integer>                          accessionNumber, orderId;
+    protected TextBox<Integer>                          accessionNumber, orderId, sdwisPriority;
 
     @UiField
     protected TextBox<String>                           clientReference, sdwisPwsNumber0, pwsName,
-                    sdwisFacilityId, sdwisSamplePointId, sdwisLocation, sdwisCollector;
+                    sdwisFacilityId, sdwisSamplePointId, sdwisLocation,
+                    sdwisCollector;
 
     @UiField
-    protected Dropdown<Integer>                         status, sdwisSampleTypeId, sdwisSampleCategoryId;
+    protected Dropdown<Integer>                         status, sdwisSampleTypeId,
+                    sdwisSampleCategoryId;
 
     @UiField
     protected TextBox<Integer>                          sdwisStateLabId;
@@ -852,25 +854,28 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(sdwisPwsNumber0, SampleMeta.getSDWISPwsNumber0(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sdwisPwsNumber0.setValue(getPwsNumber0());
-            }
+        addScreenHandler(sdwisPwsNumber0,
+                         SampleMeta.getSDWISPwsNumber0(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sdwisPwsNumber0.setValue(getPwsNumber0());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setPwsNumber0(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setPwsNumber0(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                sdwisPwsNumber0.setEnabled( (isState(QUERY)) || (canEdit && isState(ADD, UPDATE)));
-                sdwisPwsNumber0.setQueryMode( (isState(QUERY)));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 sdwisPwsNumber0.setEnabled( (isState(QUERY)) ||
+                                                            (canEdit && isState(ADD, UPDATE)));
+                                 sdwisPwsNumber0.setQueryMode( (isState(QUERY)));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? sdwisStateLabId : clientReference;
-            }
-        });
-        
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sdwisStateLabId : clientReference;
+                             }
+                         });
+
         sdwisPwsNumber0.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -879,7 +884,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     num0 = previousManager.getSampleSDWIS().getPwsNumber0();
                     name = previousManager.getSampleSDWIS().getPwsName();
-                    setPwsNumber0(num0);                    
+                    setPwsNumber0(num0);
                     setPwsName(name);
                     sdwisPwsNumber0.setValue(num0);
                     pwsName.setValue(name);
@@ -907,25 +912,28 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(sdwisStateLabId, SampleMeta.getSDWISStateLabId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sdwisStateLabId.setValue(getStateLabId());
-            }
+        addScreenHandler(sdwisStateLabId,
+                         SampleMeta.getSDWISStateLabId(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sdwisStateLabId.setValue(getStateLabId());
+                             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setStateLabId(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setStateLabId(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                sdwisStateLabId.setEnabled( (isState(QUERY)) || (canEdit && isState(ADD, UPDATE)));
-                sdwisStateLabId.setQueryMode( (isState(QUERY)));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 sdwisStateLabId.setEnabled( (isState(QUERY)) ||
+                                                            (canEdit && isState(ADD, UPDATE)));
+                                 sdwisStateLabId.setQueryMode( (isState(QUERY)));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? sdwisFacilityId : sdwisPwsNumber0;
-            }
-        });
-        
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sdwisFacilityId : sdwisPwsNumber0;
+                             }
+                         });
+
         sdwisStateLabId.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -933,7 +941,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     labId = previousManager.getSampleSDWIS().getStateLabId();
-                    setStateLabId(labId);             
+                    setStateLabId(labId);
                     sdwisStateLabId.setValue(labId);
                     screen.focusNextWidget((Focusable)sdwisStateLabId, true);
                     event.preventDefault();
@@ -942,25 +950,28 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(sdwisFacilityId, SampleMeta.getSDWISFacilityId(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sdwisFacilityId.setValue(getFacilityId());
-            }
+        addScreenHandler(sdwisFacilityId,
+                         SampleMeta.getSDWISFacilityId(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sdwisFacilityId.setValue(getFacilityId());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setFacilityId(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setFacilityId(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                sdwisFacilityId.setEnabled( (isState(QUERY)) || (canEdit && isState(ADD, UPDATE)));
-                sdwisFacilityId.setQueryMode( (isState(QUERY)));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 sdwisFacilityId.setEnabled( (isState(QUERY)) ||
+                                                            (canEdit && isState(ADD, UPDATE)));
+                                 sdwisFacilityId.setQueryMode( (isState(QUERY)));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? sdwisSampleTypeId : sdwisStateLabId;
-            }
-        });
-        
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sdwisSampleTypeId : sdwisStateLabId;
+                             }
+                         });
+
         sdwisFacilityId.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -968,7 +979,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     facId = previousManager.getSampleSDWIS().getFacilityId();
-                    setFacilityId(facId);          
+                    setFacilityId(facId);
                     sdwisFacilityId.setValue(facId);
                     screen.focusNextWidget((Focusable)sdwisFacilityId, true);
                     event.preventDefault();
@@ -990,7 +1001,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  sdwisSampleTypeId.setEnabled( (isState(QUERY)) ||
-                                                       (canEdit && isState(ADD, UPDATE)));
+                                                              (canEdit && isState(ADD, UPDATE)));
                                  sdwisSampleTypeId.setQueryMode( (isState(QUERY)));
                              }
 
@@ -998,7 +1009,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                  return forward ? sdwisSampleCategoryId : sdwisFacilityId;
                              }
                          });
-        
+
         sdwisSampleTypeId.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1006,7 +1017,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     typeId = previousManager.getSampleSDWIS().getSampleTypeId();
-                    setSampleTypeId(typeId);     
+                    setSampleTypeId(typeId);
                     sdwisSampleTypeId.setValue(typeId);
                     screen.focusNextWidget((Focusable)sdwisSampleTypeId, true);
                     event.preventDefault();
@@ -1028,7 +1039,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  sdwisSampleCategoryId.setEnabled( (isState(QUERY)) ||
-                                                           (canEdit && isState(ADD, UPDATE)));
+                                                                  (canEdit && isState(ADD, UPDATE)));
                                  sdwisSampleCategoryId.setQueryMode( (isState(QUERY)));
                              }
 
@@ -1036,7 +1047,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                  return forward ? sdwisSamplePointId : sdwisSampleTypeId;
                              }
                          });
-        
+
         sdwisSampleCategoryId.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1044,7 +1055,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                 if (canCopyFromPrevious(event.getNativeKeyCode())) {
                     catId = previousManager.getSampleSDWIS().getSampleCategoryId();
-                    setSampleCategoryId(catId);  
+                    setSampleCategoryId(catId);
                     sdwisSampleCategoryId.setValue(catId);
                     screen.focusNextWidget((Focusable)sdwisSampleCategoryId, true);
                     event.preventDefault();
@@ -1066,7 +1077,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
                              public void onStateChange(StateChangeEvent event) {
                                  sdwisSamplePointId.setEnabled( (isState(QUERY)) ||
-                                                          (canEdit && isState(ADD, UPDATE)));
+                                                               (canEdit && isState(ADD, UPDATE)));
                                  sdwisSamplePointId.setQueryMode( (isState(QUERY)));
                              }
 
@@ -1074,7 +1085,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                  return forward ? sdwisLocation : sdwisSampleCategoryId;
                              }
                          });
-        
+
         sdwisSamplePointId.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1090,7 +1101,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-
+        
         addScreenHandler(sdwisLocation, SampleMeta.getSDWISLocation(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisLocation.setValue(getLocation());
@@ -1106,10 +1117,10 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? sdwisCollector : sdwisSamplePointId;
+                return forward ? sdwisPriority : sdwisSamplePointId;
             }
         });
-        
+
         sdwisLocation.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -1125,26 +1136,64 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-
-        addScreenHandler(sdwisCollector, SampleMeta.getSDWISCollector(), new ScreenHandler<String>() {
+        
+        addScreenHandler(sdwisPriority, SampleMeta.getSDWISPriority(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sdwisCollector.setValue(getCollector());
+                sdwisPriority.setValue(getPriority());
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setCollector(event.getValue());
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setPriority(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sdwisCollector.setEnabled( (isState(QUERY)) || (canEdit && isState(ADD, UPDATE)));
-                sdwisCollector.setQueryMode( (isState(QUERY)));
+                sdwisPriority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                sdwisPriority.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? projectName : sdwisLocation;
+                return forward ? sdwisCollector : sdwisLocation;
             }
         });
-        
+
+        sdwisPriority.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                Integer p;
+
+                if (canCopyFromPrevious(event.getNativeKeyCode())) {
+                    p = previousManager.getSampleSDWIS().getPriority();
+                    setPriority(p);
+                    sdwisPriority.setValue(p);
+                    screen.focusNextWidget((Focusable)sdwisPriority, true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        });
+
+        addScreenHandler(sdwisCollector,
+                         SampleMeta.getSDWISCollector(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sdwisCollector.setValue(getCollector());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setCollector(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 sdwisCollector.setEnabled( (isState(QUERY)) ||
+                                                           (canEdit && isState(ADD, UPDATE)));
+                                 sdwisCollector.setQueryMode( (isState(QUERY)));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? projectName : sdwisPriority;
+                             }
+                         });
+
         sdwisCollector.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -3212,6 +3261,23 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     private void setSamplePointId(String samplePointId) {
         manager.getSampleSDWIS().setSamplePointId(samplePointId);
     }
+    
+    /**
+     * returns the priority or null if the manager is null or if this is not an
+     * sdwis sample
+     */
+    private Integer getPriority() {
+        if (manager == null || manager.getSampleSDWIS() == null)
+            return null;
+        return manager.getSampleSDWIS().getPriority();
+    }
+
+    /**
+     * sets the priority
+     */
+    private void setPriority(Integer priority) {
+        manager.getSampleSDWIS().setPriority(priority);
+    }
 
     /**
      * returns the location or null if the manager is null or if this is not a
@@ -3283,7 +3349,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
              * if no project existed
              */
             if (data == null)
-                data = manager.project.add();            
+                data = manager.project.add();
 
             data.setProjectId(proj.getId());
             data.setProjectName(proj.getName());

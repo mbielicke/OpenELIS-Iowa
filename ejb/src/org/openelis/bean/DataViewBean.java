@@ -2026,6 +2026,8 @@ public class DataViewBean {
             headers.add(Messages.get().samplePtId());
         if ("Y".equals(data.getSampleSDWISLocation()))
             headers.add(Messages.get().location());
+        if ("Y".equals(data.getSampleSDWISPriority()))
+            headers.add(Messages.get().priority());
         if ("Y".equals(data.getSampleSDWISCollector()))
             headers.add(Messages.get().collector());
 
@@ -2503,7 +2505,7 @@ public class DataViewBean {
 
     private void addSDWISCells(Row row, int startCol, DataViewVO data, SampleSDWISViewDO sdwis,
                                HashMap<Integer, PWSDO> pwsMap) {
-        Integer id;
+        Integer id, pr;
         Cell cell;
         PWSDO pwsDO;
 
@@ -2567,6 +2569,14 @@ public class DataViewBean {
             cell = row.createCell(startCol++);
             if (sdwis != null)
                 cell.setCellValue(sdwis.getLocation());
+        }
+        if ("Y".equals(data.getSampleSDWISPriority())) {
+            cell = row.createCell(startCol++);
+            if (sdwis != null) {
+                pr = sdwis.getPriority();
+                if (pr != null)
+                    cell.setCellValue(pr);
+            }
         }
         if ("Y".equals(data.getSampleSDWISCollector())) {
             cell = row.createCell(startCol++);

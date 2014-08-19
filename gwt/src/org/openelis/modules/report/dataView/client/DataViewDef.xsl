@@ -759,7 +759,14 @@ UIRF Software License are applicable instead of those above.
                 </row>
                 <row>
                   <widget>
-                    <HorizontalPanel width="60" />
+                      <HorizontalPanel width="60" />
+                  </widget>
+                  <check key="{meta:getSDWISPriority()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select='resource:getString($constants,"priority")' />
+                  </text>
+                  <widget>
+                    <HorizontalPanel width="40" />
                   </widget>
                   <check key="{meta:getSDWISCollector()}" />
                   <text style="LeftAlignPrompt">
