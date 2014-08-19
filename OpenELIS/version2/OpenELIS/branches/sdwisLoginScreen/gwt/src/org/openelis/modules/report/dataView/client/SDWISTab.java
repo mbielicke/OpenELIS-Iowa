@@ -9,7 +9,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.widget.WindowInt;
 
@@ -20,7 +19,7 @@ public class SDWISTab extends Screen {
     private DataViewVO data;
     private CheckBox   sdwisPwsId, pwsName, sdwisStateLabId, sdwisFacilityId, 
                        sdwisSampleTypeId, sdwisSampleCategoryId, sdwisSamplePointId,
-                       sdwisLocation, sdwisCollector;
+                       sdwisLocation, sdwisPriority, sdwisCollector;
     private boolean    loaded;
     private int        checkCount;
     
@@ -166,6 +165,23 @@ public class SDWISTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 sdwisLocation.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        sdwisPriority = (CheckBox)def.getWidget(SampleWebMeta.getSDWISPriority());
+        addScreenHandler(sdwisPriority, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                sdwisPriority.setValue(data.getSampleSDWISPriority());
+                changeCount(data.getSampleSDWISPriority(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleSDWISPriority(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sdwisPriority.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
 

@@ -58,6 +58,8 @@ import org.openelis.ui.widget.TextBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
@@ -66,6 +68,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SDWISTabUI extends Screen {
@@ -83,7 +86,7 @@ public class SDWISTabUI extends Screen {
     protected Dropdown<Integer>     sdwisSampleTypeId, sdwisSampleCategoryId;
 
     @UiField
-    protected TextBox<Integer>      sdwisStateLabId;
+    protected TextBox<Integer>      sdwisPriority, sdwisStateLabId;
 
     @UiField
     protected Button                pwsLookupButton;
@@ -278,7 +281,26 @@ public class SDWISTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? sdwisCollector : sdwisSamplePointId;
+                return forward ? sdwisPriority : sdwisSamplePointId;
+            }
+        });
+        
+        addScreenHandler(sdwisPriority, SampleMeta.getSDWISPriority(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                sdwisPriority.setValue(getPriority());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setPriority(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sdwisPriority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                sdwisPriority.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? sdwisCollector : sdwisLocation;
             }
         });
 
@@ -300,7 +322,7 @@ public class SDWISTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? sdwisPwsNumber0 : sdwisLocation;
+                                 return forward ? sdwisPwsNumber0 : sdwisPriority;
                              }
                          });
 
@@ -566,6 +588,23 @@ public class SDWISTabUI extends Screen {
      */
     private void setSamplePointId(String samplePointId) {
         manager.getSampleSDWIS().setSamplePointId(samplePointId);
+    }
+    
+    /**
+     * returns the priority or null if the manager is null or if this is not an
+     * sdwis sample
+     */
+    private Integer getPriority() {
+        if (manager == null || manager.getSampleSDWIS() == null)
+            return null;
+        return manager.getSampleSDWIS().getPriority();
+    }
+
+    /**
+     * sets the priority
+     */
+    private void setPriority(Integer priority) {
+        manager.getSampleSDWIS().setPriority(priority);
     }
 
     /**

@@ -31,7 +31,7 @@ public class SampleSDWISDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer id, sampleId, pwsId, stateLabId, sampleTypeId, sampleCategoryId;
+    protected Integer id, sampleId, pwsId, stateLabId, sampleTypeId, sampleCategoryId, priority;
     protected String facilityId, samplePointId, location, collector;
     
     public SampleSDWISDO() {
@@ -40,7 +40,7 @@ public class SampleSDWISDO extends DataObject {
         
     public SampleSDWISDO(Integer id, Integer sampleId, Integer pwsId, Integer stateLabId,
                          String facilityId, Integer sampleTypeId, Integer sampleCategoryId,
-                         String samplePointId, String location, String collector) {
+                         String samplePointId, Integer priority, String location, String collector) {
         setId(id);
         setSampleId(sampleId);
         setPwsId(pwsId);
@@ -49,6 +49,7 @@ public class SampleSDWISDO extends DataObject {
         setSampleTypeId(sampleTypeId);
         setSampleCategoryId(sampleCategoryId);
         setSamplePointId(samplePointId);
+        setPriority(priority);
         setLocation(location);
         setCollector(collector);
         _changed = false;
@@ -123,6 +124,15 @@ public class SampleSDWISDO extends DataObject {
 
     public void setSamplePointId(String samplePointId) {
         this.samplePointId = DataBaseUtil.trim(samplePointId);
+        _changed = true;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
         _changed = true;
     }
 

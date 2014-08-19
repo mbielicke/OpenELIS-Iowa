@@ -130,7 +130,7 @@
         <g:layer top="55px" height="110px" left="7px" right="7px">
           <w:TitledPanel title="{msg.sampleSDWIS_sdwisInfo}">
             <g:LayoutPanel>
-              <g:layer top="0px" bottom="0px" left="0px" width="100%">
+              <g:layer top="0px" bottom="0px" left="0px" right="0px">
                 <g:HTMLPanel>
                   <table class="{res.style.Form}">
                     <tr>
@@ -165,20 +165,22 @@
                         <ui:text from="{msg.sampleSDWIS_facilityId}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="sdwisFacilityId" width="75px" case="UPPER" field="String"
-                          maxLength="12" />
+                        <w:TextBox ui:field="sdwisFacilityId" width="75px" case="UPPER"
+                          field="String" maxLength="12" />
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.gen_sampleType}:" />
                       </td>
                       <td>
-                        <w:Dropdown ui:field="sdwisSampleTypeId" width="120px" field="Integer" required="true" />
+                        <w:Dropdown ui:field="sdwisSampleTypeId" width="120px" field="Integer"
+                          required="true" />
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.sampleSDWIS_sampleCat}:" />
                       </td>
                       <td>
-                        <w:Dropdown ui:field="sdwisSampleCategoryId" width="109px" field="Integer" required="true" />
+                        <w:Dropdown ui:field="sdwisSampleCategoryId" width="109px" field="Integer"
+                          required="true" />
                       </td>
                     </tr>
                     <tr>
@@ -193,8 +195,14 @@
                         <ui:text from="{msg.gen_location}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="sdwisLocation" width="215px" case="LOWER" field="String"
-                          maxLength="40" />
+                        <w:TextBox ui:field="sdwisLocation" width="215px" case="LOWER"
+                          field="String" maxLength="40" />
+                      </td>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.gen_priority}:" />
+                      </td>
+                      <td>
+                        <w:TextBox ui:field="sdwisPriority" field="Integer" width="24px" />
                       </td>
                     </tr>
                   </table>
@@ -217,8 +225,8 @@
                         <ui:text from="{msg.sample_collector}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="sdwisCollector" width="162px" case="LOWER" field="String"
-                          maxLength="20" />
+                        <w:TextBox ui:field="sdwisCollector" width="162px" case="LOWER"
+                          field="String" maxLength="20" />
                       </td>
                     </tr>
                     <tr>
