@@ -249,20 +249,9 @@ public class SDWISAdditionalScannerBean {
                     DataBaseUtil.isSame(v.getSeries(), data.getTiaanlgpTiaanlytName())) {
 
                     /*
-                     * If the facility reports quarterly, and the period is not
-                     * the first month in the quarter, send 5 bottles.
-                     * Otherwise, send 5 minus the number of required bottles
-                     * for facilities with 1 distribution, and 4 bottles for
-                     * facilities with more than 1 distribution
+                     * send five additional bottles
                      */
-                    if ("QUARTERLY".equals(data.getFrequencyName()) &&
-                        (cal.get(Calendar.MONTH) % 3) != 1) {
-                        multi = 5;
-                    } else if (distributionCount(pwsmm) == 1) {
-                        multi = 5 - data.getNumberSamples();
-                    } else {
-                        multi = 4;
-                    }
+                    multi = 5;
                 }
 
                 for (Integer oid : oids)
