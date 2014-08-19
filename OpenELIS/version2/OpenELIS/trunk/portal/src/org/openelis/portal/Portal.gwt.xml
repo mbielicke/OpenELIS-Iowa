@@ -15,7 +15,7 @@
     <inherits name="org.openelis.ELISCommonWeb"/>
     <inherits name="org.openelis.ui.UI"/>
     <inherits name="org.openelis.Manager"/>
-    <inherits name="org.openelis.portal.Mobile"/>
+    <inherits name="org.openelis.portal.Platform"/>
     <inherits name="org.openelis.portal.modules.Modules"/>
     
 
@@ -38,15 +38,14 @@
   <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true"/>
   <set-configuration-property name="compiler.emulatedStack.recordFileNames"   value="true"/>  
  
-  
-  <replace-with class="org.openelis.portal.modules.desktop.client.DesktopScreen">
-    <when-type-is class="org.openelis.portal.client.PortalEntry"/>
-    <when-property-is name="mobile.user.agent" value="not_mobile"/>
+   <replace-with class="org.openelis.portal.modules.mobile.client.MobileScreen">
+    <when-type-assignable class="org.openelis.portal.client.PortalEntry"/>
+    <when-property-is name="platform" value="phone"/>
   </replace-with>
   
-  <replace-with class="org.openelis.portal.modules.mobile.client.MobileScreen">
-    <when-type-is class="org.openelis.portal.client.PortalEntry"/>
-    <when-property-is name="mobile.user.agent" value="mobile"/>
+  <replace-with class="org.openelis.portal.modules.tablet.client.TabletScreen">
+    <when-type-assignable class="org.openelis.portal.client.PortalEntry"/>
+    <when-property-is name="platform" value="tablet"/>
   </replace-with>
 
   <!-- allow Super Dev Mode -->

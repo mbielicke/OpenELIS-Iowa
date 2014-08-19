@@ -6,10 +6,11 @@ import com.google.gwt.core.client.GWT;
 
 public class ExampleScreen extends Screen {
 	
-	ExampleUI ui = GWT.create(ExampleUI.class);
+	ExampleUI ui = GWT.create(ExampleUIImpl.class);
 	
 	public ExampleScreen() {
 		initWidget(ui.asWidget());
+		
 	}
 
 }
