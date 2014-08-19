@@ -5,6 +5,8 @@ import static org.openelis.portal.client.Logger.remote;
 import java.util.logging.Level;
 
 import org.openelis.portal.client.resources.Resources;
+import org.openelis.portal.modules.desktop.client.DesktopScreen;
+import org.openelis.ui.screen.Screen;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
@@ -31,7 +33,7 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
         Resources.INSTANCE.style().ensureInjected();
         try {
             RootPanel.get("main").clear();
-            RootLayoutPanel.get().add(((IsWidget)GWT.create(PortalEntry.class)).asWidget());
+            RootLayoutPanel.get().add((Screen)GWT.create(DesktopScreen.class));
 
             SessionTimer.start();
         } catch (Throwable e) {
