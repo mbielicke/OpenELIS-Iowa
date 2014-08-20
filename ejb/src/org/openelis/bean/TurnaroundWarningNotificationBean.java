@@ -125,6 +125,14 @@ public class TurnaroundWarningNotificationBean {
                 toEmail = "";
                 for (Integer aId : analysisIds) {
                     aVDO = analysesById.get(aId);
+                    /*
+                     * If an analysis was found in the turnaroun query but not in
+                     * the SampleManager query, it is an orphan analysis left over
+                     * from a bug that used to be in the Send-out Order import code.
+                     */
+                    if (aVDO == null)
+                        continue;
+                    
                     sMan = sMansByAnalysisId.get(aId);
                     if (!prevSectId.equals(aVDO.getSectionId())) {
                         if (prevSectId != -1) {
