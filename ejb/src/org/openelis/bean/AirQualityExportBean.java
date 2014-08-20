@@ -1108,7 +1108,7 @@ public class AirQualityExportBean {
         int durationCode, methodCode;
         Integer analysisCount;
         Double ttds, tmnoc;
-        String stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, analyte, key;
+        String stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, key;
         StringBuilder sb;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO ap;
@@ -1210,7 +1210,7 @@ public class AirQualityExportBean {
          * go through all the analytes and create a string for each one
          */
         airToxicsStrings = new HashMap<String, ArrayList<String>>();
-        value = mdl = qualifier = analyte = null;
+        value = mdl = qualifier = null;
         sb = new StringBuilder();
         if (getResults(sm) != null) {
             for (ResultViewDO data : getResults(sm)) {
@@ -1237,14 +1237,15 @@ public class AirQualityExportBean {
                              * the result value to the extra analyte values if
                              * applicable.
                              */
-                            if (addTds && analyte.contains(tolualdehyde) && !value.contains("<"))
+                            if (addTds && data.getAnalyte().contains(tolualdehyde) &&
+                                !value.contains("<"))
                                 ttds += Double.parseDouble(value);
                             if (addAll && !value.contains("<"))
                                 tmnoc += Double.parseDouble(value);
                             value = null;
                             continue;
                         }
-                        analyte = data.getAnalyte();
+
                         ap = analyteParameters.get(data.getAnalyteId());
                         if (ap.getP2() != null && ap.getP3() != null) {
                             methodCode = ap.getP2().intValue();
@@ -1275,7 +1276,6 @@ public class AirQualityExportBean {
                     mdl = null;
                     qualifier = null;
                     parameter = null;
-                    analyte = null;
                     continue;
                 }
                 buildSiteInfo(sb,
@@ -1362,7 +1362,6 @@ public class AirQualityExportBean {
                 mdl = null;
                 qualifier = null;
                 parameter = null;
-                analyte = null;
                 methodCode = 0;
             }
         }
