@@ -1,65 +1,65 @@
-.heading {
-	padding: 0;
-	margin: 0;
+@sprite .AppBackground {
+	gwt-image: 'AppBackground';
+	opacity: 0.8;
 }
 
-.HeaderLabel {
-	padding: 0;
+.WhiteContentPanel {
+	background: white;
 }
 
-.AppBackground {
-    background: #343434;
+.Form {
+	margin: 4px 8px;
 }
 
-.header_nav {
-    background: url("/openelisweb/Images/webheader.gif") repeat-x 0 6px;
-    width: 100%;
+.FormTitle {
+    -moz-user-select: none;
+    color:#486095;
+    text-align:center;
+    height:18px;
+    background:transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0 0;
 }
-.header_logo {
-    background: url("/openelisweb/Images/shl-logo.gif") no-repeat;
-    height: 134px;
-    margin: -6px 0 0 8px;
-    width: 230px;
-    cursor:pointer;
+
+.Prompt {
+	-moz-user-select: none;
+	color: gray;
+	padding: 2px 0 2px 2px;
+	text-align: right;
+	test-justify: trim;
+	white-space: nowrap;
 }
-.header_nav TD {
-    float: left;
-    vertical-align: top;
+
+.WarningLabel {
+    -moz-user-select: none;
+    color: #FF0000;
+    padding: 5px 0 0 12px;
+    font-weight: bold;
 }
-.header_nav .header_section {
-    background: url("/openelisweb/Images/webheaderdivider.gif") no-repeat;
-    margin-left: 8px;
-    margin-top: 6px;
-    height:110px;
-}
-.header_nav .header_section .section_label {
-    color: white;
-    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
-    font-size: 13px;
-    text-transform: uppercase;
-    padding-top:5px;
-    padding-left: 8px;
-    height:25px;
-}
-.header_nav .header_section .label {
-    color: black;
-    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
-    font-size: 11px;
-    padding-left: 8px;
-}
-.header_nav .header_section .link {
-    color: white;
-    cursor: pointer;
-    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
-    font-size: 11px;
-  	padding-top:2px;
-    padding-left: 8px;
-}
-.header_nav .header_section .link_hover {
-	color: #464D6C;
+
+.ScreenLabelLink {
+	color: blue;
+	text-decoration: underline;
 	cursor: pointer;
-	font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
-	font-size: 11px;
-	padding-top:2px;
-	padding-left: 8px;
+}
+
+@sprite .favorite .LeftMenuPanePanelClosed {
+	height: 100%;
+	width: 5px;
+	gwt-image: 'topMenuBG';
+}
+
+@sprite .favorite .LeftMenuPanePanelOpen {
+	height: 100%;
+	gwt-image: 'topMenuBG';
+	border-right: 1px solid black;
+}
+
+.favoritesMenuContainer {
+	
+}
+
+.Title {
+    -moz-user-select: none;
+    color:gray;
+    padding:2px;
+    padding-left:4px;
 }
