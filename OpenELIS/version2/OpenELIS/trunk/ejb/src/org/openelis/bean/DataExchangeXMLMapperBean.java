@@ -798,7 +798,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "birth_time", patient.getBirthTime());
         setAttribute(elm, "gender_id", patient.getGenderId());
         setAttribute(elm, "race_id", patient.getRaceId());
-        setAttribute(elm, "ethnicity_id", patient.getRaceId());
+        setAttribute(elm, "ethnicity_id", patient.getEthnicityId());
 
         addDictionary(patient.getGenderId());
         addDictionary(patient.getRaceId());
