@@ -303,6 +303,14 @@ public class AuxDataHelperBean {
             if (getAuxiliary(sm) == null)
                 setAuxiliary(sm, new ArrayList<AuxDataViewDO>());
             addAuxGroups(getAuxiliary(sm), grpIds, auxGrps, e);
+            
+            /*
+             * set negative ids in the newly added aux data
+             */
+            for (AuxDataViewDO aux : getAuxiliary(sm)) {
+                if (aux.getId() == null)
+                    aux.setId(sm.getNextUID());
+            }
         }
     }
 

@@ -25,7 +25,7 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-  <inherits name="org.openelis.modules.sample.Sample"/>
+  <inherits name="org.openelis.modules.sample1.Sample1"/>
   
-  <entry-point class="org.openelis.modules.verification.client.VerificationEntry"/>
+  <entry-point class="org.openelis.modules.verification1.client.VerificationEntry"/>
 </module>

@@ -15,72 +15,35 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0" bottom="25">
+    <g:layer top="0" bottom="0">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.verification_scanSampleAccessionBarcode}" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.verification_repeatVerifyProcess}:" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.verification_closeVerifyWindow}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="sdwisStateLabId" width="102px" field="Integer" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleSDWIS_facilityId}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="sdwisFacilityId" width="75px" case="UPPER" field="String"
-                maxLength="12" />
+            <td colspan="5">
+              <w:Label text="{msg.verification_scanSampleAccessionBarcode}" />
             </td>
           </tr>
           <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_sampleType}:" />
-            </td>
-            <td>
-              <w:Dropdown ui:field="sdwisSampleTypeId" width="120px" field="Integer" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleSDWIS_sampleCat}:" />
-            </td>
-            <td>
-              <w:Dropdown ui:field="sdwisSampleCategoryId" width="108px" field="Integer" />
+            <td colspan="5">
+              <w:Label text="{msg.verification_repeatVerifyProcess}" />
             </td>
           </tr>
           <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleSDWIS_samplePtId}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="sdwisSamplePointId" width="75px" case="UPPER" field="String"
-                maxLength="11" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_location}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="sdwisLocation" width="250px" field="String" maxLength="40" />
+            <td colspan="5">
+              <w:Label text="{msg.verification_closeVerifyWindow}" />
             </td>
           </tr>
           <tr>
+          </tr>
+          <td>
+            <g:VerticalPanel height = "5px"/>              
+          </td>
+          <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_priority}:" />
+              <ui:text from="{msg.gen_barcode}:" />
             </td>
             <td>
-              <w:TextBox ui:field="sdwisPriority" field="Integer" width="24px" />
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sample_collector}:" />
-            </td>
-            <td>
-              <w:TextBox ui:field="sdwisCollector" width="162px" case="LOWER" field="String"
-                maxLength="20" />
+              <w:TextBox ui:field="barcode" width="305px" field="String" />
             </td>
           </tr>
         </table>
