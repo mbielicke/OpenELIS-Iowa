@@ -29,6 +29,7 @@
 	  <dependency org="org.mockito" name="mockito-all" rev="1.9.5"/>
       <dependency org="junit" name="junit" rev="4.11"/>
       <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" transitive="false"/>
+      <dependency org="com.allen-sauer.gwt.dnd" name="gwt-dnd" rev="3.3.0" transitive="false" conf="default->master"/> 
       <dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.41.0"/>
       <dependency org="org.openelis" name="ui" rev="latest.integration"/>
       <dependency org="com.googlecode.mgwt" name="mgwt" rev="1.1.2" transitive="false"/>
