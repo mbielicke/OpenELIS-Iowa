@@ -99,6 +99,7 @@ public class SampleSDWISBean {
         entity.setSampleTypeId(data.getSampleTypeId());
         entity.setSampleCategoryId(data.getSampleCategoryId());
         entity.setSamplePointId(data.getSamplePointId());
+        entity.setPriority(data.getPriority());
         entity.setLocation(data.getLocation());
         entity.setCollector(data.getCollector());
         
@@ -126,6 +127,7 @@ public class SampleSDWISBean {
         entity.setSampleTypeId(data.getSampleTypeId());
         entity.setSampleCategoryId(data.getSampleCategoryId());
         entity.setSamplePointId(data.getSamplePointId());
+        entity.setPriority(data.getPriority());
         entity.setLocation(data.getLocation());
         entity.setCollector(data.getCollector());
         
