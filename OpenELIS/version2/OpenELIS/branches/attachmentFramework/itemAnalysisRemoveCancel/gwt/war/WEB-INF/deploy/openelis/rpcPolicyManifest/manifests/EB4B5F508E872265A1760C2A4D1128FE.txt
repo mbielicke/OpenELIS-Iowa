@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.instrument.client.InstrumentServiceInt
-path: 1AD84984DBE9E3EBDBFB11E6D3D39031.gwt.rpc

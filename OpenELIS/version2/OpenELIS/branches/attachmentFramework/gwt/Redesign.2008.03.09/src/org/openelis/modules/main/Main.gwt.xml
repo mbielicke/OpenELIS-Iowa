@@ -1,3 +1,0 @@
-<module>
-    <servlet path='/OpenELISServlet' class='org.openelis.modules.main.server.ScreenControllerServlet'/>  
-</module>

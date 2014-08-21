@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.scriptlet.client.ScriptletServiceInt
-path: 73544FA010F82262462B034AE513C874.gwt.rpc

@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.worksheetCompletion.client.WorksheetCompletionServiceInt
-path: F7328FEF77699BE30E13A225AB7B6F7A.gwt.rpc

@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.ToDoAnalyteReportServiceInt
-path: 28B7609EDCA6F38084D9D824A2B82B0D.gwt.rpc

@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.VerificationReportServiceInt
-path: E99D6BBB37698B2A49612B6FD2D784BB.gwt.rpc

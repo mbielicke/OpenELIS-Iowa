@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.method.client.MethodServiceInt
-path: 00F7A4A4CD8D3B0455F1C7394E3CC33F.gwt.rpc

@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.provider.client.ProviderServiceInt
-path: 989A9665F3F0E0C70A9E2C94F2117DDC.gwt.rpc

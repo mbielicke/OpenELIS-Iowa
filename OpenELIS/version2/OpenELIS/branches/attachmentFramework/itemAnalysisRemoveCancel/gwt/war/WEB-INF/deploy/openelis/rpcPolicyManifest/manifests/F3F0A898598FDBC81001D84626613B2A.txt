@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.auxiliary.client.AuxiliaryServiceInt
-path: A5F8C7296582E518BA0F4DF78FC29196.gwt.rpc

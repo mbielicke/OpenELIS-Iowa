@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.result.client.ResultServiceInt
-path: AB7AE12029BD72CBE8F9A1D4D70DFA11.gwt.rpc

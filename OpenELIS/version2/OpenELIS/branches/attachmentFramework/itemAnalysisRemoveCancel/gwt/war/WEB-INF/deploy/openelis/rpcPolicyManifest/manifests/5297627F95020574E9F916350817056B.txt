@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.RequestformReportServiceInt
-path: B8B4D096BCBF271AF106BF0955674B35.gwt.rpc

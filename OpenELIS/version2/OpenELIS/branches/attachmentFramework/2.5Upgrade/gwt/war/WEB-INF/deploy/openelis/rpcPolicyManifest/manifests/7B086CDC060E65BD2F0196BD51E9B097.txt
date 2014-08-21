@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.panel.client.PanelServiceInt
-path: 35D316272DC95B1E8AE6EEBFEA509E45.gwt.rpc

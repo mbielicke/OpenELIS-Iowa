@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.testTrailer.client.TestTrailerServiceInt
-path: 7E4216B115D66DB6FA13C70B9ACA5387.gwt.rpc

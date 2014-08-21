@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.standardnote.client.StandardNoteServiceInt
-path: 05048AF21778FA5EA0F4B6F4267B29F1.gwt.rpc

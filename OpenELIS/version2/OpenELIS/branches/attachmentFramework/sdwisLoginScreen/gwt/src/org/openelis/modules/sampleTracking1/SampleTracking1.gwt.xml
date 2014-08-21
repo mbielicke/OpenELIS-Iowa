@@ -1,9 +1,0 @@
-<module>
-  <inherits name="org.openelis.modules.auxData.AuxData"/>
-  <inherits name="org.openelis.modules.auxiliary.AuxiliaryService"/>
-  <inherits name="org.openelis.modules.patient.Patient"/>
-  <inherits name="org.openelis.modules.report.ReportService"/>
-  <inherits name="org.openelis.modules.sample1.Sample1"/>
-  <inherits name="org.openelis.modules.test.TestService"/>
-  <entry-point class="org.openelis.modules.sampleTracking1.client.SampleTrackingEntry"/>
-</module>

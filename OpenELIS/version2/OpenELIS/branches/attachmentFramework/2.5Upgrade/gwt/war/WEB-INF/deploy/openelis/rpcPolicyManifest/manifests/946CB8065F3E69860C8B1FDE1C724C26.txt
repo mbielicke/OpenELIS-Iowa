@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.order.client.OrderServiceInt
-path: 528FE1E0E942F439A9730CBBB590B787.gwt.rpc
