@@ -14029,6 +14029,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_inactiveTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "{0} is an invalid entry, please try again".
+   * 
+   * @return translated "{0} is an invalid entry, please try again"
+   */
+  @DefaultMessage("{0} is an invalid entry, please try again")
+  @Key("sample.invalidEntryException")
+  String sample_invalidEntryException(String arg0);
+
+  /**
    * Translated "Items/Analyses".
    * 
    * @return translated "Items/Analyses"
@@ -18257,6 +18266,69 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Verify Sample Data Entry")
   @Key("verification")
   String verification();
+
+  /**
+   * Translated "The sample must be fully logged in".
+   * 
+   * @return translated "The sample must be fully logged in"
+   */
+  @DefaultMessage("The sample must be fully logged in")
+  @Key("verification.cantVerifyQuickEntry")
+  String verification_cantVerifyQuickEntry();
+
+  /**
+   * Translated "3. Close the window when done.".
+   * 
+   * @return translated "3. Close the window when done."
+   */
+  @DefaultMessage("3. Close the window when done.")
+  @Key("verification.closeVerifyWindow")
+  String verification_closeVerifyWindow();
+
+  /**
+   * Translated "The sample must have at least one analysis assigned.".
+   * 
+   * @return translated "The sample must have at least one analysis assigned."
+   */
+  @DefaultMessage("The sample must have at least one analysis assigned.")
+  @Key("verification.mustHaveAnalysesToVerify")
+  String verification_mustHaveAnalysesToVerify();
+
+  /**
+   * Translated "2. Repeat the above process for every sample record.".
+   * 
+   * @return translated "2. Repeat the above process for every sample record."
+   */
+  @DefaultMessage("2. Repeat the above process for every sample record.")
+  @Key("verification.repeatVerifyProcess")
+  String verification_repeatVerifyProcess();
+
+  /**
+   * Translated "1. Scan in the barcode for the sample accession number to be verified.".
+   * 
+   * @return translated "1. Scan in the barcode for the sample accession number to be verified."
+   */
+  @DefaultMessage("1. Scan in the barcode for the sample accession number to be verified.")
+  @Key("verification.scanSampleAccessionBarcode")
+  String verification_scanSampleAccessionBarcode();
+
+  /**
+   * Translated "Verify Sample Data Entry".
+   * 
+   * @return translated "Verify Sample Data Entry"
+   */
+  @DefaultMessage("Verify Sample Data Entry")
+  @Key("verification.verification")
+  String verification_verification();
+
+  /**
+   * Translated "The status of the sample record must be \"Not Verified\"".
+   * 
+   * @return translated "The status of the sample record must be \"Not Verified\""
+   */
+  @DefaultMessage("The status of the sample record must be \"Not Verified\"")
+  @Key("verification.wrongStatusForVerifying")
+  String verification_wrongStatusForVerifying();
 
   /**
    * Translated "Verification Report".
