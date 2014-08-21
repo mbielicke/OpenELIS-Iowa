@@ -14029,6 +14029,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_inactiveTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "{0} is an invalid entry, please try again".
+   * 
+   * @return translated "{0} is an invalid entry, please try again"
+   */
+  @DefaultMessage("{0} is an invalid entry, please try again")
+  @Key("sample.invalidEntryException")
+  String sample_invalidEntryException(String arg0);
+
+  /**
    * Translated "Items/Analyses".
    * 
    * @return translated "Items/Analyses"

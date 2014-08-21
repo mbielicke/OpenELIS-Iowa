@@ -43,7 +43,7 @@
                 <w:MenuItem description="{msg.quickEntryDescription}" enabled="false" icon="{res.icon.quickEntryIcon}" ui:field="quickEntry"
                   display="{msg.quickEntry}" />
                 <w:MenuItem description="" enabled="false" icon="{res.icon.QCIcon}" ui:field="verification"
-                  display="{msg.verification}" />
+                  display="{msg.verification_verification}" />
                 <w:MenuItem description="{msg.sampleTracking_description}" enabled="false" icon="{res.icon.trackingIcon}" ui:field="tracking"
                   display="{msg.sampleTracking_tracking}" />
                 <g:HTML>

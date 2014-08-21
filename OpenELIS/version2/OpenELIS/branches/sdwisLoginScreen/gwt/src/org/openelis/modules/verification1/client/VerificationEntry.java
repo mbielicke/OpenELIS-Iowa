@@ -26,8 +26,8 @@ public class VerificationEntry implements EntryPoint, ShowScreenHandler {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                     window.setName(Messages.get().verification_verification());
-                    window.setSize("350px", "100px");
-                    //window.setContent(new VerificationScreenUI(window));
+                    window.setSize("450px", "170px");
+                    window.setContent(new VerificationScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "verification");
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
