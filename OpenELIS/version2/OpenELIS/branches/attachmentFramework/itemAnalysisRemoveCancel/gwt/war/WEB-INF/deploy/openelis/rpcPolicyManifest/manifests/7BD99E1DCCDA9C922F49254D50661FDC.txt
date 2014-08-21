@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.buildKits.client.BuildKitsServiceInt
+path: 1CB995D5F35FE1E6F4E257ADBEFB0BB1.gwt.rpc

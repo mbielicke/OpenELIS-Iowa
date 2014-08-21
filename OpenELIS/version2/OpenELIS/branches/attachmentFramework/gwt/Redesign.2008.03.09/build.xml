@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<!--
+
+Builds the a servlet warfile.
+
+-->
+
+<project name="openelis-web" default="all" basedir=".">
+
+   <!-- Initialization needed for any target -->
+
+   <target name="init">
+      <property name="name"           value="openelis-web" />
+      <property name="src.dir"        value="src" />
+      <property name="meta.dir"       value="metadata" />
+      <property name="bin.dir"        value="bin" />
+      <property name="build.dir"      value="build" />
+      <property name="build.compiler" value="modern" />
+   	  <property name="openelis.dir"   value="www/org.openelis.OpenELIS/"  />
+   	  <property name="webapp.dir"     value="/usr/pub/http/Application" />
+   </target>
+
+   <target name="all" depends="init" />
+
+   <!-- Build the various report warfiles -->
+       <exec executable="./OpenELIS-compile"/>
+	  
+
+	   <target name="openelis-web" depends="init">
+	   	  <jar jarfile="build/elissecurity.jar">
+	   	    <fileset dir="../SecurityJBoss/bin">
+	   	  	   <include name="edu/uiowa/uhl/security/domain/*.class"/>
+	   	       <include name="edu/uiowa/uhl/security/remote/*.class"/>
+	   	    </fileset>
+	   	  </jar>
+	  	<jar jarfile="build/openelis-common.jar">
+	  	    <fileset dir="../OpenELIS-Common/bin">
+	  	       <include name="org/openelis/domain/*.class"/>
+	  	       <include name="org/openelis/remote/*.class"/>
+	  	       <include name="org/openelis/local/*.class"/>
+	  	       <include name="org/openelis/util/*.class"/>
+	  	       <include name="org/openelis/meta/*.class"/>	
+	  	    </fileset>
+	    </jar>
+	   	  <delete file="${build.dir}/openelis.war" />
+	      <war destfile="${build.dir}/openelis.war"
+	           webxml="${meta.dir}/openelis-web.xml">
+	      	  <webinf dir="${meta.dir}"
+	      	          includes="stylesheet/**/*"/>
+	      	  <metainf dir="${meta.dir}"
+	      	           includes="context.xml, ehcache.xml"/>
+	      	  <fileset dir="${meta.dir}"
+	      	           excludes="stylesheet/**/**, openelis-web.xml, context.xml, ehcache.xml"/> 
+	      	  <fileset dir="${openelis.dir}"/>
+	          <classes dir="${bin.dir}"
+	      	           includes="org/openelis/**/*" />
+	          <lib dir="lib"/>
+	      	  <lib dir="../OpenELIS-Lib-tools/gwt-linux-UHL.1.5"
+	      	  	       includes="gwt-servlet.jar"/>
+	      	  <lib dir="../OpenELIS-Lib"
+	      	           includes="openelis-lib.jar"/>
+	      	   <lib dir="build"
+	      	           includes="openelis-common.jar"/>
+	      	  <lib dir="build"
+	      	           includes="elissecurity.jar"/>
+	      </war>
+	   </target>
+
+   <!-- ***************************************************************** -->
+   <!-- THE DEPLOY THE SERVLET WARFILES                                   -->
+   <!-- ***************************************************************** -->
+
+   <!-- Build the various report warfiles -->
+
+	   <target name="deploy-openelis" depends="openelis-web">
+	       <copy file="${build.dir}/openelis.war" todir="${webapp.dir}" />
+	   </target>
+
+   <!-- Removes all generated files and directories -->
+
+   <target name="clean" depends="init">
+       <delete includeemptydirs="true">
+           <fileset dir="${build.dir}" includes="**/*" />
+       </delete>
+   </target>
+
+</project>

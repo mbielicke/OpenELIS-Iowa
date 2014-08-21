@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.sample.client.SampleServiceInt
+path: 74BDD510EA4FBA1147EE963B81E70017.gwt.rpc

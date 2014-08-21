@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapServiceInt
+path: 64E82078C9DA7E321F2A2C8D1C674519.gwt.rpc

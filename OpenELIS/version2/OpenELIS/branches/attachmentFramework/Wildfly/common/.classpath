@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/local/java/wildfly-8.0.0.Final/bin/client/jboss-client.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/OpenELIS-UI/lib/gwt-i18n-server-0.22.jar"/>
+	<classpathentry kind="lib" path="/OpenELIS-UI/lib/gwt-i18n-server-0.17.jar"/>
+	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

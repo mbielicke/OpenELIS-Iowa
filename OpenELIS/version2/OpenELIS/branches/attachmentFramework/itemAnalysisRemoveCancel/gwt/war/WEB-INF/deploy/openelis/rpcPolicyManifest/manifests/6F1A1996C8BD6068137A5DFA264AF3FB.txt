@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.client.SampleInHouseReportServiceInt
+path: BE31CC0F5103C5857B75BB8DE3F27910.gwt.rpc

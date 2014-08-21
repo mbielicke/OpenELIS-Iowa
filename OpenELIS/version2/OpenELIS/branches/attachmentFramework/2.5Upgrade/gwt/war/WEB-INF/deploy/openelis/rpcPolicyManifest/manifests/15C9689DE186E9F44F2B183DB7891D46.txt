@@ -1,0 +1,2 @@
+serviceClass: org.openelis.cache.SectionCacheServiceInt
+path: 258D5CD6615CD63ACC203F24236E4F2E.gwt.rpc

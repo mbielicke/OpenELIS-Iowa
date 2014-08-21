@@ -1,0 +1,396 @@
+Module location: file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/Common.gwt.xml
+Public resources found in...
+Translatable source found in...
+Validating newly compiled units
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DataBaseUtil.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 60: No source code is available for type java.util.Date; did you forget to inherit a required module?
+      [ERROR] Line 136: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 237: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 237: No source code is available for type java.util.List<E>; did you forget to inherit a required module?
+      [ERROR] Line 239: No source code is available for type java.util.Iterator<E>; did you forget to inherit a required module?
+      [ERROR] Line 245: No source code is available for type java.lang.Math; did you forget to inherit a required module?
+      [ERROR] Line 267: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DatabaseException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Datetime.java'
+      [ERROR] Line 37: No source code is available for type java.lang.Comparable<T>; did you forget to inherit a required module?
+      [ERROR] Line 46: No source code is available for type java.util.Date; did you forget to inherit a required module?
+      [ERROR] Line 139: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 221: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 278: No source code is available for type java.lang.IllegalArgumentException; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DeleteException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/EntityLockedException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FieldErrorException.java'
+      [ERROR] Line 33: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FieldErrorWarning.java'
+      [ERROR] Line 31: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FormErrorException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FormErrorWarning.java'
+      [ERROR] Line 35: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FtpRPC.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/GridFieldErrorException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/InconsistencyException.java'
+      [ERROR] Line 33: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 41: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/LastPageException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/LocalizedException.java'
+      [ERROR] Line 30: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 30: No source code is available for type java.lang.Cloneable; did you forget to inherit a required module?
+      [ERROR] Line 34: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 61: No source code is available for type org.openelis.gwt.screen.Screen; did you forget to inherit a required module?
+      [ERROR] Line 70: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Meta.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/MetaMap.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ModulePermission.java'
+      [ERROR] Line 37: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/NotFoundException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/PermissionException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/QueryException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/RPC.java'
+      [ERROR] Line 34: No source code is available for type java.io.Serializable; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ReportProgress.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ReportStatus.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SectionPermission.java'
+      [ERROR] Line 38: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SystemUserPermission.java'
+      [ERROR] Line 42: No source code is available for type java.util.HashMap<K,V>; did you forget to inherit a required module?
+      [ERROR] Line 42: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 53: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SystemUserVO.java'
+      [ERROR] Line 38: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/TableFieldErrorException.java'
+      [ERROR] Line 34: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 34: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 35: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/TableFieldErrorWarning.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Util.java'
+      [ERROR] Line 43: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 49: No source code is available for type java.lang.NumberFormatException; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type com.google.gwt.event.dom.client.FocusHandler; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type com.google.gwt.event.dom.client.BlurHandler; did you forget to inherit a required module?
+      [ERROR] Line 68: No source code is available for type com.google.gwt.event.dom.client.FocusEvent; did you forget to inherit a required module?
+      [ERROR] Line 69: No source code is available for type org.openelis.gwt.widget.ScreenWidgetInt; did you forget to inherit a required module?
+      [ERROR] Line 81: No source code is available for type com.google.gwt.event.dom.client.BlurEvent; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ValidationErrorsList.java'
+      [ERROR] Line 30: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 33: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/data/Query.java'
+      [ERROR] Line 40: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/data/QueryData.java'
+      [ERROR] Line 44: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenService.java'
+      [ERROR] Line 51: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 52: No source code is available for type com.google.gwt.core.client.GWT; did you forget to inherit a required module?
+      [ERROR] Line 53: No source code is available for type com.google.gwt.user.client.rpc.ServiceDefTarget; did you forget to inherit a required module?
+      [ERROR] Line 72: No source code is available for type com.google.gwt.user.client.rpc.SyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 74: No source code is available for type java.lang.Throwable; did you forget to inherit a required module?
+      [ERROR] Line 84: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 94: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 121: No source code is available for type com.google.gwt.user.client.rpc.AsyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 142: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 160: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 302: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 319: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenServiceInt.java'
+      [ERROR] Line 43: No source code is available for type com.google.gwt.user.client.rpc.RemoteService; did you forget to inherit a required module?
+      [ERROR] Line 44: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 44: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 48: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 50: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 54: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 70: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 72: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenServiceIntAsync.java'
+      [ERROR] Line 41: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 41: No source code is available for type com.google.gwt.user.client.rpc.AsyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 45: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 47: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 51: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 69: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+Removing invalidated units
+[ERROR] Unable to find type 'java.lang.Object'
+   [ERROR] Hint: Check that your module inherits 'com.google.gwt.core.Core' either directly or indirectly (most often by inheriting module 'com.google.gwt.user.User')
+Module location: file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/Common.gwt.xml
+Public resources found in...
+Translatable source found in...
+Validating newly compiled units
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DataBaseUtil.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 60: No source code is available for type java.util.Date; did you forget to inherit a required module?
+      [ERROR] Line 136: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 237: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 237: No source code is available for type java.util.List<E>; did you forget to inherit a required module?
+      [ERROR] Line 239: No source code is available for type java.util.Iterator<E>; did you forget to inherit a required module?
+      [ERROR] Line 245: No source code is available for type java.lang.Math; did you forget to inherit a required module?
+      [ERROR] Line 267: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DatabaseException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Datetime.java'
+      [ERROR] Line 37: No source code is available for type java.lang.Comparable<T>; did you forget to inherit a required module?
+      [ERROR] Line 46: No source code is available for type java.util.Date; did you forget to inherit a required module?
+      [ERROR] Line 139: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 221: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 278: No source code is available for type java.lang.IllegalArgumentException; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DeleteException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/EntityLockedException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FieldErrorException.java'
+      [ERROR] Line 33: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FieldErrorWarning.java'
+      [ERROR] Line 31: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FormErrorException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FormErrorWarning.java'
+      [ERROR] Line 35: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FtpRPC.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/GridFieldErrorException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/InconsistencyException.java'
+      [ERROR] Line 33: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 41: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/LastPageException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/LocalizedException.java'
+      [ERROR] Line 30: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 30: No source code is available for type java.lang.Cloneable; did you forget to inherit a required module?
+      [ERROR] Line 34: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 61: No source code is available for type org.openelis.gwt.screen.Screen; did you forget to inherit a required module?
+      [ERROR] Line 70: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Meta.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/MetaMap.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ModulePermission.java'
+      [ERROR] Line 37: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/NotFoundException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/PermissionException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/QueryException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/RPC.java'
+      [ERROR] Line 34: No source code is available for type java.io.Serializable; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ReportProgress.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ReportStatus.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SectionPermission.java'
+      [ERROR] Line 38: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SystemUserPermission.java'
+      [ERROR] Line 42: No source code is available for type java.util.HashMap<K,V>; did you forget to inherit a required module?
+      [ERROR] Line 42: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 53: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SystemUserVO.java'
+      [ERROR] Line 38: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/TableFieldErrorException.java'
+      [ERROR] Line 34: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 34: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 35: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/TableFieldErrorWarning.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Util.java'
+      [ERROR] Line 43: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 49: No source code is available for type java.lang.NumberFormatException; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type com.google.gwt.event.dom.client.FocusHandler; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type com.google.gwt.event.dom.client.BlurHandler; did you forget to inherit a required module?
+      [ERROR] Line 68: No source code is available for type com.google.gwt.event.dom.client.FocusEvent; did you forget to inherit a required module?
+      [ERROR] Line 69: No source code is available for type org.openelis.gwt.widget.ScreenWidgetInt; did you forget to inherit a required module?
+      [ERROR] Line 81: No source code is available for type com.google.gwt.event.dom.client.BlurEvent; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ValidationErrorsList.java'
+      [ERROR] Line 30: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 33: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/data/Query.java'
+      [ERROR] Line 40: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/data/QueryData.java'
+      [ERROR] Line 44: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenService.java'
+      [ERROR] Line 51: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 52: No source code is available for type com.google.gwt.core.client.GWT; did you forget to inherit a required module?
+      [ERROR] Line 53: No source code is available for type com.google.gwt.user.client.rpc.ServiceDefTarget; did you forget to inherit a required module?
+      [ERROR] Line 72: No source code is available for type com.google.gwt.user.client.rpc.SyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 74: No source code is available for type java.lang.Throwable; did you forget to inherit a required module?
+      [ERROR] Line 84: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 94: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 121: No source code is available for type com.google.gwt.user.client.rpc.AsyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 142: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 160: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 302: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 319: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenServiceInt.java'
+      [ERROR] Line 43: No source code is available for type com.google.gwt.user.client.rpc.RemoteService; did you forget to inherit a required module?
+      [ERROR] Line 44: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 44: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 48: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 50: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 54: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 70: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 72: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenServiceIntAsync.java'
+      [ERROR] Line 41: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 41: No source code is available for type com.google.gwt.user.client.rpc.AsyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 45: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 47: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 51: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 69: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+Removing invalidated units
+[ERROR] Unable to find type 'java.lang.Object'
+   [ERROR] Hint: Check that your module inherits 'com.google.gwt.core.Core' either directly or indirectly (most often by inheriting module 'com.google.gwt.user.User')
+Module location: file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/Common.gwt.xml
+Public resources found in...
+Translatable source found in...
+Validating newly compiled units
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DataBaseUtil.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 60: No source code is available for type java.util.Date; did you forget to inherit a required module?
+      [ERROR] Line 136: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 237: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 237: No source code is available for type java.util.List<E>; did you forget to inherit a required module?
+      [ERROR] Line 239: No source code is available for type java.util.Iterator<E>; did you forget to inherit a required module?
+      [ERROR] Line 245: No source code is available for type java.lang.Math; did you forget to inherit a required module?
+      [ERROR] Line 267: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DatabaseException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Datetime.java'
+      [ERROR] Line 37: No source code is available for type java.lang.Comparable<T>; did you forget to inherit a required module?
+      [ERROR] Line 46: No source code is available for type java.util.Date; did you forget to inherit a required module?
+      [ERROR] Line 139: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 221: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 278: No source code is available for type java.lang.IllegalArgumentException; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/DeleteException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/EntityLockedException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FieldErrorException.java'
+      [ERROR] Line 33: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FieldErrorWarning.java'
+      [ERROR] Line 31: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FormErrorException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FormErrorWarning.java'
+      [ERROR] Line 35: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/FtpRPC.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/GridFieldErrorException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/InconsistencyException.java'
+      [ERROR] Line 33: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 41: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/LastPageException.java'
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/LocalizedException.java'
+      [ERROR] Line 30: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 30: No source code is available for type java.lang.Cloneable; did you forget to inherit a required module?
+      [ERROR] Line 34: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 61: No source code is available for type org.openelis.gwt.screen.Screen; did you forget to inherit a required module?
+      [ERROR] Line 70: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Meta.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/MetaMap.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ModulePermission.java'
+      [ERROR] Line 37: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/NotFoundException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/PermissionException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/QueryException.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/RPC.java'
+      [ERROR] Line 34: No source code is available for type java.io.Serializable; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ReportProgress.java'
+      [ERROR] Line 30: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ReportStatus.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SectionPermission.java'
+      [ERROR] Line 38: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SystemUserPermission.java'
+      [ERROR] Line 42: No source code is available for type java.util.HashMap<K,V>; did you forget to inherit a required module?
+      [ERROR] Line 42: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 53: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/SystemUserVO.java'
+      [ERROR] Line 38: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 39: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/TableFieldErrorException.java'
+      [ERROR] Line 34: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 34: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 35: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/TableFieldErrorWarning.java'
+      [ERROR] Line 36: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/Util.java'
+      [ERROR] Line 43: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.Object; did you forget to inherit a required module?
+      [ERROR] Line 49: No source code is available for type java.lang.NumberFormatException; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type com.google.gwt.event.dom.client.FocusHandler; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type com.google.gwt.event.dom.client.BlurHandler; did you forget to inherit a required module?
+      [ERROR] Line 68: No source code is available for type com.google.gwt.event.dom.client.FocusEvent; did you forget to inherit a required module?
+      [ERROR] Line 69: No source code is available for type org.openelis.gwt.widget.ScreenWidgetInt; did you forget to inherit a required module?
+      [ERROR] Line 81: No source code is available for type com.google.gwt.event.dom.client.BlurEvent; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/ValidationErrorsList.java'
+      [ERROR] Line 30: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 33: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+      [ERROR] Line 43: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/data/Query.java'
+      [ERROR] Line 40: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/common/data/QueryData.java'
+      [ERROR] Line 44: No source code is available for type java.lang.String; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenService.java'
+      [ERROR] Line 51: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 52: No source code is available for type com.google.gwt.core.client.GWT; did you forget to inherit a required module?
+      [ERROR] Line 53: No source code is available for type com.google.gwt.user.client.rpc.ServiceDefTarget; did you forget to inherit a required module?
+      [ERROR] Line 72: No source code is available for type com.google.gwt.user.client.rpc.SyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 74: No source code is available for type java.lang.Throwable; did you forget to inherit a required module?
+      [ERROR] Line 84: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 94: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 121: No source code is available for type com.google.gwt.user.client.rpc.AsyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 142: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 160: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 302: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 319: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenServiceInt.java'
+      [ERROR] Line 43: No source code is available for type com.google.gwt.user.client.rpc.RemoteService; did you forget to inherit a required module?
+      [ERROR] Line 44: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 44: No source code is available for type java.lang.Exception; did you forget to inherit a required module?
+      [ERROR] Line 48: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 50: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 54: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 70: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 72: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+   [ERROR] Errors in 'file:/home/tschmidt/workspace/OpenELIS-Lib/src/org/openelis/gwt/services/ScreenServiceIntAsync.java'
+      [ERROR] Line 41: No source code is available for type java.lang.String; did you forget to inherit a required module?
+      [ERROR] Line 41: No source code is available for type com.google.gwt.user.client.rpc.AsyncCallback<T>; did you forget to inherit a required module?
+      [ERROR] Line 45: No source code is available for type java.lang.Integer; did you forget to inherit a required module?
+      [ERROR] Line 47: No source code is available for type java.lang.Boolean; did you forget to inherit a required module?
+      [ERROR] Line 51: No source code is available for type java.lang.Double; did you forget to inherit a required module?
+      [ERROR] Line 67: No source code is available for type java.lang.Long; did you forget to inherit a required module?
+      [ERROR] Line 69: No source code is available for type java.util.ArrayList<E>; did you forget to inherit a required module?
+Removing invalidated units
+[ERROR] Unable to find type 'java.lang.Object'
+   [ERROR] Hint: Check that your module inherits 'com.google.gwt.core.Core' either directly or indirectly (most often by inheriting module 'com.google.gwt.user.User')

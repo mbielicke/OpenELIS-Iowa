@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.preferences.client.PreferencesServiceInt
+path: A5772E6CC4DE413DA1D8E5121C110761.gwt.rpc

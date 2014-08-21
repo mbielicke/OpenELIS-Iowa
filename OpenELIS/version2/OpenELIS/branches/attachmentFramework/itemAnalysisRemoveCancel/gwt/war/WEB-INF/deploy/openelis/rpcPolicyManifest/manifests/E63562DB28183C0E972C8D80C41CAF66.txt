@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.client.TurnaroundReportServiceInt
+path: 2C37911E5E76F08BE458FF902C414E9F.gwt.rpc

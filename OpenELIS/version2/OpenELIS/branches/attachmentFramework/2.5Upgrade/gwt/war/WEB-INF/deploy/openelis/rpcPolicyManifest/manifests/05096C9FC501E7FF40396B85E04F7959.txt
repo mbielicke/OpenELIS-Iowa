@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.inventoryReceipt.client.InventoryLocationServiceInt
+path: B84571E6E04934B326343370D0694D41.gwt.rpc

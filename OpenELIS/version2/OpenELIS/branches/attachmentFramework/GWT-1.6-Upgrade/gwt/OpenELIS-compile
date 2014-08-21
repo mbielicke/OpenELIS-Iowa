@@ -1,0 +1,4 @@
+#!/bin/sh
+APPDIR=`dirname $0`;
+TOOLS='../OpenELIS-Lib-tools/gwt-linux-UHL.1.5';
+java -Xmx512m -cp "$APPDIR/src:$APPDIR/bin:$TOOLS/gwt-user.jar:$TOOLS/gwt-dev-linux.jar:../OpenELIS-Lib/openelis-lib.jar:../OpenELIS-Common/src/" com.google.gwt.dev.GWTCompiler -style PRETTY -out "$APPDIR/www" "$@" org.openelis.OpenELIS;

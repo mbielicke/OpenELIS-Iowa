@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="address" language="groovy" pageWidth="355" pageHeight="572" columnWidth="355" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<parameter name="ADDRESS_ID" class="java.lang.Integer"/>
+	<parameter name="PHONE_TYPE" class="java.lang.String">
+		<defaultValueExpression><![CDATA["N"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="WITH_FAX" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     multiple_unit, street_address, city, state, zip_code, work_phone, home_phone, fax_phone
+FROM
+     address
+WHERE
+     id = $P{ADDRESS_ID}]]>
+	</queryString>
+	<field name="multiple_unit" class="java.lang.String"/>
+	<field name="street_address" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="state" class="java.lang.String"/>
+	<field name="zip_code" class="java.lang.String"/>
+	<field name="work_phone" class="java.lang.String"/>
+	<field name="home_phone" class="java.lang.String"/>
+	<field name="fax_phone" class="java.lang.String"/>
+	<detail>
+		<band height="60">
+			<staticText>
+				<reportElement key="multipleUnit.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Apt/Suite #:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="multipleUnit" positionType="Float" x="105" y="0" width="250" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{multiple_unit}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="streetAddress.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Address:]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="streetAddress" positionType="Float" x="105" y="12" width="250" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="cityStateZip.label" x="0" y="24" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[City, State, Zip:]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="cityStateZip" positionType="Float" x="105" y="24" width="250" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{city},", ",JasperUtil.concatWithSeparator($F{state}, " ", $F{zip_code}))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="phone.label" x="0" y="36" width="100" height="12" isRemoveLineWhenBlank="true" forecolor="#404040">
+					<printWhenExpression><![CDATA[!"N".equals($P{PHONE_TYPE})]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Phone:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="homePhone" positionType="Float" x="105" y="36" width="130" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["H".equals($P{PHONE_TYPE})]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{home_phone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement key="workPhone" positionType="Float" x="105" y="36" width="130" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["W".equals($P{PHONE_TYPE})]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{work_phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="faxPhone.label" x="0" y="48" width="100" height="12" forecolor="#404040">
+					<printWhenExpression><![CDATA[$P{WITH_FAX}]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fax:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="faxPhone" positionType="Float" x="105" y="48" width="130" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{WITH_FAX}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fax_phone}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

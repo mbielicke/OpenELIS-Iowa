@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleOrganizationOther" language="groovy" pageWidth="260" pageHeight="572" orientation="Landscape" columnWidth="260" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+     o.name o_name,
+     oa.multiple_unit oa_multiple_unit,
+     oa.street_address oa_street_address,
+     oa.city oa_city,
+     oa.zip_code oa_zip_code,
+     oa.state oa_state
+FROM
+     sample_organization so, organization o, address oa, dictionary d
+WHERE
+     so.sample_id = $P{SAMPLE_ID} AND so.organization_id = o.id AND oa.id = o.address_id AND so.type_id = d.id
+     AND d.id NOT IN (select d2.id from Dictionary d2 WHERE d2.system_name = 'org_report_to')]]>
+	</queryString>
+	<field name="o_name" class="java.lang.String"/>
+	<field name="oa_multiple_unit" class="java.lang.String"/>
+	<field name="oa_street_address" class="java.lang.String"/>
+	<field name="oa_city" class="java.lang.String"/>
+	<field name="oa_zip_code" class="java.lang.String"/>
+	<field name="oa_state" class="java.lang.String"/>
+	<pageHeader>
+		<band height="12">
+			<staticText>
+				<reportElement x="0" y="0" width="127" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<text><![CDATA[Additional Facility Information]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="48" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="12" width="260" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{oa_multiple_unit}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="36" width="260" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator(org.openelis.report.util.Concat.concatWithSeparator($F{oa_city}," ",$F{oa_state}), " ", $F{oa_zip_code})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="24" width="260" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{oa_street_address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="260" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.organization.client.OrganizationServiceInt
+path: D7D0538C33C615B38F114D3A36B050D6.gwt.rpc

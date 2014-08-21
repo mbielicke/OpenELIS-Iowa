@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.storageunit.client.StorageUnitServiceInt
+path: A190B18D497804FC1B56DD25B880F682.gwt.rpc

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.storageLocation.client.StorageLocationServiceInt
+path: CA201064AF296FB6DCCB9B2F5A45D91D.gwt.rpc

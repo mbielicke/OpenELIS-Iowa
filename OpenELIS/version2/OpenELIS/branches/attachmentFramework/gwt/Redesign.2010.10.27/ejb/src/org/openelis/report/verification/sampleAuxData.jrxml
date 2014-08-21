@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleAuxData" language="groovy" pageWidth="752" pageHeight="572" orientation="Landscape" columnWidth="752" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="SAMPLE_REFERENCE_TABLE_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[8]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     analyte.name analyte_name,
+     aux_data.value aux_data_value
+FROM
+     aux_data aux_data, aux_field aux_field,  analyte analyte
+WHERE
+     aux_data.reference_id  = $P{SAMPLE_ID} AND aux_data.reference_table_id = $P{SAMPLE_REFERENCE_TABLE_ID} AND
+     aux_data.aux_field_id = aux_field.id AND aux_field.analyte_id = analyte.id]]>
+	</queryString>
+	<field name="analyte_name" class="java.lang.String"/>
+	<field name="aux_data_value" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="150" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="165" y="0" width="171" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{aux_data_value}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="155" y="0" width="1" height="12"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

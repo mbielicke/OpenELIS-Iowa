@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.qcChart.client.QcChartReportServiceInt
+path: AD08B1FE26F5F5F81CF8585F3F69FCB4.gwt.rpc

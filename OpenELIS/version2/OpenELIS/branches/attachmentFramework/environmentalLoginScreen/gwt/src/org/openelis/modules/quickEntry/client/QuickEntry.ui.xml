@@ -1,0 +1,161 @@
+<!--
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+-->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
+
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="30px">
+      <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
+        <g:HorizontalPanel>
+          <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
+                    text="{msg.commit}"/>
+        </g:HorizontalPanel>
+      </g:AbsolutePanel>
+    </g:layer>
+    <g:layer top="30px" height="125px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.entry}:"/>
+            </td>
+            <td>
+              <w:TextBox ui:field="entry" width="158px" case="UPPER" field="String"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.accessionNum}:"/>
+            </td>
+            <td>
+              <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.tubeNum}:"/>
+            </td>
+            <td colspan="3">
+              <w:TextBox ui:field="tubeNumber" width="75px" case="UPPER" field="String"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.received}:"/>
+            </td>
+            <td>
+              <c:Calendar ui:field="receivedDate" width="134px" begin="0" end="4"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_receivedBy}:"/>
+            </td>
+            <td colspan="3">
+              <w:AutoComplete ui:field="receivedBy" width="165px" dropHeight="201px" case="LOWER">
+                <w:popup>
+                  <t:Table>
+                    <t:Column>
+                      <t:LabelCell/>
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.testMethodSampleType}:"/>
+            </td>
+            <td colspan="5">
+              <w:Dropdown ui:field="testMethodSampleType" width="437px" field="String"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.testSection}:"/>
+            </td>
+            <td colspan="5">
+              <w:Dropdown ui:field="sectionId" width="437px" field="Integer"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.currentDateTime}:"/>
+            </td>
+            <td>
+              <w:CheckBox ui:field="currentDateTime" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.printLabels}:"/>
+            </td>
+            <td>
+              <w:CheckBox ui:field="printLabels" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.printer}:"/>
+            </td>
+            <td>
+              <w:Dropdown ui:field="printer" width="139px" field="Integer"/>
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+    <g:layer top="155px" bottom="25px" left="5px" width="99%">
+      <t:Table ui:field="quickEntryTable" header="true" styleName="{res.table.ScreenTableWithSides}">
+        <t:Column width="90" label="{msg.accessionNum}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="130" label="{msg.received}">
+          <t:CalendarCell>
+            <c:Calendar width="110px" begin="0" end="4"/>
+          </t:CalendarCell>
+        </t:Column>
+        <t:Column width="160" label="{msg.test}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="150" label="{msg.method}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="150" label="{msg.sampleType}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="80" label="{msg.tubeNum}">
+          <t:LabelCell/>
+        </t:Column>
+      </t:Table>
+    </g:layer>
+    <g:layer bottom="0px" height="25px" left="5px" width="99%">
+      <g:HorizontalPanel>
+        <w:Button ui:field="removeRowButton" leftIcon="{res.icon.removeRowIcon}"
+                  text="{msg.removeRow}"/>
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>

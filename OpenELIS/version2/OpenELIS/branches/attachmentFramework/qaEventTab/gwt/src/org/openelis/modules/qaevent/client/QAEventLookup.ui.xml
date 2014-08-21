@@ -1,0 +1,44 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="25px">
+      <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+        <t:Column width="120" label="{msg.gen_name}">
+          <t:LabelCell />
+        </t:Column>
+        <t:Column width="180" label="{msg.gen_description}">
+          <t:LabelCell />
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_type}">
+          <t:DropdownCell>
+            <w:Dropdown width="85px" ui:field="type" field="Integer" />
+          </t:DropdownCell>
+        </t:Column>
+        <t:Column width = "70" label="{msg.gen_billable}">
+          <t:CheckBoxCell />
+        </t:Column>
+      </t:Table>
+    </g:layer>
+    <g:layer bottom="0px" height="25px" right="35%" left="45%">
+      <g:HorizontalPanel horizontalAlignment="CENTER">
+        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
+        <w:Button ui:field="cancelButton" text="{msg.gen_cancel}" />
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
