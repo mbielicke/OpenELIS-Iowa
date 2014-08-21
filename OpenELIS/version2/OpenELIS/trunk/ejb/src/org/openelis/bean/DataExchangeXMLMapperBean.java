@@ -715,6 +715,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "sample_type_id", sdwis.getSampleTypeId());
         setAttribute(elm, "sample_category_id", sdwis.getSampleCategoryId());
         setText(doc, elm, "sample_point_id", sdwis.getSamplePointId());
+        setAttribute(elm, "priority", sdwis.getPriority());
         setText(doc, elm, "location", sdwis.getLocation());
         setText(doc, elm, "collector", sdwis.getCollector());
 
