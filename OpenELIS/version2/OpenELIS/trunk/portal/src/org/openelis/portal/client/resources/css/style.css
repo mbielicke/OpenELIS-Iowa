@@ -1,7 +1,4 @@
-@sprite .AppBackground {
-	gwt-image: 'AppBackground';
-	opacity: 0.8;
-}
+
 
 .WhiteContentPanel {
 	background: white;
@@ -41,21 +38,6 @@
 	cursor: pointer;
 }
 
-@sprite .favorite .LeftMenuPanePanelClosed {
-	height: 100%;
-	width: 5px;
-	gwt-image: 'topMenuBG';
-}
-
-@sprite .favorite .LeftMenuPanePanelOpen {
-	height: 100%;
-	gwt-image: 'topMenuBG';
-	border-right: 1px solid black;
-}
-
-.favoritesMenuContainer {
-	
-}
 
 .Title {
     -moz-user-select: none;
