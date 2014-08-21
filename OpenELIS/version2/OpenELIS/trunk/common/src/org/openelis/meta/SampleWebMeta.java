@@ -102,6 +102,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     SDWIS_SAMPLE_TYPE_ID = "_sampleSDWIS.sampleTypeId",
                     SDWIS_SAMPLE_CATEGORY_ID = "_sampleSDWIS.sampleCategoryId",
                     SDWIS_SAMPLE_POINT_ID = "_sampleSDWIS.samplePointId",
+                    SDWIS_PRIORITY = "_sampleSDWIS.priority",
                     SDWIS_LOCATION = "_sampleSDWIS.location",
                     SDWIS_COLLECTOR = "_sampleSDWIS.collector",
 
@@ -255,7 +256,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   SDWIS_FACILITY_ID,
                                                   SDWIS_SAMPLE_TYPE_ID,
                                                   SDWIS_SAMPLE_CATEGORY_ID,
-                                                  SDWIS_SAMPLE_POINT_ID, 
+                                                  SDWIS_SAMPLE_POINT_ID,
+                                                  SDWIS_PRIORITY,
                                                   SDWIS_LOCATION,
                                                   SDWIS_COLLECTOR,
                                                   PWS_NUMBER0,
@@ -586,6 +588,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getSDWISSamplePointId() {
         return SDWIS_SAMPLE_POINT_ID;
+    }
+    
+    public static String getSDWISPriority() {
+        return SDWIS_PRIORITY;
     }
 
     public static String getSDWISLocation() {

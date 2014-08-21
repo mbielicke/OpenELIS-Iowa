@@ -39,11 +39,11 @@ public class SampleSDWISViewDO extends SampleSDWISDO {
     
     public SampleSDWISViewDO(Integer id, Integer sampleId, Integer pwsId, Integer stateLabId,
                              String facilityId, Integer sampleTypeId, Integer sampleCategoryId,
-                             String samplePointId, String location, String collector,
+                             String samplePointId, Integer priority, String location, String collector,
                              String pwsName, String pwsNumber0) {
         
         super(id, sampleId, pwsId, stateLabId, facilityId, sampleTypeId, sampleCategoryId, 
-              samplePointId, location, collector);
+              samplePointId, priority, location, collector);
         
         setPwsName(pwsName);
         setPwsNumber0(pwsNumber0);

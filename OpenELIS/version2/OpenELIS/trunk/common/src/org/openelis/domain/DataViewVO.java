@@ -80,7 +80,7 @@ public class DataViewVO implements Serializable {
                                            sampleSDWISPwsId, sampleSDWISPwsName,
                                            sampleSDWISStateLabId, sampleSDWISFacilityId,
                                            sampleSDWISSampleTypeId, sampleSDWISSampleCategoryId,
-                                           sampleSDWISSamplePointId, sampleSDWISLocation,
+                                           sampleSDWISSamplePointId, sampleSDWISLocation, sampleSDWISPriority,
                                            sampleSDWISCollector, sampleEnvironmentalCollectorHeader,
                                            sampleEnvironmentalLocationHeader;
     protected Integer                      analysisStatusId, accessionNumberFrom,
@@ -677,6 +677,14 @@ public class DataViewVO implements Serializable {
 
     public void setSampleSDWISLocation(String sampleSDWISLocation) {
         this.sampleSDWISLocation = sampleSDWISLocation;
+    }
+
+    public String getSampleSDWISPriority() {
+        return sampleSDWISPriority;
+    }
+
+    public void setSampleSDWISPriority(String sampleSDWISPriority) {
+        this.sampleSDWISPriority = DataBaseUtil.trim(sampleSDWISPriority);
     }
 
     public String getSampleSDWISCollector() {
