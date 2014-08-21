@@ -752,7 +752,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                 try {
                     testMethodSampleType.setValue(val, true);
                 } catch (Exception e) {
-                    ex = new Exception(Messages.get().invalidEntryException(val));
+                    ex = new Exception(Messages.get().sample_invalidEntryException(val));
                     window.setError(ex.getMessage());
                 }
             } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {    // tube #

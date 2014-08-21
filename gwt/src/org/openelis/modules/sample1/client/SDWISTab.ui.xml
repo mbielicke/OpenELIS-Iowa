@@ -86,6 +86,12 @@
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_priority}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="sdwisPriority" field="Integer" width="24px" />
+            </td>
+            <td class="{res.style.Prompt}">
               <ui:text from="{msg.sample_collector}:" />
             </td>
             <td>
