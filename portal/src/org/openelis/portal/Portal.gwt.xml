@@ -26,6 +26,7 @@
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
+  <source path="messages"/>
   
   <set-property name="gwt.logging.logLevel" value="SEVERE"/>
   <set-property name="gwt.logging.consoleHandler" value="DISABLED"/>
