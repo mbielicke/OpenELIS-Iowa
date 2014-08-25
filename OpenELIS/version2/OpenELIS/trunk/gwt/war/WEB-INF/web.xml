@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
 
   <servlet>
     <servlet-name>FileServlet</servlet-name>
-    <servlet-class>org.openelis.gwt.server.FileServlet</servlet-class>
+    <servlet-class>org.openelis.ui.server.FileServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   
