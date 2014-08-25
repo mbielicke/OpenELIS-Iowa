@@ -12,6 +12,9 @@ public interface Resources extends UIResources {
     @Source("css/style.css")
     Style style();
     
+    @Source("css/icons.css")
+    IconCSS icons();
+    
     
 
 }
