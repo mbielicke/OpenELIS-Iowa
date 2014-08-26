@@ -31,8 +31,8 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
         // handlers.
         Event.addNativePreviewHandler(this);
         Resources.INSTANCE.style().ensureInjected();
-        Resources.INSTANCE.tabpanel().ensureInjected();
         Resources.INSTANCE.general().ensureInjected();
+        Resources.INSTANCE.icon().ensureInjected();
         try {
             RootPanel.get("main").clear();
             RootLayoutPanel.get().add((Screen)GWT.create(DesktopScreen.class));
