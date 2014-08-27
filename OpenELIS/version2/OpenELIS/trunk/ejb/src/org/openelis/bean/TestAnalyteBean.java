@@ -149,6 +149,20 @@ public class TestAnalyteBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    public ArrayList<TestAnalyteViewDO> fetchRowAnalytesByTestIds(ArrayList<Integer> testIds) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("TestAnalyte.FetchRowAnalytesByTestIds");
+        query.setParameter("ids", testIds);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public TestAnalyteDO add(TestAnalyteDO data) throws Exception {
         TestAnalyte entity;
 
