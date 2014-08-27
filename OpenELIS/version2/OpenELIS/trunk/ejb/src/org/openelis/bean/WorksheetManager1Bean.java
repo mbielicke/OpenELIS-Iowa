@@ -307,7 +307,7 @@ public class WorksheetManager1Bean {
                             data.setIsReportable(rVDO.getIsReportable());
                             resultList.remove(0);
                             if (resultList.size() == 0)
-                                rMap.remove(resultList);
+                                rMap.remove(data.getTestAnalyteId());
                         } else {
                             taVDO = taMap.get(data.getTestAnalyteId());
                             if (taVDO == null) {
@@ -446,7 +446,7 @@ public class WorksheetManager1Bean {
                         data.setIsReportable(rVDO.getIsReportable());
                         resultList.remove(0);
                         if (resultList.size() == 0)
-                            rMap.remove(resultList);
+                            rMap.remove(data.getTestAnalyteId());
                     } else {
                         taVDO = taMap.get(data.getTestAnalyteId());
                         if (taVDO == null) {
@@ -2296,7 +2296,7 @@ public class WorksheetManager1Bean {
                     wrVDO.setResultRow(resultRow);
                 wrList.remove(0);
                 if (wrList.size() == 0)
-                    wrMap.remove(wrList);
+                    wrMap.remove(rVDO.getTestAnalyteId());
             } else {
                 wrVDO = new WorksheetResultViewDO();
                 wrVDO.setId(wm.getNextUID());
