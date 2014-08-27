@@ -3,4 +3,5 @@
   <inherits name="org.openelis.portal.modules.mobile.Mobile"/>
   <inherits name="org.openelis.portal.modules.tablet.Tablet"/>
   <inherits name="org.openelis.portal.modules.example.Example"/>
+  <inherits name="org.openelis.portal.modules.finalReport.FinalReport"/>
 </module>

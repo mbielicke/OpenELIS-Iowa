@@ -1,0 +1,245 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:wb="urn:import:org.openelis.ui.widget.web"
+	xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+
+	<ui:with type="org.openelis.portal.messages.PortalMessages"
+		field="msg" />
+	<ui:with type="org.openelis.portal.client.resources.Resources"
+		field="res" />
+	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+
+	<g:DockLayoutPanel unit="PCT">
+		<g:west size="25">
+			<g:HTMLPanel>
+				<table class="{res.style.Form}">
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_anySamples}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_collectedDate}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="collectedStart" width="90px"
+								begin="0" end="2" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="collectedEnd" width="90px"
+								begin="0" end="2" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="collectedHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_collected}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_releasedDate}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="releasedStart" width="90px"
+								begin="0" end="2" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="releasedEnd" width="90px" begin="0"
+								end="2" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="releasedHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_released}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_accessionNumber}:" />
+						</td>
+						<td>
+							<w:TextBox ui:field="accessionStart" width="90px"
+								field="Integer" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<w:TextBox ui:field="accessionEnd" width="90px" field="Integer" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="accessionHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_accession}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_clientReference}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="clientReference" width="202px"
+								field="String" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="clientReferenceHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_clientReference}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_projectCode}:" />
+						</td>
+						<td colspan="3">
+							<w:AutoComplete ui:field="projectCode" width="202px"
+								case="LOWER" dropWidth="90px">
+								<w:popup>
+									<t:Table visibleRows="10" header="true">
+										<t:Column width="90" label="{msg.project_project}">
+											<t:LabelCell />
+										</t:Column>
+									</t:Table>
+								</w:popup>
+							</w:AutoComplete>
+						</td>
+						<td>
+							<w:IconContainer ui:field="projectHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_project}" />
+						</td>
+					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_environmentalOnly}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_collector}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="collector" width="202px" field="String" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="collectorHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_collector}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.pws_id}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="pwsId" width="202px" field="Integer" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="pwsHelp" styleName="{res.icon.helpImage}"
+								tip="{msg.finalReport_help_pws}" />
+						</td>
+					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_clinicalOnly}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientFirst}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientFirst" width="202px" field="String" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="patientFirstHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_patientFirst}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientLast}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientLast" width="202px" field="String" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="patientLastHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_patientLast}" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientBirth}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="patientBirthStart" width="90px"
+								begin="0" end="2" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="patientBirthEnd" width="90px"
+								begin="0" end="2" />
+						</td>
+						<td>
+							<w:IconContainer ui:field="patientBirthHelp"
+								styleName="{res.icon.helpImage}" tip="{msg.finalReport_help_patientBirth}" />
+						</td>
+					</tr>
+				</table>
+				<table class="{res.style.Form}">
+					<tr>
+						<td>
+							<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}" />
+						</td>
+						<td>
+							<w:Button ui:field="resetButton" text="{msg.finalReport_reset}" />
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+		</g:west>
+		<g:east size="74">
+			<g:HTMLPanel>
+				<table>
+					<tr>
+						<td>
+							<g:HTML HTML="{msg.finalReport_header1}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<g:HTML HTML="{msg.finalReport_header2}" />
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+		</g:east>
+	</g:DockLayoutPanel>
+</ui:UiBinder>
