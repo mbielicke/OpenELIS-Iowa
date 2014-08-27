@@ -193,11 +193,12 @@ public class WorksheetManager1Bean {
         ArrayList<Integer> ids1, ids2;
         ArrayList<ResultViewDO> resultList;
         ArrayList<WorksheetManager1> wms;
-        HashMap<Integer, ArrayList<ResultViewDO>> arMap;
+        HashMap<Integer, ArrayList<ResultViewDO>> rMap;
+        HashMap<Integer, HashMap<Integer, ArrayList<ResultViewDO>>> arMap;
         HashMap<Integer, Integer> anaIdMap;
         HashMap<Integer, TestAnalyteViewDO> taMap;
         HashMap<Integer, WorksheetManager1> map1, map2;
-        HashSet<Integer> anaIds;
+        HashSet<Integer> anaIds, testIds;
         EnumSet<WorksheetManager1.Load> el;
         ResultViewDO rVDO;
         TestAnalyteViewDO taVDO;
@@ -258,6 +259,7 @@ public class WorksheetManager1Bean {
                 map2 = new HashMap<Integer, WorksheetManager1>();
                 anaIds = new HashSet<Integer>();
                 anaIdMap = new HashMap<Integer, Integer>();
+                testIds = new HashSet<Integer>();
                 for (WorksheetAnalysisViewDO data : analysis.fetchByWorksheetIds(ids1)) {
                     wm = map1.get(data.getWorksheetId());
                     addAnalysis(wm, data);
@@ -268,34 +270,44 @@ public class WorksheetManager1Bean {
                     if (data.getAnalysisId() != null) {
                         anaIds.add(data.getAnalysisId());
                         anaIdMap.put(data.getId(), data.getAnalysisId());
+                        testIds.add(data.getTestId());
                     }
                 }
         
-                arMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
-                if (!anaIds.isEmpty()) {
-                    for (ResultViewDO data : result.fetchByAnalysisIds(new ArrayList<Integer>(anaIds))) {
-                        if ("N".equals(data.getIsColumn())) {
-                            resultList = arMap.get(data.getAnalysisId());
-                            if (resultList == null) {
-                                resultList = new ArrayList<ResultViewDO>();
-                                arMap.put(data.getAnalysisId(), resultList);
+                if (!ids2.isEmpty()) {
+                    arMap = new HashMap<Integer, HashMap<Integer, ArrayList<ResultViewDO>>>();
+                    if (!anaIds.isEmpty()) {
+                        for (ResultViewDO data : result.fetchByAnalysisIds(new ArrayList<Integer>(anaIds))) {
+                            if ("N".equals(data.getIsColumn())) {
+                                rMap = arMap.get(data.getAnalysisId());
+                                if (rMap == null) {
+                                    rMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
+                                    arMap.put(data.getAnalysisId(), rMap);
+                                }
+                                resultList = rMap.get(data.getTestAnalyteId());
+                                if (resultList == null) {
+                                    resultList = new ArrayList<ResultViewDO>();
+                                    rMap.put(data.getTestAnalyteId(), resultList);
+                                }
+                                resultList.add(data);
                             }
-                            resultList.add(data);
                         }
                     }
-                }
-                    
-                if (!ids2.isEmpty()) {
+
                     taMap = new HashMap<Integer, TestAnalyteViewDO>();
+                    for (TestAnalyteViewDO data : testAnalyte.fetchRowAnalytesByTestIds(new ArrayList<Integer>(testIds)))
+                        taMap.put(data.getId(), data);
+                    
                     for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
                         wm = map2.get(data.getWorksheetAnalysisId());
-                        resultList = arMap.get(anaIdMap.get(data.getWorksheetAnalysisId()));
-                        rVDO = null;
-                        if (data.getResultRow() < resultList.size())
-                            rVDO = resultList.get(data.getResultRow());
-
-                        if (rVDO != null) {
+                        rMap = arMap.get(anaIdMap.get(data.getWorksheetAnalysisId()));
+                        resultList = rMap.get(data.getTestAnalyteId());
+                        if (resultList != null) {
+                            rVDO = resultList.get(0);
                             data.setIsReportable(rVDO.getIsReportable());
+                            resultList.remove(0);
+                            if (resultList.size() == 0)
+                                rMap.remove(resultList);
                         } else {
                             taVDO = taMap.get(data.getTestAnalyteId());
                             if (taVDO == null) {
@@ -341,10 +353,11 @@ public class WorksheetManager1Bean {
         ArrayList<Integer> worksheetId, ids, ids2;
         ArrayList<ResultViewDO> resultList;
         EnumSet<WorksheetManager1.Load> el;
-        HashMap<Integer, ArrayList<ResultViewDO>> arMap;
+        HashMap<Integer, ArrayList<ResultViewDO>> rMap;
+        HashMap<Integer, HashMap<Integer, ArrayList<ResultViewDO>>> arMap;
         HashMap<Integer, Integer> anaIdMap;
         HashMap<Integer, TestAnalyteViewDO> taMap;
-        HashSet<Integer> anaIds;
+        HashSet<Integer> anaIds, testIds;
         ResultViewDO rVDO;
         TestAnalyteViewDO taVDO;
 
@@ -387,6 +400,7 @@ public class WorksheetManager1Bean {
             ids2 = new ArrayList<Integer>();
             anaIds = new HashSet<Integer>();
             anaIdMap = new HashMap<Integer, Integer>();
+            testIds = new HashSet<Integer>();
             setAnalyses(wm, null);
             for (WorksheetAnalysisViewDO data : analysis.fetchByWorksheetIds(worksheetId)) {
                 addAnalysis(wm, data);
@@ -394,47 +408,60 @@ public class WorksheetManager1Bean {
                 if (data.getAnalysisId() != null) {
                     anaIds.add(data.getAnalysisId());
                     anaIdMap.put(data.getId(), data.getAnalysisId());
+                    testIds.add(data.getTestId());
                 }
             }
     
-            arMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
-            if (!anaIds.isEmpty()) {
-                for (ResultViewDO data : result.fetchByAnalysisIds(new ArrayList<Integer>(anaIds))) {
-                    if ("N".equals(data.getIsColumn())) {
-                        resultList = arMap.get(data.getAnalysisId());
-                        if (resultList == null) {
-                            resultList = new ArrayList<ResultViewDO>();
-                            arMap.put(data.getAnalysisId(), resultList);
-                        }
-                        resultList.add(data);
-                    }
-                }
-            }
-
-            taMap = new HashMap<Integer, TestAnalyteViewDO>();
             setResults(wm, null);
-            for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
-                addResult(wm, data);
-                resultList = arMap.get(anaIdMap.get(data.getWorksheetAnalysisId()));
-                rVDO = null;
-                if (data.getResultRow() < resultList.size())
-                    rVDO = resultList.get(data.getResultRow());
-                
-                if (rVDO != null) {
-                    data.setIsReportable(rVDO.getIsReportable());
-                } else {
-                    taVDO = taMap.get(data.getTestAnalyteId());
-                    if (taVDO == null) {
-                        taVDO = testAnalyte.fetchById(data.getTestAnalyteId());
-                        taMap.put(taVDO.getId(), taVDO);
-                    }
-                    data.setIsReportable(taVDO.getIsReportable());
-                }
-            }
-            
             setQcResults(wm, null);
-            for (WorksheetQcResultViewDO data : wqResult.fetchByWorksheetAnalysisIds(ids2))
-                addQcResult(wm, data);
+            if (!ids2.isEmpty()) {
+                arMap = new HashMap<Integer, HashMap<Integer, ArrayList<ResultViewDO>>>();
+                if (!anaIds.isEmpty()) {
+                    for (ResultViewDO data : result.fetchByAnalysisIds(new ArrayList<Integer>(anaIds))) {
+                        if ("N".equals(data.getIsColumn())) {
+                            rMap = arMap.get(data.getAnalysisId());
+                            if (rMap == null) {
+                                rMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
+                                arMap.put(data.getAnalysisId(), rMap);
+                            }
+                            resultList = rMap.get(data.getTestAnalyteId());
+                            if (resultList == null) {
+                                resultList = new ArrayList<ResultViewDO>();
+                                rMap.put(data.getTestAnalyteId(), resultList);
+                            }
+                            resultList.add(data);
+                        }
+                    }
+                }
+    
+                taMap = new HashMap<Integer, TestAnalyteViewDO>();
+                for (TestAnalyteViewDO data : testAnalyte.fetchRowAnalytesByTestIds(new ArrayList<Integer>(testIds)))
+                    taMap.put(data.getId(), data);
+                
+                for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
+                    rMap = arMap.get(anaIdMap.get(data.getWorksheetAnalysisId()));
+                    resultList = rMap.get(data.getTestAnalyteId());
+                    if (resultList != null) {
+                        rVDO = resultList.get(0);
+                        data.setIsReportable(rVDO.getIsReportable());
+                        resultList.remove(0);
+                        if (resultList.size() == 0)
+                            rMap.remove(resultList);
+                    } else {
+                        taVDO = taMap.get(data.getTestAnalyteId());
+                        if (taVDO == null) {
+                            taVDO = testAnalyte.fetchById(data.getTestAnalyteId());
+                            taMap.put(taVDO.getId(), taVDO);
+                        }
+                        data.setIsReportable(taVDO.getIsReportable());
+                    }
+
+                    addResult(wm, data);
+                }
+                
+                for (WorksheetQcResultViewDO data : wqResult.fetchByWorksheetAnalysisIds(ids2))
+                    addQcResult(wm, data);
+            }
         }
 
         return wm;
@@ -1561,22 +1588,35 @@ public class WorksheetManager1Bean {
     
     public WorksheetManager1 initializeResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses) throws Exception {
         int i;
-        ArrayList<Integer> excludedIds;
+        ArrayList<Integer> excludedIds, testAnalyteIds;
         ArrayList<ArrayList<ResultViewDO>> resultDOs;
         ArrayList<QcAnalyteViewDO> qcAnalytes;
         ArrayList<ResultViewDO> resultRow;
-        HashMap<Integer, ArrayList<Integer>> excludedMap;
+        HashMap<Integer, ArrayList<Integer>> excludedMap, testAnalyteMap;
         HashMap<Integer, ArrayList<QcAnalyteViewDO>> qcAnalyteMap;
         QcLotViewDO qclVDO;
         ResultViewDO resultDO;
         WorksheetQcResultViewDO wqrVDO;
         WorksheetResultViewDO wrVDO;
 
+        testAnalyteMap = new HashMap<Integer, ArrayList<Integer>>();
         excludedMap = new HashMap<Integer, ArrayList<Integer>>();
         qcAnalyteMap = new HashMap<Integer, ArrayList<QcAnalyteViewDO>>();
         
         for (WorksheetAnalysisViewDO waVDO : analyses) {
             if (waVDO.getAnalysisId() != null) {
+                testAnalyteIds = testAnalyteMap.get(waVDO.getTestId());
+                if (testAnalyteIds == null) {
+                    testAnalyteIds = new ArrayList<Integer>();
+                    try {
+                        for (TestAnalyteViewDO taVDO : testAnalyte.fetchRowAnalytesByTestId(waVDO.getTestId()))
+                            testAnalyteIds.add(taVDO.getId());
+                    } catch (Exception anyE) {
+                        throw new Exception("Error loading test row analytes: " + anyE.getMessage());
+                    }
+                    testAnalyteMap.put(waVDO.getTestId(), testAnalyteIds);
+                }
+
                 excludedIds = excludedMap.get(waVDO.getTestId());
                 if (excludedIds == null) {
                     excludedIds = new ArrayList<Integer>();
@@ -1604,7 +1644,7 @@ public class WorksheetManager1Bean {
                         wrVDO.setId(wm.getNextUID());
                         wrVDO.setWorksheetAnalysisId(waVDO.getId());
                         wrVDO.setTestAnalyteId(resultDO.getTestAnalyteId());
-                        wrVDO.setResultRow(i);
+                        wrVDO.setResultRow(testAnalyteIds.indexOf(resultDO.getTestAnalyteId()));
                         wrVDO.setAnalyteId(resultDO.getAnalyteId());
                         wrVDO.setAnalyteName(resultDO.getAnalyte());
                         addResult(wm, wrVDO);
@@ -2210,7 +2250,7 @@ public class WorksheetManager1Bean {
                                     ArrayList<Integer> testAnalyteIds, ArrayList<Integer> excludedIds,
                                     HashMap<String, Integer> formatColumnMap, HashMap<Integer, AnalyteDO> analyteMap,
                                     HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) throws Exception {
-        int i, rowIndex;
+        int i, resultRow;
         AnalyteDO anaDO;
         AnalyteParameterViewDO apVDO;
         ArrayList<AnalyteParameterViewDO> anaParams;
@@ -2240,21 +2280,20 @@ public class WorksheetManager1Bean {
             }
         }
         
-        rowIndex = -1;
         for (i = 0; i < results.size(); i++) {
             rVDO = results.get(i);
             if ("Y".equals(rVDO.getIsColumn()))
                 continue;
             
-            rowIndex++;
             if (excludedIds.contains(rVDO.getTestAnalyteId()))
                 continue;
             
+            resultRow = testAnalyteIds.indexOf(rVDO.getTestAnalyteId());
             wrList = wrMap.get(rVDO.getTestAnalyteId());
             if (wrList != null) {
                 wrVDO = wrList.get(0);
-                if (wrVDO.getResultRow() != rowIndex)
-                    wrVDO.setResultRow(rowIndex);
+                if (wrVDO.getResultRow() != resultRow)
+                    wrVDO.setResultRow(resultRow);
                 wrList.remove(0);
                 if (wrList.size() == 0)
                     wrMap.remove(wrList);
@@ -2263,7 +2302,7 @@ public class WorksheetManager1Bean {
                 wrVDO.setId(wm.getNextUID());
                 wrVDO.setWorksheetAnalysisId(waVDO.getId());
                 wrVDO.setTestAnalyteId(rVDO.getTestAnalyteId());
-                wrVDO.setResultRow(rowIndex);
+                wrVDO.setResultRow(resultRow);
                 wrVDO.setAnalyteId(rVDO.getAnalyteId());
                 wrVDO.setAnalyteName(rVDO.getAnalyte());
                 addResult(wm, wrVDO);
