@@ -24,7 +24,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="100px" bottom="0px">
+    <g:layer top="128px" bottom="0px">
       <g:LayoutPanel ui:field="main"/>
     </g:layer>
   </g:LayoutPanel>

@@ -14,15 +14,8 @@
   <ui:with type="org.openelis.portal.client.resources.Resources" field="res" />
 
   <g:LayoutPanel>
-    <g:layer top="0px" height="128px">
-      <g:LayoutPanel>
-        <g:layer left="0px" width="230px">
-          <g:AbsolutePanel styleName="{res.style.header_logo}"/>
-        </g:layer>
-        <g:layer left="230px" right="0px">
-          <p:Navigation ui:field="navigation"/>
-        </g:layer>
-      </g:LayoutPanel>
+    <g:layer top="0px" height="100px">
+      <p:Navigation ui:field="navigation"/>
     </g:layer>
     <g:layer top="100px" bottom="0px">
       <g:LayoutPanel ui:field="main"/>

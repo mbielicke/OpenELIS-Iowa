@@ -2,18 +2,18 @@ package org.openelis.portal.messages;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Portal/src/org/openelis/portal/messages/PortalMessages.properties'.
+ * 	/home/tschmidt/luna/workspace/OpenELIS-Portal/src/org/openelis/portal/messages/PortalMessages.properties'.
  */
 public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   
   /**
-   * Translated "Final Report".
+   * Translated "Data View by Spreadsheet".
    * 
-   * @return translated "Final Report"
+   * @return translated "Data View by Spreadsheet"
    */
-  @DefaultMessage("Final Report")
-  @Key("finalReport")
-  String finalReport();
+  @DefaultMessage("Data View by Spreadsheet")
+  @Key("dataView")
+  String dataView();
 
   /**
    * Translated "Accession Number".
@@ -79,11 +79,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_getSampleList();
 
   /**
-   * Translated "<span class = \"helpHeader\"> Locating Your Results </span> <p/> To locate sample results, you must know at least one or more of the following criteria: <ul><li>Your sample accession (lab) number</li> <li>The date your sample was collected</li> <li>A reference that you sent to the laboratory</li> <li>The date the lab completed (released) your test(s)</li></ul> <p/> <span class = \"helpHeader\"> To Find Sample Results </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the <b>Released Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>If you know the laboratory Accession Number (sample number, lab number), use the <b>Accession Number</b> field to specify the beginning number and the <b>to</b> field for the ending number. When looking for a single sample, just enter the number in the <b>Accession Number</b> field.</li><li>You may also search by using multiple fields. For example, to find all the samples you collected and sent to the laboratory in June of 2011, type in your name (as it appeared on the collection form) in the <b>Collector Name</b> field, select (using the calendars provided) 2011-6-1 in the <b>Collected Date</b> field, and 2011-6-30 in the <b>to</b> field.</li><li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li></ul>".
+   * Translated "This property was empty, I added it so screen would compile".
    * 
-   * @return translated "<span class = \"helpHeader\"> Locating Your Results </span> <p/> To locate sample results, you must know at least one or more of the following criteria: <ul><li>Your sample accession (lab) number</li> <li>The date your sample was collected</li> <li>A reference that you sent to the laboratory</li> <li>The date the lab completed (released) your test(s)</li></ul> <p/> <span class = \"helpHeader\"> To Find Sample Results </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the <b>Released Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>If you know the laboratory Accession Number (sample number, lab number), use the <b>Accession Number</b> field to specify the beginning number and the <b>to</b> field for the ending number. When looking for a single sample, just enter the number in the <b>Accession Number</b> field.</li><li>You may also search by using multiple fields. For example, to find all the samples you collected and sent to the laboratory in June of 2011, type in your name (as it appeared on the collection form) in the <b>Collector Name</b> field, select (using the calendars provided) 2011-6-1 in the <b>Collected Date</b> field, and 2011-6-30 in the <b>to</b> field.</li><li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li></ul>"
+   * @return translated "This property was empty, I added it so screen would compile"
    */
-  @DefaultMessage("<span class = \"helpHeader\"> Locating Your Results </span> <p/> To locate sample results, you must know at least one or more of the following criteria: <ul><li>Your sample accession (lab) number</li> <li>The date your sample was collected</li> <li>A reference that you sent to the laboratory</li> <li>The date the lab completed (released) your test(s)</li></ul> <p/> <span class = \"helpHeader\"> To Find Sample Results </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the <b>Released Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>If you know the laboratory Accession Number (sample number, lab number), use the <b>Accession Number</b> field to specify the beginning number and the <b>to</b> field for the ending number. When looking for a single sample, just enter the number in the <b>Accession Number</b> field.</li><li>You may also search by using multiple fields. For example, to find all the samples you collected and sent to the laboratory in June of 2011, type in your name (as it appeared on the collection form) in the <b>Collector Name</b> field, select (using the calendars provided) 2011-6-1 in the <b>Collected Date</b> field, and 2011-6-30 in the <b>to</b> field.</li><li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li></ul>")
+  @DefaultMessage("This property was empty, I added it so screen would compile")
   @Key("finalReport.header1")
   String finalReport_header1();
 
@@ -187,6 +187,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_released();
 
   /**
+   * Translated "<span class = \"helpHeader\"> Locating Your Results </span> <p/> To locate sample results, you must know at least one or more of the following criteria: <ul><li>Your sample accession (lab) number</li> <li>The date your sample was collected</li> <li>A reference that you sent to the laboratory</li> <li>The date the lab completed (released) your test(s)</li></ul> <p/> <span class = \"helpHeader\"> To Find Sample Results </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the <b>Released Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>If you know the laboratory Accession Number (sample number, lab number), use the <b>Accession Number</b> field to specify the beginning number and the <b>to</b> field for the ending number. When looking for a single sample, just enter the number in the <b>Accession Number</b> field.</li><li>You may also search by using multiple fields. For example, to find all the samples you collected and sent to the laboratory in June of 2011, type in your name (as it appeared on the collection form) in the <b>Collector Name</b> field, select (using the calendars provided) 2011-6-1 in the <b>Collected Date</b> field, and 2011-6-30 in the <b>to</b> field.</li><li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li></ul>".
+   * 
+   * @return translated "<span class = \"helpHeader\"> Locating Your Results </span> <p/> To locate sample results, you must know at least one or more of the following criteria: <ul><li>Your sample accession (lab) number</li> <li>The date your sample was collected</li> <li>A reference that you sent to the laboratory</li> <li>The date the lab completed (released) your test(s)</li></ul> <p/> <span class = \"helpHeader\"> To Find Sample Results </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the <b>Released Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>If you know the laboratory Accession Number (sample number, lab number), use the <b>Accession Number</b> field to specify the beginning number and the <b>to</b> field for the ending number. When looking for a single sample, just enter the number in the <b>Accession Number</b> field.</li><li>You may also search by using multiple fields. For example, to find all the samples you collected and sent to the laboratory in June of 2011, type in your name (as it appeared on the collection form) in the <b>Collector Name</b> field, select (using the calendars provided) 2011-6-1 in the <b>Collected Date</b> field, and 2011-6-30 in the <b>to</b> field.</li><li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li></ul>"
+   */
+  @DefaultMessage("<span class = \"helpHeader\"> Locating Your Results </span> <p/> To locate sample results, you must know at least one or more of the following criteria: <ul><li>Your sample accession (lab) number</li> <li>The date your sample was collected</li> <li>A reference that you sent to the laboratory</li> <li>The date the lab completed (released) your test(s)</li></ul> <p/> <span class = \"helpHeader\"> To Find Sample Results </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the <b>Released Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>If you know the laboratory Accession Number (sample number, lab number), use the <b>Accession Number</b> field to specify the beginning number and the <b>to</b> field for the ending number. When looking for a single sample, just enter the number in the <b>Accession Number</b> field.</li><li>You may also search by using multiple fields. For example, to find all the samples you collected and sent to the laboratory in June of 2011, type in your name (as it appeared on the collection form) in the <b>Collector Name</b> field, select (using the calendars provided) 2011-6-1 in the <b>Collected Date</b> field, and 2011-6-30 in the <b>to</b> field.</li><li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li></ul>")
+  @Key("finalReport.help.screen")
+  String finalReport_help_screen();
+
+  /**
    * Translated "Patient''s Date of Birth".
    * 
    * @return translated "Patient''s Date of Birth"
@@ -248,6 +257,69 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("To")
   @Key("gen.to")
   String gen_to();
+
+  /**
+   * Translated "Account Information".
+   * 
+   * @return translated "Account Information"
+   */
+  @DefaultMessage("Account Information")
+  @Key("main.accountInfo")
+  String main_accountInfo();
+
+  /**
+   * Translated "Email Notification".
+   * 
+   * @return translated "Email Notification"
+   */
+  @DefaultMessage("Email Notification")
+  @Key("main.emailNotification")
+  String main_emailNotification();
+
+  /**
+   * Translated "Final Report".
+   * 
+   * @return translated "Final Report"
+   */
+  @DefaultMessage("Final Report")
+  @Key("main.finalReport")
+  String main_finalReport();
+
+  /**
+   * Translated "Logout".
+   * 
+   * @return translated "Logout"
+   */
+  @DefaultMessage("Logout")
+  @Key("main.logout")
+  String main_logout();
+
+  /**
+   * Translated "Reports".
+   * 
+   * @return translated "Reports"
+   */
+  @DefaultMessage("Reports")
+  @Key("main.reports")
+  String main_reports();
+
+  /**
+   * Translated "Sample Status".
+   * 
+   * @return translated "Sample Status"
+   */
+  @DefaultMessage("Sample Status")
+  @Key("main.sampleStatus")
+  String main_sampleStatus();
+
+  /**
+   * Translated "Clinical Test Request Form".
+   * 
+   * @return translated "Clinical Test Request Form"
+   */
+  @DefaultMessage("Clinical Test Request Form")
+  @Key("main.testRequest")
+  String main_testRequest();
 
   /**
    * Translated "Project".
