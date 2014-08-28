@@ -22,8 +22,6 @@ public class DesktopScreen extends Screen implements PortalEntry{
 	interface DesktopUiBinder extends UiBinder<Widget, DesktopScreen>{};
 	protected static final DesktopUiBinder uiBinder = GWT.create(DesktopUiBinder.class);
 	
-	@UiField
-	Anchor exampleLink;
 	
 	@UiField
 	LayoutPanel main;
@@ -32,9 +30,5 @@ public class DesktopScreen extends Screen implements PortalEntry{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	@UiHandler("exampleLink")
-	public void exampleClick(ClickEvent event) {
-		main.add(new ExampleScreen());
-	}
 	
 }
