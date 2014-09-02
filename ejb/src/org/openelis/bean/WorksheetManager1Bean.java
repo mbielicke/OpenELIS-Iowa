@@ -295,8 +295,10 @@ public class WorksheetManager1Bean {
                     }
 
                     taMap = new HashMap<Integer, TestAnalyteViewDO>();
-                    for (TestAnalyteViewDO data : testAnalyte.fetchRowAnalytesByTestIds(new ArrayList<Integer>(testIds)))
-                        taMap.put(data.getId(), data);
+                    if (testIds != null && testIds.size() > 0) {
+                        for (TestAnalyteViewDO data : testAnalyte.fetchRowAnalytesByTestIds(new ArrayList<Integer>(testIds)))
+                            taMap.put(data.getId(), data);
+                    }
                     
                     for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
                         wm = map2.get(data.getWorksheetAnalysisId());
@@ -435,8 +437,10 @@ public class WorksheetManager1Bean {
                 }
     
                 taMap = new HashMap<Integer, TestAnalyteViewDO>();
-                for (TestAnalyteViewDO data : testAnalyte.fetchRowAnalytesByTestIds(new ArrayList<Integer>(testIds)))
-                    taMap.put(data.getId(), data);
+                if (testIds != null && testIds.size() > 0) {
+                    for (TestAnalyteViewDO data : testAnalyte.fetchRowAnalytesByTestIds(new ArrayList<Integer>(testIds)))
+                        taMap.put(data.getId(), data);
+                }
                 
                 for (WorksheetResultViewDO data : wResult.fetchByWorksheetAnalysisIds(ids2)) {
                     rMap = arMap.get(anaIdMap.get(data.getWorksheetAnalysisId()));
