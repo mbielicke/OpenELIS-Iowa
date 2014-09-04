@@ -43,7 +43,7 @@ public class FileServlet extends HttpServlet {
             factory = new DiskFileItemFactory();
             upload = new ServletFileUpload(factory);
             files = upload.parseRequest(req);
-            paths = (List<String>)req.getAttribute("upload");
+            paths = (List<String>)req.getSession().getAttribute("upload");
             
             if (files != null && files.size() > 0) {
        
@@ -55,6 +55,9 @@ public class FileServlet extends HttpServlet {
             		paths.add(dir+"/"+file.getName());
             	}
             }
+            
+            req.getSession().setAttribute("upload", paths);
+            
         } catch (Exception e) {
         	e.printStackTrace();
             throw (ServletException)e.getCause();
