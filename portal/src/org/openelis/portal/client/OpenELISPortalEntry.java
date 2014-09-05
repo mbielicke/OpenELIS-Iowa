@@ -1,21 +1,19 @@
 package org.openelis.portal.client;
 
-import static org.openelis.portal.client.Logger.remote;
+import static org.openelis.portal.client.Logger.*;
 
 import java.util.logging.Level;
 
 import org.openelis.portal.client.resources.Resources;
-import org.openelis.portal.modules.desktop.client.DesktopScreen;
 import org.openelis.portal.modules.main.client.MainScreen;
 import org.openelis.ui.screen.Screen;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -34,6 +32,18 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
         Resources.INSTANCE.style().ensureInjected();
         Resources.INSTANCE.general().ensureInjected();
         Resources.INSTANCE.icon().ensureInjected();
+        
+        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+            public void onUncaughtException(Throwable e) {
+                e.printStackTrace();
+                if (e.getMessage() == null)
+                    logger.log(Level.SEVERE, "UNKNOWN", e);
+                else
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                Window.alert("Sorry, but an unexpected error has occurred.  Please contact IT support");
+            }
+        });
+        
         try {
             RootPanel.get("main").clear();
             RootLayoutPanel.get().add((Screen)GWT.create(MainScreen.class));
