@@ -106,7 +106,7 @@ UIRF Software License are applicable instead of those above.
   
   <servlet-mapping>
     <servlet-name>CalendarUIServlet</servlet-name>
-    <url-pattern>/portal/calendar</url-pattern>
+    <url-pattern>/portal/calendarui</url-pattern>
   </servlet-mapping>
   
   <session-config>
