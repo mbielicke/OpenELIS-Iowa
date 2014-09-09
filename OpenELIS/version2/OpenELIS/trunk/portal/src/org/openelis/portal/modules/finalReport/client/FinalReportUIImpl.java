@@ -1,19 +1,16 @@
 package org.openelis.portal.modules.finalReport.client;
 
-import org.openelis.portal.messages.Messages;
-import org.openelis.ui.widget.AutoComplete;
-import org.openelis.ui.widget.Balloon.Options;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.IconContainer;
+import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.DeckLayoutPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -26,30 +23,30 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     protected static final FinalReportUiBinder uiBinder = GWT.create(FinalReportUiBinder.class);
 
     @UiField
-    protected TextBox<Integer>                 accessionStart, accessionEnd, pwsId;
+    protected TextBox<Integer>                 accessionFrom, accessionTo;
 
     @UiField
-    protected TextBox<String>                  clientReference, collector, patientFirst,
-                    patientLast;
+    protected TextBox<String>                  clientReference, envCollector, sdwisCollector,
+                    pwsId, patientFirst, patientLast;
 
     @UiField
-    protected Calendar                         collectedStart, collectedEnd, releasedStart,
-                    releasedEnd, patientBirthStart, patientBirthEnd;
+    protected Calendar                         collectedFrom, collectedTo, releasedFrom,
+                    releasedTo, patientBirthFrom, patientBirthTo;
 
     @UiField
-    protected AutoComplete                     projectCode;
+    protected Dropdown<Integer>                projectCode;
 
     @UiField
-    protected Button                           getSampleListButton, resetButton;
+    protected Button                           getSampleListButton, resetButton, backButton;
 
     @UiField
-    protected IconContainer                    collectedHelp, releasedHelp, accessionHelp,
-                    clientReferenceHelp, projectHelp, collectorHelp, pwsHelp, patientFirstHelp,
-                    patientLastHelp, patientBirthHelp;
+    protected FlexTable                            table;
+
+    @UiField
+    protected DeckLayoutPanel                  deck;
 
     public FinalReportUIImpl() {
         initWidget(uiBinder.createAndBindUi(this));
-        initialize();
     }
 
     @Override
@@ -57,102 +54,163 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
         return this;
     }
 
-    /**
-     * Setup state and data change handles for every widget on the screen
-     */
-    private void initialize() {
-        final Options options;
+    public TextBox<Integer> getAccessionFrom() {
+        return accessionFrom;
+    }
 
-        options = new Options();
-        options.setDelayHide( -1);
-        collectedHelp.addClickHandler(new ClickHandler() {
+    public void setAccessionFrom(TextBox<Integer> accessionFrom) {
+        this.accessionFrom = accessionFrom;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                collectedHelp.setTip(Messages.get().finalReport_help_collected());
-                collectedHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<Integer> getAccessionTo() {
+        return accessionTo;
+    }
 
-        releasedHelp.addClickHandler(new ClickHandler() {
+    public void setAccessionTo(TextBox<Integer> accessionTo) {
+        this.accessionTo = accessionTo;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                releasedHelp.setTip(Messages.get().finalReport_help_collected());
-                releasedHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<String> getPwsId() {
+        return pwsId;
+    }
 
-        accessionHelp.addClickHandler(new ClickHandler() {
+    public void setPwsId(TextBox<String> pwsId) {
+        this.pwsId = pwsId;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                accessionHelp.setTip(Messages.get().finalReport_help_collected());
-                accessionHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<String> getClientReference() {
+        return clientReference;
+    }
 
-        clientReferenceHelp.addClickHandler(new ClickHandler() {
+    public void setClientReference(TextBox<String> clientReference) {
+        this.clientReference = clientReference;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                clientReferenceHelp.setTip(Messages.get().finalReport_help_collected());
-                clientReferenceHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<String> getEnvCollector() {
+        return envCollector;
+    }
 
-        projectHelp.addClickHandler(new ClickHandler() {
+    public void setEnvCollector(TextBox<String> envCollector) {
+        this.envCollector = envCollector;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                projectHelp.setTip(Messages.get().finalReport_help_collected());
-                projectHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<String> getSdwisCollector() {
+        return sdwisCollector;
+    }
 
-        collectorHelp.addClickHandler(new ClickHandler() {
+    public void setSdwisCollector(TextBox<String> sdwisCollector) {
+        this.sdwisCollector = sdwisCollector;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                collectorHelp.setTip(Messages.get().finalReport_help_collected());
-                collectorHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<String> getPatientFirst() {
+        return patientFirst;
+    }
 
-        pwsHelp.addClickHandler(new ClickHandler() {
+    public void setPatientFirst(TextBox<String> patientFirst) {
+        this.patientFirst = patientFirst;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                pwsHelp.setTip(Messages.get().finalReport_help_collected());
-                pwsHelp.setBalloonOptions(options);
-            }
-        });
+    public TextBox<String> getPatientLast() {
+        return patientLast;
+    }
 
-        patientFirstHelp.addClickHandler(new ClickHandler() {
+    public void setPatientLast(TextBox<String> patientLast) {
+        this.patientLast = patientLast;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                patientFirstHelp.setTip(Messages.get().finalReport_help_collected());
-                patientFirstHelp.setBalloonOptions(options);
-            }
-        });
+    public Calendar getCollectedFrom() {
+        return collectedFrom;
+    }
 
-        patientLastHelp.addClickHandler(new ClickHandler() {
+    public void setCollectedFrom(Calendar collectedFrom) {
+        this.collectedFrom = collectedFrom;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                patientLastHelp.setTip(Messages.get().finalReport_help_collected());
-                patientLastHelp.setBalloonOptions(options);
-            }
-        });
+    public Calendar getCollectedTo() {
+        return collectedTo;
+    }
 
-        patientBirthHelp.addClickHandler(new ClickHandler() {
+    public void setCollectedTo(Calendar collectedTo) {
+        this.collectedTo = collectedTo;
+    }
 
-            @Override
-            public void onClick(ClickEvent event) {
-                patientBirthHelp.setTip(Messages.get().finalReport_help_collected());
-                patientBirthHelp.setBalloonOptions(options);
-            }
-        });
+    public Calendar getReleasedFrom() {
+        return releasedFrom;
+    }
+
+    public void setReleasedFrom(Calendar releasedFrom) {
+        this.releasedFrom = releasedFrom;
+    }
+
+    public Calendar getReleasedTo() {
+        return releasedTo;
+    }
+
+    public void setReleasedTo(Calendar releasedTo) {
+        this.releasedTo = releasedTo;
+    }
+
+    public Calendar getPatientBirthFrom() {
+        return patientBirthFrom;
+    }
+
+    public void setPatientBirthFrom(Calendar patientBirthFrom) {
+        this.patientBirthFrom = patientBirthFrom;
+    }
+
+    public Calendar getPatientBirthTo() {
+        return patientBirthTo;
+    }
+
+    public void setPatientBirthTo(Calendar patientBirthTo) {
+        this.patientBirthTo = patientBirthTo;
+    }
+
+    public Dropdown<Integer> getProjectCode() {
+        return projectCode;
+    }
+
+    public void setProjectCode(Dropdown<Integer> projectCode) {
+        this.projectCode = projectCode;
+    }
+
+    public Button getGetSampleListButton() {
+        return getSampleListButton;
+    }
+
+    public void setGetSampleListButton(Button getSampleListButton) {
+        this.getSampleListButton = getSampleListButton;
+    }
+
+    public Button getResetButton() {
+        return resetButton;
+    }
+
+    public void setResetButton(Button resetButton) {
+        this.resetButton = resetButton;
+    }
+
+    public Button getBackButton() {
+        return backButton;
+    }
+
+    public void setBackButton(Button backButton) {
+        this.backButton = backButton;
+    }
+
+    public FlexTable getTable() {
+        return table;
+    }
+
+    public void setTable(FlexTable table) {
+        this.table = table;
+    }
+
+    public DeckLayoutPanel getDeck() {
+        return deck;
+    }
+
+    public void setDeck(DeckLayoutPanel deck) {
+        this.deck = deck;
     }
 }

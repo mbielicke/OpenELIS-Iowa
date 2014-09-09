@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -12229,11 +12229,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String ptntInfo();
 
   /**
-   * Translated "PWS Id".
+   * Translated "PWS ID".
    * 
-   * @return translated "PWS Id"
+   * @return translated "PWS ID"
    */
-  @DefaultMessage("PWS Id")
+  @DefaultMessage("PWS ID")
   @Key("pws.id")
   String pws_id();
 
