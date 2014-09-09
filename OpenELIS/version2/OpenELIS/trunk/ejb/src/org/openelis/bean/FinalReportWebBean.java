@@ -25,17 +25,17 @@ import org.openelis.util.QueryBuilderV2;
 @SecurityDomain("openelis")
 public class FinalReportWebBean {
     @EJB
-    private SessionCacheBean          session;
+    private SessionCacheBean           session;
 
     @EJB
-    private SampleProjectBean         sampleProject;
+    private SampleProjectBean          sampleProject;
 
     @EJB
     private ProjectBean                project;
-    
+
     @EJB
     private UserCacheBean              userCache;
-    
+
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
 
@@ -56,9 +56,7 @@ public class FinalReportWebBean {
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
          */
-        clause = userCache.getPermission()
-                          .getModule("w_final_environmental")
-                          .getClause();
+        clause = userCache.getPermission().getModule("w_final_environmental").getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds and projIds are empty or not.
@@ -69,12 +67,11 @@ public class FinalReportWebBean {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleWebMeta.getId() + ", " +
-                          SampleWebMeta.getAccessionNumber() + ", " +
-                          SampleWebMeta.getRevision() + ", " + SampleWebMeta.getDomain() +
-                          ", " + SampleWebMeta.getCollectionDate() + ", " +
-                          SampleWebMeta.getCollectionTime() + ", " +
-                          SampleWebMeta.getStatusId() + ", " +
-                          SampleWebMeta.getEnvLocation() + ", " +
+                          SampleWebMeta.getAccessionNumber() + ", " + SampleWebMeta.getRevision() +
+                          ", " + SampleWebMeta.getDomain() + ", " +
+                          SampleWebMeta.getCollectionDate() + ", " +
+                          SampleWebMeta.getCollectionTime() + ", " + SampleWebMeta.getStatusId() +
+                          ", " + SampleWebMeta.getEnvLocation() + ", " +
                           SampleWebMeta.getEnvCollector() + ", " +
                           SampleWebMeta.getLocationAddrCity() + ", " +
                           SampleWebMeta.getSampleOrgOrganizationId());
@@ -83,11 +80,9 @@ public class FinalReportWebBean {
         builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
                          Constants.dictionary().ORG_REPORT_TO);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
         builder.addWhere(SampleWebMeta.getItemSampleId() + "=" + SampleWebMeta.getId());
-        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" +
-                         SampleWebMeta.getItemId());
+        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
@@ -164,9 +159,7 @@ public class FinalReportWebBean {
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
          */
-        clause = userCache.getPermission()
-                          .getModule("w_final_privatewell")
-                          .getClause();
+        clause = userCache.getPermission().getModule("w_final_privatewell").getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds is empty or not.
@@ -177,12 +170,11 @@ public class FinalReportWebBean {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleWebMeta.getId() + ", " +
-                          SampleWebMeta.getAccessionNumber() + ", " +
-                          SampleWebMeta.getRevision() + ", " + SampleWebMeta.getDomain() +
-                          ", " + SampleWebMeta.getCollectionDate() + ", " +
-                          SampleWebMeta.getCollectionTime() + ", " +
-                          SampleWebMeta.getStatusId() + ", " +
-                          SampleWebMeta.getWellLocation() + ", " +
+                          SampleWebMeta.getAccessionNumber() + ", " + SampleWebMeta.getRevision() +
+                          ", " + SampleWebMeta.getDomain() + ", " +
+                          SampleWebMeta.getCollectionDate() + ", " +
+                          SampleWebMeta.getCollectionTime() + ", " + SampleWebMeta.getStatusId() +
+                          ", " + SampleWebMeta.getWellLocation() + ", " +
                           SampleWebMeta.getWellCollector() + ", " +
                           SampleWebMeta.getWellOrganizationAddrCity() + ", " +
                           SampleWebMeta.getWellOrganizationId() + ", " +
@@ -192,11 +184,9 @@ public class FinalReportWebBean {
         builder.addWhere(SampleWebMeta.getWellSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getWellOrganizationAddressId() + "=" +
                          SampleWebMeta.getWellOrganizationAddrId());
-        builder.addWhere(SampleWebMeta.getStatusId() + " !=" +
-                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getStatusId() + " !=" + Constants.dictionary().SAMPLE_ERROR);
         builder.addWhere(SampleWebMeta.getItemSampleId() + "=" + SampleWebMeta.getId());
-        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" +
-                         SampleWebMeta.getItemId());
+        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
@@ -247,6 +237,69 @@ public class FinalReportWebBean {
         return returnList;
     }
 
+    @RolesAllowed("w_final_report-select")
+    public ArrayList<FinalReportWebVO> getSampleList(ArrayList<QueryData> fields) throws Exception {
+        return null;
+        // String clause;
+        // Query query;
+        // QueryBuilderV2 builder;
+        // List<Object[]> results;
+        // ArrayList<FinalReportWebVO> returnList;
+        // Date collDateTime, collTime;
+        //
+        // /*
+        // * Retrieving the organization Ids to which the user belongs to from
+        // the
+        // * security clause in the userPermission.
+        // */
+        // clause =
+        // userCache.getPermission().getModule("w_final_report").getClause();
+        //
+        // if (clause == null)
+        // return new ArrayList<FinalReportWebVO>();
+        //
+        // //TODO
+        // results = null;
+        // returnList = new ArrayList<FinalReportWebVO>();
+        // for (Object[] result : results) {
+        // collDateTime = (Date)result[4];
+        // collTime = (Date)result[5];
+        //
+        // if (collDateTime != null) {
+        // if (collTime == null) {
+        // collDateTime.setHours(0);
+        // collDateTime.setMinutes(0);
+        // } else {
+        // collDateTime.setHours(collTime.getHours());
+        // collDateTime.setMinutes(collTime.getMinutes());
+        // }
+        // }
+        // returnList.add(new FinalReportWebVO((Integer)result[0],
+        // (Integer)result[1],
+        // (Integer)result[2],
+        // (String)result[3],
+        // collDateTime,
+        // (Integer)result[6],
+        // (String)result[7],
+        // (String)result[8],
+        // null,
+        // (Integer)result[9],
+        // null,
+        // null,
+        // (String)result[10],
+        // (String)result[11],
+        // (String)result[12]));
+        // }
+        // /*
+        // * push the retrieved list of samples into session so that the system
+        // * can find the list of samples from the back end and use the indices
+        // * the user selects in the front end to select the samples to run the
+        // * report for.
+        // */
+        // session.setAttribute("sampleList", returnList);
+        // return returnList;
+    }
+
     @RolesAllowed("w_final_sdwis-select")
     public ArrayList<FinalReportWebVO> getSampleSDWISList(ArrayList<QueryData> fields) throws Exception {
         String clause;
@@ -259,9 +312,7 @@ public class FinalReportWebBean {
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
          */
-        clause = userCache.getPermission()
-                          .getModule("w_final_sdwis")
-                          .getClause();
+        clause = userCache.getPermission().getModule("w_final_sdwis").getClause();
 
         if (clause == null)
             return new ArrayList<FinalReportWebVO>();
@@ -269,28 +320,24 @@ public class FinalReportWebBean {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleWebMeta.getId() + ", " +
-                          SampleWebMeta.getAccessionNumber() + ", " +
-                          SampleWebMeta.getRevision() + ", " + SampleWebMeta.getDomain() +
-                          ", " + SampleWebMeta.getCollectionDate() + ", " +
-                          SampleWebMeta.getCollectionTime() + ", " +
-                          SampleWebMeta.getStatusId() + ", " +
-                          SampleWebMeta.getSDWISLocation() + ", " +
+                          SampleWebMeta.getAccessionNumber() + ", " + SampleWebMeta.getRevision() +
+                          ", " + SampleWebMeta.getDomain() + ", " +
+                          SampleWebMeta.getCollectionDate() + ", " +
+                          SampleWebMeta.getCollectionTime() + ", " + SampleWebMeta.getStatusId() +
+                          ", " + SampleWebMeta.getSDWISLocation() + ", " +
                           SampleWebMeta.getSDWISCollector() + ", " +
                           SampleWebMeta.getSampleOrgOrganizationId() + ", " +
                           SampleWebMeta.getPwsNumber0() + ", " +
-                          SampleWebMeta.getSDWISFacilityId() + ", " +
-                          SampleWebMeta.getPwsName());
+                          SampleWebMeta.getSDWISFacilityId() + ", " + SampleWebMeta.getPwsName());
         builder.constructWhere(fields);
         builder.addWhere("(" + clause + ")");
         builder.addWhere(SampleWebMeta.getSDWISSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSDWISPwsId() + "=" + SampleWebMeta.getPwsId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
                          Constants.dictionary().ORG_REPORT_TO);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
         builder.addWhere(SampleWebMeta.getItemSampleId() + "=" + SampleWebMeta.getId());
-        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" +
-                         SampleWebMeta.getItemId());
+        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
@@ -341,12 +388,25 @@ public class FinalReportWebBean {
         return returnList;
     }
 
+    public ArrayList<IdNameVO> getProjectList() throws Exception {
+        String clause;
+
+        clause = userCache.getPermission().getModule("w_final_report").getClause();
+
+        /*
+         * if clause is null, then the previous method returns an empty HashMap,
+         * so we need to check if the list is empty or not.
+         */
+        if (clause != null)
+            return project.fetchForOrganizations(clause);
+
+        return new ArrayList<IdNameVO>();
+    }
+
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
         String clause;
 
-        clause = userCache.getPermission()
-                          .getModule("w_final_environmental")
-                          .getClause();
+        clause = userCache.getPermission().getModule("w_final_environmental").getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not. We only return the
@@ -361,9 +421,7 @@ public class FinalReportWebBean {
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
         String clause;
 
-        clause = userCache.getPermission()
-                          .getModule("w_final_privatewell")
-                          .getClause();
+        clause = userCache.getPermission().getModule("w_final_privatewell").getClause();
 
         /*
          * if clause is null, then the previous method returns an empty HashMap,
@@ -378,9 +436,7 @@ public class FinalReportWebBean {
     public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {
         String clause;
 
-        clause = userCache.getPermission()
-                          .getModule("w_final_sdwis")
-                          .getClause();
+        clause = userCache.getPermission().getModule("w_final_sdwis").getClause();
 
         /*
          * if clause is null, then the previous method returns an empty HashMap,
