@@ -43,25 +43,25 @@ import org.openelis.ui.common.Datetime;
 
 @NamedQueries( {                  
     @NamedQuery( name = "SampleView.FetchBySampleId",
-                query = "select new org.openelis.domain.SampleViewVO(sample_id," +
-                		"domain, accession_number, sample_revision, received_date," +
-                		"collection_date, collection_time, sample_status_id, client_reference," +
-                		"report_to_id, report_to_name, collector, location, location_city," +
-                		"project_name, pws_number0, pws_name, sdwis_facility_id," +
-                		"analysis_id, analysis_revision, analysis_status_id, test_reporting_description," +
-                		"method_reporting_description)"
-                      + " from SampleView sv where sv.sampleId = :id"
-                      + " order by sv.accessionNumber, sv.test_reporting_description, sv.method_reporting_description"),
+                query = "select new org.openelis.domain.SampleViewVO(sampleId," +
+                		"domain, accessionNumber, sampleRevision, receivedDate," +
+                		"collectionDate, collectionTime, sampleStatusId, clientReference," +
+                		"reportToId, reportToName, collector, location, locationCity," +
+                		"projectName, pwsNumber0, pwsName, sdwisFacilityId," +
+                		"analysisId, analysisRevision, analysisStatusId, testReportingDescription," +
+                		"methodReportingDescription)"
+                      + " from SampleView where sampleId = :id"
+                      + " order by accessionNumber, testReportingDescription, methodReportingDescription"),
     @NamedQuery( name = "SampleView.FetchBySampleIds",
-                query = "select new org.openelis.domain.SampleViewVO(sample_id," +
-                        "domain, accession_number, sample_revision, received_date," +
-                        "collection_date, collection_time, sample_status_id, client_reference," +
-                        "report_to_id, report_to_name, collector, location, location_city," +
-                        "project_name, pws_number0, pws_name, sdwis_facility_id," +
-                        "analysis_id, analysis_revision, analysis_status_id, test_reporting_description," +
-                        "method_reporting_description)"
-                      + " from SampleView sv where sv.sampleId in (:ids)"
-                      + " order by sv.accessionNumber, sv.test_reporting_description, sv.method_reporting_description")})
+                query = "select new org.openelis.domain.SampleViewVO(sampleId," +
+                        "domain, accessionNumber, sampleRevision, receivedDate," +
+                        "collectionDate, collectionTime, sampleStatusId, clientReference," +
+                        "reportToId, reportToName, collector, location, locationCity," +
+                        "projectName, pwsNumber0, pwsName, sdwisFacilityId," +
+                        "analysisId, analysisRevision, analysisStatusId, testReportingDescription," +
+                        "methodReportingDescription)"
+                      + " from SampleView where sampleId in (:ids)"
+                      + " order by accessionNumber, testReportingDescription, methodReportingDescription")})
 @Entity
 @Table(name = "sample_view")
 public class SampleView  {
