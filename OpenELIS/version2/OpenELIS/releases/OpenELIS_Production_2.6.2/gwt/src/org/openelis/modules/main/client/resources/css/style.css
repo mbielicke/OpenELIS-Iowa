@@ -1,0 +1,65 @@
+@sprite .AppBackground {
+	gwt-image: 'AppBackground';
+	opacity: 0.8;
+}
+
+.WhiteContentPanel {
+	background: white;
+}
+
+.Form {
+	margin: 4px 8px;
+}
+
+.FormTitle {
+    -moz-user-select: none;
+    color:#486095;
+    text-align:center;
+    height:18px;
+    background:transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0 0;
+}
+
+.Prompt {
+	-moz-user-select: none;
+	color: gray;
+	padding: 2px 0 2px 2px;
+	text-align: right;
+	test-justify: trim;
+	white-space: nowrap;
+}
+
+.WarningLabel {
+    -moz-user-select: none;
+    color: #FF0000;
+    padding: 5px 0 0 12px;
+    font-weight: bold;
+}
+
+.ScreenLabelLink {
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+@sprite .favorite .LeftMenuPanePanelClosed {
+	height: 100%;
+	width: 5px;
+	gwt-image: 'topMenuBG';
+}
+
+@sprite .favorite .LeftMenuPanePanelOpen {
+	height: 100%;
+	gwt-image: 'topMenuBG';
+	border-right: 1px solid black;
+}
+
+.favoritesMenuContainer {
+	
+}
+
+.Title {
+    -moz-user-select: none;
+    color:gray;
+    padding:2px;
+    padding-left:4px;
+}
