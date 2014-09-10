@@ -47,7 +47,7 @@ import org.openelis.ui.common.Datetime;
                 		"domain, accession_number, sample_revision, received_date," +
                 		"collection_date, collection_time, sample_status_id, client_reference," +
                 		"report_to_id, report_to_name, collector, location, location_city," +
-                		"project_code, pws_number0, pws_name, sdwis_facility_id," +
+                		"project_name, pws_number0, pws_name, sdwis_facility_id," +
                 		"analysis_id, analysis_revision, analysis_status_id, test_reporting_description," +
                 		"method_reporting_description)"
                       + " from SampleView sv where sv.sampleId = :id"
@@ -57,7 +57,7 @@ import org.openelis.ui.common.Datetime;
                         "domain, accession_number, sample_revision, received_date," +
                         "collection_date, collection_time, sample_status_id, client_reference," +
                         "report_to_id, report_to_name, collector, location, location_city," +
-                        "project_code, pws_number0, pws_name, sdwis_facility_id," +
+                        "project_name, pws_number0, pws_name, sdwis_facility_id," +
                         "analysis_id, analysis_revision, analysis_status_id, test_reporting_description," +
                         "method_reporting_description)"
                       + " from SampleView sv where sv.sampleId in (:ids)"
