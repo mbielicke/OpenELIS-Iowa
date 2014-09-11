@@ -29,16 +29,20 @@ package org.openelis.entity;
  * Attachment Entity POJO for database
  */
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -49,14 +53,20 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
-    @NamedQuery( name = "Attachement.FetchById",
-                query = "select new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
-                      + " from Attachment a where a.id = :id"),               
-    @NamedQuery( name = "Attachement.FetchByIds",
-                query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
-                      + " from Attachment a where a.id in (:ids)")})               
-
+@NamedQueries({
+               @NamedQuery(name = "Attachment.FetchById",
+                           query = "select new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
+                                   + " from Attachment a where a.id = :id"),
+               @NamedQuery(name = "Attachment.FetchByIds",
+                           query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
+                                   + " from Attachment a where a.id in (:ids)"),
+               @NamedQuery(name = "Attachment.FetchByIdsDescending",
+                           query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
+                                   + " from Attachment a where a.id in (:ids) order by a.id desc"),
+               @NamedQuery(name = "Attachment.FetchUnattachedByDescription",
+                           query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
+                                   + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i)"
+                                   + " and a.description like (:description) order by a.id desc")})
 @Entity
 @Table(name = "attachment")
 @EntityListeners({AuditUtil.class})
@@ -65,25 +75,29 @@ public class Attachment implements Auditable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer    id;
+    private Integer                    id;
 
     @Column(name = "created_date")
-    private Date       createdDate;
+    private Date                       createdDate;
 
     @Column(name = "type_id")
-    private Integer    typeId;
+    private Integer                    typeId;
 
     @Column(name = "section_id")
-    private Integer    sectionId;
+    private Integer                    sectionId;
 
     @Column(name = "description")
-    private String     description;
+    private String                     description;
 
     @Column(name = "storage_reference")
-    private String     storageReference;
+    private String                     storageReference;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attachment_id", insertable = false, updatable = false)
+    private Collection<AttachmentItem> attachmentItem;
 
     @Transient
-    private Attachment original;
+    private Attachment                 original;
 
     public Integer getId() {
         return id;
@@ -139,6 +153,14 @@ public class Attachment implements Auditable, Cloneable {
             this.storageReference = storageReference;
     }
 
+    public Collection<AttachmentItem> getAttachmentItem() {
+        return attachmentItem;
+    }
+
+    public void setAttachmentItem(Collection<AttachmentItem> attachmentItem) {
+        this.attachmentItem = attachmentItem;
+    }
+
     public void setClone() {
         try {
             original = (Attachment)this.clone();
@@ -157,9 +179,9 @@ public class Attachment implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("created_date", createdDate, original.createdDate)
                  .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
-                 .setField("section_id", sectionId, original.sectionId, Constants.table().DICTIONARY)
+                 .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
                  .setField("description", description, original.description)
-                 .setField("storage_reference", storageReference, original.storageReference);                 
+                 .setField("storage_reference", storageReference, original.storageReference);
 
         return audit;
     }
