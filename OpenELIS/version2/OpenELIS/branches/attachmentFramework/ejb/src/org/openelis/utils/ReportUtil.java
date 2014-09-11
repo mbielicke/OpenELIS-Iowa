@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -111,7 +114,7 @@ public class ReportUtil {
             q.setQuery(q.getQuery().replaceAll("'", "''"));
             if (q.getQuery().contains(","))
                 return "in (" + q.getQuery() + ")";
-            else if (!DataBaseUtil.isEmpty(q.getQuery()))
+            else if ( !DataBaseUtil.isEmpty(q.getQuery()))
                 return " = " + q.getQuery();
         }
         return null;
@@ -130,7 +133,7 @@ public class ReportUtil {
             return null;
         str = q.getQuery().split(",");
         list = new int[str.length];
-        for (int i = 0; i < str.length; i++) {
+        for (int i = 0; i < str.length; i++ ) {
             try {
                 list[i] = Integer.parseInt(str[i]);
             } catch (Exception ex) {
@@ -231,27 +234,12 @@ public class ReportUtil {
     }
 
     /**
-     * Sends the file to specified printer, delete the file and returns the
-     * printer's status. NOTE: This method is very "lpr" and "cups" dependent
-     * and will not work on non unix platforms.
-     */
-    public static String print(File file, String userName, String destination, int copies, String... options) throws Exception {
-        try {
-            return printWithoutDelete(file, userName, destination, copies, options);
-        } catch (Exception anyE) {
-            throw anyE;
-        } finally {
-            file.delete();
-        }
-    }
-
-    /**
      * Sends the file to specified printer and returns the printer's status.
      * NOTE: This method is very "lpr" and "cups" dependent and will not work on
      * non unix platforms.
      */
-    public static String printWithoutDelete(File file, String userName, String destination, int copies,
-                                            String... options) throws Exception {
+    public static String print(Path path, String userName, String destination,
+                                            int copies, boolean delete, String... options) throws Exception {
         String status;
         ArrayList<String> args;
 
@@ -270,13 +258,16 @@ public class ReportUtil {
                 args.add(String.valueOf(copies));
             }
 
-            for (int i = 0; i < options.length; i++) {
+            for (int i = 0; i < options.length; i++ ) {
                 args.add("-o");
                 args.add(String.valueOf(options[i]));
             }
-            args.add(file.toString());
+            args.add(path.toString());
+            System.out.println("args: "+ args);
             exec(args);
-            status = "print queued to " + destination;
+            status = "print queued to " + destination;            
+            if (delete)
+                Files.delete(path);
         } catch (Exception e) {
             throw new Exception("Could not print to queue " + destination + "; " + e.getMessage());
         }
@@ -289,7 +280,7 @@ public class ReportUtil {
      * NOTE: This method is very "sendfax" and "cups" dependent and will not
      * work on non unix platforms.
      */
-    public static String fax(File file, String faxNumber, String fromName, String toName,
+    public static String fax(Path path, String faxNumber, String fromName, String toName,
                              String toCompany, String faxNote, String faxOwner, String faxEmail) throws Exception {
         String status;
         ArrayList<String> args;
@@ -299,33 +290,33 @@ public class ReportUtil {
             args.add("sendfax");
             args.add("-R");
 
-            if (!DataBaseUtil.isEmpty(faxOwner)) {
+            if ( !DataBaseUtil.isEmpty(faxOwner)) {
                 args.add("-o");
                 args.add(faxOwner);
             }
 
-            if (!DataBaseUtil.isEmpty(faxEmail)) {
+            if ( !DataBaseUtil.isEmpty(faxEmail)) {
                 args.add("-f");
                 args.add(faxEmail);
             }
 
-            if (!DataBaseUtil.isEmpty(fromName)) {
+            if ( !DataBaseUtil.isEmpty(fromName)) {
                 args.add("-X");
                 args.add(fromName);
             }
-            if (!DataBaseUtil.isEmpty(toCompany)) {
+            if ( !DataBaseUtil.isEmpty(toCompany)) {
                 args.add("-x");
                 args.add(toCompany);
             }
-            if (!DataBaseUtil.isEmpty(faxNote)) {
+            if ( !DataBaseUtil.isEmpty(faxNote)) {
                 args.add("-c");
                 args.add(faxNote);
             }
             faxNumber = faxNumber.replaceAll("[^0-9]", "");
             args.add("-d");
-            args.add(!DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
+            args.add( !DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
 
-            args.add(file.toString());
+            args.add(path.toString());
             exec(args);
             status = "fax queued for " + faxNumber;
         } catch (Exception e) {
@@ -339,26 +330,22 @@ public class ReportUtil {
      * Moves the specified file to upload save directory and changes its
      * permission to read/writable by all. Use this method to allow a JBOSS
      * server and Tomcat server to access a shared directory (and the file) even
-     * when they are on two different physical servers. NOTE: This method uses
-     * "chmod" and will not work on non unix systems.
+     * when they are on two different physical servers.
      */
-    public static File saveForUpload(File file) throws Exception {
-        File movedFile;
-        String saveDir;
+    public static Path createTempFile(String prefix, String suffix, String systemVariableDirectory) throws Exception {
+        String directory;
 
         /*
-         * directory where we save files for uploading
+         * directory where we create the file
          */
-        saveDir = ReportUtil.getSystemVariableValue("upload_save_directory");
-        if (saveDir == null)
-            throw new IOException("You need to define upload_save_directory in SystemVariable");
+        directory = null;
+        if (systemVariableDirectory != null)
+            directory = ReportUtil.getSystemVariableValue(systemVariableDirectory);
 
-        movedFile = new File(saveDir, file.getName());
-        copy(file, movedFile);
-        exec("chmod", "666", movedFile.getAbsolutePath());
-        file.delete();
+        if (directory == null)
+            directory = "/tmp";
 
-        return movedFile;
+        return Files.createTempFile(Paths.get(directory), prefix, suffix);
     }
 
     /**
@@ -428,7 +415,7 @@ public class ReportUtil {
         String cmd[];
 
         cmd = new String[args.size()];
-        for (int i = 0; i < args.size(); i++)
+        for (int i = 0; i < args.size(); i++ )
             cmd[i] = args.get(i);
 
         exec(cmd);
@@ -465,7 +452,7 @@ public class ReportUtil {
         if (DataBaseUtil.isEmpty(clause))
             return map;
         str = clause.split(";");
-        for (int i = 0; i < str.length; i++) {
+        for (int i = 0; i < str.length; i++ ) {
             str1 = str[i].split(":");
             if (str1.length != 2)
                 continue;
@@ -497,7 +484,7 @@ public class ReportUtil {
         if (DataBaseUtil.isEmpty(clause))
             return map;
         str = clause.split(";");
-        for (int i = 0; i < str.length; i++) {
+        for (int i = 0; i < str.length; i++ ) {
             list = new ArrayList<Integer>();
             str1 = str[i].split(":");
             if (str1.length != 2)
@@ -507,7 +494,7 @@ public class ReportUtil {
             if (DataBaseUtil.isEmpty(key) || DataBaseUtil.isEmpty(value))
                 continue;
             str2 = value.split(",");
-            for (int j = 0; j < str2.length; j++) {
+            for (int j = 0; j < str2.length; j++ ) {
                 try {
                     list.add(Integer.parseInt(str2[j]));
                 } catch (Exception ex) {
