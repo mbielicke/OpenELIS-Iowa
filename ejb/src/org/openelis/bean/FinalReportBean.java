@@ -1,8 +1,8 @@
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -90,7 +90,7 @@ public class FinalReportBean {
     private SystemVariableBean        systemVariable;
 
     @EJB
-    private AttachmentBean            attachment;
+    private AttachmentManagerBean     attachmentManager;
 
     @EJB
     private AttachmentItemBean        attachmentItem;
@@ -338,11 +338,12 @@ public class FinalReportBean {
     public void runReportForESave(Integer accession) throws Exception {
         boolean esave;
         Integer sid;
-        String sname;
+        String sname, filename;
         ReportStatus status;
         AttachmentDO att;
         FinalReportVO result;
         OrganizationPrint print;
+        Datetime timeStamp;
         ArrayList<FinalReportVO> reportList;
         ArrayList<OrganizationPrint> printList;
 
@@ -350,7 +351,8 @@ public class FinalReportBean {
          * skip if they don't want to save previous versions of final report
          */
         try {
-            esave = Boolean.parseBoolean(systemVariable.fetchByName("final_report_esave").getValue());
+            esave = Boolean.parseBoolean(systemVariable.fetchByName("final_report_esave")
+                                                       .getValue());
             if ( !esave)
                 return;
         } catch (Exception e) {
@@ -398,16 +400,30 @@ public class FinalReportBean {
             throw e;
         }
 
-        print(printList, "R", false, status, "-attachment-");
+        print(printList, "R", false, status, "-esave-");
 
         /*
          * save it as attachment to the sample
          */
-        att = attachment.add(status.getPath(),
-                             Messages.get().finalreport_attachmentEsaveDescription(result.getAccessionNumber(),
-                                                                                   result.getRevision()),
-                             sid);
-        attachmentItem.add(new AttachmentItemDO(0, result.getSampleId(), Constants.table().SAMPLE,
+        timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
+        filename = Messages.get()
+                           .finalreport_attachmentEsaveFileName(result.getAccessionNumber()
+                                                                      .toString(),
+                                                                result.getRevision(),
+                                                                ReportUtil.toString(timeStamp,
+                                                                                    Messages.get()
+                                                                                            .dateCompressedPattern()));
+        att = attachmentManager.put(status.getPath(),
+                                    false,
+                                    filename,
+                                    Messages.get()
+                                            .finalreport_attachmentEsaveDescription(result.getAccessionNumber()
+                                                                                          .toString(),
+                                                                                    result.getRevision()),
+                                    sid);
+        attachmentItem.add(new AttachmentItemDO(0,
+                                                result.getSampleId(),
+                                                Constants.table().SAMPLE,
                                                 att.getId()));
     }
 
@@ -829,11 +845,11 @@ public class FinalReportBean {
                        boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
         URL url;
-        File tempFile;
+        Path path;
         Connection con;
         JasperReport jreport;
-        String dir, uploadDir, printstat, toCompany, faxOwner, faxEmail, userName;
-        JasperPrint print, faxPrint;
+        String dir, printstat, toCompany, faxOwner, faxEmail, userName;
+        JasperPrint jprint, faxPrint;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
         JasperPrint stats;
@@ -863,7 +879,7 @@ public class FinalReportBean {
              */
             ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.PRINT);
             ds.setData(orgPrintList);
-            print = JasperFillManager.fillReport(jreport, jparam, ds);
+            jprint = JasperFillManager.fillReport(jreport, jparam, ds);
 
             /*
              * process all the faxes
@@ -897,7 +913,7 @@ public class FinalReportBean {
                 if (faxPrint == null)
                     continue;
 
-                tempFile = export(faxPrint);
+                path = export(faxPrint, null);
                 try {
                     /*
                      * For a single sample, the user can specify a different
@@ -905,7 +921,7 @@ public class FinalReportBean {
                      */
                     toCompany = o.getToCompany() != null ? o.getToCompany()
                                                         : o.getOrganizationName();
-                    printstat = ReportUtil.fax(tempFile,
+                    printstat = ReportUtil.fax(path,
                                                o.getFaxNumber(),
                                                o.getFromCompany(),
                                                o.getFaxAttention(),
@@ -933,29 +949,23 @@ public class FinalReportBean {
                                                      ds);
                 pages = stats.getPages();
                 for (i = 0; i < pages.size(); i++ )
-                    print.addPage(pages.get(i));
+                    jprint.addPage(pages.get(i));
             }
 
-            if (print.getPages().size() > 0) {
-                tempFile = export(print);
+            if (jprint.getPages().size() > 0) {
                 if (ReportUtil.isPrinter(printer)) {
-                    printstat = ReportUtil.print(tempFile, userName, printer, 1);
+                    path = export(jprint, null);
+                    printstat = ReportUtil.print(path, userName, printer, 1, true);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
-                } else if ("-attachment-".equals(printer)) {
-                    status.setMessage(tempFile.getName())
-                          .setPath(tempFile.getPath())
+                } else if ("-esave-".equals(printer)) {
+                    path = export(jprint, null);
+                    status.setMessage(path.getFileName().toString())
+                          .setPath(path.getParent().toString())
                           .setStatus(ReportStatus.Status.SAVED);
                 } else {
-                    tempFile = ReportUtil.saveForUpload(tempFile);
-                    try {
-                        uploadDir = systemVariable.fetchByName("upload_stream_directory")
-                                                  .getValue();
-                    } catch (Exception e) {
-                        log.severe("No 'upload_stream_directory' system variable defined");
-                        uploadDir = "";
-                    }
-                    status.setMessage(tempFile.getName())
-                          .setPath(uploadDir)
+                    path = export(jprint, "upload_stream_directory");
+                    status.setMessage(path.getFileName().toString())
+                          .setPath(path.getParent().toString())
                           .setStatus(ReportStatus.Status.SAVED);
                 }
             }
@@ -974,16 +984,16 @@ public class FinalReportBean {
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
-    private File export(JasperPrint print) throws Exception {
-        File tempFile;
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
         JRExporter jexport;
 
         jexport = new JRPdfExporter();
-        tempFile = File.createTempFile("finalreport", ".pdf", new File("/tmp"));
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+        path = ReportUtil.createTempFile("finalreport", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
         jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
         jexport.exportReport();
 
-        return tempFile;
+        return path;
     }
 }

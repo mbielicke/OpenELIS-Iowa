@@ -1,8 +1,8 @@
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -580,7 +580,7 @@ public class TurnaroundStatisticReportBean {
         String printstat;
         ArrayList<Value> values, valueList;
         URL url;
-        File tempFile;
+        Path path;
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
@@ -631,8 +631,6 @@ public class TurnaroundStatisticReportBean {
         jreport = (JasperReport)JRLoader.loadObject(url);
         dir = ReportUtil.getResourcePath(url);
 
-        tempFile = File.createTempFile("turnaroundstatisticreport", ".pdf", new File("/tmp"));
-
         userName = User.getName(ctx);
 
         jparam = new HashMap<String, Object>();
@@ -644,24 +642,22 @@ public class TurnaroundStatisticReportBean {
         jparam.put("TURNAROUND_DATASOURCE", ds);
         jparam.put("USER_NAME", userName);
 
-        status.setMessage("Loading report");
-        jprint = JasperFillManager.fillReport(jreport, jparam, ds);
-        jexport = new JRPdfExporter();
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
         status.setMessage("Outputing report").setPercentComplete(20);
+        
+        jprint = JasperFillManager.fillReport(jreport, jparam, ds);
+        if (ReportUtil.isPrinter(printer))
+            path = export(jprint, null);
+        else 
+            path = export(jprint, "upload_stream_directory");
 
-        jexport.exportReport();
         status.setPercentComplete(100);
 
         if (ReportUtil.isPrinter(printer)) {
-            printstat = ReportUtil.print(tempFile, userName, printer, 1);
+            printstat = ReportUtil.print(path, userName, printer, 1, true);
             status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
         } else {
-            tempFile = ReportUtil.saveForUpload(tempFile);
-            status.setMessage(tempFile.getName())
-                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+            status.setMessage(path.getFileName().toString())
+                  .setPath(path.getParent().toString())
                   .setStatus(ReportStatus.Status.SAVED);
         }
         return status;
@@ -783,10 +779,25 @@ public class TurnaroundStatisticReportBean {
         }
     }
 
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
+        JRExporter jexport;
+
+        jexport = new JRPdfExporter();
+        path = ReportUtil.createTempFile("turnaroundstatisticreport", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        jexport.exportReport();
+
+        return path;
+    }
+    
     class MyComparator implements Comparator<Value> {
         public int compare(Value v1, Value v2) {
             return (v1.getTest() + v1.getMethod()).compareTo(v2.getTest() + v2.getMethod());
         }
     }
-
 }

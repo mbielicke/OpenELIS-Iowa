@@ -46,6 +46,8 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
+import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -186,6 +188,9 @@ public class SampleManager1Bean {
 
     @EJB
     private SampleClinicalBean           sampleClinical;
+    
+    @EJB
+    private AttachmentItemBean           attachmentItem;
 
     @EJB
     private DictionaryCacheBean          dictionaryCache;
@@ -336,6 +341,13 @@ public class SampleManager1Bean {
                     setSampleExternalNote(sm, data);
                 else
                     addSampleInternalNote(sm, data);
+            }
+        }
+        
+        if (el.contains(SampleManager1.Load.ATTACHMENT)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
+                addAttachment(sm, data);
             }
         }
 
@@ -554,7 +566,14 @@ public class SampleManager1Bean {
                     addSampleInternalNote(sm, data);
             }
         }
-
+        
+        if (el.contains(SampleManager1.Load.ATTACHMENT)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
+                addAttachment(sm, data);
+            }
+        }
+        
         /*
          * build level 3, everything is based on analysis ids
          */

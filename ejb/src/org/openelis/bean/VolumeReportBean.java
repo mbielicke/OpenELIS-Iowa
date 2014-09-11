@@ -25,9 +25,9 @@
 */
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -119,7 +119,7 @@ public class VolumeReportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         URL url;
-        File tempFile;
+        Path path;
         HashMap<String, QueryData> param;
         HashMap<String, Object> jparam;
         Connection con;
@@ -172,7 +172,7 @@ public class VolumeReportBean {
             con = ReportUtil.getConnection(ctx);
             url = ReportUtil.getResourceURL("org/openelis/report/volume/main.jasper");
 
-            tempFile = File.createTempFile("volume", ".xls", new File("/tmp"));
+            path = ReportUtil.createTempFile("volume", ".xls", "upload_stream_directory");
 
             jparam = new HashMap<String, Object>();
             jparam.put("FROM", fromDate);
@@ -186,7 +186,7 @@ public class VolumeReportBean {
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
            
             jexport = new JRXlsExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setMessage("Outputing report").setPercentComplete(20);
@@ -195,10 +195,9 @@ public class VolumeReportBean {
 
             status.setPercentComplete(100);
             
-            tempFile = ReportUtil.saveForUpload(tempFile);
-            status.setMessage(tempFile.getName())
-                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                  .setStatus(ReportStatus.Status.SAVED);            
+            status.setMessage(path.getFileName().toString())
+                  .setPath(path.getParent().toString())
+                  .setStatus(ReportStatus.Status.SAVED);           
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

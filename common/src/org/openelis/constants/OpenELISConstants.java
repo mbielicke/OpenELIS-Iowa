@@ -1789,13 +1789,76 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String atleastTwoRowsInRowGroup();
 
   /**
+   * Translated "Attach".
+   * 
+   * @return translated "Attach"
+   */
+  @DefaultMessage("Attach")
+  @Key("attachment.attach")
+  String attachment_attach();
+
+  /**
+   * Translated "Attachment".
+   * 
+   * @return translated "Attachment"
+   */
+  @DefaultMessage("Attachment")
+  @Key("attachment.attachment")
+  String attachment_attachment();
+
+  /**
+   * Translated "Auto Select Next".
+   * 
+   * @return translated "Auto Select Next"
+   */
+  @DefaultMessage("Auto Select Next")
+  @Key("attachment.autoSelectNext")
+  String attachment_autoSelectNext();
+
+  /**
+   * Translated "Attachment Description".
+   * 
+   * @return translated "Attachment Description"
+   */
+  @DefaultMessage("Attachment Description")
+  @Key("attachment.description")
+  String attachment_description();
+
+  /**
+   * Translated "Detach".
+   * 
+   * @return translated "Detach"
+   */
+  @DefaultMessage("Detach")
+  @Key("attachment.detach")
+  String attachment_detach();
+
+  /**
+   * Translated "Display".
+   * 
+   * @return translated "Display"
+   */
+  @DefaultMessage("Display")
+  @Key("attachment.display")
+  String attachment_display();
+
+  /**
+   * Translated "File Name".
+   * 
+   * @return translated "File Name"
+   */
+  @DefaultMessage("File Name")
+  @Key("attachment.fileName")
+  String attachment_fileName();
+
+  /**
    * Translated "Path to attachment directory is missing. Please contact the system administrator.".
    * 
    * @return translated "Path to attachment directory is missing. Please contact the system administrator."
    */
   @DefaultMessage("Path to attachment directory is missing. Please contact the system administrator.")
-  @Key("attachment.missingPath")
-  String attachment_missingPath();
+  @Key("attachment.missingPathException")
+  String attachment_missingPathException();
 
   /**
    * Translated "Can not save attachment file ''{0}''. Please contact the system administrator.".
@@ -1805,6 +1868,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Can not save attachment file ''{0}''. Please contact the system administrator.")
   @Key("attachment.moveFileException")
   String attachment_moveFileException(String arg0);
+
+  /**
+   * Translated "You do not have permission to view the attachment {0}".
+   * 
+   * @return translated "You do not have permission to view the attachment {0}"
+   */
+  @DefaultMessage("You do not have permission to view the attachment {0}")
+  @Key("attachment.viewPermException")
+  String attachment_viewPermException(String arg0);
 
   /**
    * Translated "Attention".
@@ -4984,13 +5056,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String finalReportSingleReprint();
 
   /**
-   * Translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''".
+   * Translated "FinalReport {0} R {1,number}".
    * 
-   * @return translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''"
+   * @return translated "FinalReport {0} R {1,number}"
    */
-  @DefaultMessage("Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''")
+  @DefaultMessage("FinalReport {0} R {1,number}")
   @Key("finalreport.attachmentEsaveDescription")
-  String finalreport_attachmentEsaveDescription(Integer arg0,  Integer arg1);
+  String finalreport_attachmentEsaveDescription(String arg0,  Integer arg1);
+
+  /**
+   * Translated "finalreport{0}r{1,number}-{2}.pdf".
+   * 
+   * @return translated "finalreport{0}r{1,number}-{2}.pdf"
+   */
+  @DefaultMessage("finalreport{0}r{1,number}-{2}.pdf")
+  @Key("finalreport.attachmentEsaveFileName")
+  String finalreport_attachmentEsaveFileName(String arg0,  Integer arg1,  String arg2);
 
   /**
    * Translated "Preview Final Report".
@@ -5369,6 +5450,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Check Out")
   @Key("gen.checkOut")
   String gen_checkOut();
+
+  /**
+   * Translated "Click for more records".
+   * 
+   * @return translated "Click for more records"
+   */
+  @DefaultMessage("Click for more records")
+  @Key("gen.clickForMore")
+  String gen_clickForMore();
 
   /**
    * Translated "Collapse".
@@ -5821,6 +5911,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_middleName();
 
   /**
+   * Translated "Path to upload directory is missing. Please contact the system administrator.".
+   * 
+   * @return translated "Path to upload directory is missing. Please contact the system administrator."
+   */
+  @DefaultMessage("Path to upload directory is missing. Please contact the system administrator.")
+  @Key("gen.missingUploadPathException")
+  String gen_missingUploadPathException();
+
+  /**
    * Translated "Move".
    * 
    * @return translated "Move"
@@ -5837,6 +5936,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Move Down")
   @Key("gen.moveDown")
   String gen_moveDown();
+
+  /**
+   * Translated "<<".
+   * 
+   * @return translated "<<"
+   */
+  @DefaultMessage("<<")
+  @Key("gen.moveLeft")
+  String gen_moveLeft();
 
   /**
    * Translated "Move Up".
@@ -6163,6 +6271,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_receivedDate();
 
   /**
+   * Translated "Refresh".
+   * 
+   * @return translated "Refresh"
+   */
+  @DefaultMessage("Refresh")
+  @Key("gen.refresh")
+  String gen_refresh();
+
+  /**
    * Translated "Release".
    * 
    * @return translated "Release"
@@ -6215,6 +6332,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Type")
   @Key("gen.sampleType")
   String gen_sampleType();
+
+  /**
+   * Translated "Saving...".
+   * 
+   * @return translated "Saving..."
+   */
+  @DefaultMessage("Saving...")
+  @Key("gen.saving")
+  String gen_saving();
+
+  /**
+   * Translated "Saving...Complete".
+   * 
+   * @return translated "Saving...Complete"
+   */
+  @DefaultMessage("Saving...Complete")
+  @Key("gen.savingComplete")
+  String gen_savingComplete();
 
   /**
    * Translated "You do not have permission to access {0}".
