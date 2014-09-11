@@ -43,22 +43,24 @@ import org.openelis.ui.common.Datetime;
 
 @NamedQueries( {                  
     @NamedQuery( name = "SampleView.FetchBySampleId",
-                query = "select new org.openelis.domain.SampleViewVO(sampleId," +
-                		"domain, accessionNumber, sampleRevision, receivedDate," +
-                		"collectionDate, collectionTime, sampleStatusId, clientReference," +
-                		"reportToId, reportToName, collector, location, locationCity," +
-                		"projectName, pwsNumber0, pwsName, sdwisFacilityId," +
-                		"analysisId, analysisRevision, analysisStatusId, testReportingDescription," +
+                query = "select new org.openelis.domain.SampleViewVO(sampleId, " +
+                		"domain, accessionNumber, sampleRevision, receivedDate, " +
+                		"collectionDate, collectionTime, sampleStatusId, clientReference, " +
+                		"sampleReleasedDate, reportToId, reportToName, collector, " +
+                		"location, locationCity, projectName, pwsNumber0, pwsName, " +
+                		"sdwisFacilityId, patientLastName, patientFirstName, patientBirthDate, " +
+                		"analysisId, analysisRevision, analysisStatusId, testReportingDescription, " +
                 		"methodReportingDescription)"
                       + " from SampleView where sampleId = :id"
                       + " order by accessionNumber, testReportingDescription, methodReportingDescription"),
     @NamedQuery( name = "SampleView.FetchBySampleIds",
-                query = "select new org.openelis.domain.SampleViewVO(sampleId," +
-                        "domain, accessionNumber, sampleRevision, receivedDate," +
-                        "collectionDate, collectionTime, sampleStatusId, clientReference," +
-                        "reportToId, reportToName, collector, location, locationCity," +
-                        "projectName, pwsNumber0, pwsName, sdwisFacilityId," +
-                        "analysisId, analysisRevision, analysisStatusId, testReportingDescription," +
+                query = "select new org.openelis.domain.SampleViewVO(sampleId, " +
+                        "domain, accessionNumber, sampleRevision, receivedDate, " +
+                        "collectionDate, collectionTime, sampleStatusId, clientReference, " +
+                        "sampleReleasedDate, reportToId, reportToName, collector, " +
+                        "location, locationCity, projectName, pwsNumber0, pwsName, " +
+                        "sdwisFacilityId, patientLastName, patientFirstName, patientBirthDate, " +
+                        "analysisId, analysisRevision, analysisStatusId, testReportingDescription, " +
                         "methodReportingDescription)"
                       + " from SampleView where sampleId in (:ids)"
                       + " order by accessionNumber, testReportingDescription, methodReportingDescription")})
@@ -94,6 +96,9 @@ public class SampleView  {
     @Column(name = "client_reference")
     private String                      clientReference;    
     
+    @Column(name = "sample_released_date")
+    private Date                        sampleReleasedDate;
+
     @Column(name = "report_to_id")
     private Integer                     reportToId;
 
@@ -121,6 +126,15 @@ public class SampleView  {
     @Column(name = "sdwis_facility_id")
     private String                      sdwisFacilityId;
     
+    @Column(name = "patient_last_name")
+    private String                      patientLastName;
+    
+    @Column(name = "patient_first_name")
+    private String                      patientFirstName;
+    
+    @Column(name = "patient_birth_date")
+    private Date                        patientBirthDate;
+
     @Column(name = "analysis_id")
     private Integer                     analysisId;
 
@@ -153,7 +167,7 @@ public class SampleView  {
     }
 
     public Datetime getReceivedDate() {
-        return DataBaseUtil.toYD(receivedDate);
+        return DataBaseUtil.toYM(receivedDate);
     }
     
     public Datetime getCollectionDate() {
@@ -170,6 +184,10 @@ public class SampleView  {
 
     public String getClientReference() {
         return clientReference;
+    }
+
+    public Datetime getSampleReleasedDate() {
+        return DataBaseUtil.toYM(sampleReleasedDate);
     }
 
     public Integer getReportToId() {
@@ -206,6 +224,18 @@ public class SampleView  {
 
     public String getSdwisFacilityId() {
         return sdwisFacilityId;
+    }
+
+    public String getPatientLastName() {
+        return patientLastName;
+    }
+
+    public String getPatientFirstName() {
+        return patientFirstName;
+    }
+
+    public Datetime getPatientBirthDate() {
+        return DataBaseUtil.toYD(patientBirthDate);
     }
 
     public Integer getAnalysisId() {

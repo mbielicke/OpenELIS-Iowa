@@ -42,9 +42,10 @@ public class SampleViewVO implements Serializable {
                                 reportToId, analysisId, analysisRevision, analysisStatusId;
     protected String            domain, clientReference, reportToName, collector,
                                 location, locationCity, projectName, pwsNumber0,
-                                pwsName, sdwisFacilityId, testReportingDescription,
-                                methodReportingDescription;
-    protected Datetime          receivedDate, collectionDate, collectionTime;
+                                pwsName, sdwisFacilityId, patientLastName, patientFirstName,
+                                testReportingDescription, methodReportingDescription;
+    protected Datetime          receivedDate, collectionDate, collectionTime, sampleReleasedDate,
+                                patientBirthDate;
     
     public SampleViewVO() {        
     }
@@ -52,9 +53,10 @@ public class SampleViewVO implements Serializable {
     public SampleViewVO(Integer sampleId, String domain, Integer accessionNumber, 
                         Integer sampleRevision, Date receivedDate, Date collectionDate,
                         Date collectionTime, Integer sampleStatusId, String clientReference,
-                        Integer reportToId, String reportToName, String collector,
-                        String location, String locationCity, String projectName,
-                        String pwsNumber0, String pwsName, String sdwisFacilityId,
+                        Date sampleReleasedDate, Integer reportToId, String reportToName,
+                        String collector, String location, String locationCity,
+                        String projectName, String pwsNumber0, String pwsName, String sdwisFacilityId,
+                        String patientLastName, String patientFirstName, Date patientBirthDate,
                         Integer analysisId, Integer analysisRevision, Integer analysisStatusId,
                         String testReportingDescription, String methodReportingDescription) {
         setSampleId(sampleId);
@@ -66,6 +68,7 @@ public class SampleViewVO implements Serializable {
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setSampleStatusId(sampleStatusId);
         setClientReference(clientReference);
+        setSampleReleasedDate(DataBaseUtil.toYM(sampleReleasedDate));
         setReportToId(reportToId);
         setReportToName(reportToName);
         setCollector(collector);
@@ -75,6 +78,9 @@ public class SampleViewVO implements Serializable {
         setPwsNumber0(pwsNumber0);
         setPwsName(pwsName);
         setSdwisFacilityId(sdwisFacilityId);
+        setPatientLastName(patientLastName);
+        setPatientFirstName(patientFirstName);
+        setPatientBirthDate(DataBaseUtil.toYD(patientBirthDate));
         setAnalysisId(analysisId);
         setAnalysisRevision(analysisRevision);
         setAnalysisStatusId(analysisStatusId);
@@ -154,6 +160,14 @@ public class SampleViewVO implements Serializable {
         this.clientReference = DataBaseUtil.trim(clientReference);
     }
 
+    public Datetime getSampleReleasedDate() {
+        return sampleReleasedDate;
+    }
+
+    public void setSampleReleasedDate(Datetime sampleReleasedDate) {
+        this.sampleReleasedDate = DataBaseUtil.toYM(sampleReleasedDate);
+    }
+
     public Integer getReportToId() {
         return reportToId;
     }
@@ -224,6 +238,30 @@ public class SampleViewVO implements Serializable {
 
     public void setSdwisFacilityId(String sdwisFacilityId) {
         this.sdwisFacilityId = DataBaseUtil.trim(sdwisFacilityId);
+    }
+
+    public String getPatientLastName() {
+        return patientLastName;
+    }
+
+    public void setPatientLastName(String patientLastName) {
+        this.patientLastName = DataBaseUtil.trim(patientLastName);
+    }
+
+    public String getPatientFirstName() {
+        return patientFirstName;
+    }
+
+    public void setPatientFirstName(String patientFirstName) {
+        this.patientFirstName = DataBaseUtil.trim(patientFirstName);
+    }
+
+    public Datetime getPatientBirthDate() {
+        return patientBirthDate;
+    }
+
+    public void setPatientBirthDate(Datetime patientBirthDate) {
+        this.patientBirthDate = DataBaseUtil.toYD(patientBirthDate);
     }
 
     public Integer getAnalysisId() {
