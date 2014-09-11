@@ -25,18 +25,12 @@
  */
 package org.openelis.modules.method.client;
 
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DELETE;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.UserCache;
 import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
 import org.openelis.constants.OpenELISConstants;
@@ -55,6 +49,7 @@ import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -68,11 +63,9 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
-import org.openelis.ui.screen.AsyncCallbackUI;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;

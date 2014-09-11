@@ -174,8 +174,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected TextBox<String>                           clientReference, sdwisPwsNumber0, pwsName,
-                    sdwisFacilityId, sdwisSamplePointId, sdwisLocation,
-                    sdwisCollector;
+                    sdwisFacilityId, sdwisSamplePointId, sdwisLocation, sdwisCollector;
 
     @UiField
     protected Dropdown<Integer>                         status, sdwisSampleTypeId,
@@ -1101,7 +1100,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
+
         addScreenHandler(sdwisLocation, SampleMeta.getSDWISLocation(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisLocation.setValue(getLocation());
@@ -1136,25 +1135,28 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
             }
         });
-        
-        addScreenHandler(sdwisPriority, SampleMeta.getSDWISPriority(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sdwisPriority.setValue(getPriority());
-            }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setPriority(event.getValue());
-            }
+        addScreenHandler(sdwisPriority,
+                         SampleMeta.getSDWISPriority(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sdwisPriority.setValue(getPriority());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                sdwisPriority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                sdwisPriority.setQueryMode(isState(QUERY));
-            }
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPriority(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? sdwisCollector : sdwisLocation;
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 sdwisPriority.setEnabled(isState(QUERY) ||
+                                                          (canEdit && isState(ADD, UPDATE)));
+                                 sdwisPriority.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sdwisCollector : sdwisLocation;
+                             }
+                         });
 
         sdwisPriority.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -2332,7 +2334,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("orderLookupButton")
     protected void orderLookup(ClickEvent event) {
-        String domain;
         org.openelis.ui.widget.Window window;
         final SendoutOrderScreenUI orderScreen;
         ScheduledCommand cmd;
@@ -2340,29 +2341,23 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         if (getOrderId() == null)
             return;
 
-        domain = manager.getSample().getDomain();
-
-        if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().PRIVATEWELL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain)) {
-            try {
-                window = new org.openelis.ui.widget.Window();
-                window.setName(Messages.get().order_sendoutOrder());
-                window.setSize("1020px", "588px");
-                orderScreen = new SendoutOrderScreenUI(window);
-                window.setContent(orderScreen);
-                OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
-                cmd = new ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        orderScreen.query(manager.getSample().getOrderId());
-                    }
-                };
-                Scheduler.get().scheduleDeferred(cmd);
-            } catch (Throwable e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
+        try {
+            window = new org.openelis.ui.widget.Window();
+            window.setName(Messages.get().order_sendoutOrder());
+            window.setSize("1020px", "588px");
+            orderScreen = new SendoutOrderScreenUI(window);
+            window.setContent(orderScreen);
+            OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    orderScreen.query(manager.getSample().getOrderId());
+                }
+            };
+            Scheduler.get().scheduleDeferred(cmd);
+        } catch (Throwable e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -3261,7 +3256,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     private void setSamplePointId(String samplePointId) {
         manager.getSampleSDWIS().setSamplePointId(samplePointId);
     }
-    
+
     /**
      * returns the priority or null if the manager is null or if this is not an
      * sdwis sample

@@ -1857,9 +1857,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             public void onSuccess(ReportStatus status) {
                 String url;
 
-                url = "report?file=" + status.getMessage();
-                Window.open(URL.encode(url), "FinalReport", null);
-                setDone(Messages.get().gen_loadCompleteMessage());
+                if (ReportStatus.Status.SAVED.equals(status.getStatus())) {
+                    url = "/openelis/openelis/report?file=" + status.getMessage();
+                    Window.open(URL.encode(url), "FinalReport", null);
+                    setDone(Messages.get().gen_loadCompleteMessage());
+                } else {
+                    setDone(status.getMessage());
+                }
             }
 
             public void onFailure(Throwable e) {

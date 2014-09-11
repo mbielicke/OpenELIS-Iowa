@@ -83,7 +83,7 @@ public class OpenELIS extends Screen {
                     finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection, analyte,
                     dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
                     label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
-                    scriptlet, systemVariable, pws, cron, logs, instrumentBarcodeReport;
+                    scriptlet, systemVariable, pws, cron, logs, instrumentBarcodeReport, attachment;
 
 	@UiField
     protected Menu maintenanceMenu;                    
@@ -585,6 +585,12 @@ public class OpenELIS extends Screen {
         addCommand(sampleQc, "sampletracking", new Command() {
             public void execute() {
                 showScreen(SAMPLE_QC);
+            }
+        });
+        
+        addCommand(attachment, "attachment", new Command() {
+            public void execute() {
+                showScreen(ATTACHMENT);
             }
         });
     }
