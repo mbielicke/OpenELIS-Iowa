@@ -59,6 +59,7 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -72,6 +73,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -118,6 +120,7 @@ import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
+import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.KeyCodes;
@@ -167,8 +170,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected TextBox<Integer>                          accessionNumber, orderId, envPriority;
 
     @UiField
-    protected TextBox<String>                           clientReference, envCollector, envCollectorPhone,
-                    envDescription, envLocation, locationAddressMultipleUnit,
+    protected TextBox<String>                           clientReference, envCollector,
+                    envCollectorPhone, envDescription, envLocation, locationAddressMultipleUnit,
                     locationAddressStreetAddress, locationAddressCity, locationAddressZipCode;
 
     @UiField
@@ -197,6 +200,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     historySampleEnvironmental, historySampleProject, historySampleOrganization,
                     historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                     historySampleQA, historyAnalysisQA, historyAuxData;
+
+    @UiField
+    protected CheckMenuItem                             fromTRF;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -228,6 +234,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     @UiField(provided = true)
     protected AuxDataTabUI                              auxDataTab;
 
+    @UiField(provided = true)
+    protected AttachmentTabUI                           attachmentTab;
+
     protected boolean                                   canEdit, isBusy;
 
     protected ModulePermission                          userPermission;
@@ -239,6 +248,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected SampleProjectLookupUI                     sampleprojectLookUp;
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
+
+    protected AttachmentScreenUI                        attachmentScreen;
 
     protected HashMap<String, Object>                   cache;
 
@@ -262,7 +273,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET                  };
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT  };
 
     private static final String                         REPORT_TO_KEY = "reportTo",
                     BILL_TO_KEY = "billTo";
@@ -335,6 +346,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return SampleMeta.getAuxDataValue();
             }
         };
+        attachmentTab = new AttachmentTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -430,21 +442,34 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
          */
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                optionsMenu.setEnabled(isState(DISPLAY));
-                optionsButton.setEnabled(isState(DISPLAY));
+                optionsMenu.setEnabled(isState(DEFAULT, ADD, DISPLAY));
+                optionsButton.setEnabled(isState(DEFAULT, ADD, DISPLAY));
                 historyMenu.setEnabled(isState(DISPLAY));
             }
         });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY));
+                duplicate.setEnabled(isState(DISPLAY));
             }
         });
 
         duplicate.addCommand(new Command() {
             public void execute() {
                 duplicate();
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                fromTRF.setEnabled(true);
+            }
+        });
+
+        fromTRF.addCommand(new Command() {
+            @Override
+            public void execute() {
+                fromTRF();
             }
         });
 
@@ -848,24 +873,27 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
-        addScreenHandler(envIsHazardous, SampleMeta.getEnvIsHazardous(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                envIsHazardous.setValue(getIsHazardous());
-            }
+        addScreenHandler(envIsHazardous,
+                         SampleMeta.getEnvIsHazardous(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 envIsHazardous.setValue(getIsHazardous());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setIsHazardous(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setIsHazardous(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                envIsHazardous.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                envIsHazardous.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 envIsHazardous.setEnabled(isState(QUERY) ||
+                                                           (canEdit && isState(ADD, UPDATE)));
+                                 envIsHazardous.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? envPriority : clientReference;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? envPriority : clientReference;
+                             }
+                         });
 
         envIsHazardous.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -966,7 +994,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onStateChange(StateChangeEvent event) {
                                  envCollectorPhone.setEnabled(isState(QUERY) ||
-                                                           (canEdit && isState(ADD, UPDATE)));
+                                                              (canEdit && isState(ADD, UPDATE)));
                                  envCollectorPhone.setQueryMode(isState(QUERY));
                              }
 
@@ -991,24 +1019,27 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
-        addScreenHandler(envDescription, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                envDescription.setValue(getDescription());
-            }
+        addScreenHandler(envDescription,
+                         SampleMeta.getEnvDescription(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 envDescription.setValue(getDescription());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setDescription(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setDescription(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                envDescription.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                envDescription.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 envDescription.setEnabled(isState(QUERY) ||
+                                                           (canEdit && isState(ADD, UPDATE)));
+                                 envDescription.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? envLocation : envCollectorPhone;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? envLocation : envCollectorPhone;
+                             }
+                         });
 
         envDescription.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -1693,6 +1724,20 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
+        addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                attachmentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                attachmentTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return attachmentTab.getQueryFields();
+            }
+        });
+
         /*
          * querying by this tab is allowed on this screen, but not on all
          * screens
@@ -1832,6 +1877,22 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 Scheduler.get().scheduleDeferred(cmd);
             }
         }, '8', CTRL);
+        
+        addShortcut(new ShortcutHandler() {
+            @Override
+            public void onShortcut() {
+                ScheduledCommand cmd;
+
+                tabPanel.selectTab(8);
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        attachmentTab.setFocus();
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+            }
+        }, '9', CTRL);
 
         //
         // navigation panel
@@ -2408,36 +2469,29 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         SampleService1.get().duplicate(manager.getSample().getId(), duplicateCall);
     }
 
-    /**
-     * Shows the order linked to the sample on the screen corresponding to the
-     * type of order e.g. Send-out order screen for environmental samples
-     */
-    @UiHandler("orderLookupButton")
-    protected void orderLookup(ClickEvent event) {
-        String domain;
+    private void fromTRF() {
         org.openelis.ui.widget.Window window;
-        final SendoutOrderScreenUI orderScreen;
         ScheduledCommand cmd;
+        
+        if ( fromTRF.isChecked()) {
+            /*
+             * if the user checks the checkbox for showing attachment screen
+             * then open the attachment screen if it's closed
+             */
+            if (attachmentScreen != null)
+                return;
 
-        if (getOrderId() == null)
-            return;
-
-        domain = manager.getSample().getDomain();
-
-        if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
-            Constants.domain().PRIVATEWELL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain)) {
             try {
                 window = new org.openelis.ui.widget.Window();
-                window.setName(Messages.get().order_sendoutOrder());
-                window.setSize("1020px", "588px");
-                orderScreen = new SendoutOrderScreenUI(window);
-                window.setContent(orderScreen);
-                OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+                window.setName(Messages.get().attachment_attachment());
+                window.setSize("782px", "521px");
+                attachmentScreen = new AttachmentScreenUI(window);
+                window.setContent(attachmentScreen);
+                OpenELIS.getBrowser().addWindow(window, "attachment");
                 cmd = new ScheduledCommand() {
                     @Override
                     public void execute() {
-                        orderScreen.query(manager.getSample().getOrderId());
+                        attachmentScreen.showUnattached("%");
                     }
                 };
                 Scheduler.get().scheduleDeferred(cmd);
@@ -2445,6 +2499,48 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
+        } else {
+            /*
+             * if the user unchecks the checkbox for showing attachment screen
+             * then close the attachment screen if it's open
+             */
+            if (attachmentScreen != null) {
+                attachmentScreen.getWindow().close();
+                attachmentScreen = null;
+            }
+        }
+    }
+
+    /**
+     * Shows the order linked to the sample on the screen corresponding to the
+     * type of order e.g. Send-out order screen for environmental samples
+     */
+    @UiHandler("orderLookupButton")
+    protected void orderLookup(ClickEvent event) {
+        org.openelis.ui.widget.Window window;
+        final SendoutOrderScreenUI orderScreen;
+        ScheduledCommand cmd;
+
+        if (getOrderId() == null)
+            return;
+
+        try {
+            window = new org.openelis.ui.widget.Window();
+            window.setName(Messages.get().order_sendoutOrder());
+            window.setSize("1020px", "588px");
+            orderScreen = new SendoutOrderScreenUI(window);
+            window.setContent(orderScreen);
+            OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
+            cmd = new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    orderScreen.query(manager.getSample().getOrderId());
+                }
+            };
+            Scheduler.get().scheduleDeferred(cmd);
+        } catch (Throwable e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -2683,6 +2779,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         sampleNotesTab.setData(manager);
         storageTab.setData(manager);
         qaEventTab.setData(manager);
+        attachmentTab.setData(manager);
     }
 
     /**
@@ -3385,7 +3482,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * if no project existed
              */
             if (data == null)
-                data = manager.project.add();            
+                data = manager.project.add();
 
             data.setProjectId(proj.getId());
             data.setProjectName(proj.getName());
