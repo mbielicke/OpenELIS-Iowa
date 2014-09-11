@@ -681,7 +681,7 @@ public class AirQualityExportBean {
                                                    sm.getSample().getCollectionDate());
                                 continue;
                             }
-                            if (stringList == null || stringList.size() < 1) {
+                            if (stringList == null) {
                                 problemSamples.put(sm.getSample().getAccessionNumber(),
                                                    sm.getSample().getCollectionDate());
                                 continue;
@@ -1204,6 +1204,7 @@ public class AirQualityExportBean {
                                                                                  addAll,
                                                                                  addTds,
                                                                                  analysisId));
+            return new HashMap<String, ArrayList<String>>();
         }
 
         /*
