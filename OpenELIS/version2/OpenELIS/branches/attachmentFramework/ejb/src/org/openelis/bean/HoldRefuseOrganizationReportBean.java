@@ -25,9 +25,9 @@
  */
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +100,7 @@ public class HoldRefuseOrganizationReportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         URL url;
-        File tempFile;
+        Path path;
         HashMap<String, QueryData> param;
         HashMap<String, Object> jparam;
         Connection con;
@@ -135,33 +135,27 @@ public class HoldRefuseOrganizationReportBean {
             url = ReportUtil.getResourceURL("org/openelis/report/holdRefuseOrganization/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("holdRefuse", ".pdf", new File("/tmp"));
-
             jparam = new HashMap<String, Object>();
             jparam.put("SUBREPORT_DIR", dir);
             jparam.put("USER_NAME", userName);
 
-            status.setMessage("Loading report");
+            status.setMessage("Outputing report").setPercentComplete(20);
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
-            jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
-
-            jexport.exportReport();
+            if (ReportUtil.isPrinter(printer))
+                path = export(jprint, null);
+            else 
+                path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, userName, printer, 1);
+                printstat = ReportUtil.print(path, userName, printer, 1, true);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                status.setMessage(path.getFileName().toString())
+                      .setPath(path.getParent().toString())
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
@@ -179,4 +173,19 @@ public class HoldRefuseOrganizationReportBean {
         return status;
     }
 
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
+        JRExporter jexport;
+
+        jexport = new JRPdfExporter();
+        path = ReportUtil.createTempFile("holdRefuse", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        jexport.exportReport();
+
+        return path;
+    }
 }

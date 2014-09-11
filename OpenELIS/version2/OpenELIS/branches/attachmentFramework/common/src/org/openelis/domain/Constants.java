@@ -306,6 +306,10 @@ public class Constants implements Serializable {
 
         public String get(AuxDataDO data) {
             return getAuxData(data.getId());
+        }       
+        
+        public String get(AttachmentItemDO data) {
+            return getAttachmentItem(data.getId());
         }
 
         /**
@@ -361,6 +365,10 @@ public class Constants implements Serializable {
 
         public String getAuxData(Integer id) {
             return Constants.table().AUX_DATA + ":" + id;
+        }
+
+        private String getAttachmentItem(Integer id) {
+            return Constants.table().ATTACHMENT_ITEM + ":" + id;
         }
     }
 }

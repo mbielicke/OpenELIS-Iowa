@@ -25,9 +25,9 @@
  */
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +38,14 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
+
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.ui.common.OptionListItem;
@@ -46,14 +54,6 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
 import org.openelis.utils.User;
-
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -115,14 +115,13 @@ public class InstrumentBarcodeReportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         URL url;
-        File tempFile;
+        Path path;
         HashMap<String, QueryData> param;
         HashMap<String, Object> jparam;
         Connection con;
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
         String barcodeType, dir, printer, printstat, userName, worksheetId;
         /*
          * push status into session so we can query it while the report is
@@ -153,36 +152,29 @@ public class InstrumentBarcodeReportBean {
             url = ReportUtil.getResourceURL("org/openelis/report/instrumentBarcode/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("instrumentBarcode", ".pdf", new File("/tmp"));
-
             jparam = new HashMap<String, Object>();
             jparam.put("WORKSHEET_ID", worksheetId);
             jparam.put("BARCODE_TYPE", barcodeType);
             jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
 
-            status.setMessage("Loading report");
+            status.setMessage("Outputing report").setPercentComplete(20);
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
-
-            jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
-
-            jexport.exportReport();
+            if (ReportUtil.isPrinter(printer))
+                path = export(jprint, null);
+            else 
+                path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, userName, printer, 1);
+                printstat = ReportUtil.print(path, userName, printer, 1, true);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                status.setMessage(path.getFileName().toString())
+                      .setPath(path.getParent().toString())
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
@@ -198,5 +190,21 @@ public class InstrumentBarcodeReportBean {
         }
 
         return status;
+    }
+    
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
+        JRExporter jexport;
+
+        jexport = new JRPdfExporter();
+        path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        jexport.exportReport();
+
+        return path;
     }
 }

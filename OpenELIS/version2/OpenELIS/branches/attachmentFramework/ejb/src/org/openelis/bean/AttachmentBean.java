@@ -25,13 +25,8 @@
  */
 package org.openelis.bean;
 
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -42,15 +37,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Attachment;
+import org.openelis.meta.AttachmentMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
-import org.openelis.utils.ReportUtil;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.util.QueryBuilderV2;
 
 /**
  * The class manages attachment record and storage name/location. The actual
@@ -71,12 +69,12 @@ import org.openelis.utils.ReportUtil;
 public class AttachmentBean {
 
     @PersistenceContext(unitName = "openelis")
-    EntityManager               manager;
+    private EntityManager               manager;
 
     @EJB
-    SystemVariableBean          systemVariable;
-
-    private static final Logger log = Logger.getLogger("openelis");
+    private LockBean                    lock;
+    
+    private static final AttachmentMeta meta = new AttachmentMeta();
 
     /**
      * Returns the attachment record using its id
@@ -85,7 +83,7 @@ public class AttachmentBean {
         Query query;
         AttachmentDO data;
 
-        query = manager.createNamedQuery("Attchment.FetchById");
+        query = manager.createNamedQuery("Attachment.FetchById");
         query.setParameter("id", id);
 
         try {
@@ -105,10 +103,83 @@ public class AttachmentBean {
     public ArrayList<AttachmentDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Attchment.FetchByIds");
+        query = manager.createNamedQuery("Attachment.FetchByIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    /**
+     * Returns a distinct list of attachment records for given list of ids,
+     * sorted in descending order of the ids.
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<AttachmentDO> fetchByIdsDescending(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Attachment.FetchByIdsDescending");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    /**
+     * Returns a distinct list of attachment records that don't have any
+     * attachment items and match the given description, sorted in descending
+     * order of the ids.
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<AttachmentDO> fetchUnattachedByDescription(String description, int first, int max) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("Attachment.FetchUnattachedByDescription");
+        query.setParameter("description", description);
+        query.setMaxResults(first + max);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    public AttachmentDO fetchForUpdate(Integer id) throws Exception {
+        try {
+            lock.lock(Constants.table().ATTACHMENT, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + AttachmentMeta.getId() +
+                          ", " + AttachmentMeta.getDescription() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(AttachmentMeta.getId() + " DESC");
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
     }
 
     /**
@@ -156,8 +227,13 @@ public class AttachmentBean {
         return data;
     }
 
+    public AttachmentDO abortUpdate(Integer id) throws Exception {
+        lock.unlock(Constants.table().ATTACHMENT, id);
+        return fetchById(id);
+    }
+
     /**
-     * Removed the attachment record and data file from the file system.
+     * Removes the attachment record and data file from the file system.
      */
     public void delete(AttachmentDO data) throws Exception {
         if (data.getId() != null)
@@ -174,40 +250,5 @@ public class AttachmentBean {
 
             manager.remove(entity);
         }
-    }
-
-    /**
-     * Creates an attachment record using the filename and description. The file
-     * specified by filename is renamed and moved to the attachment directory.
-     * The filename is stored storage reference field.
-     */
-    public AttachmentDO add(String filename, String discription, Integer sectionId) throws Exception {
-        String base;
-        Path src, dst;
-        AttachmentDO data;
-
-        src = Paths.get(filename);
-
-        try {
-            base = systemVariable.fetchByName("attachment_directory").getValue();
-        } catch (Exception e) {
-            log.severe("No 'attachment_directory' system variable defined");
-            throw new InconsistencyException(Messages.get().attachment_missingPath());
-        }
-
-        /*
-         * insert the attachment and move the file to the right location
-         */
-        data = add(new AttachmentDO(0, null, null, sectionId, discription, src.getFileName().toString()));
-        dst = Paths.get(base, ReportUtil.getAttachmentSubdirectory(data.getId()), data.getId()
-                                                                                      .toString());
-        try {
-            Files.move(src, dst);
-        } catch (Exception anyE) {
-            log.severe("Can't move file '" + src.toString() + "' to '" + dst.toString());
-            throw new Exception(Messages.get().attachment_moveFileException(dst.toString()));
-        }
-
-        return data;
     }
 }

@@ -1,7 +1,8 @@
 package org.openelis.bean;
 
-import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,7 +112,7 @@ public class SampleLoginLabelReportBean {
     @RolesAllowed("r_loginlabel-select")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         int i, j, samples, containers, laccession;
-        File tempFile;
+        Path path;
         String received, location, locationId, printer, printstat;
         ReportStatus status;
         HashMap<String, QueryData> param;
@@ -185,8 +186,8 @@ public class SampleLoginLabelReportBean {
         /*
          * print the labels and send it to printer
          */
-        tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
-        ps = new PrintStream(tempFile);
+        path = ReportUtil.createTempFile("loginlabel", ".txt", null);
+        ps = new PrintStream(Files.newOutputStream(path));
         for (i = 0; i < samples; i++) {
             laccession++;
             labelReport.sampleLoginLabel(ps, laccession, -1, received, location);
@@ -195,7 +196,7 @@ public class SampleLoginLabelReportBean {
         }
         ps.close();
 
-        printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, 1);
+        printstat = ReportUtil.print(path, User.getName(ctx), printer, 1, true);
         status.setPercentComplete(100).setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
 
         return status;
@@ -256,7 +257,7 @@ public class SampleLoginLabelReportBean {
         SampleDO samdata;
         SystemVariableDO sysdata;
         PrintStream ps;
-        File tempFile;
+        Path path;
 
         /*
          * push status into session so we can query it while the report is
@@ -338,13 +339,13 @@ public class SampleLoginLabelReportBean {
         /*
          * print the labels and send it to printer
          */
-        tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
-        ps = new PrintStream(tempFile);
+        path = ReportUtil.createTempFile("loginlabel", ".txt", null);
+        ps = new PrintStream(Files.newOutputStream(path));
         for (i = 0; i < containers; i++)
             labelReport.sampleLoginLabel(ps, accession, i + starting, received, location);
         ps.close();
 
-        printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, 1);
+        printstat = ReportUtil.print(path, User.getName(ctx), printer, 1, true);
         status.setPercentComplete(100).setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
 
         return status;
