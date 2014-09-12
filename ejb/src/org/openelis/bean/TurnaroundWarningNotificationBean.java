@@ -65,7 +65,7 @@ public class TurnaroundWarningNotificationBean {
     @Asynchronous
     @TransactionTimeout(600)
     public void generateNotifications() throws Exception {
-        int days;
+        int hours;
         AnalysisViewDO aVDO;
         ArrayList<Object[]> resultList;
         ArrayList<Integer> analysisIds;
@@ -126,7 +126,7 @@ public class TurnaroundWarningNotificationBean {
                 for (Integer aId : analysisIds) {
                     aVDO = analysesById.get(aId);
                     /*
-                     * If an analysis was found in the turnaroun query but not in
+                     * If an analysis was found in the turnaround query but not in
                      * the SampleManager query, it is an orphan analysis left over
                      * from a bug that used to be in the Send-out Order import code.
                      */
@@ -194,8 +194,8 @@ public class TurnaroundWarningNotificationBean {
                         testsById.put(tVDO.getId(), tVDO);
                     }
 
-                    days = (int) (aVDO.getAvailableDate().getDate().getTime() - now.getDate().getTime()) / 1000 / 60 / 60;
-                    daysElapsed = JasperUtil.daysAndHours(days);
+                    hours = (int) (now.getDate().getTime() - aVDO.getAvailableDate().getDate().getTime()) / 1000 / 60 / 60;
+                    daysElapsed = JasperUtil.daysAndHours(hours);
                     
                     tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60 * 60 * 1000);
                     expireDate = new Datetime(Datetime.YEAR, Datetime.MINUTE, tempDate);
