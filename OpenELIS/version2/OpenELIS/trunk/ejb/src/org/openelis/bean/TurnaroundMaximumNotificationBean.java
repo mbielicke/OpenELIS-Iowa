@@ -194,7 +194,7 @@ public class TurnaroundMaximumNotificationBean {
                         testsById.put(tVDO.getId(), tVDO);
                     }
 
-                    days = (int) (aVDO.getAvailableDate().getDate().getTime() - now.getDate().getTime()) / 1000 / 60 / 60;
+                    days = (int) (now.getDate().getTime() - aVDO.getAvailableDate().getDate().getTime()) / 1000 / 60 / 60;
                     daysElapsed = JasperUtil.daysAndHours(days);
                     
                     tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60 * 60 * 1000);
