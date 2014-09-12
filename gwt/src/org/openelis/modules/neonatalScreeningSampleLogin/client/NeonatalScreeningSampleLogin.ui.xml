@@ -412,7 +412,7 @@
                     </td>
                     <td>
                       <w:TextBox ui:field="nextOfKinNationalId" width="75px" field="String"
-                        maxLength="9" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
+                        maxLength="11" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
                     </td>
                   </tr>
                   <tr>

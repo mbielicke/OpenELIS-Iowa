@@ -183,7 +183,7 @@
                       </td>
                       <td>
                         <w:TextBox ui:field="patientNationalId" width="75px" field="String"
-                          maxLength="9" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
+                          maxLength="11" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
