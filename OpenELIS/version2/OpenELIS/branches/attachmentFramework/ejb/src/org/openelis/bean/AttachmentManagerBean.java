@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import static org.openelis.manager.AttachmentManagerAccessor.*;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -314,7 +315,6 @@ public class AttachmentManagerBean {
      * set as the description. Returns the managers for the attachment records
      * created.
      */
-    @RolesAllowed({"attachment-add", "attachment-update"})
     public ArrayList<AttachmentManager> put(List<String> paths) throws Exception {
         AttachmentDO data;
         ArrayList<Integer> ids;
@@ -378,13 +378,15 @@ public class AttachmentManagerBean {
      * linked to the attachment with the passed id
      */
     public ReportStatus get(Integer id) throws Exception {
-        String base;
+        Integer index;
+        String base, ref, prefix, suffix;
         AttachmentDO data;
-        Path srcPath, uploadPath;
+        Path src, dst;
         ReportStatus status;
         SystemUserPermission perm;
         SectionPermission sp;
         SectionViewDO sect;
+        InputStream in;
 
         data = attachment.fetchById(id);
 
@@ -409,18 +411,34 @@ public class AttachmentManagerBean {
             throw new InconsistencyException(Messages.get().attachment_missingPathException());
         }
 
+        src = Paths.get(base, ReportUtil.getAttachmentSubdirectory(id), id.toString());
+        in = Files.newInputStream(src);
+        ref = data.getStorageReference();
+        index = ref.lastIndexOf(".");
         /*
-         * copy the original file linked to the attachment to the upload
-         * directory
+         * Get the file name and extension from the storage reference if there
+         * is a "." in the reference and there's something to the left and right
+         * of it; otherwise, use the whole reference as the prefix and let the
+         * suffix be empty. Last index is used instead of splitting on the "."
+         * because the reference could have multiple of them.
          */
-        srcPath = Paths.get(base, ReportUtil.getAttachmentSubdirectory(id), id.toString());
-        uploadPath = Paths.get(ReportUtil.getSystemVariableValue("upload_stream_directory"),
-                               data.getStorageReference());
-        Files.copy(srcPath, uploadPath);
-        
+        if (index > 0 && index < ref.length() - 1) {
+            prefix = ref.substring(0, index);
+            suffix = ref.substring(index, ref.length());
+        } else {
+            prefix = ref;
+            suffix = "";
+        }
+        /*
+         * copy the contents of the original file linked to the attachment to
+         * the upload directory
+         */
+        dst = ReportUtil.createTempFile(prefix, suffix, "upload_stream_directory");
+        Files.copy(in, dst);
+
         status = new ReportStatus();
-        status.setMessage(uploadPath.getFileName().toString())
-              .setPath(uploadPath.getParent().toString())
+        status.setMessage(dst.getFileName().toString())
+              .setPath(dst.toString())
               .setStatus(ReportStatus.Status.SAVED);
         return status;
     }
