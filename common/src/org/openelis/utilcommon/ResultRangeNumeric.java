@@ -64,13 +64,24 @@ public class ResultRangeNumeric implements ResultRange {
     public void contains(String value) throws ParseException {
         double d;
         boolean contains;
+        String sign;
 
-        if (value.startsWith(">") || value.startsWith("<"))
+        sign = null;
+        if (value.startsWith(">") || value.startsWith("<")) {
+            sign = value.substring(0, 1);
             value = value.substring(1);
+        }
 
         try {
             d = Double.parseDouble(value);
-            contains = d >= min && d < max;
+            /*
+             * If the user specifies a "<" in front of the result, we want to
+             * try to match the upper bounds.
+             */
+            if ("<".equals(sign) && d == max)
+                contains = true;
+            else
+                contains = d >= min && d < max;
         } catch (Exception e) {
             contains = false;
         }
