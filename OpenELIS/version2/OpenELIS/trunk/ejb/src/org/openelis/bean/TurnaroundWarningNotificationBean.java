@@ -197,7 +197,7 @@ public class TurnaroundWarningNotificationBean {
                     hours = (int) (now.getDate().getTime() - aVDO.getAvailableDate().getDate().getTime()) / 1000 / 60 / 60;
                     daysElapsed = JasperUtil.daysAndHours(hours);
                     
-                    tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60 * 60 * 1000);
+                    tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60L * 60L * 1000L);
                     expireDate = new Datetime(Datetime.YEAR, Datetime.MINUTE, tempDate);
                     expireString = "";
                     if (expireDate != null)

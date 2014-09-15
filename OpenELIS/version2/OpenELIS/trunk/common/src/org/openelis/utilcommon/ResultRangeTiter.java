@@ -66,21 +66,36 @@ public class ResultRangeTiter implements ResultRange {
     public void contains(String value) throws ParseException {
         int d;
         boolean contains;
+        String fmt;
 
-        if (value.startsWith(">") || value.startsWith("<"))
+        fmt = "";
+        if (value.startsWith(">") || value.startsWith("<")) {
+            fmt = value.substring(0, 1);
             value = value.substring(1);
+        }
 
-        if (value.startsWith("="))
+        if (value.startsWith("=")) {
+            fmt += value.substring(0, 1);
             value = value.substring(1);
+        }
 
         if (value.startsWith("1:"))
             value = value.substring(2);
         else
             throw new ParseException(Messages.get().illegalTiterFormatException());
 
+        fmt += "1:";
+
         try {
             d = Integer.parseInt(value);
-            contains = d >= min && d <= max;
+            /*
+             * If the user specifies a "<" in front of the result, we want to
+             * try to match the upper bounds.
+             */
+            if ("<1:".equals(fmt) && d == max)
+                contains = true;
+            else
+                contains = d >= min && d <= max;
         } catch (Exception e) {
             contains = false;
         }
