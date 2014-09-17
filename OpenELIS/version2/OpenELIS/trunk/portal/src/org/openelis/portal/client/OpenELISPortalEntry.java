@@ -4,6 +4,7 @@ import static org.openelis.portal.client.Logger.*;
 
 import java.util.logging.Level;
 
+import org.openelis.domain.Constants;
 import org.openelis.portal.client.resources.Resources;
 import org.openelis.portal.modules.main.client.MainScreen;
 import org.openelis.ui.screen.Screen;
@@ -52,6 +53,12 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
         } catch (Throwable e) {
             remote.log(Level.SEVERE,e.getMessage(),e);
             Window.alert("Unable to start app : " + e.getMessage());
+        }
+        
+        try {
+            Constants.setConstants(OpenELISService.get().getConstants());
+        } catch (Exception e) {
+        	remote.log(Level.SEVERE,e.getMessage(),e);
         }
     }
 
