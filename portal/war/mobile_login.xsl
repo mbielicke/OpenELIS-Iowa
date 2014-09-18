@@ -65,7 +65,7 @@ UIRF Software License are applicable instead of those above.
 
 			// If there are matches, we're in portrait
 			if(mql.matches) {  
-				window.alert("started in portrait");
+				//window.alert("started in portrait");
 			} else {  
 				document.getElementById("textDiv").setAttribute("style","float:left;");
 			}
@@ -73,7 +73,7 @@ UIRF Software License are applicable instead of those above.
 			// Add a media query change listener
 			mql.addListener(function(m) {
 				if(m.matches) {
-					window.alert("changed to portrait");
+					//window.alert("changed to portrait");
 				}
 				else {
 					document.getElementById("textDiv").setAttribute("style","float:left;");

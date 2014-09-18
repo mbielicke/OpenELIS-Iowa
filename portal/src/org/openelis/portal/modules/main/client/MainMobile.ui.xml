@@ -18,7 +18,7 @@
       <p:Navigation ui:field="navigation"/>
     </g:layer>
     <g:layer top="100px" bottom="0px">
-      <g:LayoutPanel ui:field="main"/>
+      <g:ScrollPanel ui:field="main"/>
     </g:layer>
   </g:LayoutPanel>
   
