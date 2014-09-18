@@ -47,10 +47,10 @@ import org.openelis.ui.common.Datetime;
                 		"domain, accessionNumber, sampleRevision, receivedDate, " +
                 		"collectionDate, collectionTime, sampleStatusId, clientReference, " +
                 		"sampleReleasedDate, reportToId, reportToName, collector, " +
-                		"location, locationCity, projectName, pwsNumber0, pwsName, " +
-                		"sdwisFacilityId, patientLastName, patientFirstName, patientBirthDate, " +
-                		"analysisId, analysisRevision, analysisStatusId, testReportingDescription, " +
-                		"methodReportingDescription)"
+                		"location, locationCity, projectId, projectName, pwsNumber0, " +
+                		"pwsName, sdwisFacilityId, patientLastName, patientFirstName, " +
+                		"patientBirthDate, analysisId, analysisRevision, analysisIsReportable, " +
+                		"analysisStatusId, testReportingDescription, methodReportingDescription)"
                       + " from SampleView where sampleId = :id"
                       + " order by accessionNumber, testReportingDescription, methodReportingDescription"),
     @NamedQuery( name = "SampleView.FetchBySampleIds",
@@ -58,10 +58,10 @@ import org.openelis.ui.common.Datetime;
                         "domain, accessionNumber, sampleRevision, receivedDate, " +
                         "collectionDate, collectionTime, sampleStatusId, clientReference, " +
                         "sampleReleasedDate, reportToId, reportToName, collector, " +
-                        "location, locationCity, projectName, pwsNumber0, pwsName, " +
-                        "sdwisFacilityId, patientLastName, patientFirstName, patientBirthDate, " +
-                        "analysisId, analysisRevision, analysisStatusId, testReportingDescription, " +
-                        "methodReportingDescription)"
+                        "location, locationCity, projectId, projectName, pwsNumber0, " +
+                        "pwsName, sdwisFacilityId, patientLastName, patientFirstName, " +
+                        "patientBirthDate, analysisId, analysisRevision, analysisIsReportable, " +
+                        "analysisStatusId, testReportingDescription, methodReportingDescription)"
                       + " from SampleView where sampleId in (:ids)"
                       + " order by accessionNumber, testReportingDescription, methodReportingDescription")})
 @Entity
@@ -114,6 +114,9 @@ public class SampleView  {
     @Column(name = "location_city")
     private String                      locationCity;
     
+    @Column(name = "project_id")
+    private Integer                     projectId;
+    
     @Column(name = "project_name")
     private String                      projectName;
     
@@ -140,6 +143,9 @@ public class SampleView  {
 
     @Column(name = "analysis_revision")
     private Integer                     analysisRevision;
+
+    @Column(name = "analysis_is_reportable")
+    private String                      analysisIsReportable;
 
     @Column(name = "analysis_status_id")
     private Integer                     analysisStatusId;
@@ -210,6 +216,10 @@ public class SampleView  {
         return locationCity;
     }
 
+    public Integer getProjectId() {
+        return projectId;
+    }
+
     public String getProjectName() {
         return projectName;
     }
@@ -244,6 +254,10 @@ public class SampleView  {
 
     public Integer getAnalysisRevision() {
         return analysisRevision;
+    }
+
+    public String getAnalysisIsReportable() {
+        return analysisIsReportable;
     }
 
     public Integer getAnalysisStatusId() {

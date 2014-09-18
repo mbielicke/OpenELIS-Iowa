@@ -39,11 +39,13 @@ public class SampleViewVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected Integer           sampleId, accessionNumber, sampleRevision, sampleStatusId,
-                                reportToId, analysisId, analysisRevision, analysisStatusId;
+                                reportToId, projectId, analysisId, analysisRevision,
+                                analysisStatusId;
     protected String            domain, clientReference, reportToName, collector,
                                 location, locationCity, projectName, pwsNumber0,
                                 pwsName, sdwisFacilityId, patientLastName, patientFirstName,
-                                testReportingDescription, methodReportingDescription;
+                                analysisIsReportable, testReportingDescription,
+                                methodReportingDescription;
     protected Datetime          receivedDate, collectionDate, collectionTime, sampleReleasedDate,
                                 patientBirthDate;
     
@@ -55,9 +57,10 @@ public class SampleViewVO implements Serializable {
                         Date collectionTime, Integer sampleStatusId, String clientReference,
                         Date sampleReleasedDate, Integer reportToId, String reportToName,
                         String collector, String location, String locationCity,
-                        String projectName, String pwsNumber0, String pwsName, String sdwisFacilityId,
-                        String patientLastName, String patientFirstName, Date patientBirthDate,
-                        Integer analysisId, Integer analysisRevision, Integer analysisStatusId,
+                        Integer projectId, String projectName, String pwsNumber0,
+                        String pwsName, String sdwisFacilityId, String patientLastName,
+                        String patientFirstName, Date patientBirthDate, Integer analysisId,
+                        Integer analysisRevision, String analysisIsReportable, Integer analysisStatusId,
                         String testReportingDescription, String methodReportingDescription) {
         setSampleId(sampleId);
         setDomain(domain);
@@ -74,6 +77,7 @@ public class SampleViewVO implements Serializable {
         setCollector(collector);
         setLocation(location);
         setLocationCity(locationCity);
+        setProjectId(projectId);
         setProjectName(projectName);
         setPwsNumber0(pwsNumber0);
         setPwsName(pwsName);
@@ -83,6 +87,7 @@ public class SampleViewVO implements Serializable {
         setPatientBirthDate(DataBaseUtil.toYD(patientBirthDate));
         setAnalysisId(analysisId);
         setAnalysisRevision(analysisRevision);
+        setAnalysisIsReportable(analysisIsReportable);
         setAnalysisStatusId(analysisStatusId);
         setTestReportingDescription(testReportingDescription);
         setMethodReportingDescription(methodReportingDescription);
@@ -208,6 +213,14 @@ public class SampleViewVO implements Serializable {
         this.locationCity = DataBaseUtil.trim(locationCity);
     }
 
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
     public String getProjectName() {
         return projectName;
     }
@@ -278,6 +291,14 @@ public class SampleViewVO implements Serializable {
 
     public void setAnalysisRevision(Integer analysisRevision) {
         this.analysisRevision = analysisRevision;
+    }
+
+    public String getAnalysisIsReportable() {
+        return analysisIsReportable;
+    }
+
+    public void setAnalysisIsReportable(String analysisIsReportable) {
+        this.analysisIsReportable = DataBaseUtil.trim(analysisIsReportable);
     }
 
     public Integer getAnalysisStatusId() {
