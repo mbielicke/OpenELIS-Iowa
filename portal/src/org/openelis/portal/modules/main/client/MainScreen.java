@@ -24,7 +24,10 @@ public class MainScreen extends Screen {
 				ui.main().clear();
 				FinalReportScreen screen = new FinalReportScreen();
 				ui.main().add(screen);
-				//ui.main().setWidgetTopBottom(screen, 0, Unit.PX, 0, Unit.PX);
+				//ui.main().setSize(ui.main().getParent().getOffsetWidth()+"px", ui.main().getParent().getOffsetHeight()+"px");
+				//ui.main().onResize();
+				//screen.onResize();
+				ui.main().setWidgetTopBottom(screen, 0, Unit.PX, 0, Unit.PX);
 			}
 		});
 	}
