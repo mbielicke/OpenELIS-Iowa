@@ -1211,7 +1211,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             public void onSuccess(ReportStatus status) {
                 String url;
 
-                url = "report?file=" + status.getMessage();
+                url = "/openelis/openelis/report?file=" + status.getMessage();
                 Window.open(URL.encode(url), "FinalReport", null);
                 window.setDone(Messages.get().loadCompleteMessage());
             }
