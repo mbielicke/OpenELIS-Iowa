@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MainMobileUIImpl extends ResizeComposite implements MainUI{
@@ -17,7 +18,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 	
 	
 	@UiField
-	LayoutPanel main;
+	ScrollPanel main;
 	
 	@UiField
 	Navigation navigation;
@@ -26,7 +27,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	public LayoutPanel main() {
+	public ScrollPanel main() {
 		return main;
 	}
 	
