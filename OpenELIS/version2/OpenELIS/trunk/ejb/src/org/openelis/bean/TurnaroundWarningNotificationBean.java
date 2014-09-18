@@ -194,7 +194,7 @@ public class TurnaroundWarningNotificationBean {
                         testsById.put(tVDO.getId(), tVDO);
                     }
 
-                    hours = (int) (now.getDate().getTime() - aVDO.getAvailableDate().getDate().getTime()) / 1000 / 60 / 60;
+                    hours = (int) ((now.getDate().getTime() - aVDO.getAvailableDate().getDate().getTime()) / 1000L / 60L / 60L);
                     daysElapsed = JasperUtil.daysAndHours(hours);
                     
                     tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60L * 60L * 1000L);
