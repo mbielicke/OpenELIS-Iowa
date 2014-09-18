@@ -21,16 +21,16 @@
               <g:LayoutPanel>
                 <g:layer>
                   <g:HTMLPanel styleName="{style.flow}">
-                    <div style="width:200px;" class="{res.style.Link}">
+                    <div style="width:175px;" class="{res.style.Link}">
               	      <g:Anchor ui:field="finalReport" text="{msg.main_finalReport}"/>
               	    </div>
-              	    <div style="width:200px;" class="{res.style.Link}">
+              	    <div style="width:175px;" class="{res.style.Link}">
               	      <g:Anchor ui:field="dataView" text="{msg.dataView}"/>
               	    </div>
-              	    <div style="width:200px;" class="{res.style.Link}">
+              	    <div style="width:175px;" class="{res.style.Link}">
                       <g:Anchor ui:field="sampleStatus" text="{msg.main_sampleStatus}"/>
               	    </div>
-                    <div style="width:200px;" class="{res.style.Link}">
+                    <div style="width:175px;" class="{res.style.Link}">
                 	  <g:Anchor ui:field="testRequest" text="{msg.main_testRequest}"/>
                     </div>
                   </g:HTMLPanel>
@@ -42,10 +42,10 @@
               <g:LayoutPanel>
                 <g:layer>
                   <g:HTMLPanel styleName="{style.flow}">
-                    <div style="width:200px" class="{res.style.Link}">
+                    <div style="width:175px" class="{res.style.Link}">
                       <g:Anchor ui:field="emailNotification" text="{msg.main_emailNotification}"/>
                     </div>
-                    <div style="width:200px" class="{res.style.Link}">
+                    <div style="width:175px" class="{res.style.Link}">
               	      <g:Anchor ui:field="logout" text="{msg.main_logout}"/>
                   	</div>
                   </g:HTMLPanel>
