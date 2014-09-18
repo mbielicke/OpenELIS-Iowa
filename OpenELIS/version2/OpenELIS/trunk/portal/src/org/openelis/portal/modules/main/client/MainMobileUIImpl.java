@@ -18,7 +18,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 	
 	
 	@UiField
-	ScrollPanel main;
+	LayoutPanel main;
 	
 	@UiField
 	Navigation navigation;
@@ -27,7 +27,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	public ScrollPanel main() {
+	public LayoutPanel main() {
 		return main;
 	}
 	

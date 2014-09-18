@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 
 public interface MainUI extends IsWidget {
 	
-	ScrollPanel main();
+	LayoutPanel main();
 	Navigation navigation();
 	
 }
