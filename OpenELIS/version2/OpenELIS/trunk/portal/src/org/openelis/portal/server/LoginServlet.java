@@ -26,6 +26,7 @@
 package org.openelis.portal.server;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,7 +70,7 @@ public class LoginServlet extends HttpServlet {
             locale = req.getParameter("locale");
             hreq.getSession().setAttribute("locale", locale);
         }
-
+        
         //
         // ask them to authenticate
         //
@@ -100,7 +101,11 @@ public class LoginServlet extends HttpServlet {
             ((HttpServletResponse)response).setContentType("text/html");
             ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
             
-            response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") +
+            if(req.getHeader("user-agent").toLowerCase().contains("mobile"))
+            	response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") + 
+            											"/mobile_login.xsl", doc,(String)hreq.getSession().getAttribute("locale")));
+            else
+            	response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") +
                                                        "/login.xsl", doc,(String)hreq.getSession().getAttribute("locale")));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
