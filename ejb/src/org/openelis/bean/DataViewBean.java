@@ -310,7 +310,7 @@ public class DataViewBean {
              */
             enc.close();
             status.setMessage(path.getFileName().toString())
-                  .setPath(path.getParent().toString())
+                  .setPath(path.toString())
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             if (out != null)
@@ -756,7 +756,7 @@ public class DataViewBean {
                 wb.write(out);
                 out.close();
                 status.setMessage(path.getFileName().toString())
-                      .setPath(path.getParent().toString())
+                      .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             } catch (Exception e) {
                 e.printStackTrace();

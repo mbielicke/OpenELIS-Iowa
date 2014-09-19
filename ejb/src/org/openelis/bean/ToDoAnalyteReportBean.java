@@ -267,9 +267,8 @@ public class ToDoAnalyteReportBean {
                 printstat = ReportUtil.print(path, userName, printer, 1, true);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
-                path = ReportUtil.createTempFile("todoAnalyte", ".pdf", "upload_stream_directory");
                 status.setMessage(path.getFileName().toString())
-                      .setPath(path.getParent().toString())
+                      .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {

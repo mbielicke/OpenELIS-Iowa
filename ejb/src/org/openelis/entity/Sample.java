@@ -680,6 +680,11 @@ public class Sample implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Collection<AuxData>             auxData;
+    
+    // attachment item records
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+    private Collection<AttachmentItem>      attachmentItem;
 
     @Transient
     private Sample                          original;
@@ -874,15 +879,7 @@ public class Sample implements Auditable, Cloneable {
     public void setSamplePrivateWell(Collection<SamplePrivateWell> samplePrivateWell) {
         this.samplePrivateWell = samplePrivateWell;
     }
-
-    public Collection<AuxData> getAuxData() {
-        return auxData;
-    }
-
-    public void setAuxData(Collection<AuxData> auxData) {
-        this.auxData = auxData;
-    }
-
+    
     public Collection<SampleSDWIS> getSampleSDWIS() {
         return sampleSDWIS;
     }
@@ -905,6 +902,22 @@ public class Sample implements Auditable, Cloneable {
 
     public void setSampleClinical(Collection<SampleClinical> sampleClinical) {
         this.sampleClinical = sampleClinical;
+    }
+
+    public Collection<AuxData> getAuxData() {
+        return auxData;
+    }
+
+    public void setAuxData(Collection<AuxData> auxData) {
+        this.auxData = auxData;
+    }
+
+    public Collection<AttachmentItem> getAttachmentItem() {
+        return attachmentItem;
+    }
+
+    public void setAttachmentItem(Collection<AttachmentItem> attachmentItem) {
+        this.attachmentItem = attachmentItem;
     }
 
     public void setClone() {
