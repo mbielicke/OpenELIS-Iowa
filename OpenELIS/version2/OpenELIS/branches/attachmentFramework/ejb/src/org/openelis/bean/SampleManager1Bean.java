@@ -46,7 +46,6 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
-import org.openelis.domain.AttachmentItemDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -1064,6 +1063,8 @@ public class SampleManager1Bean {
                         auxdata.delete( ((AuxDataViewDO)data));
                     else if (data instanceof NoteViewDO)
                         note.delete( ((NoteViewDO)data));
+                    else if (data instanceof AttachmentItemViewDO)
+                        attachmentItem.delete( ((AttachmentItemViewDO)data));
                     else if (data instanceof SampleItemViewDO)
                         item.delete( ((SampleItemViewDO)data));
                     else if (data instanceof AnalysisQaEventViewDO)
@@ -1200,6 +1201,18 @@ public class SampleManager1Bean {
                         note.add(data);
                     } else {
                         note.update(data);
+                    }
+                }
+            }
+            
+            if (getAttachments(sm) != null) {
+                for (AttachmentItemViewDO data : getAttachments(sm)) {
+                    if (data.getId() < 0) {
+                        data.setReferenceTableId(Constants.table().SAMPLE);
+                        data.setReferenceId(getSample(sm).getId());
+                        attachmentItem.add(data);
+                    } else {
+                        attachmentItem.update(data);
                     }
                 }
             }

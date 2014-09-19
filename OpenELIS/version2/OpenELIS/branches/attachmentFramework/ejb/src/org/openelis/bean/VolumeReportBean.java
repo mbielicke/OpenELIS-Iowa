@@ -196,7 +196,7 @@ public class VolumeReportBean {
             status.setPercentComplete(100);
             
             status.setMessage(path.getFileName().toString())
-                  .setPath(path.getParent().toString())
+                  .setPath(path.toString())
                   .setStatus(ReportStatus.Status.SAVED);           
         } catch (Exception e) {
             e.printStackTrace();

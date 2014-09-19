@@ -247,7 +247,6 @@ public class QcChartReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
         QcChartDataSource ds;
         HashMap<String, Object> jparam;
 
@@ -299,7 +298,7 @@ public class QcChartReportBean {
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 status.setMessage(path.getFileName().toString())
-                      .setPath(path.getParent().toString())
+                      .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {

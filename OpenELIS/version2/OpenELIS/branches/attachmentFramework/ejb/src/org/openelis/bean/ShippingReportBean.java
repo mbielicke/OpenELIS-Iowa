@@ -227,7 +227,7 @@ public class ShippingReportBean {
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 } else {
                     status.setMessage(path.getFileName().toString())
-                          .setPath(path.getParent().toString())
+                          .setPath(path.toString())
                           .setStatus(ReportStatus.Status.SAVED);
                 }
             }

@@ -202,7 +202,7 @@ public class SDWISUnloadReportBean {
         ArrayList<SDWISUnloadReportVO> analyses;
         Counter sampleCounts;
         Date beginReleased, endReleased;
-        Path tempPath, statPath;
+        Path temp, stat;
         OutputStream out;
         HashMap<String, Object> jparam;
         HashMap<String, QueryData> param;
@@ -239,9 +239,9 @@ public class SDWISUnloadReportBean {
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
         try {
-            tempPath = ReportUtil.createTempFile("sdwisUnload", ".lrr", "upload_stream_directory");
-            statPath = ReportUtil.createTempFile("sdwisUnloadStatus", ".pdf", null);
-            out = Files.newOutputStream(tempPath);
+            temp = ReportUtil.createTempFile("sdwisUnload", ".lrr", "upload_stream_directory");
+            stat = ReportUtil.createTempFile("sdwisUnloadStatus", ".pdf", null);
+            out = Files.newOutputStream(temp);
         } catch (Exception anyE) {
             anyE.printStackTrace();
             throw new Exception("Could not open temp file for writing.");
@@ -405,7 +405,7 @@ public class SDWISUnloadReportBean {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, sds);
             jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(statPath));
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(stat));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setPercentComplete(90);
@@ -414,10 +414,10 @@ public class SDWISUnloadReportBean {
 
             status.setPercentComplete(100);
 
-            ReportUtil.print(statPath, User.getName(ctx), printer, 1, true);
+            ReportUtil.print(stat, User.getName(ctx), printer, 1, true);
 
-            status.setMessage(tempPath.getFileName().toString())
-                  .setPath(tempPath.getParent().toString())
+            status.setMessage(temp.getFileName().toString())
+                  .setPath(temp.toString())
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             e.printStackTrace();

@@ -960,12 +960,12 @@ public class FinalReportBean {
                 } else if ("-esave-".equals(printer)) {
                     path = export(jprint, null);
                     status.setMessage(path.getFileName().toString())
-                          .setPath(path.getParent().toString())
+                          .setPath(path.toString())
                           .setStatus(ReportStatus.Status.SAVED);
                 } else {
                     path = export(jprint, "upload_stream_directory");
                     status.setMessage(path.getFileName().toString())
-                          .setPath(path.getParent().toString())
+                          .setPath(path.toString())
                           .setStatus(ReportStatus.Status.SAVED);
                 }
             }
