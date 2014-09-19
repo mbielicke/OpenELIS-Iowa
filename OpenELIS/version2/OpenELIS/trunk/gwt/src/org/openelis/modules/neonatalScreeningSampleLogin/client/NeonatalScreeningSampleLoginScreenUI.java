@@ -2808,6 +2808,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * show the combination of code (1,2,3 etc.) and entry("White", "Black")
          * for each race
          */
+        model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("race")) {
             r = DataBaseUtil.concatWithSeparator(d.getCode(), " - ", d.getEntry());
             row = new Item<Integer>(d.getId(), r);
