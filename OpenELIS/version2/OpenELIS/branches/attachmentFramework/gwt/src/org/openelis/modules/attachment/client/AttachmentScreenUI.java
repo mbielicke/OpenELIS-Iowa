@@ -43,11 +43,11 @@ import org.openelis.domain.SectionDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.SectionPermission.SectionFlags;
+import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.StateChangeEvent;
@@ -55,6 +55,7 @@ import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
@@ -96,7 +97,7 @@ public class AttachmentScreenUI extends Screen {
 
     public static final AttachmentUiBinder                  uiBinder      = GWT.create(AttachmentUiBinder.class);
 
-    protected AttachmentManager                             manager;
+    protected AttachmentManager                             manager, previousManager;
 
     protected HashMap<Integer, AttachmentManager>           managers;
 
@@ -110,13 +111,14 @@ public class AttachmentScreenUI extends Screen {
     protected Dropdown<Integer>                             querySection, tableSection, type;
 
     @UiField
+    protected Tree                                          tree;
+
+    @UiField
     protected Button                                        searchButton, updateButton,
                     commitButton, abortButton;
 
     @UiField
-    protected Tree                                          tree;
-
-    protected ModulePermission                              userPermission;
+    protected CheckBox                                      autoSelectNext;
 
     protected AttachmentScreenUI                            screen;
 
@@ -126,14 +128,13 @@ public class AttachmentScreenUI extends Screen {
 
     protected Query                                         query;
 
-    protected AsyncCallbackUI<ArrayList<AttachmentManager>> queryCall,
-                    fetchUnattachedByDescriptionCall;
+    protected AsyncCallbackUI<ArrayList<AttachmentManager>> queryCall;
 
     protected AsyncCallbackUI<AttachmentManager>            fetchForUpdateCall, updateCall,
                     unlockCall;
 
-    protected boolean                                       isNewSearch, isLoadedFromSearch,
-                    isExternalSearch;
+    protected boolean                                       isNewQuery, isLoadedFromQuery,
+                    fetchUnattached, isReserved;
 
     protected static int                                    ROWS_PER_PAGE = 19;
 
@@ -143,15 +144,21 @@ public class AttachmentScreenUI extends Screen {
     public AttachmentScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("attachment");
-        if (userPermission == null)
-            throw new PermissionException(Messages.get().screenPermException("Attachment Screen"));
-
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
         setState(QUERY);
-        fireDataChange();
+        loadTree(null, true, true);
+
+        logger.fine("Attachment Screen Opened");
+    }
+    
+    public AttachmentScreenUI() throws Exception {
+        initWidget(uiBinder.createAndBindUi(this));
+
+        initialize();
+        setState(QUERY);
+        loadTree(null, true, true);
 
         logger.fine("Attachment Screen Opened");
     }
@@ -216,7 +223,7 @@ public class AttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? updateButton : searchButton;
+                return forward ? autoSelectNext : searchButton;
             }
         });
 
@@ -224,7 +231,16 @@ public class AttachmentScreenUI extends Screen {
             @Override
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 Integer id;
-                Node node, parent;
+                Node node;
+
+                if (isReserved) {
+                    /*
+                     * if an attachment is reserved then no other nodes can be
+                     * selected
+                     */
+                    event.cancel();
+                    return;
+                }
 
                 if ( !isState(UPDATE))
                     return;
@@ -235,14 +251,13 @@ public class AttachmentScreenUI extends Screen {
                  */
                 node = tree.getNodeAt(event.getItem());
 
-                if (ATTACHMENT_LEAF.equals(node.getType())) {
-                    id = ((AttachmentDO)node.getData()).getId();
-                } else if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
-                    parent = node.getParent();
-                    id = ((AttachmentDO)parent.getData()).getId();
-                } else {
+                if (ATTACHMENT_LEAF.equals(node.getType()))
+                    id = node.getData();
+                else if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
+                    id = node.getParent().getData();
+                else
                     id = null;
-                }
+
                 if ( !manager.getAttachment().getId().equals(id))
                     event.cancel();
             }
@@ -251,45 +266,66 @@ public class AttachmentScreenUI extends Screen {
         tree.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
-                Integer id;
-                Node node, parent;
-
-                node = tree.getNodeAt(event.getSelectedItem());
-                if (ATTACHMENT_LEAF.equals(node.getType())) {
-                    id = ((AttachmentDO)node.getData()).getId();
-                } else if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
-                    parent = node.getParent();
-                    id = ((AttachmentDO)parent.getData()).getId();
-                } else {
-                    loadNextPage();
-                    id = null;
-                }
-
-                updateButton.setEnabled(ATTACHMENT_LEAF.equals(node.getType()) &&
-                                        (isState(DISPLAY) && userPermission.hasUpdatePermission()));
-                manager = id != null ? managers.get(id) : null;
-                if (isExternalSearch && id != null)
-                    displayAttachment(id);
+                nodeSelected(event.getSelectedItem());
             }
         });
 
         tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(UPDATE) || event.getCol() > 0)
+                String name;
+                Integer sectId;
+                SystemUserPermission perm;
+                Node node;
+
+                node = tree.getNodeAt(tree.getSelectedNode());
+                if ( !ATTACHMENT_LEAF.equals(node.getType()) || !isState(UPDATE) ||
+                    (event.getCol() != 0 && event.getCol() != 2)) {
                     event.cancel();
+                    return;
+                }
+
+                if (event.getCol() != 2)
+                    return;
+
+                perm = UserCache.getPermission();
+                sectId = manager.getAttachment().getSectionId();
+                try {
+                    if (sectId != null) {
+                        /*
+                         * allow changing the section only if the user has
+                         * assign permission to the current section
+                         */
+                        name = SectionCache.getById(sectId).getName();
+                        if ( !perm.has(name, SectionFlags.ASSIGN)) {
+                            event.cancel();
+                            return;
+                        }
+                    }
+
+                    /*
+                     * make sure that the section can't be changed to one that
+                     * the user doesn't have assign permission to
+                     */
+                    for (Item<Integer> row : tableSection.getModel()) {
+                        name = SectionCache.getById(row.getKey()).getName();
+                        row.setEnabled(perm.has(name, SectionFlags.ASSIGN));
+                    }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    event.cancel();
+                }
             }
         });
 
         tree.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 Object val;
-                Node node;
                 AttachmentDO data;
 
                 val = tree.getValueAt(event.getRow(), event.getCol());
-                node = tree.getNodeAt(tree.getSelectedNode());
-                data = node.getData();
+                data = manager.getAttachment();
                 switch (event.getCol()) {
                     case 0:
                         data.setDescription((String)val);
@@ -301,10 +337,20 @@ public class AttachmentScreenUI extends Screen {
             }
         });
 
+        addScreenHandler(autoSelectNext, "autoSelectNext", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                autoSelectNext.setEnabled(isState(DISPLAY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? updateButton : tree;
+            }
+        });
+
         addScreenHandler(updateButton, "updateButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                updateButton.setEnabled(isState(UPDATE) && userPermission.hasUpdatePermission());
-                if (isState(UPDATE)) {
+                updateButton.setEnabled(isState(UPDATE) && !isReserved);
+                if (isState(UPDATE) && !isReserved) {
                     updateButton.lock();
                     updateButton.setPressed(true);
                 }
@@ -319,7 +365,7 @@ public class AttachmentScreenUI extends Screen {
 
         addScreenHandler(commitButton, "commitButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                commitButton.setEnabled(isState(UPDATE));
+                commitButton.setEnabled(isState(UPDATE) && !isReserved);
             }
 
             public Widget onTab(boolean forward) {
@@ -331,7 +377,7 @@ public class AttachmentScreenUI extends Screen {
 
         addScreenHandler(abortButton, "abortButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                abortButton.setEnabled(isState(UPDATE));
+                abortButton.setEnabled(isState(UPDATE) && !isReserved);
             }
 
             public Widget onTab(boolean forward) {
@@ -356,9 +402,10 @@ public class AttachmentScreenUI extends Screen {
 
             public void onDropSuccess() {
                 ArrayList<AttachmentManager> ams;
-                AttachmentDO data;
 
                 try {
+                    if (fetchUnattached)
+                        return;
                     setBusy(Messages.get().gen_saving());
                     /*
                      * create attachments for the newly uploaded files and get
@@ -372,14 +419,14 @@ public class AttachmentScreenUI extends Screen {
                         managers.put(am.getAttachment().getId(), am);
 
                     setState(DISPLAY);
-                    if (isLoadedFromSearch) {
+                    if (isLoadedFromQuery) {
                         /*
                          * the table is showing the attachments returned by a
-                         * previous search, so they need to be cleared and only
-                         * the attachment created from uploaded file is shown
+                         * previous search, so they are cleared and only the
+                         * attachment created from the uploaded file is shown
                          */
                         loadTree(ams, true, false);
-                        isLoadedFromSearch = false;
+                        isLoadedFromQuery = false;
                     } else {
                         /*
                          * add the attachment created from uploaded file as the
@@ -388,8 +435,7 @@ public class AttachmentScreenUI extends Screen {
                         loadTree(ams, false, false);
                     }
                     tree.selectNodeAt(0);
-                    data = tree.getNodeAt(0).getData();
-                    manager = managers.get(data.getId());
+                    manager = managers.get(tree.getNodeAt(0).getData());
                     setDone(Messages.get().gen_savingComplete());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -460,36 +506,7 @@ public class AttachmentScreenUI extends Screen {
 
     @UiHandler("searchButton")
     protected void search(ClickEvent event) {
-        /*
-         * query is a class variable because this screen doesn't use a screen
-         * navigator but it needs to keep track of the previously executed query
-         * and not a query created from the screen's current data
-         */
-        query = new Query();
-        query.setFields(getQueryFields());
-        query.setRowsPerPage(ROWS_PER_PAGE);
-        
-        isNewSearch = true;
-        isLoadedFromSearch = true;
-        managers = null;
-        
-        executeQuery(query);
-    }
-    
-    public void showUnattached(String description) {
-        QueryData field;
-
-        query = new Query();
-        field = new QueryData();
-        field.setQuery(description);
-        query.setFields(field);
-        query.setRowsPerPage(ROWS_PER_PAGE);
-        
-        isNewSearch = true;
-        isExternalSearch = true;
-        managers = null;
-
-        executeQuery(query);
+        search();
     }
 
     /**
@@ -584,7 +601,7 @@ public class AttachmentScreenUI extends Screen {
 
     /**
      * Reverts any changes made to the data on the screen and disables editing
-     * of the widgets. If the sample was locked calls the service method to
+     * of the widgets. If the attachment was locked, calls the service method to
      * unlock it and loads the screen with that data.
      */
     @UiHandler("abortButton")
@@ -621,7 +638,266 @@ public class AttachmentScreenUI extends Screen {
             AttachmentService.get().unlock(manager.getAttachment().getId(), unlockCall);
         }
     }
-    
+
+    /**
+     * Defines the action to be performed when a node in the tree is selected.
+     * If the node was showing an attachment then the passed value is the
+     * attachment's id, otherwise it's null.
+     */
+    public void attachmentSelected(Integer id) {
+    }
+
+    /**
+     * Displays the file linked to the attachment with the passed id
+     */
+    public void displayAttachment(Integer id) {
+        try {
+            /*
+             * not passing a name to the displayAttachment makes sure that the
+             * files opened by it open in separate windows
+             */
+            AttachmentUtil.displayAttachment(id, null, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Creates and executes a query to fetch the attachments to be shown on the
+     * screen
+     */
+    public void search() {
+        /*
+         * query is a class variable because this screen doesn't use a screen
+         * navigator but it needs to keep track of the previously executed query
+         * and not a query created from the screen's current data
+         */
+        query = new Query();
+        query.setFields(getQueryFields());
+        query.setRowsPerPage(ROWS_PER_PAGE);
+        isNewQuery = true;
+        isLoadedFromQuery = true;
+        fetchUnattached = false;
+        managers = null;
+
+        executeQuery(query);
+    }
+
+    /**
+     * Uses the passed query to fetch attachments and refreshes the screen with
+     * the returned data. If "fetchUnattached" is true then only unattached
+     * attachments matching the query are fetched otherwise all matching
+     * attachments are fetched.
+     */
+    public void executeQuery(final Query query) {
+        setBusy(Messages.get().gen_querying());
+
+        if (queryCall == null) {
+            queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
+                public void success(ArrayList<AttachmentManager> result) {
+                    /*
+                     * this map is used to link a tree node with the manager
+                     * containing the attachment or attachment item that it's
+                     * showing
+                     */
+                    if (managers == null)
+                        managers = new HashMap<Integer, AttachmentManager>();
+
+                    for (AttachmentManager am : result)
+                        managers.put(am.getAttachment().getId(), am);
+
+                    setState(DISPLAY);
+                    loadTree(result, isNewQuery, true);
+                    clearStatus();
+                    tree.selectNodeAt(0);
+                    nodeSelected(0);
+                }
+
+                public void notFound() {
+                    setState(QUERY);
+                    loadTree(null, isNewQuery, true);
+                    description.setFocus(true);
+                    setDone(Messages.get().gen_noRecordsFound());
+                }
+
+                public void lastPage() {
+                    int page;
+
+                    /*
+                     * make sure that the page doesn't stay one more than the
+                     * current one, if there are no more pages in this direction
+                     */
+                    page = query.getPage();
+                    if (page > 0)
+                        query.setPage(page - 1);
+                    setError(Messages.get().gen_noMoreRecordInDir());
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert("Error: Attachment call query failed; " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    setError(Messages.get().gen_queryFailed());
+                }
+            };
+        }
+
+        if (fetchUnattached)
+            AttachmentService.get()
+                             .fetchUnattachedByDescription(query.getFields().get(0).getQuery(),
+                                                           query.getPage() * query.getRowsPerPage(),
+                                                           query.getRowsPerPage(),
+                                                           queryCall);
+        else
+            AttachmentService.get().fetchByQuery(query.getFields(),
+                                                 query.getPage() * query.getRowsPerPage(),
+                                                 query.getRowsPerPage(),
+                                                 queryCall);
+    }
+
+    /**
+     * If "auto select next" is checked then reserves the next attachment that
+     * can be reserved and returns its manager; otherwise reserves the currently
+     * selected attachment and returns its manager.
+     */
+    public AttachmentManager getReserved() {
+        Node node;
+
+        node = tree.getNodeAt(tree.getSelectedNode());
+        if (node == null)
+            return null;
+
+        if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
+            node = node.getParent();
+        } else if (CLICK_FOR_MORE_LEAF.equals(node.getType())) {
+            /*
+             * no attachment or attachment item was selected
+             */
+            return null;
+        }
+
+        /*
+         * if "auto select next" is checked then try to find the next manager
+         * that can be reserved and return it; otherwise return the currently
+         * selected manager
+         */
+        setBusy(Messages.get().gen_lockForUpdate());
+        if ("Y".equals(autoSelectNext.getValue())) {
+            /*
+             * if previousManager is null then no attachments were reserved
+             * before, so try to reserve the current node's attachment instead
+             * of the next one's
+             */
+            if (previousManager != null)
+                node = node.nextSibling();
+            while (ATTACHMENT_LEAF.equals(node.getType())) {
+                try {
+                    reserve(node);
+                    break;
+                } catch (EntityLockedException e) {
+                    /*
+                     * the attachment is already reserved, so try to reserve the
+                     * next one
+                     */
+                    node = node.nextSibling();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                    return null;
+                }
+            }
+        } else {
+            /*
+             * reserve the currently selected attachment
+             */
+            try {
+                reserve(node);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                clearStatus();
+                return null;
+            }
+        }
+        clearStatus();
+
+        return manager;
+    }
+
+    /**
+     * Removes the reservation from the last attachment that was reserved
+     */
+    public void removeReservation() {
+        Integer id;
+        Node node;
+
+        node = tree.getNodeAt(tree.getSelectedNode());
+        if (node == null)
+            return;
+
+        if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
+            node = node.getParent();
+        } else if (CLICK_FOR_MORE_LEAF.equals(node.getType())) {
+            /*
+             * no attachment or attachment item was selected
+             */
+            return;
+        }
+
+        setBusy(Messages.get().gen_cancelChanges());
+        try {
+            id = node.getData();
+            manager = AttachmentService.get().unlock(id);
+            managers.put(id, manager);
+            isReserved = false;
+            setState(DISPLAY);
+            reloadAttachment(node);
+            setDone(Messages.get().gen_updateAborted());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            clearStatus();
+        }
+    }
+
+    private void reserve(Node node) throws Exception {
+        Integer id;
+
+        id = node.getData();
+        manager = AttachmentService.get().getReserved(id);
+        previousManager = manager;
+        /*
+         * the attachment is now reserved for this user, so refresh the screen
+         * and display the attachment
+         */
+        managers.put(id, manager);
+        isReserved = true;
+        setState(UPDATE);
+        tree.selectNodeAt(node);
+        reloadAttachment(node);
+        attachmentSelected(id);
+    }
+
+    private void nodeSelected(int index) {
+        Integer id;
+        Node node;
+
+        node = tree.getNodeAt(index);
+        if (ATTACHMENT_LEAF.equals(node.getType())) {
+            id = node.getData();
+        } else if (ATTACHMENT_ITEM_LEAF.equals(node.getType())) {
+            id = node.getParent().getData();
+        } else {
+            loadNextPage();
+            id = null;
+        }
+
+        updateButton.setEnabled(ATTACHMENT_LEAF.equals(node.getType()) && (isState(DISPLAY)));
+        manager = id != null ? managers.get(id) : null;
+        attachmentSelected(id);
+    }
+
     private void loadNextPage() {
         int page;
 
@@ -633,140 +909,8 @@ public class AttachmentScreenUI extends Screen {
         page = query.getPage();
 
         query.setPage(page + 1);
-        isNewSearch = false;
+        isNewQuery = false;
         executeQuery(query);
-    }
-
-    private void executeQuery(final Query query) {
-        setBusy(Messages.get().gen_querying());
-
-        if (queryCall == null) {
-            queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
-                public void success(ArrayList<AttachmentManager> result) {
-                    AttachmentDO data;
-
-                    /*
-                     * this map is used to link a tree node with the manager
-                     * containing the attachment or attachment item that it's
-                     * showing
-                     */
-                    if (managers == null)
-                        managers = new HashMap<Integer, AttachmentManager>();
-
-                    for (AttachmentManager am : result)
-                        managers.put(am.getAttachment().getId(), am);
-
-                    setState(DISPLAY);
-                    loadTree(result, isNewSearch, true);
-                    tree.selectNodeAt(0);
-                    data = tree.getNodeAt(0).getData();
-                    manager = managers.get(data.getId());
-                    clearStatus();
-                    displayAttachment(data.getId());
-                }
-
-                public void notFound() {
-                    setState(QUERY);
-                    loadTree(null, isNewSearch, true);
-                    if (!isExternalSearch)
-                        description.setFocus(true);
-                    setDone(Messages.get().gen_noRecordsFound());
-                }
-
-                public void lastPage() {
-                    int page;
-
-                    /*
-                     * make sure that the page doesn't stay one more than the
-                     * current one, if there are no more pages in this direction
-                     */
-                    page = query.getPage();
-                    if (page > 0)
-                        query.setPage(page - 1);
-                    setError(Messages.get().gen_noMoreRecordInDir());
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert("Error: Attachment call query failed; " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    setError(Messages.get().gen_queryFailed());
-                }
-            };
-        }
-
-        if (!isExternalSearch)
-            AttachmentService.get().fetchByQuery(query.getFields(),
-                                                 query.getPage() * query.getRowsPerPage(),
-                                                 query.getRowsPerPage(),
-                                                 queryCall);
-        else
-            AttachmentService.get()
-            .fetchUnattachedByDescription(query.getFields().get(0).getQuery(),
-                                          query.getPage() * query.getRowsPerPage(),
-                                          query.getRowsPerPage(),
-                                          queryCall);
-    }
-
-    private void showUnattached1(String description) {
-        setBusy(Messages.get().gen_querying());
-
-        if (fetchUnattachedByDescriptionCall == null) {
-            fetchUnattachedByDescriptionCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
-                public void success(ArrayList<AttachmentManager> result) {
-                    AttachmentDO data;
-
-                    /*
-                     * this map is used to link a tree node with the manager
-                     * containing the attachment or attachment item that it's
-                     * showing
-                     */
-                    if (managers == null)
-                        managers = new HashMap<Integer, AttachmentManager>();
-
-                    for (AttachmentManager am : result)
-                        managers.put(am.getAttachment().getId(), am);
-
-                    setState(DISPLAY);
-                    loadTree(result, isNewSearch, true);
-                    tree.selectNodeAt(0);
-                    data = tree.getNodeAt(0).getData();
-                    manager = managers.get(data.getId());
-                    clearStatus();
-                    displayAttachment(data.getId());
-                }
-
-                public void notFound() {
-                    setState(DEFAULT);
-                    loadTree(null, isNewSearch, true);
-                    setDone(Messages.get().gen_noRecordsFound());
-                }
-
-                public void lastPage() {
-                    int page;
-
-                    /*
-                     * make sure that the page doesn't stay one more than the
-                     * current one, if there are no more pages in this direction
-                     */
-                    page = query.getPage();
-                    if (page > 0)
-                        query.setPage(page - 1);
-                    setError(Messages.get().gen_noMoreRecordInDir());
-                }
-
-                public void failure(Throwable e) {
-                    Window.alert("Error: Attachment call query failed; " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                    setError(Messages.get().gen_queryFailed());
-                }
-            };
-        }
-
-        isNewSearch = true;
-        isExternalSearch = true;
-        query = new Query();
-        query.setRowsPerPage(ROWS_PER_PAGE);
-
     }
 
     private void loadTree(ArrayList<AttachmentManager> ams, boolean reloadTree, boolean addAfter) {
@@ -802,8 +946,8 @@ public class AttachmentScreenUI extends Screen {
 
         if (reloadTree) {
             /*
-             * since this is a new search, add the node for showing the next
-             * page and reload the tree with the new nodes
+             * add the node for showing the next page and reload the tree with
+             * the new nodes
              */
             cmnode = new Node(1);
             cmnode.setCell(0, Messages.get().gen_clickForMore());
@@ -839,7 +983,7 @@ public class AttachmentScreenUI extends Screen {
         anode.setCell(3, data.getTypeId());
         anode.setCell(4, data.getStorageReference());
         anode.setCell(5, data.getId());
-        anode.setData(data);
+        anode.setData(data.getId());
         anode.setType(ATTACHMENT_LEAF);
         /*
          * the nodes for the attachment items
@@ -878,14 +1022,5 @@ public class AttachmentScreenUI extends Screen {
 
         tree.refreshNode(node);
         tree.selectNodeAt(node);
-    }
-
-    private void displayAttachment(Integer id) {
-        try {
-            AttachmentUtil.displayAttachment(id);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
     }
 }
