@@ -19,7 +19,7 @@
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="5px">
       <g:LayoutPanel>
-        <g:layer width="45%" left="0px">
+        <g:layer width="46%" left="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="25px">
               <t:Table ui:field="currentTable" verticalScroll="ALWAYS" horizontalScroll="ALWAYS"
@@ -32,7 +32,7 @@
                 </t:Column>
                 <t:Column width="90" label="{msg.gen_section}">
                   <t:DropdownCell>
-                    <w:Dropdown ui:field="attachmentSection" field="Integer" dropWidth="110"
+                    <w:Dropdown ui:field="currentTableSection" field="Integer" dropWidth="110"
                       required="true" />
                   </t:DropdownCell>
                 </t:Column>
@@ -55,7 +55,7 @@
         </g:layer>
         <g:layer width="5%" left="48%" top="44%" bottom="46%">
           <g:VerticalPanel>
-            <w:Button ui:field="moveLeftbutton" text="{msg.gen_moveLeft}" />
+            <w:Button ui:field="moveLeftButton" text="{msg.gen_moveLeft}" />
           </g:VerticalPanel>
         </g:layer>
         <g:layer width="47%" right="0px">
@@ -96,11 +96,13 @@
                 </t:Column>
                 <t:Column width="100" label="{msg.gen_section}">
                   <t:DropdownCell>
-                    <w:Dropdown field="Integer" dropWidth="110" required="true" />
+                    <w:Dropdown ui:field="searchTableSection" field="Integer" dropWidth="110" required="true" />
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="133" label="{msg.gen_description}">
-                  <t:LabelCell />
+                  <t:TextBoxCell>
+                    <w:TextBox width="133px" field="String" />
+                  </t:TextBoxCell>
                 </t:Column>
               </t:Table>
             </g:layer>

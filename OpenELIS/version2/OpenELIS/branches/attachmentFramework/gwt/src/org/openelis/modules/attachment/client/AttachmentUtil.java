@@ -25,23 +25,34 @@
  */
 package org.openelis.modules.attachment.client;
 
-import org.openelis.ui.common.ReportStatus;
-
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
+import org.openelis.meta.AttachmentMeta;
+import org.openelis.modules.report.attachment.client.AttachmentReportScreen;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.WindowInt;
 
 public class AttachmentUtil {
 
+    private static AttachmentReportScreen attachmentReportScreen;
     /**
      * Shows the file linked to the attachment with the passed id, in the
      * browser
      */
-    public static void displayAttachment(Integer id) throws Exception {
-        String url;
-        ReportStatus status;
+    public static void displayAttachment(Integer id, String name, WindowInt window) throws Exception {
+        Query query;
+        QueryData field;
 
-        status = AttachmentService.get().get(id);
-        url = "/openelis/openelis/report?file=" + status.getMessage();;
-        Window.open(URL.encode(url), status.getMessage(), null);
+        query = new Query();
+        field = new QueryData();
+        field.setKey(AttachmentMeta.getId());
+        field.setQuery(id.toString());
+        field.setType(QueryData.Type.INTEGER);
+        query.setFields(field);
+        
+        if (attachmentReportScreen == null)
+            attachmentReportScreen = new AttachmentReportScreen(window);
+        
+        attachmentReportScreen.setName(name);
+        attachmentReportScreen.runReport(query);
     }
 }

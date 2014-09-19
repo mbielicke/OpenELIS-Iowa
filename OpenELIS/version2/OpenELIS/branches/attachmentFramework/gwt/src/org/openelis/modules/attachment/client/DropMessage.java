@@ -46,6 +46,4 @@ public class DropMessage extends Composite {
     public DropMessage() {
         initWidget(uiBinder.createAndBindUi(this));
     }
-    
-    
 }
