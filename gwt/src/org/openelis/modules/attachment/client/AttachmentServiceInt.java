@@ -49,6 +49,8 @@ public interface AttachmentServiceInt extends RemoteService {
     public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception;
 
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception;
+    
+    public AttachmentManager getReserved(Integer attachmentId) throws Exception;
 
     public AttachmentManager update(AttachmentManager data) throws Exception;
 

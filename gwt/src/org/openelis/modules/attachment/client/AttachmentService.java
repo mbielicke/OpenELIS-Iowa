@@ -103,6 +103,20 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     }
 
     @Override
+    public AttachmentManager getReserved(Integer attachmentId) throws Exception {
+        Callback<AttachmentManager> callback;
+
+        callback = new Callback<AttachmentManager>();
+        service.getReserved(attachmentId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void getReserved(Integer attachmentId, AsyncCallback<AttachmentManager> callback) {
+        service.getReserved(attachmentId, callback);
+    }
+
+    @Override
     public AttachmentManager update(AttachmentManager data) throws Exception {
         Callback<AttachmentManager> callback;
 

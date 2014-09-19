@@ -101,7 +101,7 @@
               <table class="{res.style.Form}">
                 <tr>
                   <td>
-                    <w:Check ui:field="autoSelectNext" />
+                    <w:CheckBox ui:field="autoSelectNext" />
                   </td>
                   <td class="{res.style.Prompt}">
                     <ui:text from="{msg.attachment_autoSelectNext}" />

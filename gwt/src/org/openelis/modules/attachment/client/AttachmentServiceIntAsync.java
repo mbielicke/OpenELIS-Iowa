@@ -45,15 +45,16 @@ public interface AttachmentServiceIntAsync {
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                       AsyncCallback<ArrayList<AttachmentManager>> callback);
     
-    void fetchUnattachedByDescription(String description, int first, int max,
+    public void fetchUnattachedByDescription(String description, int first, int max,
                                       AsyncCallback<ArrayList<AttachmentManager>> callback);
 
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
+    
+    public void getReserved(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
     public void update(AttachmentManager data, AsyncCallback<AttachmentManager> callback);
 
     public void unlock(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 
     public void put(AsyncCallback<ArrayList<AttachmentManager>> callback);
-
 }

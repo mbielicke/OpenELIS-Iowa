@@ -80,13 +80,14 @@ public class OpenELIS extends Screen {
                     sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
                     turnAroundStatisticReport, kitTrackingReport, airQualityExport,
                     sdwisUnloadReport, dataView, qcChart, finalReport, finalReportBatch,
-                    finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection, analyte,
-                    dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
-                    label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
-                    scriptlet, systemVariable, pws, cron, logs, instrumentBarcodeReport, attachment;
+                    finalReportBatchReprint, sampleQc, test, method, panel, QAEvent, labSection,
+                    analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
+                    exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
+                    storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
+                    instrumentBarcodeReport, attachment;
 
-	@UiField
-    protected Menu maintenanceMenu;                    
+    @UiField
+    protected Menu                  maintenanceMenu;
 
     public OpenELIS() throws Exception {
         Exception loadError;
@@ -99,7 +100,7 @@ public class OpenELIS extends Screen {
         }
 
         initWidget(uiBinder.createAndBindUi(this));
-        
+
         maintenanceMenu.ensureDebugId("openelis.maintenanceMenu");
         method.ensureDebugId("openelis.method");
 
@@ -110,7 +111,7 @@ public class OpenELIS extends Screen {
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
         initialize();
-        
+
         if (loadError != null)
             Window.alert("FATAL ERROR: " + loadError.getMessage() + "; Please contact IT support");
     }
@@ -497,7 +498,7 @@ public class OpenELIS extends Screen {
                 showScreen(BATCH_FINAL_REPORT_REPRINT);
             }
         });
-        
+
         addCommand(verificationReport, "verification", new Command() {
             public void execute() {
                 showScreen(VERIFICATION_REPORT);
@@ -563,13 +564,13 @@ public class OpenELIS extends Screen {
                 showScreen(KIT_TRACKING_REPORT);
             }
         });
-        
+
         addCommand(airQualityExport, "sampletracking", new Command() {
             public void execute() {
                 showScreen(AIR_QUALITY_EXPORT);
             }
         });
-        
+
         addCommand(holdRefuseOrganization, "sampletracking", new Command() {
             public void execute() {
                 showScreen(HOLD_REFUSE_REPORT);
@@ -581,14 +582,14 @@ public class OpenELIS extends Screen {
                 showScreen(INSTRUMENT_BARCODE_REPORT);
             }
         });
-        
+
         addCommand(sampleQc, "sampletracking", new Command() {
             public void execute() {
                 showScreen(SAMPLE_QC);
             }
         });
-        
-        addCommand(attachment, "attachment", new Command() {
+
+        addCommand(attachment, "openelis", new Command() {
             public void execute() {
                 showScreen(ATTACHMENT);
             }
@@ -605,10 +606,11 @@ public class OpenELIS extends Screen {
     private void showScreen(ShowScreenType type) {
         ShowScreenEvent event = new ShowScreenEvent(type);
         ScreenBus.get().fireEvent(event);
-        if(!event.wasHandled())
-            Window.alert("Screen Handler for "+type.getScreen()+" was not found.  Make sure the module for this screen was included in the compile");
+        if ( !event.wasHandled())
+            Window.alert("Screen Handler for " + type.getScreen() +
+                         " was not found.  Make sure the module for this screen was included in the compile");
     }
-    
+
     /**
      * logout the user
      */
