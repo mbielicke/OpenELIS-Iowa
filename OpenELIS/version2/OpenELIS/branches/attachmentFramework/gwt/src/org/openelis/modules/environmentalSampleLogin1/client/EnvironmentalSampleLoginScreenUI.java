@@ -2522,7 +2522,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         query.setRowsPerPage(ROWS_PER_PAGE);
                         isNewQuery = true;
                         isLoadedFromQuery = true;
-                        fetchUnattached = true;
                         managers = null;
 
                         executeQuery(query);
@@ -2532,6 +2531,11 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     public void attachmentSelected(Integer id) {
                         if (id != null)
                             displayAttachment(id);
+                    }
+                    
+                    @Override
+                    public boolean isDataEntry() {
+                        return true;
                     }
                 };
                 window.setContent(attachmentScreen);

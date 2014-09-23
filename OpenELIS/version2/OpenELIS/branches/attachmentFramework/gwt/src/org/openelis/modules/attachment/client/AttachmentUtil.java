@@ -34,9 +34,12 @@ import org.openelis.ui.widget.WindowInt;
 public class AttachmentUtil {
 
     private static AttachmentReportScreen attachmentReportScreen;
+
     /**
      * Shows the file linked to the attachment with the passed id, in the
-     * browser
+     * browser; if "name" is not null and is the same as the previous time this
+     * method was called, then the current file is opened in the same browser
+     * window/tab as the previous one.
      */
     public static void displayAttachment(Integer id, String name, WindowInt window) throws Exception {
         Query query;
@@ -48,10 +51,10 @@ public class AttachmentUtil {
         field.setQuery(id.toString());
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
-        
+
         if (attachmentReportScreen == null)
             attachmentReportScreen = new AttachmentReportScreen(window);
-        
+
         attachmentReportScreen.setName(name);
         attachmentReportScreen.runReport(query);
     }

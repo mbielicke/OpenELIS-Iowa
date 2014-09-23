@@ -25,7 +25,11 @@
 */
 package org.openelis.modules.attachment.client;
 
+import org.openelis.modules.main.client.resources.OpenELISResources;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -45,5 +49,18 @@ public class DropMessage extends Composite {
     
     public DropMessage() {
         initWidget(uiBinder.createAndBindUi(this));
+    }
+    
+    public void startAnimation() {
+        ScheduledCommand cmd;
+        
+        screenPanel.getElement().removeClassName(OpenELISResources.INSTANCE.style().Circle());
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                screenPanel.getElement().addClassName(OpenELISResources.INSTANCE.style().Circle());
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }
 }

@@ -4,11 +4,11 @@
   
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   
-  <g:LayoutPanel  styleName="{res.style.WhiteContentPanel}">
-    <g:layer left = "30%" right = "25%" top="20%" bottom ="10%">
+  <!-- <g:LayoutPanel  styleName="{res.style.WhiteContentPanel}">
+    <g:layer left = "30%" right = "25%" top="20%" bottom ="10%"> -->
       <g:HTMLPanel ui:field = "screenPanel" width="100%" height="100%" styleName = "{res.style.Circle}">
         <w:Label text = "Drop your files to instantly upload them"/>
       </g:HTMLPanel>
-    </g:layer>
-  </g:LayoutPanel>
+    <!-- </g:layer>
+  </g:LayoutPanel> -->
 </ui:UiBinder>
