@@ -48,7 +48,6 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
@@ -69,6 +68,8 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -86,7 +87,7 @@ public class AttachmentTabUI extends Screen {
     interface AttachmentTabUIBinder extends UiBinder<Widget, AttachmentTabUI> {
     };
 
-    private static AttachmentTabUIBinder                    uiBinder = GWT.create(AttachmentTabUIBinder.class);
+    private static AttachmentTabUIBinder                    uiBinder          = GWT.create(AttachmentTabUIBinder.class);
 
     @UiField
     protected Table                                         currentTable, searchTable;
@@ -112,12 +113,14 @@ public class AttachmentTabUI extends Screen {
     protected EventBus                                      parentBus;
 
     protected SampleManager1                                manager;
-    
+
     protected AttachmentScreenUI                            attachmentScreen;
 
     protected AsyncCallbackUI<ArrayList<AttachmentManager>> queryCall;
 
     protected boolean                                       isVisible, redraw;
+
+    protected static String                                 DEFAULT_FILE_NAME = "preview";
 
     public AttachmentTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -194,6 +197,18 @@ public class AttachmentTabUI extends Screen {
                 manager.attachment.remove(event.getIndex());
                 detachButton.setEnabled(false);
                 displayButton.setEnabled(false);
+            }
+        });
+
+        currentTable.addDoubleClickHandler(new DoubleClickHandler() {
+            @Override
+            public void onDoubleClick(DoubleClickEvent event) {
+                /*
+                 * passing null as the name will make the file open in a
+                 * different window than the previous one because the value for
+                 * name in the url will be the name of the temp file
+                 */
+                displayAttachment(null);
             }
         });
 
@@ -362,25 +377,12 @@ public class AttachmentTabUI extends Screen {
     }
 
     @UiHandler("displayButton")
-    protected void displayAttachment(ClickEvent event) {
-        AttachmentItemViewDO data;
-
+    protected void display(ClickEvent event) {
         /*
-         * display the file linked to the attachment for the selected row
+         * passing the same name to the displayAttachment makes the files opened
+         * by it open in the same window
          */
-        data = currentTable.getRowAt(currentTable.getSelectedRow()).getData();
-        try {
-            /*
-             * passing a name to the displayAttachment makes the files opened by
-             * it open in the same window
-             */
-            AttachmentUtil.displayAttachment(data.getAttachmentId(),
-                                             "preview",
-                                             parentScreen.getWindow());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        displayAttachment(DEFAULT_FILE_NAME);
     }
 
     @UiHandler("moveLeftButton")
@@ -395,17 +397,11 @@ public class AttachmentTabUI extends Screen {
          * add the attachment selected in the table showing search results, to
          * the sample
          */
-        att = searchTable.getRowAt(searchTable.getSelectedRow()).getData();
+        att = (AttachmentDO)searchTable.getRowAt(searchTable.getSelectedRow()).getData();
+        atti = createAttachmentItem(att);
 
-        atti = manager.attachment.add();
-        atti.setId(manager.getNextUID());
-        atti.setAttachmentId(att.getId());
-        atti.setAttachmentCreatedDate(att.getCreatedDate());
-        atti.setAttachmentSectionId(att.getSectionId());
-        atti.setAttachmentDescription(att.getDescription());
-        
         currentTable.addRow(createAttachmentRow(atti));
-        currentTable.selectRowAt(currentTable.getRowCount()-1);
+        currentTable.selectRowAt(currentTable.getRowCount() - 1);
         detachButton.setEnabled(true);
         displayButton.setEnabled(true);
     }
@@ -446,24 +442,45 @@ public class AttachmentTabUI extends Screen {
                                              query.getRowsPerPage(),
                                              queryCall);
     }
-    
+
     @UiHandler("attachButton")
     protected void attach(ClickEvent event) {
         ModalWindow modal;
 
-        if (attachmentScreen != null) {
+        if (attachmentScreen == null) {
             try {
-                attachmentScreen = new AttachmentScreenUI();
+                attachmentScreen = new AttachmentScreenUI() {
+                    @Override
+                    public boolean isAttach() {
+                        return true;
+                    }
+
+                    @Override
+                    public void attach(ArrayList<AttachmentDO> attachments) {
+                        AttachmentItemViewDO atti;
+
+                        if (attachments == null)
+                            return;
+
+                        /*
+                         * add the selected attachments to the sample
+                         */
+                        for (AttachmentDO att : attachments) {
+                            atti = createAttachmentItem(att);
+                            currentTable.addRow(createAttachmentRow(atti));
+                        }
+                    }
+                };
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
+                return;
             }
         }
 
         modal = new ModalWindow();
         modal.setName(Messages.get().attachment_attachment());
         modal.setSize("782px", "521px");
-        modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(attachmentScreen);
 
         attachmentScreen.setWindow(modal);
@@ -475,6 +492,16 @@ public class AttachmentTabUI extends Screen {
             currentTable.selectRowAt(0);
             detachButton.setEnabled(isState(ADD, UPDATE));
             displayButton.setEnabled(isState(ADD, UPDATE));
+        }
+    }
+
+    private void displayAttachments() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
+            fireDataChange();
         }
     }
 
@@ -518,6 +545,19 @@ public class AttachmentTabUI extends Screen {
         return model;
     }
 
+    private AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
+        AttachmentItemViewDO atti;
+
+        atti = manager.attachment.add();
+        atti.setId(manager.getNextUID());
+        atti.setAttachmentId(att.getId());
+        atti.setAttachmentCreatedDate(att.getCreatedDate());
+        atti.setAttachmentSectionId(att.getSectionId());
+        atti.setAttachmentDescription(att.getDescription());
+
+        return atti;
+    }
+
     private Row createAttachmentRow(AttachmentItemViewDO data) {
         Row row;
 
@@ -529,13 +569,19 @@ public class AttachmentTabUI extends Screen {
         return row;
     }
 
-    private void displayAttachments() {
-        if ( !isVisible)
-            return;
+    private void displayAttachment(String name) {
+        AttachmentItemViewDO data;
 
-        if (redraw) {
-            redraw = false;
-            fireDataChange();
+        /*
+         * display the file linked to the attachment for the selected row
+         */
+        data = currentTable.getRowAt(currentTable.getSelectedRow()).getData();
+        try {
+
+            AttachmentUtil.displayAttachment(data.getAttachmentId(), name, parentScreen.getWindow());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }

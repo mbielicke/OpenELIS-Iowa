@@ -95,26 +95,38 @@
             </r:Leaf>
           </r:Tree>
         </g:layer>
-        <g:layer bottom="0px" height="25px" left="45%" right="0%">
-          <g:HorizontalPanel>
-            <g:HTMLPanel>
-              <table class="{res.style.Form}">
-                <tr>
-                  <td>
-                    <w:CheckBox ui:field="autoSelectNext" />
-                  </td>
-                  <td class="{res.style.Prompt}">
-                    <ui:text from="{msg.attachment_autoSelectNext}" />
-                  </td>
-                </tr>
-              </table>
-            </g:HTMLPanel>
-            <w:Button ui:field="refreshButton" leftIcon="{res.icon.refreshButtonImage}"
-              text="{msg.gen_refresh}" />
-            <w:Button ui:field="updateButton" leftIcon="{res.icon.UpdateButtonImage}" text="{msg.gen_update}" />
-            <w:Button ui:field="commitButton" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_commit}" />
-            <w:Button ui:field="abortButton" leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_abort}" />
-          </g:HorizontalPanel>
+        <g:layer bottom="0px" height="25px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="0px" left="0px" width="10%">
+              <g:HorizontalPanel>
+                <w:Button ui:field="attachButton" leftIcon="{res.icon.addRowIcon}" text="{msg.attachment_attach}" />
+              </g:HorizontalPanel>
+            </g:layer>
+            <g:layer top="0px" bottom="0px" right="0px" width="55%">
+              <g:HorizontalPanel>
+                <g:HTMLPanel>
+                  <table class="{res.style.Form}">
+                    <tr>
+                      <td>
+                        <w:CheckBox ui:field="autoSelectNext" />
+                      </td>
+                      <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.attachment_autoSelectNext}" />
+                      </td>
+                    </tr>
+                  </table>
+                </g:HTMLPanel>
+                <w:Button ui:field="refreshButton" leftIcon="{res.icon.refreshButtonImage}"
+                  text="{msg.gen_refresh}" />
+                <w:Button ui:field="updateButton" leftIcon="{res.icon.UpdateButtonImage}"
+                  text="{msg.gen_update}" />
+                <w:Button ui:field="commitButton" leftIcon="{res.icon.CommitButtonImage}"
+                  text="{msg.gen_commit}" />
+                <w:Button ui:field="abortButton" leftIcon="{res.icon.AbortButtonImage}"
+                  text="{msg.gen_abort}" />
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
         </g:layer>
       </g:LayoutPanel>
     </g:layer>

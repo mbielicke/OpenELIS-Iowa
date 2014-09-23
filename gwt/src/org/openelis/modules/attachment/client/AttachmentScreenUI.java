@@ -56,6 +56,7 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
+import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
@@ -114,8 +115,8 @@ public class AttachmentScreenUI extends Screen {
     protected Tree                                          tree;
 
     @UiField
-    protected Button                                        searchButton, updateButton,
-                    commitButton, abortButton;
+    protected Button                                        searchButton, attachButton,
+                    updateButton, commitButton, abortButton;
 
     @UiField
     protected CheckBox                                      autoSelectNext;
@@ -126,6 +127,8 @@ public class AttachmentScreenUI extends Screen {
 
     protected DropMessage                                   dropMessage;
 
+    protected Confirm                                       confirm;
+
     protected Query                                         query;
 
     protected AsyncCallbackUI<ArrayList<AttachmentManager>> queryCall;
@@ -134,7 +137,7 @@ public class AttachmentScreenUI extends Screen {
                     unlockCall;
 
     protected boolean                                       isNewQuery, isLoadedFromQuery,
-                    fetchUnattached, isReserved;
+                    isReserved, closeHandlerAdded;
 
     protected static int                                    ROWS_PER_PAGE = 19;
 
@@ -152,7 +155,7 @@ public class AttachmentScreenUI extends Screen {
 
         logger.fine("Attachment Screen Opened");
     }
-    
+
     public AttachmentScreenUI() throws Exception {
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -223,7 +226,7 @@ public class AttachmentScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? autoSelectNext : searchButton;
+                return forward ? attachButton : searchButton;
             }
         });
 
@@ -337,6 +340,18 @@ public class AttachmentScreenUI extends Screen {
             }
         });
 
+        tree.setAllowMultipleSelection(isAttach());
+
+        addScreenHandler(attachButton, "attachButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                attachButton.setEnabled(false);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? autoSelectNext : tree;
+            }
+        });
+
         addScreenHandler(autoSelectNext, "autoSelectNext", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 autoSelectNext.setEnabled(isState(DISPLAY));
@@ -350,9 +365,32 @@ public class AttachmentScreenUI extends Screen {
         addScreenHandler(updateButton, "updateButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 updateButton.setEnabled(isState(UPDATE) && !isReserved);
-                if (isState(UPDATE) && !isReserved) {
-                    updateButton.lock();
-                    updateButton.setPressed(true);
+                if (isState(UPDATE)) {
+                    if ( !isReserved) {
+                        updateButton.lock();
+                        updateButton.setPressed(true);
+                    }
+
+                    if ( !closeHandlerAdded && window != null) {
+                        /*
+                         * this handler is added here instead of in initialize()
+                         * because this screen can be shown in a modal window
+                         * and in that case, the window is not available in
+                         * initialize()
+                         */
+                        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+                            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
+                                if (isState(UPDATE)) {
+                                    event.cancel();
+                                    setError(Messages.get().gen_mustCommitOrAbort());
+                                } else if (dropMessage != null) {
+                                    dropMessage.removeFromParent();
+                                    dropMessage = null;
+                                }
+                            }
+                        });
+                        closeHandlerAdded = true;
+                    }
                 }
             }
 
@@ -404,7 +442,7 @@ public class AttachmentScreenUI extends Screen {
                 ArrayList<AttachmentManager> ams;
 
                 try {
-                    if (fetchUnattached)
+                    if (isDataEntry() || isState(UPDATE))
                         return;
                     setBusy(Messages.get().gen_saving());
                     /*
@@ -425,8 +463,8 @@ public class AttachmentScreenUI extends Screen {
                          * previous search, so they are cleared and only the
                          * attachment created from the uploaded file is shown
                          */
-                        loadTree(ams, true, false);
                         isLoadedFromQuery = false;
+                        loadTree(ams, true, false);
                     } else {
                         /*
                          * add the attachment created from uploaded file as the
@@ -435,7 +473,7 @@ public class AttachmentScreenUI extends Screen {
                         loadTree(ams, false, false);
                     }
                     tree.selectNodeAt(0);
-                    manager = managers.get(tree.getNodeAt(0).getData());
+                    nodeSelected(0);
                     setDone(Messages.get().gen_savingComplete());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -450,7 +488,7 @@ public class AttachmentScreenUI extends Screen {
                 fileDrop.setEnabled(isState(QUERY, DISPLAY));
             }
         });
-
+        
         fileDrop.addDragEnterHandler(new DragEnterHandler() {
             @Override
             public void onDragEnter(DragEnterEvent event) {
@@ -461,6 +499,7 @@ public class AttachmentScreenUI extends Screen {
                     panel = (LayoutPanel)screen.getWidget();
                     panel.add(dropMessage);
                     panel.setWidgetTopBottom(dropMessage, 0, Unit.PX, 0, Unit.PX);
+                    dropMessage.startAnimation();
                 }
             }
         });
@@ -472,6 +511,16 @@ public class AttachmentScreenUI extends Screen {
                     dropMessage.removeFromParent();
                     dropMessage = null;
                 }
+            }
+        });
+
+        addScreenHandler(attachButton, "attachButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                attachButton.setEnabled(false);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? updateButton : abortButton;
             }
         });
 
@@ -490,18 +539,6 @@ public class AttachmentScreenUI extends Screen {
 
         querySection.setModel(model);
         tableSection.setModel(model);
-
-        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
-            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                if (isState(UPDATE)) {
-                    event.cancel();
-                    setError(Messages.get().gen_mustCommitOrAbort());
-                } else if (dropMessage != null) {
-                    dropMessage.removeFromParent();
-                    dropMessage = null;
-                }
-            }
-        });
     }
 
     @UiHandler("searchButton")
@@ -581,6 +618,7 @@ public class AttachmentScreenUI extends Screen {
                     if (ATTACHMENT_ITEM_LEAF.endsWith(node.getType()))
                         node = node.getParent();
                     reloadAttachment(node);
+                    nodeSelected(tree.getSelectedNode());
                     clearStatus();
                 }
 
@@ -624,6 +662,7 @@ public class AttachmentScreenUI extends Screen {
                         if (ATTACHMENT_ITEM_LEAF.endsWith(node.getType()))
                             node = node.getParent();
                         reloadAttachment(node);
+                        nodeSelected(tree.getSelectedNode());
                         setDone(Messages.get().gen_updateAborted());
                     }
 
@@ -637,6 +676,52 @@ public class AttachmentScreenUI extends Screen {
 
             AttachmentService.get().unlock(manager.getAttachment().getId(), unlockCall);
         }
+    }
+
+    @UiHandler("attachButton")
+    protected void attach(ClickEvent event) {
+        Integer currId, prevId, selNodes[];
+        Node node;
+        ArrayList<AttachmentDO> attachments;
+
+        /*
+         * go through the selected nodes and find the ids of the selected
+         * attachments
+         */
+        selNodes = tree.getSelectedNodes();
+        prevId = null;
+        attachments = new ArrayList<AttachmentDO>();
+        for (int i = 0; i < selNodes.length; i++ ) {
+            node = tree.getNodeAt(selNodes[i]);
+            if (CLICK_FOR_MORE_LEAF.equals(node.getType()))
+                break;
+            /*
+             * if an attachment item's node is selected then get the id from its
+             * parent node
+             */
+            if (ATTACHMENT_ITEM_LEAF.equals(node.getType()))
+                node = node.getParent();
+
+            currId = (Integer)node.getData();
+            if (!currId.equals(prevId)) {
+                attachments.add(managers.get(currId).getAttachment());
+                prevId = currId;
+            }
+        }
+
+        attach(attachments);
+        window.close();
+    }
+
+    public void setWindow(WindowInt window) {
+        super.setWindow(window);
+        /*
+         * this flag needs to be reset every time the screen's window changes,
+         * which can happen when the screen is brought up in a modal window and
+         * in that case the handler for BeforeCloseHandler will be needed to be
+         * added to the new window
+         */
+        closeHandlerAdded = false;
     }
 
     /**
@@ -653,8 +738,8 @@ public class AttachmentScreenUI extends Screen {
     public void displayAttachment(Integer id) {
         try {
             /*
-             * not passing a name to the displayAttachment makes sure that the
-             * files opened by it open in separate windows
+             * not passing a name to displayAttachment makes sure that the files
+             * open in separate windows
              */
             AttachmentUtil.displayAttachment(id, null, window);
         } catch (Exception e) {
@@ -678,7 +763,6 @@ public class AttachmentScreenUI extends Screen {
         query.setRowsPerPage(ROWS_PER_PAGE);
         isNewQuery = true;
         isLoadedFromQuery = true;
-        fetchUnattached = false;
         managers = null;
 
         executeQuery(query);
@@ -742,7 +826,7 @@ public class AttachmentScreenUI extends Screen {
             };
         }
 
-        if (fetchUnattached)
+        if (isDataEntry())
             AttachmentService.get()
                              .fetchUnattachedByDescription(query.getFields().get(0).getQuery(),
                                                            query.getPage() * query.getRowsPerPage(),
@@ -861,6 +945,30 @@ public class AttachmentScreenUI extends Screen {
         }
     }
 
+    /**
+     * Returns true if the screen was opened from another screen for data entry,
+     * false otherwise
+     */
+    public boolean isDataEntry() {
+        return false;
+    }
+
+    /**
+     * Returns true if the screen was opened from another screen for adding new
+     * attachment to the system and then attaching them to a record, false
+     * otherwise
+     */
+    public boolean isAttach() {
+        return false;
+    }
+
+    /**
+     * Defines the action to be performed when attachments selected by a user
+     * are to be attached to another record like sample
+     */
+    public void attach(ArrayList<AttachmentDO> attachments) {
+    }
+
     private void reserve(Node node) throws Exception {
         Integer id;
 
@@ -893,8 +1001,21 @@ public class AttachmentScreenUI extends Screen {
             id = null;
         }
 
-        updateButton.setEnabled(ATTACHMENT_LEAF.equals(node.getType()) && (isState(DISPLAY)));
+        if (!isState(UPDATE))
+            /*
+             * in update state, the Update button can't be disabled
+             */
+            updateButton.setEnabled(id != null && (isState(DISPLAY)));
+        /*
+         * the "Attach" button shouldn't be enabled unless any attachment or
+         * attachment item is selected but once it is enabled it shouldn't be
+         * disabled on selecting "Click for more..." because the tree supports
+         * multiple selection, and other nodes may be already selected
+         */
+        if ( !CLICK_FOR_MORE_LEAF.equals(node.getType()))
+            attachButton.setEnabled(isAttach() && (isState(DISPLAY)));
         manager = id != null ? managers.get(id) : null;
+
         attachmentSelected(id);
     }
 
@@ -944,10 +1065,10 @@ public class AttachmentScreenUI extends Screen {
                 tree.addNodeAt( ++index, anode);
         }
 
-        if (reloadTree) {
+        if (reloadTree && isLoadedFromQuery) {
             /*
-             * add the node for showing the next page and reload the tree with
-             * the new nodes
+             * add the node for showing the next page, because the tree is
+             * showing the results of a query
              */
             cmnode = new Node(1);
             cmnode.setCell(0, Messages.get().gen_clickForMore());
