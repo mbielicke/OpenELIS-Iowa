@@ -25,16 +25,20 @@
  */
 package org.openelis.portal.modules.finalReport.client;
 
+import java.util.ArrayList;
+
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 public class FinalReportFormVO {
 
-    private Datetime collectedFrom, collectedTo, releasedFrom, releasedTo, patientBirthFrom,
-                    patientBirthTo;
-    private String   clientReference, envCollector, sdwisCollector, pwsId, patientFirst,
+    private Datetime           collectedFrom, collectedTo, releasedFrom, releasedTo,
+                    patientBirthFrom, patientBirthTo;
+    private String             clientReference, envCollector, sdwisCollector, pwsId, patientFirst,
                     patientLast;
-    private Integer  accessionFrom, accessionTo, projectCode;
+    private Integer            accessionFrom, accessionTo;
+
+    private ArrayList<Integer> projectCodes;
 
     public Datetime getCollectedFrom() {
         return collectedFrom;
@@ -148,11 +152,11 @@ public class FinalReportFormVO {
         this.accessionTo = accessionTo;
     }
 
-    public Integer getProjectCode() {
-        return projectCode;
+    public ArrayList<Integer> getProjectCodes() {
+        return projectCodes;
     }
 
-    public void setProjectCode(Integer projectCode) {
-        this.projectCode = projectCode;
+    public void setProjectCodes(ArrayList<Integer> projectCodes) {
+        this.projectCodes = projectCodes;
     }
 }

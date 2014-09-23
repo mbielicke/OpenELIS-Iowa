@@ -2,8 +2,6 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.FinalReportWebVO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
@@ -27,17 +25,5 @@ public interface FinalReportServiceInt extends XsrfProtectedService {
     ReportStatus runReportForBatchReprint(Query query) throws Exception;
 
     ReportStatus runReportForWeb(Query query) throws Exception;
-
-    ArrayList<FinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception;
-
-    ArrayList<FinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception;
-
-    ArrayList<FinalReportWebVO> getSampleSDWISList(Query query) throws Exception;
-
-    ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception;
-
-    ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception;
-
-    ArrayList<IdNameVO> getSDWISProjectList() throws Exception;
 
 }

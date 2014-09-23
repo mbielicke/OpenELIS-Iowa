@@ -1,12 +1,13 @@
 package org.openelis.portal.modules.finalReport.client;
 
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.Dropdown;
+import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -21,6 +22,30 @@ public class FinalReportUIMobileImpl extends ResizeComposite implements FinalRep
 
     protected static final FinalReportUiBinder uiBinder = GWT.create(FinalReportUiBinder.class);
 
+    @UiField
+    protected TextBox<Integer>                 accessionFrom, accessionTo;
+
+    @UiField
+    protected TextBox<String>                  clientReference, envCollector, sdwisCollector,
+                    pwsId, patientFirst, patientLast;
+
+    @UiField
+    protected Calendar                         collectedFrom, collectedTo, releasedFrom,
+                    releasedTo, patientBirthFrom, patientBirthTo;
+
+    @UiField
+    protected MultiDropdown<Integer>           projectCode;
+
+    @UiField
+    protected Button                           getSampleListButton, resetButton, backButton,
+                    selectAllButton, unselectAllButton, runReportButton;
+
+    @UiField
+    protected FlexTable                        table;
+
+    @UiField
+    protected DeckLayoutPanel                  deck;
+
     public FinalReportUIMobileImpl() {
         initWidget(uiBinder.createAndBindUi(this));
     }
@@ -30,243 +55,95 @@ public class FinalReportUIMobileImpl extends ResizeComposite implements FinalRep
         return this;
     }
 
-    @Override
     public TextBox<Integer> getAccessionFrom() {
-        // TODO Auto-generated method stub
-        return null;
+        return accessionFrom;
     }
 
-    @Override
-    public void setAccessionFrom(TextBox<Integer> accessionFrom) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<Integer> getAccessionTo() {
-        // TODO Auto-generated method stub
-        return null;
+        return accessionTo;
     }
 
-    @Override
-    public void setAccessionTo(TextBox<Integer> accessionTo) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<String> getPwsId() {
-        // TODO Auto-generated method stub
-        return null;
+        return pwsId;
     }
 
-    @Override
-    public void setPwsId(TextBox<String> pwsId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<String> getClientReference() {
-        // TODO Auto-generated method stub
-        return null;
+        return clientReference;
     }
 
-    @Override
-    public void setClientReference(TextBox<String> clientReference) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<String> getEnvCollector() {
-        // TODO Auto-generated method stub
-        return null;
+        return envCollector;
     }
 
-    @Override
-    public void setEnvCollector(TextBox<String> envCollector) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<String> getSdwisCollector() {
-        // TODO Auto-generated method stub
-        return null;
+        return sdwisCollector;
     }
 
-    @Override
-    public void setSdwisCollector(TextBox<String> sdwisCollector) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<String> getPatientFirst() {
-        // TODO Auto-generated method stub
-        return null;
+        return patientFirst;
     }
 
-    @Override
-    public void setPatientFirst(TextBox<String> patientFirst) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public TextBox<String> getPatientLast() {
-        // TODO Auto-generated method stub
-        return null;
+        return patientLast;
     }
 
-    @Override
-    public void setPatientLast(TextBox<String> patientLast) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Calendar getCollectedFrom() {
-        // TODO Auto-generated method stub
-        return null;
+        return collectedFrom;
     }
 
-    @Override
-    public void setCollectedFrom(Calendar collectedFrom) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Calendar getCollectedTo() {
-        // TODO Auto-generated method stub
-        return null;
+        return collectedTo;
     }
 
-    @Override
-    public void setCollectedTo(Calendar collectedTo) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Calendar getReleasedFrom() {
-        // TODO Auto-generated method stub
-        return null;
+        return releasedFrom;
     }
 
-    @Override
-    public void setReleasedFrom(Calendar releasedFrom) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Calendar getReleasedTo() {
-        // TODO Auto-generated method stub
-        return null;
+        return releasedTo;
     }
 
-    @Override
-    public void setReleasedTo(Calendar releasedTo) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Calendar getPatientBirthFrom() {
-        // TODO Auto-generated method stub
-        return null;
+        return patientBirthFrom;
     }
 
-    @Override
-    public void setPatientBirthFrom(Calendar patientBirthFrom) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Calendar getPatientBirthTo() {
-        // TODO Auto-generated method stub
-        return null;
+        return patientBirthTo;
     }
 
-    @Override
-    public void setPatientBirthTo(Calendar patientBirthTo) {
-        // TODO Auto-generated method stub
-
+    public MultiDropdown<Integer> getProjectCode() {
+        return projectCode;
     }
 
-    @Override
-    public Dropdown<Integer> getProjectCode() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setProjectCode(Dropdown<Integer> projectCode) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Button getGetSampleListButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return getSampleListButton;
     }
 
-    @Override
-    public void setGetSampleListButton(Button getSampleListButton) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Button getResetButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return resetButton;
     }
 
-    @Override
-    public void setResetButton(Button resetButton) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Button getBackButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return backButton;
     }
 
-    @Override
-    public void setBackButton(Button backButton) {
-        // TODO Auto-generated method stub
-
+    public Button getSelectAllButton() {
+        return selectAllButton;
     }
 
-    @Override
+    public Button getUnselectAllButton() {
+        return unselectAllButton;
+    }
+
+    public Button getRunReportButton() {
+        return runReportButton;
+    }
+
     public FlexTable getTable() {
-        // TODO Auto-generated method stub
-        return null;
+        return table;
     }
 
-    @Override
-    public void setTable(FlexTable table) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public DeckLayoutPanel getDeck() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setDeck(DeckLayoutPanel deck) {
-        // TODO Auto-generated method stub
-
+        return deck;
     }
 }

@@ -25,8 +25,8 @@
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
 	<g:DeckLayoutPanel ui:field="deck">
-		<g:DockLayoutPanel unit="PCT">
-			<g:west size="25">
+		<g:DockLayoutPanel>
+			<g:west size="400">
 				<g:HTMLPanel>
 					<table class="{res.style.Form}">
 						<tr>
@@ -53,7 +53,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -73,7 +73,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_released}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -93,7 +93,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -106,7 +106,8 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}"
-									text="{msg.finalReport_help_clientReference}" placement="RIGHT" />
+									text="{msg.finalReport_help_clientReference}" placement="RIGHT"
+									balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -114,12 +115,12 @@
 								<ui:text from="{msg.finalReport_projectCode}:" />
 							</td>
 							<td colspan="3">
-								<w:Dropdown ui:field="projectCode" width="206px"
+								<w:MultiDropdown ui:field="projectCode" width="206px"
 									field="Integer" enabled="true" />
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr cellSpacing="1" />
@@ -139,8 +140,8 @@
 									field="String" enabled="true" />
 							</td>
 							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collector}"
-									placement="RIGHT" />
+								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_envCollector}"
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -159,8 +160,8 @@
 									field="String" enabled="true" />
 							</td>
 							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collector}"
-									placement="RIGHT" />
+								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_sdwisCollector}"
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -173,7 +174,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_pws}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr cellSpacing="1" />
@@ -194,7 +195,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientFirst}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -207,7 +208,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientLast}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 						<tr>
@@ -227,7 +228,7 @@
 							</td>
 							<td>
 								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientBirth}"
-									placement="RIGHT" />
+									placement="RIGHT" balloonWidth="135px" />
 							</td>
 						</tr>
 					</table>
@@ -245,7 +246,7 @@
 					</table>
 				</g:HTMLPanel>
 			</g:west>
-			<g:east size="74">
+			<g:center>
 				<g:HTMLPanel>
 					<table>
 						<tr>
@@ -255,36 +256,35 @@
 						</tr>
 					</table>
 				</g:HTMLPanel>
-			</g:east>
+			</g:center>
 		</g:DockLayoutPanel>
-		<g:LayoutPanel>
-			<g:layer>
-				<g:HTMLPanel>
-					<table width="728">
-						<tr>
-							<td>
-								<w:Button ui:field="backButton" text="{msg.finalReport_back}"
-									enabled="true" />
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<g:FlexTable ui:field="table" />
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
-									enabled="false" />
-								<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
-									enabled="false" />
-								<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-									enabled="false" />
-							</td>
-						</tr>
-					</table>
-				</g:HTMLPanel>
-			</g:layer>
-		</g:LayoutPanel>
+		<g:ScrollPanel>
+			<g:HTMLPanel>
+				<table width="728">
+					<tr>
+						<td>
+							<w:Button ui:field="backButton" text="{msg.finalReport_back}"
+								enabled="true" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<g:FlexTable ui:field="table"
+								styleName="{res.table.ScreenTableWithSides} {res.table.Table}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
+								enabled="true" />
+							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
+								enabled="true" />
+							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
+								enabled="true" />
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+		</g:ScrollPanel>
 	</g:DeckLayoutPanel>
 </ui:UiBinder>
