@@ -2,8 +2,8 @@ package org.openelis.portal.modules.finalReport.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleViewVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 
@@ -17,6 +17,6 @@ public interface FinalReportServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> getProjectList() throws Exception;
 
-    ArrayList<FinalReportWebVO> getSampleList(Query query) throws Exception;
+    ArrayList<SampleViewVO> getSampleList(Query query) throws Exception;
 
 }

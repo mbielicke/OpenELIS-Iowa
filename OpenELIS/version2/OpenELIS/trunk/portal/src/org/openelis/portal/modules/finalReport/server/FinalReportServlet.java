@@ -30,10 +30,9 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.FinalReportBean;
-import org.openelis.bean.FinalReportWebBean;
-import org.openelis.domain.FinalReportWebVO;
+import org.openelis.stfu.bean.FinalReportPortalBean;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleViewVO;
 import org.openelis.portal.modules.finalReport.client.FinalReportServiceInt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
@@ -42,19 +41,16 @@ import org.openelis.ui.server.RemoteServlet;
 @WebServlet("/portal/finalReport")
 public class FinalReportServlet extends RemoteServlet implements FinalReportServiceInt {
 
-    private static final long  serialVersionUID = 1L;
+    private static final long     serialVersionUID = 1L;
 
     @EJB
-    private FinalReportBean    finalReport;
-
-    @EJB
-    private FinalReportWebBean finalReportWeb;
+    private FinalReportPortalBean finalReportPortal;
 
     public ReportStatus runReportForWeb(Query query) throws Exception {
         ReportStatus st;
 
         try {
-            st = finalReport.runReportForWeb(query.getFields());
+            st = finalReportPortal.runReportForPortal(query.getFields());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -65,9 +61,9 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
         return st;
     }
 
-    public ArrayList<FinalReportWebVO> getSampleList(Query query) throws Exception {
+    public ArrayList<SampleViewVO> getSampleList(Query query) throws Exception {
         try {
-            return finalReportWeb.getSampleList(query.getFields());
+            return finalReportPortal.getSampleList(query.getFields());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -75,7 +71,7 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
 
     public ArrayList<IdNameVO> getProjectList() throws Exception {
         try {
-            return finalReportWeb.getProjectList();
+            return finalReportPortal.getProjectList();
         } catch (Exception anyE) {
             anyE.printStackTrace();
             throw serializeForGWT(anyE);

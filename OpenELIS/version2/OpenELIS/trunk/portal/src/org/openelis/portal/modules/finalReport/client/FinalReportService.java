@@ -2,8 +2,8 @@ package org.openelis.portal.modules.finalReport.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleViewVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.screen.Callback;
@@ -37,7 +37,7 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     }
 
     @Override
-    public void getSampleList(Query query, AsyncCallback<ArrayList<FinalReportWebVO>> callback) {
+    public void getSampleList(Query query, AsyncCallback<ArrayList<SampleViewVO>> callback) {
         service.getSampleList(query, callback);
     }
 
@@ -65,10 +65,10 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     }
 
     @Override
-    public ArrayList<FinalReportWebVO> getSampleList(Query query) throws Exception {
-        Callback<ArrayList<FinalReportWebVO>> callback;
+    public ArrayList<SampleViewVO> getSampleList(Query query) throws Exception {
+        Callback<ArrayList<SampleViewVO>> callback;
 
-        callback = new Callback<ArrayList<FinalReportWebVO>>();
+        callback = new Callback<ArrayList<SampleViewVO>>();
         service.getSampleList(query, callback);
         return callback.getResult();
     }

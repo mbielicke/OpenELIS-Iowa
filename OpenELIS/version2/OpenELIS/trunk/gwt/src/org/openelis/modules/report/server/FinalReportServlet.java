@@ -32,13 +32,11 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.FinalReportBean;
 import org.openelis.bean.FinalReportWebBean;
-import org.openelis.domain.FinalReportWebVO;
-import org.openelis.domain.IdNameVO;
+import org.openelis.modules.report.client.FinalReportServiceInt;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.modules.report.client.FinalReportServiceInt;
 
 @WebServlet("/openelis/finalReport")
 public class FinalReportServlet extends RemoteServlet implements FinalReportServiceInt {
@@ -142,51 +140,4 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
         return st;
     }
 
-    public ArrayList<FinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception {        
-        try {        
-            return finalReportWeb.getSampleEnvironmentalList(query.getFields());
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    } 
-    
-    public ArrayList<FinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception{        
-        try {        
-            return finalReportWeb.getSamplePrivateWellList(query.getFields());
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }  
-    
-    public ArrayList<FinalReportWebVO> getSampleSDWISList(Query query) throws Exception {        
-        try {        
-            return finalReportWeb.getSampleSDWISList(query.getFields());
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }     
-    
-    public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {        
-        try {        
-            return finalReportWeb.getEnvironmentalProjectList();
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-    
-    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
-        try {        
-            return finalReportWeb.getPrivateWellProjectList();
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-    
-    public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {        
-        try {        
-            return finalReportWeb.getSDWISProjectList();
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
 }
