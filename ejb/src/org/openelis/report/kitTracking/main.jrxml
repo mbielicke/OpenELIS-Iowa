@@ -48,7 +48,7 @@ where o.status_id = d1.id and
       oo.order_id = o.id and
       oo.organization_id = report_to.id and
       oo.type_id = (select id from dictionary where system_name = 'org_report_to') and
-      o.type = "S" and
+      o.type = 'S' and
       o.ordered_date between $P{FROM_DATE} and $P{TO_DATE}
 $P!{SHIP_FROM} $P!{SHIP_TO} $P!{REPORT_TO} $P!{DESCRIPTION} $P!{STATUS} $P!{SECTION} $P!{SORT_BY}]]>
 	</queryString>

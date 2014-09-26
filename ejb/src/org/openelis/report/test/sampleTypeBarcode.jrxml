@@ -8,7 +8,7 @@
 	<queryString>
 		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
 FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
-WHERE $P{REF_TYPE} = "T" and
+WHERE $P{REF_TYPE} = 'T' and
       t.test_id = $P{T_OR_P_ID} and
       t.type_of_sample_id = d1.id and
       t.unit_of_measure_id = d2.id
@@ -17,14 +17,14 @@ UNION
 
 SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
 FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
-WHERE $P{REF_TYPE} = "P" and
+WHERE $P{REF_TYPE} = 'P' and
       t.test_id in (
 	SELECT te.id FROM panel_item pi, test te, method me
 	WHERE pi.panel_id = $P{T_OR_P_ID} and
       	      pi.name = te.name and
               pi.method_name = me.name and
       	      te.method_id = me.id and
-      	      te.is_active = "Y" ) and
+      	      te.is_active = 'Y' ) and
       t.type_of_sample_id = d1.id and
       t.unit_of_measure_id = d2.id]]>
 	</queryString>
