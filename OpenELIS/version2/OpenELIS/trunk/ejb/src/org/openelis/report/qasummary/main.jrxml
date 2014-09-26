@@ -35,7 +35,7 @@ FROM sample s, sample_item si, analysis a, test t, section se,
          outer(organization o, sample_organization so, address ad, dictionary d), analysis_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and  s.domain != 'W' and
       s.id = so.sample_id and so.organization_id = o.id and so.type_id = d.id and
-      d.system_name = 'org_report_to' and si.sample_id =s.id and a.sample_item_id = si.id and
+      d.system_name = 'org_report_to' and si.sample_id = s.id and a.sample_item_id = si.id and
       a.test_id = t.id and a.section_id = se.id and
       aq.analysis_id = a.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
@@ -45,7 +45,7 @@ FROM sample s, sample_item si, analysis a, test t, section se,
          outer(organization o, sample_organization so, address ad, dictionary d), sample_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and  s.domain != 'W' and
       s.id = so.sample_id and so.organization_id = o.id and so.type_id = d.id and
-      d.system_name = 'org_report_to' and si.sample_id =s.id and a.sample_item_id = si.id and
+      d.system_name = 'org_report_to' and si.sample_id = s.id and a.sample_item_id = si.id and
       a.test_id = t.id and a.section_id = se.id and
       aq.sample_id = s.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
@@ -55,7 +55,7 @@ SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s
 FROM sample s, sample_item si, analysis a, test t, section se,
          organization o, sample_private_well so, address ad, analysis_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
-      s.id = so.sample_id and so.organization_id = o.id and si.sample_id =s.id and
+      s.id = so.sample_id and so.organization_id = o.id and si.sample_id = s.id and
       a.sample_item_id = si.id and a.test_id = t.id and a.section_id = se.id and
       aq.analysis_id = a.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
@@ -64,7 +64,7 @@ SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s
 FROM sample s, sample_item si, analysis a, test t, section se,
          organization o, sample_private_well so, address ad, sample_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
-      s.id = so.sample_id and so.organization_id = o.id and si.sample_id =s.id and
+      s.id = so.sample_id and so.organization_id = o.id and si.sample_id = s.id and
       a.sample_item_id = si.id and a.test_id = t.id and a.section_id = se.id and
       aq.sample_id = s.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
@@ -73,7 +73,7 @@ SELECT unique 'private',so.organization_id o_id, 'pvt_city', 'pvt_state', s.acce
 FROM sample s, sample_item si, analysis a, test t, section se, test_section ts,
          sample_private_well so, address ad, analysis_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
-      s.id = so.sample_id and si.sample_id =s.id and a.sample_item_id = si.id and
+      s.id = so.sample_id and si.sample_id = s.id and a.sample_item_id = si.id and
       a.test_id = t.id and a.section_id = se.id and
       aq.analysis_id = a.id and so.report_to_address_id = ad.id
       $P!{TEST} $P!{SECTION}
@@ -82,7 +82,7 @@ SELECT unique 'private',so.organization_id o_id,'pvt_city', 'pvt_state', s.acces
 FROM sample s, sample_item si, analysis a, test t, section se,
          sample_private_well so, address ad, sample_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
-      s.id = so.sample_id and si.sample_id =s.id and a.sample_item_id = si.id and
+      s.id = so.sample_id and si.sample_id = s.id and a.sample_item_id = si.id and
       a.test_id = t.id and a.section_id = se.id and
       aq.sample_id = s.id and so.report_to_address_id = ad.id
       $P!{TEST} $P!{SECTION}

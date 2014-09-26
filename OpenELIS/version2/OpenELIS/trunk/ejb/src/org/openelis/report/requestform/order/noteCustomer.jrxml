@@ -14,7 +14,7 @@
 from note n
 where n.reference_id = $P{ORDER_ID} and
       n.reference_table_id = $P{ORDER_CUSTOMER_REFERENCE_TABLE_ID} and
-      n.is_external = "Y"]]>
+      n.is_external = 'Y']]>
 	</queryString>
 	<field name="text" class="java.lang.String"/>
 	<title>

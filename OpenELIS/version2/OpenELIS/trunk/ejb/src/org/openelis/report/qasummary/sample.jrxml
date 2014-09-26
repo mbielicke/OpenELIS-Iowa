@@ -34,7 +34,7 @@
 	<queryString>
 		<![CDATA[SELECT distinct s.accession_number s_no, q.name q_name, q.reporting_sequence, sq.id sq_id
 FROM sample_qaevent sq, qaevent q, sample s
-WHERE s.id= $P{SAMPLE_ID} and
+WHERE s.id = $P{SAMPLE_ID} and
       sq.qaevent_id = q.id and s.id = sq.sample_id
 ORDER BY q.reporting_sequence, sq_id]]>
 	</queryString>
