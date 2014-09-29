@@ -1870,6 +1870,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_moveFileException(String arg0);
 
   /**
+   * Translated "Sample # ''{0,number}''".
+   * 
+   * @return translated "Sample # ''{0,number}''"
+   */
+  @DefaultMessage("Sample # ''{0,number}''")
+  @Key("attachment.sampleDescription")
+  String attachment_sampleDescription(Integer arg0);
+
+  /**
    * Translated "You do not have permission to view the attachment {0}".
    * 
    * @return translated "You do not have permission to view the attachment {0}"
