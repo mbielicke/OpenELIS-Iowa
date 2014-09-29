@@ -5,11 +5,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class MainUIImpl extends ResizeComposite implements MainUI{
+public class MainUIImpl extends Composite implements MainUI{
 	
 	@UiTemplate("Main.ui.xml")
 	interface MainUiBinder extends UiBinder<Widget, MainUIImpl>{};
@@ -17,7 +20,7 @@ public class MainUIImpl extends ResizeComposite implements MainUI{
 	
 	
 	@UiField
-	LayoutPanel main;
+	AbsolutePanel main;
 	
 	@UiField
 	Navigation navigation;
@@ -26,7 +29,7 @@ public class MainUIImpl extends ResizeComposite implements MainUI{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	public LayoutPanel main() {
+	public AbsolutePanel main() {
 		return main;
 	}
 	

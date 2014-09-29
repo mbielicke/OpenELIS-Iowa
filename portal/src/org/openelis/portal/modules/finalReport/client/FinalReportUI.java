@@ -6,6 +6,7 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
+import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -57,6 +58,6 @@ public interface FinalReportUI extends IsWidget {
 
     public FlexTable getTable();
 
-    public DeckLayoutPanel getDeck();
+    public DeckPanel getDeck();
 
 }

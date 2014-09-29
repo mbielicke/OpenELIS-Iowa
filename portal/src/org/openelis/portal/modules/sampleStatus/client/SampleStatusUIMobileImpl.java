@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
+import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,7 +43,7 @@ public class SampleStatusUIMobileImpl extends ResizeComposite implements SampleS
     protected FlexTable                        table;
 
     @UiField
-    protected DeckLayoutPanel                  deck;
+    protected DeckPanel                  deck;
 
     public SampleStatusUIMobileImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -125,7 +126,7 @@ public class SampleStatusUIMobileImpl extends ResizeComposite implements SampleS
     }
 
     @Override
-    public DeckLayoutPanel getDeck() {
+    public DeckPanel getDeck() {
         return deck;
     }
 

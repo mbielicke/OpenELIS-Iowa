@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
+import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
@@ -44,7 +45,7 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     protected FlexTable                        table;
 
     @UiField
-    protected DeckLayoutPanel                  deck;
+    protected DeckPanel                  deck;
 
     public FinalReportUIImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -171,7 +172,7 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     }
 
     @Override
-    public DeckLayoutPanel getDeck() {
+    public DeckPanel getDeck() {
         return deck;
     }
 }
