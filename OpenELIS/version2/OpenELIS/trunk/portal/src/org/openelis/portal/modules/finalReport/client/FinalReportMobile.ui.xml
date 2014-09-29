@@ -40,14 +40,14 @@
 							<ui:text from="{msg.finalReport_collectedDate}:" />
 						</td>
 						<td>
-							<c:Calendar ui:field="collectedFrom" width="90px"
+							<c:Calendar ui:field="collectedFrom" width="75px"
 								begin="0" end="2" enabled="true" />
 						</td>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.gen_to}:" />
 						</td>
 						<td>
-							<c:Calendar ui:field="collectedTo" width="90px" begin="0"
+							<c:Calendar ui:field="collectedTo" width="75px" begin="0"
 								end="2" enabled="true" />
 						</td>
 						<td>
@@ -60,14 +60,14 @@
 							<ui:text from="{msg.finalReport_releasedDate}:" />
 						</td>
 						<td>
-							<c:Calendar ui:field="releasedFrom" width="90px"
+							<c:Calendar ui:field="releasedFrom" width="75px"
 								begin="0" end="2" enabled="true" />
 						</td>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.gen_to}:" />
 						</td>
 						<td>
-							<c:Calendar ui:field="releasedTo" width="90px" begin="0"
+							<c:Calendar ui:field="releasedTo" width="75px" begin="0"
 								end="2" enabled="true" />
 						</td>
 						<td>
@@ -80,14 +80,14 @@
 							<ui:text from="{msg.finalReport_accessionNumber}:" />
 						</td>
 						<td>
-							<w:TextBox ui:field="accessionFrom" width="90px" field="Integer"
+							<w:TextBox ui:field="accessionFrom" width="77px" field="Integer"
 								enabled="true" />
 						</td>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.gen_to}:" />
 						</td>
 						<td>
-							<w:TextBox ui:field="accessionTo" width="90px" field="Integer"
+							<w:TextBox ui:field="accessionTo" width="77px" field="Integer"
 								enabled="true" />
 						</td>
 						<td>
@@ -100,7 +100,7 @@
 							<ui:text from="{msg.sample_clientReference}:" />
 						</td>
 						<td colspan="3">
-							<w:TextBox ui:field="clientReference" width="208px"
+							<w:TextBox ui:field="clientReference" width="180px"
 								field="String" enabled="true" />
 						</td>
 						<td>
@@ -113,7 +113,7 @@
 							<ui:text from="{msg.finalReport_projectCode}:" />
 						</td>
 						<td colspan="3">
-							<w:MultiDropdown ui:field="projectCode" width="206px"
+							<w:MultiDropdown ui:field="projectCode" width="178px"
 								field="Integer" enabled="true" />
 						</td>
 						<td>
@@ -134,7 +134,7 @@
 							<ui:text from="{msg.finalReport_collector}:" />
 						</td>
 						<td colspan="3">
-							<w:TextBox ui:field="envCollector" width="208px" field="String"
+							<w:TextBox ui:field="envCollector" width="180px" field="String"
 								enabled="true" />
 						</td>
 						<td>
@@ -154,7 +154,7 @@
 							<ui:text from="{msg.finalReport_collector}:" />
 						</td>
 						<td colspan="3">
-							<w:TextBox ui:field="sdwisCollector" width="208px"
+							<w:TextBox ui:field="sdwisCollector" width="180px"
 								field="String" enabled="true" />
 						</td>
 						<td>
@@ -167,7 +167,7 @@
 							<ui:text from="{msg.pws_id}:" />
 						</td>
 						<td colspan="3">
-							<w:TextBox ui:field="pwsId" width="208px" field="String"
+							<w:TextBox ui:field="pwsId" width="180px" field="String"
 								enabled="true" />
 						</td>
 						<td>
@@ -188,7 +188,7 @@
 							<ui:text from="{msg.finalReport_patientFirst}:" />
 						</td>
 						<td colspan="3">
-							<w:TextBox ui:field="patientFirst" width="208px" field="String"
+							<w:TextBox ui:field="patientFirst" width="180px" field="String"
 								enabled="true" />
 						</td>
 						<td>
@@ -201,7 +201,7 @@
 							<ui:text from="{msg.finalReport_patientLast}:" />
 						</td>
 						<td colspan="3">
-							<w:TextBox ui:field="patientLast" width="208px" field="String"
+							<w:TextBox ui:field="patientLast" width="180px" field="String"
 								enabled="true" />
 						</td>
 						<td>
@@ -214,14 +214,14 @@
 							<ui:text from="{msg.finalReport_patientBirth}:" />
 						</td>
 						<td>
-							<c:Calendar ui:field="patientBirthFrom" width="90px"
+							<c:Calendar ui:field="patientBirthFrom" width="75px"
 								begin="0" end="2" enabled="true" />
 						</td>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.gen_to}:" />
 						</td>
 						<td>
-							<c:Calendar ui:field="patientBirthTo" width="90px"
+							<c:Calendar ui:field="patientBirthTo" width="75px"
 								begin="0" end="2" enabled="true" />
 						</td>
 						<td>

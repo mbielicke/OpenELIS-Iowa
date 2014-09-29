@@ -55,94 +55,127 @@ public class FinalReportUIMobileImpl extends ResizeComposite implements FinalRep
         return this;
     }
 
+    @Override
+    public void initialize() {
+        collectedFrom.setWidth("75px");
+        collectedTo.setWidth("75px");
+        releasedFrom.setWidth("75px");
+        releasedTo.setWidth("75px");
+        patientBirthFrom.setWidth("75px");
+        patientBirthTo.setWidth("75px");
+    }
+
+    @Override
     public TextBox<Integer> getAccessionFrom() {
         return accessionFrom;
     }
 
+    @Override
     public TextBox<Integer> getAccessionTo() {
         return accessionTo;
     }
 
+    @Override
     public TextBox<String> getPwsId() {
         return pwsId;
     }
 
+    @Override
     public TextBox<String> getClientReference() {
         return clientReference;
     }
 
+    @Override
     public TextBox<String> getEnvCollector() {
         return envCollector;
     }
 
+    @Override
     public TextBox<String> getSdwisCollector() {
         return sdwisCollector;
     }
 
+    @Override
     public TextBox<String> getPatientFirst() {
         return patientFirst;
     }
 
+    @Override
     public TextBox<String> getPatientLast() {
         return patientLast;
     }
 
+    @Override
     public Calendar getCollectedFrom() {
         return collectedFrom;
     }
 
+    @Override
     public Calendar getCollectedTo() {
         return collectedTo;
     }
 
+    @Override
     public Calendar getReleasedFrom() {
         return releasedFrom;
     }
 
+    @Override
     public Calendar getReleasedTo() {
         return releasedTo;
     }
 
+    @Override
     public Calendar getPatientBirthFrom() {
         return patientBirthFrom;
     }
 
+    @Override
     public Calendar getPatientBirthTo() {
         return patientBirthTo;
     }
 
+    @Override
     public MultiDropdown<Integer> getProjectCode() {
         return projectCode;
     }
 
+    @Override
     public Button getGetSampleListButton() {
         return getSampleListButton;
     }
 
+    @Override
     public Button getResetButton() {
         return resetButton;
     }
 
+    @Override
     public Button getBackButton() {
         return backButton;
     }
 
+    @Override
     public Button getSelectAllButton() {
         return selectAllButton;
     }
 
+    @Override
     public Button getUnselectAllButton() {
         return unselectAllButton;
     }
 
+    @Override
     public Button getRunReportButton() {
         return runReportButton;
     }
 
+    @Override
     public FlexTable getTable() {
         return table;
     }
 
+    @Override
     public DeckLayoutPanel getDeck() {
         return deck;
     }

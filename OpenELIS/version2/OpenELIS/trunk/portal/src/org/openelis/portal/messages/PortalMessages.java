@@ -34,11 +34,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_accessionNumber();
 
   /**
-   * Translated "ALL SAMPLES".
+   * Translated "ANY SAMPLES".
    * 
-   * @return translated "ALL SAMPLES"
+   * @return translated "ANY SAMPLES"
    */
-  @DefaultMessage("ALL SAMPLES")
+  @DefaultMessage("ANY SAMPLES")
   @Key("finalReport.anySamples")
   String finalReport_anySamples();
 
@@ -518,4 +518,13 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Client Reference")
   @Key("sample.clientReference")
   String sample_clientReference();
+
+  /**
+   * Translated "<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>".
+   * 
+   * @return translated "<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>"
+   */
+  @DefaultMessage("<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>")
+  @Key("sampleStatus.help.screen")
+  String sampleStatus_help_screen();
 }
