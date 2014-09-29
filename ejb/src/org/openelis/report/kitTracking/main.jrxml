@@ -39,7 +39,7 @@
 		<![CDATA[select distinct o.id o_id, d1.entry status, o.ordered_date, ship_to.id ship_to_id, ship_to.name ship_to_name,
                   d3.entry ship_from_name, report_to.id report_to_id, report_to.name report_to_name, o.requested_by,
                   d2.entry cost_center
-  from order o, dictionary d1, outer dictionary d2, outer dictionary d3, organization ship_to,
+  from "order" o, dictionary d1, outer dictionary d2, outer dictionary d3, organization ship_to,
        outer(order_organization oo, organization report_to)
 where o.status_id = d1.id and
       o.cost_center_id = d2.id and

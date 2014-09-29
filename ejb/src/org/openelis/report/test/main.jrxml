@@ -30,7 +30,7 @@ WHERE t.is_active = 'Y' and
 
 UNION
 
-SELECT unique 'P' ref_type, p.id t_id, '' s_name, p.name t_name,
+SELECT distinct 'P' ref_type, p.id t_id, '' s_name, p.name t_name,
        p.description t_description,  '' m_name
 FROM panel p, panel_item pi, test t, method m, test_section ts, section s
 WHERE $P{DETAIL} != 'FD' and
