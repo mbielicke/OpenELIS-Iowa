@@ -1609,6 +1609,7 @@ public class SampleManager1Bean {
                        SampleManager1.Load.QA,
                        SampleManager1.Load.AUXDATA,
                        SampleManager1.Load.NOTE,
+                       SampleManager1.Load.ATTACHMENT,
                        SampleManager1.Load.RESULT);
 
         accession = getSample(sm).getAccessionNumber();
@@ -1754,6 +1755,13 @@ public class SampleManager1Bean {
         }
 
         setSampleInternalNotes(sm, null);
+        
+        if (getAttachments(sm) != null) {
+            for (AttachmentItemViewDO data : getAttachments(sm)) {
+                data.setId(sm.getNextUID());
+                data.setReferenceId(null);
+            }
+        }
 
         /*
          * level 2: everything is based on item ids
