@@ -36,6 +36,8 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.preferences.PreferencesService"/>
   <inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1"/>
   <inherits name="org.openelis.modules.order1.Order1"/>
+  <inherits name="org.openelis.modules.attachment.AttachmentService"/>
+  <inherits name="org.openelis.modules.scriptlet.ScriptletService"/>
   
   <entry-point class="org.openelis.modules.environmentalSampleLogin1.client.EnvironmentalSampleLoginEntry"/>
 </module>

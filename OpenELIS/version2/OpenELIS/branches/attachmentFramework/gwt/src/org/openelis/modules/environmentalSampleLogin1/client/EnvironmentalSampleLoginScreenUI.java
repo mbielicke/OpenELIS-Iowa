@@ -62,6 +62,7 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
@@ -142,6 +143,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -240,7 +243,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     @UiField(provided = true)
     protected AttachmentTabUI                           attachmentTab;
 
-    protected boolean                                   canEdit, isBusy;
+    protected boolean                                   canEdit, isBusy, closeScreen,
+                    isAttachmentScreenOpen;
 
     protected ModulePermission                          userPermission;
 
@@ -2059,11 +2063,23 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     event.cancel();
                     setError(Messages.get().mustCommitOrAbort());
                 } else {
-                    /*
-                     * make sure that all detached tabs are closed when the main
-                     * screen is closed
-                     */
-                    tabPanel.close();
+                    if (isAttachmentScreenOpen) {
+                        /*
+                         * don't close the main screen before trying to close
+                         * attachment screen because that screen may be in
+                         * update state and may not close
+                         */
+                        event.cancel();
+                        closeScreen = true;
+                        attachmentScreen.getWindow().close();
+                        closeScreen = false;
+                    } else {
+                        /*
+                         * make sure that all detached tabs are closed when the
+                         * main screen is closed
+                         */
+                        tabPanel.close();
+                    }
                 }
             }
         });
@@ -2148,27 +2164,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         if (addCall == null) {
             addCall = new AsyncCallbackUI<SampleManager1>() {
                 public void success(SampleManager1 result) {
-                    AttachmentManager am;
-                    AttachmentDO att;
-                    AttachmentItemViewDO atti;
-
                     previousManager = manager;
                     manager = result;
-                    if (attachmentScreen != null) {
-                        am = attachmentScreen.getReserved();
-                        /*
-                         * add an attachment item for the record selected on the
-                         * attachment screen
-                         */
-                        if (am != null) {
-                            att = am.getAttachment();
-                            atti = manager.attachment.add();
-                            atti.setAttachmentId(att.getId());
-                            atti.setAttachmentDescription(att.getDescription());
-                            atti.setAttachmentCreatedDate(att.getCreatedDate());
-                            atti.setAttachmentSectionId(att.getSectionId());
-                        }
-                    }
+                    if (attachmentScreen != null)
+                        addReservedAttachment();
                     cache = new HashMap<String, Object>();
                     addScriptlet(null);
                     runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
@@ -2328,7 +2327,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     cache = null;
                     scriptletRunner = null;
                     if (attachmentScreen != null)
-                        attachmentScreen.removeReservation();
+                        attachmentScreen.removeReservation(true);
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -2381,7 +2380,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             cache = null;
             scriptletRunner = null;
             if (attachmentScreen != null)
-                attachmentScreen.removeReservation();
+                attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<SampleManager1>() {
@@ -2503,49 +2502,59 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * if the user checks the checkbox for showing attachment screen
              * then open the attachment screen if it's closed
              */
-            if (attachmentScreen != null)
-                return;
 
             try {
+                if (attachmentScreen == null) {
+                    attachmentScreen = new AttachmentScreenUI() {
+                        @Override
+                        public boolean isDataEntry() {
+                            return true;
+                        }
+
+                        @Override
+                        public void search() {
+                            QueryData field;
+
+                            query = new Query();
+                            field = new QueryData();
+                            field.setQuery("%");
+                            query.setFields(field);
+                            query.setRowsPerPage(ROWS_PER_PAGE);
+                            isNewQuery = true;
+                            isLoadedFromQuery = true;
+                            managers = null;
+
+                            executeQuery(query);
+                        }
+
+                        @Override
+                        public void searchSuccessful() {
+                            attachmentSearchSuccessful();
+                        }
+                    };
+                }
+
                 window = new org.openelis.ui.widget.Window();
                 window.setName(Messages.get().attachment_attachment());
                 window.setSize("782px", "521px");
-                attachmentScreen = new AttachmentScreenUI(window) {
-                    @Override
-                    public void search() {
-                        QueryData field;
-
-                        query = new Query();
-                        field = new QueryData();
-                        field.setQuery("%");
-                        query.setFields(field);
-                        query.setRowsPerPage(ROWS_PER_PAGE);
-                        isNewQuery = true;
-                        isLoadedFromQuery = true;
-                        managers = null;
-
-                        executeQuery(query);
-                    }
-
-                    @Override
-                    public void attachmentSelected(Integer id) {
-                        if (id != null)
-                            displayAttachment(id);
-                    }
-                    
-                    @Override
-                    public boolean isDataEntry() {
-                        return true;
-                    }
-                };
+                attachmentScreen.setWindow(window);
                 window.setContent(attachmentScreen);
                 OpenELIS.getBrowser().addWindow(window, "attachment");
+                isAttachmentScreenOpen = true;
+
                 attachmentScreen.search();
-                window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+                window.addCloseHandler(new CloseHandler<WindowInt>() {
                     @Override
-                    public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
-                        attachmentScreen = null;
-                        fromTRF.setCheck(false);
+                    public void onClose(CloseEvent<WindowInt> event) {
+                        isAttachmentScreenOpen = false;
+                        if (closeScreen)
+                            /*
+                             * the main screen needs to be closed because it is
+                             * waiting for attachment screen to be closed
+                             */
+                            screen.window.close();
+                        else
+                            fromTRF.setCheck(false);
                     }
                 });
             } catch (Throwable e) {
@@ -2557,10 +2566,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * if the user unchecks the checkbox for showing attachment screen
              * then close the attachment screen if it's open
              */
-            if (attachmentScreen != null) {
+            if (attachmentScreen != null)
                 attachmentScreen.getWindow().close();
-                attachmentScreen = null;
-            }
         }
     }
 
@@ -3024,6 +3031,38 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
      */
     private void runDomainScriptlet(Operation operation) {
         runScriptlet(null, null, operation);
+    }
+
+    private void addReservedAttachment() {
+        AttachmentManager am;
+        AttachmentDO att;
+        AttachmentItemViewDO atti;
+
+        am = attachmentScreen.getReserved();
+        /*
+         * add an attachment item for the record selected on the attachment
+         * screen
+         */
+        if (am != null) {
+            att = am.getAttachment();
+            atti = manager.attachment.add();
+            atti.setAttachmentId(att.getId());
+            atti.setAttachmentDescription(att.getDescription());
+            atti.setAttachmentCreatedDate(att.getCreatedDate());
+            atti.setAttachmentSectionId(att.getSectionId());
+        }
+    }
+
+    private void attachmentSearchSuccessful() {
+        if (isState(ADD)) {
+            /*
+             * if the screen is already in Add state then reserve an attachment,
+             * add it to the sample and notify the tab
+             */
+            addReservedAttachment();
+            setData();
+            bus.fireEvent(new AttachmentAddedEvent());
+        }
     }
 
     /*

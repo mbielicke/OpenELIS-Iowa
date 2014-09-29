@@ -102,7 +102,7 @@
                 <w:Button ui:field="attachButton" leftIcon="{res.icon.addRowIcon}" text="{msg.attachment_attach}" />
               </g:HorizontalPanel>
             </g:layer>
-            <g:layer top="0px" bottom="0px" right="0px" width="55%">
+            <g:layer top="0px" bottom="0px" right="0px" width="45%">
               <g:HorizontalPanel>
                 <g:HTMLPanel>
                   <table class="{res.style.Form}">
@@ -115,9 +115,7 @@
                       </td>
                     </tr>
                   </table>
-                </g:HTMLPanel>
-                <w:Button ui:field="refreshButton" leftIcon="{res.icon.refreshButtonImage}"
-                  text="{msg.gen_refresh}" />
+                </g:HTMLPanel>                
                 <w:Button ui:field="updateButton" leftIcon="{res.icon.UpdateButtonImage}"
                   text="{msg.gen_update}" />
                 <w:Button ui:field="commitButton" leftIcon="{res.icon.CommitButtonImage}"
