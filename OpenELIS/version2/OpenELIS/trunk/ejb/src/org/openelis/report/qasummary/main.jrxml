@@ -30,7 +30,7 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT unique o.name o_name, o.id o_id, ad.city, ad.state,s.accession_number, s.id s_id
+		<![CDATA[SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state,s.accession_number, s.id s_id
 FROM sample s, sample_item si, analysis a, test t, section se,
          outer(organization o, sample_organization so, address ad, dictionary d), analysis_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and  s.domain != 'W' and
@@ -40,7 +40,7 @@ WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and  s.domain
       aq.analysis_id = a.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
 UNION
-SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
+SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
 FROM sample s, sample_item si, analysis a, test t, section se,
          outer(organization o, sample_organization so, address ad, dictionary d), sample_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and  s.domain != 'W' and
@@ -51,7 +51,7 @@ WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and  s.domai
       $P!{TEST} $P!{SECTION}
 
 UNION
-SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
+SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
 FROM sample s, sample_item si, analysis a, test t, section se,
          organization o, sample_private_well so, address ad, analysis_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
@@ -60,7 +60,7 @@ WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain 
       aq.analysis_id = a.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
 UNION
-SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
+SELECT distinct o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
 FROM sample s, sample_item si, analysis a, test t, section se,
          organization o, sample_private_well so, address ad, sample_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
@@ -69,7 +69,7 @@ WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain
       aq.sample_id = s.id and o.address_id = ad.id
       $P!{TEST} $P!{SECTION}
 UNION
-SELECT unique 'private',so.organization_id o_id, 'pvt_city', 'pvt_state', s.accession_number, s.id s_id
+SELECT distinct 'private',so.organization_id o_id, 'pvt_city', 'pvt_state', s.accession_number, s.id s_id
 FROM sample s, sample_item si, analysis a, test t, section se, test_section ts,
          sample_private_well so, address ad, analysis_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
@@ -78,7 +78,7 @@ WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain 
       aq.analysis_id = a.id and so.report_to_address_id = ad.id
       $P!{TEST} $P!{SECTION}
 UNION
-SELECT unique 'private',so.organization_id o_id,'pvt_city', 'pvt_state', s.accession_number, s.id s_id
+SELECT distinct 'private',so.organization_id o_id,'pvt_city', 'pvt_state', s.accession_number, s.id s_id
 FROM sample s, sample_item si, analysis a, test t, section se,
          sample_private_well so, address ad, sample_qaevent aq
 WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
