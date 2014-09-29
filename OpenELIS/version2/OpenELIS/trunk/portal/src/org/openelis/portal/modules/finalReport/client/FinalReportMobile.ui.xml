@@ -24,8 +24,8 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-	<g:DeckLayoutPanel ui:field="deck">
-		<g:ScrollPanel>
+    <w:PortalPanel>
+	<g:DeckPanel ui:field="deck">
 			<g:HTMLPanel>
 				<table class="{res.style.Form}">
 					<tr>
@@ -243,8 +243,6 @@
 					</tr>
 				</table>
 			</g:HTMLPanel>
-		</g:ScrollPanel>
-		<g:ScrollPanel>
 			<g:HTMLPanel>
 				<table width="728">
 					<tr>
@@ -271,6 +269,6 @@
 					</tr>
 				</table>
 			</g:HTMLPanel>
-		</g:ScrollPanel>
-	</g:DeckLayoutPanel>
+	</g:DeckPanel>
+	</w:PortalPanel>
 </ui:UiBinder>

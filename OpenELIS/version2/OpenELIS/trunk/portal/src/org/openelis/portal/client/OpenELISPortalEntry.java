@@ -11,12 +11,14 @@ import org.openelis.ui.screen.Screen;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -45,21 +47,23 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
                 Window.alert("Sorry, but an unexpected error has occurred.  Please contact IT support");
             }
         });
-
+        
         try {
-            RootPanel.get("main").clear();
-            RootLayoutPanel.get().add((Screen)GWT.create(MainScreen.class));
+            RootPanel.get("main").removeFromParent();
+            
+            MainScreen screen = GWT.create(MainScreen.class);
+            RootPanel.get().add(screen);
 
             SessionTimer.start();
         } catch (Throwable e) {
-            remote.log(Level.SEVERE, e.getMessage(), e);
+            remote.log(Level.SEVERE,e.getMessage(),e);
             Window.alert("Unable to start app : " + e.getMessage());
         }
-
+        
         try {
             Constants.setConstants(OpenELISService.get().getConstants());
         } catch (Exception e) {
-            remote.log(Level.SEVERE, e.getMessage(), e);
+        	remote.log(Level.SEVERE,e.getMessage(),e);
         }
     }
 
