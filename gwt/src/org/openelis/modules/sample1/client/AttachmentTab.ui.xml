@@ -37,7 +37,9 @@
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="133" label="{msg.gen_description}">
-                  <t:LabelCell />
+                  <t:TextBoxCell>
+                    <w:TextBox width="133px" field="String" />
+                  </t:TextBoxCell>
                 </t:Column>
               </t:Table>
             </g:layer>

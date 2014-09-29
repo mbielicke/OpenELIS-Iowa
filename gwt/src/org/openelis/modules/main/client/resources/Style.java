@@ -27,6 +27,4 @@ public interface Style extends CssResource {
 	public String ScreenLabelLink();
 	
     public String Title();
-    
-    public String Circle();
 }

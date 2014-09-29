@@ -40,6 +40,7 @@ import org.openelis.manager.AttachmentManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.AttachmentMeta;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentService;
 import org.openelis.modules.attachment.client.AttachmentUtil;
@@ -152,7 +153,7 @@ public class AttachmentTabUI extends Screen {
                 QueryData qd;
 
                 qds = new ArrayList<QueryData>();
-                for (int i = 0; i < 2; i++ ) {
+                for (int i = 0; i < 3; i++ ) {
                     qd = (QueryData) ((Queryable)currentTable.getColumnWidget(i)).getQuery();
                     if (qd != null) {
                         switch (i) {
@@ -315,6 +316,14 @@ public class AttachmentTabUI extends Screen {
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
+                displayAttachments();
+            }
+        });
+
+        parentBus.addHandler(AttachmentAddedEvent.getType(), new AttachmentAddedEvent.Handler() {
+            @Override
+            public void onAttachmentAdded(AttachmentAddedEvent event) {
+                redraw = true;
                 displayAttachments();
             }
         });
