@@ -1,4 +1,4 @@
-package org.openelis.portal.modules.finalReport.client;
+package org.openelis.portal.modules.sampleStatus.client;
 
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.MultiDropdown;
@@ -14,10 +14,10 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FinalReportUITabletImpl extends ResizeComposite implements FinalReportUI {
+public class SampleStatusUITabletImpl extends ResizeComposite implements SampleStatusUI {
 
-    @UiTemplate("FinalReportTablet.ui.xml")
-    interface FinalReportUiBinder extends UiBinder<Widget, FinalReportUITabletImpl> {
+    @UiTemplate("SampleStatusTablet.ui.xml")
+    interface FinalReportUiBinder extends UiBinder<Widget, SampleStatusUITabletImpl> {
     };
 
     protected static final FinalReportUiBinder uiBinder = GWT.create(FinalReportUiBinder.class);
@@ -26,12 +26,10 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     protected TextBox<Integer>                 accessionFrom, accessionTo;
 
     @UiField
-    protected TextBox<String>                  clientReference, envCollector, sdwisCollector,
-                    pwsId, patientFirst, patientLast;
+    protected TextBox<String>                  clientReference;
 
     @UiField
-    protected Calendar                         collectedFrom, collectedTo, releasedFrom,
-                    releasedTo, patientBirthFrom, patientBirthTo;
+    protected Calendar                         collectedFrom, collectedTo;
 
     @UiField
     protected MultiDropdown<Integer>           projectCode;
@@ -46,7 +44,7 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     @UiField
     protected DeckLayoutPanel                  deck;
 
-    public FinalReportUITabletImpl() {
+    public SampleStatusUITabletImpl() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
@@ -54,10 +52,10 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     public Widget asWidget() {
         return this;
     }
-    
+
     @Override
-    public void initialize(){
-        
+    public void initialize() {
+
     }
 
     @Override
@@ -71,33 +69,8 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     }
 
     @Override
-    public TextBox<String> getPwsId() {
-        return pwsId;
-    }
-
-    @Override
     public TextBox<String> getClientReference() {
         return clientReference;
-    }
-
-    @Override
-    public TextBox<String> getEnvCollector() {
-        return envCollector;
-    }
-
-    @Override
-    public TextBox<String> getSdwisCollector() {
-        return sdwisCollector;
-    }
-
-    @Override
-    public TextBox<String> getPatientFirst() {
-        return patientFirst;
-    }
-
-    @Override
-    public TextBox<String> getPatientLast() {
-        return patientLast;
     }
 
     @Override
@@ -108,26 +81,6 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     @Override
     public Calendar getCollectedTo() {
         return collectedTo;
-    }
-
-    @Override
-    public Calendar getReleasedFrom() {
-        return releasedFrom;
-    }
-
-    @Override
-    public Calendar getReleasedTo() {
-        return releasedTo;
-    }
-
-    @Override
-    public Calendar getPatientBirthFrom() {
-        return patientBirthFrom;
-    }
-
-    @Override
-    public Calendar getPatientBirthTo() {
-        return patientBirthTo;
     }
 
     @Override

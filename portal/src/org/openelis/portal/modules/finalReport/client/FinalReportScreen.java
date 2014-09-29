@@ -9,8 +9,8 @@ import java.util.logging.Level;
 
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SampleViewVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleViewVO;
 import org.openelis.meta.SampleViewMeta;
 import org.openelis.portal.cache.CategoryCache;
 import org.openelis.portal.cache.UserCache;
@@ -23,12 +23,12 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.resources.UIResources;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,7 +55,7 @@ public class FinalReportScreen extends Screen {
         userPermission = UserCache.getPermission().getModule("w_final_report");
         if (userPermission == null) {
             Window.alert(Messages.get().error_screenPerm("Final Report Screen"));
-            // return;
+            return;
         }
 
         try {
@@ -77,6 +77,7 @@ public class FinalReportScreen extends Screen {
         ArrayList<IdNameVO> list;
         Item<Integer> row;
 
+        ui.initialize();
         form = new FinalReportFormVO();
         ui.getDeck().showWidget(0);
 
@@ -84,119 +85,7 @@ public class FinalReportScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                int numDomains;
-                String domain;
-                Query query;
-                QueryData field;
-                ArrayList<QueryData> fields;
-
-                clearErrors();
-                ui.getTable().removeAllRows();
-                numDomains = 0;
-                domain = null;
-                query = new Query();
-                field = new QueryData();
-                fields = new ArrayList<QueryData>();
-
-                /*
-                 * determine the domain that is being queried.
-                 */
-                if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
-                    !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
-                    field = new QueryData(SampleViewMeta.getDomain(),
-                                          QueryData.Type.STRING,
-                                          Constants.domain().SDWIS);
-                    domain = Constants.domain().SDWIS;
-                    numDomains++ ;
-                }
-                if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
-                    field = new QueryData(SampleViewMeta.getDomain(),
-                                          QueryData.Type.STRING,
-                                          Constants.domain().ENVIRONMENTAL);
-                    domain = Constants.domain().ENVIRONMENTAL;
-                    numDomains++ ;
-                }
-                if ( !DataBaseUtil.isEmpty(ui.getPatientFirst().getText()) ||
-                    !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
-                    !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
-                    !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
-                    field = new QueryData(SampleViewMeta.getDomain(),
-                                          QueryData.Type.STRING,
-                                          Constants.domain().CLINICAL);
-                    domain = Constants.domain().CLINICAL;
-                    numDomains++ ;
-                }
-
-                if (numDomains > 1) {
-                    Window.alert(Messages.get().finalReport_error_queryDomainException());
-                    return;
-                }
-
-                /*
-                 * check if any of the to fields are filled without the from
-                 * fields being filled. Set an error on the widget if they are.
-                 */
-                if (DataBaseUtil.isEmpty(ui.getCollectedFrom().getText()) &&
-                    !DataBaseUtil.isEmpty(ui.getCollectedTo().getText())) {
-                    ui.getCollectedTo()
-                      .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-                    return;
-                }
-
-                if (DataBaseUtil.isEmpty(ui.getReleasedFrom().getText()) &&
-                    !DataBaseUtil.isEmpty(ui.getReleasedTo().getText())) {
-                    ui.getReleasedTo()
-                      .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-                    return;
-                }
-
-                if (DataBaseUtil.isEmpty(ui.getAccessionFrom().getText()) &&
-                    !DataBaseUtil.isEmpty(ui.getAccessionTo().getText())) {
-                    ui.getAccessionTo()
-                      .addException(new Exception(Messages.get()
-                                                          .finalReport_error_noStartAccession()));
-                    return;
-                }
-
-                if (DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) &&
-                    !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
-                    ui.getPatientBirthTo()
-                      .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-                    return;
-                }
-
-                if (domain != null)
-                    fields.add(field);
-
-                try {
-                    fields.addAll(createWhereFromParamFields(getQueryFields()));
-                } catch (Exception e) {
-                    return;
-                }
-
-                query.setFields(fields);
-
-                if (fields.size() < 1) {
-                    Window.alert(Messages.get().finalReport_error_emptyQueryException());
-                    return;
-                }
-
-                // TODO
-                // window.setBusy(Messages.get().gen_genReportMessage());
-                FinalReportService.get()
-                                  .getSampleList(query,
-                                                 new AsyncCallback<ArrayList<SampleViewVO>>() {
-
-                                                     @Override
-                                                     public void onSuccess(ArrayList<SampleViewVO> result) {
-                                                         setTableData(result);
-                                                     }
-
-                                                     @Override
-                                                     public void onFailure(Throwable caught) {
-                                                         Window.alert(caught.getMessage());
-                                                     }
-                                                 });
+                getSampleList();
             }
         });
 
@@ -774,6 +663,132 @@ public class FinalReportScreen extends Screen {
         }
     }
 
+    private void getSampleList() {
+        int numDomains;
+        String domain;
+        Query query;
+        QueryData field;
+        ArrayList<QueryData> fields;
+
+        clearErrors();
+        ui.getTable().removeAllRows();
+        numDomains = 0;
+        domain = null;
+        query = new Query();
+        field = new QueryData();
+        fields = new ArrayList<QueryData>();
+
+        /*
+         * determine the domain that is being queried.
+         */
+        if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
+            field = new QueryData(SampleViewMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().SDWIS);
+            domain = Constants.domain().SDWIS;
+            numDomains++ ;
+        }
+        if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
+            field = new QueryData(SampleViewMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().ENVIRONMENTAL);
+            domain = Constants.domain().ENVIRONMENTAL;
+            numDomains++ ;
+        }
+        if ( !DataBaseUtil.isEmpty(ui.getPatientFirst().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
+            field = new QueryData(SampleViewMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().CLINICAL);
+            domain = Constants.domain().CLINICAL;
+            numDomains++ ;
+        }
+
+        if (numDomains > 1) {
+            Window.alert(Messages.get().finalReport_error_queryDomainException());
+            return;
+        }
+
+        /*
+         * check if any of the to fields are filled without the from fields
+         * being filled. Set an error on the widget if they are.
+         */
+        if (DataBaseUtil.isEmpty(ui.getCollectedFrom().getText()) &&
+            !DataBaseUtil.isEmpty(ui.getCollectedTo().getText())) {
+            ui.getCollectedTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            return;
+        }
+
+        if (DataBaseUtil.isEmpty(ui.getReleasedFrom().getText()) &&
+            !DataBaseUtil.isEmpty(ui.getReleasedTo().getText())) {
+            ui.getReleasedTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            return;
+        }
+
+        if (DataBaseUtil.isEmpty(ui.getAccessionFrom().getText()) &&
+            !DataBaseUtil.isEmpty(ui.getAccessionTo().getText())) {
+            ui.getAccessionTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
+            return;
+        }
+
+        if (DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) &&
+            !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
+            ui.getPatientBirthTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            return;
+        }
+
+        if (domain != null)
+            fields.add(field);
+
+        try {
+            fields.addAll(createWhereFromParamFields(getQueryFields()));
+        } catch (Exception e) {
+            return;
+        }
+
+        query.setFields(fields);
+
+        if (fields.size() < 1) {
+            Window.alert(Messages.get().finalReport_error_emptyQueryException());
+            return;
+        }
+
+        // modal = new ModalWindow();
+        // modal.setName("Fetching Final Reports");
+        // modal.setCSS(Resources.INSTANCE.gray());
+        // modal.addStyleName("gray");
+        // this.setWindow(modal);
+        this.addStyleName("res.window.ScreenLoad");
+
+        // TODO
+        // window.setBusy(Messages.get().gen_genReportMessage());
+        FinalReportService.get().getSampleList(query, new AsyncCallback<ArrayList<SampleViewVO>>() {
+
+            @Override
+            public void onSuccess(ArrayList<SampleViewVO> result) {
+                // modal.removeStyleName("gray");
+                // modal.close();
+                // modal = null;
+                setTableData(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                // modal.removeStyleName("gray");
+                // modal.close();
+                // modal = null;
+                Window.alert(caught.getMessage());
+            }
+        });
+    }
+
     private void runReport() {
         Query query;
         QueryData field;
@@ -799,12 +814,21 @@ public class FinalReportScreen extends Screen {
             return;
         }
 
-        // TODO
-        // window.setBusy(Messages.get().genReportMessage());
+        // modal = new ModalWindow();
+        // modal.setSize("4000px", "4000px");
+        // modal.setName("Fetching Final Reports");
+        // modal.setCSS(Resources.INSTANCE.gray());
+        // modal.addStyleName("gray");
+        // this.setWindow(modal);
+        this.addStyleName("res.window.ScreenLoad");
+
         FinalReportService.get().runReportForWeb(query, new AsyncCallback<ReportStatus>() {
 
             @Override
             public void onSuccess(ReportStatus result) {
+                // modal.removeStyleName("gray");
+                // modal.close();
+                // modal = null;
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/portal/portal/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "FinalReport", null);
@@ -813,8 +837,15 @@ public class FinalReportScreen extends Screen {
 
             @Override
             public void onFailure(Throwable caught) {
+                // modal.removeStyleName("gray");
+                // modal.close();
+                // modal = null;
                 Window.alert(caught.getMessage());
             }
         });
+    }
+
+    private void removeStyle(String styleName) {
+        this.removeStyleName(styleName);
     }
 }

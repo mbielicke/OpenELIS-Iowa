@@ -48,6 +48,10 @@ public class FinalReportPortalBean {
 
     private static final SampleViewMeta meta = new SampleViewMeta();
 
+    /**
+     * Creates a query string from the passed query fields and returns the list
+     * of sample views that the query returns
+     */
     @RolesAllowed("w_final_report-select")
     public ArrayList<SampleViewVO> getSampleList(ArrayList<QueryData> fields) throws Exception {
         String clause;
@@ -197,6 +201,9 @@ public class FinalReportPortalBean {
         return status;
     }
 
+    /**
+     * Fetches the list of projects that the user has access to
+     */
     public ArrayList<IdNameVO> getProjectList() throws Exception {
         String clause;
 
