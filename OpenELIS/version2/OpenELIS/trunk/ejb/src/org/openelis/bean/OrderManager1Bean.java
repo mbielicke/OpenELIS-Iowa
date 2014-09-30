@@ -991,7 +991,7 @@ public class OrderManager1Bean {
         OrderTestViewDO ot;
         TestManager tm;
         HashMap<Integer, TestManager> tms;
-        ArrayList<Integer> testIds, auxGrpIds;
+        ArrayList<Integer> testIds, groupIds;
         ArrayList<IdVO> pts, pgs;
         ArrayList<OrderTestViewDO> tests;
 
@@ -1000,7 +1000,7 @@ public class OrderManager1Bean {
         ret.setManager(om);
         ret.setErrors(e);
         testIds = new ArrayList<Integer>();
-        auxGrpIds = null;
+        groupIds = null;
 
         if (isTest) {
             testIds.add(id);
@@ -1017,9 +1017,9 @@ public class OrderManager1Bean {
              * fetch the IDs of the aux groups specified in the panel
              */
             pgs = panel.fetchAuxIdsFromPanel(id);
-            auxGrpIds = new ArrayList<Integer>();
+            groupIds = new ArrayList<Integer>();
             for (IdVO pg : pgs)
-                auxGrpIds.add(pg.getId());
+                groupIds.add(pg.getId());
         }
         tms = orderTestHelper.getTestManagers(testIds, e);
 
@@ -1040,6 +1040,13 @@ public class OrderManager1Bean {
             ot = orderTestHelper.addTest(om, tm, index++ );
             orderTestHelper.addAnalytes(om, tm, ot.getId());
         }
+
+        /*
+         * if a panel was added above and it had any aux groups linked to it
+         * then add them to the order
+         */
+        if (groupIds != null && groupIds.size() > 0)
+            addAuxGroups(om, groupIds);
 
         return ret;
     }

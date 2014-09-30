@@ -3866,26 +3866,37 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * tests
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
+        int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
         ValidationErrorsList errors;
 
         setBusy();
         try {
+            numAuxBef = manager.auxData.count();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
-            errors = ret.getErrors();
+            numAuxAft = manager.auxData.count();
             setData();
             setState(state);
             /*
              * notify the tabs that some new tests have been added
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
+            if (numAuxAft > numAuxBef) {
+                /*
+                 * the number of aux data after adding the tests is more than
+                 * the ones before, so it means that a panel was added which
+                 * linked to some aux groups, so notify the tabs 
+                 */
+                bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
+            }
             clearStatus();
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
              * added
              */
+            errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
                     Window.alert(getWarnings(errors.getErrorList(), false));
