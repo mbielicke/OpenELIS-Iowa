@@ -2201,13 +2201,24 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     private void addTest(Integer id, boolean isTest, Integer index) {
+        int numAuxBef, numAuxAft;
         OrderReturnVO ret;
         try {
+            numAuxBef = manager.auxData.count();
             ret = OrderService1.get().addTest(manager, id, isTest, index);
             manager = ret.getManager();
+            numAuxAft = manager.auxData.count();
             setData();
             setState(state);
             fireDataChange();
+            if (numAuxAft > numAuxBef) {
+                /*
+                 * the number of aux data after adding the test is more than
+                 * the ones before, so it means that a panel was added which
+                 * linked to some aux groups, so notify the tabs 
+                 */
+                bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
+            }
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
             else

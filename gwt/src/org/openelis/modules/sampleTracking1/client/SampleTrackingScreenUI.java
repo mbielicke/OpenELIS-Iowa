@@ -3146,13 +3146,16 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
      * prep/reflex tests.
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
+        int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
         ValidationErrorsList errors;
 
         setBusy();
         try {
+            numAuxBef = manager.auxData.count();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            numAuxAft = manager.auxData.count();
             managers.put(manager.getSample().getId(), manager);
 
             setData();
@@ -3161,6 +3164,14 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
              * notify the tabs that some new tests have been added
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
+            if (numAuxAft > numAuxBef) {
+                /*
+                 * the number of aux data after adding the tests is more than
+                 * the ones before, so it means that a panel was added which
+                 * linked to some aux groups, so notify the tabs 
+                 */
+                bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
+            }
 
             /*
              * reload the sample's subtree to show the newly added analyses

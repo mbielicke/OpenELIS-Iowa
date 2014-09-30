@@ -167,8 +167,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected TextBox<Integer>                          accessionNumber, orderId, envPriority;
 
     @UiField
-    protected TextBox<String>                           clientReference, envCollector, envCollectorPhone,
-                    envDescription, envLocation, locationAddressMultipleUnit,
+    protected TextBox<String>                           clientReference, envCollector,
+                    envCollectorPhone, envDescription, envLocation, locationAddressMultipleUnit,
                     locationAddressStreetAddress, locationAddressCity, locationAddressZipCode;
 
     @UiField
@@ -848,24 +848,27 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
-        addScreenHandler(envIsHazardous, SampleMeta.getEnvIsHazardous(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                envIsHazardous.setValue(getIsHazardous());
-            }
+        addScreenHandler(envIsHazardous,
+                         SampleMeta.getEnvIsHazardous(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 envIsHazardous.setValue(getIsHazardous());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setIsHazardous(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setIsHazardous(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                envIsHazardous.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                envIsHazardous.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 envIsHazardous.setEnabled(isState(QUERY) ||
+                                                           (canEdit && isState(ADD, UPDATE)));
+                                 envIsHazardous.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? envPriority : clientReference;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? envPriority : clientReference;
+                             }
+                         });
 
         envIsHazardous.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -966,7 +969,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onStateChange(StateChangeEvent event) {
                                  envCollectorPhone.setEnabled(isState(QUERY) ||
-                                                           (canEdit && isState(ADD, UPDATE)));
+                                                              (canEdit && isState(ADD, UPDATE)));
                                  envCollectorPhone.setQueryMode(isState(QUERY));
                              }
 
@@ -991,24 +994,27 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
-        addScreenHandler(envDescription, SampleMeta.getEnvDescription(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                envDescription.setValue(getDescription());
-            }
+        addScreenHandler(envDescription,
+                         SampleMeta.getEnvDescription(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 envDescription.setValue(getDescription());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                setDescription(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setDescription(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                envDescription.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                envDescription.setQueryMode(isState(QUERY));
-            }
+                             public void onStateChange(StateChangeEvent event) {
+                                 envDescription.setEnabled(isState(QUERY) ||
+                                                           (canEdit && isState(ADD, UPDATE)));
+                                 envDescription.setQueryMode(isState(QUERY));
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? envLocation : envCollectorPhone;
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return forward ? envLocation : envCollectorPhone;
+                             }
+                         });
 
         envDescription.addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -3602,19 +3608,30 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
      * tests
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
+        int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
         ValidationErrorsList errors;
 
         setBusy();
         try {
+            numAuxBef = manager.auxData.count();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            numAuxAft = manager.auxData.count();
             setData();
             setState(state);
             /*
              * notify the tabs that some new tests have been added
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
+            if (numAuxAft > numAuxBef) {
+                /*
+                 * the number of aux data after adding the tests is more than
+                 * the ones before, so it means that a panel was added which
+                 * linked to some aux groups, so notify the tabs 
+                 */
+                bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
+            }
             clearStatus();
             /*
              * show any validation errors encountered while adding the tests or
