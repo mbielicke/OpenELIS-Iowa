@@ -27,7 +27,7 @@
     <w:PortalPanel>
 	<g:DeckPanel ui:field="deck">
 		<g:DockPanel>
-			<g:Dock directeion="WEST" size="400">
+			<g:Dock direction="WEST" size="400">
 				<g:HTMLPanel>
 					<table class="{res.style.Form}">
 						<tr>
