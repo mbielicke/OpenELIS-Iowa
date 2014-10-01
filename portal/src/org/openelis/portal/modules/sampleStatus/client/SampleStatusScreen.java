@@ -4,22 +4,29 @@ import static org.openelis.portal.client.Logger.remote;
 import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
+import org.openelis.domain.SampleViewVO;
 import org.openelis.meta.SampleViewMeta;
 import org.openelis.portal.cache.UserCache;
 import org.openelis.portal.messages.Messages;
 import org.openelis.portal.modules.finalReport.client.FinalReportFormVO;
 import org.openelis.portal.modules.finalReport.client.FinalReportService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
@@ -75,7 +82,11 @@ public class SampleStatusScreen extends Screen {
                 // return;
                 // }
                 query = new Query();
-                queryList = createWhereFromParamFields(getQueryFields());
+                try {
+                    queryList = createWhereFromParamFields(getQueryFields());
+                } catch (Exception e) {
+                    return;
+                }
                 /*
                  * if user does not enter any search details, throw an error.
                  */
@@ -93,7 +104,7 @@ public class SampleStatusScreen extends Screen {
                                                                            public void onSuccess(ArrayList<SampleStatusWebReportVO> list) {
                                                                                if (list.size() > 0) {
                                                                                    // loadDeck(list);
-                                                                                   window.clearStatus();
+                                                                                   // window.clearStatus();
                                                                                } else {
                                                                                    Window.alert(Messages.get()
                                                                                                         .finalReport_error_noSamples());
@@ -102,7 +113,7 @@ public class SampleStatusScreen extends Screen {
 
                                                                            @Override
                                                                            public void onFailure(Throwable caught) {
-                                                                               window.clearStatus();
+                                                                               // window.clearStatus();
                                                                                Window.alert(caught.getMessage());
                                                                            }
                                                                        });
@@ -287,52 +298,147 @@ public class SampleStatusScreen extends Screen {
         ui.getProjectCode().setModel(model);
     }
 
-    private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) {
-        int i;
-        QueryData field, fCol, fAcc;
-        ArrayList<QueryData> list;
+    private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) throws Exception {
+        HashMap<String, QueryData> fieldMap;
 
-        list = new ArrayList<QueryData>();
-        fCol = fAcc = null;
-
-        for (i = 0; i < fields.size(); i++ ) {
-            field = fields.get(i);
-            if ( (SampleViewMeta.getCollectionDateFrom()).equals(field.getKey())) {
-                if (fCol == null) {
-                    fCol = field;
-                    fCol.setKey(SampleViewMeta.getCollectionDate());
-                } else {
-                    fCol.setQuery(field.getQuery() + ".." + fCol.getQuery());
-                    list.add(fCol);
-                }
-            } else if ( (SampleViewMeta.getCollectionDateTo()).equals(field.getKey())) {
-                if (fCol == null) {
-                    fCol = field;
-                    fCol.setKey(SampleViewMeta.getCollectionDate());
-                } else {
-                    fCol.setQuery(fCol.getQuery() + ".." + field.getQuery());
-                    list.add(fCol);
-                }
-            } else if ( (SampleViewMeta.getAccessionNumberFrom()).equals(field.getKey())) {
-                if (fAcc == null) {
-                    fAcc = field;
-                    fAcc.setKey(SampleViewMeta.getAccessionNumber());
-                } else {
-                    fAcc.setQuery(field.getQuery() + ".." + fAcc.getQuery());
-                    list.add(fAcc);
-                }
-            } else if ( (SampleViewMeta.getAccessionNumberTo()).equals(field.getKey())) {
-                if (fAcc == null) {
-                    fAcc = field;
-                    fAcc.setKey(SampleViewMeta.getAccessionNumber());
-                } else {
-                    fAcc.setQuery(fAcc.getQuery() + ".." + field.getQuery());
-                    list.add(fAcc);
-                }
-            } else {
-                list.add(field);
-            }
+        fieldMap = new HashMap<String, QueryData>();
+        for (QueryData data : fields) {
+            fieldMap.put(data.getKey(), data);
         }
-        return list;
+
+        try {
+            getRangeQuery(SampleViewMeta.getCollectionDateFrom(),
+                          SampleViewMeta.getCollectionDateTo(),
+                          SampleViewMeta.getCollectionDate(),
+                          fieldMap);
+        } catch (Exception e) {
+            ui.getCollectedTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            throw e;
+        }
+
+        try {
+            getRangeQuery(SampleViewMeta.getAccessionNumberFrom(),
+                          SampleViewMeta.getAccessionNumberTo(),
+                          SampleViewMeta.getAccessionNumber(),
+                          fieldMap);
+        } catch (Exception e) {
+            ui.getAccessionTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
+            throw e;
+        }
+
+        return new ArrayList<QueryData>(fieldMap.values());
+    }
+
+    private HashMap<String, QueryData> getRangeQuery(String fromKey, String toKey, String key,
+                                                     HashMap<String, QueryData> fieldMap) throws Exception {
+        QueryData from, to, range;
+
+        from = fieldMap.get(fromKey);
+        to = fieldMap.get(toKey);
+
+        if (to != null && from == null) {
+            throw new Exception();
+        } else if (to == null && from == null) {
+            return fieldMap;
+        } else {
+            range = fieldMap.get(fromKey);
+            range.setKey(key);
+            range.setQuery(from.getQuery() + ".." + to.getQuery());
+            fieldMap.put(key, range);
+            fieldMap.remove(fromKey);
+            fieldMap.remove(toKey);
+        }
+
+        return fieldMap;
+    }
+
+    private void setTableData(ArrayList<SampleViewVO> samples) {
+        int currRow;
+        Integer accNumPrev, accNum;
+        String completed, inProgress;
+        Date temp;
+        Datetime temp1;
+        DateHelper dh;
+        SampleViewVO data;
+
+        /*
+         * show the sample list table
+         */
+        ui.getDeck().showWidget(1);
+
+        /*
+         * if there are no samples returned, tell the user
+         */
+        if (samples == null || samples.size() < 1) {
+            ui.getTable().setText(0, 1, Messages.get().finalReport_error_noSamples());
+            return;
+        }
+        /*
+         * initialize the column headers
+         */
+        ui.getTable().setText(0, 0, Messages.get().gen_accessionNumber());
+        ui.getTable().setText(0, 1, Messages.get().sampleStatus_description());
+        ui.getTable().setText(0, 2, Messages.get().sampleStatus_testStatus());
+        ui.getTable().setText(0, 3, Messages.get().gen_collectedDate());
+        ui.getTable().setText(0, 4, Messages.get().sampleStatus_dateReceived());
+        ui.getTable().setText(0, 5, Messages.get().sample_clientReference());
+        ui.getTable().setText(0, 6, Messages.get().sampleStatus_qaEvent());
+        ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
+
+        dh = new DateHelper();
+        dh.setEnd(Datetime.MINUTE);
+        accNumPrev = null;
+        currRow = 1;
+        completed = Messages.get().sampleStatus_completed();
+        inProgress = Messages.get().sampleStatus_inProgress();
+
+        for (int i = 0; i < samples.size(); i++ ) {
+            data = samples.get(i);
+            accNum = data.getAccessionNumber();
+
+            /*
+             * If analysis status is Released, screen displays
+             * "Completed status", for all other statuses screen displays
+             * "In Progress".
+             */
+            if ( !accNum.equals(accNumPrev)) {
+                currRow++ ;
+                if (data.getCollectionDate() != null) {
+                    temp = data.getCollectionDate().getDate();
+                    if (data.getCollectionTime() == null) {
+                        temp.setHours(0);
+                        temp.setMinutes(0);
+                    } else {
+                        temp.setHours(data.getCollectionTime().getDate().getHours());
+                        temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
+                    }
+                    temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
+                } else {
+                    temp1 = null;
+                }
+                ui.getTable().setText(currRow, 0, DataBaseUtil.toString(data.getAccessionNumber()));
+                ui.getTable().setText(currRow, 1, data.getCollector());
+                ui.getTable().setText(currRow, 3, dh.format(temp1));
+                ui.getTable().setText(currRow, 4, dh.format(data.getReceivedDate()));
+                ui.getTable().setText(currRow, 5, data.getClientReference());
+                // ui.getTable().setText(currRow, 6, data.getAnalysisQa());
+            } else {
+                ui.getTable().setText(currRow,
+                                      1,
+                                      ui.getTable().getText(currRow, 1) + "\n" +
+                                                      data.getTestReportingDescription() + " : " +
+                                                      data.getMethodReportingDescription());
+                ui.getTable()
+                  .setText(currRow,
+                           2,
+                           ui.getTable().getText(currRow, 2) +
+                                           "\n" +
+                                           (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getSampleStatusId()) ? completed
+                                                                                                                     : inProgress));
+            }
+            accNumPrev = accNum;
+        }
     }
 }
