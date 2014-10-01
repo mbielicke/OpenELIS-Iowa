@@ -5,7 +5,6 @@ import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
-import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -13,7 +12,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface SampleStatusUI extends IsWidget {
 
     public void initialize();
-    
+
     public TextBox<Integer> getAccessionFrom();
 
     public TextBox<Integer> getAccessionTo();
@@ -31,12 +30,6 @@ public interface SampleStatusUI extends IsWidget {
     public Button getResetButton();
 
     public Button getBackButton();
-
-    public Button getSelectAllButton();
-
-    public Button getUnselectAllButton();
-
-    public Button getRunReportButton();
 
     public FlexTable getTable();
 

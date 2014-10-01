@@ -24,106 +24,106 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-    <w:PortalPanel>
-	<g:DeckPanel ui:field="deck">
-		<g:DockPanel>
-			<g:Dock direction="WEST" size="400">
-				<g:HTMLPanel>
-					<table class="{res.style.Form}">
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.finalReport_collectedDate}:" />
-							</td>
-							<td>
-								<c:Calendar ui:field="collectedFrom" width="90px"
-									begin="0" end="2" enabled="true" />
-							</td>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.gen_to}:" />
-							</td>
-							<td>
-								<c:Calendar ui:field="collectedTo" width="90px"
-									begin="0" end="2" enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
-									placement="RIGHT" balloonWidth="135px" />
-							</td>
-						</tr>
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.finalReport_accessionNumber}:" />
-							</td>
-							<td>
-								<w:TextBox ui:field="accessionFrom" width="90px"
-									field="Integer" enabled="true" />
-							</td>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.gen_to}:" />
-							</td>
-							<td>
-								<w:TextBox ui:field="accessionTo" width="90px" field="Integer"
-									enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
-									placement="RIGHT" balloonWidth="135px" />
-							</td>
-						</tr>
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.sample_clientReference}:" />
-							</td>
-							<td colspan="3">
-								<w:TextBox ui:field="clientReference" width="208px"
-									field="String" enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}"
-									text="{msg.finalReport_help_clientReference}" placement="RIGHT"
-									balloonWidth="135px" />
-							</td>
-						</tr>
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.finalReport_projectCode}:" />
-							</td>
-							<td colspan="3">
-								<w:MultiDropdown ui:field="projectCode" width="206px"
-									field="Integer" enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
-									placement="RIGHT" balloonWidth="135px" />
-							</td>
-						</tr>
-					</table>
-					<table class="{res.style.Form}">
-						<tr>
-							<td>
-								<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
-									enabled="true" />
-							</td>
-							<td>
-								<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-									enabled="true" />
-							</td>
-						</tr>
-					</table>
-				</g:HTMLPanel>
-			</g:Dock>
-			<g:Dock direction="CENTER">
-				<g:HTMLPanel>
-					<table>
-						<tr>
-							<td>
-								<g:HTML HTML="{msg.sampleStatus_help_screen}" />
-							</td>
-						</tr>
-					</table>
-				</g:HTMLPanel>
-			</g:Dock>
-		</g:DockPanel>
+	<w:PortalPanel>
+		<g:DeckPanel ui:field="deck">
+			<g:DockPanel>
+				<g:Dock direction="WEST" size="400">
+					<g:HTMLPanel>
+						<table class="{res.style.Form}">
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_collectedDate}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="collectedFrom" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="collectedTo" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
+										placement="RIGHT" balloonWidth="135px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.finalReport_accessionNumber}:" />
+								</td>
+								<td>
+									<w:TextBox ui:field="accessionFrom" width="90px"
+										field="Integer" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<w:TextBox ui:field="accessionTo" width="90px" field="Integer"
+										enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
+										placement="RIGHT" balloonWidth="135px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_clientReference}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="clientReference" width="208px"
+										field="String" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}"
+										text="{msg.finalReport_help_clientReference}" placement="RIGHT"
+										balloonWidth="135px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.finalReport_projectCode}:" />
+								</td>
+								<td colspan="3">
+									<w:MultiDropdown ui:field="projectCode" width="206px"
+										field="Integer" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
+										placement="RIGHT" balloonWidth="135px" />
+								</td>
+							</tr>
+						</table>
+						<table class="{res.style.Form}">
+							<tr>
+								<td>
+									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
+										enabled="true" />
+								</td>
+								<td>
+									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
+										enabled="true" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:Dock>
+				<g:Dock direction="CENTER">
+					<g:HTMLPanel>
+						<table>
+							<tr>
+								<td>
+									<g:HTML HTML="{msg.sampleStatus_help_screen}" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:Dock>
+			</g:DockPanel>
 			<g:HTMLPanel>
 				<table width="728">
 					<tr>
@@ -138,18 +138,8 @@
 								styleName="{res.table.ScreenTableWithSides} {res.table.Table}" />
 						</td>
 					</tr>
-					<tr>
-						<td>
-							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
-								enabled="true" />
-							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" />
-						</td>
-					</tr>
 				</table>
 			</g:HTMLPanel>
-	</g:DeckPanel>
-    </w:PortalPanel>
+		</g:DeckPanel>
+	</w:PortalPanel>
 </ui:UiBinder>
