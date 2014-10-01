@@ -625,7 +625,7 @@ public class FinalReportScreen extends Screen {
          * initialize the column headers
          */
         ui.getTable().setText(0, 1, Messages.get().finalReport_accessionNumber());
-        ui.getTable().setText(0, 2, Messages.get().finalReport_collectedDate());
+        ui.getTable().setText(0, 2, Messages.get().gen_collectedDate());
         ui.getTable().setText(0, 3, Messages.get().finalReport_referenceInfo());
         ui.getTable().setText(0, 4, Messages.get().finalReport_select_status());
         ui.getTable().setText(0, 5, Messages.get().finalReport_project());
@@ -633,33 +633,33 @@ public class FinalReportScreen extends Screen {
 
         dh = new DateHelper();
         dh.setEnd(Datetime.MINUTE);
-        if (samples.size() > 0) {
 
-            for (int i = 0, j = 1; i < samples.size(); i++ , j++ ) {
-                check = new CheckBox();
-                check.setEnabled(true);
-                ui.getTable().setWidget(j, 0, check);
-                ui.getTable().setText(j,
-                                      1,
-                                      DataBaseUtil.toString(samples.get(i).getAccessionNumber()));
-                ui.getTable().setText(j, 2, dh.format(samples.get(i).getCollectionDate()));
+        for (int i = 0, j = 1; i < samples.size(); i++ , j++ ) {
+            check = new CheckBox();
+            check.setEnabled(true);
+            ui.getTable().setWidget(j, 0, check);
+            ui.getTable().setText(j, 1, DataBaseUtil.toString(samples.get(i).getAccessionNumber()));
+            ui.getTable().setText(j, 2, dh.format(samples.get(i).getCollectionDate()));
 
-                /*
-                 * show the collector for environmental and SDWIS samples and
-                 * show the patient's last name for clinical samples
-                 */
-                if ( !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "E") ||
-                    !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "S")) {
-                    if (samples.get(i).getCollector() != null)
-                        ui.getTable().setText(j, 3, "[collector] " + samples.get(i).getCollector());
-                } else if ( !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "C") &&
-                           samples.get(i).getPatientLastName() != null) {
-                    ui.getTable().setText(j, 3, "[patient] " + samples.get(i).getPatientLastName());
-                }
-                ui.getTable().setText(j, 4, status.get(samples.get(i).getSampleStatusId()));
-                ui.getTable().setText(j, 5, samples.get(i).getProjectName());
-
+            /*
+             * show the collector for environmental and SDWIS samples and show
+             * the patient's last name for clinical samples
+             */
+            if ( !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "E") ||
+                !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "S")) {
+                if (samples.get(i).getCollector() != null)
+                    ui.getTable().setText(j, 3, "[collector] " + samples.get(i).getCollector());
+            } else if ( !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "C") &&
+                       samples.get(i).getPatientLastName() != null) {
+                ui.getTable().setText(j, 3, "[patient] " + samples.get(i).getPatientLastName());
             }
+            ui.getTable().setText(j, 4, status.get(samples.get(i).getSampleStatusId()));
+            ui.getTable().setText(j, 5, samples.get(i).getProjectName());
+
+            /*
+             * set row height higher for mobile and tablet versions
+             */
+            ui.setRowHeight(j, "40px");
         }
     }
 
@@ -760,30 +760,18 @@ public class FinalReportScreen extends Screen {
             return;
         }
 
-        // modal = new ModalWindow();
-        // modal.setName("Fetching Final Reports");
-        // modal.setCSS(Resources.INSTANCE.gray());
-        // modal.addStyleName("gray");
-        // this.setWindow(modal);
-        this.addStyleName("res.window.ScreenLoad");
-
-        // TODO
-        // window.setBusy(Messages.get().gen_genReportMessage());
+        window.setBusy(Messages.get().gen_genReportMessage());
         FinalReportService.get().getSampleList(query, new AsyncCallback<ArrayList<SampleViewVO>>() {
 
             @Override
             public void onSuccess(ArrayList<SampleViewVO> result) {
-                // modal.removeStyleName("gray");
-                // modal.close();
-                // modal = null;
                 setTableData(result);
+                window.clearStatus();
             }
 
             @Override
             public void onFailure(Throwable caught) {
-                // modal.removeStyleName("gray");
-                // modal.close();
-                // modal = null;
+                window.clearStatus();
                 Window.alert(caught.getMessage());
             }
         });
@@ -814,21 +802,12 @@ public class FinalReportScreen extends Screen {
             return;
         }
 
-        // modal = new ModalWindow();
-        // modal.setSize("4000px", "4000px");
-        // modal.setName("Fetching Final Reports");
-        // modal.setCSS(Resources.INSTANCE.gray());
-        // modal.addStyleName("gray");
-        // this.setWindow(modal);
-        this.addStyleName("res.window.ScreenLoad");
-
+        window.setBusy(Messages.get().gen_genReportMessage());
         FinalReportService.get().runReportForWeb(query, new AsyncCallback<ReportStatus>() {
 
             @Override
             public void onSuccess(ReportStatus result) {
-                // modal.removeStyleName("gray");
-                // modal.close();
-                // modal = null;
+                window.clearStatus();
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/portal/portal/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "FinalReport", null);
@@ -837,15 +816,9 @@ public class FinalReportScreen extends Screen {
 
             @Override
             public void onFailure(Throwable caught) {
-                // modal.removeStyleName("gray");
-                // modal.close();
-                // modal = null;
+                window.clearStatus();
                 Window.alert(caught.getMessage());
             }
         });
-    }
-
-    private void removeStyle(String styleName) {
-        this.removeStyleName(styleName);
     }
 }

@@ -12,6 +12,8 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -45,7 +47,7 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     protected FlexTable                        table;
 
     @UiField
-    protected DeckPanel                  deck;
+    protected DeckPanel                        deck;
 
     public FinalReportUITabletImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -55,10 +57,20 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     public Widget asWidget() {
         return this;
     }
-    
+
     @Override
-    public void initialize(){
-        
+    public void initialize() {
+
+    }
+
+    @Override
+    public void setRowHeight(int i, String height) {
+        table.getRowFormatter().getElement(i).setAttribute("height", height);
+        table.getCellFormatter().setWidth(i, 0, height);
+        table.getWidget(i, 0).setHeight(height);
+        table.getWidget(i, 0).setWidth(height);
+        table.getCellFormatter().setHorizontalAlignment(i, 0, HasHorizontalAlignment.ALIGN_CENTER);
+        table.getCellFormatter().setVerticalAlignment(i, 0, HasVerticalAlignment.ALIGN_MIDDLE);
     }
 
     @Override

@@ -61,15 +61,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_clinicalOnly();
 
   /**
-   * Translated "Collected Date".
-   * 
-   * @return translated "Collected Date"
-   */
-  @DefaultMessage("Collected Date")
-  @Key("finalReport.collectedDate")
-  String finalReport_collectedDate();
-
-  /**
    * Translated "Collector Name".
    * 
    * @return translated "Collector Name"
@@ -412,6 +403,24 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_unselectAll();
 
   /**
+   * Translated "Accession #".
+   * 
+   * @return translated "Accession #"
+   */
+  @DefaultMessage("Accession #")
+  @Key("gen.accessionNumber")
+  String gen_accessionNumber();
+
+  /**
+   * Translated "Collected Date".
+   * 
+   * @return translated "Collected Date"
+   */
+  @DefaultMessage("Collected Date")
+  @Key("gen.collectedDate")
+  String gen_collectedDate();
+
+  /**
    * Translated "Generating report....".
    * 
    * @return translated "Generating report...."
@@ -520,6 +529,33 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sample_clientReference();
 
   /**
+   * Translated "Completed".
+   * 
+   * @return translated "Completed"
+   */
+  @DefaultMessage("Completed")
+  @Key("sampleStatus.completed")
+  String sampleStatus_completed();
+
+  /**
+   * Translated "Date Received".
+   * 
+   * @return translated "Date Received"
+   */
+  @DefaultMessage("Date Received")
+  @Key("sampleStatus.dateReceived")
+  String sampleStatus_dateReceived();
+
+  /**
+   * Translated "Sample/Test Description".
+   * 
+   * @return translated "Sample/Test Description"
+   */
+  @DefaultMessage("Sample/Test Description")
+  @Key("sampleStatus.description")
+  String sampleStatus_description();
+
+  /**
    * Translated "<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>".
    * 
    * @return translated "<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>"
@@ -527,4 +563,31 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>")
   @Key("sampleStatus.help.screen")
   String sampleStatus_help_screen();
+
+  /**
+   * Translated "In Progress".
+   * 
+   * @return translated "In Progress"
+   */
+  @DefaultMessage("In Progress")
+  @Key("sampleStatus.inProgress")
+  String sampleStatus_inProgress();
+
+  /**
+   * Translated "QA Event".
+   * 
+   * @return translated "QA Event"
+   */
+  @DefaultMessage("QA Event")
+  @Key("sampleStatus.qaEvent")
+  String sampleStatus_qaEvent();
+
+  /**
+   * Translated "Test Status".
+   * 
+   * @return translated "Test Status"
+   */
+  @DefaultMessage("Test Status")
+  @Key("sampleStatus.testStatus")
+  String sampleStatus_testStatus();
 }
