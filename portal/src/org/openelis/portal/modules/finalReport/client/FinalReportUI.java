@@ -14,6 +14,8 @@ public interface FinalReportUI extends IsWidget {
 
     public void initialize();
 
+    public void setRowHeight(int i, String height);
+    
     public TextBox<Integer> getAccessionFrom();
 
     public TextBox<Integer> getAccessionTo();
@@ -59,5 +61,5 @@ public interface FinalReportUI extends IsWidget {
     public FlexTable getTable();
 
     public DeckPanel getDeck();
-
+    
 }

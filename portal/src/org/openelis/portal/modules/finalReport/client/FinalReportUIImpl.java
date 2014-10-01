@@ -45,7 +45,7 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     protected FlexTable                        table;
 
     @UiField
-    protected DeckPanel                  deck;
+    protected DeckPanel                        deck;
 
     public FinalReportUIImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -59,6 +59,13 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     @Override
     public void initialize() {
 
+    }
+
+    @Override
+    public void setRowHeight(int i, String height) {
+        /*
+         * do nothing for desktop version
+         */
     }
 
     @Override

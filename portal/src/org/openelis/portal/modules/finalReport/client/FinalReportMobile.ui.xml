@@ -37,7 +37,7 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_collectedDate}:" />
+							<ui:text from="{msg.gen_collectedDate}:" />
 						</td>
 						<td>
 							<c:Calendar ui:field="collectedFrom" width="75px"

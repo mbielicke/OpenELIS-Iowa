@@ -45,7 +45,7 @@ public class FinalReportUIMobileImpl extends ResizeComposite implements FinalRep
     protected FlexTable                        table;
 
     @UiField
-    protected DeckPanel                  deck;
+    protected DeckPanel                        deck;
 
     public FinalReportUIMobileImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -64,6 +64,13 @@ public class FinalReportUIMobileImpl extends ResizeComposite implements FinalRep
         releasedTo.setWidth("75px");
         patientBirthFrom.setWidth("75px");
         patientBirthTo.setWidth("75px");
+    }
+
+    @Override
+    public void setRowHeight(int i, String height) {
+        table.getRowFormatter().getElement(i).setAttribute("height", height);
+        table.getWidget(i, 0).setHeight(height);
+        table.getWidget(i, 0).setWidth(height);
     }
 
     @Override
