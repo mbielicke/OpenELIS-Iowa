@@ -345,7 +345,7 @@ public class InstrumentInterfaceImportBean {
         
         setInstrument = false;
         while ((line = file.readLine()) != null) {
-            data = line.split("\\|");
+            data = line.split("\\|", fileColumnMap.size());
             waVDO = waVDOsByAccessionNumber.get(data[fileColumnMap.get(Messages.get().instrumentInterface_accessionNumber())]);
             if (waVDO != null) {
                 if (waVDO.getAnalysisId() != null) {
