@@ -13,13 +13,15 @@
   <ui:with type="org.openelis.portal.messages.PortalMessages" field="msg" />
   <ui:with type="org.openelis.portal.client.resources.Resources" field="res" />
 
-  <g:LayoutPanel>
-    <g:layer top="0px" height="100px">
-      <p:Navigation ui:field="navigation"/>
-    </g:layer>
-    <g:layer top="100px" bottom="0px">
-      <g:LayoutPanel ui:field="main"/>
-    </g:layer>
-  </g:LayoutPanel>
+   <g:AbsolutePanel>
+    <g:AbsolutePanel height="128px" width="100%">
+    <g:LayoutPanel>
+      <g:layer top="0px" height="128px">
+         <p:Navigation ui:field="navigation"/>
+      </g:layer>
+    </g:LayoutPanel>
+    </g:AbsolutePanel>
+    <g:AbsolutePanel ui:field="main"/>
+  </g:AbsolutePanel>
   
 </ui:UiBinder>

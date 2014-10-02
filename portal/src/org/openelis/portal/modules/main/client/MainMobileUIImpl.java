@@ -19,7 +19,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 	
 	
 	@UiField
-	LayoutPanel main;
+	AbsolutePanel main;
 	
 	@UiField
 	Navigation navigation;
@@ -28,7 +28,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	public LayoutPanel main() {
+	public AbsolutePanel main() {
 		return main;
 	}
 	
