@@ -13,7 +13,15 @@
   <ui:with type="org.openelis.portal.messages.PortalMessages" field="msg" />
   <ui:with type="org.openelis.portal.client.resources.Resources" field="res" />
 
-   <g:AbsolutePanel>
+   <ui:style>
+     .scroll {
+	     width:100%;
+	     height:100%;
+	     overflow:auto;
+     }
+   </ui:style>
+   
+   <g:AbsolutePanel >
     <g:AbsolutePanel height="128px" width="100%">
     <g:LayoutPanel>
       <g:layer top="0px" height="128px">
@@ -21,7 +29,7 @@
       </g:layer>
     </g:LayoutPanel>
     </g:AbsolutePanel>
-    <g:AbsolutePanel ui:field="main"/>
+    <g:AbsolutePanel styleName="{style.scroll}" ui:field="main"/>
   </g:AbsolutePanel>
   
 </ui:UiBinder>
