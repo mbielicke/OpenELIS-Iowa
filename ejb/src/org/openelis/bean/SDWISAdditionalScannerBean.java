@@ -100,9 +100,9 @@ public class SDWISAdditionalScannerBean {
         PWSMonitorManager pwsmm;
         PWSMonitorDO data;
         ArrayList<String> analytes;
-        ArrayList<Integer> oids, deleteList;
+        ArrayList<Integer> oids;
         HashMap<Integer, PWSManager> pwsms;
-        ArrayList<PWSViolationDO> vList;
+        ArrayList<PWSViolationDO> vList, processedList;
         HashMap<Integer, ArrayList<PWSViolationDO>> facilityMap;
 
         /*
@@ -149,12 +149,20 @@ public class SDWISAdditionalScannerBean {
         lastYearCal = Calendar.getInstance();
         lastYearCal.add(Calendar.YEAR, -1);
         lastYear = Datetime.getInstance(Datetime.YEAR, Datetime.DAY, lastYearCal.getTime());
-        deleteList = new ArrayList<Integer>();
+        processedList = new ArrayList<PWSViolationDO>();
         pwsms = new HashMap<Integer, PWSManager>();
         facilityMap = new HashMap<Integer, ArrayList<PWSViolationDO>>();
         multi = 0;
 
         for (PWSViolationDO v : pwsViolation.fetchAll()) {
+
+            /*
+             * if the sample ID is null, then the additional has already been
+             * processed for that month
+             */
+            if (v.getSampleId() == null)
+                continue;
+
             vCal.setTime(v.getViolationDate().getDate());
 
             /*
@@ -191,7 +199,7 @@ public class SDWISAdditionalScannerBean {
                     for (PWSViolationDO pwsv : vList) {
                         if (v.getFacilityId().equals(pwsv.getFacilityId()) &&
                             v.getSeries().equals(pwsv.getSeries())) {
-                            deleteList.add(v.getId());
+                            processedList.add(v);
                             processed = true;
                             break;
                         }
@@ -240,7 +248,7 @@ public class SDWISAdditionalScannerBean {
                  */
                 if ("QUARTERLY".equals(data.getFrequencyName()) &&
                     DataBaseUtil.isAfter(lastYear, v.getViolationDate())) {
-                    deleteList.add(v.getId());
+                    processedList.add(v);
                     continue;
                 }
                 multi = 0;
@@ -256,12 +264,12 @@ public class SDWISAdditionalScannerBean {
 
                 for (Integer oid : oids)
                     createOrder(sm, pwsm, oid, analytes, v, multi);
-                deleteList.add(v.getId());
+                processedList.add(v);
             }
         }
 
-        if (deleteList.size() > 0)
-            pwsViolation.deleteList(deleteList);
+        if (processedList.size() > 0)
+            updateProcessed(processedList);
     }
 
     /**
@@ -306,5 +314,12 @@ public class SDWISAdditionalScannerBean {
             }
         }
         return distCount;
+    }
+
+    private void updateProcessed(ArrayList<PWSViolationDO> violations) throws Exception {
+        for (PWSViolationDO v : violations) {
+            v.setSampleId(null);
+            pwsViolation.update(v);
+        }
     }
 }
