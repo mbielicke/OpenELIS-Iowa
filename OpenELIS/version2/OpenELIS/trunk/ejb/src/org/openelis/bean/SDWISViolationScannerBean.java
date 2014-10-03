@@ -76,27 +76,29 @@ import org.openelis.ui.common.NotFoundException;
 public class SDWISViolationScannerBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                manager;
+    private EntityManager       manager;
 
     @EJB
-    private SystemVariableBean           systemVariable;
+    private SystemVariableBean  systemVariable;
 
     @EJB
-    private SampleManager1Bean           sampleManager;
+    private SampleManager1Bean  sampleManager;
 
     @EJB
-    private OrderManager1Bean            orderManager;
+    private OrderManager1Bean   orderManager;
 
     @EJB
-    private TestResultBean               testResult;
+    private TestResultBean      testResult;
 
     @EJB
-    private PWSManagerBean               pwsManager;
+    private PWSManagerBean      pwsManager;
 
     @EJB
-    private PWSViolationBean             pwsViolation;
+    private PWSViolationBean    pwsViolation;
 
-    private static final Logger          log = Logger.getLogger("openelis");
+    private static final Logger log                  = Logger.getLogger("openelis");
+
+    private static final String triggerSamplePointId = "TG";
 
     /**
      * Finds samples with positive results and creates orders for repeat samples
@@ -245,6 +247,13 @@ public class SDWISViolationScannerBean {
         pwsms = new HashMap<Integer, PWSManager>();
         for (SampleManager1 sm : sms) {
             sdwis = getSampleSDWIS(sm);
+
+            /*
+             * ignore the positive result if the sample is a trigger
+             */
+            if (triggerSamplePointId.equals(sdwis.getSamplePointId()))
+                continue;
+
             if (Constants.dictionary().SDWIS_CATEGORY_BACTERIAL.equals(sdwis.getSampleCategoryId()) &&
                 Constants.dictionary().SMPL_TYPE_RT.equals(sdwis.getSampleTypeId())) {
                 pwsm = pwsms.get(sdwis.getPwsId());
