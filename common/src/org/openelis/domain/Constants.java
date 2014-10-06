@@ -150,9 +150,11 @@ public class Constants implements Serializable {
                         ORDER_TEST_ANALYTE = 111, ORDER_SAMPLE_NOTE = 112,
                         EXCHANGE_LOCAL_TERM = 113, EXCHANGE_EXTERNAL_TERM = 114,
                         EXCHANGE_CRITERIA = 115, EXCHANGE_PROFILE = 116, EVENT_LOG = 117,
-                        QC_LOT = 118, SAMPLE_NEONATAL = 119, CASE = 120, CASE_ANALYSIS = 121, CASE_PATIENT = 122,
-                        CASE_PROVIDER = 123, CASE_USER = 124, CASE_RESULT = 125, CASE_TAG = 126, CASE_CONTACT = 127,
-                        CASE_CONTACT_LOCATION = 128;
+                        QC_LOT = 118, SAMPLE_NEONATAL = 119, CASE = 120, CASE_ANALYSIS = 121,
+                        CASE_PATIENT = 122, CASE_PROVIDER = 123, CASE_USER = 124,
+                        CASE_RESULT = 125, CASE_TAG = 126, CASE_CONTACT = 127,
+                        CASE_CONTACT_LOCATION = 128, EORDER = 129, EORDER_BODY = 130,
+                        EORDER_LINK = 131;
     }
 
     /**
