@@ -124,6 +124,7 @@ public class PWSViolationBean {
         entity.setFacilityId(data.getFacilityId());
         entity.setSeries(data.getSeries());
         entity.setViolationDate(data.getViolationDate());
+        entity.setSampleId(data.getSampleId());
 
         return data;
     }
