@@ -43,7 +43,7 @@
        t.method_id = m.id and a.section_id = sec.id and
        a.status_id = d.id and si.type_of_sample_id = d1.id and
        a.pre_analysis_id = a1.id and a1.test_id = t1.id and t1.method_id = m1.id and a1.status_id = d2.id and
-       $P{PREP_TEST} = ""
+       $P{PREP_TEST} = ''
        $P!{STATUS} $P!{TEST} $P!{SECTION}
 UNION
 SELECT s.id s_id, s.accession_number, s.collection_date, s.collection_time, se.priority,

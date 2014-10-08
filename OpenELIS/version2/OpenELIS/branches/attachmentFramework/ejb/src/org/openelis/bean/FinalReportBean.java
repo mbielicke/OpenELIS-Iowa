@@ -841,7 +841,7 @@ public class FinalReportBean {
      * This method generates the actual report using jasper. The jasper output
      * is directed to either a printer or the faxing system.
      */
-    private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
+    public void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
                        boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
         URL url;

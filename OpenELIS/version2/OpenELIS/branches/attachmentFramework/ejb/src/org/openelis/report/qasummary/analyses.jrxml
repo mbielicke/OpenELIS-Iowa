@@ -31,7 +31,7 @@
 	<queryString>
 		<![CDATA[SELECT DISTINCT s.accession_number s_no, t.name t_name, q.name q_name, m.name m_name, a.id a_id
 FROM      qaevent q, analysis_qaevent aq, analysis a, test t, section se, test_section ts, method m, sample s,    	sample_item si
-WHERE    si.sample_id =s.id and
+WHERE    si.sample_id = s.id and
          a.sample_item_id = si.id and
          a.test_id = t.id and t.method_id = m.id and t.id = ts.test_id and ts.section_id = se.id and
          s.id = $P{SAMPLE_ID} and

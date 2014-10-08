@@ -39,7 +39,7 @@
 FROM sample s, sample_item si, sample_environmental se, analysis a,
      test t, method m, section sec, dictionary d, dictionary d1,
      sample_organization sd
-WHERE s.domain = "E" and
+WHERE s.domain = 'E' and
       s.entered_date between $P{FROM} and $P{TO} and
       s.id = si.sample_id and s.id = se.sample_id and
       si.id = a.sample_item_id and a.test_id = t.id and

@@ -26,6 +26,8 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -37,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
@@ -45,8 +48,10 @@ import org.openelis.meta.AttachmentMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
@@ -73,7 +78,7 @@ public class AttachmentBean {
 
     @EJB
     private LockBean                    lock;
-    
+
     private static final AttachmentMeta meta = new AttachmentMeta();
 
     /**
@@ -125,16 +130,26 @@ public class AttachmentBean {
 
     /**
      * Returns a distinct list of attachment records that don't have any
-     * attachment items and match the given description, sorted in descending
-     * order of the ids.
+     * attachment items, match the given description and no older than 2 weeks
+     * from the current time, sorted in descending order of the ids.
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentDO> fetchUnattachedByDescription(String description, int first, int max) throws Exception {
+    public ArrayList<AttachmentDO> fetchUnattachedByDescription(String description, int first,
+                                                                int max) throws Exception {
         Query query;
         List list;
+        Calendar cal;
+        Date startDate, endDate;
+
+        cal = Calendar.getInstance();
+        endDate = cal.getTime();
+        cal.add(Calendar.WEEK_OF_YEAR, -2);
+        startDate = cal.getTime();
 
         query = manager.createNamedQuery("Attachment.FetchUnattachedByDescription");
         query.setParameter("description", description);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
         query.setMaxResults(first + max);
 
         list = query.getResultList();
@@ -143,7 +158,7 @@ public class AttachmentBean {
         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
-        
+
         return DataBaseUtil.toArrayList(list);
     }
 
@@ -157,15 +172,18 @@ public class AttachmentBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<AttachmentDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + AttachmentMeta.getId() +
-                          ", " + AttachmentMeta.getDescription() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.AttachmentDO(" +
+                          AttachmentMeta.getId() + ", " + AttachmentMeta.getCreatedDate() + ", " +
+                          AttachmentMeta.getTypeId() + ", " + AttachmentMeta.getSectionId() + ", " +
+                          AttachmentMeta.getDescription() + ", " +
+                          AttachmentMeta.getStorageReference() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(AttachmentMeta.getId() + " DESC");
         query = manager.createQuery(builder.getEJBQL());
@@ -175,11 +193,11 @@ public class AttachmentBean {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        list = (ArrayList<AttachmentDO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<IdNameVO>)list;
+        return (ArrayList<AttachmentDO>)list;
     }
 
     /**
@@ -250,5 +268,18 @@ public class AttachmentBean {
 
             manager.remove(entity);
         }
+    }
+
+    public void validate(AttachmentDO data) throws Exception {
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+
+        if (DataBaseUtil.isEmpty(data.getDescription()))
+            e.add(new FormErrorException(Messages.get()
+                                                 .attachment_descRequiredException(data.getStorageReference())));
+
+        if (e.size() > 0)
+            throw e;
     }
 }

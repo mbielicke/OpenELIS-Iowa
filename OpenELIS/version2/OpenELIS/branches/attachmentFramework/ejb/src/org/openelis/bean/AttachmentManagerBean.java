@@ -46,7 +46,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.manager.AttachmentManager;
@@ -196,8 +195,8 @@ public class AttachmentManagerBean {
 
         ids = new ArrayList<Integer>();
 
-        for (IdNameVO vo : attachment.query(fields, first, max))
-            ids.add(vo.getId());
+        for (AttachmentDO data : attachment.query(fields, first, max))
+            ids.add(data.getId());
         return fetchByIds(ids);
     }
 
@@ -512,6 +511,18 @@ public class AttachmentManagerBean {
     }
 
     private void validate(AttachmentManager am) throws Exception {
-        // TODO Auto-generated method stub
+        ValidationErrorsList e;
+        
+        e = new ValidationErrorsList();
+        
+        if (getAttachment(am).isChanged())
+            try {
+                attachment.validate(getAttachment(am));
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }        
+        
+        if (e.size() > 0)
+            throw e;
     }
 }

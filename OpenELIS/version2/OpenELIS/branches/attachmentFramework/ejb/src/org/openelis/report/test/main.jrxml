@@ -20,25 +20,25 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT "T" ref_type, t.id t_id, s.name s_name, t.name t_name,
+		<![CDATA[SELECT 'T' ref_type, t.id t_id, s.name s_name, t.name t_name,
        t.description t_description, m.name m_name
 FROM test t, method m, test_section ts, section s
-WHERE t.is_active = "Y" and
+WHERE t.is_active = 'Y' and
       t.method_id = m.id and
       t.id = ts.test_id and ts.section_id = s.id
       $P!{TEST} $P!{SECTION}
 
 UNION
 
-SELECT unique "P" ref_type, p.id t_id, "" s_name, p.name t_name,
-       p.description t_description,  "" m_name
+SELECT distinct 'P' ref_type, p.id t_id, '' s_name, p.name t_name,
+       p.description t_description,  '' m_name
 FROM panel p, panel_item pi, test t, method m, test_section ts, section s
-WHERE $P{DETAIL} != "FD" and
+WHERE $P{DETAIL} != 'FD' and
       pi.panel_id = p.id and
       pi.name = t.name and
       pi.method_name = m.name and
       t.method_id = m.id and
-      t.is_active = "Y" and
+      t.is_active = 'Y' and
       ts.test_id = t.id and ts.section_id = s.id
       $P!{TEST} $P!{SECTION}
 

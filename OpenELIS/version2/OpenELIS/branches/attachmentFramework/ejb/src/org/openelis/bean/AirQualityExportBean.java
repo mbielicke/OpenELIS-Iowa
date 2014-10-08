@@ -681,7 +681,7 @@ public class AirQualityExportBean {
                                                    sm.getSample().getCollectionDate());
                                 continue;
                             }
-                            if (stringList == null || stringList.size() < 1) {
+                            if (stringList == null) {
                                 problemSamples.put(sm.getSample().getAccessionNumber(),
                                                    sm.getSample().getCollectionDate());
                                 continue;
@@ -1204,6 +1204,7 @@ public class AirQualityExportBean {
                                                                                  addAll,
                                                                                  addTds,
                                                                                  analysisId));
+            return new HashMap<String, ArrayList<String>>();
         }
 
         /*
@@ -1644,11 +1645,13 @@ public class AirQualityExportBean {
         reportedUnit = null;
 
         /*
-         * replicate and performance evaluation samples do not produce strings
+         * replicate, performance evaluation, and cutting blank samples do not
+         * produce strings
          */
         if (sm.getSample().getClientReference() == null ||
             "r".equalsIgnoreCase(sm.getSample().getClientReference().substring(2, 3)) ||
-            "pep".equalsIgnoreCase(sm.getSample().getClientReference().substring(0, 3)))
+            "pep".equalsIgnoreCase(sm.getSample().getClientReference().substring(0, 3)) ||
+            "qcb".equalsIgnoreCase(sm.getSample().getClientReference().substring(0, 3)))
             return null;
 
         /*
