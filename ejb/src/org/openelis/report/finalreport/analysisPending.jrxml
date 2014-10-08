@@ -18,8 +18,8 @@ WHERE
      a.is_reportable = 'Y' and
      a.test_id = t.id and
      t.method_id = m.id and
-     (($P{REPORT_TYPE} = "R" and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_released'))) or
-      ($P{REPORT_TYPE} = "C" and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_completed', 'analysis_released'))))]]>
+     (($P{REPORT_TYPE} = 'R' and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_released'))) or
+      ($P{REPORT_TYPE} = 'C' and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_completed', 'analysis_released'))))]]>
 	</queryString>
 	<field name="t_reporting_description" class="java.lang.String"/>
 	<field name="m_reporting_description" class="java.lang.String"/>

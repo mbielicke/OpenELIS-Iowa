@@ -66,7 +66,7 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "Attachment.FetchUnattachedByDescription",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i)"
-                                   + " and a.description like (:description) order by a.id desc")})
+                                   + " and a.description like (:description) and a.createdDate between :startDate and :endDate order by a.id desc")})
 @Entity
 @Table(name = "attachment")
 @EntityListeners({AuditUtil.class})

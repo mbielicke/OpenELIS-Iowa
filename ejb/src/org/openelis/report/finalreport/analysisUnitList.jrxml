@@ -9,7 +9,7 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     unique d.entry unit_name, d1.entry unit_description
+     distinct d.entry unit_name, d1.entry unit_description
 FROM
      dictionary d, outer dictionary d1
 WHERE

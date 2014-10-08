@@ -102,20 +102,20 @@ import org.openelis.utils.Auditable;
                       + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate order by p.number0, s.accessionNumber, a.sectionId, a.releasedDate")})
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Analysis.FetchForTurnaroundWarningReport",
-                     query = "select a.id a_id, a.available_date, t.time_ta_warning, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
+                     query = "select distinct a.id a_id, a.available_date, t.time_ta_warning, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
                              " from analysis a, test t, dictionary d1, section se, section_parameter sp, dictionary d2" +
                              " where a.test_id = t.id and a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and" +
                              " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_warn' and" +
                              " a.released_date is null and a.available_date is not null" +
-                             " order by se.name, a.available_date, a.id",
+                             " order by se_name, a.available_date, a_id",
 		  resultSetMapping = "Analysis.FetchForTurnaroundWarningReportMapping"),
     @NamedNativeQuery(name = "Analysis.FetchForTurnaroundMaximumReport",
-                     query = "select a.id a_id, a.available_date, t.time_ta_max, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
+                     query = "select distinct a.id a_id, a.available_date, t.time_ta_max, se.id se_id, CAST(se.name AS varchar(20)) se_name" +
                              " from analysis a, test t, dictionary d1, section se, section_parameter sp, dictionary d2" +
                              " where a.test_id = t.id and a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and" +
                              " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_max' and" +
                              " a.released_date is null and a.available_date is not null" +
-                             " order by se.name, a.available_date, a.id",
+                             " order by se_name, a.available_date, a_id",
             resultSetMapping = "Analysis.FetchForTurnaroundMaximumReportMapping")})
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "Analysis.FetchForTurnaroundWarningReportMapping",

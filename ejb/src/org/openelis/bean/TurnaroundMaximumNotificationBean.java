@@ -65,7 +65,7 @@ public class TurnaroundMaximumNotificationBean {
     @Asynchronous
     @TransactionTimeout(600)
     public void generateNotifications() throws Exception {
-        int days;
+        int hours;
         AnalysisViewDO aVDO;
         ArrayList<Object[]> resultList;
         ArrayList<Integer> analysisIds;
@@ -194,10 +194,10 @@ public class TurnaroundMaximumNotificationBean {
                         testsById.put(tVDO.getId(), tVDO);
                     }
 
-                    days = (int) (aVDO.getAvailableDate().getDate().getTime() - now.getDate().getTime());
-                    daysElapsed = JasperUtil.daysAndHours(days);
+                    hours = (int) ((now.getDate().getTime() - aVDO.getAvailableDate().getDate().getTime()) / 1000L / 60L / 60L);
+                    daysElapsed = JasperUtil.daysAndHours(hours);
                     
-                    tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60 * 60 * 1000);
+                    tempDate.setTime(aVDO.getAvailableDate().getDate().getTime() + tVDO.getTimeHolding() * 60L * 60L * 1000L);
                     expireDate = new Datetime(Datetime.YEAR, Datetime.MINUTE, tempDate);
                     expireString = "";
                     if (expireDate != null)

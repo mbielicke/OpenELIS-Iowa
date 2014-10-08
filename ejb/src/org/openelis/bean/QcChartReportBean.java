@@ -340,7 +340,7 @@ public class QcChartReportBean {
 
         worksheetFormat = result.getWorksheetFormat();
         value.setValue1(getValue(worksheetFormat, "expected_value", result, map));
-        value.setValue2(getValue(worksheetFormat, "final_percent_recov", result, map));
+        value.setValue2(getValue(worksheetFormat, "percent_recovery", result, map));
         try {
             value.setPlotValue(Double.parseDouble(getValue(worksheetFormat,
                                                            "final_value",

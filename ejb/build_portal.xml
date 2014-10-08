@@ -48,6 +48,15 @@
 			<include name="org/openelis/manager/*.class" />
 	    </fileset>
 	</jar>
+	
+	<delete file="build/openelis-portal.jar"/>
+	<jar jarfile="build/openelis-portal.jar">
+		<fileset dir="bin">
+			<include name="org/openelis/stfu/bean/*.class"/>
+			<include name="org/openelis/stfu/manager/*.class"/>
+			<include name="org/openelis/stfu/entity/*.class"/>
+		</fileset>
+	</jar>
 
 	<delete file="build/openelis-common.jar" />
 	<copy file="../OpenELIS-Common/src/org/openelis/constants/OpenELISWebConstants.properties" todir="../OpenELIS-Common/bin/org/openelis/constants"/>
@@ -63,6 +72,8 @@
 			<include name="org/openelis/remote/*.class" />
 			<include name="org/openelis/report/*.class" />
 			<include name="org/openelis/utilcommon/*.class" />
+			<include name="org/openelis/stfu/domain/*.class"/>
+			<include name="org/openelis/stfu/manager/*.class"/>
 		</fileset>
 	</jar>
     
@@ -83,6 +94,9 @@
 		<fileset dir="build">
 			<include name="portal.war" />
 	    </fileset>
+		<fileset dir="build">
+			<include name="openelis-portal.jar"/>
+		</fileset>
 		<fileset dir="build">
 			<include name="openelis-common.jar"/>
 	    </fileset>

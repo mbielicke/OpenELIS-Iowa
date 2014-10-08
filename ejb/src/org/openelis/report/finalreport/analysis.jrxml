@@ -29,8 +29,8 @@ WHERE
      si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
      a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
      a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
-     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
-                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = 'R' and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = 'C' and system_name in ('analysis_completed','analysis_released'))) and
      t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
 UNION
 SELECT 2 sorting_method, t.reporting_sequence, t.test_trailer_id,
@@ -44,8 +44,8 @@ WHERE
      si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
      a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
      a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
-     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
-                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = 'R' and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = 'C' and system_name in ('analysis_completed','analysis_released'))) and
      t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
 ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	</queryString>
