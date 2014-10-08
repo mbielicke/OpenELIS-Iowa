@@ -55,12 +55,12 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer width="5%" left="48%" top="44%" bottom="46%">
+        <g:layer width="5%" left="47%" top="44%" bottom="46%">
           <g:VerticalPanel>
             <w:Button ui:field="moveLeftButton" text="{msg.gen_moveLeft}" />
           </g:VerticalPanel>
         </g:layer>
-        <g:layer width="47%" right="0px">
+        <g:layer width="48%" right="0px">
           <g:LayoutPanel>
             <g:layer left="0" right="0" top="0" height="30px">
               <g:HTMLPanel>
@@ -71,13 +71,13 @@
                     </td>
                     <td>
                       <c:Calendar ui:field="attachmentCreatedDate" width="90px" begin="0"
-                        end="2" />
+                        end="4" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.gen_desc}:" />
                     </td>
                     <td>
-                      <w:TextBox ui:field="attachmentDescription" width="100px" field="String" />
+                      <w:TextBox ui:field="attachmentDescription" width="76px" field="String" />
                     </td>
                     <td>
                       <w:Button ui:field="searchButton" leftIcon="{res.icon.findIcon}"
@@ -91,19 +91,19 @@
               <t:Table ui:field="searchTable" verticalScroll="ALWAYS" horizontalScroll="ALWAYS"
                 header="true" styleName="{res.table.ScreenTableWithSides}"
               >
-                <t:Column width="90" label="{msg.worksheet_createdDate}">
+                <t:Column width="90" label="{msg.worksheet_createdDate}" sortable="true">
                   <t:CalendarCell>
                     <c:Calendar width="90px" begin="0" end="4" />
                   </t:CalendarCell>
                 </t:Column>
-                <t:Column width="100" label="{msg.gen_section}">
+                <t:Column width="70" label="{msg.gen_section}" sortable="true" filterable = "true">
                   <t:DropdownCell>
-                    <w:Dropdown ui:field="searchTableSection" field="Integer" dropWidth="110" required="true" />
+                    <w:Dropdown ui:field="searchTableSection" field="Integer" required="true" />
                   </t:DropdownCell>
                 </t:Column>
-                <t:Column width="133" label="{msg.gen_description}">
+                <t:Column width="163" label="{msg.gen_description}" sortable="true">
                   <t:TextBoxCell>
-                    <w:TextBox width="133px" field="String" />
+                    <w:TextBox width="163px" field="String" />
                   </t:TextBoxCell>
                 </t:Column>
               </t:Table>

@@ -44,7 +44,7 @@
             </w:display>
             <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
               display="{msg.gen_duplicateRecord}" />
-            <w:CheckMenuItem ui:field="fromTRF" display="From TRF" />
+            <w:CheckMenuItem ui:field="fromTRF" display="{msg.sample_fromTRF}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"
             >
@@ -139,7 +139,7 @@
                         <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
                       </td>
                       <td>
-                        <w:CheckBox ui:field="envIsHazardous" />
+                        <w:CheckBox ui:field="envIsHazardous"/>
                       </td>
                     </tr>
                     <tr>

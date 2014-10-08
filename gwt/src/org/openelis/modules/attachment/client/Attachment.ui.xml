@@ -56,9 +56,9 @@
             <r:Column width="200" label="{msg.attachment_fileName}" />
             <r:Column width="50" label="{msg.gen_id}" />
             <r:Leaf key="attachment">
-              <r:LeafColumn>
+              <r:LeafColumn required = "true">
                 <t:TextBoxCell>
-                  <w:TextBox field="String" />
+                  <w:TextBox field="String"/>
                 </t:TextBoxCell>
               </r:LeafColumn>
               <r:LeafColumn>
@@ -68,7 +68,7 @@
               </r:LeafColumn>
               <r:LeafColumn>
                 <t:DropdownCell>
-                  <w:Dropdown ui:field="tableSection" field="Integer" dropWidth="100" />
+                  <w:Dropdown ui:field="tableSection" field="Integer" dropWidth="150" />
                 </t:DropdownCell>
               </r:LeafColumn>
               <r:LeafColumn>

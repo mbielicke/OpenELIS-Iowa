@@ -27,8 +27,10 @@ package org.openelis.modules.attachment.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AttachmentDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -49,6 +51,8 @@ public interface AttachmentServiceIntAsync {
                                       AsyncCallback<ArrayList<AttachmentManager>> callback);
 
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
+
+    public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback);
     
     public void getReserved(Integer attachmentId, AsyncCallback<AttachmentManager> callback);
 

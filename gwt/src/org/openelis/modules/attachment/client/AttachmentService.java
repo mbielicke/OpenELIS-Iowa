@@ -27,9 +27,11 @@ package org.openelis.modules.attachment.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AttachmentDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.core.client.GWT;
@@ -100,6 +102,20 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
     @Override
     public void fetchForUpdate(Integer attachmentId, AsyncCallback<AttachmentManager> callback) {
         service.fetchForUpdate(attachmentId, callback);
+    }
+    
+    @Override
+    public ArrayList<AttachmentDO> query(Query query) throws Exception {
+        Callback<ArrayList<AttachmentDO>> callback;
+
+        callback = new Callback<ArrayList<AttachmentDO>>();
+        service.query(query, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void query(Query query, AsyncCallback<ArrayList<AttachmentDO>> callback) {
+        service.query(query, callback);
     }
 
     @Override

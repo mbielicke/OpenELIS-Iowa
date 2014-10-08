@@ -27,6 +27,9 @@ package org.openelis.modules.report.dataView.server;
 
 import java.beans.XMLDecoder;
 import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,13 +84,15 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
         List<String> paths;
         HttpSession session;
         XMLDecoder dec;
+        Path path;
 
         dec = null;
         session = getThreadLocalRequest().getSession();
         paths = (List<String>) session.getAttribute("upload");
         if (paths != null && paths.size() > 0) {
+            path = Paths.get(paths.get(0));
             try {
-                dec = new XMLDecoder(new FileInputStream(paths.get(0)));
+                dec = new XMLDecoder(Files.newInputStream(path));
                 return (DataViewVO)dec.readObject();
             } catch (Exception anyE) {
                 throw serializeForGWT(anyE);

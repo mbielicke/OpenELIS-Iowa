@@ -36,14 +36,11 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.SectionDO;
-import org.openelis.manager.AttachmentManager;
-import org.openelis.manager.SampleManager1;
 import org.openelis.meta.AttachmentMeta;
-import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentService;
-import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -82,54 +79,47 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AttachmentTabUI extends Screen {
+public abstract class AttachmentTabUI extends Screen {
 
     @UiTemplate("AttachmentTab.ui.xml")
     interface AttachmentTabUIBinder extends UiBinder<Widget, AttachmentTabUI> {
     };
 
-    private static AttachmentTabUIBinder                    uiBinder          = GWT.create(AttachmentTabUIBinder.class);
+    private static AttachmentTabUIBinder               uiBinder = GWT.create(AttachmentTabUIBinder.class);
 
     @UiField
-    protected Table                                         currentTable, searchTable;
+    protected Table                                    currentTable, searchTable;
 
     @UiField
-    protected Dropdown<Integer>                             currentTableSection,
-                    searchTableSection;
+    protected Dropdown<Integer>                        currentTableSection, searchTableSection;
 
     @UiField
-    protected Button                                        detachButton, displayButton,
-                    moveLeftButton, searchButton, attachButton;
+    protected Button                                   detachButton, displayButton, moveLeftButton,
+                    searchButton, attachButton;
 
     @UiField
-    protected Calendar                                      attachmentCreatedDate;
+    protected Calendar                                 attachmentCreatedDate;
 
     @UiField
-    protected TextBox<String>                               attachmentDescription;
+    protected TextBox<String>                          attachmentDescription;
 
-    protected Screen                                        parentScreen;
+    protected Screen                                   parentScreen;
 
-    protected AttachmentTabUI                               screen;
+    protected AttachmentTabUI                          screen;
 
-    protected EventBus                                      parentBus;
+    protected EventBus                                 parentBus;
 
-    protected SampleManager1                                manager;
+    protected AttachmentScreenUI                       attachmentScreen;
 
-    protected AttachmentScreenUI                            attachmentScreen;
+    protected AsyncCallbackUI<ArrayList<AttachmentDO>> queryCall;
 
-    protected AsyncCallbackUI<ArrayList<AttachmentManager>> queryCall;
-
-    protected boolean                                       isVisible, redraw;
-
-    protected static String                                 DEFAULT_FILE_NAME = "preview";
+    protected boolean                                  isVisible, redraw, canQuery;
 
     public AttachmentTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
-
-        manager = null;
     }
 
     private void initialize() {
@@ -139,18 +129,21 @@ public class AttachmentTabUI extends Screen {
 
         addScreenHandler(currentTable, "currentTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                if ( !isState(QUERY))
+                if ( ! (isState(QUERY) && canQuery))
                     currentTable.setModel(getCurrentTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
                 currentTable.setEnabled(true);
-                currentTable.setQueryMode(isState(QUERY));
+                currentTable.setQueryMode(isState(QUERY) && canQuery);
             }
 
             public Object getQuery() {
                 ArrayList<QueryData> qds;
                 QueryData qd;
+
+                if ( !canQuery)
+                    return null;
 
                 qds = new ArrayList<QueryData>();
                 for (int i = 0; i < 3; i++ ) {
@@ -158,13 +151,13 @@ public class AttachmentTabUI extends Screen {
                     if (qd != null) {
                         switch (i) {
                             case 0:
-                                qd.setKey(SampleMeta.getAttachmentItemAttachmentCreatedDate());
+                                qd.setKey(getAttachmentCreatedDateMetaKey());
                                 break;
                             case 1:
-                                qd.setKey(SampleMeta.getAttachmentItemAttachmentSectionId());
+                                qd.setKey(getAttachmentSectionIdKey());
                                 break;
                             case 2:
-                                qd.setKey(SampleMeta.getAttachmentItemAttachmentDescription());
+                                qd.setKey(getAttachmentDescriptionKey());
                                 break;
                         }
                         qds.add(qd);
@@ -195,7 +188,7 @@ public class AttachmentTabUI extends Screen {
 
         currentTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                manager.attachment.remove(event.getIndex());
+                remove(event.getIndex());
                 detachButton.setEnabled(false);
                 displayButton.setEnabled(false);
             }
@@ -209,7 +202,7 @@ public class AttachmentTabUI extends Screen {
                  * different window than the previous one because the value for
                  * name in the url will be the name of the temp file
                  */
-                displayAttachment(null);
+                displayAttachment(currentTable.getSelectedRow(), false);
             }
         });
 
@@ -336,22 +329,64 @@ public class AttachmentTabUI extends Screen {
         searchTableSection.setModel(model);
     }
 
-    public void setData(SampleManager1 manager) {
-        this.manager = manager;
-    }
-
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
+    /**
+     * overridden to return the total number of attachment items in the manager
+     */
+    public abstract int count();
+
+    /**
+     * overridden to return the attachment item at the specified index in the
+     * manager
+     */
+    public abstract AttachmentItemViewDO get(int i);
+
+    /**
+     * overridden to return the key for attachment created date from the meta
+     * used by the main screen
+     */
+    public abstract String getAttachmentCreatedDateMetaKey();
+
+    /**
+     * overridden to return the key for attachment section id from the meta used
+     * by the main screen
+     */
+    public abstract String getAttachmentSectionIdKey();
+
+    /**
+     * overridden to return the key for attachment description from the meta
+     * used by the main screen
+     */
+    public abstract String getAttachmentDescriptionKey();
+
+    /**
+     * overridden to return the an AttachmentItemViewDO filled with the data of
+     * the passed AttachmentDO
+     */
+    public abstract AttachmentItemViewDO createAttachmentItem(AttachmentDO att);
+
+    /**
+     * overridden to remove the attachment item at the passed index from the
+     * manager used by the main screen
+     */
+    public abstract void remove(int i);
+
+    /**
+     * Notifies the tab that it may need to refresh the display in its widgets;
+     * if the data currently showing in the widgets is the same as the data in
+     * the latest manager then the widgets are not refreshed
+     */
     public void onDataChange() {
         int i, count1, count2;
         AttachmentItemViewDO data;
         Row row;
 
         count1 = currentTable.getRowCount();
-        count2 = manager == null ? 0 : manager.attachment.count();
+        count2 = count();
 
         if (count1 == count2) {
             /*
@@ -359,7 +394,7 @@ public class AttachmentTabUI extends Screen {
              * being displayed and the attachment item in the manager
              */
             for (i = 0; i < count1; i++ ) {
-                data = manager.attachment.get(i);
+                data = get(i);
 
                 row = currentTable.getRowAt(i);
                 if (DataBaseUtil.isDifferent(data.getAttachmentCreatedDate(), row.getCell(0)) ||
@@ -373,9 +408,24 @@ public class AttachmentTabUI extends Screen {
             redraw = true;
         }
         displayAttachments();
+        /*
+         * this is done here and not in displayButton's StateChangeHandler
+         * because at the time StateChangeEvent is fired, the table may have
+         * rows but this method may empty the table in which case displayButton
+         * needs to be disabled
+         */
+        displayButton.setEnabled(currentTable.getSelectedRow() >= 0);
         searchTable.setModel(getSearchTableModel(null));
     }
 
+    public void setCanQuery(boolean canQuery) {
+        this.canQuery = canQuery;
+    }
+
+    /**
+     * Deletes the selected row from the table showing the sample's attachment
+     * items
+     */
     @UiHandler("detachButton")
     protected void detach(ClickEvent event) {
         int r;
@@ -385,15 +435,23 @@ public class AttachmentTabUI extends Screen {
             currentTable.removeRowAt(r);
     }
 
+    /**
+     * Opens the file linked to the attachment item at the selected row in the
+     * table showing the sample's attachment items
+     */
     @UiHandler("displayButton")
     protected void display(ClickEvent event) {
         /*
-         * passing the same name to the displayAttachment makes the files opened
-         * by it open in the same window
+         * passing the same name to displayAttachment makes the files opened by
+         * it open in the same window
          */
-        displayAttachment(DEFAULT_FILE_NAME);
+        displayAttachment(currentTable.getSelectedRow(), true);
     }
 
+    /**
+     * Adds to the sample, an attachment item from the row selected in the table
+     * showing the results of the query for matching attachments
+     */
     @UiHandler("moveLeftButton")
     protected void moveLeft(ClickEvent event) {
         AttachmentDO att;
@@ -415,6 +473,10 @@ public class AttachmentTabUI extends Screen {
         displayButton.setEnabled(true);
     }
 
+    /**
+     * Executes a query to fetch attachments matching the values specified by
+     * the user in the created date and/or the description for attachment
+     */
     @UiHandler("searchButton")
     protected void search(ClickEvent event) {
         Query query;
@@ -426,8 +488,8 @@ public class AttachmentTabUI extends Screen {
         parentScreen.setBusy(Messages.get().gen_querying());
 
         if (queryCall == null) {
-            queryCall = new AsyncCallbackUI<ArrayList<AttachmentManager>>() {
-                public void success(ArrayList<AttachmentManager> result) {
+            queryCall = new AsyncCallbackUI<ArrayList<AttachmentDO>>() {
+                public void success(ArrayList<AttachmentDO> result) {
                     parentScreen.clearStatus();
                     searchTable.setModel(getSearchTableModel(result));
                 }
@@ -446,12 +508,13 @@ public class AttachmentTabUI extends Screen {
             };
         }
 
-        AttachmentService.get().fetchByQuery(query.getFields(),
-                                             query.getPage() * query.getRowsPerPage(),
-                                             query.getRowsPerPage(),
-                                             queryCall);
+        AttachmentService.get().query(query, queryCall);
     }
 
+    /**
+     * Opens the attachment screen and adds the attachments selected on it, if
+     * any, to the sample when that screen is closed
+     */
     @UiHandler("attachButton")
     protected void attach(ClickEvent event) {
         ModalWindow modal;
@@ -500,7 +563,7 @@ public class AttachmentTabUI extends Screen {
         if (currentTable.getRowCount() > 0) {
             currentTable.selectRowAt(0);
             detachButton.setEnabled(isState(ADD, UPDATE));
-            displayButton.setEnabled(isState(ADD, UPDATE));
+            displayButton.setEnabled(true);
         }
     }
 
@@ -520,11 +583,9 @@ public class AttachmentTabUI extends Screen {
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
-        if (manager == null)
-            return model;
 
-        for (int i = 0; i < manager.attachment.count(); i++ ) {
-            data = manager.attachment.get(i);
+        for (int i = 0; i < count(); i++ ) {
+            data = get(i);
             row = createAttachmentRow(data);
             model.add(row);
         }
@@ -532,18 +593,16 @@ public class AttachmentTabUI extends Screen {
         return model;
     }
 
-    private ArrayList<Row> getSearchTableModel(ArrayList<AttachmentManager> ams) {
+    private ArrayList<Row> getSearchTableModel(ArrayList<AttachmentDO> attachments) {
         Row row;
-        AttachmentDO data;
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
-        if (ams == null)
+        if (attachments == null)
             return model;
 
-        for (AttachmentManager am : ams) {
+        for (AttachmentDO data : attachments) {
             row = new Row(3);
-            data = am.getAttachment();
             row.setCell(0, data.getCreatedDate());
             row.setCell(1, data.getSectionId());
             row.setCell(2, data.getDescription());
@@ -552,19 +611,6 @@ public class AttachmentTabUI extends Screen {
         }
 
         return model;
-    }
-
-    private AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
-        AttachmentItemViewDO atti;
-
-        atti = manager.attachment.add();
-        atti.setId(manager.getNextUID());
-        atti.setAttachmentId(att.getId());
-        atti.setAttachmentCreatedDate(att.getCreatedDate());
-        atti.setAttachmentSectionId(att.getSectionId());
-        atti.setAttachmentDescription(att.getDescription());
-
-        return atti;
     }
 
     private Row createAttachmentRow(AttachmentItemViewDO data) {
@@ -578,19 +624,19 @@ public class AttachmentTabUI extends Screen {
         return row;
     }
 
-    private void displayAttachment(String name) {
+    /**
+     * Opens the file linked to the attachment on the selected row in the table
+     * showing the sample's attachment items. If isSameWindow is true then the
+     * file is opened in the same browser window/tab as before, otherwise it's
+     * opened in a different one.
+     */
+    private void displayAttachment(int index, boolean isSameWindow) {
         AttachmentItemViewDO data;
 
         /*
          * display the file linked to the attachment for the selected row
          */
-        data = currentTable.getRowAt(currentTable.getSelectedRow()).getData();
-        try {
-
-            AttachmentUtil.displayAttachment(data.getAttachmentId(), name, parentScreen.getWindow());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        data = currentTable.getRowAt(index).getData();
+        parentBus.fireEvent(new DisplayAttachmentEvent(data.getAttachmentId(), isSameWindow));
     }
 }
