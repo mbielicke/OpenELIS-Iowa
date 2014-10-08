@@ -1816,6 +1816,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_autoSelectNext();
 
   /**
+   * Translated "Attachment ''{0}'': Description is required ".
+   * 
+   * @return translated "Attachment ''{0}'': Description is required "
+   */
+  @DefaultMessage("Attachment ''{0}'': Description is required ")
+  @Key("attachment.descRequiredException")
+  String attachment_descRequiredException(String arg0);
+
+  /**
    * Translated "Attachment Description".
    * 
    * @return translated "Attachment Description"
@@ -1879,11 +1888,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_sampleDescription(Integer arg0);
 
   /**
-   * Translated "You do not have permission to view the attachment {0}".
+   * Translated "Attachment ''{0}'': You do not have permission to view the attachment".
    * 
-   * @return translated "You do not have permission to view the attachment {0}"
+   * @return translated "Attachment ''{0}'': You do not have permission to view the attachment"
    */
-  @DefaultMessage("You do not have permission to view the attachment {0}")
+  @DefaultMessage("Attachment ''{0}'': You do not have permission to view the attachment")
   @Key("attachment.viewPermException")
   String attachment_viewPermException(String arg0);
 
@@ -12373,11 +12382,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String ptntInfo();
 
   /**
-   * Translated "PWS Id".
+   * Translated "PWS ID".
    * 
-   * @return translated "PWS Id"
+   * @return translated "PWS ID"
    */
-  @DefaultMessage("PWS Id")
+  @DefaultMessage("PWS ID")
   @Key("pws.id")
   String pws_id();
 
@@ -14135,6 +14144,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Environmental")
   @Key("sample.environmental")
   String sample_environmental();
+
+  /**
+   * Translated "From TRF".
+   * 
+   * @return translated "From TRF"
+   */
+  @DefaultMessage("From TRF")
+  @Key("sample.fromTRF")
+  String sample_fromTRF();
 
   /**
    * Translated "Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample".
