@@ -29,35 +29,50 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler that attachments were added to a
- * record e.g. sample
+ * This class is used to notify the handler to open the file linked to the
+ * attachment specified by id. The flag isSameWindow specifies whether the file
+ * should be opened in the same browser window as before or a different one.
  */
-public class AttachmentAddedEvent extends GwtEvent<AttachmentAddedEvent.Handler> {
+public class DisplayAttachmentEvent extends GwtEvent<DisplayAttachmentEvent.Handler> {
 
-    private static Type<AttachmentAddedEvent.Handler> TYPE;
+    private static Type<DisplayAttachmentEvent.Handler> TYPE;
 
-    public AttachmentAddedEvent() {
+    private Integer                                     id;
+
+    private boolean                                     isSameWindow;
+
+    public DisplayAttachmentEvent(Integer id, boolean isSameWindow) {        
+        this.id = id;
+        this.isSameWindow = isSameWindow;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AttachmentAddedEvent.Handler> getAssociatedType() {
+    public Type<DisplayAttachmentEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AttachmentAddedEvent.Handler> getType() {
+    public static Type<DisplayAttachmentEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AttachmentAddedEvent.Handler>();
+            TYPE = new Type<DisplayAttachmentEvent.Handler>();
         }
         return TYPE;
     }
 
     public static interface Handler extends EventHandler {
-        public void onAttachmentAdded(AttachmentAddedEvent event);
+        public void onDisplayAttachment(DisplayAttachmentEvent event);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+    
+    public boolean getIsSameWindow() {
+        return isSameWindow;
     }
 
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAttachmentAdded(this);
+        handler.onDisplayAttachment(this);
     }
 }

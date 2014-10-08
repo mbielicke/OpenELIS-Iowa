@@ -2,8 +2,6 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.FinalReportWebVO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -33,16 +31,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     }
 
     @Override
-    public void getEnvironmentalProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.getEnvironmentalProjectList(callback);
-    }
-
-    @Override
-    public void getPrivateWellProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.getPrivateWellProjectList(callback);
-    }
-
-    @Override
     public void getPromptsForBatch(AsyncCallback<ArrayList<Prompt>> callback) {
         service.getPromptsForBatch(callback);
     }
@@ -50,28 +38,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     @Override
     public void getPromptsForBatchReprint(AsyncCallback<ArrayList<Prompt>> callback) {
         service.getPromptsForBatchReprint(callback);
-    }
-
-    @Override
-    public void getSDWISProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.getSDWISProjectList(callback);
-    }
-
-    @Override
-    public void getSampleEnvironmentalList(Query query,
-                                           AsyncCallback<ArrayList<FinalReportWebVO>> callback) {
-        service.getSampleEnvironmentalList(query, callback);
-    }
-
-    @Override
-    public void getSamplePrivateWellList(Query query,
-                                         AsyncCallback<ArrayList<FinalReportWebVO>> callback) {
-        service.getSamplePrivateWellList(query, callback);
-    }
-
-    @Override
-    public void getSampleSDWISList(Query query, AsyncCallback<ArrayList<FinalReportWebVO>> callback) {
-        service.getSampleSDWISList(query, callback);
     }
 
     @Override
@@ -159,60 +125,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
         
         callback = new Callback<ReportStatus>();
         service.runReportForWeb(query, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<FinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception {
-        Callback<ArrayList<FinalReportWebVO>> callback;
-        
-        callback = new Callback<ArrayList<FinalReportWebVO>>();
-        service.getSampleEnvironmentalList(query, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<FinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception {
-        Callback<ArrayList<FinalReportWebVO>> callback;
-        
-        callback = new Callback<ArrayList<FinalReportWebVO>>();
-        service.getSamplePrivateWellList(query, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<FinalReportWebVO> getSampleSDWISList(Query query) throws Exception {
-        Callback<ArrayList<FinalReportWebVO>> callback;
-        
-        callback = new Callback<ArrayList<FinalReportWebVO>>();
-        service.getSampleSDWISList(query, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
-        Callback<ArrayList<IdNameVO>> callback;
-        
-        callback = new Callback<ArrayList<IdNameVO>>();
-        service.getEnvironmentalProjectList(callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
-        Callback<ArrayList<IdNameVO>> callback;
-        
-        callback = new Callback<ArrayList<IdNameVO>>();
-        service.getPrivateWellProjectList(callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {
-        Callback<ArrayList<IdNameVO>> callback;
-        
-        callback = new Callback<ArrayList<IdNameVO>>();
-        service.getSDWISProjectList(callback);
         return callback.getResult();
     }
 

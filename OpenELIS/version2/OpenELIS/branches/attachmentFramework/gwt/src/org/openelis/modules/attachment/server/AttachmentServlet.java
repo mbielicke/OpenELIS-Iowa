@@ -32,10 +32,13 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
+import org.openelis.bean.AttachmentBean;
 import org.openelis.bean.AttachmentManagerBean;
+import org.openelis.domain.AttachmentDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.modules.attachment.client.AttachmentServiceInt;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -46,6 +49,9 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
 
     @EJB
     private AttachmentManagerBean attachmentManager;
+    
+    @EJB
+    private AttachmentBean attachment;
 
     @Override
     public ArrayList<AttachmentManager> fetchByQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -69,6 +75,16 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception {
         try {
             return attachmentManager.fetchForUpdate(attachmentId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<AttachmentDO> query(Query query) throws Exception {
+        try {
+            return attachment.query(query.getFields(),
+                                query.getPage() * query.getRowsPerPage(),
+                                query.getRowsPerPage());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

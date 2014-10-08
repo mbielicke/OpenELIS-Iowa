@@ -155,7 +155,7 @@ public class AttachmentScreenUI extends Screen {
 
         initialize();
         setState(QUERY);
-        loadTree(null, true, true);
+        loadTree(null, true, true, false);
 
         logger.fine("Attachment Screen Opened");
     }
@@ -165,7 +165,7 @@ public class AttachmentScreenUI extends Screen {
 
         initialize();
         setState(QUERY);
-        loadTree(null, true, true);
+        loadTree(null, true, true, false);
 
         logger.fine("Attachment Screen Opened");
     }
@@ -283,7 +283,8 @@ public class AttachmentScreenUI extends Screen {
         tree.addDoubleClickHandler(new DoubleClickHandler() {
             @Override
             public void onDoubleClick(DoubleClickEvent event) {
-                displayAttachment(tree.getSelectedNode(), null);
+                if ( !isState(UPDATE))
+                    displayAttachment(tree.getSelectedNode(), null);
             }
         });
 
@@ -302,16 +303,13 @@ public class AttachmentScreenUI extends Screen {
                     return;
                 }
 
-                if (event.getCol() != 2)
-                    return;
-
                 perm = UserCache.getPermission();
                 sectId = manager.getAttachment().getSectionId();
                 try {
                     if (sectId != null) {
                         /*
-                         * allow changing the section only if the user has
-                         * assign permission to the current section
+                         * allow changing any field of the attachment only if
+                         * the user has assign permission to the current section
                          */
                         name = SectionCache.getById(sectId).getName();
                         if ( !perm.has(name, SectionFlags.ASSIGN)) {
@@ -368,7 +366,7 @@ public class AttachmentScreenUI extends Screen {
 
         addScreenHandler(autoSelectNext, "autoSelectNext", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                autoSelectNext.setEnabled(isState(DISPLAY));
+                autoSelectNext.setEnabled(isState(DISPLAY) && isDataEntry());
             }
 
             public Widget onTab(boolean forward) {
@@ -462,13 +460,13 @@ public class AttachmentScreenUI extends Screen {
                          * attachment created from the uploaded file is shown
                          */
                         isLoadedFromQuery = false;
-                        loadTree(ams, true, false);
+                        loadTree(ams, true, false, isLoadedFromQuery);
                     } else {
                         /*
                          * add the attachment created from uploaded file as the
                          * first one in the tree
                          */
-                        loadTree(ams, false, false);
+                        loadTree(ams, false, false, isLoadedFromQuery);
                     }
                     tree.selectNodeAt(0);
                     nodeSelected(0);
@@ -698,6 +696,10 @@ public class AttachmentScreenUI extends Screen {
         }
     }
 
+    /**
+     * If there are any attachments selected in the tree, then passes them to
+     * the screen that brought attachment screen up and closes the window
+     */
     @UiHandler("attachButton")
     protected void attach(ClickEvent event) {
         Integer currId, prevId, selNodes[];
@@ -742,14 +744,10 @@ public class AttachmentScreenUI extends Screen {
     }
 
     /**
-     * Defines the action to be performed when a node in the tree is selected.
-     * If the node was showing an attachment then the passed value is the
-     * attachment's id, otherwise it's null.
-     */
-
-    /**
-     * Displays the file linked to the attachment showing on the node at the
-     * passed index
+     * Opens the file linked to the attachment showing on the node at the passed
+     * index. If "name" is null or if it's different from the previous time this
+     * method was called then the file is opened in a new window, otherwise it's
+     * opened in the same window as before.
      */
     public void displayAttachment(int index, String name) {
         Node node;
@@ -814,7 +812,7 @@ public class AttachmentScreenUI extends Screen {
                         managers.put(am.getAttachment().getId(), am);
 
                     setState(DISPLAY);
-                    loadTree(result, isNewQuery, true);
+                    loadTree(result, isNewQuery, true, isLoadedFromQuery);
                     clearStatus();
                     tree.selectNodeAt(0);
                     nodeSelected(0);
@@ -825,7 +823,7 @@ public class AttachmentScreenUI extends Screen {
 
                 public void notFound() {
                     setState(QUERY);
-                    loadTree(null, isNewQuery, true);
+                    loadTree(null, isNewQuery, true, isLoadedFromQuery);
                     description.setFocus(true);
                     setDone(Messages.get().gen_noRecordsFound());
                 }
@@ -866,8 +864,8 @@ public class AttachmentScreenUI extends Screen {
 
     /**
      * If "auto select next" is checked then reserves the next attachment that
-     * can be reserved and returns its manager; otherwise reserves the currently
-     * selected attachment and returns its manager.
+     * can be reserved and returns its manager. Otherwise, reserves the
+     * currently selected attachment and returns its manager.
      */
     public AttachmentManager getReserved() {
         AttachmentManager am;
@@ -964,11 +962,11 @@ public class AttachmentScreenUI extends Screen {
     }
 
     /**
-     * Removes the reservation from the last attachment that was reserved; if
+     * Removes the reservation from the last attachment that was reserved. If
      * the flag is true then the reserved attachment was successfully attached
      * to the other record e.g. sample and if "auto select next" is checked then
      * an attachment after the current one will be reserved, otherwise the
-     * current attachment will be reserved because it was not attached
+     * current attachment will be reserved because it was not attached.
      */
     public void removeReservation(boolean isAttached) {
         Integer id;
@@ -1022,7 +1020,7 @@ public class AttachmentScreenUI extends Screen {
     /**
      * Returns true if the screen was opened from another screen for adding new
      * attachments to the system and then attaching them to a record, like
-     * sample; otherwise returns false
+     * sample. Otherwise returns false.
      */
     public boolean isAttach() {
         return false;
@@ -1042,6 +1040,11 @@ public class AttachmentScreenUI extends Screen {
     public void searchSuccessful() {
     }
 
+    /**
+     * Reserves and returns the manager for the attachment showing on the passed
+     * node and refreshes the tree. Throws exception if there was an issue with
+     * reserving the attachment.
+     */
     private AttachmentManager reserve(AttachmentNode node) throws Exception {
         Integer id;
 
@@ -1060,6 +1063,12 @@ public class AttachmentScreenUI extends Screen {
         return manager;
     }
 
+    /**
+     * Performs specific actions based on node selected in the tree, specified
+     * by the passed index. If an attachment or attachment item was selected
+     * then resets the manager otherwise tries to load the next page, because
+     * "Click for Next.." is selected. Also, enables or disables widgets.
+     */
     private void nodeSelected(int index) {
         Integer id;
         Node node;
@@ -1090,6 +1099,9 @@ public class AttachmentScreenUI extends Screen {
         manager = id != null ? managers.get(id) : null;
     }
 
+    /**
+     * Executes the previously run query to fetch the next page of results
+     */
     private void loadNextPage() {
         int page;
 
@@ -1105,7 +1117,16 @@ public class AttachmentScreenUI extends Screen {
         executeQuery(query);
     }
 
-    private void loadTree(ArrayList<AttachmentManager> ams, boolean reloadTree, boolean addAfter) {
+    /**
+     * Loads the tree with the data in the passed managers. If "reloadTree" is
+     * true then loads the tree from scratch, otherwise only adds new nodes; if
+     * "addAfter" is true then adds the new nodes after the current nodes,
+     * otherwise adds them at the beginning. If "isLoadedFromQuery" and
+     * "reloadTree" are both true then adds the node for "Click For More...",
+     * because the tree is getting loaded from the results of a fresh query.
+     */
+    private void loadTree(ArrayList<AttachmentManager> ams, boolean reloadTree, boolean addAfter,
+                          boolean isLoadedFromQuery) {
         int sel, index;
         Node root, node;
 
@@ -1125,8 +1146,18 @@ public class AttachmentScreenUI extends Screen {
         index = -1;
 
         if (addAfter)
+            /*
+             * find the index of the last attachment node before the node for
+             * "Click For More..."
+             */
             index = tree.getRoot().getChildCount() - 2;
 
+        /*
+         * create and add the nodes for attachments and attachment items to the
+         * tree; if "reloadTree" is true then the nodes are added to the root
+         * because the tree will be reloaded, otherwise they're added after the
+         * current nodes
+         */
         for (AttachmentManager am : ams) {
             node = new AttachmentNode(6);
             loadAttachment(node, am);
@@ -1162,8 +1193,8 @@ public class AttachmentScreenUI extends Screen {
     }
 
     /**
-     * Creates a subtree loaded from the passed manager; makes passed node the
-     * attachment node and also the root of the subtree
+     * Creates a subtree loaded from the passed manager. Makes passed node the
+     * attachment node and also the root of the subtree.
      */
     private void loadAttachment(Node anode, AttachmentManager am) {
         int i;
@@ -1236,8 +1267,8 @@ public class AttachmentScreenUI extends Screen {
 
         Status status;
 
-        AttachmentNode(int size) {
-            super(size);
+        AttachmentNode(int columns) {
+            super(columns);
             status = Status.UNATTACHED;
         }
 

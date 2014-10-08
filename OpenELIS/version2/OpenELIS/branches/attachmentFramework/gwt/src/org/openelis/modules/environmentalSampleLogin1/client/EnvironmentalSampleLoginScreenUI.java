@@ -64,6 +64,8 @@ import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentAddedEvent;
 import org.openelis.modules.attachment.client.AttachmentScreenUI;
+import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -243,7 +245,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     @UiField(provided = true)
     protected AttachmentTabUI                           attachmentTab;
 
-    protected boolean                                   canEdit, isBusy, closeScreen,
+    protected boolean                                   canEdit, isBusy, closeLoginScreen,
                     isAttachmentScreenOpen;
 
     protected ModulePermission                          userPermission;
@@ -271,7 +273,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
-    protected SystemVariableDO                          domainScriptletVariable;
+    protected SystemVariableDO                          domainScriptletVariable,
+                    attachmentPatternVariable;
 
     protected Integer                                   domainScriptletId;
 
@@ -353,7 +356,53 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 return SampleMeta.getAuxDataValue();
             }
         };
-        attachmentTab = new AttachmentTabUI(this);
+        attachmentTab = new AttachmentTabUI(this) {
+            @Override
+            public int count() {
+                if (manager != null)
+                    return manager.attachment.count();
+                return 0;
+            }
+
+            @Override
+            public AttachmentItemViewDO get(int i) {
+                return manager.attachment.get(i);
+            }
+
+            @Override
+            public String getAttachmentCreatedDateMetaKey() {
+                return SampleMeta.getAttachmentItemAttachmentCreatedDate();
+            }
+
+            @Override
+            public String getAttachmentSectionIdKey() {
+                return SampleMeta.getAttachmentItemAttachmentSectionId();
+            }
+
+            @Override
+            public String getAttachmentDescriptionKey() {
+                return SampleMeta.getAttachmentItemAttachmentDescription();
+            }
+
+            @Override
+            public AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
+                AttachmentItemViewDO atti;
+
+                atti = manager.attachment.add();
+                atti.setId(manager.getNextUID());
+                atti.setAttachmentId(att.getId());
+                atti.setAttachmentCreatedDate(att.getCreatedDate());
+                atti.setAttachmentSectionId(att.getSectionId());
+                atti.setAttachmentDescription(att.getDescription());
+
+                return atti;
+            }
+
+            @Override
+            public void remove(int i) {
+                manager.attachment.remove(i);
+            }
+        };
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -1731,6 +1780,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        auxDataTab.setCanQuery(true);
+
         addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 attachmentTab.onDataChange();
@@ -1749,7 +1804,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
          * querying by this tab is allowed on this screen, but not on all
          * screens
          */
-        auxDataTab.setCanQuery(true);
+        attachmentTab.setCanQuery(true);
 
         /*
          * add shortcuts to select the tabs on the screen by using the Ctrl key
@@ -2057,6 +2112,13 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                displayAttachment(event.getId(), event.getIsSameWindow());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
@@ -2070,9 +2132,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                          * update state and may not close
                          */
                         event.cancel();
-                        closeScreen = true;
+                        closeLoginScreen = true;
                         attachmentScreen.getWindow().close();
-                        closeScreen = false;
+                        closeLoginScreen = false;
                     } else {
                         /*
                          * make sure that all detached tabs are closed when the
@@ -2166,7 +2228,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 public void success(SampleManager1 result) {
                     previousManager = manager;
                     manager = result;
-                    if (attachmentScreen != null)
+                    if (isAttachmentScreenOpen)
                         addReservedAttachment();
                     cache = new HashMap<String, Object>();
                     addScriptlet(null);
@@ -2494,80 +2556,99 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         SampleService1.get().duplicate(manager.getSample().getId(), duplicateCall);
     }
 
-    private void fromTRF() {
+    /**
+     * If the checkbox of the menu item "From TRF" is checked, then opens the
+     * Attachment screen and executes the query to fetch unattached attachments
+     * for this domain, if it's unchecked then closes that screen if it's open.
+     */
+    protected void fromTRF() {
         org.openelis.ui.widget.Window window;
 
-        if (fromTRF.isChecked()) {
+        if ( !fromTRF.isChecked()) {
             /*
-             * if the user checks the checkbox for showing attachment screen
-             * then open the attachment screen if it's closed
+             * the user unchecked the checkbox for showing Attachment screen, so
+             * try to close that screen if it's open, but recheck the checkbox
+             * to make sure that if the screen can't be closed due to some
+             * record locked on it, the checkbox doesn't stay unchecked
              */
-
-            try {
-                if (attachmentScreen == null) {
-                    attachmentScreen = new AttachmentScreenUI() {
-                        @Override
-                        public boolean isDataEntry() {
-                            return true;
-                        }
-
-                        @Override
-                        public void search() {
-                            QueryData field;
-
-                            query = new Query();
-                            field = new QueryData();
-                            field.setQuery("%");
-                            query.setFields(field);
-                            query.setRowsPerPage(ROWS_PER_PAGE);
-                            isNewQuery = true;
-                            isLoadedFromQuery = true;
-                            managers = null;
-
-                            executeQuery(query);
-                        }
-
-                        @Override
-                        public void searchSuccessful() {
-                            attachmentSearchSuccessful();
-                        }
-                    };
-                }
-
-                window = new org.openelis.ui.widget.Window();
-                window.setName(Messages.get().attachment_attachment());
-                window.setSize("782px", "521px");
-                attachmentScreen.setWindow(window);
-                window.setContent(attachmentScreen);
-                OpenELIS.getBrowser().addWindow(window, "attachment");
-                isAttachmentScreenOpen = true;
-
-                attachmentScreen.search();
-                window.addCloseHandler(new CloseHandler<WindowInt>() {
-                    @Override
-                    public void onClose(CloseEvent<WindowInt> event) {
-                        isAttachmentScreenOpen = false;
-                        if (closeScreen)
-                            /*
-                             * the main screen needs to be closed because it is
-                             * waiting for attachment screen to be closed
-                             */
-                            screen.window.close();
-                        else
-                            fromTRF.setCheck(false);
-                    }
-                });
-            } catch (Throwable e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        } else {
-            /*
-             * if the user unchecks the checkbox for showing attachment screen
-             * then close the attachment screen if it's open
-             */
+            fromTRF.setCheck(true);
             if (attachmentScreen != null)
                 attachmentScreen.getWindow().close();
+            return;
+        }
+
+        try {
+            /*
+             * get the system variable that specifies the pattern for finding
+             * this domain's TRFs
+             */
+            if (attachmentPatternVariable == null)
+                attachmentPatternVariable = SystemVariableService.get()
+                                                                 .fetchByExactName("pattern_attachment_env");
+            
+            /*
+             * the user checked the checkbox for showing attachment screen, so
+             * open that screen if it's closed
+             */
+            if (attachmentScreen == null) {
+                attachmentScreen = new AttachmentScreenUI() {
+                    @Override
+                    public boolean isDataEntry() {
+                        return true;
+                    }
+
+                    @Override
+                    public void search() {
+                        QueryData field;
+
+                        /*
+                         * query for the TRFs for this domain
+                         */
+                        query = new Query();
+                        field = new QueryData();
+                        field.setQuery(attachmentPatternVariable.getValue());
+                        query.setFields(field);
+                        query.setRowsPerPage(ROWS_PER_PAGE);
+                        isNewQuery = true;
+                        isLoadedFromQuery = true;
+                        managers = null;
+
+                        executeQuery(query);
+                    }
+
+                    @Override
+                    public void searchSuccessful() {
+                        attachmentSearchSuccessful();
+                    }
+                };
+            }
+
+            window = new org.openelis.ui.widget.Window();
+            window.setName(Messages.get().attachment_attachment());
+            window.setSize("782px", "521px");
+            attachmentScreen.setWindow(window);
+            window.setContent(attachmentScreen);
+            OpenELIS.getBrowser().addWindow(window, "attachment");
+            isAttachmentScreenOpen = true;
+
+            attachmentScreen.search();
+            window.addCloseHandler(new CloseHandler<WindowInt>() {
+                @Override
+                public void onClose(CloseEvent<WindowInt> event) {
+                    isAttachmentScreenOpen = false;
+                    if (closeLoginScreen)
+                        /*
+                         * the login screen needs to be closed because it is
+                         * waiting for Attachment screen to be closed
+                         */
+                        screen.window.close();
+                    else
+                        fromTRF.setCheck(false);
+                }
+            });
+        } catch (Throwable e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -2839,7 +2920,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         sampleNotesTab.setData(manager);
         storageTab.setData(manager);
         qaEventTab.setData(manager);
-        attachmentTab.setData(manager);
     }
 
     /**
@@ -3033,6 +3113,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         runScriptlet(null, null, operation);
     }
 
+    /**
+     * Gets the next attachment reserved for the current user on Attachment
+     * screen, if any, and adds it to the sample
+     */
     private void addReservedAttachment() {
         AttachmentManager am;
         AttachmentDO att;
@@ -3053,6 +3137,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
     }
 
+    /**
+     * If the screen is in Add state then gets the next attachment reserved for
+     * the current user on Attachment screen, if any, and adds it to the sample.
+     */
     private void attachmentSearchSuccessful() {
         if (isState(ADD)) {
             /*
@@ -3786,24 +3874,59 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     }
 
     /**
+     * Opens the file linked to the attachment on the selected row in the table
+     * showing the sample's attachment items. If isSameWindow is true then the
+     * file is opened in the same browser window/tab as before, otherwise it's
+     * opened in a different one.
+     */
+    private void displayAttachment(Integer id, boolean isSameWindow) {
+        String name;
+
+        /*
+         * if isSameWindow is true then the name passed to displayAttachment is
+         * this screen's window's title because ReportScreen sets that as the
+         * title of the window passed to it, so if the name is not the same,
+         * then the screen's window's title will get changed
+         */
+        name = isSameWindow ? Messages.get().sampleEnvironmental_login() : null;
+        try {
+            AttachmentUtil.displayAttachment(id, name, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
      * Adds the tests/panels in the list to the sample; shows any errors found
      * while adding the tests or the popup for selecting additional prep/reflex
      * tests
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
+        int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
         ValidationErrorsList errors;
 
         setBusy();
         try {
+            numAuxBef = manager.auxData.count();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            numAuxAft = manager.auxData.count();
             setData();
             setState(state);
             /*
              * notify the tabs that some new tests have been added
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
+            if (numAuxAft > numAuxBef) {
+                /*
+                 * the number of aux data after adding the tests is more than
+                 * the ones before, so it means that a panel was added which
+                 * linked to some aux groups, so notify the tabs
+                 */
+                bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
+            }
             clearStatus();
             /*
              * show any validation errors encountered while adding the tests or

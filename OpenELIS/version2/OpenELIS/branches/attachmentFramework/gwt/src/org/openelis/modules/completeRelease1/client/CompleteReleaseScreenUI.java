@@ -20,6 +20,8 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -37,6 +39,8 @@ import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -51,6 +55,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
@@ -205,6 +210,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     @UiField(provided = true)
     protected AuxDataTabUI                     auxDataTab;
 
+    @UiField(provided = true)
+    protected AttachmentTabUI                  attachmentTab;
+
     protected SampleManager1                   manager;
 
     protected HashMap<Integer, SampleManager1> managers;
@@ -238,11 +246,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.SINGLERESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET                   };
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
 
     protected enum Tabs {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
-        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
+        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
+        ATTACHMENT, BLANK
     };
 
     /**
@@ -321,6 +330,53 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             @Override
             public String getValueMetaKey() {
                 return SampleMeta.getAuxDataValue();
+            }
+        };
+        attachmentTab = new AttachmentTabUI(this) {
+            @Override
+            public int count() {
+                if (manager != null)
+                    return manager.attachment.count();
+                return 0;
+            }
+
+            @Override
+            public AttachmentItemViewDO get(int i) {
+                return manager.attachment.get(i);
+            }
+
+            @Override
+            public String getAttachmentCreatedDateMetaKey() {
+                return SampleMeta.getAttachmentItemAttachmentCreatedDate();
+            }
+
+            @Override
+            public String getAttachmentSectionIdKey() {
+                return SampleMeta.getAttachmentItemAttachmentSectionId();
+            }
+
+            @Override
+            public String getAttachmentDescriptionKey() {
+                return SampleMeta.getAttachmentItemAttachmentDescription();
+            }
+
+            @Override
+            public AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
+                AttachmentItemViewDO atti;
+
+                atti = manager.attachment.add();
+                atti.setId(manager.getNextUID());
+                atti.setAttachmentId(att.getId());
+                atti.setAttachmentCreatedDate(att.getCreatedDate());
+                atti.setAttachmentSectionId(att.getSectionId());
+                atti.setAttachmentDescription(att.getDescription());
+
+                return atti;
+            }
+
+            @Override
+            public void remove(int i) {
+                manager.attachment.remove(i);
             }
         };
 
@@ -965,6 +1021,25 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          */
         auxDataTab.setCanQuery(false);
 
+        addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                attachmentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                attachmentTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return attachmentTab.getQueryFields();
+            }
+        });
+
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        attachmentTab.setCanQuery(false);
+
         /*
          * handlers for the events fired by the tabs
          */
@@ -1052,6 +1127,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     if (screen != event.getSource())
                         removeAuxGroups(event.getGroupIds());
                 }
+            }
+        });
+
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                displayAttachment(event.getId(), event.getIsSameWindow());
             }
         });
 
@@ -1157,14 +1239,15 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         }
 
         /*
-         * for update the data for all analyses is fetched and not just for the
+         * for update, the data for all analyses is fetched and not just for the
          * once that were returned by the initial query
          */
         SampleManager1.Load elements[] = {SampleManager1.Load.ANALYSISUSER,
                         SampleManager1.Load.AUXDATA, SampleManager1.Load.NOTE,
                         SampleManager1.Load.ORGANIZATION, SampleManager1.Load.PROJECT,
                         SampleManager1.Load.QA, SampleManager1.Load.RESULT,
-                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET};
+                        SampleManager1.Load.STORAGE, SampleManager1.Load.WORKSHEET,
+                        SampleManager1.Load.ATTACHMENT};
 
         SampleService1.get().fetchForUpdate(manager.getSample().getId(),
                                             elements,
@@ -1712,62 +1795,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             queryByWorksheetLookup = new QueryByWorksheetLookupUI() {
                 @Override
                 public void ok() {
-                    int i, j;
-                    WorksheetItemDO wi;
-                    WorksheetAnalysisViewDO wa;
-                    WorksheetManager1 wm;
-                    ArrayList<Integer> ids;
-                    
-                    // TODO extract this to a different method after fetch
-                    // starts working
-                    manager = null;
-                    managers = null;
-                    showTabs(Tabs.BLANK);
-                    setData();
-                    setState(DEFAULT);
-                    table.setModel(getTableModel(null));
-                    fireDataChange();
-                    bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
-                                                                                         null));
-                    lastAccession = null;
-
-                    screen.setBusy(Messages.get().gen_querying());
-                    try {
-                        /*
-                         * fetch the worksheet specified by the user and find
-                         * out if there are any analyses linked to it
-                         */
-                        wm = WorksheetService1.get()
-                                              .fetchById(queryByWorksheetLookup.getWorksheetId(),
-                                                         WorksheetManager1.Load.DETAIL);
-                        if (wm == null) {
-                            noRecordsFound();
-                            return;
-                        }
-                        
-                        ids = new ArrayList<Integer>();
-                        for (i = 0; i < wm.item.count(); i++ ) {
-                            wi = wm.item.get(i);
-                            for (j = 0; j < wm.analysis.count(wi); j++ ) {
-                                wa = wm.analysis.get(wi, j);
-                                if (wa.getAnalysisId() != null)
-                                    ids.add(wa.getAnalysisId());
-                            }
-                        }
-
-                        /*
-                         * if there are any analyses linked to the worksheet
-                         * then fetch and show them; otherwise clear the screen
-                         */
-                        if (ids.size() > 0)
-                            SampleService1.get().fetchByAnalyses(ids, elements, getQueryCallBack());
-                        else
-                            noRecordsFound();
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                        setError(Messages.get().gen_queryFailed());
-                    }
+                    queryByWorksheet(queryByWorksheetLookup.getWorksheetId());
                 }
 
                 @Override
@@ -2138,7 +2166,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                      Tabs.SAMPLE_NOTES,
                      Tabs.STORAGE,
                      Tabs.QA_EVENTS,
-                     Tabs.AUX_DATA);
+                     Tabs.AUX_DATA,
+                     Tabs.ATTACHMENT);
 
             /*
              * show notifications on the header of the tabs
@@ -2149,6 +2178,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             setTabNotification(Tabs.STORAGE, sm, ana);
             setTabNotification(Tabs.QA_EVENTS, sm, ana);
             setTabNotification(Tabs.AUX_DATA, sm, ana);
+            setTabNotification(Tabs.ATTACHMENT, sm, ana);
         }
 
         fireDataChange();
@@ -2217,6 +2247,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 break;
             case AUX_DATA:
                 count1 = sm.auxData.count();
+                if (count1 > 0)
+                    label = String.valueOf(count1);
+                break;
+            case ATTACHMENT:
+                count1 = sm.attachment.count();
                 if (count1 > 0)
                     label = String.valueOf(count1);
                 break;
@@ -2584,6 +2619,64 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * If there are any analyses linked to the worksheet specified by the passed
+     * id then fetches and shows them; otherwise clears the screen
+     */
+    private void queryByWorksheet(Integer worksheetId) {
+        int i, j;
+        WorksheetItemDO wi;
+        WorksheetAnalysisViewDO wa;
+        WorksheetManager1 wm;
+        ArrayList<Integer> ids;
+
+        manager = null;
+        managers = null;
+        showTabs(Tabs.BLANK);
+        setData();
+        setState(DEFAULT);
+        table.setModel(getTableModel(null));
+        fireDataChange();
+        bus.fireEvent(new org.openelis.modules.sample1.client.SelectionEvent(SelectedType.NONE,
+                                                                             null));
+        lastAccession = null;
+
+        setBusy(Messages.get().gen_querying());
+        try {
+            /*
+             * fetch the worksheet specified by the user and find out if there
+             * are any analyses linked to it
+             */
+            wm = WorksheetService1.get().fetchById(worksheetId, WorksheetManager1.Load.DETAIL);
+            if (wm == null) {
+                noRecordsFound();
+                return;
+            }
+
+            ids = new ArrayList<Integer>();
+            for (i = 0; i < wm.item.count(); i++ ) {
+                wi = wm.item.get(i);
+                for (j = 0; j < wm.analysis.count(wi); j++ ) {
+                    wa = wm.analysis.get(wi, j);
+                    if (wa.getAnalysisId() != null)
+                        ids.add(wa.getAnalysisId());
+                }
+            }
+
+            /*
+             * fetch and show the analyses, if any; otherwise clear the screen
+             */
+            if (ids.size() > 0)
+                SampleService1.get().fetchByAnalyses(ids, elements, getQueryCallBack());
+            else
+                noRecordsFound();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            setError(Messages.get().gen_queryFailed());
+        }
+    }
+
+    /**
      * changes the accession number of the sample to the passed value if it is
      * valid for the sample, otherwise shows the validation error
      */
@@ -2673,6 +2766,30 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Opens the file linked to the attachment on the selected row in the table
+     * showing the sample's attachment items. If isSameWindow is true then the
+     * file is opened in the same browser window/tab as before, otherwise it's
+     * opened in a different one.
+     */
+    private void displayAttachment(Integer id, boolean isSameWindow) {
+        String name;
+
+        /*
+         * if isSameWindow is true then the name passed to displayAttachment is
+         * this screen's window's title because ReportScreen sets that as the
+         * title of the window passed to it, so if the name is not the same,
+         * then the screen's window's title will get changed
+         */
+        name = isSameWindow ? Messages.get().completeRelease_completeAndRelease() : null;
+        try {
+            AttachmentUtil.displayAttachment(id, name, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
      * returns the ids of all analyses in the table, belonging to the sample
      * with this id
      */
@@ -2701,13 +2818,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * tests
      */
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
+        int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
         ValidationErrorsList errors;
-        
+
         setBusy();
         try {
+            numAuxBef = manager.auxData.count();
             ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
+            numAuxAft = manager.auxData.count();
             managers.put(manager.getSample().getId(), manager);
             setData();
             setState(state);
@@ -2715,6 +2835,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              * notify the tabs that some new tests have been added
              */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
+            if (numAuxAft > numAuxBef) {
+                /*
+                 * the number of aux data after adding the tests is more than
+                 * the ones before, so it means that a panel was added which
+                 * linked to some aux groups, so notify the tabs
+                 */
+                bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
+            }
             clearStatus();
             /*
              * show any validation errors encountered while adding the tests or

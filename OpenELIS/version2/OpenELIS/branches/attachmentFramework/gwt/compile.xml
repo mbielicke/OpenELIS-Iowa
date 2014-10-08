@@ -118,6 +118,7 @@
 		
 		<!-- Compile of OpenELIS-EJB -->
 		<javac includeantruntime="false" srcdir="../OpenELIS-EJB/src:../OpenELIS-Common/src/org/openelis/domain:../OpenELIS-Common/src/org/openelis/constants:../OpenELIS-Common/src/org/openelis/manager:../OpenELIS-Common/src/org/openelis/utilcommon:../OpenELIS-Common/src/org/openelis/meta:../OpenELIS-Common/src/org/openelis/exception:../OpenELIS-GWT/src/org/openelis/cache" includes="**" encoding="utf-8" destdir="../OpenELIS-EJB/bin" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source">
+			<exclude name="org/openelis/stfu/**/*"/>
             <classpath refid="ejb.class.path"/>
 	    </javac>
 		

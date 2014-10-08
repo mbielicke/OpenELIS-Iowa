@@ -20,6 +20,8 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -36,6 +38,8 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -50,6 +54,7 @@ import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
@@ -193,6 +198,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     @UiField(provided = true)
     protected AuxDataTabUI                               auxDataTab;
 
+    @UiField(provided = true)
+    protected AttachmentTabUI                            attachmentTab;
+
     protected SampleManager1                             manager;
 
     protected HashMap<Integer, SampleManager1>           managers;
@@ -235,16 +243,18 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.NOTE, SampleManager1.Load.ORGANIZATION,
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
-                    SampleManager1.Load.WORKSHEET                      };
+                    SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
 
     protected static final String                        SAMPLE_LEAF   = "sample",
                     SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis",
                     STORAGE_LEAF = "storage", NOTE_LEAF = "note", QA_EVENT_LEAF = "qaEvent",
-                    AUX_DATA_LEAF = "auxData", RESULT_LEAF = "result";
+                    AUX_DATA_LEAF = "auxData", RESULT_LEAF = "result",
+                    ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
         SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
-        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA, BLANK
+        ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
+        ATTACHMENT, BLANK
     };
 
     /**
@@ -332,6 +342,53 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             @Override
             public String getValueMetaKey() {
                 return SampleMeta.getAuxDataValue();
+            }
+        };
+        attachmentTab = new AttachmentTabUI(this) {
+            @Override
+            public int count() {
+                if (manager != null)
+                    return manager.attachment.count();
+                return 0;
+            }
+
+            @Override
+            public AttachmentItemViewDO get(int i) {
+                return manager.attachment.get(i);
+            }
+
+            @Override
+            public String getAttachmentCreatedDateMetaKey() {
+                return SampleMeta.getAttachmentItemAttachmentCreatedDate();
+            }
+
+            @Override
+            public String getAttachmentSectionIdKey() {
+                return SampleMeta.getAttachmentItemAttachmentSectionId();
+            }
+
+            @Override
+            public String getAttachmentDescriptionKey() {
+                return SampleMeta.getAttachmentItemAttachmentDescription();
+            }
+
+            @Override
+            public AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
+                AttachmentItemViewDO atti;
+
+                atti = manager.attachment.add();
+                atti.setId(manager.getNextUID());
+                atti.setAttachmentId(att.getId());
+                atti.setAttachmentCreatedDate(att.getCreatedDate());
+                atti.setAttachmentSectionId(att.getSectionId());
+                atti.setAttachmentDescription(att.getDescription());
+
+                return atti;
+            }
+
+            @Override
+            public void remove(int i) {
+                manager.attachment.remove(i);
             }
         };
 
@@ -1054,6 +1111,26 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          */
         auxDataTab.setCanQuery(true);
 
+        addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                attachmentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                attachmentTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return attachmentTab.getQueryFields();
+            }
+        });
+        
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        attachmentTab.setCanQuery(true);
+
         /*
          * handlers for the events fired by the tabs
          */
@@ -1150,6 +1227,13 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                displayAttachment(event.getId(), event.getIsSameWindow());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
@@ -1205,7 +1289,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                  Tab.CLINICAL,
                  Tab.SAMPLE_ITEM,
                  Tab.ANALYSIS,
-                 Tab.AUX_DATA);
+                 Tab.AUX_DATA,
+                 Tab.ATTACHMENT);
         setData();
         evaluateEdit();
         setState(QUERY);
@@ -2354,6 +2439,11 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * aux data
          */
         node.add(createAuxDataNode(sm, sdata));
+        
+        /*
+         * attachments
+         */
+        node.add(createAttachmentNode(sm, sdata));
     }
 
     /**
@@ -2734,7 +2824,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Creates a node for qa event and sets the passed UUID as its data
+     * Creates a node for aux data and sets the passed UUID as its data
      */
     private Node createAuxDataNode(SampleManager1 sm, UUID data) {
         int i, count;
@@ -2768,6 +2858,35 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         if (count > 0)
             sb.append("]");
+
+        node.setCell(0, sb.toString());
+        node.setData(data);
+        return node;
+    }
+    
+    /**
+     * Creates a node for attachment and sets the passed UUID as its data
+     */
+    private Node createAttachmentNode(SampleManager1 sm, UUID data) {
+        int count;
+        Node node;
+        StringBuilder sb;
+
+        node = new Node(1);
+        node.setType(ATTACHMENT_LEAF);
+
+        sb = new StringBuilder();
+        sb.append(Messages.get().attachment_attachment());
+
+        /*
+         * show the number of attachments added to the sample
+         */
+        count = sm.attachment.count();
+        if (count > 0) {
+            sb.append(" [");
+            sb.append(count);
+            sb.append("]");
+        }
 
         node.setCell(0, sb.toString());
         node.setData(data);
@@ -2859,6 +2978,11 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
              * show aux data
              */
             tabs.add(Tab.AUX_DATA);
+        } else if (ATTACHMENT_LEAF.equals(selection.getType())) {
+            /*
+             * show attachments
+             */
+            tabs.add(Tab.ATTACHMENT);
         }
 
         showTabs(tabs);
@@ -3039,6 +3163,30 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         clearStatus();
+    }
+
+    /**
+     * Opens the file linked to the attachment on the selected row in the table
+     * showing the sample's attachment items. If isSameWindow is true then the
+     * file is opened in the same browser window/tab as before, otherwise it's
+     * opened in a different one.
+     */
+    private void displayAttachment(Integer id, boolean isSameWindow) {
+        String name;
+
+        /*
+         * if isSameWindow is true then the name passed to displayAttachment is
+         * this screen's window's title because ReportScreen sets that as the
+         * title of the window passed to it, so if the name is not the same,
+         * then the screen's window's title will get changed
+         */
+        name = isSameWindow ? Messages.get().sampleTracking_tracking() : null;
+        try {
+            AttachmentUtil.displayAttachment(id, name, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     /**

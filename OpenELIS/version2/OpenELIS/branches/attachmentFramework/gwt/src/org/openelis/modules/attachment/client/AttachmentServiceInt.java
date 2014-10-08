@@ -27,8 +27,10 @@ package org.openelis.modules.attachment.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AttachmentDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -49,6 +51,8 @@ public interface AttachmentServiceInt extends RemoteService {
     public ArrayList<AttachmentManager> fetchUnattachedByDescription(String description, int first, int max) throws Exception;
 
     public AttachmentManager fetchForUpdate(Integer attachmentId) throws Exception;
+    
+    public ArrayList<AttachmentDO> query(Query query) throws Exception;
     
     public AttachmentManager getReserved(Integer attachmentId) throws Exception;
 
