@@ -189,7 +189,7 @@ public class RequestformReportBean {
         JRExporter jexport;
 
         jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
+        path = ReportUtil.createTempFile("order", ".pdf", systemVariableDirectory);
         jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
         jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
         jexport.exportReport();

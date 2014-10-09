@@ -249,8 +249,6 @@ public class SampleInhouseReportBean {
             con = ReportUtil.getConnection(ctx);
             url = ReportUtil.getResourceURL("org/openelis/report/inhouse/main.jasper");
 
-            path = ReportUtil.createTempFile("inhouse", ".pdf", null);
-
             jparam = new HashMap<String, Object>();
             jparam.put("FROM", fromDate);
             jparam.put("TO", toDate);

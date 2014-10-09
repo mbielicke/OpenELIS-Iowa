@@ -481,7 +481,7 @@ public class QcChartScreen extends Screen {
         }
 
         row = qcName.getSelection();
-        if (row != null && row.key != null) {
+        if (row != null && row.data != null) {
             qd = new QueryData();
             qd.setKey(QcChartMeta.getQCType());
             qd.setQuery(((Integer)row.data).toString());

@@ -211,8 +211,6 @@ public class QASummaryReportBean {
             url = ReportUtil.getResourceURL("org/openelis/report/qasummary/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            path = ReportUtil.createTempFile("qasummary", ".pdf", null);
-
             jparam = new HashMap<String, Object>();
             jparam.put("BEGIN_ENTERED", fromDate);
             jparam.put("END_ENTERED", toDate);
