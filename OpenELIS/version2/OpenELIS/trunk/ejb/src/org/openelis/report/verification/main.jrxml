@@ -169,9 +169,7 @@ ORDER BY
 				<text><![CDATA[Order#:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="orderNumber" mode="Transparent" x="434" y="0" width="60" height="12" backcolor="#FFFFFF">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="orderNumber" mode="Transparent" x="434" y="0" width="60" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
@@ -234,7 +232,7 @@ ORDER BY
 				<text><![CDATA[Client Reference:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="clientReference" mode="Transparent" x="435" y="12" width="120" height="12" backcolor="#FFFFFF"/>
+				<reportElement key="clientReference" mode="Transparent" x="434" y="12" width="120" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
