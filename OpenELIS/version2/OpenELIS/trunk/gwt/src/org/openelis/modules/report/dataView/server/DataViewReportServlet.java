@@ -26,20 +26,24 @@
 package org.openelis.modules.report.dataView.server;
 
 import java.beans.XMLDecoder;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
 import org.openelis.bean.DataViewBean;
 import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.modules.report.dataView.client.DataViewServiceInt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.modules.report.dataView.client.DataViewServiceInt;
 
 @WebServlet("/openelis/dataViewReport")
 public class DataViewReportServlet extends RemoteServlet implements DataViewServiceInt {
@@ -77,23 +81,24 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     }
 
     public DataViewVO openQuery() throws Exception {
-        FileItem temp;
+        List<String> paths;
         HttpSession session;
-        XMLDecoder dec = null;
+        XMLDecoder dec;
+        Path path;
 
+        dec = null;
         session = getThreadLocalRequest().getSession();
-        temp = (FileItem) session.getAttribute("upload");
-        if (temp != null) {
+        paths = (List<String>) session.getAttribute("upload");
+        if (paths != null && paths.size() > 0) {
+            path = Paths.get(paths.get(0));
             try {
-                dec = new XMLDecoder(temp.getInputStream());
+                dec = new XMLDecoder(Files.newInputStream(path));
                 return (DataViewVO)dec.readObject();
             } catch (Exception anyE) {
                 throw serializeForGWT(anyE);
             } finally {
                 if (dec != null)
                     dec.close();
-                if (temp != null)
-                    temp.delete();
                 session.removeAttribute("upload");
             }
         }

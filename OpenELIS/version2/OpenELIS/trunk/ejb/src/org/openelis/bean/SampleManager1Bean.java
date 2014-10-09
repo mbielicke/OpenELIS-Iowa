@@ -46,6 +46,7 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -186,6 +187,9 @@ public class SampleManager1Bean {
 
     @EJB
     private SampleClinicalBean           sampleClinical;
+    
+    @EJB
+    private AttachmentItemBean           attachmentItem;
 
     @EJB
     private DictionaryCacheBean          dictionaryCache;
@@ -336,6 +340,13 @@ public class SampleManager1Bean {
                     setSampleExternalNote(sm, data);
                 else
                     addSampleInternalNote(sm, data);
+            }
+        }
+        
+        if (el.contains(SampleManager1.Load.ATTACHMENT)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
+                addAttachment(sm, data);
             }
         }
 
@@ -554,7 +565,14 @@ public class SampleManager1Bean {
                     addSampleInternalNote(sm, data);
             }
         }
-
+        
+        if (el.contains(SampleManager1.Load.ATTACHMENT)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
+                addAttachment(sm, data);
+            }
+        }
+        
         /*
          * build level 3, everything is based on analysis ids
          */
@@ -1045,6 +1063,8 @@ public class SampleManager1Bean {
                         auxdata.delete( ((AuxDataViewDO)data));
                     else if (data instanceof NoteViewDO)
                         note.delete( ((NoteViewDO)data));
+                    else if (data instanceof AttachmentItemViewDO)
+                        attachmentItem.delete( ((AttachmentItemViewDO)data));
                     else if (data instanceof SampleItemViewDO)
                         item.delete( ((SampleItemViewDO)data));
                     else if (data instanceof AnalysisQaEventViewDO)
@@ -1181,6 +1201,18 @@ public class SampleManager1Bean {
                         note.add(data);
                     } else {
                         note.update(data);
+                    }
+                }
+            }
+            
+            if (getAttachments(sm) != null) {
+                for (AttachmentItemViewDO data : getAttachments(sm)) {
+                    if (data.getId() < 0) {
+                        data.setReferenceTableId(Constants.table().SAMPLE);
+                        data.setReferenceId(getSample(sm).getId());
+                        attachmentItem.add(data);
+                    } else {
+                        attachmentItem.update(data);
                     }
                 }
             }
@@ -1577,6 +1609,7 @@ public class SampleManager1Bean {
                        SampleManager1.Load.QA,
                        SampleManager1.Load.AUXDATA,
                        SampleManager1.Load.NOTE,
+                       SampleManager1.Load.ATTACHMENT,
                        SampleManager1.Load.RESULT);
 
         accession = getSample(sm).getAccessionNumber();
@@ -1722,6 +1755,13 @@ public class SampleManager1Bean {
         }
 
         setSampleInternalNotes(sm, null);
+        
+        if (getAttachments(sm) != null) {
+            for (AttachmentItemViewDO data : getAttachments(sm)) {
+                data.setId(sm.getNextUID());
+                data.setReferenceId(null);
+            }
+        }
 
         /*
          * level 2: everything is based on item ids

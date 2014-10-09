@@ -31,6 +31,8 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
+import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
@@ -193,6 +195,20 @@ public class SampleManager1Accessor {
         if (sm.sampleIntNotes == null)
             sm.sampleIntNotes = new ArrayList<NoteViewDO>();
         sm.sampleIntNotes.add(sampleInternalNote);
+    }
+    
+    public static ArrayList<AttachmentItemViewDO> getAttachments(SampleManager1 sm) {
+        return sm.attachments;
+    }
+    
+    public static void setAttachments(SampleManager1 sm, ArrayList<AttachmentItemViewDO> attachments) {
+        sm.attachments = attachments;
+    }
+    
+    public static void addAttachment(SampleManager1 sm, AttachmentItemViewDO attachment) {
+        if (sm.attachments == null)
+            sm.attachments = new ArrayList<AttachmentItemViewDO>();
+        sm.attachments.add(attachment);
     }
 
     public static ArrayList<SampleItemViewDO> getItems(SampleManager1 sm) {

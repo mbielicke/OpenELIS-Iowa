@@ -44,7 +44,7 @@
             </w:display>
             <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
               display="{msg.gen_duplicateRecord}" />
-            <!-- <html>&lt;hr/&gt;</html> -->
+            <w:CheckMenuItem ui:field="fromTRF" display="{msg.sample_fromTRF}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"
             >
@@ -109,7 +109,8 @@
                   <ui:text from="{msg.sample_received}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" required="true" />
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4"
+                    required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_status}:" />
@@ -142,13 +143,13 @@
                         <g:HorizontalPanel>
                           <w:TextBox ui:field="patientId" width="50px" field="Integer" />
                           <w:Button ui:field="emptySearchButton" leftIcon="{res.icon.QueryButtonImage}"
-                            text="" css="{res.FormFieldButton}" tip="{msg.patient_fullWindowSearch}"/>
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_fullWindowSearch}" />
                           <w:Button ui:field="fieldSearchButton" leftIcon="{res.icon.refreshButtonImage}"
-                            text="" css="{res.FormFieldButton}" tip="{msg.patient_searchByFields}"/>
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_searchByFields}" />
                           <w:Button ui:field="unlinkPatientButton" leftIcon="{res.icon.DeleteButtonImage}"
-                            text="" css="{res.FormFieldButton}" tip="{msg.patient_unlink}"/>
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_unlink}" />
                           <w:Button ui:field="editPatientButton" leftIcon="{res.icon.UpdateButtonImage}"
-                            text="" css="{res.FormFieldButton}" tip="{msg.patient_edit}"/>
+                            text="" css="{res.FormFieldButton}" tip="{msg.patient_edit}" />
                         </g:HorizontalPanel>
                       </td>
                     </tr>
@@ -488,6 +489,16 @@
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <a:AuxDataTabUI ui:field="auxDataTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.attachment_attachment}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AttachmentTabUI ui:field="attachmentTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

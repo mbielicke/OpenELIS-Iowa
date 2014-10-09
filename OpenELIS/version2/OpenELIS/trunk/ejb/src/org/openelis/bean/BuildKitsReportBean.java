@@ -25,8 +25,9 @@
  */
 package org.openelis.bean;
 
-import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -133,7 +134,7 @@ public class BuildKitsReportBean {
         HashMap<String, QueryData> param;
         String lotNumber, orderId, createdDate, expiredDate, kitDesc, specInstr, printer, printstat;
         PrintStream ps;
-        File tempFile;
+        Path path;
 
         /*
          * push status into session so we can query it while the report is
@@ -198,8 +199,8 @@ public class BuildKitsReportBean {
         /*
          * print the labels and send it to printer
          */
-        tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
-        ps = new PrintStream(tempFile);
+        path = ReportUtil.createTempFile("loginlabel", ".txt", null);
+        ps = new PrintStream(Files.newOutputStream(path));
         for (i = startNum; i <= endNum; i++) {
             for (j = 0; j < numLabels; j++) {
                 labelReport.kitLabel(ps,
@@ -216,7 +217,7 @@ public class BuildKitsReportBean {
         }
         ps.close();
 
-        printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, 1);
+        printstat = ReportUtil.print(path, User.getName(ctx), printer, 1, true);
         status.setPercentComplete(100).setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
 
         return status;

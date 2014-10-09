@@ -26,8 +26,9 @@
 package org.openelis.bean;
 
 import java.beans.XMLEncoder;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -283,24 +284,24 @@ public class DataViewBean {
 
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public ReportStatus saveQuery(DataViewVO data) throws Exception {
-        FileOutputStream fos;
-        File tempFile;
+        OutputStream out;
+        Path path;
         ReportStatus status;
         XMLEncoder enc;
 
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("DataViewQuery", status);
-        fos = null;
+        out = null;
         enc = null;
         try {
             status.setMessage("Saving query").setPercentComplete(20);
-            tempFile = File.createTempFile("query", ".xml", new File("/tmp"));
+            path = ReportUtil.createTempFile("query", ".xml", "upload_stream_directory");
 
             status.setPercentComplete(100);
 
-            fos = new FileOutputStream(tempFile);
-            enc = new XMLEncoder(fos);
+            out = Files.newOutputStream(path);
+            enc = new XMLEncoder(out);
             enc.writeObject(data);
             /*
              * the FileOutputStream gets closed by the XMLEncoder, and so we
@@ -308,13 +309,12 @@ public class DataViewBean {
              * exception
              */
             enc.close();
-            tempFile = ReportUtil.saveForUpload(tempFile);
-            status.setMessage(tempFile.getName())
-                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+            status.setMessage(path.getFileName().toString())
+                  .setPath(path.toString())
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
-            if (fos != null)
-                fos.close();
+            if (out != null)
+                out.close();
             if (enc != null)
                 enc.close();
             e.printStackTrace();
@@ -506,8 +506,8 @@ public class DataViewBean {
         boolean excludeResults, excludeAuxData, runForWeb, addSampleCells, addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
         ArrayList<String> allCols, cols;
         ArrayList<Integer> unselAnalytes;
-        FileOutputStream out;
-        File tempFile;
+        OutputStream out;
+        Path path;
         List<DataViewResultFetchVO> resultList, noResAuxList;
         List<DataViewAuxDataFetchVO> auxDataList;
         ArrayList<TestAnalyteDataViewVO> anaList;
@@ -748,16 +748,15 @@ public class DataViewBean {
             out = null;
             try {
                 status.setMessage("Outputing report").setPercentComplete(20);
-                tempFile = File.createTempFile("dataview", ".xls", new File("/tmp"));
+                path = ReportUtil.createTempFile("dataview", ".xls", "upload_stream_directory");
 
                 status.setPercentComplete(100);
 
-                out = new FileOutputStream(tempFile);
+                out = Files.newOutputStream(path);
                 wb.write(out);
                 out.close();
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                status.setMessage(path.getFileName().toString())
+                      .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             } catch (Exception e) {
                 e.printStackTrace();

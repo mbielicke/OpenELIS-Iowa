@@ -32,11 +32,14 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -48,13 +51,17 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "AttachmentItem.FetchById",
-                query = "select new org.openelis.domain.AttachmentItemDO(a.id,a.referenceId,a.referenceTableId," +
-                        "a.attachmentId)"
-                      + " from AttachmentItem a where a.referenceId = :id and a.referenceTableId = :tableId"),
+                query = "select new org.openelis.domain.AttachmentItemDO(ai.id,ai.referenceId,ai.referenceTableId," +
+                        "ai.attachmentId)"
+                      + " from AttachmentItem ai where ai.referenceId = :id and ai.referenceTableId = :tableId"),
    @NamedQuery( name = "AttachmentItem.FetchByIds",
-               query = "select new org.openelis.domain.AttachmentItemDO(a.id,a.referenceId,a.referenceTableId," +
-                       "a.attachmentId)"
-                     + " from AttachmentItem a where a.referenceId in (:id) and a.referenceTableId = :tableId")})                  
+               query = "select new org.openelis.domain.AttachmentItemViewDO(ai.id,ai.referenceId,ai.referenceTableId," +
+                       "ai.attachmentId,a.createdDate,a.sectionId,a.description,'')"
+                     + " from AttachmentItem ai left join ai.attachment a where ai.referenceId in (:ids) and ai.referenceTableId = :tableId"),
+   @NamedQuery( name = "AttachmentItem.FetchByAttachmentIds",
+               query = "select new org.openelis.domain.AttachmentItemViewDO(ai.id,ai.referenceId,ai.referenceTableId," +
+                       "ai.attachmentId,a.createdDate,a.sectionId,a.description,'')"
+                     + " from AttachmentItem ai left join ai.attachment a where ai.attachmentId in (:ids)")})                  
 
 @Entity
 @Table(name = "attachment_item")
@@ -74,6 +81,10 @@ public class AttachmentItem implements Auditable, Cloneable {
 
     @Column(name = "attachment_id")
     private Integer        attachmentId;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attachment_id", insertable = false, updatable = false)
+    private Attachment     attachment;
 
     @Transient
     private AttachmentItem original;
@@ -112,6 +123,14 @@ public class AttachmentItem implements Auditable, Cloneable {
     public void setAttachmentId(Integer attachmentId) {
         if (DataBaseUtil.isDifferent(attachmentId, this.attachmentId))
             this.attachmentId = attachmentId;
+    }
+
+    public Attachment getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Attachment attachment) {
+        this.attachment = attachment;
     }
 
     public void setClone() {

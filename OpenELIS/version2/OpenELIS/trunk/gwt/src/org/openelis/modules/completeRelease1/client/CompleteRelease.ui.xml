@@ -12,7 +12,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-  xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"  
+  xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -41,7 +41,7 @@
               <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
                 rightIcon="{res.icon.OptionsButtonImage}" />
             </w:display>
-            <w:MenuItem ui:field="unreleaseAnalysis"  icon="{res.icon.unreleaseIcon}"
+            <w:MenuItem ui:field="unreleaseAnalysis" icon="{res.icon.unreleaseIcon}"
               display="{msg.completeRelease_unrelease}" />
             <w:CheckMenuItem ui:field="previewFinalReport" display="{msg.finalreport_preview}" />
             <w:MenuItem ui:field="queryByWorksheet" display="{msg.completeRelease_queryByWorksheet}" />
@@ -61,7 +61,8 @@
               <w:MenuItem ui:field="historyAuxData" display="{msg.aux_data}" />
             </w:Menu>
           </w:Menu>
-          <w:Button css="{res.buttonPanel}" ui:field="details" leftIcon="{res.icon.fieldLookupIcon}" text="{msg.gen_details}" />
+          <w:Button css="{res.buttonPanel}" ui:field="details" leftIcon="{res.icon.fieldLookupIcon}"
+            text="{msg.gen_details}" />
         </g:HorizontalPanel>
       </g:AbsolutePanel>
     </g:layer>
@@ -251,6 +252,16 @@
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <a:AuxDataTabUI ui:field="auxDataTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.attachment_attachment}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AttachmentTabUI ui:field="attachmentTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

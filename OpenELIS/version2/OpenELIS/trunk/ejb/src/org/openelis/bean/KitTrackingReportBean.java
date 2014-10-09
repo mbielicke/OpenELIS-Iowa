@@ -25,9 +25,9 @@
  */
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,7 +158,7 @@ public class KitTrackingReportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         URL url;
-        File tempFile;
+        Path path;
         HashMap<String, QueryData> param;
         HashMap<String, Object> jparam;
         Connection con;
@@ -194,26 +194,26 @@ public class KitTrackingReportBean {
         if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
             throw new InconsistencyException("You must specify From Date and To Date for this report");
 
-        if (!DataBaseUtil.isEmpty(section))
+        if ( !DataBaseUtil.isEmpty(section))
             section = " and o.id in (select ot.order_id from order_test ot, test t," +
                       " test_section ts where ot.test_id = t.id and ts.test_id = t.id" +
                       " and ot.order_id = o.id and ts.section_id " + section + ")";
         else
             section = "";
 
-        if (!DataBaseUtil.isEmpty(shipFrom))
+        if ( !DataBaseUtil.isEmpty(shipFrom))
             shipFrom = " and o.ship_from_id " + shipFrom;
         else
             shipFrom = "";
 
-        if (!DataBaseUtil.isEmpty(shipTo)) {
+        if ( !DataBaseUtil.isEmpty(shipTo)) {
             shipTo = shipTo.replaceAll("\\*", "%");
             shipTo = " and ship_to.name like '" + shipTo + "'";
         } else {
             shipTo = "";
         }
 
-        if (!DataBaseUtil.isEmpty(reportTo)) {
+        if ( !DataBaseUtil.isEmpty(reportTo)) {
             reportTo = reportTo.replaceAll("\\*", "%");
             reportTo = " and o.id in (select oo2.order_id from order_organization oo2," +
                        " organization o2 where oo2.order_id = o.id and oo2.organization_id = o2.id" +
@@ -223,19 +223,19 @@ public class KitTrackingReportBean {
             reportTo = "";
         }
 
-        if (!DataBaseUtil.isEmpty(description)) {
+        if ( !DataBaseUtil.isEmpty(description)) {
             description = description.replaceAll("\\*", "%");
             description = " and o.description like '" + description + "'";
         } else {
             description = "";
         }
 
-        if (!DataBaseUtil.isEmpty(orderStatus))
+        if ( !DataBaseUtil.isEmpty(orderStatus))
             orderStatus = " and o.status_id = " + orderStatus;
         else
             orderStatus = "";
 
-        if (!DataBaseUtil.isEmpty(sortBy))
+        if ( !DataBaseUtil.isEmpty(sortBy))
             sortBy = " order by " + sortBy;
         else
             sortBy = "";
@@ -250,8 +250,6 @@ public class KitTrackingReportBean {
             url = ReportUtil.getResourceURL("org/openelis/report/kitTracking/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("kitTracking", ".xls", new File("/tmp"));
-
             jparam = new HashMap<String, Object>();
             jparam.put("FROM_DATE", frDate);
             jparam.put("TO_DATE", tDate);
@@ -265,24 +263,22 @@ public class KitTrackingReportBean {
             jparam.put("SORT_BY", sortBy);
             jparam.put("SUBREPORT_DIR", dir);
 
-            status.setMessage("Loading report");
+            status.setMessage("Outputing report").setPercentComplete(20);
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
 
             jexport = new JRXlsExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+            path = ReportUtil.createTempFile("kitTracking", ".xls", "upload_stream_directory");
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
 
             jexport.exportReport();
 
             status.setPercentComplete(100);
 
-            tempFile = ReportUtil.saveForUpload(tempFile);
-            status.setMessage(tempFile.getName())
-                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+            status.setMessage(path.getFileName().toString())
+                  .setPath(path.toString())
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             e.printStackTrace();

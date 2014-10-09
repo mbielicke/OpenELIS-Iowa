@@ -44,7 +44,7 @@
             </w:display>
             <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
               display="{msg.gen_duplicateRecord}" />
-            <!-- <html>&lt;hr/&gt;</html> -->
+            <w:CheckMenuItem ui:field="fromTRF" display="{msg.sample_fromTRF}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"
             >
@@ -110,7 +110,8 @@
                   <ui:text from="{msg.sample_received}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" required="true" />
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4"
+                    required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_status}:" />
@@ -396,7 +397,7 @@
                     </td>
                     <td>
                       <w:Dropdown ui:field="nextOfKinRelation" width="80px" dropHeight="100px"
-                        field="Integer" required="true"/>
+                        field="Integer" required="true" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.patient_birth}:" />
@@ -477,8 +478,8 @@
                       <ui:text from="{msg.patient_ethnicity}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinEthnicity" width="85px"
-                        dropHeight="75px" dropWidth="100px" field="Integer" />
+                      <w:Dropdown ui:field="nextOfKinEthnicity" width="85px" dropHeight="75px"
+                        dropWidth="100px" field="Integer" />
                     </td>
                   </tr>
                 </table>
@@ -708,6 +709,16 @@
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <a:AuxDataTabUI ui:field="auxDataTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.attachment_attachment}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AttachmentTabUI ui:field="attachmentTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

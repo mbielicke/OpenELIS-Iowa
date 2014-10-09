@@ -44,7 +44,7 @@
             </w:display>
             <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
               display="{msg.gen_duplicateRecord}" />
-            <!-- <html>&lt;hr/&gt;</html> -->
+            <w:CheckMenuItem ui:field="fromTRF" display="{msg.sample_fromTRF}" />
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
               selfShow="true" showBelow="false"
             >
@@ -108,7 +108,8 @@
                   <ui:text from="{msg.sample_received}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" required="true" />
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4"
+                    required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_status}:" />
@@ -138,7 +139,7 @@
                         <ui:text from="{msg.sampleEnvironmental_hazardous}:" />
                       </td>
                       <td>
-                        <w:CheckBox ui:field="envIsHazardous" />
+                        <w:CheckBox ui:field="envIsHazardous"/>
                       </td>
                     </tr>
                     <tr>
@@ -187,8 +188,8 @@
                         <ui:text from="{msg.gen_location}:" />
                       </td>
                       <td>
-                        <w:TextBox ui:field="envLocation" width="231px" field="String" case="LOWER"
-                          maxLength="40" />
+                        <w:TextBox ui:field="envLocation" width="231px" field="String"
+                          case="LOWER" maxLength="40" />
                       </td>
                     </tr>
                     <tr>
@@ -232,7 +233,7 @@
                       </td>
                       <td>
                         <w:Dropdown ui:field="locationAddressCountry" field="String"
-                          width="229px"/>
+                          width="229px" />
                       </td>
                     </tr>
                   </table>
@@ -430,6 +431,16 @@
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <a:AuxDataTabUI ui:field="auxDataTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.attachment_attachment}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:AttachmentTabUI ui:field="attachmentTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

@@ -352,6 +352,11 @@ public class SampleMeta implements Meta, MetaMap {
                     AUX_DATA_REFERENCE_TABLE_ID = "_auxData.referenceTableId",
                     AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
                     AUX_DATA_TYPE_ID = "_auxData.typeId", AUX_DATA_VALUE = "_auxData.value",
+                    
+                    ATT_ITEM_ID = "_attachmentItem.id",
+                    ATT_ITEM_REFERENCE_ID = "_attachmentItem.referenceId",
+                    ATT_ITEM_REFERENCE_TABLE_ID = "_attachmentItem.referenceTableId",
+                    ATT_ITEM_ATTACHMENT_ID = "_attachmentItem.attachmentId",
 
                     SAMPLE_ORG_ORGANIZATION_NAME = "_sampleOrganizationOrganization.name",
 
@@ -370,7 +375,11 @@ public class SampleMeta implements Meta, MetaMap {
 
                     ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID = "_testResult.flagsId",
 
-                    ORG_PARAM_VALUE = "_organizationParameter.value";
+                    ORG_PARAM_VALUE = "_organizationParameter.value",
+    
+                    ATT_ITEM_ATTACHMENT_CREATED_DATE = "_attachmentItem.attachment.createdDate",
+                    ATT_ITEM_ATTACHMENT_SECTION_ID = "_attachmentItem.attachment.sectionId",
+                    ATT_ITEM_ATTACHMENT_DESCRIPTION = "_attachmentItem.attachment.description";
 
     private static HashSet<String> names;
 
@@ -652,6 +661,10 @@ public class SampleMeta implements Meta, MetaMap {
                                                   AUX_DATA_IS_REPORTABLE,
                                                   AUX_DATA_TYPE_ID,
                                                   AUX_DATA_VALUE,
+                                                  ATT_ITEM_ID,
+                                                  ATT_ITEM_REFERENCE_ID,
+                                                  ATT_ITEM_REFERENCE_TABLE_ID,
+                                                  ATT_ITEM_ATTACHMENT_ID,
                                                   SAMPLE_ORG_ORGANIZATION_NAME,
                                                   SAMPLE_PROJ_PROJECT_NAME,
                                                   SAMPLE_PROJ_PROJECT_DESCRIPTION,
@@ -665,7 +678,10 @@ public class SampleMeta implements Meta, MetaMap {
                                                   ANALYSIS_METHOD_ID,
                                                   ANALYSIS_TEST_IS_ACTIVE,
                                                   ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
-                                                  ORG_PARAM_VALUE));
+                                                  ORG_PARAM_VALUE,
+                                                  ATT_ITEM_ATTACHMENT_CREATED_DATE,
+                                                  ATT_ITEM_ATTACHMENT_SECTION_ID,
+                                                  ATT_ITEM_ATTACHMENT_DESCRIPTION));
     }
 
     public static String getId() {
@@ -1775,6 +1791,22 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAuxDataValue() {
         return AUX_DATA_VALUE;
     }
+    
+    public static String getAttachmentItemId() {
+        return ATT_ITEM_ID;
+    }
+    
+    public static String getAttachmentItemReferenceId() {
+        return ATT_ITEM_REFERENCE_ID;
+    }
+    
+    public static String getAttachmentItemReferenceTableId() {
+        return ATT_ITEM_REFERENCE_TABLE_ID;
+    }
+    
+    public static String getAttachmentItemAttachmentId() {
+        return ATT_ITEM_ATTACHMENT_ID;
+    }
 
     public static String getSampleOrgOrganizationName() {
         return SAMPLE_ORG_ORGANIZATION_NAME;
@@ -1830,6 +1862,18 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getOrgParamValue() {
         return ORG_PARAM_VALUE;
+    }
+    
+    public static String getAttachmentItemAttachmentCreatedDate() {
+        return ATT_ITEM_ATTACHMENT_CREATED_DATE;
+    }
+    
+    public static String getAttachmentItemAttachmentSectionId() {
+        return ATT_ITEM_ATTACHMENT_SECTION_ID;
+    }
+    
+    public static String getAttachmentItemAttachmentDescription() {
+        return ATT_ITEM_ATTACHMENT_DESCRIPTION;
     }
 
     public boolean hasColumn(String columnName) {
@@ -1979,6 +2023,9 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("auxData.") > -1)
             from += ", IN (_sample.auxData) _auxData ";
+        
+        if (where.indexOf("attachmentItem.") > -1)
+            from += ", IN (_sample.attachmentItem) _attachmentItem ";
 
         return from;
     }

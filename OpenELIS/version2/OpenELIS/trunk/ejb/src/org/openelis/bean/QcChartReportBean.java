@@ -1,8 +1,8 @@
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -243,11 +243,10 @@ public class QcChartReportBean {
         QcChartReportViewVO result;
         ArrayList<Value> list;
         URL url;
-        File tempFile;
+        Path path;
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
         QcChartDataSource ds;
         HashMap<String, Object> jparam;
 
@@ -276,8 +275,6 @@ public class QcChartReportBean {
             else
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
 
-            tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
-
             userName = User.getName(ctx);
 
             jparam = new HashMap<String, Object>();
@@ -285,25 +282,23 @@ public class QcChartReportBean {
             jparam.put("QCNAME", qcName);
             jparam.put("USER_NAME", userName);
 
-            status.setMessage("Loading report");
+            status.setMessage("Outputing report").setPercentComplete(20);
+            
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, ds);
-            jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
-
-            jexport.exportReport();
+            if (ReportUtil.isPrinter(printer))
+                path = export(jprint, null);
+            else 
+                path = export(jprint, "upload_stream_directory");
+            
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, userName, printer, 1);
+                printstat = ReportUtil.print(path, userName, printer, 1, true);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                status.setMessage(path.getFileName().toString())
+                      .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
@@ -509,6 +504,22 @@ public class QcChartReportBean {
             value.setLCL(lCL);
             value.setSd(sd);
         }
+    }
+    
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
+        JRExporter jexport;
+
+        jexport = new JRPdfExporter();
+        path = ReportUtil.createTempFile("qcreport", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        jexport.exportReport();
+
+        return path;
     }
 
     class MyComparator implements Comparator<QcChartReportViewVO.Value> {

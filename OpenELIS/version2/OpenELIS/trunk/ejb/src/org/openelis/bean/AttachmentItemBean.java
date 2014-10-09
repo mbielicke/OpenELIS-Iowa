@@ -35,6 +35,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.entity.AttachmentItem;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.NotFoundException;
@@ -63,13 +64,23 @@ public class AttachmentItemBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<AttachmentItemDO> fetchByIds(ArrayList<Integer> referenceIds,
+    public ArrayList<AttachmentItemViewDO> fetchByIds(ArrayList<Integer> referenceIds,
                                                   Integer referenceTableId) {
         Query query;
 
         query = manager.createNamedQuery("AttachmentItem.FetchByIds");
         query.setParameter("ids", referenceIds);
         query.setParameter("tableId", referenceTableId);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<AttachmentItemViewDO> fetchByAttachmentIds(ArrayList<Integer> attachmentIds) {
+        Query query;
+
+        query = manager.createNamedQuery("AttachmentItem.FetchByAttachmentIds");
+        query.setParameter("ids", attachmentIds);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
