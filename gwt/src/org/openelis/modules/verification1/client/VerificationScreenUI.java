@@ -163,7 +163,7 @@ public class VerificationScreenUI extends Screen {
              * samples with no analyses can't be verified
              */
             for (i = 0; i < sm.item.count(); i++ ) {
-                item = sm.item.get(0);
+                item = sm.item.get(i);
                 if (sm.analysis.count(item) > 0)
                     break;
             }
