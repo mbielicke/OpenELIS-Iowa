@@ -237,69 +237,6 @@ public class FinalReportWebBean {
         return returnList;
     }
 
-    @RolesAllowed("w_final_report-select")
-    public ArrayList<FinalReportWebVO> getSampleList(ArrayList<QueryData> fields) throws Exception {
-        return null;
-        // String clause;
-        // Query query;
-        // QueryBuilderV2 builder;
-        // List<Object[]> results;
-        // ArrayList<FinalReportWebVO> returnList;
-        // Date collDateTime, collTime;
-        //
-        // /*
-        // * Retrieving the organization Ids to which the user belongs to from
-        // the
-        // * security clause in the userPermission.
-        // */
-        // clause =
-        // userCache.getPermission().getModule("w_final_report").getClause();
-        //
-        // if (clause == null)
-        // return new ArrayList<FinalReportWebVO>();
-        //
-        // //TODO
-        // results = null;
-        // returnList = new ArrayList<FinalReportWebVO>();
-        // for (Object[] result : results) {
-        // collDateTime = (Date)result[4];
-        // collTime = (Date)result[5];
-        //
-        // if (collDateTime != null) {
-        // if (collTime == null) {
-        // collDateTime.setHours(0);
-        // collDateTime.setMinutes(0);
-        // } else {
-        // collDateTime.setHours(collTime.getHours());
-        // collDateTime.setMinutes(collTime.getMinutes());
-        // }
-        // }
-        // returnList.add(new FinalReportWebVO((Integer)result[0],
-        // (Integer)result[1],
-        // (Integer)result[2],
-        // (String)result[3],
-        // collDateTime,
-        // (Integer)result[6],
-        // (String)result[7],
-        // (String)result[8],
-        // null,
-        // (Integer)result[9],
-        // null,
-        // null,
-        // (String)result[10],
-        // (String)result[11],
-        // (String)result[12]));
-        // }
-        // /*
-        // * push the retrieved list of samples into session so that the system
-        // * can find the list of samples from the back end and use the indices
-        // * the user selects in the front end to select the samples to run the
-        // * report for.
-        // */
-        // session.setAttribute("sampleList", returnList);
-        // return returnList;
-    }
-
     @RolesAllowed("w_final_sdwis-select")
     public ArrayList<FinalReportWebVO> getSampleSDWISList(ArrayList<QueryData> fields) throws Exception {
         String clause;
