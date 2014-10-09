@@ -1,9 +1,10 @@
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,7 +130,7 @@ public class ShippingReportBean {
                requestForm, instruction, dir, printstat, itemUri, uriPath, method,
                costCenter, userName;
         URL url;
-        File tempFile;
+        Path path;
         HashMap<String, Object> jparam;
         Connection con;
         ReportStatus status;
@@ -203,24 +204,18 @@ public class ShippingReportBean {
                 url = ReportUtil.getResourceURL("org/openelis/report/shipping/main.jasper");
                 dir = ReportUtil.getResourcePath(url);
 
-                tempFile = File.createTempFile("shippingManifest", ".pdf", new File("/tmp"));
-
                 jparam = new HashMap<String, Object>();
                 jparam.put("SHIPPING_ID", shippingIdStr);
                 jparam.put("SUBREPORT_DIR", dir);
 
-                status.setMessage("Loading report");
+                status.setMessage("Outputing report").setPercentComplete(20);
 
                 jreport = (JasperReport)JRLoader.loadObject(url);
                 jprint = JasperFillManager.fillReport(jreport, jparam, con);
-                jexport = new JRPdfExporter();
-                jexport.setParameter(JRExporterParameter.OUTPUT_STREAM,
-                                     new FileOutputStream(tempFile));
-                jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-                status.setMessage("Outputing report").setPercentComplete(20);
-
-                jexport.exportReport();
+                if (ReportUtil.isPrinter(printer))
+                    path = export(jprint, null);
+                else 
+                    path = export(jprint, "upload_stream_directory");
 
                 status.setPercentComplete(100);
 
@@ -228,12 +223,11 @@ public class ShippingReportBean {
                     //
                     // print the manifest
                     //
-                    printstat = ReportUtil.print(tempFile, userName, printer, 1);
+                    printstat = ReportUtil.print(path, userName, printer, 1, true);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 } else {
-                    tempFile = ReportUtil.saveForUpload(tempFile);
-                    status.setMessage(tempFile.getName())
-                          .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                    status.setMessage(path.getFileName().toString())
+                          .setPath(path.toString())
                           .setStatus(ReportStatus.Status.SAVED);
                 }
             }
@@ -274,8 +268,8 @@ public class ShippingReportBean {
                             costCenter = dictionaryCache.getById(o.getCostCenterId()).getEntry();
                     }
                     
-                    tempFile = File.createTempFile("shippingAddresslabel", ".txt", new File("/tmp"));
-                    ps = new PrintStream(tempFile);
+                    path = ReportUtil.createTempFile("shippingAddresslabel", ".txt", null);
+                    ps = new PrintStream(Files.newOutputStream(path));
                     for (int i = 0; i < numpkg; i++ ) {
                         labelReport.shippingAddressLabel(ps, shipFrom.getName(), method, costCenter,
                                                          shipFromAddr.getMultipleUnit(), "SH" + shippingIdStr,
@@ -290,7 +284,7 @@ public class ShippingReportBean {
                                                          shipToAddr.getZipCode());
                     }
                     ps.close();
-                    printstat = ReportUtil.print(tempFile, userName, barcodePrinter, 1);
+                    printstat = ReportUtil.print(path, userName, barcodePrinter, 1, true);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 }
             }
@@ -325,8 +319,8 @@ public class ShippingReportBean {
                         if (itemUri != null && itemUri.startsWith(PRN_PREFIX) &&
                             data.getQuantity() > 0) {
                             itemUri = itemUri.replaceAll(PRN_PREFIX, "");
-                            tempFile = new File(uriPath, itemUri);
-                            ReportUtil.printWithoutDelete(tempFile, userName, printer, data.getQuantity());
+                            path = Paths.get(uriPath, itemUri);
+                            ReportUtil.print(path, userName, printer, data.getQuantity(), false);
                         }
                     }
                     prevOrderId = orderId;
@@ -380,5 +374,21 @@ public class ShippingReportBean {
 
     private boolean printOption(String option) {
         return DataBaseUtil.trim(option) != null && "Y".equals(option);
+    }
+    
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
+        JRExporter jexport;
+
+        jexport = new JRPdfExporter();
+        path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        jexport.exportReport();
+
+        return path;
     }
 }

@@ -30,6 +30,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.analysis.Analysis"/>
     <inherits name="org.openelis.modules.analysisUser.AnalysisUser"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
+    <inherits name="org.openelis.modules.attachment.Attachment"/>
     <inherits name="org.openelis.modules.auxData.AuxData"/>
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
     <inherits name="org.openelis.modules.analyteParameter.AnalyteParameter"/>
@@ -90,6 +91,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.sample1.Sample1"/>
     <inherits name="org.openelis.modules.sampleQc.SampleQc"/>
     <inherits name="org.openelis.modules.report.Report"/>
+    <inherits name="org.openelis.modules.report.attachment.Attachment"/>
     <inherits name="org.openelis.modules.report.dataView.DataView"/>
     <inherits name="org.openelis.modules.report.finalReportSingleReprint.FinalReportSingleReprint"/>
     <inherits name="org.openelis.modules.report.orderRequestForm.OrderRequestForm"/>

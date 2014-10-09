@@ -229,3 +229,19 @@
 @sprite .Disabled .fieldLookupIcon {
     gwt-image: 'fieldLookupDisabledIcon';
 }
+
+@sprite .attachedIcon {
+    gwt-image:'attachedIcon';
+}
+
+@sprite .lockedByOtherIcon {
+    gwt-image:'lockedByOtherIcon';
+}
+
+@sprite .lockedBySelfIcon {
+    gwt-image:'lockedBySelfIcon';
+}
+
+@sprite .blankIcon {
+    gwt-image:'blankIcon';
+}

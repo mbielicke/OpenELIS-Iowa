@@ -768,6 +768,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 } else {
                     tree.selectNodeAt(node);
                 }
+                removeRowButton.setEnabled(true);
                 break;
             }
         }

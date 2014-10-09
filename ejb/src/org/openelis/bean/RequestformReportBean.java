@@ -1,8 +1,8 @@
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class RequestformReportBean {
         int copies;
         String orderId, printer, dir, printstat, useNumForms;
         URL url;
-        File tempFile;
+        Path path;
         HashMap<String, QueryData> param;
         HashMap<String, Object> jparam;
         Connection con;
@@ -138,23 +138,18 @@ public class RequestformReportBean {
             url = ReportUtil.getResourceURL("org/openelis/report/requestform/order/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("order", ".pdf", new File("/tmp"));
-
             jparam = new HashMap<String, Object>();
             jparam.put("ORDER_ID", orderId);
             jparam.put("SUBREPORT_DIR", dir);
 
-            status.setMessage("Loading report");
+            status.setMessage("Outputing report").setPercentComplete(20);
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
-            jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
-
-            jexport.exportReport();
+            if (ReportUtil.isPrinter(printer))
+                path = export(jprint, null);
+            else 
+                path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
 
@@ -163,13 +158,12 @@ public class RequestformReportBean {
                 if (useNumForms != null)
                     copies = data.getNumberOfForms();
                 if (copies > 0) {
-                    printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, copies);
+                    printstat = ReportUtil.print(path, User.getName(ctx), printer, copies, true);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 }
             } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                status.setMessage(path.getFileName().toString())
+                      .setPath(path.toString())
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
@@ -185,5 +179,21 @@ public class RequestformReportBean {
         }
 
         return status;
+    }
+    
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
+    private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
+        Path path;
+        JRExporter jexport;
+
+        jexport = new JRPdfExporter();
+        path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        jexport.exportReport();
+
+        return path;
     }
 }

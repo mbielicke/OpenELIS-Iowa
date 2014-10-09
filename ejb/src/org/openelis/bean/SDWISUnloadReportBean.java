@@ -25,11 +25,12 @@
  */
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -201,8 +202,8 @@ public class SDWISUnloadReportBean {
         ArrayList<SDWISUnloadReportVO> analyses;
         Counter sampleCounts;
         Date beginReleased, endReleased;
-        File tempFile, statFile;
-        FileOutputStream out;
+        Path temp, stat;
+        OutputStream out;
         HashMap<String, Object> jparam;
         HashMap<String, QueryData> param;
         Iterator<SampleDO> sIter;
@@ -238,9 +239,9 @@ public class SDWISUnloadReportBean {
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
         try {
-            tempFile = File.createTempFile("sdwisUnload", ".lrr", new File("/tmp"));
-            statFile = File.createTempFile("sdwisUnloadStatus", ".pdf", new File("/tmp"));
-            out = new FileOutputStream(tempFile);
+            temp = ReportUtil.createTempFile("sdwisUnload", ".lrr", "upload_stream_directory");
+            stat = ReportUtil.createTempFile("sdwisUnloadStatus", ".pdf", null);
+            out = Files.newOutputStream(temp);
         } catch (Exception anyE) {
             anyE.printStackTrace();
             throw new Exception("Could not open temp file for writing.");
@@ -404,7 +405,7 @@ public class SDWISUnloadReportBean {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, sds);
             jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(statFile));
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(stat));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setPercentComplete(90);
@@ -413,11 +414,10 @@ public class SDWISUnloadReportBean {
 
             status.setPercentComplete(100);
 
-            ReportUtil.print(statFile, User.getName(ctx), printer, 1);
+            ReportUtil.print(stat, User.getName(ctx), printer, 1, true);
 
-            tempFile = ReportUtil.saveForUpload(tempFile);
-            status.setMessage(tempFile.getName())
-                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+            status.setMessage(temp.getFileName().toString())
+                  .setPath(temp.toString())
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             e.printStackTrace();

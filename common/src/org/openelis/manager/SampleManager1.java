@@ -37,6 +37,8 @@ import org.openelis.domain.AnalysisUserDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
+import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -77,7 +79,7 @@ public class SampleManager1 implements Serializable {
      */
     public enum Load {
         ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT,
-        WORKSHEET
+        WORKSHEET, ATTACHMENT
     };
 
     /**
@@ -101,6 +103,7 @@ public class SampleManager1 implements Serializable {
     protected NoteViewDO                          sampleExtNote;
     protected ArrayList<NoteViewDO>               sampleIntNotes, analysisExtNotes,
                     analysisIntNotes;
+    protected ArrayList<AttachmentItemViewDO>     attachments;
     protected ArrayList<SampleItemViewDO>         items;
     protected ArrayList<AnalysisViewDO>           analyses;
     protected ArrayList<AnalysisQaEventViewDO>    analysisQAs;
@@ -118,6 +121,7 @@ public class SampleManager1 implements Serializable {
     transient public final AuxData                auxData              = new AuxData();
     transient public final SampleExternalNote     sampleExternalNote   = new SampleExternalNote();
     transient public final SampleInternalNote     sampleInternalNote   = new SampleInternalNote();
+    transient public final Attachment             attachment           = new Attachment();
     transient public final AnalysisExternalNote   analysisExternalNote = new AnalysisExternalNote();
     transient public final AnalysisInternalNote   analysisInternalNote = new AnalysisInternalNote();
     transient public final SampleItem             item                 = new SampleItem();
@@ -193,6 +197,10 @@ public class SampleManager1 implements Serializable {
 
             if (sampleIntNotes != null)
                 for (NoteDO data : sampleIntNotes)
+                    uidMap.put(Constants.uid().get(data), data);
+            
+            if (attachments != null)
+                for (AttachmentItemDO data : attachments)
                     uidMap.put(Constants.uid().get(data), data);
 
             if (analysisIntNotes != null)
@@ -748,6 +756,61 @@ public class SampleManager1 implements Serializable {
          */
         public int count() {
             return (sampleIntNotes == null) ? 0 : sampleIntNotes.size();
+        }
+    }
+    
+    /**
+     * Class to manage the attachments associated with the sample
+     */
+    public class Attachment {
+        /**
+         * Returns the attachment item at specified index.
+         */
+        public AttachmentItemViewDO get(int i) {
+            return attachments.get(i);
+        }
+
+        /**
+         * Returns an attachment item
+         */
+        public AttachmentItemViewDO add() {
+            AttachmentItemViewDO data;
+
+            data = new AttachmentItemViewDO();
+            data.setId(getNextUID());            
+            if (attachments == null)
+                attachments = new ArrayList<AttachmentItemViewDO>();
+            attachments.add(data);
+            uidMapAdd(Constants.uid().get(data), data);
+            
+            return data;
+        }
+
+        /**
+         * Removes an attachment item from the list
+         */
+        public void remove(int i) {
+            AttachmentItemDO data;
+
+            data = attachments.get(i);
+            attachments.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
+        }
+
+        public void remove(AttachmentItemDO data) {
+            attachments.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(Constants.uid().get(data));
+        }
+
+        /**
+         * Returns the number of attachment items associated with this sample
+         */
+        public int count() {
+            if (attachments != null)
+                return attachments.size();
+            return 0;
         }
     }
 
