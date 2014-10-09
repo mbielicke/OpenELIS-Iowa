@@ -346,8 +346,7 @@
 				maxOccurs="unbounded" type="analysisQaevent" />
 			<xs:element name="analysis_user" type="analysis_user"
 				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="note" type="note" minOccurs="0"
-				maxOccurs="unbounded" />
+			<xs:element name="note" type="note" minOccurs="0" />
 			<xs:element name="result" minOccurs="0" maxOccurs="unbounded"
 				type="result" />
 			<xs:element name="analysis_qc" minOccurs="0" type="analysisQc" />
