@@ -260,7 +260,7 @@ public class CronBean {
                                              CronMeta.getMethod()));
         else if (bean != null) {
             if ( !DataBaseUtil.isEmpty(data.getParameters())) {
-                params = data.getParameters().split(";");
+                params = data.getParameters().split(";",-1);
                 classes = new Class[params.length];
                 for (int i = 0; i < params.length; i++ ) {
                     classes[i] = String.class;
