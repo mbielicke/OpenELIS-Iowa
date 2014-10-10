@@ -26,16 +26,15 @@
 package org.openelis.portal.modules.sampleStatus.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.SampleStatusReportBean;
-import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SampleStatusWebReportVO;
+import org.openelis.domain.SampleViewVO;
 import org.openelis.portal.modules.sampleStatus.client.SampleStatusServiceInt;
+import org.openelis.stfu.bean.SampleStatusPortalBean;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
@@ -45,11 +44,11 @@ public class SampleStatusServlet extends RemoteServlet implements SampleStatusSe
     private static final long      serialVersionUID = 1L;
 
     @EJB
-    private SampleStatusReportBean sampleStatusReport;
+    private SampleStatusPortalBean sampleStatusPortal;
 
-    public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception {
+    public ArrayList<SampleViewVO> getSampleListForSampleStatusReport(Query query) throws Exception {
         try {
-            return sampleStatusReport.getSampleListForSampleStatusReport(query.getFields());
+            return sampleStatusPortal.getSampleListForSampleStatusReport(query.getFields());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -57,26 +56,20 @@ public class SampleStatusServlet extends RemoteServlet implements SampleStatusSe
 
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
         try {
-            return sampleStatusReport.getProjectList();
+            return sampleStatusPortal.getProjectList();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception {
-        try {
-            return sampleStatusReport.getSampleQaEventsBySampleId(id);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
+    @Override
+    public HashMap<Integer, ArrayList<String>> getSampleQaEvents(ArrayList<Integer> sampleIds) throws Exception {
+        return sampleStatusPortal.getSampleQaEvents(sampleIds);
     }
 
-    public ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception {
-        try {
-            return sampleStatusReport.getAnalysisQaEventsByAnalysisId(id);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
+    @Override
+    public HashMap<Integer, ArrayList<String>> getAnalysisQaEvents(ArrayList<Integer> analysisIds) throws Exception {
+        return sampleStatusPortal.getAnalysisQaEvents(analysisIds);
     }
 
 }

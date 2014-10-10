@@ -6,4 +6,5 @@
 	<inherits name="org.openelis.portal.modules.main.Main" />
 	<inherits name="org.openelis.portal.modules.finalReport.FinalReport" />
 	<inherits name="org.openelis.portal.modules.sampleStatus.SampleStatus" />
+	<inherits name="org.openelis.portal.modules.dataView.DataView" />
 </module>

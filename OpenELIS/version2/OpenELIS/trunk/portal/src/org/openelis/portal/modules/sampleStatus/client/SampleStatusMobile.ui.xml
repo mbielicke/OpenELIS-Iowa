@@ -24,95 +24,95 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-    <w:PortalPanel>
-	<g:DeckPanel ui:field="deck">
-		<g:DockPanel>
-			<g:Dock direction="WEST" size="400">
-				<g:HTMLPanel>
-					<table class="{res.style.Form}">
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.gen_collectedDate}:" />
-							</td>
-							<td>
-								<c:Calendar ui:field="collectedFrom" width="75px"
-									begin="0" end="2" enabled="true" />
-							</td>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.gen_to}:" />
-							</td>
-							<td>
-								<c:Calendar ui:field="collectedTo" width="75px"
-									begin="0" end="2" enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
-									placement="RIGHT" balloonWidth="135px" />
-							</td>
-						</tr>
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.finalReport_accessionNumber}:" />
-							</td>
-							<td>
-								<w:TextBox ui:field="accessionFrom" width="77px"
-									field="Integer" enabled="true" />
-							</td>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.gen_to}:" />
-							</td>
-							<td>
-								<w:TextBox ui:field="accessionTo" width="77px" field="Integer"
-									enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
-									placement="RIGHT" balloonWidth="135px" />
-							</td>
-						</tr>
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.sample_clientReference}:" />
-							</td>
-							<td colspan="3">
-								<w:TextBox ui:field="clientReference" width="180px"
-									field="String" enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}"
-									text="{msg.finalReport_help_clientReference}" placement="RIGHT"
-									balloonWidth="135px" />
-							</td>
-						</tr>
-						<tr>
-							<td class="{res.style.Prompt}">
-								<ui:text from="{msg.finalReport_projectCode}:" />
-							</td>
-							<td colspan="3">
-								<w:MultiDropdown ui:field="projectCode" width="178px"
-									field="Integer" enabled="true" />
-							</td>
-							<td>
-								<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
-									placement="RIGHT" balloonWidth="135px" />
-							</td>
-						</tr>
-					</table>
-					<table class="{res.style.Form}">
-						<tr>
-							<td>
-								<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
-									enabled="true" />
-							</td>
-							<td>
-								<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-									enabled="true" />
-							</td>
-						</tr>
-					</table>
-				</g:HTMLPanel>
-			</g:Dock>
-		</g:DockPanel>
+	<w:PortalPanel>
+		<g:DeckPanel ui:field="deck">
+			<g:DockPanel>
+				<g:Dock direction="WEST" size="400">
+					<g:HTMLPanel>
+						<table class="{res.style.Form}">
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_collectedDate}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="collectedFrom" width="75px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="collectedTo" width="75px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
+										placement="LEFT" balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_accessionNumber}:" />
+								</td>
+								<td>
+									<w:TextBox ui:field="accessionFrom" width="77px"
+										field="Integer" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<w:TextBox ui:field="accessionTo" width="77px" field="Integer"
+										enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
+										placement="LEFT" balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_clientReference}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="clientReference" width="180px"
+										field="String" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}"
+										text="{msg.finalReport_help_clientReference}" placement="LEFT"
+										balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_projectCode}:" />
+								</td>
+								<td colspan="3">
+									<w:MultiDropdown ui:field="projectCode" width="178px"
+										field="Integer" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
+										placement="LEFT" balloonWidth="200px" />
+								</td>
+							</tr>
+						</table>
+						<table class="{res.style.Form}">
+							<tr>
+								<td>
+									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
+										enabled="true" />
+								</td>
+								<td>
+									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
+										enabled="true" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:Dock>
+			</g:DockPanel>
 			<g:HTMLPanel>
 				<table width="728">
 					<tr>
@@ -139,7 +139,7 @@
 					</tr>
 				</table>
 			</g:HTMLPanel>
-	</g:DeckPanel>
+		</g:DeckPanel>
 	</w:PortalPanel>
-	
+
 </ui:UiBinder>

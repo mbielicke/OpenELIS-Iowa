@@ -24,8 +24,8 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-    <w:PortalPanel>
-	<g:DeckPanel ui:field="deck">
+	<w:PortalPanel>
+		<g:DeckPanel ui:field="deck">
 			<g:HTMLPanel>
 				<table class="{res.style.Form}">
 					<tr>
@@ -37,7 +37,7 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.gen_collectedDate}:" />
+							<ui:text from="{msg.sample_collectedDate}:" />
 						</td>
 						<td>
 							<c:Calendar ui:field="collectedFrom" width="75px"
@@ -51,13 +51,15 @@
 								end="2" enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="collectedError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_releasedDate}:" />
+							<ui:text from="{msg.sample_releasedDate}:" />
 						</td>
 						<td>
 							<c:Calendar ui:field="releasedFrom" width="75px"
@@ -71,13 +73,15 @@
 								end="2" enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_released}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_released}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="releasedError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_accessionNumber}:" />
+							<ui:text from="{msg.sample_accessionNumber}:" />
 						</td>
 						<td>
 							<w:TextBox ui:field="accessionFrom" width="77px" field="Integer"
@@ -91,8 +95,10 @@
 								enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="accessionError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
@@ -104,21 +110,25 @@
 								field="String" enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_clientReference}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_clientReference}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="clientReferenceError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_projectCode}:" />
+							<ui:text from="{msg.sample_projectCode}:" />
 						</td>
 						<td colspan="3">
 							<w:MultiDropdown ui:field="projectCode" width="178px"
 								field="Integer" enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="projectError" css="{res.errorCss}" text=""
+								placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr cellSpacing="1" />
@@ -131,15 +141,17 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_collector}:" />
+							<ui:text from="{msg.sample_collector}:" />
 						</td>
 						<td colspan="3">
 							<w:TextBox ui:field="envCollector" width="180px" field="String"
 								enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_envCollector}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_envCollector}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="envCollectorError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
@@ -151,15 +163,17 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.finalReport_collector}:" />
+							<ui:text from="{msg.sample_collector}:" />
 						</td>
 						<td colspan="3">
 							<w:TextBox ui:field="sdwisCollector" width="180px"
 								field="String" enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_sdwisCollector}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_sdwisCollector}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="sdwisCollectorError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
@@ -171,8 +185,10 @@
 								enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_pws}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_pws}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="pwsError" css="{res.errorCss}" text=""
+								placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr cellSpacing="1" />
@@ -189,11 +205,13 @@
 						</td>
 						<td colspan="3">
 							<w:TextBox ui:field="patientFirst" width="180px" field="String"
-								enabled="true" />
+								enabled="true" case="UPPER" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientFirst}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientFirstError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
@@ -202,11 +220,13 @@
 						</td>
 						<td colspan="3">
 							<w:TextBox ui:field="patientLast" width="180px" field="String"
-								enabled="true" />
+								enabled="true" case="UPPER" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientLast}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientLastError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 					<tr>
@@ -225,8 +245,10 @@
 								begin="0" end="2" enabled="true" />
 						</td>
 						<td>
-							<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientBirth}"
-								placement="LEFT" balloonWidth="135px" />
+							<w:Help css="{res.help}" text="{msg.finalReport_help_patientBirth}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientBirthError" css="{res.errorCss}"
+								text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
 				</table>
@@ -269,6 +291,6 @@
 					</tr>
 				</table>
 			</g:HTMLPanel>
-	</g:DeckPanel>
+		</g:DeckPanel>
 	</w:PortalPanel>
 </ui:UiBinder>

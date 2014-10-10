@@ -4,6 +4,7 @@ import static org.openelis.portal.client.Logger.remote;
 import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -22,7 +23,6 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
-import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
@@ -31,6 +31,9 @@ import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Cursor;
+import com.google.gwt.dom.client.Style.TextAlign;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -94,7 +97,7 @@ public class FinalReportScreen extends Screen {
             @Override
             public void onClick(ClickEvent event) {
                 form = new FinalReportFormVO();
-                clearErrors();
+                ui.clearErrors();
                 fireDataChange();
             }
         });
@@ -103,7 +106,6 @@ public class FinalReportScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                ui.getTable().getRowCount();
                 ui.getDeck().showWidget(0);
             }
         });
@@ -131,26 +133,6 @@ public class FinalReportScreen extends Screen {
             @Override
             public void onClick(ClickEvent event) {
                 runReport();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                // ui.getCollectedFrom().setQueryMode(isState(QUERY));
-                // ui.getCollectedTo().setQueryMode(isState(QUERY));
-                // ui.getReleasedFrom().setQueryMode(isState(QUERY));
-                // ui.getReleasedTo().setQueryMode(isState(QUERY));
-                // ui.getAccessionFrom().setQueryMode(isState(QUERY));
-                // ui.getAccessionTo().setQueryMode(isState(QUERY));
-                // ui.getClientReference().setQueryMode(isState(QUERY));
-                // ui.getProjectCode().setQueryMode(isState(QUERY));
-                // ui.getEnvCollector().setQueryMode(isState(QUERY));
-                // ui.getSdwisCollector().setQueryMode(isState(QUERY));
-                // ui.getPwsId().setQueryMode(isState(QUERY));
-                // ui.getPatientFirst().setQueryMode(isState(QUERY));
-                // ui.getPatientLast().setQueryMode(isState(QUERY));
-                // ui.getPatientBirthFrom().setQueryMode(isState(QUERY));
-                // ui.getPatientBirthTo().setQueryMode(isState(QUERY));
             }
         });
 
@@ -527,6 +509,9 @@ public class FinalReportScreen extends Screen {
         }
     }
 
+    /**
+     * create the range queries for variables with from and to fields
+     */
     private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) throws Exception {
         HashMap<String, QueryData> fieldMap;
 
@@ -541,8 +526,10 @@ public class FinalReportScreen extends Screen {
                           SampleViewMeta.getCollectionDate(),
                           fieldMap);
         } catch (Exception e) {
-            ui.getCollectedTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
+            // ui.getCollectedTo()
+            // .addException(new
+            // Exception(Messages.get().finalReport_error_noStartDate()));
             throw e;
         }
 
@@ -552,8 +539,10 @@ public class FinalReportScreen extends Screen {
                           SampleViewMeta.getReleasedDate(),
                           fieldMap);
         } catch (Exception e) {
-            ui.getReleasedTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
+            // ui.getReleasedTo()
+            // .addException(new
+            // Exception(Messages.get().finalReport_error_noStartDate()));
             throw e;
         }
 
@@ -563,8 +552,10 @@ public class FinalReportScreen extends Screen {
                           SampleViewMeta.getAccessionNumber(),
                           fieldMap);
         } catch (Exception e) {
-            ui.getAccessionTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
+            ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
+            // ui.getAccessionTo()
+            // .addException(new
+            // Exception(Messages.get().finalReport_error_noStartAccession()));
             throw e;
         }
 
@@ -574,14 +565,19 @@ public class FinalReportScreen extends Screen {
                           SampleViewMeta.getPatientBirthDate(),
                           fieldMap);
         } catch (Exception e) {
-            ui.getPatientBirthTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
+            // ui.getPatientBirthTo()
+            // .addException(new
+            // Exception(Messages.get().finalReport_error_noStartDate()));
             throw e;
         }
 
         return new ArrayList<QueryData>(fieldMap.values());
     }
 
+    /**
+     * create a range query string
+     */
     private HashMap<String, QueryData> getRangeQuery(String fromKey, String toKey, String key,
                                                      HashMap<String, QueryData> fieldMap) throws Exception {
         QueryData from, to, range;
@@ -589,10 +585,17 @@ public class FinalReportScreen extends Screen {
         from = fieldMap.get(fromKey);
         to = fieldMap.get(toKey);
 
-        if (to != null && from == null) {
-            throw new Exception();
-        } else if (to == null && from == null) {
+        if (to == null && from == null) {
             return fieldMap;
+        } else if (to != null && from == null) {
+            throw new Exception();
+        } else if (to == null && from != null) {
+            range = fieldMap.get(fromKey);
+            range.setKey(key);
+            range.setQuery(from.getQuery() + ".." + from.getQuery());
+            fieldMap.put(key, range);
+            fieldMap.remove(fromKey);
+            fieldMap.remove(toKey);
         } else {
             range = fieldMap.get(fromKey);
             range.setKey(key);
@@ -606,8 +609,19 @@ public class FinalReportScreen extends Screen {
     }
 
     private void setTableData(ArrayList<SampleViewVO> samples) {
+        SampleViewVO sample;
         DateHelper dh;
         CheckBox check;
+        Datetime collectionTime;
+        Date collection;
+
+        /*
+         * if there are no samples returned, tell the user
+         */
+        if (samples.size() < 1) {
+            Window.alert(Messages.get().finalReport_error_noSamples());
+            return;
+        }
 
         /*
          * show the sample list table
@@ -615,54 +629,92 @@ public class FinalReportScreen extends Screen {
         ui.getDeck().showWidget(1);
 
         /*
-         * if there are no samples returned, tell the user
-         */
-        if (samples.size() < 1) {
-            ui.getTable().setText(0, 1, Messages.get().finalReport_error_noSamples());
-            return;
-        }
-        /*
          * initialize the column headers
          */
-        ui.getTable().setText(0, 1, Messages.get().finalReport_accessionNumber());
-        ui.getTable().setText(0, 2, Messages.get().gen_collectedDate());
+        ui.getTable().setText(0, 1, Messages.get().sample_accessionNumber());
+        ui.getTable().setText(0, 2, Messages.get().sample_collectedDate());
         ui.getTable().setText(0, 3, Messages.get().finalReport_referenceInfo());
         ui.getTable().setText(0, 4, Messages.get().finalReport_select_status());
         ui.getTable().setText(0, 5, Messages.get().finalReport_project());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
+        ui.getTable().getElement().getStyle().setTextAlign(TextAlign.CENTER);
+
+        // TODO cell padding
+        ui.getTable().setCellSpacing(12);
+        ui.getTable().setCellPadding(12);
+        ui.getTable().getElement().getStyle().setPadding(12, Unit.PX);
 
         dh = new DateHelper();
         dh.setEnd(Datetime.MINUTE);
 
         for (int i = 0, j = 1; i < samples.size(); i++ , j++ ) {
+            sample = samples.get(i);
             check = new CheckBox();
             check.setEnabled(true);
             ui.getTable().setWidget(j, 0, check);
-            ui.getTable().setText(j, 1, DataBaseUtil.toString(samples.get(i).getAccessionNumber()));
-            ui.getTable().setText(j, 2, dh.format(samples.get(i).getCollectionDate()));
+            ui.getTable().setText(j, 1, DataBaseUtil.toString(sample.getAccessionNumber()));
+            collectionTime = sample.getCollectionTime();
+            collection = sample.getCollectionDate().getDate();
+            try {
+                collection.setHours(collectionTime.get(Datetime.HOUR));
+                collection.setMinutes(collectionTime.get(Datetime.MINUTE));
+            } catch (Exception e) {
+                // time is null
+            }
+
+            ui.getTable()
+              .setText(j, 2, dh.format(new Datetime(Datetime.YEAR, Datetime.MINUTE, collection)));
 
             /*
              * show the collector for environmental and SDWIS samples and show
              * the patient's last name for clinical samples
              */
-            if ( !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "E") ||
-                !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "S")) {
-                if (samples.get(i).getCollector() != null)
-                    ui.getTable().setText(j, 3, "[collector] " + samples.get(i).getCollector());
-            } else if ( !DataBaseUtil.isDifferent(samples.get(i).getDomain(), "C") &&
-                       samples.get(i).getPatientLastName() != null) {
-                ui.getTable().setText(j, 3, "[patient] " + samples.get(i).getPatientLastName());
+            if ( !DataBaseUtil.isDifferent(sample.getDomain(), "E") ||
+                !DataBaseUtil.isDifferent(sample.getDomain(), "S")) {
+                if (sample.getCollector() != null)
+                    ui.getTable().setText(j, 3, "[collector] " + sample.getCollector());
+            } else if ( !DataBaseUtil.isDifferent(sample.getDomain(), "C") &&
+                       sample.getPatientLastName() != null) {
+                ui.getTable().setText(j, 3, "[patient] " + sample.getPatientLastName());
             }
-            ui.getTable().setText(j, 4, status.get(samples.get(i).getSampleStatusId()));
-            ui.getTable().setText(j, 5, samples.get(i).getProjectName());
+            ui.getTable().setText(j, 4, status.get(sample.getSampleStatusId()));
+            if (DataBaseUtil.isSame(Constants.dictionary().SAMPLE_RELEASED,
+                                    sample.getSampleStatusId()) ||
+                DataBaseUtil.isSame(Constants.dictionary().SAMPLE_COMPLETED,
+                                    sample.getSampleStatusId())) {
+                ui.getTable().getCellFormatter().setStyleName(j,
+                                                              4,
+                                                              UIResources.INSTANCE.table()
+                                                                                  .GreenStatus());
+            } else if (DataBaseUtil.isSame(Constants.dictionary().SAMPLE_LOGGED_IN,
+                                           sample.getSampleStatusId()) ||
+                       DataBaseUtil.isSame(Constants.dictionary().SAMPLE_NOT_VERIFIED,
+                                           sample.getSampleStatusId())) {
+                ui.getTable().getCellFormatter().setStyleName(j,
+                                                              4,
+                                                              UIResources.INSTANCE.table()
+                                                                                  .YellowStatus());
+            } else if (DataBaseUtil.isSame(Constants.dictionary().SAMPLE_ERROR,
+                                           sample.getSampleStatusId())) {
+                ui.getTable().getCellFormatter().setStyleName(j,
+                                                              4,
+                                                              UIResources.INSTANCE.table()
+                                                                                  .RedStatus());
+            }
+            ui.getTable().setText(j, 5, sample.getProjectName());
 
             /*
              * set row height higher for mobile and tablet versions
              */
-            ui.setRowHeight(j, "40px");
+            ui.setRowHeight(j, "30px");
+            ui.getTable().getRowFormatter().setStyleName(j,
+                                                         UIResources.INSTANCE.table().LargeFont());
         }
     }
 
+    /**
+     * fetch samples that match the search criteria
+     */
     private void getSampleList() {
         int numDomains;
         String domain;
@@ -670,7 +722,7 @@ public class FinalReportScreen extends Screen {
         QueryData field;
         ArrayList<QueryData> fields;
 
-        clearErrors();
+        ui.clearErrors();
         ui.getTable().removeAllRows();
         numDomains = 0;
         domain = null;
@@ -712,38 +764,6 @@ public class FinalReportScreen extends Screen {
             return;
         }
 
-        /*
-         * check if any of the to fields are filled without the from fields
-         * being filled. Set an error on the widget if they are.
-         */
-        if (DataBaseUtil.isEmpty(ui.getCollectedFrom().getText()) &&
-            !DataBaseUtil.isEmpty(ui.getCollectedTo().getText())) {
-            ui.getCollectedTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-            return;
-        }
-
-        if (DataBaseUtil.isEmpty(ui.getReleasedFrom().getText()) &&
-            !DataBaseUtil.isEmpty(ui.getReleasedTo().getText())) {
-            ui.getReleasedTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-            return;
-        }
-
-        if (DataBaseUtil.isEmpty(ui.getAccessionFrom().getText()) &&
-            !DataBaseUtil.isEmpty(ui.getAccessionTo().getText())) {
-            ui.getAccessionTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
-            return;
-        }
-
-        if (DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) &&
-            !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
-            ui.getPatientBirthTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-            return;
-        }
-
         if (domain != null)
             fields.add(field);
 
@@ -760,13 +780,13 @@ public class FinalReportScreen extends Screen {
             return;
         }
 
-        window.setBusy(Messages.get().gen_genReportMessage());
+        window.setBusy(Messages.get().gen_fetchingSamples());
         FinalReportService.get().getSampleList(query, new AsyncCallback<ArrayList<SampleViewVO>>() {
 
             @Override
             public void onSuccess(ArrayList<SampleViewVO> result) {
-                setTableData(result);
                 window.clearStatus();
+                setTableData(result);
             }
 
             @Override
@@ -777,6 +797,9 @@ public class FinalReportScreen extends Screen {
         });
     }
 
+    /**
+     * fetch final reports for checked samples
+     */
     private void runReport() {
         Query query;
         QueryData field;

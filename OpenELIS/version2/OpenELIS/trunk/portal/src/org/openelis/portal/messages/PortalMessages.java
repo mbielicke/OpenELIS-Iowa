@@ -16,6 +16,105 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView();
 
   /**
+   * Translated "Continue to Report Fields".
+   * 
+   * @return translated "Continue to Report Fields"
+   */
+  @DefaultMessage("Continue to Report Fields")
+  @Key("dataView.continue")
+  String dataView_continue();
+
+  /**
+   * Translated "The lab number assigned to the sample by SHL. Enter the accession number in this field to search for a single sample or enter the beginning number in the Accession Number field and the ending number in the To field to search for a series of samples.".
+   * 
+   * @return translated "The lab number assigned to the sample by SHL. Enter the accession number in this field to search for a single sample or enter the beginning number in the Accession Number field and the ending number in the To field to search for a series of samples."
+   */
+  @DefaultMessage("The lab number assigned to the sample by SHL. Enter the accession number in this field to search for a single sample or enter the beginning number in the Accession Number field and the ending number in the To field to search for a series of samples.")
+  @Key("dataView.help.accession")
+  String dataView_help_accession();
+
+  /**
+   * Translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.".
+   * 
+   * @return translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect."
+   */
+  @DefaultMessage("This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.")
+  @Key("dataView.help.clientReference")
+  String dataView_help_clientReference();
+
+  /**
+   * Translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.".
+   * 
+   * @return translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field."
+   */
+  @DefaultMessage("The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.")
+  @Key("dataView.help.collected")
+  String dataView_help_collected();
+
+  /**
+   * Translated "TODO".
+   * 
+   * @return translated "TODO"
+   */
+  @DefaultMessage("TODO")
+  @Key("dataView.help.collectionSite")
+  String dataView_help_collectionSite();
+
+  /**
+   * Translated "TODO".
+   * 
+   * @return translated "TODO"
+   */
+  @DefaultMessage("TODO")
+  @Key("dataView.help.collectionTown")
+  String dataView_help_collectionTown();
+
+  /**
+   * Translated "The name or ID of the collector of the sample.".
+   * 
+   * @return translated "The name or ID of the collector of the sample."
+   */
+  @DefaultMessage("The name or ID of the collector of the sample.")
+  @Key("dataView.help.collector")
+  String dataView_help_collector();
+
+  /**
+   * Translated "The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.".
+   * 
+   * @return translated "The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose."
+   */
+  @DefaultMessage("The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.")
+  @Key("dataView.help.project")
+  String dataView_help_project();
+
+  /**
+   * Translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
+   * 
+   * @return translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field."
+   */
+  @DefaultMessage("The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
+  @Key("dataView.help.released")
+  String dataView_help_released();
+
+  /**
+   * Translated "<span class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>".
+   * 
+   * @return translated "<span class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>"
+   */
+  @DefaultMessage("<span class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>")
+  @Key("dataView.help.screen")
+  String dataView_help_screen();
+
+  /**
+   * Translated "Query".
+   * 
+   * @return translated "Query"
+   */
+  @DefaultMessage("Query")
+  @Key("dataView.query")
+  String dataView_query();
+
+  /**
    * Translated "You do not have permission to access {0}".
    * 
    * @return translated "You do not have permission to access {0}"
@@ -23,15 +122,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("You do not have permission to access {0}")
   @Key("error.screenPerm")
   String error_screenPerm(String arg0);
-
-  /**
-   * Translated "Accession Number".
-   * 
-   * @return translated "Accession Number"
-   */
-  @DefaultMessage("Accession Number")
-  @Key("finalReport.accessionNumber")
-  String finalReport_accessionNumber();
 
   /**
    * Translated "ANY SAMPLES".
@@ -59,15 +149,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("CLINICAL SAMPLES ONLY")
   @Key("finalReport.clinicalOnly")
   String finalReport_clinicalOnly();
-
-  /**
-   * Translated "Collector Name".
-   * 
-   * @return translated "Collector Name"
-   */
-  @DefaultMessage("Collector Name")
-  @Key("finalReport.collector")
-  String finalReport_collector();
 
   /**
    * Translated "ENVIRONMENTAL SAMPLES ONLY".
@@ -286,15 +367,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_project();
 
   /**
-   * Translated "Project Code".
-   * 
-   * @return translated "Project Code"
-   */
-  @DefaultMessage("Project Code")
-  @Key("finalReport.projectCode")
-  String finalReport_projectCode();
-
-  /**
    * Translated "Reference Information".
    * 
    * @return translated "Reference Information"
@@ -302,15 +374,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Reference Information")
   @Key("finalReport.referenceInfo")
   String finalReport_referenceInfo();
-
-  /**
-   * Translated "Released Date".
-   * 
-   * @return translated "Released Date"
-   */
-  @DefaultMessage("Released Date")
-  @Key("finalReport.releasedDate")
-  String finalReport_releasedDate();
 
   /**
    * Translated "Reset".
@@ -358,15 +421,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_select_accession();
 
   /**
-   * Translated "Collection Site".
-   * 
-   * @return translated "Collection Site"
-   */
-  @DefaultMessage("Collection Site")
-  @Key("finalReport.select.site")
-  String finalReport_select_site();
-
-  /**
    * Translated "Status".
    * 
    * @return translated "Status"
@@ -374,15 +428,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Status")
   @Key("finalReport.select.status")
   String finalReport_select_status();
-
-  /**
-   * Translated "Collection Town".
-   * 
-   * @return translated "Collection Town"
-   */
-  @DefaultMessage("Collection Town")
-  @Key("finalReport.select.town")
-  String finalReport_select_town();
 
   /**
    * Translated "Select All".
@@ -412,13 +457,13 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String gen_accessionNumber();
 
   /**
-   * Translated "Collected Date".
+   * Translated "Fetching samples....".
    * 
-   * @return translated "Collected Date"
+   * @return translated "Fetching samples...."
    */
-  @DefaultMessage("Collected Date")
-  @Key("gen.collectedDate")
-  String gen_collectedDate();
+  @DefaultMessage("Fetching samples....")
+  @Key("gen.fetchingSamples")
+  String gen_fetchingSamples();
 
   /**
    * Translated "Generating report....".
@@ -520,6 +565,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String pws_id();
 
   /**
+   * Translated "Accession Number".
+   * 
+   * @return translated "Accession Number"
+   */
+  @DefaultMessage("Accession Number")
+  @Key("sample.accessionNumber")
+  String sample_accessionNumber();
+
+  /**
    * Translated "Client Reference".
    * 
    * @return translated "Client Reference"
@@ -527,6 +581,60 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Client Reference")
   @Key("sample.clientReference")
   String sample_clientReference();
+
+  /**
+   * Translated "Collected Date".
+   * 
+   * @return translated "Collected Date"
+   */
+  @DefaultMessage("Collected Date")
+  @Key("sample.collectedDate")
+  String sample_collectedDate();
+
+  /**
+   * Translated "Collection Site".
+   * 
+   * @return translated "Collection Site"
+   */
+  @DefaultMessage("Collection Site")
+  @Key("sample.collectionSite")
+  String sample_collectionSite();
+
+  /**
+   * Translated "Collection Town".
+   * 
+   * @return translated "Collection Town"
+   */
+  @DefaultMessage("Collection Town")
+  @Key("sample.collectionTown")
+  String sample_collectionTown();
+
+  /**
+   * Translated "Collector Name".
+   * 
+   * @return translated "Collector Name"
+   */
+  @DefaultMessage("Collector Name")
+  @Key("sample.collector")
+  String sample_collector();
+
+  /**
+   * Translated "Project Code".
+   * 
+   * @return translated "Project Code"
+   */
+  @DefaultMessage("Project Code")
+  @Key("sample.projectCode")
+  String sample_projectCode();
+
+  /**
+   * Translated "Released Date".
+   * 
+   * @return translated "Released Date"
+   */
+  @DefaultMessage("Released Date")
+  @Key("sample.releasedDate")
+  String sample_releasedDate();
 
   /**
    * Translated "Completed".

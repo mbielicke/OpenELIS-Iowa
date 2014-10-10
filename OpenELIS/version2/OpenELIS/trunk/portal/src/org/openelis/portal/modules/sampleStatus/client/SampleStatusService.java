@@ -1,13 +1,10 @@
 package org.openelis.portal.modules.sampleStatus.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.domain.SampleViewVO;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.screen.Callback;
 import org.openelis.ui.services.TokenService;
@@ -36,7 +33,7 @@ public class SampleStatusService implements SampleStatusServiceInt, SampleStatus
 
     @Override
     public void getSampleListForSampleStatusReport(Query query,
-                                                   AsyncCallback<ArrayList<SampleStatusWebReportVO>> callback) {
+                                                   AsyncCallback<ArrayList<SampleViewVO>> callback) {
         service.getSampleListForSampleStatusReport(query, callback);
     }
 
@@ -46,22 +43,22 @@ public class SampleStatusService implements SampleStatusServiceInt, SampleStatus
     }
 
     @Override
-    public void getSampleQaEventsBySampleId(Integer id,
-                                            AsyncCallback<ArrayList<SampleQaEventViewDO>> callback) {
-        service.getSampleQaEventsBySampleId(id, callback);
+    public void getSampleQaEvents(ArrayList<Integer> sampleIds,
+                                  AsyncCallback<HashMap<Integer, ArrayList<String>>> callback) {
+        service.getSampleQaEvents(sampleIds, callback);
     }
 
     @Override
-    public void getAnalysisQaEventsByAnalysisId(Integer id,
-                                                AsyncCallback<ArrayList<AnalysisQaEventViewDO>> callback) {
-        service.getAnalysisQaEventsByAnalysisId(id, callback);
+    public void getAnalysisQaEvents(ArrayList<Integer> analysisIds,
+                                    AsyncCallback<HashMap<Integer, ArrayList<String>>> callback) {
+        service.getAnalysisQaEvents(analysisIds, callback);
     }
 
     @Override
-    public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception {
-        Callback<ArrayList<SampleStatusWebReportVO>> callback;
-        
-        callback = new Callback<ArrayList<SampleStatusWebReportVO>>();
+    public ArrayList<SampleViewVO> getSampleListForSampleStatusReport(Query query) throws Exception {
+        Callback<ArrayList<SampleViewVO>> callback;
+
+        callback = new Callback<ArrayList<SampleViewVO>>();
         service.getSampleListForSampleStatusReport(query, callback);
         return callback.getResult();
     }
@@ -69,28 +66,27 @@ public class SampleStatusService implements SampleStatusServiceInt, SampleStatus
     @Override
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
-        
+
         callback = new Callback<ArrayList<IdNameVO>>();
         service.getSampleStatusProjectList(callback);
         return callback.getResult();
     }
 
     @Override
-    public ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception {
-        Callback<ArrayList<SampleQaEventViewDO>> callback;
-        
-        callback = new Callback<ArrayList<SampleQaEventViewDO>>();
-        service.getSampleQaEventsBySampleId(id, callback);
+    public HashMap<Integer, ArrayList<String>> getSampleQaEvents(ArrayList<Integer> sampleIds) throws Exception {
+        Callback<HashMap<Integer, ArrayList<String>>> callback;
+
+        callback = new Callback<HashMap<Integer, ArrayList<String>>>();
+        service.getSampleQaEvents(sampleIds, callback);
         return callback.getResult();
     }
 
     @Override
-    public ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception {
-        Callback<ArrayList<AnalysisQaEventViewDO>> callback;
-        
-        callback = new Callback<ArrayList<AnalysisQaEventViewDO>>();
-        service.getAnalysisQaEventsByAnalysisId(id, callback);
+    public HashMap<Integer, ArrayList<String>> getAnalysisQaEvents(ArrayList<Integer> analysisIds) throws Exception {
+        Callback<HashMap<Integer, ArrayList<String>>> callback;
+
+        callback = new Callback<HashMap<Integer, ArrayList<String>>>();
+        service.getAnalysisQaEvents(analysisIds, callback);
         return callback.getResult();
     }
-
 }

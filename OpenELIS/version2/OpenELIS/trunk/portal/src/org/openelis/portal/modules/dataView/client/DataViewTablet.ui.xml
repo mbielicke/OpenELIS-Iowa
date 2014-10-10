@@ -46,7 +46,27 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_collected}"
+										placement="RIGHT" balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_releasedDate}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="releasedFrom" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="releasedTo" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_released}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -66,7 +86,20 @@
 										enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_accession}"
+										placement="RIGHT" balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_collector}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="collector" width="208px" field="String"
+										enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_collector}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -79,9 +112,34 @@
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}"
-										text="{msg.finalReport_help_clientReference}" placement="RIGHT"
-										balloonWidth="200px" />
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_clientReference}"
+										placement="RIGHT" balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_collectionSite}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="collectionSite" width="208px"
+										field="String" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_collectionSite}"
+										placement="RIGHT" balloonWidth="200px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_collectionTown}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="collectionTown" width="208px"
+										field="String" enabled="true" />
+								</td>
+								<td>
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_clientReference}"
+										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
 							<tr>
@@ -93,7 +151,7 @@
 										field="Integer" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
+									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_project}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -101,7 +159,7 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
+									<w:Button ui:field="continueButton" text="{msg.dataView_continue}"
 										enabled="true" />
 								</td>
 								<td>
@@ -117,7 +175,7 @@
 						<table>
 							<tr>
 								<td>
-									<g:HTML HTML="{msg.sampleStatus_help_screen}" />
+									<g:HTML HTML="{msg.dataView_help_screen}" />
 								</td>
 							</tr>
 						</table>
@@ -128,18 +186,23 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.finalReport_back}"
+							<w:Button ui:field="backButton" text="{msg.dataView_query}"
 								enabled="true" />
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<g:FlexTable ui:field="table"
-								styleName="{res.table.ScreenTableWithSides} {res.table.Table}" />
+							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
+								enabled="true" />
+							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
+								enabled="true" />
+							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
+								enabled="true" />
 						</td>
 					</tr>
 				</table>
 			</g:HTMLPanel>
 		</g:DeckPanel>
 	</w:PortalPanel>
+
 </ui:UiBinder>
