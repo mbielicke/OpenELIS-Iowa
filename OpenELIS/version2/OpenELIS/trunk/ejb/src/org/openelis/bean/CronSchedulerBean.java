@@ -117,7 +117,7 @@ public class CronSchedulerBean {
         beanInst = EJBFactory.lookup(cronTab.getBean());
 
         if (cronTab.getParameters() != null) {
-            params = cronTab.getParameters().split(";");
+            params = cronTab.getParameters().split(";",-1);
             classes = new Class[params.length];
             for (int i = 0; i < params.length; i++ ) {
                 classes[i] = String.class;
