@@ -9,7 +9,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -58,7 +57,9 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
 
     @Override
     public void initialize() {
-
+        /*
+         * do nothing for desktop
+         */
     }
 
     @Override
@@ -181,5 +182,83 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     @Override
     public DeckPanel getDeck() {
         return deck;
+    }
+
+    @Override
+    public void setCollectedError(String error) {
+        collectedFrom.addException(new Exception(error));
+        collectedTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setReleasedError(String error) {
+        releasedFrom.addException(new Exception(error));
+        releasedTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setAccessionError(String error) {
+        accessionFrom.addException(new Exception(error));
+        accessionTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setClientReferenceError(String error) {
+        clientReference.addException(new Exception(error));
+    }
+
+    @Override
+    public void setProjectError(String error) {
+        projectCode.addException(new Exception(error));
+    }
+
+    @Override
+    public void setEnvCollectorError(String error) {
+        envCollector.addException(new Exception(error));
+    }
+
+    @Override
+    public void setSdiwsCollectorError(String error) {
+        sdwisCollector.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPwsError(String error) {
+        pwsId.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPatientFirstError(String error) {
+        patientFirst.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPatientLastError(String error) {
+        patientLast.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPatientBirthError(String error) {
+        patientBirthFrom.addException(new Exception(error));
+        patientBirthTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void clearErrors() {
+        collectedFrom.clearExceptions();
+        collectedTo.clearExceptions();
+        releasedFrom.clearExceptions();
+        releasedTo.clearExceptions();
+        accessionFrom.clearExceptions();
+        accessionTo.clearExceptions();
+        clientReference.clearExceptions();
+        projectCode.clearExceptions();
+        envCollector.clearExceptions();
+        sdwisCollector.clearExceptions();
+        pwsId.clearExceptions();
+        patientFirst.clearExceptions();
+        patientLast.clearExceptions();
+        patientBirthFrom.clearExceptions();
+        patientBirthTo.clearExceptions();
     }
 }

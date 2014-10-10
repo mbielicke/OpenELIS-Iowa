@@ -1,19 +1,18 @@
 package org.openelis.portal.modules.main.client;
 
+import org.openelis.portal.modules.dataView.client.DataViewScreen;
 import org.openelis.portal.modules.finalReport.client.FinalReportScreen;
 import org.openelis.portal.modules.sampleStatus.client.SampleStatusScreen;
 import org.openelis.ui.widget.PortalWindow;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.LayoutPanel;
 
 public class MainScreen extends Composite {
 
-    MainUI ui = GWT.create(MainUIImpl.class);
+    MainUI       ui = GWT.create(MainUIImpl.class);
     PortalWindow window;
 
     public MainScreen() {
@@ -22,8 +21,8 @@ public class MainScreen extends Composite {
     }
 
     protected void initialize() {
-    	window = new PortalWindow();
-    	
+        window = new PortalWindow();
+
         ui.navigation().finalReport().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -39,6 +38,16 @@ public class MainScreen extends Composite {
             public void onClick(ClickEvent event) {
                 ui.main().clear();
                 SampleStatusScreen screen = new SampleStatusScreen();
+                screen.setWindow(window);
+                ui.main().add(screen);
+            }
+        });
+
+        ui.navigation().dataView().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                ui.main().clear();
+                DataViewScreen screen = new DataViewScreen();
                 screen.setWindow(window);
                 ui.main().add(screen);
             }

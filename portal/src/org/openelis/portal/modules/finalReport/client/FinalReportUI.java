@@ -15,7 +15,7 @@ public interface FinalReportUI extends IsWidget {
     public void initialize();
 
     public void setRowHeight(int i, String height);
-    
+
     public TextBox<Integer> getAccessionFrom();
 
     public TextBox<Integer> getAccessionTo();
@@ -61,5 +61,29 @@ public interface FinalReportUI extends IsWidget {
     public FlexTable getTable();
 
     public DeckPanel getDeck();
-    
+
+    public void setCollectedError(String error);
+
+    public void setReleasedError(String error);
+
+    public void setAccessionError(String error);
+
+    public void setClientReferenceError(String error);
+
+    public void setProjectError(String error);
+
+    public void setEnvCollectorError(String error);
+
+    public void setSdiwsCollectorError(String error);
+
+    public void setPwsError(String error);
+
+    public void setPatientFirstError(String error);
+
+    public void setPatientLastError(String error);
+
+    public void setPatientBirthError(String error);
+
+    public void clearErrors();
+
 }

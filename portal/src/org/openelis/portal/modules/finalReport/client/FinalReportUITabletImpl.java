@@ -1,6 +1,7 @@
 package org.openelis.portal.modules.finalReport.client;
 
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Help;
 import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
@@ -9,7 +10,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -49,6 +49,11 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     @UiField
     protected DeckPanel                        deck;
 
+    @UiField
+    protected Help                             collectedError, releasedError, accessionError,
+                    clientReferenceError, projectError, envCollectorError, sdwisCollectorError,
+                    pwsError, patientFirstError, patientLastError, patientBirthError;
+
     public FinalReportUITabletImpl() {
         initWidget(uiBinder.createAndBindUi(this));
     }
@@ -60,7 +65,9 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
 
     @Override
     public void initialize() {
-
+        /*
+         * do nothing for tablet
+         */
     }
 
     @Override
@@ -188,4 +195,128 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
         return deck;
     }
 
+    @Override
+    public void setCollectedError(String error) {
+        if (error == null) {
+            collectedError.setVisible(false);
+        } else {
+            collectedError.setText(error);
+            collectedError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setReleasedError(String error) {
+        if (error == null) {
+            releasedError.setVisible(false);
+        } else {
+            releasedError.setText(error);
+            releasedError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setAccessionError(String error) {
+        if (error == null) {
+            accessionError.setVisible(false);
+        } else {
+            accessionError.setText(error);
+            accessionError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setClientReferenceError(String error) {
+        if (error == null) {
+            clientReferenceError.setVisible(false);
+        } else {
+            clientReferenceError.setText(error);
+            clientReferenceError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setProjectError(String error) {
+        if (error == null) {
+            projectError.setVisible(false);
+        } else {
+            projectError.setText(error);
+            projectError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setEnvCollectorError(String error) {
+        if (error == null) {
+            envCollectorError.setVisible(false);
+        } else {
+            envCollectorError.setText(error);
+            envCollectorError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setSdiwsCollectorError(String error) {
+        if (error == null) {
+            sdwisCollectorError.setVisible(false);
+        } else {
+            sdwisCollectorError.setText(error);
+            sdwisCollectorError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setPwsError(String error) {
+        if (error == null) {
+            pwsError.setVisible(false);
+        } else {
+            pwsError.setText(error);
+            pwsError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setPatientFirstError(String error) {
+        if (error == null) {
+            patientFirstError.setVisible(false);
+        } else {
+            patientFirstError.setText(error);
+            patientFirstError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setPatientLastError(String error) {
+        if (error == null) {
+            patientLastError.setVisible(false);
+        } else {
+            patientLastError.setText(error);
+            patientLastError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setPatientBirthError(String error) {
+        if (error == null) {
+            patientBirthError.setVisible(false);
+        } else {
+            patientBirthError.setText(error);
+            patientBirthError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void clearErrors() {
+        collectedError.setVisible(false);
+        releasedError.setVisible(false);
+        accessionError.setVisible(false);
+        clientReferenceError.setVisible(false);
+        projectError.setVisible(false);
+        envCollectorError.setVisible(false);
+        sdwisCollectorError.setVisible(false);
+        pwsError.setVisible(false);
+        patientFirstError.setVisible(false);
+        patientLastError.setVisible(false);
+        patientBirthError.setVisible(false);
+    }
 }

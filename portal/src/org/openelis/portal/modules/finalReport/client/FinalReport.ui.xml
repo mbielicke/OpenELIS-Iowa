@@ -39,7 +39,7 @@
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.gen_collectedDate}:" />
+									<ui:text from="{msg.sample_collectedDate}:" />
 								</td>
 								<td>
 									<c:Calendar ui:field="collectedFrom" width="90px"
@@ -53,13 +53,13 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.finalReport_releasedDate}:" />
+									<ui:text from="{msg.sample_releasedDate}:" />
 								</td>
 								<td>
 									<c:Calendar ui:field="releasedFrom" width="90px"
@@ -73,13 +73,13 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_released}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_released}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.finalReport_accessionNumber}:" />
+									<ui:text from="{msg.sample_accessionNumber}:" />
 								</td>
 								<td>
 									<w:TextBox ui:field="accessionFrom" width="90px"
@@ -93,7 +93,7 @@
 										enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -106,21 +106,21 @@
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}"
+									<w:Help css="{res.help}"
 										text="{msg.finalReport_help_clientReference}" placement="RIGHT"
 										balloonWidth="200px" />
 								</td>
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.finalReport_projectCode}:" />
+									<ui:text from="{msg.sample_projectCode}:" />
 								</td>
 								<td colspan="3">
 									<w:MultiDropdown ui:field="projectCode" width="206px"
 										field="Integer" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -134,14 +134,14 @@
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.finalReport_collector}:" />
+									<ui:text from="{msg.sample_collector}:" />
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="envCollector" width="208px"
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_envCollector}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_envCollector}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -154,14 +154,14 @@
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.finalReport_collector}:" />
+									<ui:text from="{msg.sample_collector}:" />
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="sdwisCollector" width="208px"
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}"
+									<w:Help css="{res.help}"
 										text="{msg.finalReport_help_sdwisCollector}" placement="RIGHT"
 										balloonWidth="200px" />
 								</td>
@@ -175,7 +175,7 @@
 										enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_pws}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_pws}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -193,10 +193,10 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="patientFirst" width="208px"
-										field="String" enabled="true" />
+										field="String" enabled="true" case="UPPER"/>
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientFirst}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -206,10 +206,10 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="patientLast" width="208px"
-										field="String" enabled="true" />
+										field="String" enabled="true" case="UPPER"/>
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientLast}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>
@@ -229,7 +229,7 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_patientBirth}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientBirth}"
 										placement="RIGHT" balloonWidth="200px" />
 								</td>
 							</tr>

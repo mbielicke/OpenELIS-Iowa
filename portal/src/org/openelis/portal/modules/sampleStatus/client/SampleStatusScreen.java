@@ -6,11 +6,11 @@ import static org.openelis.ui.screen.State.QUERY;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.meta.SampleViewMeta;
 import org.openelis.portal.cache.UserCache;
@@ -35,15 +35,22 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SampleStatusScreen extends Screen {
 
-    SampleStatusUI            ui = GWT.create(SampleStatusUIImpl.class);
+    SampleStatusUI             ui = GWT.create(SampleStatusUIImpl.class);
 
-    private ModulePermission  userPermission;
+    private ModulePermission   userPermission;
 
-    private FinalReportFormVO form;
+    private FinalReportFormVO  form;
+
+    private Integer            sampleId;
+
+    private ArrayList<Integer> analysisIds;
+
+    private HashMap<Integer, ArrayList<String>> sampleQas, analysisQas;
 
     public SampleStatusScreen() {
         initWidget(ui.asWidget());
@@ -74,50 +81,7 @@ public class SampleStatusScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                Query query;
-                ArrayList<QueryData> queryList;
-
-                // if ( !validate()) {
-                // Window.alert(Messages.get().correctErrors());
-                // return;
-                // }
-                query = new Query();
-                try {
-                    queryList = createWhereFromParamFields(getQueryFields());
-                } catch (Exception e) {
-                    return;
-                }
-                /*
-                 * if user does not enter any search details, throw an error.
-                 */
-                if (queryList.size() == 0) {
-                    Window.alert(Messages.get().finalReport_error_emptyQueryException());
-                    return;
-                }
-
-                query.setFields(queryList);
-
-                SampleStatusService.get()
-                                   .getSampleListForSampleStatusReport(query,
-                                                                       new AsyncCallback<ArrayList<SampleStatusWebReportVO>>() {
-                                                                           @Override
-                                                                           public void onSuccess(ArrayList<SampleStatusWebReportVO> list) {
-                                                                               if (list.size() > 0) {
-                                                                                   // loadDeck(list);
-                                                                                   // window.clearStatus();
-                                                                               } else {
-                                                                                   Window.alert(Messages.get()
-                                                                                                        .finalReport_error_noSamples());
-                                                                               }
-                                                                           }
-
-                                                                           @Override
-                                                                           public void onFailure(Throwable caught) {
-                                                                               // window.clearStatus();
-                                                                               Window.alert(caught.getMessage());
-                                                                           }
-                                                                       });
-
+                getSampleList();
             }
         });
 
@@ -128,6 +92,14 @@ public class SampleStatusScreen extends Screen {
                 form = new FinalReportFormVO();
                 clearErrors();
                 fireDataChange();
+            }
+        });
+
+        ui.getBackButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                ui.getDeck().showWidget(0);
             }
         });
 
@@ -355,18 +327,14 @@ public class SampleStatusScreen extends Screen {
     }
 
     private void setTableData(ArrayList<SampleViewVO> samples) {
-        int currRow;
+        int currRow, qaCount;
         Integer accNumPrev, accNum;
         String completed, inProgress;
         Date temp;
         Datetime temp1;
         DateHelper dh;
         SampleViewVO data;
-
-        /*
-         * show the sample list table
-         */
-        ui.getDeck().showWidget(1);
+        StringBuffer sb;
 
         /*
          * if there are no samples returned, tell the user
@@ -375,22 +343,37 @@ public class SampleStatusScreen extends Screen {
             ui.getTable().setText(0, 1, Messages.get().finalReport_error_noSamples());
             return;
         }
+
+        /*
+         * show the sample list table
+         */
+        ui.getDeck().showWidget(1);
+
         /*
          * initialize the column headers
          */
         ui.getTable().setText(0, 0, Messages.get().gen_accessionNumber());
         ui.getTable().setText(0, 1, Messages.get().sampleStatus_description());
         ui.getTable().setText(0, 2, Messages.get().sampleStatus_testStatus());
-        ui.getTable().setText(0, 3, Messages.get().gen_collectedDate());
+        ui.getTable().setText(0, 3, Messages.get().sample_collectedDate());
         ui.getTable().setText(0, 4, Messages.get().sampleStatus_dateReceived());
         ui.getTable().setText(0, 5, Messages.get().sample_clientReference());
         ui.getTable().setText(0, 6, Messages.get().sampleStatus_qaEvent());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
+        ui.getTable().setWidth("250%");
+        ui.getTable().getColumnFormatter().setWidth(0, "75px");
+        ui.getTable().getColumnFormatter().setWidth(1, "25%");
+        ui.getTable().getColumnFormatter().setWidth(2, "6%");
+        ui.getTable().getColumnFormatter().setWidth(3, "8%");
+        ui.getTable().getColumnFormatter().setWidth(4, "8%");
+        ui.getTable().getColumnFormatter().setWidth(5, "8%");
+        ui.getTable().getColumnFormatter().setWidth(6, "40%");
 
         dh = new DateHelper();
+        sb = new StringBuffer();
         dh.setEnd(Datetime.MINUTE);
         accNumPrev = null;
-        currRow = 1;
+        currRow = qaCount = 0;
         completed = Messages.get().sampleStatus_completed();
         inProgress = Messages.get().sampleStatus_inProgress();
 
@@ -404,7 +387,17 @@ public class SampleStatusScreen extends Screen {
              * "In Progress".
              */
             if ( !accNum.equals(accNumPrev)) {
+                qaCount = 1;
+                if (currRow > 0) {
+                    sb.append("</ol>");
+                    ui.getTable().setHTML(currRow, 6, sb.toString());
+                    ui.getTable().getCellFormatter().setWordWrap(currRow, 6, true);
+                    sb.setLength(0);
+                }
+                // insertQaData(currRow);
                 currRow++ ;
+                ui.getTable().getRowFormatter().setVerticalAlign(currRow,
+                                                                 HasVerticalAlignment.ALIGN_TOP);
                 if (data.getCollectionDate() != null) {
                     temp = data.getCollectionDate().getDate();
                     if (data.getCollectionTime() == null) {
@@ -419,26 +412,162 @@ public class SampleStatusScreen extends Screen {
                     temp1 = null;
                 }
                 ui.getTable().setText(currRow, 0, DataBaseUtil.toString(data.getAccessionNumber()));
-                ui.getTable().setText(currRow, 1, data.getCollector());
+                sb.append("<ol>");
+                if (sampleQas != null && sampleQas.get(data.getSampleId()) != null) {
+                    ui.getTable().setHTML(currRow,
+                                          1,
+                                          data.getCollector() + "<sub><font color=\"red\">" +
+                                                          qaCount++ + "</font></sub>");
+                    sb.append("<li>");
+                    for (String qa : sampleQas.get(data.getSampleId())) {
+                        sb.append(qa).append("<br>");
+                    }
+                    sb.append("</li><br>");
+                } else {
+                    ui.getTable().setHTML(currRow, 1, data.getCollector());
+                }
                 ui.getTable().setText(currRow, 3, dh.format(temp1));
                 ui.getTable().setText(currRow, 4, dh.format(data.getReceivedDate()));
                 ui.getTable().setText(currRow, 5, data.getClientReference());
-                // ui.getTable().setText(currRow, 6, data.getAnalysisQa());
-            } else {
-                ui.getTable().setText(currRow,
-                                      1,
-                                      ui.getTable().getText(currRow, 1) + "\n" +
-                                                      data.getTestReportingDescription() + " : " +
-                                                      data.getMethodReportingDescription());
-                ui.getTable()
-                  .setText(currRow,
-                           2,
-                           ui.getTable().getText(currRow, 2) +
-                                           "\n" +
-                                           (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getSampleStatusId()) ? completed
-                                                                                                                     : inProgress));
+                sampleId = data.getSampleId();
             }
+            if (analysisQas != null && analysisQas.get(data.getAnalysisId()) != null) {
+                addHtml(currRow, 1, "<br>" + data.getTestReportingDescription() + " : " +
+                                    data.getMethodReportingDescription() +
+                                    "<sub><font color=\"red\">" + qaCount++ + "</font></sub>");
+                sb.append("<li>");
+                for (String qa : analysisQas.get(data.getAnalysisId())) {
+                    sb.append(qa).append("<br>");
+                }
+                sb.append("</li><br>");
+            } else {
+                addHtml(currRow, 1, "<br>" + data.getTestReportingDescription() + " : " +
+                                    data.getMethodReportingDescription());
+            }
+
+            ui.getTable()
+              .setText(currRow,
+                       2,
+                       ui.getTable().getText(currRow, 2) +
+                                       "\n" +
+                                       (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
+                                                            data.getAnalysisStatusId()) ? completed
+                                                                                       : inProgress));
+            // analysisIds.add(data.getAnalysisId());
             accNumPrev = accNum;
         }
+    }
+
+    private void getSampleList() {
+        Query query;
+        ArrayList<QueryData> queryList;
+
+        clearErrors();
+        ui.getTable().removeAllRows();
+
+        /*
+         * check if any of the to fields are filled without the from fields
+         * being filled. Set an error on the widget if they are.
+         */
+        if (DataBaseUtil.isEmpty(ui.getCollectedFrom().getText()) &&
+            !DataBaseUtil.isEmpty(ui.getCollectedTo().getText())) {
+            ui.getCollectedTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
+            return;
+        }
+
+        if (DataBaseUtil.isEmpty(ui.getAccessionFrom().getText()) &&
+            !DataBaseUtil.isEmpty(ui.getAccessionTo().getText())) {
+            ui.getAccessionTo()
+              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
+            return;
+        }
+
+        query = new Query();
+        try {
+            queryList = createWhereFromParamFields(getQueryFields());
+        } catch (Exception e) {
+            return;
+        }
+
+        /*
+         * if user does not enter any search details, throw an error.
+         */
+        if (queryList.size() == 0) {
+            Window.alert(Messages.get().finalReport_error_emptyQueryException());
+            return;
+        }
+
+        query.setFields(queryList);
+        window.setBusy(Messages.get().gen_fetchingSamples());
+
+        SampleStatusService.get()
+                           .getSampleListForSampleStatusReport(query,
+                                                               new AsyncCallback<ArrayList<SampleViewVO>>() {
+                                                                   @Override
+                                                                   public void onSuccess(ArrayList<SampleViewVO> list) {
+                                                                       if (list.size() > 0) {
+                                                                           window.clearStatus();
+                                                                           try {
+                                                                               fetchQaData(list);
+                                                                           } catch (Exception e) {
+                                                                               Window.alert(e.getMessage());
+                                                                               return;
+                                                                           }
+                                                                           setTableData(list);
+                                                                       } else {
+                                                                           Window.alert(Messages.get()
+                                                                                                .finalReport_error_noSamples());
+                                                                       }
+                                                                   }
+
+                                                                   @Override
+                                                                   public void onFailure(Throwable caught) {
+                                                                       window.clearStatus();
+                                                                       Window.alert(caught.getMessage());
+                                                                   }
+                                                               });
+    }
+
+    // TODO
+    private void fetchQaData(ArrayList<SampleViewVO> samples) throws Exception {
+        HashSet<Integer> sids, aids;
+
+        sids = new HashSet<Integer>();
+        aids = new HashSet<Integer>();
+        for (SampleViewVO sample : samples) {
+            sids.add(sample.getSampleId());
+            aids.add(sample.getAnalysisId());
+        }
+
+        sampleQas = SampleStatusService.get().getSampleQaEvents(new ArrayList<Integer>(sids));
+
+        analysisQas = SampleStatusService.get().getAnalysisQaEvents(new ArrayList<Integer>(aids));
+    }
+
+    private void insertQaData(int row) {
+        int count;
+
+        count = 0;
+        if (sampleQas.get(sampleId) != null)
+            count = 1;
+        for (Integer id : analysisIds) {
+            if (analysisQas.get(id) != null)
+                count++ ;
+            if (count > 1) {
+                break;
+            }
+        }
+        if (count > 1) {
+
+        } else {
+
+        }
+        sampleId = null;
+        analysisIds.clear();
+    }
+
+    private void addHtml(int row, int column, String html) {
+        ui.getTable().setHTML(row, column, ui.getTable().getHTML(row, column) + html);
     }
 }
