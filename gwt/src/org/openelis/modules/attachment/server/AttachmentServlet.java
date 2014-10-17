@@ -125,7 +125,7 @@ public class AttachmentServlet extends RemoteServlet implements AttachmentServic
         session = getThreadLocalRequest().getSession();
         paths = (List<String>)session.getAttribute("upload");
         try {
-            return attachmentManager.put(paths);
+            return attachmentManager.put(paths, null);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         } finally {

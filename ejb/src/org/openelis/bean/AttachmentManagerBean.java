@@ -175,7 +175,8 @@ public class AttachmentManagerBean {
                     am = map.get(data.getAttachmentId());
                     if (Constants.table().SAMPLE.equals(data.getReferenceTableId())) {
                         s = smap.get(data.getReferenceId());
-                        data.setReferenceDescription(Messages.get().attachment_sampleDescription(s.getAccessionNumber()));
+                        data.setReferenceDescription(Messages.get()
+                                                             .attachment_sampleDescription(s.getAccessionNumber()));
                     }
                 }
             }
@@ -324,7 +325,7 @@ public class AttachmentManagerBean {
      * set as the description. Returns the managers for the attachment records
      * created.
      */
-    public ArrayList<AttachmentManager> put(List<String> paths) throws Exception {
+    public ArrayList<AttachmentManager> put(List<String> paths, Integer sectionId) throws Exception {
         String base;
         AttachmentDO data;
         ArrayList<Integer> ids;
@@ -341,7 +342,7 @@ public class AttachmentManagerBean {
          * managers for those records
          */
         for (String p : paths) {
-            data = put(base, p, true, null, null, null);
+            data = put(base, p, true, null, null, sectionId);
             ids.add(data.getId());
         }
 
@@ -392,8 +393,7 @@ public class AttachmentManagerBean {
         try {
             Files.move(src, dst);
         } catch (Exception anyE) {
-            log.severe("Can't move file '" + src.toString() + "' to '" + dst.toString());
-            anyE.printStackTrace();
+            log.log(Level.SEVERE, "Can't move file '" + src.toString() + "' to '" + dst.toString() + "'", anyE);
             throw new DatabaseException(Messages.get().attachment_moveFileException(dst.toString()));
         }
 
@@ -512,16 +512,16 @@ public class AttachmentManagerBean {
 
     private void validate(AttachmentManager am) throws Exception {
         ValidationErrorsList e;
-        
+
         e = new ValidationErrorsList();
-        
+
         if (getAttachment(am).isChanged())
             try {
                 attachment.validate(getAttachment(am));
             } catch (Exception err) {
                 DataBaseUtil.mergeException(e, err);
-            }        
-        
+            }
+
         if (e.size() > 0)
             throw e;
     }

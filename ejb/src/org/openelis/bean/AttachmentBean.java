@@ -146,7 +146,7 @@ public class AttachmentBean {
         cal.add(Calendar.WEEK_OF_YEAR, -2);
         startDate = cal.getTime();
 
-        query = manager.createNamedQuery("Attachment.FetchUnattachedByDescription");
+        query = manager.createNamedQuery("Attachment.FetchUnattachedByDescAndCreatedDate");
         query.setParameter("description", description);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
@@ -158,6 +158,25 @@ public class AttachmentBean {
         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    /**
+     * Returns a distinct list of attachment records that don't have any
+     * attachment items and were created before the passed date
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<AttachmentDO> fetchUnattachedBeforeCreatedDate(Date createdDate) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("Attachment.FetchUnattachedBeforeCreatedDate");
+        query.setParameter("createdDate", createdDate);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
     }

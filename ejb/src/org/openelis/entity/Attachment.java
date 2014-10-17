@@ -63,10 +63,14 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "Attachment.FetchByIdsDescending",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id in (:ids) order by a.id desc"),
-               @NamedQuery(name = "Attachment.FetchUnattachedByDescription",
+               @NamedQuery(name = "Attachment.FetchUnattachedByDescAndCreatedDate",
                            query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
                                    + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i)"
-                                   + " and a.description like (:description) and a.createdDate between :startDate and :endDate order by a.id desc")})
+                                   + " and a.description like (:description) and a.createdDate between :startDate and :endDate order by a.id desc"),
+               @NamedQuery(name = "Attachment.FetchUnattachedBeforeCreatedDate",
+                           query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
+                                 + " from Attachment a where a.id not in (select i.attachmentId from AttachmentItem i)"
+                                 + " and a.createdDate < :createdDate")})
 @Entity
 @Table(name = "attachment")
 @EntityListeners({AuditUtil.class})
