@@ -340,7 +340,7 @@ public class ReportUtil {
          */
         directory = null;
         if (systemVariableDirectory != null)
-            directory = ReportUtil.getSystemVariableValue(systemVariableDirectory);
+            directory = getSystemVariableValue(systemVariableDirectory);
 
         if (directory == null)
             directory = "/tmp";
