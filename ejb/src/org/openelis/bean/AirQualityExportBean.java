@@ -150,7 +150,8 @@ public class AirQualityExportBean {
 
     private ArrayList<String>                        sulfateAnalytes, nitrateAnalytes;
 
-    private HashMap<Integer, String>                 analyteCodes, unitCodes;
+    private HashMap<Integer, String>                 analyteCodes, unitCodes, methodCodes,
+                    durationCodes;
 
     private HashMap<Integer, AnalyteParameterViewDO> analyteParameters;
 
@@ -209,9 +210,9 @@ public class AirQualityExportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         boolean pressureTempString, fileWritten;
-        Integer analysisCount;
+        Integer analysisCount, testId;
         ReportStatus status;
-        String val, frDate, tDate, accession, action, reportTo, attention, tempArray[], analyteArray[], qualifierCode, airDir, metal, errorMessage;
+        String val, frDate, tDate, accession, action, reportTo, attention, tempArray[], codeArray[], analyteArray[], qualifierCode, airDir, metal, errorMessage;
         Datetime d;
         SimpleDateFormat dateTimeFormat;
         QueryData field;
@@ -289,15 +290,21 @@ public class AirQualityExportBean {
 
         try {
             /*
-             * Test ids for air toxics tests.
+             * Test ids, method codes, and duration codes for air toxics tests.
              * 
-             * Format: "test id"|"test id"|repeating
+             * Format: "test id";"method code";"duration code"|repeating
              */
             val = systemVariable.fetchByName("air_toxics_tests").getValue();
             tempArray = val.split(escape + delim);
             airToxicsTests = new ArrayList<Integer>();
+            methodCodes = new HashMap<Integer, String>();
+            durationCodes = new HashMap<Integer, String>();
             for (int i = 0; i < tempArray.length; i++ ) {
-                airToxicsTests.add(Integer.parseInt(tempArray[i]));
+                codeArray = tempArray[i].split(";");
+                testId = Integer.parseInt(codeArray[0]);
+                methodCodes.put(testId, codeArray[1]);
+                durationCodes.put(testId, codeArray[2]);
+                airToxicsTests.add(testId);
             }
         } catch (Exception e) {
             log.log(Level.SEVERE,
@@ -1105,14 +1112,11 @@ public class AirQualityExportBean {
                                                                    ArrayList<String> qualifierStrings,
                                                                    Integer analysisId) throws Exception {
         boolean addTds, addAll;
-        int durationCode, methodCode;
         Integer analysisCount;
         Double ttds, tmnoc;
-        String stateCode, countyCode, siteId, parameter, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, key;
+        String stateCode, countyCode, siteId, parameter, durationCode, methodCode, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, key;
         StringBuilder sb;
         SimpleDateFormat dateTimeFormat;
-        AnalyteParameterViewDO ap;
-        DecimalFormat threeDigits;
         HashMap<String, ArrayList<String>> airToxicsStrings;
         HashMap<String, String> auxData;
 
@@ -1130,10 +1134,8 @@ public class AirQualityExportBean {
          */
         addAll = addTds = false;
         tmnoc = ttds = null;
-        reportedUnit = parameter = null;
-        analysisCount = durationCode = methodCode = 0;
-        threeDigits = new DecimalFormat("#");
-        threeDigits.setMinimumIntegerDigits(3);
+        reportedUnit = parameter = durationCode = methodCode = null;
+        analysisCount = 0;
 
         /*
          * get auxiliary data from the sample
@@ -1247,11 +1249,8 @@ public class AirQualityExportBean {
                             continue;
                         }
 
-                        ap = analyteParameters.get(data.getAnalyteId());
-                        if (ap.getP2() != null && ap.getP3() != null) {
-                            methodCode = ap.getP2().intValue();
-                            durationCode = ap.getP3().intValue();
-                        }
+                        methodCode = methodCodes.get(testId);
+                        durationCode = durationCodes.get(testId);
                         continue;
                     } else {
                         continue;
@@ -1272,7 +1271,7 @@ public class AirQualityExportBean {
                 /*
                  * if the data isn't there, a string cannot be created
                  */
-                if (durationCode == 0 || methodCode == 0) {
+                if (durationCode == null || methodCode == null) {
                     value = null;
                     mdl = null;
                     qualifier = null;
@@ -1290,7 +1289,7 @@ public class AirQualityExportBean {
 
                 sb.append(durationCode).append(delim);
                 sb.append(reportedUnit).append(delim);
-                sb.append(threeDigits.format(methodCode)).append(delim);
+                sb.append(methodCode).append(delim);
                 sb.append(date).append(delim);
                 sb.append(time).append(delim);
                 if (DataBaseUtil.isEmpty(nullDataCd)) {
@@ -1363,7 +1362,8 @@ public class AirQualityExportBean {
                 mdl = null;
                 qualifier = null;
                 parameter = null;
-                methodCode = 0;
+                methodCode = null;
+                durationCode = null;
             }
         }
 
@@ -1460,12 +1460,9 @@ public class AirQualityExportBean {
                                                           String poc, String reportedUnit,
                                                           String date, boolean addAll,
                                                           boolean addTds, Integer analysisId) throws Exception {
-        int methodCode;
         Double ttds, tmnoc;
-        String parameter, value, analyte;
+        String parameter, value, analyte, methodCode;
         StringBuilder sb;
-        AnalyteParameterViewDO ap;
-        DecimalFormat threeDigits;
         ArrayList<String> precisions;
 
         tmnoc = ttds = null;
@@ -1474,13 +1471,10 @@ public class AirQualityExportBean {
         } else if (addTds) {
             ttds = 0.0;
         }
-        threeDigits = new DecimalFormat("#");
-        threeDigits.setMinimumIntegerDigits(3);
 
         precisions = new ArrayList<String>();
         sb = new StringBuilder();
-        value = analyte = parameter = null;
-        methodCode = 0;
+        value = analyte = parameter = methodCode = null;
         if (getResults(sm) != null) {
             for (ResultViewDO data : getResults(sm)) {
                 /*
@@ -1490,7 +1484,7 @@ public class AirQualityExportBean {
                     continue;
                 /*
                  * get all result data for this analyte before creating the
-                 * screen
+                 * string
                  */
                 if (data.getIsColumn().equals("N")) {
                     value = data.getValue();
@@ -1504,10 +1498,7 @@ public class AirQualityExportBean {
                     }
                     parameter = analyteCodes.get(data.getAnalyteId());
                     analyte = data.getAnalyte();
-                    ap = analyteParameters.get(data.getAnalyteId());
-                    if (ap.getP2() != null && ap.getP3() != null) {
-                        methodCode = ap.getP2().intValue();
-                    }
+                    methodCode = methodCodes.get(testId);
                 } else {
                     continue;
                 }
@@ -1533,7 +1524,7 @@ public class AirQualityExportBean {
                 /*
                  * if the data isn't there, a string cannot be created
                  */
-                if (methodCode == 0) {
+                if (methodCode == null) {
                     value = null;
                     parameter = null;
                     analyte = null;
@@ -1577,7 +1568,7 @@ public class AirQualityExportBean {
                 value = null;
                 parameter = null;
                 analyte = null;
-                methodCode = 0;
+                methodCode = null;
             }
         }
 
