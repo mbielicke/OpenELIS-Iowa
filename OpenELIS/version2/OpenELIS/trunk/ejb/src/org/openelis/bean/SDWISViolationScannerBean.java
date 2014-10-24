@@ -330,7 +330,7 @@ public class SDWISViolationScannerBean {
      */
     private void createOrder(SampleManager1 sm, PWSManager pwsm, Integer orderTemplate,
                              String series, ArrayList<String> analytes, boolean trigger) throws Exception {
-        int multi;
+        int multi, index;
         OrderManager1 om;
         PWSMonitorManager pwsmm;
         PWSMonitorDO data;
@@ -361,6 +361,18 @@ public class SDWISViolationScannerBean {
                 item.setQuantity(item.getQuantity() * multi);
         }
 
+        /*
+         * trigger orders cannot have the original sample number aux data filled
+         */
+        if (trigger) {
+            index = -1;
+            for (String s : analytes) {
+                if (AuxDataHelperBean.ORIG_SAMPLE_NUMBER.equals(s))
+                    index = analytes.indexOf(s);
+            }
+            if (index != -1)
+                analytes.remove(index);
+        }
         orderManager.createOrderFromSample(om, sm, analytes);
     }
 
