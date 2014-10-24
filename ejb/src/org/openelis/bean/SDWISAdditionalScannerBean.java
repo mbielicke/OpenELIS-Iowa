@@ -278,6 +278,7 @@ public class SDWISAdditionalScannerBean {
      */
     private void createOrder(SampleManager1 sm, PWSManager pwsm, Integer orderTemplate,
                              ArrayList<String> analytes, PWSViolationDO violation, int multiplier) throws Exception {
+        int index;
         OrderManager1 om;
 
         om = orderManager.duplicate(orderTemplate, true, false).getManager();
@@ -287,6 +288,17 @@ public class SDWISAdditionalScannerBean {
                 item.setQuantity(item.getQuantity() * multiplier);
         }
 
+        /*
+         * additional orders cannot have the original sample number aux data
+         * filled
+         */
+        index = -1;
+        for (String s : analytes) {
+            if (AuxDataHelperBean.ORIG_SAMPLE_NUMBER.equals(s))
+                index = analytes.indexOf(s);
+        }
+        if (index != -1)
+            analytes.remove(index);
         orderManager.createOrderFromSample(om, sm, analytes);
     }
 
