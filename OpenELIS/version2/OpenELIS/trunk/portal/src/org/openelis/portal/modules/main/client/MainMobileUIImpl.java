@@ -27,6 +27,7 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI{
 	
 	public MainMobileUIImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		main.getElement().getStyle().setOverflow(Overflow.AUTO);
 	}
 	
 	public AbsolutePanel main() {

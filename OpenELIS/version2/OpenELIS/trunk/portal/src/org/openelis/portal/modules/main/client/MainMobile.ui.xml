@@ -29,7 +29,7 @@
       </g:layer>
     </g:LayoutPanel>
     </g:AbsolutePanel>
-    <g:AbsolutePanel styleName="{style.scroll}" ui:field="main"/>
+    <g:AbsolutePanel ui:field="main"/>
   </g:AbsolutePanel>
   
 </ui:UiBinder>
