@@ -7,6 +7,69 @@ package org.openelis.portal.messages;
 public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   
   /**
+   * Translated "Completed".
+   * 
+   * @return translated "Completed"
+   */
+  @DefaultMessage("Completed")
+  @Key("analysis.completed")
+  String analysis_completed();
+
+  /**
+   * Translated "Method".
+   * 
+   * @return translated "Method"
+   */
+  @DefaultMessage("Method")
+  @Key("analysis.method")
+  String analysis_method();
+
+  /**
+   * Translated "QA Event".
+   * 
+   * @return translated "QA Event"
+   */
+  @DefaultMessage("QA Event")
+  @Key("analysis.qaEvent")
+  String analysis_qaEvent();
+
+  /**
+   * Translated "Revision".
+   * 
+   * @return translated "Revision"
+   */
+  @DefaultMessage("Revision")
+  @Key("analysis.revision")
+  String analysis_revision();
+
+  /**
+   * Translated "Started".
+   * 
+   * @return translated "Started"
+   */
+  @DefaultMessage("Started")
+  @Key("analysis.started")
+  String analysis_started();
+
+  /**
+   * Translated "Test".
+   * 
+   * @return translated "Test"
+   */
+  @DefaultMessage("Test")
+  @Key("analysis.test")
+  String analysis_test();
+
+  /**
+   * Translated "Unit".
+   * 
+   * @return translated "Unit"
+   */
+  @DefaultMessage("Unit")
+  @Key("analysis.unit")
+  String analysis_unit();
+
+  /**
    * Translated "Data View by Spreadsheet".
    * 
    * @return translated "Data View by Spreadsheet"
@@ -14,6 +77,33 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Data View by Spreadsheet")
   @Key("dataView")
   String dataView();
+
+  /**
+   * Translated "Select Analysis Fields For Output".
+   * 
+   * @return translated "Select Analysis Fields For Output"
+   */
+  @DefaultMessage("Select Analysis Fields For Output")
+  @Key("dataView.analysisFields")
+  String dataView_analysisFields();
+
+  /**
+   * Translated "Test Analyte".
+   * 
+   * @return translated "Test Analyte"
+   */
+  @DefaultMessage("Test Analyte")
+  @Key("dataView.analyte")
+  String dataView_analyte();
+
+  /**
+   * Translated "Auxiliary Data".
+   * 
+   * @return translated "Auxiliary Data"
+   */
+  @DefaultMessage("Auxiliary Data")
+  @Key("dataView.aux")
+  String dataView_aux();
 
   /**
    * Translated "Continue to Report Fields".
@@ -97,13 +187,31 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_released();
 
   /**
-   * Translated "<span class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>".
+   * Translated "<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>".
    * 
-   * @return translated "<span class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>"
+   * @return translated "<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>"
    */
-  @DefaultMessage("<span class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>")
+  @DefaultMessage("<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\"> Locating Your Result </span> <ul> <li> To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add “*” at the end of your search term. For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”.  Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul> <span class = \"helpHeader\"> Disclaimer </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul>")
   @Key("dataView.help.screen")
   String dataView_help_screen();
+
+  /**
+   * Translated "Select Organization Fields For Output".
+   * 
+   * @return translated "Select Organization Fields For Output"
+   */
+  @DefaultMessage("Select Organization Fields For Output")
+  @Key("dataView.orgFields")
+  String dataView_orgFields();
+
+  /**
+   * Translated "Select Patient Fields For Output".
+   * 
+   * @return translated "Select Patient Fields For Output"
+   */
+  @DefaultMessage("Select Patient Fields For Output")
+  @Key("dataView.patientFields")
+  String dataView_patientFields();
 
   /**
    * Translated "Query".
@@ -113,6 +221,33 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Query")
   @Key("dataView.query")
   String dataView_query();
+
+  /**
+   * Translated "Select Sample Fields For Output".
+   * 
+   * @return translated "Select Sample Fields For Output"
+   */
+  @DefaultMessage("Select Sample Fields For Output")
+  @Key("dataView.sampleFields")
+  String dataView_sampleFields();
+
+  /**
+   * Translated "Please select at least one test analyte or aux data".
+   * 
+   * @return translated "Please select at least one test analyte or aux data"
+   */
+  @DefaultMessage("Please select at least one test analyte or aux data")
+  @Key("dataView.selectOneAnaOrAux")
+  String dataView_selectOneAnaOrAux();
+
+  /**
+   * Translated "Selected Analytes".
+   * 
+   * @return translated "Selected Analytes"
+   */
+  @DefaultMessage("Selected Analytes")
+  @Key("dataView.selectedAnalytes")
+  String dataView_selectedAnalytes();
 
   /**
    * Translated "You do not have permission to access {0}".
@@ -131,15 +266,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("ANY SAMPLES")
   @Key("finalReport.anySamples")
   String finalReport_anySamples();
-
-  /**
-   * Translated "Back To Search".
-   * 
-   * @return translated "Back To Search"
-   */
-  @DefaultMessage("Back To Search")
-  @Key("finalReport.back")
-  String finalReport_back();
 
   /**
    * Translated "CLINICAL SAMPLES ONLY".
@@ -313,11 +439,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_released();
 
   /**
-   * Translated "<span style=\"float:left;font-size:11pt;\" class = \"helpHeader\"> Locating Your Results </span> <br/> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/> The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.".
+   * Translated "<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\"> Locating Your Results </span> <br/> <span style=\"float:left;font-size:11pt;\"> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <span style=\"color:red;font-weight:bold;\">Collected Date</span>, <span style=\"color:red;font-weight:bold;\">Accession Number</span>, <span style=\"color:red;font-weight:bold;\">Collector Name</span>, or <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <span style=\"color:red;font-weight:bold;\">Collector Name</span> field and select (using the calendars provided) 2014-06-01 in the <span style=\"color:red;font-weight:bold;\">Collected Date</span> field and 2014-06-30 in the <span style=\"color:red;font-weight:bold;\">To</span> field.<p/> The system supports wild card searches in the following fields: <span style=\"color:red;font-weight:bold;\">Client Reference</span>, <span style=\"color:red;font-weight:bold;\">Collector Name</span>, <span style=\"color:red;font-weight:bold;\">PWS ID</span>, <span style=\"color:red;font-weight:bold;\">Patient''s First Name</span>, and <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <span style=\"color:red;font-weight:bold;\">Collector Name</span> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <span style=\"color:red;font-weight:bold;\">Find Samples</span> button to display a list of samples that match your search criteria. The <span style=\"color:red;font-weight:bold;\">Reset</span> button clears all of the search fields.</span>".
    * 
-   * @return translated "<span style=\"float:left;font-size:11pt;\" class = \"helpHeader\"> Locating Your Results </span> <br/> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/> The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields."
+   * @return translated "<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\"> Locating Your Results </span> <br/> <span style=\"float:left;font-size:11pt;\"> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <span style=\"color:red;font-weight:bold;\">Collected Date</span>, <span style=\"color:red;font-weight:bold;\">Accession Number</span>, <span style=\"color:red;font-weight:bold;\">Collector Name</span>, or <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <span style=\"color:red;font-weight:bold;\">Collector Name</span> field and select (using the calendars provided) 2014-06-01 in the <span style=\"color:red;font-weight:bold;\">Collected Date</span> field and 2014-06-30 in the <span style=\"color:red;font-weight:bold;\">To</span> field.<p/> The system supports wild card searches in the following fields: <span style=\"color:red;font-weight:bold;\">Client Reference</span>, <span style=\"color:red;font-weight:bold;\">Collector Name</span>, <span style=\"color:red;font-weight:bold;\">PWS ID</span>, <span style=\"color:red;font-weight:bold;\">Patient''s First Name</span>, and <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <span style=\"color:red;font-weight:bold;\">Collector Name</span> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <span style=\"color:red;font-weight:bold;\">Find Samples</span> button to display a list of samples that match your search criteria. The <span style=\"color:red;font-weight:bold;\">Reset</span> button clears all of the search fields.</span>"
    */
-  @DefaultMessage("<span style=\"float:left;font-size:11pt;\" class = \"helpHeader\"> Locating Your Results </span> <br/> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/> The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.")
+  @DefaultMessage("<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\"> Locating Your Results </span> <br/> <span style=\"float:left;font-size:11pt;\"> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <span style=\"color:red;font-weight:bold;\">Collected Date</span>, <span style=\"color:red;font-weight:bold;\">Accession Number</span>, <span style=\"color:red;font-weight:bold;\">Collector Name</span>, or <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <span style=\"color:red;font-weight:bold;\">Collector Name</span> field and select (using the calendars provided) 2014-06-01 in the <span style=\"color:red;font-weight:bold;\">Collected Date</span> field and 2014-06-30 in the <span style=\"color:red;font-weight:bold;\">To</span> field.<p/> The system supports wild card searches in the following fields: <span style=\"color:red;font-weight:bold;\">Client Reference</span>, <span style=\"color:red;font-weight:bold;\">Collector Name</span>, <span style=\"color:red;font-weight:bold;\">PWS ID</span>, <span style=\"color:red;font-weight:bold;\">Patient''s First Name</span>, and <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <span style=\"color:red;font-weight:bold;\">Patient''s Last Name</span> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <span style=\"color:red;font-weight:bold;\">Collector Name</span> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <span style=\"color:red;font-weight:bold;\">Find Samples</span> button to display a list of samples that match your search criteria. The <span style=\"color:red;font-weight:bold;\">Reset</span> button clears all of the search fields.</span>")
   @Key("finalReport.help.screen")
   String finalReport_help_screen();
 
@@ -457,6 +583,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String gen_accessionNumber();
 
   /**
+   * Translated "Back To Search".
+   * 
+   * @return translated "Back To Search"
+   */
+  @DefaultMessage("Back To Search")
+  @Key("gen.back")
+  String gen_back();
+
+  /**
    * Translated "Fetching samples....".
    * 
    * @return translated "Fetching samples...."
@@ -547,6 +682,114 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String main_testRequest();
 
   /**
+   * Translated "Address".
+   * 
+   * @return translated "Address"
+   */
+  @DefaultMessage("Address")
+  @Key("org.address")
+  String org_address();
+
+  /**
+   * Translated "Apt/Suite #".
+   * 
+   * @return translated "Apt/Suite #"
+   */
+  @DefaultMessage("Apt/Suite #")
+  @Key("org.apt")
+  String org_apt();
+
+  /**
+   * Translated "City".
+   * 
+   * @return translated "City"
+   */
+  @DefaultMessage("City")
+  @Key("org.city")
+  String org_city();
+
+  /**
+   * Translated "Name".
+   * 
+   * @return translated "Name"
+   */
+  @DefaultMessage("Name")
+  @Key("org.name")
+  String org_name();
+
+  /**
+   * Translated "State".
+   * 
+   * @return translated "State"
+   */
+  @DefaultMessage("State")
+  @Key("org.state")
+  String org_state();
+
+  /**
+   * Translated "Zip Code".
+   * 
+   * @return translated "Zip Code"
+   */
+  @DefaultMessage("Zip Code")
+  @Key("org.zip")
+  String org_zip();
+
+  /**
+   * Translated "Birth Date".
+   * 
+   * @return translated "Birth Date"
+   */
+  @DefaultMessage("Birth Date")
+  @Key("patient.birthDate")
+  String patient_birthDate();
+
+  /**
+   * Translated "Ethnicity".
+   * 
+   * @return translated "Ethnicity"
+   */
+  @DefaultMessage("Ethnicity")
+  @Key("patient.ethnicity")
+  String patient_ethnicity();
+
+  /**
+   * Translated "First Name".
+   * 
+   * @return translated "First Name"
+   */
+  @DefaultMessage("First Name")
+  @Key("patient.firstName")
+  String patient_firstName();
+
+  /**
+   * Translated "Gender".
+   * 
+   * @return translated "Gender"
+   */
+  @DefaultMessage("Gender")
+  @Key("patient.gender")
+  String patient_gender();
+
+  /**
+   * Translated "Last Name".
+   * 
+   * @return translated "Last Name"
+   */
+  @DefaultMessage("Last Name")
+  @Key("patient.lastName")
+  String patient_lastName();
+
+  /**
+   * Translated "Race".
+   * 
+   * @return translated "Race"
+   */
+  @DefaultMessage("Race")
+  @Key("patient.race")
+  String patient_race();
+
+  /**
    * Translated "Project".
    * 
    * @return translated "Project"
@@ -610,13 +853,40 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sample_collectionTown();
 
   /**
-   * Translated "Collector Name".
+   * Translated "Collector".
    * 
-   * @return translated "Collector Name"
+   * @return translated "Collector"
    */
-  @DefaultMessage("Collector Name")
+  @DefaultMessage("Collector")
   @Key("sample.collector")
   String sample_collector();
+
+  /**
+   * Translated "Sample Description".
+   * 
+   * @return translated "Sample Description"
+   */
+  @DefaultMessage("Sample Description")
+  @Key("sample.description")
+  String sample_description();
+
+  /**
+   * Translated "Location City".
+   * 
+   * @return translated "Location City"
+   */
+  @DefaultMessage("Location City")
+  @Key("sample.locationCity")
+  String sample_locationCity();
+
+  /**
+   * Translated "Phone #".
+   * 
+   * @return translated "Phone #"
+   */
+  @DefaultMessage("Phone #")
+  @Key("sample.phone")
+  String sample_phone();
 
   /**
    * Translated "Project Code".
@@ -628,6 +898,24 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sample_projectCode();
 
   /**
+   * Translated "Received".
+   * 
+   * @return translated "Received"
+   */
+  @DefaultMessage("Received")
+  @Key("sample.received")
+  String sample_received();
+
+  /**
+   * Translated "Released".
+   * 
+   * @return translated "Released"
+   */
+  @DefaultMessage("Released")
+  @Key("sample.released")
+  String sample_released();
+
+  /**
    * Translated "Released Date".
    * 
    * @return translated "Released Date"
@@ -635,6 +923,33 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Released Date")
   @Key("sample.releasedDate")
   String sample_releasedDate();
+
+  /**
+   * Translated "Source".
+   * 
+   * @return translated "Source"
+   */
+  @DefaultMessage("Source")
+  @Key("sample.source")
+  String sample_source();
+
+  /**
+   * Translated "Status".
+   * 
+   * @return translated "Status"
+   */
+  @DefaultMessage("Status")
+  @Key("sample.status")
+  String sample_status();
+
+  /**
+   * Translated "Sample Type".
+   * 
+   * @return translated "Sample Type"
+   */
+  @DefaultMessage("Sample Type")
+  @Key("sample.type")
+  String sample_type();
 
   /**
    * Translated "Completed".
@@ -664,11 +979,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sampleStatus_description();
 
   /**
-   * Translated "<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>".
+   * Translated "<p><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><br/><br/><span style=\"float:left;font-size:11pt;\">To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul></span></p><br/><br/><p><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Find the Status of Samples </span><br/><span style=\"float:left;font-size:11pt;\"><ul><li>If searching by sample collection date, specify the beginning date in the <span style=\"color:red;font-weight:bold;\">Collected Date</span> and the ending date in the <span style=\"color:red;font-weight:bold;\">To</span> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <span style=\"color:red;font-weight:bold;\">Client Reference</span> field. You may use part of a reference by adding a \"*\" at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\". Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul></span></p>".
    * 
-   * @return translated "<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>"
+   * @return translated "<p><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><br/><br/><span style=\"float:left;font-size:11pt;\">To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul></span></p><br/><br/><p><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Find the Status of Samples </span><br/><span style=\"float:left;font-size:11pt;\"><ul><li>If searching by sample collection date, specify the beginning date in the <span style=\"color:red;font-weight:bold;\">Collected Date</span> and the ending date in the <span style=\"color:red;font-weight:bold;\">To</span> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <span style=\"color:red;font-weight:bold;\">Client Reference</span> field. You may use part of a reference by adding a \"*\" at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\". Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul></span></p>"
    */
-  @DefaultMessage("<span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><p/> To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><p/> <span class = \"helpHeader\">To Find the Status of Samples </span><ul> <li> If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>to</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today’s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a “*” at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters “BIG”, enter “BIG*”. Matches would include “BIG WATER”, “BIG RIVER”, “BIGGER THAN SKY”, etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul>")
+  @DefaultMessage("<p><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><br/><br/><span style=\"float:left;font-size:11pt;\">To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul></span></p><br/><br/><p><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Find the Status of Samples </span><br/><span style=\"float:left;font-size:11pt;\"><ul><li>If searching by sample collection date, specify the beginning date in the <span style=\"color:red;font-weight:bold;\">Collected Date</span> and the ending date in the <span style=\"color:red;font-weight:bold;\">To</span> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <span style=\"color:red;font-weight:bold;\">Client Reference</span> field. You may use part of a reference by adding a \"*\" at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\". Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul></span></p>")
   @Key("sampleStatus.help.screen")
   String sampleStatus_help_screen();
 

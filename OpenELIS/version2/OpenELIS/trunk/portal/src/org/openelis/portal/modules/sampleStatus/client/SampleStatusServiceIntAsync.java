@@ -14,7 +14,7 @@ public interface SampleStatusServiceIntAsync {
     void getSampleListForSampleStatusReport(Query query,
                                             AsyncCallback<ArrayList<SampleViewVO>> callback);
 
-    void getSampleStatusProjectList(AsyncCallback<ArrayList<IdNameVO>> callback);
+    void getProjectList(AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void getSampleQaEvents(ArrayList<Integer> sampleIds,
                            AsyncCallback<HashMap<Integer, ArrayList<String>>> callback);

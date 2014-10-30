@@ -38,8 +38,8 @@ public class SampleStatusService implements SampleStatusServiceInt, SampleStatus
     }
 
     @Override
-    public void getSampleStatusProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.getSampleStatusProjectList(callback);
+    public void getProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
+        service.getProjectList(callback);
     }
 
     @Override
@@ -64,11 +64,11 @@ public class SampleStatusService implements SampleStatusServiceInt, SampleStatus
     }
 
     @Override
-    public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
+    public ArrayList<IdNameVO> getProjectList() throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
 
         callback = new Callback<ArrayList<IdNameVO>>();
-        service.getSampleStatusProjectList(callback);
+        service.getProjectList(callback);
         return callback.getResult();
     }
 

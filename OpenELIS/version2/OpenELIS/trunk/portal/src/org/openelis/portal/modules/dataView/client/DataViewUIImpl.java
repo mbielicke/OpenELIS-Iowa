@@ -1,9 +1,11 @@
 package org.openelis.portal.modules.dataView.client;
 
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.MultiDropdown;
+import org.openelis.ui.widget.CheckBox;
+import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
+import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -32,13 +34,27 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
     protected Calendar                      collectedFrom, collectedTo, releasedFrom, releasedTo;
 
     @UiField
-    protected MultiDropdown<Integer>        projectCode;
+    protected Dropdown<Integer>             projectCode;
 
     @UiField
-    protected Button                        continueButton, resetButton, backButton;
+    protected CheckBox                      accession, sampleCollected, sampleReceived,
+                    sampleReleased, sampleStatus, projectId, clientReferenceHeader,
+                    collectorHeader, collectionSiteHeader, sampleDescription, collectorPhone,
+                    sampleType, source, sampleLocationCity, organizationName, organizationApt,
+                    organizationAddress, organizationCity, organizationState, organizationZip,
+                    analysisTest, analysisMethod, analysisRevision, analysisUnit, analysisStarted,
+                    analysisCompleted, analysisReleased, analysisQa, patientLastName,
+                    patientFirstName, patientBirth, patientGender, patientRace, patientEthnicity;
 
-    // @UiField
-    // protected FlexTable table;
+    @UiField
+    protected Table                         analyteTable, auxTable;
+
+    @UiField
+    protected Button                        continueButton, resetButton,
+                    selectAllSampleFieldsButton, selectAllOrgFieldsButton,
+                    selectAllAnalysisFieldsButton, selectAllPatientFieldsButton,
+                    selectAllAnalytesButton, unselectAllAnalytesButton, selectAllAuxButton,
+                    unselectAllAuxButton, backButton, runReportButton;
 
     @UiField
     protected DeckPanel                     deck;
@@ -110,8 +126,188 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
     }
 
     @Override
-    public MultiDropdown<Integer> getProjectCode() {
+    public Dropdown<Integer> getProjectCode() {
         return projectCode;
+    }
+
+    @Override
+    public CheckBox getAccession() {
+        return accession;
+    }
+
+    @Override
+    public CheckBox getSampleCollected() {
+        return sampleCollected;
+    }
+
+    @Override
+    public CheckBox getSampleReceived() {
+        return sampleReceived;
+    }
+
+    @Override
+    public CheckBox getSampleReleased() {
+        return sampleReleased;
+    }
+
+    @Override
+    public CheckBox getSampleStatus() {
+        return sampleStatus;
+    }
+
+    @Override
+    public CheckBox getProjectId() {
+        return projectId;
+    }
+
+    @Override
+    public CheckBox getClientReferenceHeader() {
+        return clientReferenceHeader;
+    }
+
+    @Override
+    public CheckBox getCollectorHeader() {
+        return collectorHeader;
+    }
+
+    @Override
+    public CheckBox getCollectionSiteHeader() {
+        return collectionSiteHeader;
+    }
+
+    @Override
+    public CheckBox getSampleDescription() {
+        return sampleDescription;
+    }
+
+    @Override
+    public CheckBox getCollectorPhone() {
+        return collectorPhone;
+    }
+
+    @Override
+    public CheckBox getSampleType() {
+        return sampleType;
+    }
+
+    @Override
+    public CheckBox getSource() {
+        return source;
+    }
+
+    @Override
+    public CheckBox getSampleLocationCity() {
+        return sampleLocationCity;
+    }
+
+    @Override
+    public CheckBox getOrganizationName() {
+        return organizationName;
+    }
+
+    @Override
+    public CheckBox getOrganizationApt() {
+        return organizationApt;
+    }
+
+    @Override
+    public CheckBox getOrganizationAddress() {
+        return organizationAddress;
+    }
+
+    @Override
+    public CheckBox getOrganizationCity() {
+        return organizationCity;
+    }
+
+    @Override
+    public CheckBox getOrganizationState() {
+        return organizationState;
+    }
+
+    @Override
+    public CheckBox getOrganizationZip() {
+        return organizationZip;
+    }
+
+    @Override
+    public CheckBox getAnalysisTest() {
+        return analysisTest;
+    }
+
+    @Override
+    public CheckBox getAnalysisMethod() {
+        return analysisMethod;
+    }
+
+    @Override
+    public CheckBox getAnalysisRevision() {
+        return analysisRevision;
+    }
+
+    @Override
+    public CheckBox getAnalysisUnit() {
+        return analysisUnit;
+    }
+
+    @Override
+    public CheckBox getAnalysisStarted() {
+        return analysisStarted;
+    }
+
+    @Override
+    public CheckBox getAnalysisCompleted() {
+        return analysisCompleted;
+    }
+
+    @Override
+    public CheckBox getAnalysisReleased() {
+        return analysisReleased;
+    }
+
+    @Override
+    public CheckBox getAnalysisQa() {
+        return analysisQa;
+    }
+
+    @Override
+    public CheckBox getPatientFirstName() {
+        return patientFirstName;
+    }
+
+    @Override
+    public CheckBox getPatientLastName() {
+        return patientLastName;
+    }
+
+    @Override
+    public CheckBox getPatientBirth() {
+        return patientBirth;
+    }
+
+    @Override
+    public CheckBox getPatientGender() {
+        return patientGender;
+    }
+
+    @Override
+    public CheckBox getPatientRace() {
+        return patientRace;
+    }
+
+    @Override
+    public CheckBox getPatientEthnicity() {
+        return patientEthnicity;
+    }
+
+    @Override
+    public Table getAnalyteTable() {
+        return analyteTable;
+    }
+
+    @Override
+    public Table getAuxTable() {
+        return auxTable;
     }
 
     @Override
@@ -125,12 +321,115 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
     }
 
     @Override
+    public Button getSelectAllSampleFieldsButton() {
+        return selectAllSampleFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllOrgFieldsButton() {
+        return selectAllOrgFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllAnalysisFieldsButton() {
+        return selectAllAnalysisFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllPatientFieldsButton() {
+        return selectAllPatientFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllAnalytesButton() {
+        return selectAllAnalytesButton;
+    }
+
+    @Override
+    public Button getUnselectAllAnalytesButton() {
+        return unselectAllAnalytesButton;
+    }
+
+    @Override
+    public Button getSelectAllAuxButton() {
+        return selectAllAuxButton;
+    }
+
+    @Override
+    public Button getUnselectAllAuxButton() {
+        return unselectAllAuxButton;
+    }
+
+    @Override
     public Button getBackButton() {
         return backButton;
     }
 
     @Override
+    public Button getRunReportButton() {
+        return runReportButton;
+    }
+
+    @Override
     public DeckPanel getDeck() {
         return deck;
+    }
+
+    @Override
+    public void setCollectedError(String error) {
+        collectedFrom.addException(new Exception(error));
+        collectedTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setReleasedError(String error) {
+        releasedFrom.addException(new Exception(error));
+        releasedTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setAccessionError(String error) {
+        accessionFrom.addException(new Exception(error));
+        accessionTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setCollectorError(String error) {
+        collector.addException(new Exception(error));
+
+    }
+
+    @Override
+    public void setClientReferenceError(String error) {
+        clientReference.addException(new Exception(error));
+    }
+
+    @Override
+    public void setCollectionSiteError(String error) {
+        collectionSite.addException(new Exception(error));
+    }
+
+    @Override
+    public void setCollectionTownError(String error) {
+        collectionTown.addException(new Exception(error));
+    }
+
+    @Override
+    public void setProjectError(String error) {
+        projectCode.addException(new Exception(error));
+    }
+
+    @Override
+    public void clearErrors() {
+        collectedFrom.clearExceptions();
+        collectedTo.clearExceptions();
+        releasedFrom.clearExceptions();
+        releasedTo.clearExceptions();
+        accessionFrom.clearExceptions();
+        accessionTo.clearExceptions();
+        clientReference.clearExceptions();
+        collectionSite.clearExceptions();
+        collectionTown.clearExceptions();
+        projectCode.clearExceptions();
     }
 }

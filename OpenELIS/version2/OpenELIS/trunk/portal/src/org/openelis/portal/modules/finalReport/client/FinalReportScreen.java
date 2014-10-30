@@ -31,7 +31,6 @@ import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -44,7 +43,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class FinalReportScreen extends Screen {
 
-    FinalReportUI                    ui = GWT.create(FinalReportUIImpl.class);
+    private FinalReportUI            ui = GWT.create(FinalReportUIImpl.class);
 
     private ModulePermission         userPermission;
 
@@ -135,6 +134,14 @@ public class FinalReportScreen extends Screen {
                 runReport();
             }
         });
+
+        // ui.getTable().addClickHandler(new ClickHandler() {
+        //
+        // @Override
+        // public void onClick(ClickEvent event) {
+        // ui.getTable().getWidget(event.get, 0);
+        // }
+        // })
 
         addScreenHandler(ui.getCollectedFrom(),
                          SampleViewMeta.getCollectionDateFrom(),
@@ -255,7 +262,7 @@ public class FinalReportScreen extends Screen {
                          SampleViewMeta.getAccessionNumberTo(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getAccessionTo().setValue(form.getAccessionFrom());
+                                 ui.getAccessionTo().setValue(form.getAccessionTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -527,9 +534,6 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
-            // ui.getCollectedTo()
-            // .addException(new
-            // Exception(Messages.get().finalReport_error_noStartDate()));
             throw e;
         }
 
@@ -540,9 +544,6 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
-            // ui.getReleasedTo()
-            // .addException(new
-            // Exception(Messages.get().finalReport_error_noStartDate()));
             throw e;
         }
 
@@ -553,9 +554,6 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
-            // ui.getAccessionTo()
-            // .addException(new
-            // Exception(Messages.get().finalReport_error_noStartAccession()));
             throw e;
         }
 
@@ -566,9 +564,6 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
-            // ui.getPatientBirthTo()
-            // .addException(new
-            // Exception(Messages.get().finalReport_error_noStartDate()));
             throw e;
         }
 
@@ -608,6 +603,7 @@ public class FinalReportScreen extends Screen {
         return fieldMap;
     }
 
+    @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
         SampleViewVO sample;
         DateHelper dh;
@@ -638,11 +634,8 @@ public class FinalReportScreen extends Screen {
         ui.getTable().setText(0, 5, Messages.get().finalReport_project());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
         ui.getTable().getElement().getStyle().setTextAlign(TextAlign.CENTER);
-
-        // TODO cell padding
-        ui.getTable().setCellSpacing(12);
-        ui.getTable().setCellPadding(12);
         ui.getTable().getElement().getStyle().setPadding(12, Unit.PX);
+        ui.getTable().getElement().getStyle().setFontSize(18, Unit.PX);
 
         dh = new DateHelper();
         dh.setEnd(Datetime.MINUTE);
@@ -706,10 +699,15 @@ public class FinalReportScreen extends Screen {
             /*
              * set row height higher for mobile and tablet versions
              */
-            ui.setRowHeight(j, "30px");
-            ui.getTable().getRowFormatter().setStyleName(j,
-                                                         UIResources.INSTANCE.table().LargeFont());
+            // ui.setWidgetWidth(j);
+            ui.getTable().getCellFormatter().getElement(j, 0).getStyle().setPadding(10, Unit.PX);
+            ui.getTable().getCellFormatter().getElement(j, 1).getStyle().setPadding(10, Unit.PX);
+            ui.getTable().getCellFormatter().getElement(j, 2).getStyle().setPadding(10, Unit.PX);
+            ui.getTable().getCellFormatter().getElement(j, 3).getStyle().setPadding(10, Unit.PX);
+            ui.getTable().getCellFormatter().getElement(j, 4).getStyle().setPadding(10, Unit.PX);
+            ui.getTable().getCellFormatter().getElement(j, 5).getStyle().setPadding(10, Unit.PX);
         }
+        ui.setCheckBoxCSS();
     }
 
     /**
@@ -835,6 +833,7 @@ public class FinalReportScreen extends Screen {
                     String url = "/portal/portal/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "FinalReport", null);
                 }
+                window.clearStatus();
             }
 
             @Override

@@ -54,7 +54,7 @@ public class SampleStatusServlet extends RemoteServlet implements SampleStatusSe
         }
     }
 
-    public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
+    public ArrayList<IdNameVO> getProjectList() throws Exception {
         try {
             return sampleStatusPortal.getProjectList();
         } catch (Exception anyE) {

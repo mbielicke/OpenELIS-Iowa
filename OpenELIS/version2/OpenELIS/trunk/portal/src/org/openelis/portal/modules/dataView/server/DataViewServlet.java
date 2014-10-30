@@ -38,7 +38,7 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/portal/dataView")
-public class DataViewReportServlet extends RemoteServlet implements DataViewServiceInt {
+public class DataViewServlet extends RemoteServlet implements DataViewServiceInt {
 
     private static final long  serialVersionUID = 1L;
 

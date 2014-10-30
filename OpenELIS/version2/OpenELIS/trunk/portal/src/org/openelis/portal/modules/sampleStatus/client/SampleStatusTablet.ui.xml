@@ -128,7 +128,7 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.finalReport_back}"
+							<w:Button ui:field="backButton" text="{msg.gen_back}"
 								enabled="true" />
 						</td>
 					</tr>
@@ -136,16 +136,6 @@
 						<td>
 							<g:FlexTable ui:field="table"
 								styleName="{res.table.ScreenTableWithSides} {res.table.Table}" />
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
-								enabled="true" />
-							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" />
 						</td>
 					</tr>
 				</table>
