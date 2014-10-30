@@ -11,6 +11,7 @@
 		<![CDATA[SELECT
      aux_data.sort_order,
      analyte.name analyte_name,
+     analyte.external_id analyte_ext_id,
      aux_data.value aux_data_value,
      aux_field.description field_description,
      aux_field.aux_field_group_id
@@ -28,6 +29,7 @@ UNION
 SELECT
      aux_data.sort_order,
      analyte.name analyte_name,
+     analyte.external_id analyte_ext_id,
      dictionary.entry aux_data_value,
      aux_field.description field_description,
      aux_field.aux_field_group_id
@@ -45,9 +47,14 @@ ORDER BY aux_data.sort_order]]>
 	</queryString>
 	<field name="sort_order" class="java.lang.Integer"/>
 	<field name="analyte_name" class="java.lang.String"/>
+	<field name="analyte_ext_id" class="java.lang.String"/>
 	<field name="aux_data_value" class="java.lang.String"/>
 	<field name="field_description" class="java.lang.String"/>
 	<field name="aux_field_group_id" class="java.lang.Integer"/>
+	<variable name="PWS_COUNT" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA["pws_id".equals($F{analyte_ext_id}) ? "Y" : null]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
 	<group name="aux_field_group">
 		<groupExpression><![CDATA[$F{aux_field_group_id}]]></groupExpression>
 		<groupHeader>
