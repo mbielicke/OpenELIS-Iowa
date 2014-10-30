@@ -37,6 +37,9 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.analysis.Analysis"/>
   <inherits name="org.openelis.modules.history.History"/>
   <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
+  <inherits name="org.openelis.modules.worksheetCompletion1.WorksheetCompletion1Service"/>
+  <inherits name="org.openelis.modules.worksheet1.Worksheet1"/>
+  <inherits name="org.openelis.modules.analyte.AnalyteService"/>
   
   <entry-point class="org.openelis.modules.clinicalSampleLogin1.client.ClinicalSampleLoginEntry"/>
 </module>
