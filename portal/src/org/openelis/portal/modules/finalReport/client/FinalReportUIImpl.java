@@ -58,12 +58,19 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     @Override
     public void initialize() {
         /*
-         * do nothing for desktop
+         * do nothing for desktop version
          */
     }
 
     @Override
-    public void setRowHeight(int i, String height) {
+    public void setWidgetWidth(int row) {
+        /*
+         * do nothing for desktop version
+         */
+    }
+
+    @Override
+    public void setCheckBoxCSS() {
         /*
          * do nothing for desktop version
          */

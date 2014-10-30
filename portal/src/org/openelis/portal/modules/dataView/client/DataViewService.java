@@ -12,20 +12,20 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
-public class DataViewReportService implements DataViewServiceInt, DataViewServiceIntAsync {
+public class DataViewService implements DataViewServiceInt, DataViewServiceIntAsync {
     
-    static DataViewReportService instance;
+    static DataViewService instance;
     
     DataViewServiceIntAsync service;
     
-    public static DataViewReportService get() {
+    public static DataViewService get() {
         if(instance == null)
-            instance = new DataViewReportService();
+            instance = new DataViewService();
         
         return instance;
     }
     
-    private DataViewReportService() {
+    private DataViewService() {
         service = (DataViewServiceIntAsync)GWT.create(DataViewServiceInt.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }

@@ -39,62 +39,50 @@ import org.openelis.ui.common.data.QueryData;
  */
 public class DataViewVO implements Serializable {
 
-    private static final long              serialVersionUID = 1L;
+    private static final long                  serialVersionUID = 1L;
 
-    protected String                       analysisId, analysisTestName, analysisTestMethodName,
-                                           excludeResultOverride,
-                                           clientReference, accessionNumber, revision,
-                                           collectionDate, receivedDate, enteredDate,
-                                           releasedDate, statusId, clientReferenceHeader,
-                                           projectName, reportToOrganizationName,
-                                           excludeResults, excludeAuxData, organizationId,
-                                           organizationName, organizationAttention,
-                                           organizationAddressMultipleUnit,
-                                           organizationAddressAddress, organizationAddressCity,
-                                           organizationAddressState, organizationAddressZipCode,
-                                           sampleItemTypeofSampleId, sampleItemSourceOfSampleId, 
-                                           sampleItemSourceOther, sampleItemContainerId,
-                                           sampleItemContainerReference, sampleItemItemSequence,
-                                           analysisTestNameHeader, analysisTestMethodNameHeader,
-                                           analysisStatusIdHeader, analysisRevision,
-                                           analysisIsReportable, analysisIsReportableHeader,
-                                           analysisQaName, analysisCompletedDate,
-                                           analysisCompletedBy, analysisReleasedDate,
-                                           analysisReleasedBy, analysisStartedDate,
-                                           analysisPrintedDate, analysisSectionName,
-                                           analysisUnitOfMeasureId, sampleEnvironmentalIsHazardous,
-                                           sampleEnvironmentalPriority, sampleEnvironmentalCollector,
-                                           sampleEnvironmentalCollectorPhone, sampleEnvironmentalLocation,
-                                           sampleEnvironmentalLocationAddressCity, 
-                                           sampleEnvironmentalLocationAddressCityHeader,
-                                           sampleEnvironmentalDescription, samplePrivateWellOwner, 
-                                           samplePrivateWellCollector, samplePrivateWellWellNumber,
-                                           samplePrivateWellReportToAddressWorkPhone,
-                                           samplePrivateWellReportToAddressFaxPhone,
-                                           samplePrivateWellLocation, 
-                                           samplePrivateWellLocationAddressMultipleUnit,
-                                           samplePrivateWellLocationAddressStreetAddress,
-                                           samplePrivateWellLocationAddressCity,
-                                           samplePrivateWellLocationAddressState,
-                                           samplePrivateWellLocationAddressZipCode,
-                                           sampleSDWISPwsId, sampleSDWISPwsName,
-                                           sampleSDWISStateLabId, sampleSDWISFacilityId,
-                                           sampleSDWISSampleTypeId, sampleSDWISSampleCategoryId,
-                                           sampleSDWISSamplePointId, sampleSDWISLocation, sampleSDWISPriority,
-                                           sampleSDWISCollector, sampleEnvironmentalCollectorHeader,
-                                           sampleEnvironmentalLocationHeader;
-    protected Integer                      analysisStatusId, accessionNumberFrom,
-                                           accessionNumberTo, projectId;
-    protected Date                         analysisCompletedDateFrom, analysisCompletedDateTo,
-                                           analysisReleasedDateFrom, analysisReleasedDateTo, 
-                                           collectionDateFrom, collectionDateTo, 
-                                           receivedDateFrom, receivedDateTo, enteredDateFrom,
-                                           enteredDateTo, releasedDateFrom, releasedDateTo;
-    
+    protected String                           analysisId, analysisTestName,
+                    analysisTestMethodName, excludeResultOverride, clientReference,
+                    accessionNumber, revision, collectionDate, receivedDate, enteredDate,
+                    releasedDate, statusId, clientReferenceHeader, projectName,
+                    reportToOrganizationName, excludeResults, excludeAuxData, organizationId,
+                    organizationName, organizationAttention, organizationAddressMultipleUnit,
+                    organizationAddressAddress, organizationAddressCity, organizationAddressState,
+                    organizationAddressZipCode, sampleItemTypeofSampleId,
+                    sampleItemSourceOfSampleId, sampleItemSourceOther, sampleItemContainerId,
+                    sampleItemContainerReference, sampleItemItemSequence, analysisTestNameHeader,
+                    analysisTestMethodNameHeader, analysisStatusIdHeader, analysisRevision,
+                    analysisIsReportable, analysisIsReportableHeader, analysisQaName,
+                    analysisCompletedDate, analysisCompletedBy, analysisReleasedDate,
+                    analysisReleasedBy, analysisStartedDate, analysisPrintedDate,
+                    analysisSectionName, analysisUnitOfMeasureId, sampleEnvironmentalIsHazardous,
+                    sampleEnvironmentalPriority, sampleEnvironmentalCollector,
+                    sampleEnvironmentalCollectorPhone, sampleEnvironmentalLocation,
+                    sampleEnvironmentalLocationAddressCity,
+                    sampleEnvironmentalLocationAddressCityHeader, sampleEnvironmentalDescription,
+                    samplePrivateWellOwner, samplePrivateWellCollector,
+                    samplePrivateWellWellNumber, samplePrivateWellReportToAddressWorkPhone,
+                    samplePrivateWellReportToAddressFaxPhone, samplePrivateWellLocation,
+                    samplePrivateWellLocationAddressMultipleUnit,
+                    samplePrivateWellLocationAddressStreetAddress,
+                    samplePrivateWellLocationAddressCity, samplePrivateWellLocationAddressState,
+                    samplePrivateWellLocationAddressZipCode, sampleSDWISPwsId, sampleSDWISPwsName,
+                    sampleSDWISStateLabId, sampleSDWISFacilityId, sampleSDWISSampleTypeId,
+                    sampleSDWISSampleCategoryId, sampleSDWISSamplePointId, sampleSDWISLocation,
+                    sampleSDWISPriority, sampleSDWISCollector, sampleEnvironmentalCollectorHeader,
+                    sampleEnvironmentalLocationHeader, patientLastName, patientFirstName,
+                    patientBirth, patientGender, patientRace, patientEthnicity;
+    protected Integer                          analysisStatusId, accessionNumberFrom,
+                    accessionNumberTo, projectId;
+    protected Date                             analysisCompletedDateFrom, analysisCompletedDateTo,
+                    analysisReleasedDateFrom, analysisReleasedDateTo, collectionDateFrom,
+                    collectionDateTo, receivedDateFrom, receivedDateTo, enteredDateFrom,
+                    enteredDateTo, releasedDateFrom, releasedDateTo;
+
     protected ArrayList<QueryData>             queryFields;
     protected ArrayList<TestAnalyteDataViewVO> testAnalytes;
     protected ArrayList<AuxFieldDataViewVO>    auxFields;
-    
+
     public String getAnalysisId() {
         return analysisId;
     }
@@ -102,7 +90,7 @@ public class DataViewVO implements Serializable {
     public void setAnalysisId(String analysisId) {
         this.analysisId = DataBaseUtil.trim(analysisId);
     }
-    
+
     public String getAnalysisTestName() {
         return analysisTestName;
     }
@@ -126,7 +114,7 @@ public class DataViewVO implements Serializable {
     public void setExcludeResults(String excludeResults) {
         this.excludeResults = DataBaseUtil.trim(excludeResults);
     }
-    
+
     public String getExcludeAuxData() {
         return excludeAuxData;
     }
@@ -134,7 +122,7 @@ public class DataViewVO implements Serializable {
     public void setExcludeAuxData(String excludeAuxData) {
         this.excludeAuxData = DataBaseUtil.trim(excludeAuxData);
     }
-    
+
     public String getExcludeResultOverride() {
         return excludeResultOverride;
     }
@@ -206,7 +194,7 @@ public class DataViewVO implements Serializable {
     public void setStatusId(String statusId) {
         this.statusId = DataBaseUtil.trim(statusId);
     }
-    
+
     public String getClientReferenceHeader() {
         return clientReferenceHeader;
     }
@@ -222,7 +210,7 @@ public class DataViewVO implements Serializable {
     public void setProjectName(String projectName) {
         this.projectName = DataBaseUtil.trim(projectName);
     }
-    
+
     public String getReportToOrganizationName() {
         return reportToOrganizationName;
     }
@@ -374,7 +362,7 @@ public class DataViewVO implements Serializable {
     public void setAnalysisRevision(String analysisRevision) {
         this.analysisRevision = DataBaseUtil.trim(analysisRevision);
     }
-    
+
     public String getAnalysisIsReportable() {
         return analysisIsReportable;
     }
@@ -382,7 +370,7 @@ public class DataViewVO implements Serializable {
     public void setAnalysisIsReportable(String analysisIsReportable) {
         this.analysisIsReportable = DataBaseUtil.trim(analysisIsReportable);
     }
-    
+
     public String getAnalysisIsReportableHeader() {
         return analysisIsReportableHeader;
     }
@@ -446,7 +434,7 @@ public class DataViewVO implements Serializable {
     public void setAnalysisPrintedDate(String analysisPrintedDate) {
         this.analysisPrintedDate = DataBaseUtil.trim(analysisPrintedDate);
     }
-    
+
     public String getAnalysisUnitOfMeasureId() {
         return analysisUnitOfMeasureId;
     }
@@ -454,7 +442,7 @@ public class DataViewVO implements Serializable {
     public void setAnalysisUnitOfMeasureId(String analysisUnitOfMeasureId) {
         this.analysisUnitOfMeasureId = DataBaseUtil.trim(analysisUnitOfMeasureId);
     }
-    
+
     public String getAnalysisSectionName() {
         return analysisSectionName;
     }
@@ -462,7 +450,7 @@ public class DataViewVO implements Serializable {
     public void setAnalysisSectionName(String analysisSectionName) {
         this.analysisSectionName = DataBaseUtil.trim(analysisSectionName);
     }
-    
+
     public String getSampleEnvironmentalIsHazardous() {
         return sampleEnvironmentalIsHazardous;
     }
@@ -510,7 +498,7 @@ public class DataViewVO implements Serializable {
     public void setSampleEnvironmentalLocationAddressCity(String sampleEnvironmentalLocationAddressCity) {
         this.sampleEnvironmentalLocationAddressCity = DataBaseUtil.trim(sampleEnvironmentalLocationAddressCity);
     }
-    
+
     public String getSampleEnvironmentalLocationAddressCityHeader() {
         return sampleEnvironmentalLocationAddressCityHeader;
     }
@@ -590,7 +578,7 @@ public class DataViewVO implements Serializable {
     public void setSamplePrivateWellLocationAddressStreetAddress(String samplePrivateWellLocationAddressStreetAddress) {
         this.samplePrivateWellLocationAddressStreetAddress = DataBaseUtil.trim(samplePrivateWellLocationAddressStreetAddress);
     }
-    
+
     public String getSamplePrivateWellLocationAddressCity() {
         return samplePrivateWellLocationAddressCity;
     }
@@ -702,13 +690,61 @@ public class DataViewVO implements Serializable {
     public void setSampleEnvironmentalCollectorHeader(String collectorHeader) {
         this.sampleEnvironmentalCollectorHeader = DataBaseUtil.trim(collectorHeader);
     }
-    
+
     public String getSampleEnvironmentalLocationHeader() {
         return sampleEnvironmentalLocationHeader;
     }
 
     public void setSampleEnvironmentalLocationHeader(String locationHeader) {
         this.sampleEnvironmentalLocationHeader = DataBaseUtil.trim(locationHeader);
+    }
+
+    public String getPatientLastName() {
+        return patientLastName;
+    }
+
+    public void setPatientLastName(String patientLastName) {
+        this.patientLastName = DataBaseUtil.trim(patientLastName);
+    }
+
+    public String getPatientFirstName() {
+        return patientFirstName;
+    }
+
+    public void setPatientFirstName(String patientFirstName) {
+        this.patientFirstName = DataBaseUtil.trim(patientFirstName);
+    }
+
+    public String getPatientBirth() {
+        return patientBirth;
+    }
+
+    public void setPatientBirth(String patientBirth) {
+        this.patientBirth = DataBaseUtil.trim(patientBirth);
+    }
+
+    public String getPatientGender() {
+        return patientGender;
+    }
+
+    public void setPatientGender(String patientGender) {
+        this.patientGender = DataBaseUtil.trim(patientGender);
+    }
+
+    public String getPatientRace() {
+        return patientRace;
+    }
+
+    public void setPatientRace(String patientRace) {
+        this.patientRace = DataBaseUtil.trim(patientRace);
+    }
+
+    public String getPatientEthnicity() {
+        return patientEthnicity;
+    }
+
+    public void setPatientEthnicity(String patientEthnicity) {
+        this.patientEthnicity = DataBaseUtil.trim(patientEthnicity);
     }
 
     public Integer getAnalysisStatusId() {
@@ -821,8 +857,8 @@ public class DataViewVO implements Serializable {
 
     public void setEnteredDateTo(Date enteredDateTo) {
         this.enteredDateTo = enteredDateTo;
-    }    
-       
+    }
+
     public Date getReleasedDateFrom() {
         return releasedDateFrom;
     }
@@ -830,7 +866,7 @@ public class DataViewVO implements Serializable {
     public void setReleasedDateFrom(Date releasedDateFrom) {
         this.releasedDateFrom = releasedDateFrom;
     }
-    
+
     public Date getReleasedDateTo() {
         return releasedDateTo;
     }
@@ -838,7 +874,7 @@ public class DataViewVO implements Serializable {
     public void setReleasedDateTo(Date releasedDateTo) {
         this.releasedDateTo = releasedDateTo;
     }
-    
+
     public ArrayList<QueryData> getQueryFields() {
         return queryFields;
     }
@@ -861,5 +897,5 @@ public class DataViewVO implements Serializable {
 
     public void setAuxFields(ArrayList<AuxFieldDataViewVO> auxFields) {
         this.auxFields = auxFields;
-    }   
+    }
 }

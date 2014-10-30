@@ -16,7 +16,7 @@ public interface SampleStatusServiceInt extends XsrfProtectedService {
 
     ArrayList<SampleViewVO> getSampleListForSampleStatusReport(Query query) throws Exception;
 
-    ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception;
+    ArrayList<IdNameVO> getProjectList() throws Exception;
 
     HashMap<Integer, ArrayList<String>> getSampleQaEvents(ArrayList<Integer> sampleIds) throws Exception;
 

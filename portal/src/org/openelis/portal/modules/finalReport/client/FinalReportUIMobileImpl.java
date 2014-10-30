@@ -1,6 +1,8 @@
 package org.openelis.portal.modules.finalReport.client;
 
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Help;
 import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
@@ -72,10 +74,16 @@ public class FinalReportUIMobileImpl extends ResizeComposite implements FinalRep
     }
 
     @Override
-    public void setRowHeight(int i, String height) {
-        table.getRowFormatter().getElement(i).setAttribute("height", height);
-        table.getWidget(i, 0).setHeight(height);
-        table.getWidget(i, 0).setWidth(height);
+    public void setWidgetWidth(int row) {
+        table.getWidget(row, 0).setWidth("45px");
+    }
+
+    @Override
+    public void setCheckBoxCSS() {
+        for (int i = 1; i < table.getRowCount(); i++ ) {
+            ((CheckBox)table.getWidget(i, 0)).setCss(UIResources.INSTANCE.mcheckbox());
+            ((CheckBox)table.getWidget(i, 0)).setWidth("45px");
+        }
     }
 
     @Override

@@ -46,8 +46,12 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_collected}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_collected}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="collectedError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -66,8 +70,12 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_released}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_released}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="releasedError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -86,8 +94,12 @@
 										enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_accession}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_accession}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="accessionError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -99,8 +111,12 @@
 										enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_collector}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_collector}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="collectorError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -112,8 +128,12 @@
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_clientReference}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_clientReference}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="clientReferenceError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -125,8 +145,12 @@
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_collectionSite}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_collectionSite}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="collectionSiteError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -138,8 +162,12 @@
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_clientReference}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_clientReference}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="collectionTownError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -147,12 +175,16 @@
 									<ui:text from="{msg.sample_projectCode}:" />
 								</td>
 								<td colspan="3">
-									<w:MultiDropdown ui:field="projectCode" width="206px"
+									<w:Dropdown ui:field="projectCode" width="206px"
 										field="Integer" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.dataView_help_project}"
+									<w:Help css="{res.help}" text="{msg.dataView_help_project}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="projectError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 						</table>
@@ -182,27 +214,366 @@
 					</g:HTMLPanel>
 				</g:Dock>
 			</g:DockPanel>
-			<g:HTMLPanel>
-				<table width="728">
-					<tr>
-						<td>
-							<w:Button ui:field="backButton" text="{msg.dataView_query}"
-								enabled="true" />
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
-								enabled="true" />
-							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" />
-						</td>
-					</tr>
-				</table>
-			</g:HTMLPanel>
+			<g:LayoutPanel height="750px" width="900px">
+				<g:layer top="25px" height="225px">
+					<g:HTMLPanel>
+						<table>
+							<tr>
+								<td colspan="8">
+									<span style="float:left;font-weight:bold;font-size:10pt;">
+										<ui:text from="{msg.dataView_sampleFields}- " />
+									</span>
+									<w:Button ui:field="selectAllSampleFieldsButton" text="{msg.finalReport_selectAll}"
+										enabled="true" visible="true" />
+								</td>
+								<td />
+								<td colspan="7">
+									<span style="float:left;font-weight:bold;font-size:10pt;">
+										<ui:text from="{msg.dataView_orgFields}- " />
+									</span>
+									<w:Button ui:field="selectAllOrgFieldsButton" text="{msg.finalReport_selectAll}"
+										enabled="true" visible="true" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<w:CheckBox ui:field="accession" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.gen_accessionNumber}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="sampleCollected" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_collectedDate}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="sampleReceived" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_received}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="sampleReleased" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_released}" />
+								</td>
+								<td width="50px" />
+								<td>
+									<w:CheckBox ui:field="organizationName" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.org_name}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="organizationApt" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.org_apt}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="organizationAddress" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.org_address}" />
+								</td>
+								<td width="100px" />
+							</tr>
+							<tr>
+								<td>
+									<w:CheckBox ui:field="sampleStatus" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_status}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="projectId" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_projectCode}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="clientReferenceHeader"
+										enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_clientReference}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="collectorHeader" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_collector}" />
+								</td>
+								<td width="50px" />
+								<td>
+									<w:CheckBox ui:field="organizationCity" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.org_city}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="organizationState" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.org_state}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="organizationZip" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.org_zip}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<w:CheckBox ui:field="collectionSiteHeader" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_collectionSite}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="sampleDescription" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_description}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="collectorPhone" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_phone}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="sampleType" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_type}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<w:CheckBox ui:field="source" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_source}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="sampleLocationCity" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_locationCity}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<br />
+									<br />
+								</td>
+							</tr>
+							<tr>
+								<td colspan="8">
+									<span style="float:left;font-weight:bold;font-size:10pt;">
+										<ui:text from="{msg.dataView_analysisFields}- " />
+									</span>
+									<w:Button ui:field="selectAllAnalysisFieldsButton"
+										text="{msg.finalReport_selectAll}" enabled="true" visible="true" />
+								</td>
+								<td />
+								<td colspan="7">
+									<span style="float:left;font-weight:bold;font-size:10pt;">
+										<ui:text from="{msg.dataView_patientFields}- " />
+									</span>
+									<w:Button ui:field="selectAllPatientFieldsButton"
+										text="{msg.finalReport_selectAll}" enabled="true" visible="true" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<w:CheckBox ui:field="analysisTest" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_test}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="analysisMethod" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_method}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="analysisRevision" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_revision}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="analysisUnit" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_unit}" />
+								</td>
+								<td width="50px" />
+								<td>
+									<w:CheckBox ui:field="patientLastName" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_lastName}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="patientFirstName" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_firstName}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="patientBirth" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_birthDate}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<w:CheckBox ui:field="analysisStarted" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_started}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="analysisCompleted" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_completed}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="analysisReleased" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.sample_released}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="analysisQa" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.analysis_qaEvent}" />
+								</td>
+								<td width="50px" />
+								<td>
+									<w:CheckBox ui:field="patientGender" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_gender}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="patientRace" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_race}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="patientEthnicity" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_ethnicity}" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer top="250px" height="25px" left="0px" width="500px">
+					<g:HTMLPanel>
+						<table>
+							<tr>
+								<td width="310">
+									<span style="float:left;font-weight:bold;font-size:10pt;">
+										<ui:text from="{msg.dataView_analyte} " />
+									</span>
+								</td>
+								<td>
+									<span style="float:left;font-weight:bold;font-size:10pt;">
+										<ui:text from="{msg.dataView_aux} " />
+									</span>
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer top="275px" height="230px" left="0px" width="300px">
+					<t:Table ui:field="analyteTable" header="true"
+						styleName="{res.table.ScreenTableWithSides}" enabled="true">
+						<t:Column width="20" label="">
+							<t:CheckBoxCell>
+								<w:CheckBox />
+							</t:CheckBoxCell>
+						</t:Column>
+						<t:Column width="200" label="{msg.org_name}">
+							<t:TextBoxCell>
+								<w:TextBox case="MIXED" field="String" />
+							</t:TextBoxCell>
+						</t:Column>
+					</t:Table>
+				</g:layer>
+				<g:layer top="275px" height="230px" left="310px" width="300px">
+					<t:Table ui:field="auxTable" header="true"
+						styleName="{res.table.ScreenTableWithSides}" enabled="true">
+						<t:Column width="20" label="">
+							<t:CheckBoxCell>
+								<w:CheckBox />
+							</t:CheckBoxCell>
+						</t:Column>
+						<t:Column width="200" label="{msg.org_name}">
+							<t:TextBoxCell>
+								<w:TextBox case="MIXED" field="String" />
+							</t:TextBoxCell>
+						</t:Column>
+					</t:Table>
+				</g:layer>
+				<g:layer top="510px" height="30px" left="0px" width="200px">
+					<g:HTMLPanel>
+						<table>
+							<tr>
+								<td>
+									<w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
+										enabled="true" visible="true" />
+									<w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
+										enabled="true" visible="true" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer top="510px" height="30px" left="310px" width="200px">
+					<g:HTMLPanel>
+						<table>
+							<tr>
+								<td>
+									<w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
+										enabled="true" visible="true" />
+									<w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
+										enabled="true" visible="true" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer top="560px" height="30px" left="0px" width="200px">
+					<g:HTMLPanel>
+						<table>
+							<tr>
+								<td>
+									<w:Button ui:field="backButton" text="{msg.gen_back}"
+										enabled="true" visible="true" />
+									<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
+										enabled="true" visible="true" />
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+			</g:LayoutPanel>
 		</g:DeckPanel>
 	</w:PortalPanel>
-
 </ui:UiBinder>

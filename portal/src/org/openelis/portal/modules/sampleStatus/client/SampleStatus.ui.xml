@@ -128,7 +128,7 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.finalReport_back}"
+							<w:Button ui:field="backButton" text="{msg.gen_back}"
 								enabled="true" />
 						</td>
 					</tr>

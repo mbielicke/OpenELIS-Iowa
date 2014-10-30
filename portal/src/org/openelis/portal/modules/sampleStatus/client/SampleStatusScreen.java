@@ -16,7 +16,6 @@ import org.openelis.meta.SampleViewMeta;
 import org.openelis.portal.cache.UserCache;
 import org.openelis.portal.messages.Messages;
 import org.openelis.portal.modules.finalReport.client.FinalReportFormVO;
-import org.openelis.portal.modules.finalReport.client.FinalReportService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -30,6 +29,7 @@ import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.WhiteSpace;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -40,15 +40,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class SampleStatusScreen extends Screen {
 
-    SampleStatusUI             ui = GWT.create(SampleStatusUIImpl.class);
+    SampleStatusUI            ui = GWT.create(SampleStatusUIImpl.class);
 
-    private ModulePermission   userPermission;
+    private ModulePermission  userPermission;
 
-    private FinalReportFormVO  form;
-
-    private Integer            sampleId;
-
-    private ArrayList<Integer> analysisIds;
+    private FinalReportFormVO form;
 
     private HashMap<Integer, ArrayList<String>> sampleQas, analysisQas;
 
@@ -176,7 +172,7 @@ public class SampleStatusScreen extends Screen {
                          SampleViewMeta.getAccessionNumberTo(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getAccessionTo().setValue(form.getAccessionFrom());
+                                 ui.getAccessionTo().setValue(form.getAccessionTo());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -257,8 +253,7 @@ public class SampleStatusScreen extends Screen {
          */
         model = new ArrayList<Item<Integer>>();
         try {
-            // TODO
-            list = FinalReportService.get().getProjectList();
+            list = SampleStatusService.get().getProjectList();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new Item<Integer>(list.get(i).getId(), list.get(i).getName());
                 model.add(row);
@@ -310,10 +305,17 @@ public class SampleStatusScreen extends Screen {
         from = fieldMap.get(fromKey);
         to = fieldMap.get(toKey);
 
-        if (to != null && from == null) {
-            throw new Exception();
-        } else if (to == null && from == null) {
+        if (to == null && from == null) {
             return fieldMap;
+        } else if (to != null && from == null) {
+            throw new Exception();
+        } else if (to == null && from != null) {
+            range = fieldMap.get(fromKey);
+            range.setKey(key);
+            range.setQuery(from.getQuery() + ".." + from.getQuery());
+            fieldMap.put(key, range);
+            fieldMap.remove(fromKey);
+            fieldMap.remove(toKey);
         } else {
             range = fieldMap.get(fromKey);
             range.setKey(key);
@@ -326,10 +328,11 @@ public class SampleStatusScreen extends Screen {
         return fieldMap;
     }
 
+    @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
         int currRow, qaCount;
         Integer accNumPrev, accNum;
-        String completed, inProgress;
+        String completed, inProgress, collector;
         Date temp;
         Datetime temp1;
         DateHelper dh;
@@ -360,14 +363,6 @@ public class SampleStatusScreen extends Screen {
         ui.getTable().setText(0, 5, Messages.get().sample_clientReference());
         ui.getTable().setText(0, 6, Messages.get().sampleStatus_qaEvent());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
-        ui.getTable().setWidth("250%");
-        ui.getTable().getColumnFormatter().setWidth(0, "75px");
-        ui.getTable().getColumnFormatter().setWidth(1, "25%");
-        ui.getTable().getColumnFormatter().setWidth(2, "6%");
-        ui.getTable().getColumnFormatter().setWidth(3, "8%");
-        ui.getTable().getColumnFormatter().setWidth(4, "8%");
-        ui.getTable().getColumnFormatter().setWidth(5, "8%");
-        ui.getTable().getColumnFormatter().setWidth(6, "40%");
 
         dh = new DateHelper();
         sb = new StringBuffer();
@@ -381,20 +376,18 @@ public class SampleStatusScreen extends Screen {
             data = samples.get(i);
             accNum = data.getAccessionNumber();
 
-            /*
-             * If analysis status is Released, screen displays
-             * "Completed status", for all other statuses screen displays
-             * "In Progress".
-             */
             if ( !accNum.equals(accNumPrev)) {
                 qaCount = 1;
                 if (currRow > 0) {
-                    sb.append("</ol>");
+                    sb.append("</ol></font>");
                     ui.getTable().setHTML(currRow, 6, sb.toString());
-                    ui.getTable().getCellFormatter().setWordWrap(currRow, 6, true);
+                    ui.getTable()
+                      .getCellFormatter()
+                      .getElement(currRow, 6)
+                      .getStyle()
+                      .setWhiteSpace(WhiteSpace.PRE_WRAP);
                     sb.setLength(0);
                 }
-                // insertQaData(currRow);
                 currRow++ ;
                 ui.getTable().getRowFormatter().setVerticalAlign(currRow,
                                                                  HasVerticalAlignment.ALIGN_TOP);
@@ -411,28 +404,35 @@ public class SampleStatusScreen extends Screen {
                 } else {
                     temp1 = null;
                 }
+
                 ui.getTable().setText(currRow, 0, DataBaseUtil.toString(data.getAccessionNumber()));
-                sb.append("<ol>");
+
+                // TODO
+                if (data.getCollector() == null)
+                    collector = "Collector Not Available";
+                else
+                    collector = data.getCollector();
+                sb.append("<font color=\"red\"><ol>");
                 if (sampleQas != null && sampleQas.get(data.getSampleId()) != null) {
                     ui.getTable().setHTML(currRow,
                                           1,
-                                          data.getCollector() + "<sub><font color=\"red\">" +
-                                                          qaCount++ + "</font></sub>");
+                                          collector + "<sub><font color=\"red\">" + qaCount++ +
+                                                          "</font></sub>");
                     sb.append("<li>");
+                    ui.getTable().setHTML(currRow, 2, "<sub/>");
                     for (String qa : sampleQas.get(data.getSampleId())) {
                         sb.append(qa).append("<br>");
                     }
                     sb.append("</li><br>");
                 } else {
-                    ui.getTable().setHTML(currRow, 1, data.getCollector());
+                    ui.getTable().setHTML(currRow, 1, collector);
                 }
                 ui.getTable().setText(currRow, 3, dh.format(temp1));
                 ui.getTable().setText(currRow, 4, dh.format(data.getReceivedDate()));
                 ui.getTable().setText(currRow, 5, data.getClientReference());
-                sampleId = data.getSampleId();
             }
             if (analysisQas != null && analysisQas.get(data.getAnalysisId()) != null) {
-                addHtml(currRow, 1, "<br>" + data.getTestReportingDescription() + " : " +
+                addHtml(currRow, 1, "<br><hr>" + data.getTestReportingDescription() + " : " +
                                     data.getMethodReportingDescription() +
                                     "<sub><font color=\"red\">" + qaCount++ + "</font></sub>");
                 sb.append("<li>");
@@ -440,21 +440,40 @@ public class SampleStatusScreen extends Screen {
                     sb.append(qa).append("<br>");
                 }
                 sb.append("</li><br>");
+
+                /*
+                 * If analysis status is Released, screen displays
+                 * "Completed status", for all other statuses screen displays
+                 * "In Progress".
+                 */
+                addHtml(currRow, 2, "<br><hr>" +
+                                    (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
+                                                         data.getAnalysisStatusId()) ? completed
+                                                                                    : inProgress) +
+                                    "<sub/>");
             } else {
-                addHtml(currRow, 1, "<br>" + data.getTestReportingDescription() + " : " +
+                addHtml(currRow, 1, "<br><hr>" + data.getTestReportingDescription() + " : " +
                                     data.getMethodReportingDescription());
+                addHtml(currRow, 2, "<br><hr>" +
+                                    (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
+                                                         data.getAnalysisStatusId()) ? completed
+                                                                                    : inProgress));
             }
 
-            ui.getTable()
-              .setText(currRow,
-                       2,
-                       ui.getTable().getText(currRow, 2) +
-                                       "\n" +
-                                       (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
-                                                            data.getAnalysisStatusId()) ? completed
-                                                                                       : inProgress));
-            // analysisIds.add(data.getAnalysisId());
             accNumPrev = accNum;
+        }
+
+        /*
+         * complete the html for the last row
+         */
+        if (sb.length() > 0) {
+            sb.append("</ol></font>");
+            ui.getTable().setHTML(currRow, 6, sb.toString());
+            ui.getTable()
+              .getCellFormatter()
+              .getElement(currRow, 6)
+              .getStyle()
+              .setWhiteSpace(WhiteSpace.PRE_WRAP);
         }
     }
 
@@ -543,28 +562,6 @@ public class SampleStatusScreen extends Screen {
         sampleQas = SampleStatusService.get().getSampleQaEvents(new ArrayList<Integer>(sids));
 
         analysisQas = SampleStatusService.get().getAnalysisQaEvents(new ArrayList<Integer>(aids));
-    }
-
-    private void insertQaData(int row) {
-        int count;
-
-        count = 0;
-        if (sampleQas.get(sampleId) != null)
-            count = 1;
-        for (Integer id : analysisIds) {
-            if (analysisQas.get(id) != null)
-                count++ ;
-            if (count > 1) {
-                break;
-            }
-        }
-        if (count > 1) {
-
-        } else {
-
-        }
-        sampleId = null;
-        analysisIds.clear();
     }
 
     private void addHtml(int row, int column, String html) {

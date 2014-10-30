@@ -24,7 +24,7 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-	<w:PortalPanel>
+	<w:PortalPanel width="275px">
 		<g:DeckPanel ui:field="deck">
 			<g:HTMLPanel>
 				<table class="{res.style.Form}">
@@ -269,7 +269,7 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.finalReport_back}"
+							<w:Button ui:field="backButton" text="{msg.gen_back}"
 								enabled="true" />
 						</td>
 					</tr>

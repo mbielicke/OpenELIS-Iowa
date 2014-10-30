@@ -5,7 +5,6 @@ import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
-import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -14,7 +13,9 @@ public interface FinalReportUI extends IsWidget {
 
     public void initialize();
 
-    public void setRowHeight(int i, String height);
+    public void setWidgetWidth(int row);
+    
+    public void setCheckBoxCSS();
 
     public TextBox<Integer> getAccessionFrom();
 

@@ -1,6 +1,8 @@
 package org.openelis.portal.modules.finalReport.client;
 
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Help;
 import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
@@ -12,8 +14,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -71,13 +71,16 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     }
 
     @Override
-    public void setRowHeight(int i, String height) {
-        table.getRowFormatter().getElement(i).setAttribute("height", height);
-        table.getCellFormatter().setWidth(i, 0, height);
-        table.getWidget(i, 0).setHeight(height);
-        table.getWidget(i, 0).setWidth(height);
-        table.getCellFormatter().setHorizontalAlignment(i, 0, HasHorizontalAlignment.ALIGN_CENTER);
-        table.getCellFormatter().setVerticalAlignment(i, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+    public void setWidgetWidth(int row) {
+        table.getWidget(row, 0).setWidth("45px");
+    }
+
+    @Override
+    public void setCheckBoxCSS() {
+        for (int i = 1; i < table.getRowCount(); i++ ) {
+            ((CheckBox)table.getWidget(i, 0)).setCss(UIResources.INSTANCE.mcheckbox());
+            ((CheckBox)table.getWidget(i, 0)).setWidth("45px");
+        }
     }
 
     @Override
