@@ -117,8 +117,10 @@ public class AuxDataHelperBean {
                     NULL_DATA_CODE = "null_data_code", FILTER_LOT_BLANK = "filter_lot_blank",
                     STRIPS_PER_FILTER = "strips_per_filter",
                     BLANK_SAMPLE_NUMBER = "blank_sample_number", STATE_CODE = "state_code",
-                    COUNTY_CODE = "county_code", SITE_ID = "site_id", POC = "poc",
-                    COLLECTION_FREQUENCY = "collection_frequency";
+                    COUNTY_CODE = "county_code", SITE_ID = "site_id",
+                    COLLECTION_FREQUENCY = "collection_frequency", POC_SULFATE = "poc_sulfate",
+                    POC_NITRATE = "poc_nitrate", POC_TO11 = "poc_to11", POC_TO12 = "poc_to12",
+                    POC_TO15 = "poc_to15";
 
     /**
      * Adds aux groups specified by the list of ids to the list of aux data, if
@@ -264,8 +266,10 @@ public class AuxDataHelperBean {
              * consider this aux group only if it's active
              */
             if ("N".equals(aux.getAuxFieldGroupIsActive())) {
-                if (!aux.getAuxFieldGroupId().equals(prevGrpId))
-                    e.add(new FormErrorWarning(Messages.get().sample_inactiveAuxGroupWarning(accession, aux.getAuxFieldGroupName())));
+                if ( !aux.getAuxFieldGroupId().equals(prevGrpId))
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_inactiveAuxGroupWarning(accession,
+                                                                                       aux.getAuxFieldGroupName())));
                 prevGrpId = aux.getAuxFieldGroupId();
                 continue;
             }
@@ -303,7 +307,7 @@ public class AuxDataHelperBean {
             if (getAuxiliary(sm) == null)
                 setAuxiliary(sm, new ArrayList<AuxDataViewDO>());
             addAuxGroups(getAuxiliary(sm), grpIds, auxGrps, e);
-            
+
             /*
              * set negative ids in the newly added aux data
              */
@@ -375,7 +379,7 @@ public class AuxDataHelperBean {
         accession = sample.getAccessionNumber();
         if (accession == null)
             accession = 0;
-        
+
         for (AuxDataViewDO data : grp.values()) {
             extId = data.getAnalyteExternalId();
             if (SMPL_COLLECTED_DATE.equals(extId)) {
@@ -390,8 +394,10 @@ public class AuxDataHelperBean {
                     if (projects.size() > 0)
                         sm.project.add(projects.get(0));
                     else
-                        e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "project",
-                                                                                   data.getValue())));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .sample_orderImportException(accession,
+                                                                                        "project",
+                                                                                        data.getValue())));
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Missing/invalid project '" + data.getValue() + "'", ex);
                     throw ex;
@@ -420,8 +426,10 @@ public class AuxDataHelperBean {
                     else
                         env.setIsHazardous("N");
                 } catch (NotFoundException ex) {
-                    e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "flag hazardous",
-                                                                               data.getValue())));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_orderImportException(accession,
+                                                                                    "flag hazardous",
+                                                                                    data.getValue())));
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Missing/invalid flag hazardous '" + data.getValue() +
                                           "'", ex);
@@ -438,8 +446,10 @@ public class AuxDataHelperBean {
                         pr = new Integer(data.getValue());
                     env.setPriority(pr);
                 } catch (Exception ex) {
-                    e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "priority",
-                                                                               data.getValue())));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_orderImportException(accession,
+                                                                                    "priority",
+                                                                                    data.getValue())));
                 }
             } else if (COLLECTOR_PHONE.equals(extId)) {
                 env.setCollectorPhone(data.getValue());
@@ -475,8 +485,10 @@ public class AuxDataHelperBean {
                         w = new Integer(data.getValue());
                     well.setWellNumber(w);
                 } catch (Exception ex) {
-                    e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "well number",
-                                                                               data.getValue())));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_orderImportException(accession,
+                                                                                    "well number",
+                                                                                    data.getValue())));
                 }
             } else {
                 copyAddressFields(accession, data, e, extId, well.getLocationAddress());
@@ -488,8 +500,8 @@ public class AuxDataHelperBean {
      * Sets values of SDWIS fields from the corresponding aux data in the list.
      * Adds warnings or throws exception for invalid data.
      */
-    private void copySDWISFields(Integer accession, SampleSDWISViewDO sdwis, HashMap<Integer, AuxDataViewDO> grp,
-                                 ValidationErrorsList e) throws Exception {
+    private void copySDWISFields(Integer accession, SampleSDWISViewDO sdwis,
+                                 HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
         Integer dictId, pr;
         String extId;
         PWSDO pwsDO;
@@ -504,8 +516,10 @@ public class AuxDataHelperBean {
                     sdwis.setPwsName(pwsDO.getName());
                     sdwis.setPwsNumber0(pwsDO.getNumber0());
                 } catch (NotFoundException ex) {
-                    e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "pws id",
-                                                                               data.getValue())));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_orderImportException(accession,
+                                                                                    "pws id",
+                                                                                    data.getValue())));
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Missing/invalid pws id '" + data.getValue() + "'", ex);
                     throw ex;
@@ -524,8 +538,10 @@ public class AuxDataHelperBean {
                         throw ex;
                     }
                     if ( !isInCategory(SDWIS_SAMPLE_TYPE, dictId)) {
-                        e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "sample type",
-                                                                                   data.getValue())));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .sample_orderImportException(accession,
+                                                                                        "sample type",
+                                                                                        data.getValue())));
                     } else {
                         dict = dictionaryCache.getById(dictId);
                         /*
@@ -553,8 +569,9 @@ public class AuxDataHelperBean {
                     }
                     if ( !isInCategory(SDWIS_SAMPLE_CATEGORY, dictId)) {
                         e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(accession, "sample category",
-                                                                             data.getValue())));
+                                                           .sample_orderImportException(accession,
+                                                                                        "sample category",
+                                                                                        data.getValue())));
                     } else {
                         dict = dictionaryCache.getById(dictId);
                         /*
@@ -582,8 +599,10 @@ public class AuxDataHelperBean {
                         pr = new Integer(data.getValue());
                     sdwis.setPriority(pr);
                 } catch (Exception ex) {
-                    e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, "priority",
-                                                                               data.getValue())));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_orderImportException(accession,
+                                                                                    "priority",
+                                                                                    data.getValue())));
                 }
             } else if (COLLECTOR.equals(extId)) {
                 sdwis.setCollector(data.getValue());
@@ -595,8 +614,8 @@ public class AuxDataHelperBean {
      * Sets values of address fields from the aux data. Adds warnings for
      * invalid data.
      */
-    private void copyAddressFields(Integer accession, AuxDataViewDO data, ValidationErrorsList e, String extId,
-                                   AddressDO addr) throws Exception {
+    private void copyAddressFields(Integer accession, AuxDataViewDO data, ValidationErrorsList e,
+                                   String extId, AddressDO addr) throws Exception {
         if (LOC_MULT_UNIT.equals(extId)) {
             addr.setMultipleUnit(data.getValue());
         } else if (LOC_STREET_ADDRESS.equals(extId)) {
@@ -607,7 +626,10 @@ public class AuxDataHelperBean {
             if (isInCategory(STATE, data.getValue()))
                 addr.setState(data.getValue());
             else
-                e.add(new FormErrorWarning(Messages.get().sample_orderImportException(accession, STATE, data.getValue())));
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .sample_orderImportException(accession,
+                                                                                STATE,
+                                                                                data.getValue())));
         } else if (LOC_ZIP_CODE.equals(extId)) {
             addr.setZipCode(data.getValue());
         } else if (LOC_COUNTRY.equals(extId) && data.getValue() != null) {
@@ -615,7 +637,9 @@ public class AuxDataHelperBean {
                 addr.setCountry(data.getValue());
             else
                 e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(accession, COUNTRY, data.getValue())));
+                                                   .sample_orderImportException(accession,
+                                                                                COUNTRY,
+                                                                                data.getValue())));
         }
     }
 

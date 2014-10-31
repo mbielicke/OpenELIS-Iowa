@@ -932,7 +932,7 @@ public class AirQualityExportBean {
                                                                         String action,
                                                                         Integer analysisId) throws Exception {
         int sulfateDurationCd, nitrateDurationCd, sulfateMethodCd, nitrateMethodCd;
-        String sulfateValue, nitrateValue, sulfateCode, nitrateCode, stateCode, countyCode, siteId, poc, volume, nullDataCd, collectionFreq, date, reportedUnit, sulfateAlternateMethodDetectableLimit, nitrateAlternateMethodDetectableLimit, key;
+        String sulfateValue, nitrateValue, sulfateCode, nitrateCode, stateCode, countyCode, siteId, pocSulfate, pocNitrate, volume, nullDataCd, collectionFreq, date, reportedUnit, sulfateAlternateMethodDetectableLimit, nitrateAlternateMethodDetectableLimit, key;
         StringBuilder ssb, nsb;
         SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO sulfateParameter, nitrateParameter;
@@ -959,7 +959,8 @@ public class AirQualityExportBean {
         stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
         countyCode = auxData.get(AuxDataHelperBean.COUNTY_CODE);
         siteId = auxData.get(AuxDataHelperBean.SITE_ID);
-        poc = auxData.get(AuxDataHelperBean.POC);
+        pocSulfate = auxData.get(AuxDataHelperBean.POC_SULFATE);
+        pocNitrate = auxData.get(AuxDataHelperBean.POC_NITRATE);
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
         key = stateCode + "_" + countyCode + "_" + siteId;
 
@@ -1016,8 +1017,22 @@ public class AirQualityExportBean {
          */
         ssb = new StringBuilder();
         nsb = new StringBuilder();
-        buildSiteInfo(ssb, rawDataType, action, stateCode, countyCode, siteId, sulfateCode, poc);
-        buildSiteInfo(nsb, rawDataType, action, stateCode, countyCode, siteId, nitrateCode, poc);
+        buildSiteInfo(ssb,
+                      rawDataType,
+                      action,
+                      stateCode,
+                      countyCode,
+                      siteId,
+                      sulfateCode,
+                      pocSulfate);
+        buildSiteInfo(nsb,
+                      rawDataType,
+                      action,
+                      stateCode,
+                      countyCode,
+                      siteId,
+                      nitrateCode,
+                      pocNitrate);
 
         date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
         ssb.append(sulfateDurationCd)
@@ -1146,7 +1161,7 @@ public class AirQualityExportBean {
         stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
         countyCode = auxData.get(AuxDataHelperBean.COUNTY_CODE);
         siteId = auxData.get(AuxDataHelperBean.SITE_ID);
-        poc = auxData.get(AuxDataHelperBean.POC);
+        poc = null;
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
         date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
         key = stateCode + "_" + countyCode + "_" + siteId;
@@ -1158,9 +1173,13 @@ public class AirQualityExportBean {
                     if (data.getMethodName().contains(to11)) {
                         addTds = true;
                         ttds = (double)0;
+                        poc = auxData.get(AuxDataHelperBean.POC_TO11);
                     } else if (data.getMethodName().contains(to12)) {
                         addAll = true;
                         tmnoc = (double)0;
+                        poc = auxData.get(AuxDataHelperBean.POC_TO12);
+                    } else {
+                        poc = auxData.get(AuxDataHelperBean.POC_TO15);
                     }
                 }
                 if (testId.equals(data.getTestId()) &&
@@ -1678,8 +1697,12 @@ public class AirQualityExportBean {
         siteId = auxData.get(AuxDataHelperBean.SITE_ID);
         key = stateCode + "_" + countyCode + "_" + siteId;
 
+        /*
+         * if the POC is null, then the client reference string was not in the
+         * correct format or the aux data was left empty
+         */
         if (poc == null)
-            poc = auxData.get(AuxDataHelperBean.POC);
+            return null;
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
 
         date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
