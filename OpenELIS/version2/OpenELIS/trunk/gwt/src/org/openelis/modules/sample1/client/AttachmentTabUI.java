@@ -142,7 +142,7 @@ public abstract class AttachmentTabUI extends Screen {
                 ArrayList<QueryData> qds;
                 QueryData qd;
 
-                if ( !canQuery)
+                if ( !isState(QUERY) || !canQuery)
                     return null;
 
                 qds = new ArrayList<QueryData>();

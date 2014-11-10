@@ -3537,7 +3537,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              */
             if (attachmentPatternVariable == null)
                 attachmentPatternVariable = SystemVariableService.get()
-                                                                 .fetchByExactName("pattern_attachment_neonatal");
+                                                                 .fetchByExactName("attachment_pattern_neonatal");
             /*
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
