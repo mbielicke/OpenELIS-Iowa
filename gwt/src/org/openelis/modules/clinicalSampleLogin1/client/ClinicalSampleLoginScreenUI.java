@@ -2707,7 +2707,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
              */
             if (attachmentPatternVariable == null)
                 attachmentPatternVariable = SystemVariableService.get()
-                                                                 .fetchByExactName("pattern_attachment_clinical");
+                                                                 .fetchByExactName("attachment_pattern_clinical");
             /*
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed

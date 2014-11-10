@@ -2584,7 +2584,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              */
             if (attachmentPatternVariable == null)
                 attachmentPatternVariable = SystemVariableService.get()
-                                                                 .fetchByExactName("pattern_attachment_env");
+                                                                 .fetchByExactName("attachment_pattern_env");
             
             /*
              * the user checked the checkbox for showing attachment screen, so
