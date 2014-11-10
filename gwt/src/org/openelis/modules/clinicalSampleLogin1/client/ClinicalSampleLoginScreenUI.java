@@ -272,7 +272,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
     protected AsyncCallbackUI<Void>                     validateAccessionNumberCall;
 
-    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall, setOrderIdCall;
 
     protected SystemVariableDO                          attachmentPatternVariable;
 
@@ -3376,9 +3376,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * screen with the returned manager.
      */
     private void setOrderId(Integer ordId) {
-        SampleTestReturnVO ret;
-        ValidationErrorsList errors;
-
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
             return;
@@ -3390,35 +3387,45 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             return;
         }
 
-        try {
-            setBusy(Messages.get().fetching());
-            ret = SampleService1.get().importOrder(manager, ordId);
-            manager = ret.getManager();
-            setData();
-            fireDataChange();
-            clearStatus();
-            /*
-             * show any validation errors encountered while importing the order
-             * or the pop up for selecting the prep/reflex tests for the tests
-             * added during the import
-             */
-            errors = ret.getErrors();
-            if (errors != null && errors.size() > 0) {
-                if (errors.hasWarnings())
-                    Window.alert(getWarnings(errors.getErrorList(), false));
-                if (errors.hasErrors())
-                    showErrors(errors);
-                isBusy = false;
-            } else if (ret.getTests() == null || ret.getTests().size() == 0) {
-                isBusy = false;
-            } else {
-                showTests(ret);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            clearStatus();
+        setBusy(Messages.get().gen_fetching());
+        
+        if (setOrderIdCall == null) {
+            setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
+                public void success(SampleTestReturnVO result) {
+                    ValidationErrorsList errors;
+                    
+                    manager = result.getManager();
+                    setData();
+                    fireDataChange();
+                    clearStatus();
+                    /*
+                     * show any validation errors encountered while importing the order
+                     * or the pop up for selecting the prep/reflex tests for the tests
+                     * added during the import
+                     */
+                    errors = result.getErrors();
+                    if (errors != null && errors.size() > 0) {
+                        if (errors.hasWarnings())
+                            Window.alert(getWarnings(errors.getErrorList(), false));
+                        if (errors.hasErrors())
+                            showErrors(errors);
+                        isBusy = false;
+                    } else if (result.getTests() == null || result.getTests().size() == 0) {
+                        isBusy = false;
+                    } else {
+                        showTests(result);
+                    }
+                }
+
+                public void failure(Throwable error) {
+                    Window.alert(error.getMessage());
+                    logger.log(Level.SEVERE, error.getMessage(), error);
+                    clearStatus();
+                }
+            };
         }
+        
+        SampleService1.get().importOrder(manager, ordId, setOrderIdCall); 
     }
 
     /**
