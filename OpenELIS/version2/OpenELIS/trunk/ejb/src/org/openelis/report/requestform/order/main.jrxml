@@ -39,7 +39,7 @@ where o.id = $P{ORDER_ID} and type = 'S' and oo1.order_id = o.id and
 	<field name="bill_to_attention" class="java.lang.String"/>
 	<variable name="PWS_COUNT" class="java.lang.Integer">
 		<variableExpression><![CDATA[$V{PWS_COUNT}]]></variableExpression>
-		<initialValueExpression><![CDATA[]]></initialValueExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
 	</variable>
 	<background>
 		<band height="756">
@@ -124,7 +124,7 @@ Phone # 319-335-4500 or
 			<componentElement>
 				<reportElement key="formType.barcode" mode="Opaque" x="17" y="725" width="60" height="20"/>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false" evaluationTime="Page">
-					<jr:codeExpression><![CDATA[$V{PWS_COUNT} > 0 ? "SD" : "EN"]]></jr:codeExpression>
+					<jr:codeExpression><![CDATA[$V{PWS_COUNT} != null && $V{PWS_COUNT} > 0 ? "SD" : "EN"]]></jr:codeExpression>
 				</jr:barbecue>
 			</componentElement>
 			<textField evaluationTime="Page" pattern="">
@@ -132,7 +132,7 @@ Phone # 319-335-4500 or
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isItalic="true" isUnderline="false" pdfFontName="Helvetica-Oblique" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($V{PWS_COUNT} > 0 ? "SD" : "EN") + " 102014"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($V{PWS_COUNT} != null && $V{PWS_COUNT} > 0 ? "SD" : "EN") + " 102014"]]></textFieldExpression>
 			</textField>
 		</band>
 	</background>

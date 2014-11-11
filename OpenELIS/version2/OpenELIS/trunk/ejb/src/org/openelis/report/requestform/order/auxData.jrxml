@@ -53,7 +53,7 @@ ORDER BY aux_data.sort_order]]>
 	<field name="aux_field_group_id" class="java.lang.Integer"/>
 	<variable name="PWS_COUNT" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA["pws_id".equals($F{analyte_ext_id}) ? "Y" : null]]></variableExpression>
-		<initialValueExpression><![CDATA[]]></initialValueExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
 	</variable>
 	<group name="aux_field_group">
 		<groupExpression><![CDATA[$F{aux_field_group_id}]]></groupExpression>
