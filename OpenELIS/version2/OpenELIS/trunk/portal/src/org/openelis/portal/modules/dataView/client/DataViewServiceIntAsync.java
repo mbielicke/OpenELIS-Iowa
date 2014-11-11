@@ -12,13 +12,10 @@ public interface DataViewServiceIntAsync {
 
     void fetchAnalyteAndAuxField(DataViewVO data, AsyncCallback<DataViewVO> callback);
 
-    void fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data,
-                                                    AsyncCallback<DataViewVO> callback);
-
-    void fetchEnvironmentalProjectListForWeb(AsyncCallback<ArrayList<IdNameVO>> callback);
+    void fetchProjectListForPortal(AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback);
 
-    void runReportForWebEnvironmental(DataViewVO data, AsyncCallback<ReportStatus> callback);
+    void runReportForPortal(DataViewVO data, AsyncCallback<ReportStatus> callback);
 
 }

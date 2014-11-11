@@ -75,6 +75,7 @@ public class FinalReportScreen extends Screen {
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        IdNameVO project;
         ArrayList<Item<Integer>> model;
         ArrayList<IdNameVO> list;
         Item<Integer> row;
@@ -135,14 +136,6 @@ public class FinalReportScreen extends Screen {
             }
         });
 
-        // ui.getTable().addClickHandler(new ClickHandler() {
-        //
-        // @Override
-        // public void onClick(ClickEvent event) {
-        // ui.getTable().getWidget(event.get, 0);
-        // }
-        // })
-
         addScreenHandler(ui.getCollectedFrom(),
                          SampleViewMeta.getCollectionDateFrom(),
                          new ScreenHandler<Datetime>() {
@@ -151,6 +144,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setCollectedError(null);
                                  ui.getCollectedFrom().clearExceptions();
                                  ui.getCollectedTo().clearExceptions();
                                  form.setCollectedFrom(event.getValue());
@@ -174,6 +168,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setCollectedError(null);
                                  ui.getCollectedTo().clearExceptions();
                                  ui.getCollectedFrom().clearExceptions();
                                  form.setCollectedTo(event.getValue());
@@ -197,6 +192,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setReleasedError(null);
                                  ui.getReleasedFrom().clearExceptions();
                                  ui.getReleasedTo().clearExceptions();
                                  form.setReleasedFrom(event.getValue());
@@ -220,6 +216,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setReleasedError(null);
                                  ui.getReleasedTo().clearExceptions();
                                  ui.getReleasedFrom().clearExceptions();
                                  form.setReleasedTo(event.getValue());
@@ -243,6 +240,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 ui.setAccessionError(null);
                                  ui.getAccessionFrom().clearExceptions();
                                  ui.getAccessionTo().clearExceptions();
                                  form.setAccessionFrom(event.getValue());
@@ -266,6 +264,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 ui.setAccessionError(null);
                                  ui.getAccessionTo().clearExceptions();
                                  ui.getAccessionFrom().clearExceptions();
                                  form.setAccessionTo(event.getValue());
@@ -289,6 +288,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setClientReferenceError(null);
                                  ui.getClientReference().clearExceptions();
                                  form.setClientReference(event.getValue());
                              }
@@ -311,6 +311,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<ArrayList<Integer>> event) {
+                                 ui.setProjectError(null);
                                  ui.getProjectCode().clearExceptions();
                                  form.setProjectCodes(event.getValue());
                              }
@@ -333,6 +334,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setEnvCollectorError(null);
                                  ui.getEnvCollector().clearExceptions();
                                  form.setEnvCollector(event.getValue());
                              }
@@ -355,6 +357,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setSdiwsCollectorError(null);
                                  ui.getSdwisCollector().clearExceptions();
                                  form.setSdwisCollector(event.getValue());
                              }
@@ -377,6 +380,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPwsError(null);
                                  ui.getPwsId().clearExceptions();
                                  form.setPwsId(event.getValue());
                              }
@@ -399,6 +403,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientFirstError(null);
                                  ui.getPatientFirst().clearExceptions();
                                  form.setPatientFirst(event.getValue());
                              }
@@ -421,6 +426,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientLastError(null);
                                  ui.getPatientLast().clearExceptions();
                                  form.setPatientLast(event.getValue());
                              }
@@ -443,6 +449,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setPatientBirthError(null);
                                  ui.getPatientBirthFrom().clearExceptions();
                                  ui.getPatientBirthTo().clearExceptions();
                                  form.setPatientBirthFrom(event.getValue());
@@ -466,6 +473,7 @@ public class FinalReportScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setPatientBirthError(null);
                                  ui.getPatientBirthTo().clearExceptions();
                                  ui.getPatientBirthFrom().clearExceptions();
                                  form.setPatientBirthTo(event.getValue());
@@ -501,7 +509,11 @@ public class FinalReportScreen extends Screen {
         try {
             list = FinalReportService.get().getProjectList();
             for (int i = 0; i < list.size(); i++ ) {
-                row = new Item<Integer>(list.get(i).getId(), list.get(i).getName());
+                project = list.get(i);
+                row = new Item<Integer>(2);
+                row.setKey(project.getId());
+                row.setCell(0, project.getName());
+                row.setCell(1, project.getDescription());
                 model.add(row);
             }
         } catch (Exception e) {
@@ -520,6 +532,7 @@ public class FinalReportScreen extends Screen {
      * create the range queries for variables with from and to fields
      */
     private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) throws Exception {
+        boolean error;
         HashMap<String, QueryData> fieldMap;
 
         fieldMap = new HashMap<String, QueryData>();
@@ -527,6 +540,7 @@ public class FinalReportScreen extends Screen {
             fieldMap.put(data.getKey(), data);
         }
 
+        error = false;
         try {
             getRangeQuery(SampleViewMeta.getCollectionDateFrom(),
                           SampleViewMeta.getCollectionDateTo(),
@@ -534,7 +548,7 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
-            throw e;
+            error = true;
         }
 
         try {
@@ -544,7 +558,7 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
-            throw e;
+            error = true;
         }
 
         try {
@@ -554,7 +568,7 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
-            throw e;
+            error = true;
         }
 
         try {
@@ -564,8 +578,14 @@ public class FinalReportScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
-            throw e;
+            error = true;
         }
+
+        /*
+         * if there was an error validating the fields, do not query for samples
+         */
+        if (error)
+            throw new Exception();
 
         return new ArrayList<QueryData>(fieldMap.values());
     }
@@ -699,7 +719,6 @@ public class FinalReportScreen extends Screen {
             /*
              * set row height higher for mobile and tablet versions
              */
-            // ui.setWidgetWidth(j);
             ui.getTable().getCellFormatter().getElement(j, 0).getStyle().setPadding(10, Unit.PX);
             ui.getTable().getCellFormatter().getElement(j, 1).getStyle().setPadding(10, Unit.PX);
             ui.getTable().getCellFormatter().getElement(j, 2).getStyle().setPadding(10, Unit.PX);

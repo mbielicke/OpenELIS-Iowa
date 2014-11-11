@@ -57,28 +57,27 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class ProjectBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager       manager;
-    
-    @EJB
-    private UserCacheBean       userCache;
+    private EntityManager              manager;
 
-    private static ProjectMeta  meta = new ProjectMeta();
-    
+    @EJB
+    private UserCacheBean              userCache;
+
+    private static ProjectMeta         meta    = new ProjectMeta();
+
     private static final SampleWebMeta webMeta = new SampleWebMeta();
 
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> fetchList() throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("Project.FetchList");
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public ProjectViewDO fetchById(Integer id) throws Exception {
         Query query;
         ProjectViewDO data;
@@ -101,7 +100,7 @@ public class ProjectBean {
         }
         return data;
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<ProjectViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
         Query query;
@@ -110,9 +109,9 @@ public class ProjectBean {
 
         query = manager.createNamedQuery("Project.FetchByIds");
         query.setParameter("ids", ids);
-        list = query.getResultList(); 
-        
-        for (ProjectViewDO data :list) {
+        list = query.getResultList();
+
+        for (ProjectViewDO data : list) {
             if (data.getOwnerId() != null) {
                 user = userCache.getSystemUser(data.getOwnerId());
                 if (user != null)
@@ -143,31 +142,33 @@ public class ProjectBean {
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public ArrayList<IdNameVO> fetchForOrganizations(String clause) throws Exception {
         Query query;
         QueryBuilderV2 builder;
-        
+
         builder = new QueryBuilderV2();
-        builder.setMeta(webMeta);        
+        builder.setMeta(webMeta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          SampleWebMeta.getProjectId() + ", " + SampleWebMeta.getProjectName()+ ") ");
-        builder.addWhere("("+clause+")");
-        builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + "=" + SampleWebMeta.getProjectId());
+                          SampleWebMeta.getProjectId() + ", " + SampleWebMeta.getProjectName() +
+                          "," + SampleWebMeta.getProjectDescription() + ") ");
+        builder.addWhere("(" + clause + ")");
+        builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + "=" +
+                         SampleWebMeta.getProjectId());
         query = manager.createQuery(builder.getEJBQL());
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public ArrayList<IdNameVO> fetchForSampleStatusReport(ArrayList<Integer> organizationIds) throws Exception {
         Query query;
         IdNameVO vo;
         ArrayList<Object[]> resultList;
         ArrayList<IdNameVO> projectList;
-        
+
         query = manager.createNamedQuery("Project.FetchForSampleStatusReport");
         query.setParameter("organizationIds", organizationIds);
         resultList = DataBaseUtil.toArrayList(query.getResultList());
-        
+
         projectList = new ArrayList<IdNameVO>();
         for (Object[] result : resultList) {
             vo = new IdNameVO((Integer)result[0], (String)result[1]);
@@ -184,8 +185,8 @@ public class ProjectBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          ProjectMeta.getId() + "," + ProjectMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + ProjectMeta.getId() + "," +
+                          ProjectMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(ProjectMeta.getName());
 
@@ -249,34 +250,41 @@ public class ProjectBean {
     public void validate(ProjectDO data) throws Exception {
         ArrayList<ProjectDO> dups;
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getIsActive()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getIsActive()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProjectMeta.getIsActive()));
 
         if (DataBaseUtil.isEmpty(data.getOwnerId()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getOwnerId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProjectMeta.getOwnerId()));
 
         if (DataBaseUtil.isEmpty(data.getStartedDate()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getStartedDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProjectMeta.getStartedDate()));
 
         if (DataBaseUtil.isEmpty(data.getCompletedDate()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getCompletedDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProjectMeta.getCompletedDate()));
 
         if (DataBaseUtil.isAfter(data.getStartedDate(), data.getCompletedDate()))
             list.add(new FieldErrorException(Messages.get().endDateAfterBeginDateException(),
-                                                      ProjectMeta.getCompletedDate()));
+                                             ProjectMeta.getCompletedDate()));
         //
         // check for duplicate name
         //
-        if (DataBaseUtil.isEmpty(data.getName())) { 
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getName()));
+        if (DataBaseUtil.isEmpty(data.getName())) {
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProjectMeta.getName()));
         } else {
             if ("Y".equals(data.getIsActive())) {
                 try {
                     dups = fetchActiveByName(data.getName(), 1);
-                    if (dups.size() > 0 && DataBaseUtil.isDifferent(data.getId(), dups.get(0).getId())) 
-                        list.add(new FieldErrorException(Messages.get().fieldUniqueException(), ProjectMeta.getName()));
+                    if (dups.size() > 0 &&
+                        DataBaseUtil.isDifferent(data.getId(), dups.get(0).getId()))
+                        list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
+                                                         ProjectMeta.getName()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

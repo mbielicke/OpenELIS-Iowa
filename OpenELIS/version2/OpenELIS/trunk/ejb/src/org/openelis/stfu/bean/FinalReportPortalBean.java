@@ -214,10 +214,6 @@ public class FinalReportPortalBean {
 
         clause = userCache.getPermission().getModule("w_final_report").getClause();
 
-        /*
-         * if clause is null, then the previous method returns an empty HashMap,
-         * so we need to check if the list is empty or not.
-         */
         if (clause != null)
             return project.fetchForOrganizations(clause);
 

@@ -220,31 +220,17 @@ public class SampleStatusPortalBean {
     @RolesAllowed("w_status-select")
     public ArrayList<IdNameVO> getProjectList() throws Exception {
         String clause;
-        ArrayList<Integer> orgIds;
-        ArrayList<IdNameVO> projectList;
-        HashMap<String, ArrayList<Integer>> orgMapArr;
 
         /*
          * Retrieve the sql clause that limits what the user can access. Don't
          * allow an empty clause
          */
         clause = userCache.getPermission().getModule("w_status").getClause();
-        if (clause == null)
-            return new ArrayList<IdNameVO>();
 
-        /*
-         * Create an ArrayList of organization ids from the clause in a format
-         * which the QueryBuilder can understand.
-         */
-        orgMapArr = ReportUtil.parseClauseAsArrayList(clause);
-        orgIds = orgMapArr.get("organizationId");
+        if (clause != null)
+            return project.fetchForOrganizations(clause);
 
-        /*
-         * Adding projects for organizations from all domains into projectList.
-         */
-        projectList = project.fetchForSampleStatusReport(orgIds);
-
-        return projectList;
+        return new ArrayList<IdNameVO>();
     }
 
     @RolesAllowed("w_status-select")

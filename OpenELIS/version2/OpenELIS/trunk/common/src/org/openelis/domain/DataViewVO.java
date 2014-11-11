@@ -70,8 +70,10 @@ public class DataViewVO implements Serializable {
                     sampleSDWISStateLabId, sampleSDWISFacilityId, sampleSDWISSampleTypeId,
                     sampleSDWISSampleCategoryId, sampleSDWISSamplePointId, sampleSDWISLocation,
                     sampleSDWISPriority, sampleSDWISCollector, sampleEnvironmentalCollectorHeader,
-                    sampleEnvironmentalLocationHeader, patientLastName, patientFirstName,
-                    patientBirth, patientGender, patientRace, patientEthnicity;
+                    sampleEnvironmentalLocationHeader, sampleClinicalPatientLastName,
+                    sampleClinicalPatientFirstName, sampleClinicalPatientBirth,
+                    sampleClinicalPatientGender, sampleClinicalPatientRace,
+                    sampleClinicalPatientEthnicity;
     protected Integer                          analysisStatusId, accessionNumberFrom,
                     accessionNumberTo, projectId;
     protected Date                             analysisCompletedDateFrom, analysisCompletedDateTo,
@@ -699,52 +701,52 @@ public class DataViewVO implements Serializable {
         this.sampleEnvironmentalLocationHeader = DataBaseUtil.trim(locationHeader);
     }
 
-    public String getPatientLastName() {
-        return patientLastName;
+    public String getSampleClinicalPatientLastName() {
+        return sampleClinicalPatientLastName;
     }
 
-    public void setPatientLastName(String patientLastName) {
-        this.patientLastName = DataBaseUtil.trim(patientLastName);
+    public void setSampleClinicalPatientLastName(String sampleClinicalPatientLastName) {
+        this.sampleClinicalPatientLastName = sampleClinicalPatientLastName;
     }
 
-    public String getPatientFirstName() {
-        return patientFirstName;
+    public String getSampleClinicalPatientFirstName() {
+        return sampleClinicalPatientFirstName;
     }
 
-    public void setPatientFirstName(String patientFirstName) {
-        this.patientFirstName = DataBaseUtil.trim(patientFirstName);
+    public void setSampleClinicalPatientFirstName(String sampleClinicalPatientFirstName) {
+        this.sampleClinicalPatientFirstName = sampleClinicalPatientFirstName;
     }
 
-    public String getPatientBirth() {
-        return patientBirth;
+    public String getSampleClinicalPatientBirth() {
+        return sampleClinicalPatientBirth;
     }
 
-    public void setPatientBirth(String patientBirth) {
-        this.patientBirth = DataBaseUtil.trim(patientBirth);
+    public void setSampleClinicalPatientBirth(String sampleClinicalPatientBirth) {
+        this.sampleClinicalPatientBirth = sampleClinicalPatientBirth;
     }
 
-    public String getPatientGender() {
-        return patientGender;
+    public String getSampleClinicalPatientGender() {
+        return sampleClinicalPatientGender;
     }
 
-    public void setPatientGender(String patientGender) {
-        this.patientGender = DataBaseUtil.trim(patientGender);
+    public void setSampleClinicalPatientGender(String sampleClinicalPatientGender) {
+        this.sampleClinicalPatientGender = sampleClinicalPatientGender;
     }
 
-    public String getPatientRace() {
-        return patientRace;
+    public String getSampleClinicalPatientRace() {
+        return sampleClinicalPatientRace;
     }
 
-    public void setPatientRace(String patientRace) {
-        this.patientRace = DataBaseUtil.trim(patientRace);
+    public void setSampleClinicalPatientRace(String sampleClinicalPatientRace) {
+        this.sampleClinicalPatientRace = sampleClinicalPatientRace;
     }
 
-    public String getPatientEthnicity() {
-        return patientEthnicity;
+    public String getSampleClinicalPatientEthnicity() {
+        return sampleClinicalPatientEthnicity;
     }
 
-    public void setPatientEthnicity(String patientEthnicity) {
-        this.patientEthnicity = DataBaseUtil.trim(patientEthnicity);
+    public void setSampleClinicalPatientEthnicity(String sampleClinicalPatientEthnicity) {
+        this.sampleClinicalPatientEthnicity = sampleClinicalPatientEthnicity;
     }
 
     public Integer getAnalysisStatusId() {

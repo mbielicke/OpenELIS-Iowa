@@ -31,6 +31,13 @@
 					<g:HTMLPanel>
 						<table class="{res.style.Form}">
 							<tr>
+								<td colspan="5">
+									<span style="float:left;font-weight:bold;font-size:13pt;">
+										<ui:text from="{msg.main_finalReport}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
 								<td class="{res.style.Prompt}" colspan="5">
 									<span style="float:left;font-weight:bold;font-size:11pt;">
 										<ui:text from="{msg.finalReport_anySamples}" />
@@ -132,7 +139,18 @@
 								</td>
 								<td colspan="3">
 									<w:MultiDropdown ui:field="projectCode" width="206px"
-										field="Integer" enabled="true" />
+										field="Integer" enabled="true">
+										<w:popup>
+											<t:Table visibleRows="10" header="true">
+												<t:Column width="100" label="{msg.gen_name}">
+													<t:LabelCell />
+												</t:Column>
+												<t:Column width="300" label="{msg.gen_description}">
+													<t:LabelCell />
+												</t:Column>
+											</t:Table>
+										</w:popup>
+									</w:MultiDropdown>
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
