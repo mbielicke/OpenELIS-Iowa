@@ -1,6 +1,7 @@
 package org.openelis.portal.modules.sampleStatus.client;
 
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Help;
 import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
@@ -42,6 +43,10 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
 
     @UiField
     protected DeckPanel                         deck;
+
+    @UiField
+    protected Help                              collectedError, accessionError,
+                    clientReferenceError, projectError;
 
     public SampleStatusUITabletImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -119,4 +124,51 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
         return deck;
     }
 
+    @Override
+    public void setCollectedError(String error) {
+        if (error == null) {
+            collectedError.setVisible(false);
+        } else {
+            collectedError.setText(error);
+            collectedError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setAccessionError(String error) {
+        if (error == null) {
+            accessionError.setVisible(false);
+        } else {
+            accessionError.setText(error);
+            accessionError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setClientReferenceError(String error) {
+        if (error == null) {
+            clientReferenceError.setVisible(false);
+        } else {
+            clientReferenceError.setText(error);
+            clientReferenceError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setProjectError(String error) {
+        if (error == null) {
+            projectError.setVisible(false);
+        } else {
+            projectError.setText(error);
+            projectError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void clearErrors() {
+        collectedError.setVisible(false);
+        accessionError.setVisible(false);
+        clientReferenceError.setVisible(false);
+        projectError.setVisible(false);
+    }
 }

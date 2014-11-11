@@ -65,6 +65,7 @@ public class SampleStatusScreen extends Screen {
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        IdNameVO project;
         ArrayList<Item<Integer>> model;
         ArrayList<IdNameVO> list;
         Item<Integer> row;
@@ -86,7 +87,7 @@ public class SampleStatusScreen extends Screen {
             @Override
             public void onClick(ClickEvent event) {
                 form = new FinalReportFormVO();
-                clearErrors();
+                ui.clearErrors();
                 fireDataChange();
             }
         });
@@ -107,6 +108,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setCollectedError(null);
                                  ui.getCollectedFrom().clearExceptions();
                                  ui.getCollectedTo().clearExceptions();
                                  form.setCollectedFrom(event.getValue());
@@ -130,6 +132,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setCollectedError(null);
                                  ui.getCollectedTo().clearExceptions();
                                  ui.getCollectedFrom().clearExceptions();
                                  form.setCollectedTo(event.getValue());
@@ -153,6 +156,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 ui.setAccessionError(null);
                                  ui.getAccessionFrom().clearExceptions();
                                  ui.getAccessionTo().clearExceptions();
                                  form.setAccessionFrom(event.getValue());
@@ -176,6 +180,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 ui.setAccessionError(null);
                                  ui.getAccessionTo().clearExceptions();
                                  ui.getAccessionFrom().clearExceptions();
                                  form.setAccessionTo(event.getValue());
@@ -199,6 +204,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setClientReferenceError(null);
                                  ui.getClientReference().clearExceptions();
                                  form.setClientReference(event.getValue());
                              }
@@ -221,6 +227,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<ArrayList<Integer>> event) {
+                                 ui.setProjectError(null);
                                  ui.getProjectCode().clearExceptions();
                                  form.setProjectCodes(event.getValue());
                              }
@@ -255,7 +262,11 @@ public class SampleStatusScreen extends Screen {
         try {
             list = SampleStatusService.get().getProjectList();
             for (int i = 0; i < list.size(); i++ ) {
-                row = new Item<Integer>(list.get(i).getId(), list.get(i).getName());
+                project = list.get(i);
+                row = new Item<Integer>(2);
+                row.setKey(project.getId());
+                row.setCell(0, project.getName());
+                row.setCell(1, project.getDescription());
                 model.add(row);
             }
         } catch (Exception e) {
@@ -266,6 +277,7 @@ public class SampleStatusScreen extends Screen {
     }
 
     private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) throws Exception {
+        boolean error;
         HashMap<String, QueryData> fieldMap;
 
         fieldMap = new HashMap<String, QueryData>();
@@ -273,15 +285,15 @@ public class SampleStatusScreen extends Screen {
             fieldMap.put(data.getKey(), data);
         }
 
+        error = false;
         try {
             getRangeQuery(SampleViewMeta.getCollectionDateFrom(),
                           SampleViewMeta.getCollectionDateTo(),
                           SampleViewMeta.getCollectionDate(),
                           fieldMap);
         } catch (Exception e) {
-            ui.getCollectedTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-            throw e;
+            ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
+            error = true;
         }
 
         try {
@@ -290,10 +302,15 @@ public class SampleStatusScreen extends Screen {
                           SampleViewMeta.getAccessionNumber(),
                           fieldMap);
         } catch (Exception e) {
-            ui.getAccessionTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
-            throw e;
+            ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
+            error = true;
         }
+
+        /*
+         * if there was an error validating the fields, do not query for samples
+         */
+        if (error)
+            throw new Exception();
 
         return new ArrayList<QueryData>(fieldMap.values());
     }
@@ -481,26 +498,8 @@ public class SampleStatusScreen extends Screen {
         Query query;
         ArrayList<QueryData> queryList;
 
-        clearErrors();
+        ui.clearErrors();
         ui.getTable().removeAllRows();
-
-        /*
-         * check if any of the to fields are filled without the from fields
-         * being filled. Set an error on the widget if they are.
-         */
-        if (DataBaseUtil.isEmpty(ui.getCollectedFrom().getText()) &&
-            !DataBaseUtil.isEmpty(ui.getCollectedTo().getText())) {
-            ui.getCollectedTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartDate()));
-            return;
-        }
-
-        if (DataBaseUtil.isEmpty(ui.getAccessionFrom().getText()) &&
-            !DataBaseUtil.isEmpty(ui.getAccessionTo().getText())) {
-            ui.getAccessionTo()
-              .addException(new Exception(Messages.get().finalReport_error_noStartAccession()));
-            return;
-        }
 
         query = new Query();
         try {

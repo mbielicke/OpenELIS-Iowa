@@ -251,16 +251,11 @@ public class SDWISAdditionalScannerBean {
                     processedList.add(v);
                     continue;
                 }
-                multi = 0;
-                if (data.getNumberSamples() != null &&
-                    DataBaseUtil.isSame(getSampleSDWIS(sm).getFacilityId(), data.getStAsgnIdentCd()) &&
-                    DataBaseUtil.isSame(v.getSeries(), data.getTiaanlgpTiaanlytName())) {
 
-                    /*
-                     * send five additional bottles
-                     */
-                    multi = 5;
-                }
+                /*
+                 * send five additional bottles
+                 */
+                multi = 5;
 
                 for (Integer oid : oids)
                     createOrder(sm, pwsm, oid, analytes, v, multi);

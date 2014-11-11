@@ -118,4 +118,36 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
     public DeckPanel getDeck() {
         return deck;
     }
+
+    @Override
+    public void setCollectedError(String error) {
+        collectedFrom.addException(new Exception(error));
+        collectedTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setAccessionError(String error) {
+        accessionFrom.addException(new Exception(error));
+        accessionTo.addException(new Exception(error));
+    }
+
+    @Override
+    public void setClientReferenceError(String error) {
+        clientReference.addException(new Exception(error));
+    }
+
+    @Override
+    public void setProjectError(String error) {
+        projectCode.addException(new Exception(error));
+    }
+
+    @Override
+    public void clearErrors() {
+        collectedFrom.clearExceptions();
+        collectedTo.clearExceptions();
+        accessionFrom.clearExceptions();
+        accessionTo.clearExceptions();
+        clientReference.clearExceptions();
+        projectCode.clearExceptions();
+    }
 }

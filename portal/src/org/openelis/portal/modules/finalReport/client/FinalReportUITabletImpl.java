@@ -71,15 +71,10 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     }
 
     @Override
-    public void setWidgetWidth(int row) {
-        table.getWidget(row, 0).setWidth("45px");
-    }
-
-    @Override
     public void setCheckBoxCSS() {
         for (int i = 1; i < table.getRowCount(); i++ ) {
             ((CheckBox)table.getWidget(i, 0)).setCss(UIResources.INSTANCE.mcheckbox());
-            ((CheckBox)table.getWidget(i, 0)).setWidth("45px");
+            ((CheckBox)table.getWidget(i, 0)).setWidth("36px");
         }
     }
 

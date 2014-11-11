@@ -31,6 +31,13 @@
 					<g:HTMLPanel>
 						<table class="{res.style.Form}">
 							<tr>
+								<td colspan="5">
+									<span style="float:left;font-weight:bold;font-size:13pt;">
+										<ui:text from="{msg.main_dataView}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
 								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.sample_collectedDate}:" />
 								</td>
@@ -176,7 +183,18 @@
 								</td>
 								<td colspan="3">
 									<w:Dropdown ui:field="projectCode" width="206px"
-										field="Integer" enabled="true" />
+										field="Integer" enabled="true">
+										<w:popup>
+											<t:Table visibleRows="10" header="true">
+												<t:Column width="100" label="{msg.gen_name}">
+													<t:LabelCell />
+												</t:Column>
+												<t:Column width="300" label="{msg.gen_description}">
+													<t:LabelCell />
+												</t:Column>
+											</t:Table>
+										</w:popup>
+									</w:Dropdown>
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_project}"
@@ -214,366 +232,389 @@
 					</g:HTMLPanel>
 				</g:Dock>
 			</g:DockPanel>
-			<g:LayoutPanel height="750px" width="900px">
-				<g:layer top="25px" height="225px">
-					<g:HTMLPanel>
-						<table>
-							<tr>
-								<td colspan="8">
-									<span style="float:left;font-weight:bold;font-size:10pt;">
-										<ui:text from="{msg.dataView_sampleFields}- " />
-									</span>
-									<w:Button ui:field="selectAllSampleFieldsButton" text="{msg.finalReport_selectAll}"
-										enabled="true" visible="true" />
-								</td>
-								<td />
-								<td colspan="7">
-									<span style="float:left;font-weight:bold;font-size:10pt;">
-										<ui:text from="{msg.dataView_orgFields}- " />
-									</span>
-									<w:Button ui:field="selectAllOrgFieldsButton" text="{msg.finalReport_selectAll}"
-										enabled="true" visible="true" />
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<w:CheckBox ui:field="accession" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.gen_accessionNumber}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="sampleCollected" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_collectedDate}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="sampleReceived" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_received}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="sampleReleased" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_released}" />
-								</td>
-								<td width="50px" />
-								<td>
-									<w:CheckBox ui:field="organizationName" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.org_name}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="organizationApt" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.org_apt}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="organizationAddress" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.org_address}" />
-								</td>
-								<td width="100px" />
-							</tr>
-							<tr>
-								<td>
-									<w:CheckBox ui:field="sampleStatus" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_status}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="projectId" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_projectCode}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="clientReferenceHeader"
-										enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_clientReference}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="collectorHeader" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_collector}" />
-								</td>
-								<td width="50px" />
-								<td>
-									<w:CheckBox ui:field="organizationCity" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.org_city}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="organizationState" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.org_state}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="organizationZip" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.org_zip}" />
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<w:CheckBox ui:field="collectionSiteHeader" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_collectionSite}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="sampleDescription" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_description}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="collectorPhone" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_phone}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="sampleType" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_type}" />
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<w:CheckBox ui:field="source" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_source}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="sampleLocationCity" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_locationCity}" />
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<br />
-									<br />
-								</td>
-							</tr>
-							<tr>
-								<td colspan="8">
-									<span style="float:left;font-weight:bold;font-size:10pt;">
-										<ui:text from="{msg.dataView_analysisFields}- " />
-									</span>
-									<w:Button ui:field="selectAllAnalysisFieldsButton"
-										text="{msg.finalReport_selectAll}" enabled="true" visible="true" />
-								</td>
-								<td />
-								<td colspan="7">
-									<span style="float:left;font-weight:bold;font-size:10pt;">
-										<ui:text from="{msg.dataView_patientFields}- " />
-									</span>
-									<w:Button ui:field="selectAllPatientFieldsButton"
-										text="{msg.finalReport_selectAll}" enabled="true" visible="true" />
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<w:CheckBox ui:field="analysisTest" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_test}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="analysisMethod" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_method}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="analysisRevision" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_revision}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="analysisUnit" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_unit}" />
-								</td>
-								<td width="50px" />
-								<td>
-									<w:CheckBox ui:field="patientLastName" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_lastName}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="patientFirstName" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_firstName}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="patientBirth" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_birthDate}" />
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<w:CheckBox ui:field="analysisStarted" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_started}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="analysisCompleted" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_completed}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="analysisReleased" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.sample_released}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="analysisQa" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.analysis_qaEvent}" />
-								</td>
-								<td width="50px" />
-								<td>
-									<w:CheckBox ui:field="patientGender" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_gender}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="patientRace" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_race}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="patientEthnicity" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_ethnicity}" />
-								</td>
-							</tr>
-						</table>
-					</g:HTMLPanel>
-				</g:layer>
-				<g:layer top="250px" height="25px" left="0px" width="500px">
-					<g:HTMLPanel>
-						<table>
-							<tr>
-								<td width="310">
-									<span style="float:left;font-weight:bold;font-size:10pt;">
-										<ui:text from="{msg.dataView_analyte} " />
-									</span>
-								</td>
-								<td>
-									<span style="float:left;font-weight:bold;font-size:10pt;">
-										<ui:text from="{msg.dataView_aux} " />
-									</span>
-								</td>
-							</tr>
-						</table>
-					</g:HTMLPanel>
-				</g:layer>
-				<g:layer top="275px" height="230px" left="0px" width="300px">
-					<t:Table ui:field="analyteTable" header="true"
-						styleName="{res.table.ScreenTableWithSides}" enabled="true">
-						<t:Column width="20" label="">
-							<t:CheckBoxCell>
-								<w:CheckBox />
-							</t:CheckBoxCell>
-						</t:Column>
-						<t:Column width="200" label="{msg.org_name}">
-							<t:TextBoxCell>
-								<w:TextBox case="MIXED" field="String" />
-							</t:TextBoxCell>
-						</t:Column>
-					</t:Table>
-				</g:layer>
-				<g:layer top="275px" height="230px" left="310px" width="300px">
-					<t:Table ui:field="auxTable" header="true"
-						styleName="{res.table.ScreenTableWithSides}" enabled="true">
-						<t:Column width="20" label="">
-							<t:CheckBoxCell>
-								<w:CheckBox />
-							</t:CheckBoxCell>
-						</t:Column>
-						<t:Column width="200" label="{msg.org_name}">
-							<t:TextBoxCell>
-								<w:TextBox case="MIXED" field="String" />
-							</t:TextBoxCell>
-						</t:Column>
-					</t:Table>
-				</g:layer>
-				<g:layer top="510px" height="30px" left="0px" width="200px">
-					<g:HTMLPanel>
-						<table>
-							<tr>
-								<td>
-									<w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
-										enabled="true" visible="true" />
-									<w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
-										enabled="true" visible="true" />
-								</td>
-							</tr>
-						</table>
-					</g:HTMLPanel>
-				</g:layer>
-				<g:layer top="510px" height="30px" left="310px" width="200px">
-					<g:HTMLPanel>
-						<table>
-							<tr>
-								<td>
-									<w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
-										enabled="true" visible="true" />
-									<w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
-										enabled="true" visible="true" />
-								</td>
-							</tr>
-						</table>
-					</g:HTMLPanel>
-				</g:layer>
-				<g:layer top="560px" height="30px" left="0px" width="200px">
-					<g:HTMLPanel>
-						<table>
-							<tr>
-								<td>
-									<w:Button ui:field="backButton" text="{msg.gen_back}"
-										enabled="true" visible="true" />
-									<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-										enabled="true" visible="true" />
-								</td>
-							</tr>
-						</table>
-					</g:HTMLPanel>
-				</g:layer>
-			</g:LayoutPanel>
+			<g:HTMLPanel>
+				<table>
+					<tr>
+						<td colspan="8">
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_sampleFields}- " />
+							</span>
+							<w:Button ui:field="selectAllSampleFieldsButton" text="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" />
+						</td>
+						<td />
+						<td colspan="7">
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_orgFields}- " />
+							</span>
+							<w:Button ui:field="selectAllOrgFieldsButton" text="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="accession"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.gen_accessionNumber}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleCollected"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collectedDate}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleReceived"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_received}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleReleased"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_released}" />
+						</td>
+						<td width="50px" />
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="organizationName"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.org_name}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="organizationApt"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.org_apt}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="organizationAddress"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.org_address}" />
+						</td>
+						<td width="100px" />
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleStatus"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_status}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="projectId"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_projectCode}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="clientReferenceHeader"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_clientReference}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="collectorHeader"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collector}" />
+						</td>
+						<td width="50px" />
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="organizationCity"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.org_city}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="organizationState"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.org_state}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="organizationZip"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.org_zip}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="collectionSiteHeader"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collectionSite}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleDescription"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_description}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="collectorPhone"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_phone}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleType"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_type}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="source"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_source}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleLocationCity"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_locationCity}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<br />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="8">
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_analysisFields}- " />
+							</span>
+							<w:Button ui:field="selectAllAnalysisFieldsButton" text="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" />
+						</td>
+						<td />
+						<td colspan="7">
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_patientFields}- " />
+							</span>
+							<w:Button ui:field="selectAllPatientFieldsButton" text="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisTest"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_test}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisMethod"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_method}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisRevision"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_revision}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisUnit"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_unit}" />
+						</td>
+						<td width="50px" />
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientLastName"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_lastName}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientFirstName"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_firstName}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientBirth"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_birthDate}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisStarted"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_started}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisCompleted"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_completed}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisReleased"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_released}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="analysisQa"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.analysis_qaEvent}" />
+						</td>
+						<td width="50px" />
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientGender"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_gender}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientRace"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_race}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientEthnicity"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_ethnicity}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<br />
+							<br />
+						</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td>
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_analyte} " />
+							</span>
+						</td>
+						<td>
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_aux} " />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<g:LayoutPanel height="300px" width="300px">
+								<g:layer>
+									<t:Table ui:field="analyteTable" header="true"
+										styleName="{res.table.ScreenTableWithSides}" enabled="true"
+										rowHeight="50">
+										<t:Column width="50" label="">
+											<t:CheckBoxCell css="{res.mcheckbox}">
+												<w:CheckBox css="{res.mcheckbox}" width="45px" />
+											</t:CheckBoxCell>
+										</t:Column>
+										<t:Column width="200" label="{msg.org_name}">
+											<t:TextBoxCell>
+												<w:TextBox case="MIXED" field="String" />
+											</t:TextBoxCell>
+										</t:Column>
+									</t:Table>
+								</g:layer>
+							</g:LayoutPanel>
+						</td>
+						<td>
+							<g:LayoutPanel height="300px" width="300px">
+								<g:layer>
+									<t:Table ui:field="auxTable" header="true"
+										styleName="{res.table.ScreenTableWithSides}" enabled="true"
+										rowHeight="50">
+										<t:Column width="50" label="">
+											<t:CheckBoxCell css="{res.mcheckbox}">
+												<w:CheckBox css="{res.mcheckbox}" width="45px" />
+											</t:CheckBoxCell>
+										</t:Column>
+										<t:Column width="200" label="{msg.org_name}">
+											<t:TextBoxCell>
+												<w:TextBox case="MIXED" field="String" />
+											</t:TextBoxCell>
+										</t:Column>
+									</t:Table>
+								</g:layer>
+							</g:LayoutPanel>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" />
+							<w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
+								enabled="true" visible="true" />
+						</td>
+						<td>
+							<w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" />
+							<w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
+								enabled="true" visible="true" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:Button ui:field="backButton" text="{msg.gen_back}"
+								enabled="true" visible="true" />
+							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
+								enabled="true" visible="true" />
+						</td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
 		</g:DeckPanel>
 	</w:PortalPanel>
 </ui:UiBinder>

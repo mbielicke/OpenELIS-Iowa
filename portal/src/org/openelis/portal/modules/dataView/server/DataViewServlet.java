@@ -40,14 +40,14 @@ import org.openelis.ui.server.RemoteServlet;
 @WebServlet("/portal/dataView")
 public class DataViewServlet extends RemoteServlet implements DataViewServiceInt {
 
-    private static final long  serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @EJB
-    private DataViewBean       dataView;
+    private DataViewBean      dataView;
 
-    public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
+    public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         try {
-            return dataView.fetchEnvironmentalProjectListForWeb();
+            return dataView.fetchProjectListForPortal();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -56,14 +56,6 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
         try {
             return dataView.fetchAnalyteAndAuxField(data);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
-    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
-        try {
-            return dataView.fetchAnalyteAndAuxFieldForWebEnvironmental(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -84,11 +76,11 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
         return st;
     }
 
-    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
+    public ReportStatus runReportForPortal(DataViewVO data) throws Exception {
         ReportStatus st;
 
         try {
-            st = dataView.runReportForWebEnvironmental(data);
+            st = dataView.runReportForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

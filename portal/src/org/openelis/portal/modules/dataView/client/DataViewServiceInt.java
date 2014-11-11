@@ -12,14 +12,12 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 @RemoteServiceRelativePath("dataView")
 public interface DataViewServiceInt extends XsrfProtectedService {
 
-    ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception;
+    ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception;
 
     DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception;
 
-    DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception;
-
     ReportStatus runReport(DataViewVO data) throws Exception;
 
-    ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception;
+    ReportStatus runReportForPortal(DataViewVO data) throws Exception;
 
 }

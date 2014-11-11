@@ -31,6 +31,13 @@
 					<g:HTMLPanel>
 						<table class="{res.style.Form}">
 							<tr>
+								<td colspan="5">
+									<span style="float:left;font-weight:bold;font-size:13pt;">
+										<ui:text from="{msg.main_sampleStatus}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
 								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.sample_collectedDate}:" />
 								</td>
@@ -46,8 +53,12 @@
 										begin="0" end="2" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_collected}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="collectedError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -66,8 +77,12 @@
 										enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_accession}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="accessionError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -79,9 +94,12 @@
 										field="String" enabled="true" />
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}"
-										text="{msg.finalReport_help_clientReference}" placement="RIGHT"
-										balloonWidth="200px" />
+									<w:Help css="{res.help}" text="{msg.finalReport_help_clientReference}"
+										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="clientReferenceError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 							<tr>
@@ -90,11 +108,26 @@
 								</td>
 								<td colspan="3">
 									<w:MultiDropdown ui:field="projectCode" width="206px"
-										field="Integer" enabled="true" />
+										field="Integer" enabled="true">
+										<w:popup>
+											<t:Table visibleRows="10" header="true">
+												<t:Column width="100" label="{msg.gen_name}">
+													<t:LabelCell />
+												</t:Column>
+												<t:Column width="300" label="{msg.gen_description}">
+													<t:LabelCell />
+												</t:Column>
+											</t:Table>
+										</w:popup>
+									</w:MultiDropdown>
 								</td>
 								<td>
-									<w:Help styleName="{res.icon.helpImage}" text="{msg.finalReport_help_project}"
+									<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
 										placement="RIGHT" balloonWidth="200px" />
+								</td>
+								<td>
+									<w:Help ui:field="projectError" css="{res.errorCss}"
+										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
 								</td>
 							</tr>
 						</table>

@@ -13,8 +13,6 @@ public interface FinalReportUI extends IsWidget {
 
     public void initialize();
 
-    public void setWidgetWidth(int row);
-    
     public void setCheckBoxCSS();
 
     public TextBox<Integer> getAccessionFrom();

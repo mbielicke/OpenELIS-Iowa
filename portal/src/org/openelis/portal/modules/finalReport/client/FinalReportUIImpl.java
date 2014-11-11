@@ -63,13 +63,6 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     }
 
     @Override
-    public void setWidgetWidth(int row) {
-        /*
-         * do nothing for desktop version
-         */
-    }
-
-    @Override
     public void setCheckBoxCSS() {
         /*
          * do nothing for desktop version

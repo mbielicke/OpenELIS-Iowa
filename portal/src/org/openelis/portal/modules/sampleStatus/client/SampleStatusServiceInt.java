@@ -3,7 +3,6 @@ package org.openelis.portal.modules.sampleStatus.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.ui.common.data.Query;

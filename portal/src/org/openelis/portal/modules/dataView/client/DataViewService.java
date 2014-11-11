@@ -13,23 +13,22 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class DataViewService implements DataViewServiceInt, DataViewServiceIntAsync {
-    
-    static DataViewService instance;
-    
-    DataViewServiceIntAsync service;
-    
+
+    private static DataViewService  instance;
+
+    private DataViewServiceIntAsync service;
+
     public static DataViewService get() {
-        if(instance == null)
+        if (instance == null)
             instance = new DataViewService();
-        
+
         return instance;
     }
-    
+
     private DataViewService() {
         service = (DataViewServiceIntAsync)GWT.create(DataViewServiceInt.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
-
 
     @Override
     public void fetchAnalyteAndAuxField(DataViewVO data, AsyncCallback<DataViewVO> callback) {
@@ -37,14 +36,8 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
     }
 
     @Override
-    public void fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data,
-                                                           AsyncCallback<DataViewVO> callback) {
-        service.fetchAnalyteAndAuxFieldForWebEnvironmental(data, callback);
-    }
-
-    @Override
-    public void fetchEnvironmentalProjectListForWeb(AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.fetchEnvironmentalProjectListForWeb(callback);
+    public void fetchProjectListForPortal(AsyncCallback<ArrayList<IdNameVO>> callback) {
+        service.fetchProjectListForPortal(callback);
     }
 
     @Override
@@ -53,52 +46,43 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
     }
 
     @Override
-    public void runReportForWebEnvironmental(DataViewVO data, AsyncCallback<ReportStatus> callback) {
-        service.runReportForWebEnvironmental(data, callback);
+    public void runReportForPortal(DataViewVO data, AsyncCallback<ReportStatus> callback) {
+        service.runReportForPortal(data, callback);
     }
 
     @Override
-    public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
+    public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
-        
+
         callback = new Callback<ArrayList<IdNameVO>>();
-        service.fetchEnvironmentalProjectListForWeb(callback);
+        service.fetchProjectListForPortal(callback);
         return callback.getResult();
     }
 
     @Override
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
         Callback<DataViewVO> callback;
-        
+
         callback = new Callback<DataViewVO>();
         service.fetchAnalyteAndAuxField(data, callback);
-        return callback.getResult();  
-    }
-
-    @Override
-    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
-        Callback<DataViewVO> callback;
-        
-        callback = new Callback<DataViewVO>();
-        service.fetchAnalyteAndAuxFieldForWebEnvironmental(data, callback);
         return callback.getResult();
     }
 
     @Override
     public ReportStatus runReport(DataViewVO data) throws Exception {
         Callback<ReportStatus> callback;
-        
+
         callback = new Callback<ReportStatus>();
         service.runReport(data, callback);
         return callback.getResult();
     }
 
     @Override
-    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
+    public ReportStatus runReportForPortal(DataViewVO data) throws Exception {
         Callback<ReportStatus> callback;
-        
+
         callback = new Callback<ReportStatus>();
-        service.runReportForWebEnvironmental(data, callback);
+        service.runReportForPortal(data, callback);
         return callback.getResult();
     }
 

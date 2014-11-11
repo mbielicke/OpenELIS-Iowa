@@ -1,6 +1,12 @@
 package org.openelis.portal.modules.main.client;
 
+import static org.openelis.portal.client.Logger.remote;
+
+import java.util.logging.Level;
+
+import org.openelis.portal.client.OpenELISService;
 import org.openelis.portal.modules.dataView.client.DataViewScreen;
+import org.openelis.portal.modules.emailNotification.client.EmailNotificationScreen;
 import org.openelis.portal.modules.finalReport.client.FinalReportScreen;
 import org.openelis.portal.modules.sampleStatus.client.SampleStatusScreen;
 import org.openelis.ui.widget.PortalWindow;
@@ -8,6 +14,7 @@ import org.openelis.ui.widget.PortalWindow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 
 public class MainScreen extends Composite {
@@ -50,6 +57,30 @@ public class MainScreen extends Composite {
                 DataViewScreen screen = new DataViewScreen();
                 screen.setWindow(window);
                 ui.main().add(screen);
+            }
+        });
+
+        ui.navigation().emailNotification().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                ui.main().clear();
+                EmailNotificationScreen screen = new EmailNotificationScreen();
+                screen.setWindow(window);
+                ui.main().add(screen);
+            }
+        });
+
+        ui.navigation().logout().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                try {
+                    OpenELISService.get().logout();
+                } catch (Exception e) {
+                    remote().log(Level.SEVERE, e.getMessage(), e);
+                    Window.alert(e.getMessage());
+                }
+
+                Window.open("/portal/Portal.html", "_self", null);
             }
         });
     }

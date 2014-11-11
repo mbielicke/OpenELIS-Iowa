@@ -35,4 +35,14 @@ public interface SampleStatusUI extends IsWidget {
 
     public DeckPanel getDeck();
 
+    public void setCollectedError(String error);
+
+    public void setAccessionError(String error);
+
+    public void setClientReferenceError(String error);
+
+    public void setProjectError(String error);
+
+    public void clearErrors();
+
 }
