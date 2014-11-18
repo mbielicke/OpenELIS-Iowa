@@ -41,18 +41,23 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
+import org.openelis.domain.ResultDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
@@ -80,10 +85,12 @@ import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
+import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
+import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemAnalysisTreeTabUI;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
@@ -92,13 +99,16 @@ import org.openelis.modules.sample1.client.SampleOrganizationLookupUI;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SelectedType;
+import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.scriptlet.SampleSO;
-import org.openelis.scriptlet.SampleSO.Operation;
+import org.openelis.scriptlet.SampleSO.Action_After;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -314,7 +324,10 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                            "user_action",
                                            "unit_of_measure",
                                            "qaevent_type",
-                                           "worksheet_status");
+                                           "worksheet_status",
+                                           "scriptlet_domain",
+                                           "scriptlet_test",
+                                           "scriptlet_test_analyte");
         } catch (Exception e) {
             window.close();
             throw e;
@@ -940,6 +953,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setIsHazardous(event.getValue());
+                                 runScriptlets(null, SampleMeta.getEnvIsHazardous(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -976,6 +990,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 setPriority(event.getValue());
+                runScriptlets(null, SampleMeta.getEnvPriority(), null);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1011,6 +1026,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 setCollector(event.getValue());
+                runScriptlets(null, SampleMeta.getEnvCollector(), null);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1048,6 +1064,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setCollectorPhone(event.getValue());
+                                 runScriptlets(null, SampleMeta.getEnvCollectorPhone(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1086,6 +1103,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setDescription(event.getValue());
+                                 runScriptlets(null, SampleMeta.getEnvDescription(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1122,6 +1140,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 setLocation(event.getValue());
+                runScriptlets(null, SampleMeta.getEnvLocation(), null);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1159,6 +1178,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressMultipleUnit(event.getValue());
+                                 runScriptlets(null, SampleMeta.getLocationAddrMultipleUnit(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1200,6 +1220,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressStreetAddress(event.getValue());
+                                 runScriptlets(null, SampleMeta.getLocationAddrStreetAddress(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1241,6 +1262,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressCity(event.getValue());
+                                 runScriptlets(null, SampleMeta.getLocationAddrCity(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1280,6 +1302,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressState(event.getValue());
+                                 runScriptlets(null, SampleMeta.getLocationAddrState(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1318,6 +1341,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressZipCode(event.getValue());
+                                 runScriptlets(null, SampleMeta.getLocationAddrZipCode(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1358,6 +1382,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressCountry(event.getValue());
+                                 runScriptlets(null, SampleMeta.getLocationAddrCountry(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2114,6 +2139,14 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
         });
 
+        bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
+            @Override
+            public void onRunScriptlet(RunScriptletEvent event) {
+                if (screen != event.getSource())
+                    runScriptlets(event.getUid(), event.getChanged(), event.getOperation());
+            }
+        });
+
         bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
             @Override
             public void onDisplayAttachment(DisplayAttachmentEvent event) {
@@ -2234,7 +2267,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         addReservedAttachment();
                     cache = new HashMap<String, Object>();
                     addScriptlet(null);
-                    runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
+                    runScriptlets(null, null, Action_Before.NEW_DOMAIN_ADDED);
                     evaluateEdit();
                     setData();
                     setState(ADD);
@@ -2284,6 +2317,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     setState(UPDATE);
                     fireDataChange();
                     accessionNumber.setFocus(true);
+                    if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                        .getStatusId()))
+                        addScriptlet(null);
                 }
 
                 public void failure(Throwable e) {
@@ -3047,6 +3083,13 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
                 }
                 scids.add(domainScriptletId);
+                
+                /*
+                 * add all the scriptlets for all tests, test analytes and aux
+                 * fields linked to the manager
+                 */
+                scids.addAll(getTestScriptlets(false));
+                scids.addAll(getAuxScriptlets(false));
             } else {
                 scids.add(scriptletId);
             }
@@ -3070,26 +3113,81 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
      * Runs the scriptlet with the passed id for the passed operation performed
      * on the field "changed" of the record with the passed uid.
      */
-    private void runScriptlet(String uid, String changed, Operation operation) {
+    private void runScriptlets(String uid, String changed, Action_Before operation) {
+        boolean resultChangedFired;
+        String auid, selUid;
+        Object obj;
         SampleSO data;
-        EnumSet<Operation> operations;
+        AnalysisViewDO ana;
+        ResultViewDO res;
+        AuxDataViewDO aux;
+        TestManager tm;
+        AuxFieldGroupManager auxfgm;
+        EnumSet<Action_Before> actionBefore;
+        EnumSet<Action_After> actionAfter;
+        HashMap<Integer, TestManager> analyses, results;
+        HashMap<Integer, AuxFieldGroupManager> auxData;
         ValidationErrorsList errors;
+        
+        analyses = null;
+        results = null;
+        auxData = null;
+        res = null;
+
+        if (uid != null) {
+            /*
+             * find the test or aux group manager for the changed record so that
+             * it can be used by the scriptlet
+             */
+            obj = manager.getObject(uid);
+            if (obj instanceof AnalysisViewDO) {
+                analyses = getAnalysisTestMap();
+            } else if (obj instanceof ResultViewDO) {
+                res = (ResultViewDO)obj;
+                ana = (AnalysisViewDO)manager.getObject(Constants.uid()
+                                                                 .getAnalysis(res.getAnalysisId()));
+                tm = get(ana.getTestId(), TestManager.class);
+                results = new HashMap<Integer, TestManager>();
+                results.put(res.getId(), tm);
+            } else if (obj instanceof AuxDataViewDO) {
+                aux = (AuxDataViewDO)obj;
+                auxfgm = get(aux.getAuxFieldGroupId(), AuxFieldGroupManager.class);
+                auxData = new HashMap<Integer, AuxFieldGroupManager>();
+                auxData.put(aux.getId(), auxfgm);
+            } else if (obj instanceof SampleQaEventDO || obj instanceof AnalysisQaEventDO) {
+                /*
+                 * qa events effect how results are handled
+                 */
+                analyses = getAnalysisTestMap();
+            }
+        } else {
+            analyses = getAnalysisTestMap();
+        }
 
         /*
          * create the sciptlet object
          */
         data = new SampleSO();
-        operations = EnumSet.of(operation);
+        actionBefore = EnumSet.noneOf(Action_Before.class);
+        if (operation != null)
+            actionBefore.add(operation);
         if (manager.getSampleEnvironmental().getId() == null &&
-            Operation.NEW_DOMAIN_ADDED != operation)
+            Action_Before.NEW_DOMAIN_ADDED != operation)
             /*
              * this is either an uncommitted sample or was a quick-entry sample
              * before being loaded on the screen
              */
-            operations.add(Operation.NEW_DOMAIN_ADDED);
-        data.setOperations(operations);
+            actionBefore.add(Action_Before.NEW_DOMAIN_ADDED);
+        actionAfter = EnumSet.noneOf(Action_After.class);
+        data.setActionBefore(actionBefore);
+        data.setActionAfter(actionAfter);
         data.setChanged(changed);
+        data.setUid(uid);
         data.setManager(manager);
+        data.setAnalyses(analyses);
+        data.setResults(results);
+        data.setAuxData(auxData);
+        data.setChangedUids(new HashSet<String>());
 
         /*
          * run the scritplet and show the errors and the changed data
@@ -3108,15 +3206,37 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         manager = data.getManager();
         evaluateEdit();
         setData();
-        setState(state);
-        fireDataChange();
-    }
 
-    /**
-     * Runs the scriptlet for the environmental domain
-     */
-    private void runDomainScriptlet(Operation operation) {
-        runScriptlet(null, null, operation);
+        selUid = sampleItemAnalysisTreeTab.getSelectedUid();
+
+        resultChangedFired = false;
+        /*
+         * go through the changed uids and fire appropriate events to refresh
+         * particular parts of the screen
+         */
+        for (String cuid : data.getChangedUids()) {
+            obj = manager.getObject(cuid);
+            if (obj instanceof ResultDO && !resultChangedFired) {
+                /*
+                 * if any results were changed and if any of them belong to the
+                 * analysis selected in the tree then refresh the result tab,
+                 * otherwise don't
+                 */
+                res = (ResultViewDO)obj;
+                auid = Constants.uid().getAnalysis(res.getAnalysisId());
+                if (auid.equals(selUid)) {
+                    bus.fireEvent(new ResultChangeEvent(auid));
+                    resultChangedFired = true;
+                }
+            }
+        }
+        
+        /*
+         * if there were any other actions performed by scriptlets not involving
+         * uids, then respond to them
+         */
+        if (data.getActionAfter().contains(Action_After.SAMPLE_EXTERNAL_NOTE_ADDED))
+            bus.fireEvent(new NoteChangeEvent(null));
     }
 
     /**
@@ -3159,6 +3279,122 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
     }
 
+    /**
+     * Returns the ids of the scriptlets linked to aux fields for the manager's
+     * aux data. If onlyNew is true then only returns the scriptlets for
+     * uncommitted records.
+     */
+    private HashSet<Integer> getAuxScriptlets(boolean onlyNew) throws Exception {
+        int i;
+        AuxFieldViewDO auxf;
+        AuxDataViewDO aux;
+        AuxFieldGroupManager auxfgm;
+        HashSet<Integer> ids, scids;
+
+        ids = new HashSet<Integer>();
+        /*
+         * find the ids of the all aux groups
+         */
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            aux = manager.auxData.get(i);
+            if (aux.getId() > 0 || onlyNew)
+                ids.add(aux.getAuxFieldGroupId());
+        }
+
+        /*
+         * find the scriptlets linked to all aux fields in all aux group
+         * managers
+         */
+        scids = new HashSet<Integer>();
+        for (Integer id : ids) {
+            auxfgm = get(id, AuxFieldGroupManager.class);
+            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
+                auxf = auxfgm.getFields().getAuxFieldAt(i);
+                if (auxf.getScriptletId() != null)
+                    scids.add(auxf.getScriptletId());
+            }
+        }
+
+        return scids;
+    }
+
+    /**
+     * Returns the ids of the scriptlets linked to tests and test analytes for
+     * the manager's analyses and results. If onlyNew is true then only returns
+     * the scriptlets for uncommitted records.
+     */
+    private HashSet<Integer> getTestScriptlets(boolean onlyNew) throws Exception {
+        int i, j, k, l;
+        HashSet<Integer> ids, scids;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestAnalyteViewDO ta;
+        TestManager tm;
+
+        ids = new HashSet<Integer>();
+        /*
+         * find out the tests in the manager for which scriptlets need to be
+         * added
+         */
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if ( (ana.getId() > 0 || onlyNew) &&
+                    !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) &&
+                    !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    ids.add(ana.getTestId());
+            }
+        }
+
+        /*
+         * scriptlets for tests and test analytes
+         */
+        scids = new HashSet<Integer>();
+        for (Integer id : ids) {
+            tm = get(id, TestManager.class);
+            if (tm.getTest().getScriptletId() != null)
+                scids.add(tm.getTest().getScriptletId());
+
+            for (k = 0; k < tm.getTestAnalytes().rowCount(); k++ ) {
+                for (l = 0; l < tm.getTestAnalytes().columnCount(k); l++ ) {
+                    ta = tm.getTestAnalytes().getAnalyteAt(k, l);
+                    if (ta.getScriptletId() != null)
+                        scids.add(ta.getScriptletId());
+                }
+            }
+        }
+
+        return scids;
+    }
+    
+
+    /**
+     * Returns a hashmap between the ids of analyses and the test managers for
+     * the tests that they're linked to; doesn't include cancelled analyses
+     */
+    private HashMap<Integer, TestManager> getAnalysisTestMap() {
+        int i;
+        int j;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestManager tm;
+        HashMap<Integer, TestManager> analyses;
+
+        analyses = new HashMap<Integer, TestManager>();
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    continue;
+                tm = get(ana.getTestId(), TestManager.class);
+                analyses.put(ana.getId(), tm);
+            }
+        }
+        return analyses;
+    }
+    
     /*
      * getters and setters for the fields at the sample or domain level
      */
@@ -3205,7 +3441,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     @Override
                     public void success(SampleManager1 result) {
                         manager = result;
-                        runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
+                        runScriptlets(null, null, Action_Before.NEW_DOMAIN_ADDED);
                         setData();
                         setState(UPDATE);
                         fireDataChange();
@@ -3855,6 +4091,11 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
+            /*
+             * add scriptlets for the newly added aux data
+             */
+            addScriptlets(getAuxScriptlets(true));
+            
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
@@ -3918,6 +4159,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
+        HashSet<Integer> scids;
         ValidationErrorsList errors;
 
         setBusy();
@@ -3954,9 +4196,18 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     showErrors(errors);
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
+                runScriptlets(null, null, Action_Before.TEST_ADDED);
             } else {
                 showTests(ret);
             }
+            
+            /*
+             * add scriptlets for any newly added tests and aux data
+             */
+            scids = new HashSet<Integer>();
+            scids.addAll(getTestScriptlets(true));
+            scids.addAll(getAuxScriptlets(true));
+            addScriptlets(scids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

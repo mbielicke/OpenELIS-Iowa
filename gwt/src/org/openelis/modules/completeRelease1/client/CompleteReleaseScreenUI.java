@@ -17,19 +17,26 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.ResultDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
@@ -65,18 +72,24 @@ import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
+import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.sample1.client.SDWISTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
-import org.openelis.modules.sample1.client.SampleTabUI;
 import org.openelis.modules.sampleTracking1.client.SampleTrackingScreenUI;
+import org.openelis.modules.scriptlet.client.ScriptletFactory;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
+import org.openelis.scriptlet.SampleSO;
+import org.openelis.scriptlet.SampleSO.Action_After;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -97,6 +110,8 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Confirm;
@@ -239,7 +254,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, commitUpdateCall;
 
-    protected Integer                                    lastAccession;
+    protected ScriptletRunner<SampleSO>                  scriptletRunner;
+
+    protected Integer                                    lastAccession, neonatalScriptletId, envScriptletId,
+                                                          sdwisScriptletId;
 
     protected static final SampleManager1.Load           elements[] = {
                     SampleManager1.Load.ANALYSISUSER, SampleManager1.Load.AUXDATA,
@@ -253,6 +271,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
         ATTACHMENT, BLANK
     };
+
+    protected static final String NEO_SCRIPTLET_SYSTEM_VARIABLE = "neonatal_ia_scriptlet_1",
+                    ENV_SCRIPTLET_SYSTEM_VARIABLE = "environmental_ia_scriptlet_1",
+                    SDWIS_SCRIPTLET_SYSTEM_VARIABLE = "sdwis_ia_scriptlet_1";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -1130,6 +1152,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         });
 
+        bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
+            @Override
+            public void onRunScriptlet(RunScriptletEvent event) {
+                if (screen != event.getSource())
+                    runScriptlet(event.getUid(), event.getChanged(), event.getOperation());
+            }
+        });
+
         bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
             @Override
             public void onDisplayAttachment(DisplayAttachmentEvent event) {
@@ -1225,6 +1255,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     setState(UPDATE);
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     refreshTabs(data, true);
+                    if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                               .getStatusId()))
+                        addScriptlet(null);
                 }
 
                 public void failure(Throwable e) {
@@ -1589,12 +1622,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     refreshTabs(data, true);
                     clearStatus();
+
                     /*
-                     * the cache is set to null only if the update succeeds
-                     * because otherwise, it can't be used by any tabs if the
-                     * user wants to change any data
+                     * the cache and scriptlet runner are set to null only if
+                     * the add/update succeeds because otherwise, it can't be
+                     * used by any tabs if the user wants to change any data
                      */
                     cache = null;
+                    scriptletRunner = null;
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -1674,6 +1709,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
+                        scriptletRunner = null;
                     }
 
                     public void failure(Throwable e) {
@@ -1681,6 +1717,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
+                        scriptletRunner = null;
                     }
                 };
             }
@@ -1997,6 +2034,332 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
         return b.toString();
+    }
+
+    /**
+     * If the passed id is not null then adds the scriptlet with the id to the
+     * scriptlet runner; otherwise adds the scriptlets for the domain and for
+     * all the records in the manager to the scriptlet runner
+     */
+    private void addScriptlet(Integer scriptletId) {
+        Integer id;
+        HashSet<Integer> scids;
+
+        if (scriptletRunner == null)
+            scriptletRunner = new ScriptletRunner<SampleSO>();
+
+        try {
+            scids = new HashSet<Integer>();
+            if (scriptletId == null) {
+                /*
+                 * add the scriptlet for the domain, which is the value of this
+                 * system variable
+                 */
+                id = getDomainScriptlet();
+                if (id != null)
+                    scids.add(id);
+
+                /*
+                 * add all the scriptlets for all tests, test analytes and aux
+                 * fields linked to the manager
+                 */
+                scids.addAll(getTestScriptlets(false));
+                scids.addAll(getAuxScriptlets(false));
+            } else {
+                scids.add(scriptletId);
+            }
+
+            addScriptlets(scids);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Adds the scriptlet with the passed ids to the scriptlet runner
+     */
+    private void addScriptlets(HashSet<Integer> ids) throws Exception {
+        for (Integer id : ids)
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(id));
+    }
+
+    /**
+     * Runs the scriptlet with the passed id for the passed operation performed
+     * on the field "changed" of the record with the passed uid.
+     */
+    private void runScriptlet(String uid, String changed, Action_Before operation) {
+        boolean resultChangedFired;
+        String auid;
+        UUID selData;
+        Object obj;
+        SampleSO data;
+        AnalysisViewDO ana;
+        ResultViewDO res;
+        AuxDataViewDO aux;
+        TestManager tm;
+        AuxFieldGroupManager auxfgm;
+        Row selRow;
+        EnumSet<Action_After> actionAfter;
+        HashMap<Integer, TestManager> analyses, results;
+        HashMap<Integer, AuxFieldGroupManager> auxData;
+        ValidationErrorsList errors;
+
+        analyses = null;
+        results = null;
+        auxData = null;
+        res = null;
+
+        if (uid != null) {
+            /*
+             * find the test or aux group manager for the changed record so that
+             * it can be used by the scriptlet
+             */
+            obj = manager.getObject(uid);
+            if (obj instanceof AnalysisViewDO) {
+                analyses = getAnalysisTestMap();
+            } else if (obj instanceof ResultViewDO) {
+                res = (ResultViewDO)obj;
+                ana = (AnalysisViewDO)manager.getObject(Constants.uid()
+                                                                 .getAnalysis(res.getAnalysisId()));
+                tm = get(ana.getTestId(), TestManager.class);
+                results = new HashMap<Integer, TestManager>();
+                results.put(res.getId(), tm);
+            } else if (obj instanceof AuxDataViewDO) {
+                aux = (AuxDataViewDO)obj;
+                auxfgm = get(aux.getAuxFieldGroupId(), AuxFieldGroupManager.class);
+                auxData = new HashMap<Integer, AuxFieldGroupManager>();
+                auxData.put(aux.getId(), auxfgm);
+            } else if (obj instanceof SampleQaEventDO || obj instanceof AnalysisQaEventDO) {
+                /*
+                 * qa events effect how results are handled
+                 */
+                analyses = getAnalysisTestMap();
+            }
+        } else {
+            analyses = getAnalysisTestMap();
+        }
+
+        /*
+         * create the sciptlet object
+         */
+        data = new SampleSO();
+        data.setActionBefore(EnumSet.of(operation));
+        actionAfter = EnumSet.noneOf(Action_After.class);
+        data.setActionAfter(actionAfter);
+        data.setChanged(changed);
+        data.setUid(uid);
+        data.setManager(manager);
+        data.setAnalyses(analyses);
+        data.setResults(results);
+        data.setAuxData(auxData);
+        data.setChangedUids(new HashSet<String>());
+
+        /*
+         * run the scritplet and show the errors and the changed data
+         */
+        data = scriptletRunner.run(data);
+
+        if (data.getExceptions() != null && data.getExceptions().size() > 0) {
+            errors = new ValidationErrorsList();
+            for (Exception e : data.getExceptions())
+                errors.add(e);
+            showErrors(errors);
+        } else {
+            clearErrors();
+        }
+
+        manager = data.getManager();
+        managers.put(manager.getSample().getId(), manager);
+        setData();
+        if (Action_Before.RESULT_CHANGED == operation) {
+            bus.fireEvent(new ResultChangeEvent(Constants.uid().getAnalysis(res.getAnalysisId())));
+        } else {
+            setState(state);
+            fireDataChange();
+        }
+
+        resultChangedFired = false;
+        /*
+         * go through the changed uids and fire appropriate events to refresh
+         * particular parts of the screen
+         */
+        selRow = table.getRowAt(table.getSelectedRow());
+        selData = (UUID)selRow.getData();
+        for (String cuid : data.getChangedUids()) {
+            obj = manager.getObject(cuid);
+            if (obj instanceof ResultDO && !resultChangedFired) {
+                /*
+                 * if any results were changed and if any of them belong to the
+                 * analysis selected in the table then refresh the result tab,
+                 * otherwise don't
+                 */
+                res = (ResultViewDO)obj;
+                auid = Constants.uid().getAnalysis(res.getAnalysisId());
+                if (auid.equals(selData.analysisUid)) {
+                    bus.fireEvent(new ResultChangeEvent(auid));
+                    resultChangedFired = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Runs the scriptlet for the neonatal domain
+     */
+    private void runDomainScriptlet(Action_Before operation) throws Exception {
+        Integer id;
+
+        id = getDomainScriptlet();
+        if (id != null)
+            runScriptlet(null, null, operation);
+    }
+
+    /**
+     * Returns the id of the scriptlet for the selected sample's domain; returns
+     * null if the domain is quick entry
+     */
+    private Integer getDomainScriptlet() throws Exception {
+        SystemVariableDO data;
+
+        if (Constants.domain().ENVIRONMENTAL.equals(manager.getSample().getDomain())) {
+            if (envScriptletId == null) {
+                data = SystemVariableService.get().fetchByExactName(ENV_SCRIPTLET_SYSTEM_VARIABLE);
+                envScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            }
+            return envScriptletId;
+        } else if (Constants.domain().SDWIS.equals(manager.getSample().getDomain())) {
+            if (sdwisScriptletId == null) {
+                data = SystemVariableService.get().fetchByExactName(SDWIS_SCRIPTLET_SYSTEM_VARIABLE);
+                sdwisScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            }
+            return sdwisScriptletId;
+        } else if (Constants.domain().CLINICAL.equals(manager.getSample().getDomain())) {
+
+        } else if (Constants.domain().NEONATAL.equals(manager.getSample().getDomain())) {
+            if (neonatalScriptletId == null) {
+                data = SystemVariableService.get().fetchByExactName(NEO_SCRIPTLET_SYSTEM_VARIABLE);
+                neonatalScriptletId = DictionaryCache.getIdBySystemName(data.getValue());
+            }
+            return neonatalScriptletId;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the ids of the scriptlets linked to aux fields for the manager's
+     * aux data. If onlyNew is true then only returns the scriptlets for
+     * uncommitted records.
+     */
+    private HashSet<Integer> getAuxScriptlets(boolean onlyNew) throws Exception {
+        int i;
+        AuxFieldViewDO auxf;
+        AuxDataViewDO aux;
+        AuxFieldGroupManager auxfgm;
+        HashSet<Integer> ids, scids;
+
+        ids = new HashSet<Integer>();
+        /*
+         * find the ids of the all aux groups
+         */
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            aux = manager.auxData.get(i);
+            if (aux.getId() > 0 || onlyNew)
+                ids.add(aux.getAuxFieldGroupId());
+        }
+
+        /*
+         * find the scriptlets linked to all aux fields in all aux group
+         * managers
+         */
+        scids = new HashSet<Integer>();
+        for (Integer id : ids) {
+            auxfgm = get(id, AuxFieldGroupManager.class);
+            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
+                auxf = auxfgm.getFields().getAuxFieldAt(i);
+                if (auxf.getScriptletId() != null)
+                    scids.add(auxf.getScriptletId());
+            }
+        }
+
+        return scids;
+    }
+
+    /**
+     * Returns the ids of the scriptlets linked to tests and test analytes for
+     * the manager's analyses and results. If onlyNew is true then only returns
+     * the scriptlets for uncommitted records.
+     */
+    private HashSet<Integer> getTestScriptlets(boolean onlyNew) throws Exception {
+        int i, j, k, l;
+        HashSet<Integer> ids, scids;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestAnalyteViewDO ta;
+        TestManager tm;
+
+        ids = new HashSet<Integer>();
+        /*
+         * find out the tests in the manager for which scriptlets need to be
+         * added
+         */
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if ( (ana.getId() > 0 || onlyNew) &&
+                    !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) &&
+                    !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    ids.add(ana.getTestId());
+            }
+        }
+
+        /*
+         * scriptlets for tests and test analytes
+         */
+        scids = new HashSet<Integer>();
+        for (Integer id : ids) {
+            tm = get(id, TestManager.class);
+            if (tm.getTest().getScriptletId() != null)
+                scids.add(tm.getTest().getScriptletId());
+
+            for (k = 0; k < tm.getTestAnalytes().rowCount(); k++ ) {
+                for (l = 0; l < tm.getTestAnalytes().columnCount(k); l++ ) {
+                    ta = tm.getTestAnalytes().getAnalyteAt(k, l);
+                    if (ta.getScriptletId() != null)
+                        scids.add(ta.getScriptletId());
+                }
+            }
+        }
+
+        return scids;
+    }
+
+    /**
+     * Returns a hashmap between the ids of analyses and the test managers for
+     * the tests that they're linked to; doesn't include cancelled analyses
+     */
+    private HashMap<Integer, TestManager> getAnalysisTestMap() {
+        int i;
+        int j;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestManager tm;
+        HashMap<Integer, TestManager> analyses;
+
+        analyses = new HashMap<Integer, TestManager>();
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    continue;
+                tm = get(ana.getTestId(), TestManager.class);
+                analyses.put(ana.getId(), tm);
+            }
+        }
+        return analyses;
     }
 
     /**
@@ -2729,6 +3092,10 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
             /*
+             * add scriptlets for the newly added aux data
+             */
+            addScriptlets(getAuxScriptlets(true));
+            /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
              * added
@@ -2820,6 +3187,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
+        HashSet<Integer> scids;
         ValidationErrorsList errors;
 
         setBusy();
@@ -2857,9 +3225,18 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     showErrors(errors);
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
+                runDomainScriptlet(Action_Before.TEST_ADDED);
             } else {
                 showTests(ret);
             }
+            
+            /*
+             * add scriptlets for any newly added tests and aux data
+             */
+            scids = new HashSet<Integer>();
+            scids.addAll(getTestScriptlets(true));
+            scids.addAll(getAuxScriptlets(true));
+            addScriptlets(scids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

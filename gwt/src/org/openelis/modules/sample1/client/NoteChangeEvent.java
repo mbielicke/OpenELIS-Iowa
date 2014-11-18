@@ -25,61 +25,47 @@
  */
 package org.openelis.modules.sample1.client;
 
-import org.openelis.scriptlet.SampleSO.Action_Before;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The event used to inform the handler that a scriptlet should be executed on
- * the data specified in the event. The scriptlet to be executed is specified by
- * scriptletId, the field whose value was changed is specified by "changed" and
- * the record that was changed is specified by "uid".
+ * This event is used to inform the handler that the sample's or an analysis's
+ * notes have changed, e.g. by a new note being added. The unique identifier for
+ * the analysis is specified through uid. In the case of the sample the uid is
+ * null.
  */
-public class RunScriptletEvent extends GwtEvent<RunScriptletEvent.Handler> {
+public class NoteChangeEvent extends GwtEvent<NoteChangeEvent.Handler> {
 
-    private static Type<RunScriptletEvent.Handler> TYPE;
+    private static Type<NoteChangeEvent.Handler> TYPE;
+    private String                               uid;
 
-    private String                                 uid, changed;
-    private Action_Before                              operation;
-
-    public RunScriptletEvent(String uid, String changed, Action_Before operation) {
+    public NoteChangeEvent(String uid) {
         this.uid = uid;
-        this.changed = changed;
-        this.operation = operation;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<RunScriptletEvent.Handler> getAssociatedType() {
+    public Type<NoteChangeEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<RunScriptletEvent.Handler> getType() {
+    public static Type<NoteChangeEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<RunScriptletEvent.Handler>();
+            TYPE = new Type<NoteChangeEvent.Handler>();
         }
         return TYPE;
     }
 
     public static interface Handler extends EventHandler {
-        public void onRunScriptlet(RunScriptletEvent event);
+        public void onNoteChange(NoteChangeEvent event);
     }
 
     public String getUid() {
         return uid;
     }
 
-    public String getChanged() {
-        return changed;
-    }
-    
-    public Action_Before getOperation() {
-        return operation;
-    }
-
     @Override
     protected void dispatch(Handler handler) {
-        handler.onRunScriptlet(this);
+        handler.onNoteChange(this);
     }
 }
