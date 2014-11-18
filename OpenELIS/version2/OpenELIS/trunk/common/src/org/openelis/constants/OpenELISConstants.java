@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -13613,6 +13613,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("An analysis needs to be selected to view current result history")
   @Key("result.historyException")
   String result_historyException();
+
+  /**
+   * Translated "Ethnicity not specified".
+   * 
+   * @return translated "Ethnicity not specified"
+   */
+  @DefaultMessage("Ethnicity not specified")
+  @Key("result.missingEthnicityException")
+  String result_missingEthnicityException();
+
+  /**
+   * Translated "Famility history not specified".
+   * 
+   * @return translated "Famility history not specified"
+   */
+  @DefaultMessage("Famility history not specified")
+  @Key("result.missingFamilyHistoryException")
+  String result_missingFamilyHistoryException();
 
   /**
    * Translated "Result(s) Overridden".

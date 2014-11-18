@@ -54,11 +54,15 @@ public class ScriptletUtility {
                     QA_UE = "unknown weight elev", QA_TRAN = "transfused",
                     QA_TRANU = "transfused unknown", QA_PQ = "poor quality";
 
-    public Integer                                       INTER_N, INTER_PP_NR, INTER_BORD_NR,
+    public final Integer                                 INTER_N, INTER_PP_NR, INTER_BORD_NR,
                     INTER_DFNT, INTER_AA_NR, INTER_EC, INTER_UE, INTER_U, INTER_FETAL, INTER_BARTS,
                     INTER_TRAN, INTER_TRAIT_NR, INTER_DIS, INTER_D_B, INTER_ECU, INTER_TRANU,
                     INTER_T_B, INTER_PSBL, INTER_PQ, INTER_PP, INTER_NEG, INTER_PS, INTER_INC,
-                    INTER_INS, INTER_INV, INTER_SNTL, INTER_AA, INTER_BORD, INTER_TRAIT;
+                    INTER_INS, INTER_INV, INTER_SNTL, INTER_AA, INTER_BORD, INTER_TRAIT,
+                    ETHN_JEWISH, ETHN_CAUCASIAN, ETHN_HISPANIC, ETHN_AFRICAN, ETHN_ASIAN,
+                    FAM_HIST_CARRIER, FAM_HIST_DISORDER, RELAT_PARENT, RELAT_SIBLING,
+                    RELAT_DAUGHTER, RELAT_AUNT, RELAT_NIECE, RELAT_COUSIN, RELAT_8, RELAT_16,
+                    RELAT_INDIVIDUAL, NORMAL, NEGATIVE, NOT_TESTED;
 
     public ScriptletUtility(Proxy proxy) throws Exception {
         ArrayList<String> names;
@@ -98,6 +102,25 @@ public class ScriptletUtility {
         INTER_AA = proxy.getDictionaryBySystemName("newborn_inter_aa").getId();
         INTER_BORD = proxy.getDictionaryBySystemName("newborn_inter_bord").getId();
         INTER_TRAIT = proxy.getDictionaryBySystemName("newborn_inter_trait").getId();
+        ETHN_JEWISH = proxy.getDictionaryBySystemName("cf_ethnicity_jewish").getId();
+        ETHN_CAUCASIAN = proxy.getDictionaryBySystemName("cf_ethnicity_caucasian").getId();
+        ETHN_HISPANIC = proxy.getDictionaryBySystemName("cf_ethnicity_hispanic").getId();
+        ETHN_AFRICAN = proxy.getDictionaryBySystemName("cf_ethnicity_african").getId();
+        ETHN_ASIAN = proxy.getDictionaryBySystemName("cf_ethnicity_asian").getId();
+        FAM_HIST_CARRIER = proxy.getDictionaryBySystemName("cf_fam_hist_carrier").getId();
+        FAM_HIST_DISORDER = proxy.getDictionaryBySystemName("cf_fam_hist_disorder").getId();
+        RELAT_PARENT = proxy.getDictionaryBySystemName("cf_relation_parent").getId();
+        RELAT_SIBLING = proxy.getDictionaryBySystemName("cf_relation_sibling").getId();
+        RELAT_DAUGHTER = proxy.getDictionaryBySystemName("cf_relation_daughter").getId();
+        RELAT_AUNT = proxy.getDictionaryBySystemName("cf_relation_aunt").getId();
+        RELAT_NIECE = proxy.getDictionaryBySystemName("cf_relation_niece").getId();
+        RELAT_COUSIN = proxy.getDictionaryBySystemName("cf_relation_cousin").getId();
+        RELAT_8 = proxy.getDictionaryBySystemName("cf_relation_8").getId();
+        RELAT_16 = proxy.getDictionaryBySystemName("cf_relation_16").getId();
+        RELAT_INDIVIDUAL = proxy.getDictionaryBySystemName("cf_relation_individual").getId();
+        NORMAL = proxy.getDictionaryBySystemName("normal").getId();
+        NEGATIVE = proxy.getDictionaryBySystemName("negative").getId();
+        NOT_TESTED = proxy.getDictionaryBySystemName("not_tested").getId();
 
         if (qaTestMap == null) {
             proxy.log(Level.FINE, "Initializing qa events");
@@ -150,16 +173,35 @@ public class ScriptletUtility {
     }
 
     /**
-     * Returns true if the sample has any sample qa event of type warning or
-     * result override; false otherwise
+     * Returns true if the sample has any "reject" sample qa events i.e. the
+     * ones with type result override; considers qa events of type warning as
+     * "reject" also, if the passed flag is true. Returns false otherwise.
      */
-    public boolean sampleHasRejectQA(SampleManager1 sm) {
+    public boolean sampleHasRejectQA(SampleManager1 sm, boolean includeWarning) {
         SampleQaEventDO sqa;
 
         for (int i = 0; i < sm.qaEvent.count(); i++ ) {
             sqa = sm.qaEvent.get(i);
             if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sqa.getTypeId()) ||
-                Constants.dictionary().QAEVENT_WARNING.equals(sqa.getTypeId()))
+                (includeWarning && Constants.dictionary().QAEVENT_WARNING.equals(sqa.getTypeId())))
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the analysis has any "reject" qa events i.e. the ones
+     * with type result override; considers qa events of type warning as
+     * "reject" also, if the passed flag is true. Returns false otherwise.
+     */
+    public boolean analysisHasRejectQA(SampleManager1 sm, AnalysisViewDO ana, boolean includeWarning) {
+        AnalysisQaEventViewDO aqa;
+
+        for (int i = 0; i < sm.qaEvent.count(ana); i++ ) {
+            aqa = sm.qaEvent.get(ana, i);
+            if (Constants.dictionary().QAEVENT_OVERRIDE.equals(aqa.getTypeId()) ||
+                (includeWarning && Constants.dictionary().QAEVENT_WARNING.equals(aqa.getTypeId())))
                 return true;
         }
 
@@ -194,7 +236,8 @@ public class ScriptletUtility {
 
         res = null;
         proxy.log(Level.FINE,
-                  "Going through the SO to find the result that trigerred the scriptlet for test: "+testName+", "+methodName);
+                  "Going through the SO to find the result that trigerred the scriptlet for test: " +
+                                  testName + ", " + methodName);
         for (Map.Entry<Integer, TestManager> entry : data.getResults().entrySet()) {
             tm = entry.getValue();
             test = tm.getTest();
@@ -220,7 +263,8 @@ public class ScriptletUtility {
         TestManager tm;
 
         ana = null;
-        proxy.log(Level.FINE, "Going through the SO to find the analysis for test: "+testName+", "+methodName);
+        proxy.log(Level.FINE, "Going through the SO to find the analysis for test: " + testName +
+                              ", " + methodName);
         for (Map.Entry<Integer, TestManager> entry : data.getAnalyses().entrySet()) {
             tm = entry.getValue();
             test = tm.getTest();

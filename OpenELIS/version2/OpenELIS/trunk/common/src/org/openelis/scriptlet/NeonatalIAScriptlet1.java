@@ -25,7 +25,7 @@
  */
 package org.openelis.scriptlet;
 
-import static org.openelis.scriptlet.SampleSO.Operation.*;
+import static org.openelis.scriptlet.SampleSO.Action_Before.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,6 +45,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.scriptlet.SampleSO.Action_After;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
@@ -56,7 +57,7 @@ import org.openelis.ui.scriptlet.ScriptletObject.Status;
  * The scriptlet for performing operations for the neonatal domain e.g. the ones
  * related to repeat samples
  */
-public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
+public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Proxy                                proxy;
 
@@ -72,10 +73,10 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
 
     private static DictionaryDO                  driedBloodSpotDict;
 
-    public NeonatalDomainScriptlet1(Proxy proxy) throws Exception {
+    public NeonatalIAScriptlet1(Proxy proxy) throws Exception {
         this.proxy = proxy;
 
-        proxy.log(Level.FINE, "Initializing NeonatalDomainScriptlet1");
+        proxy.log(Level.FINE, "Initializing NeonatalIAScriptlet1");
         /*
          * external ids for the analytes for interpretation
          */
@@ -108,7 +109,7 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
         SampleNeonatalDO sn;
         SampleManager1 sm;
 
-        proxy.log(Level.FINE, "In NeonatalDomainScriptlet1.run");
+        proxy.log(Level.FINE, "In NeonatalIAScriptlet1.run");
 
         /*
          * if the sample doesn't have any items then add an item with the most
@@ -116,7 +117,7 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
          */
         sm = data.getManager();
         if (sm.item.count() == 0)
-            addDefaultSampleItem(sm);
+            addDefaultSampleItem(data);
 
         changed = data.getChanged();
         /*
@@ -131,10 +132,16 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
 
         sn = sm.getSampleNeonatal();
         /*
+         * no further processin 
+         */
+        if (sn == null)
+            return data;
+        
+        /*
          * don't do anything if it's an existing neonatal sample or if it
          * doesn't have a patient
          */
-        if ( !data.getOperations().contains(NEW_DOMAIN_ADDED) || sn.getPatientId() == null)
+        if ( !data.getActionBefore().contains(NEW_DOMAIN_ADDED) || sn.getPatientId() == null)
             return data;
 
         try {
@@ -144,7 +151,7 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
                  * previously for its patient
                  */
                 setRepeat(data);
-            else if (data.getOperations().contains(TEST_ADDED) && "Y".equals(sn.getIsRepeat()))
+            else if (data.getActionBefore().contains(TEST_ADDED) && "Y".equals(sn.getIsRepeat()))
                 /*
                  * since the current sample is a repeat sample, remove those
                  * uncommitted tests from it that didn't have any abnormal
@@ -163,14 +170,16 @@ public class NeonatalDomainScriptlet1 implements ScriptletInt<SampleSO> {
      * If the sample doesn't have any items then adds an item with the sample
      * type 'dried blood spot'
      */
-    private void addDefaultSampleItem(SampleManager1 sm) {
+    private void addDefaultSampleItem(SampleSO data) {
         SampleItemViewDO item;
 
         proxy.log(Level.FINE, "Adding a sample item by default with sample type: " +
                               driedBloodSpotDict.getSystemName());
-        item = sm.item.add();
+        item = data.getManager().item.add();
         item.setTypeOfSampleId(driedBloodSpotDict.getId());
         item.setTypeOfSample(driedBloodSpotDict.getEntry());
+        data.getChangedUids().add(Constants.uid().getSampleItem(item.getId()));
+        data.getActionAfter().add(Action_After.SAMPLE_ITEM_ADDED);
     }
 
     /**

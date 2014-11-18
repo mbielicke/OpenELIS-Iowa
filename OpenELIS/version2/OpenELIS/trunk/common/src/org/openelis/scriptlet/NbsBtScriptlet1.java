@@ -35,7 +35,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.scriptlet.SampleSO.Operation;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
@@ -71,7 +71,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
 
         proxy.log(Level.FINE, "In NbsBtScriptlet1.run");
 
-        if (data.getOperations().contains(Operation.RESULT_CHANGED)) {
+        if (data.getActionBefore().contains(Action_Before.RESULT_CHANGED)) {
             /*
              * find the result that made this scriptlet get executed
              */
@@ -85,8 +85,8 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
             ana = (AnalysisViewDO)data.getManager()
                                       .getObject(Constants.uid().getAnalysis(res.getAnalysisId()));
             tm = data.getResults().get(res.getId());
-        } else if (data.getOperations().contains(Operation.SAMPLE_QA_ADDED) ||
-                   data.getOperations().contains(Operation.SAMPLE_QA_REMOVED) ||
+        } else if (data.getActionBefore().contains(Action_Before.SAMPLE_QA_ADDED) ||
+                   data.getActionBefore().contains(Action_Before.SAMPLE_QA_REMOVED) ||
                    SampleMeta.getNeonatalIsTransfused().equals(data.getChanged()) ||
                    SampleMeta.getNeonatalTransfusionDate().equals(data.getChanged())) {
             /*
@@ -133,8 +133,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         ResultFormatter rf;
 
         /*
-         * find the analysis for the result and the values for the various
-         * analytes
+         * find the values for the various analytes
          */
         sm = data.getManager();
         bioVal = null;
@@ -155,7 +154,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         try {
-            proxy.log(Level.FINE, "Finding the values of override interretation");
+            proxy.log(Level.FINE, "Finding the value of override interretation");
             /*
              * proceed only if the value for override interpretation has been
              * validated and is "No"
@@ -218,7 +217,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
              */
             if ( !scriptletUtility.INTER_PP_NR.equals(interp)) {
                 proxy.log(Level.FINE, "Setting the interpretation based on qa events");
-                if (scriptletUtility.sampleHasRejectQA(sm)) {
+                if (scriptletUtility.sampleHasRejectQA(sm, true)) {
                     /*
                      * the sample has reject qas so set the interpretation as
                      * "poor quality"

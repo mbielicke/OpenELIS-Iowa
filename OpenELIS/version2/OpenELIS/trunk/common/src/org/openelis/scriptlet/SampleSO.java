@@ -27,6 +27,7 @@ package org.openelis.scriptlet;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
@@ -41,26 +42,45 @@ public class SampleSO extends ScriptletObject {
 
     private static final long serialVersionUID = 1L;
 
-    public enum Operation {
-        NEW_DOMAIN_ADDED, TEST_ADDED, RESULT_CHANGED, AUX_DATA_CHANGED, SAMPLE_QA_ADDED, SAMPLE_QA_REMOVED, SAMPLE_ITEM_ADDED
+    public enum Action_Before {
+        NEW_DOMAIN_ADDED, TEST_ADDED, RESULT_CHANGED, AUX_DATA_CHANGED, SAMPLE_QA_ADDED,
+        SAMPLE_QA_REMOVED, ANALYSIS_QA_ADDED, ANALYSIS_QA_REMOVED, SAMPLE_ITEM_ADDED
     }
 
-    protected EnumSet<Operation>                    operations;
+    public enum Action_After {
+        SAMPLE_EXTERNAL_NOTE_ADDED, SAMPLE_ITEM_ADDED, SAMPLE_ITEM_TYPE_CHANGED
+        // RESULT_CHANGED, ANALYSIS_QA_ADDED,
+        // SAMPLE_ITEM_CHANGED
+    }
+
+    protected EnumSet<Action_Before>                 actionBefore;
+
+    protected EnumSet<Action_After>                  actionAfter;
 
     protected SampleManager1                         manager;
 
     protected HashMap<Integer, TestManager>          analyses, results;
 
     protected HashMap<Integer, AuxFieldGroupManager> auxData;
-    
+
     protected String                                 uid;
 
-    public EnumSet<Operation> getOperations() {
-        return operations;
+    protected HashSet<String>                        changedUids;
+
+    public EnumSet<Action_Before> getActionBefore() {
+        return actionBefore;
     }
 
-    public void setOperations(EnumSet<Operation> operations) {
-        this.operations = operations;
+    public void setActionBefore(EnumSet<Action_Before> actionBefore) {
+        this.actionBefore = actionBefore;
+    }
+
+    public EnumSet<Action_After> getActionAfter() {
+        return actionAfter;
+    }
+
+    public void setActionAfter(EnumSet<Action_After> actionAfter) {
+        this.actionAfter = actionAfter;
     }
 
     public void setManager(SampleManager1 manager) {
@@ -101,5 +121,13 @@ public class SampleSO extends ScriptletObject {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public HashSet<String> getChangedUids() {
+        return changedUids;
+    }
+
+    public void setChangedUids(HashSet<String> changedUids) {
+        this.changedUids = changedUids;
     }
 }
