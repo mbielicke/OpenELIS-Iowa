@@ -219,6 +219,17 @@ public class AnalysisNotesTabUI extends Screen {
                 }
             }
         });
+        
+        parentBus.addHandler(NoteChangeEvent.getType(), new NoteChangeEvent.Handler() {
+            @Override
+            public void onNoteChange(NoteChangeEvent event) {
+                if (event.getUid() != null) {
+                    redraw = true;
+                    analysis = (AnalysisViewDO)manager.getObject(event.getUid());
+                    displayNotes();
+                }
+            }
+        });
     }
 
     public void setData(SampleManager1 manager) {

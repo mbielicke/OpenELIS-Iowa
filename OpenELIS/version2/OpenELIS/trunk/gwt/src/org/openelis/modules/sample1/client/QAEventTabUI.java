@@ -44,7 +44,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.qaevent.client.QAEventLookupUI;
-import org.openelis.scriptlet.SampleSO.Operation;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -520,7 +520,7 @@ public class QAEventTabUI extends Screen {
             sampleQATable.removeRowAt(r);
             parentBus.fireEventFromSource(new RunScriptletEvent(null,
                                                                 null,
-                                                                Operation.SAMPLE_QA_REMOVED),
+                                                                Action_Before.SAMPLE_QA_REMOVED),
                                           screen);
             notifyQAChanged(null);
         }
@@ -553,6 +553,10 @@ public class QAEventTabUI extends Screen {
                 parentScreen.setError(Messages.get().analysis_cantRemoveQAReleased());
         } else {
             analysisQATable.removeRowAt(r);
+            parentBus.fireEventFromSource(new RunScriptletEvent(null,
+                                                                null,
+                                                                Action_Before.ANALYSIS_QA_REMOVED),
+                                          screen);
             notifyQAChanged(analysis.getId());
         }
     }
@@ -662,6 +666,11 @@ public class QAEventTabUI extends Screen {
                             row.setCell(2, aqa.getIsBillable());
                             analysisQATable.addRow(row);
                             showAnalysisBillableMessage();
+                            parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
+                                                                                .getAnalysisQAEvent(aqa.getId()),
+                                                                       null,
+                                                                       Action_Before.ANALYSIS_QA_ADDED),
+                                                 screen);
                         }
                         notifyQAChanged(analysis.getId());
                     } else {
@@ -710,7 +719,7 @@ public class QAEventTabUI extends Screen {
                             parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                          .getSampleQAEvent(sqa.getId()),
                                                                                 null,
-                                                                                Operation.SAMPLE_QA_ADDED),
+                                                                                Action_Before.SAMPLE_QA_ADDED),
                                                           screen);
                         }
                         notifyQAChanged(null);

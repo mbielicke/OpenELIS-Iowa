@@ -45,7 +45,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.sample1.client.ResultCell;
 import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.modules.sample1.client.RunScriptletEvent;
-import org.openelis.scriptlet.SampleSO.Operation;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -270,7 +270,7 @@ public abstract class AuxDataTabUI extends Screen {
                                         parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                                      .getAuxData(data.getId()),
                                                                                             getValueMetaKey(),
-                                                                                            Operation.AUX_DATA_CHANGED),
+                                                                                            Action_Before.AUX_DATA_CHANGED),
                                                                       screen);
                                 }
                             } catch (ParseException e) {

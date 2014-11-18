@@ -32,6 +32,7 @@ import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.manager.SampleManager1;
@@ -51,6 +52,7 @@ import org.openelis.ui.widget.NotesPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -75,6 +77,8 @@ public class SampleNotesTabUI extends Screen {
 
     protected EditNoteLookupUI            editNoteLookup;
 
+    protected EventBus                    parentBus;
+
     protected SampleManager1              manager;
 
     protected NoteViewDO                  displayedExtNote, displayedIntNote;
@@ -83,6 +87,7 @@ public class SampleNotesTabUI extends Screen {
 
     public SampleNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -129,6 +134,16 @@ public class SampleNotesTabUI extends Screen {
                 isVisible = event.isVisible();
                 setState(state);
                 displayNotes();
+            }
+        });
+
+        parentBus.addHandler(NoteChangeEvent.getType(), new NoteChangeEvent.Handler() {
+            @Override
+            public void onNoteChange(NoteChangeEvent event) {
+                if (event.getUid() == null) {
+                    redraw = true;
+                    displayNotes();
+                }
             }
         });
     }

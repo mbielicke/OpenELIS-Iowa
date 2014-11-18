@@ -475,7 +475,7 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
-                          <dropdown key="{meta:getAnalyteScriptletId()}" width="100" popWidth = "165" field="Integer"/>
+                          <dropdown key="{meta:getAnalyteScriptletId()}" width="96" popWidth = "165" field="Integer"/>
                         </row>
                       </TablePanel>
                     </HorizontalPanel>

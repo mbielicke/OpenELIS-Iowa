@@ -26,12 +26,13 @@
 package org.openelis.modules.scriptlet.client;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.scriptlet.CFCarrierScriptlet1;
 import org.openelis.scriptlet.EnvironmentalIAScriptlet1;
 import org.openelis.scriptlet.NbsBtScriptlet1;
 import org.openelis.scriptlet.NbsCahScriptlet1;
 import org.openelis.scriptlet.NbsGaltScriptlet1;
 import org.openelis.scriptlet.NbsTshScriptlet1;
-import org.openelis.scriptlet.NeonatalDomainScriptlet1;
+import org.openelis.scriptlet.NeonatalIAScriptlet1;
 import org.openelis.scriptlet.PwsValidateScriptlet1;
 import org.openelis.scriptlet.SDWISIAScriptlet1;
 import org.openelis.scriptlet.ScriptletUtility;
@@ -63,7 +64,7 @@ public class ScriptletFactory {
                 script = (T)new SDWISIAScriptlet1(new SDWISIAProxy1());
                 break;
             case "scriptlet_neonatal_ia1":
-                script = (T)new NeonatalDomainScriptlet1(new NeonatalDomainProxy1());
+                script = (T)new NeonatalIAScriptlet1(new NeonatalIAProxy1());
                 break;
             case "scriptlet_nbs_bt1":
                 script = (T)new NbsBtScriptlet1(scriptletUtility, new NbsBtProxy1());
@@ -79,6 +80,9 @@ public class ScriptletFactory {
                 break;
             case "scriptlet_pws_validate1":
                 script = (T)new PwsValidateScriptlet1(new PwsValidateProxy1());
+                break;
+            case "scriptlet_cf_carrier1":
+                script = (T)new CFCarrierScriptlet1(scriptletUtility, new CFCarrierProxy1());
                 break;
         }
 

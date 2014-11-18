@@ -36,18 +36,18 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.scriptlet.NeonatalDomainScriptlet1;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.scriptlet.NeonatalIAScriptlet1;
 
 /**
  * This class is used for providing the front-end functionality for neonatal
- * domain scriptlet
+ * iowa scriptlet
  */
-public class NeonatalDomainProxy1 implements NeonatalDomainScriptlet1.Proxy {
+public class NeonatalIAProxy1 implements NeonatalIAScriptlet1.Proxy {
     @Override
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                                       SampleManager1.Load... elements) throws Exception {
-        
+                                                  SampleManager1.Load... elements) throws Exception {
+
         return SampleService1.get().fetchByQuery(fields, first, max, elements);
     }
 
@@ -65,7 +65,7 @@ public class NeonatalDomainProxy1 implements NeonatalDomainScriptlet1.Proxy {
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
         return DictionaryCache.getBySystemName(systemName);
     }
-    
+
     @Override
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
         return SampleService1.get().removeAnalysis(sm, analysisId);

@@ -42,6 +42,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemViewDO;
@@ -54,10 +55,13 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
@@ -95,6 +99,7 @@ import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.RunScriptletEvent;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
+import org.openelis.modules.sample1.client.SampleItemAddedEvent;
 import org.openelis.modules.sample1.client.SampleItemAnalysisTreeTabUI;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
@@ -108,7 +113,8 @@ import org.openelis.modules.scriptlet.client.ScriptletFactory;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.scriptlet.SampleSO;
-import org.openelis.scriptlet.SampleSO.Operation;
+import org.openelis.scriptlet.SampleSO.Action_After;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -1044,7 +1050,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  setPatientLastName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged(patientLastName);
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientLastName());
+                                 runScriptlets(null, SampleMeta.getNeonatalPatientLastName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1070,7 +1076,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  setPatientFirstName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged(patientFirstName);
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientFirstName());
+                                 runScriptlets(null, SampleMeta.getNeonatalPatientFirstName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1094,7 +1100,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setPatientBirthDate(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientBirthDate());
+                                 collectionAgeChanged(SampleMeta.getNeonatalPatientBirthDate());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1118,7 +1124,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setPatientBirthTime(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientBirthTime());
+                                 collectionAgeChanged(SampleMeta.getNeonatalPatientBirthTime());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1142,7 +1148,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressMultipleUnit(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientAddrMultipleUnit());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalPatientAddrMultipleUnit(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1167,7 +1175,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressStreetAddress(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientAddrStreetAddress());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalPatientAddrStreetAddress(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1192,7 +1202,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressCity(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientAddrCity());
+                                 runScriptlets(null, SampleMeta.getNeonatalPatientAddrCity(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1216,7 +1226,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressState(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientAddrState());
+                                 runScriptlets(null, SampleMeta.getNeonatalPatientAddrState(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1240,7 +1250,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressZipCode(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientAddrZipCode());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalPatientAddrZipCode(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1264,7 +1276,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientGenderId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientGenderId());
+                                 runScriptlets(null, SampleMeta.getNeonatalPatientGenderId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1288,7 +1300,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientRaceId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientLastName());
+                                 // runDomainScriptlet(SampleMeta.getNeonatalPatientLastName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1312,7 +1324,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientEthnicityId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalPatientEthnicityId());
+                                 // runDomainScriptlet(SampleMeta.getNeonatalPatientEthnicityId());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1353,7 +1365,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 setIsNicu(event.getValue());
-                runDomainScriptlet(SampleMeta.getNeonatalIsNicu());
+                // runDomainScriptlet(SampleMeta.getNeonatalIsNicu());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1375,7 +1387,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setBirthOrder(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalBirthOrder());
+                                 runScriptlets(null, SampleMeta.getNeonatalBirthOrder(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1398,7 +1410,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setGestationalAge(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalGestationalAge());
+                                 runScriptlets(null, SampleMeta.getNeonatalGestationalAge(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1421,7 +1433,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setFeedingId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalFeedingId());
+                                 runScriptlets(null, SampleMeta.getNeonatalFeedingId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1442,7 +1454,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 setWeight(event.getValue());
-                runDomainScriptlet(SampleMeta.getNeonatalWeight());
+                runScriptlets(null, SampleMeta.getNeonatalWeight(), null);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1464,7 +1476,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setIsTransfused(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalIsTransfused());
+                                 runScriptlets(null, SampleMeta.getNeonatalIsTransfused(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1487,7 +1499,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setTransfusionDate(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalTransfusionDate());
+                                 runScriptlets(null, SampleMeta.getNeonatalTransfusionDate(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1542,14 +1554,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  collectionAge.setValue(getNeonatalCollectionAge());
                              }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setCollectionAge(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalCollectionAge());
-                             }
-
                              public void onStateChange(StateChangeEvent event) {
-                                 collectionAge.setEnabled(isState(QUERY) ||
-                                                          (canEditSample && isState(ADD, UPDATE)));
+                                 collectionAge.setEnabled(isState(QUERY));
                                  collectionAge.setQueryMode(isState(QUERY));
                              }
 
@@ -1567,7 +1573,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setIsCollectionValid(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalIsCollectionValid());
+                                 // runDomainScriptlet(SampleMeta.getNeonatalIsCollectionValid());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1646,7 +1652,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                      getNextOfKinFirstName() != null)
                                      nextOfKinQueryChanged(nextOfKinLastName);
                                  // else
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinLastName());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinLastName(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1670,7 +1678,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinMiddleName(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinMiddleName());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinMiddleName(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1698,7 +1708,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                      getNextOfKinFirstName() != null)
                                      nextOfKinQueryChanged(nextOfKinFirstName);
                                  // else
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinFirstName());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinFirstName(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1722,7 +1734,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setNeonatalNextOfKinRelationId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinRelationId());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinRelationId(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1745,7 +1759,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setNextOfKinBirthDate(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinBirthDate());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinBirthDate(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1772,7 +1788,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  if (getNextOfKinNationalId() != null)
                                      nextOfKinQueryChanged(nextOfKinNationalId);
                                  else
-                                     runDomainScriptlet(SampleMeta.getNeonatalNextOfKinNationalId());
+                                     runScriptlets(null,
+                                                   SampleMeta.getNeonatalNextOfKinNationalId(),
+                                                   null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1796,7 +1814,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinAddressMultipleUnit(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinAddrMultipleUnit());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinAddrMultipleUnit(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1821,7 +1841,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinAddressStreetAddress(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinAddrStreetAddress());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinAddrStreetAddress(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1846,7 +1868,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinAddressCity(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinAddrCity());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinAddrCity(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1870,7 +1894,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinAddressState(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinAddrState());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinAddrState(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1894,7 +1920,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinAddressZipCode(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinAddrZipCode());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinAddrZipCode(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1918,7 +1946,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setNextOfKinAddressHomePhone(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinAddrHomePhone());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinAddrHomePhone(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1943,7 +1973,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setNextOfKinGenderId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinGenderId());
+                                 runScriptlets(null,
+                                               SampleMeta.getNeonatalNextOfKinGenderId(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1967,7 +1999,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setNextOfKinRaceId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinRaceId());
+                                 // runDomainScriptlet(SampleMeta.getNeonatalNextOfKinRaceId());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1991,7 +2023,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setNextOfKinEthnicityId(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalNextOfKinEthnicityId());
+                                 // runDomainScriptlet(SampleMeta.getNeonatalNextOfKinEthnicityId());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2042,7 +2074,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                      data = (ProviderDO)event.getValue().getData();
                                  setProvider(data);
 
-                                 runDomainScriptlet(SampleMeta.getNeonatalProviderLastName());
+                                 runScriptlets(null, SampleMeta.getNeonatalProviderLastName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2363,7 +2395,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setFormNumber(event.getValue());
-                                 runDomainScriptlet(SampleMeta.getNeonatalFormNumber());
+                                 runScriptlets(null, SampleMeta.getNeonatalFormNumber(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2873,18 +2905,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
-            @Override
-            public void onDisplayAttachment(DisplayAttachmentEvent event) {
-                displayAttachment(event.getId(), event.getIsSameWindow());
-            }
-        });
-
         bus.addHandler(RunScriptletEvent.getType(), new RunScriptletEvent.Handler() {
             @Override
             public void onRunScriptlet(RunScriptletEvent event) {
                 if (screen != event.getSource())
-                    runScriptlet(event.getUid(), event.getChanged(), event.getOperation());
+                    runScriptlets(event.getUid(), event.getChanged(), event.getOperation());
+            }
+        });
+
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                displayAttachment(event.getId(), event.getIsSameWindow());
             }
         });
 
@@ -3050,7 +3082,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     isPatientLocked = false;
                     isNextOfKinLocked = false;
                     addScriptlet(null);
-                    runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
+                    runScriptlets(null, null, Action_Before.NEW_DOMAIN_ADDED);
                     evaluateEdit();
                     setData();
                     setState(ADD);
@@ -4181,15 +4213,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Runs the scriptlet with the passed id for the passed operation performed
      * on the field "changed" of the record with the passed uid.
      */
-    private void runScriptlet(String uid, String changed, Operation operation) {
+    private void runScriptlets(String uid, String changed, Action_Before operation) {
+        boolean resultChangedFired, itemAddedFired;
+        String auid, iuid, selUid;
         Object obj;
         SampleSO data;
+        SampleItemViewDO item;
         AnalysisViewDO ana;
         ResultViewDO res;
         AuxDataViewDO aux;
         TestManager tm;
         AuxFieldGroupManager auxfgm;
-        EnumSet<Operation> operations;
+        EnumSet<Action_Before> actionBefore;
+        EnumSet<Action_After> actionAfter;
         HashMap<Integer, TestManager> analyses, results;
         HashMap<Integer, AuxFieldGroupManager> auxData;
         ValidationErrorsList errors;
@@ -4206,7 +4242,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              */
             obj = manager.getObject(uid);
             if (obj instanceof AnalysisViewDO) {
-
+                analyses = getAnalysisTestMap();
             } else if (obj instanceof ResultViewDO) {
                 res = (ResultViewDO)obj;
                 ana = (AnalysisViewDO)manager.getObject(Constants.uid()
@@ -4219,26 +4255,40 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 auxfgm = get(aux.getAuxFieldGroupId(), AuxFieldGroupManager.class);
                 auxData = new HashMap<Integer, AuxFieldGroupManager>();
                 auxData.put(aux.getId(), auxfgm);
+            } else if (obj instanceof SampleQaEventDO || obj instanceof AnalysisQaEventDO) {
+                /*
+                 * qa events effect how results are handled
+                 */
+                analyses = getAnalysisTestMap();
             }
+        } else {
+            analyses = getAnalysisTestMap();
         }
 
         /*
          * create the sciptlet object
          */
         data = new SampleSO();
-        operations = EnumSet.of(operation);
-        if (manager.getSampleNeonatal().getId() == null && Operation.NEW_DOMAIN_ADDED != operation)
+        actionBefore = EnumSet.noneOf(Action_Before.class);
+        if (operation != null)
+            actionBefore.add(operation);
+        if (manager.getSampleNeonatal().getId() == null &&
+            Action_Before.NEW_DOMAIN_ADDED != operation)
             /*
              * this is either an uncommitted sample or was a quick-entry sample
              * before being loaded on the screen
              */
-            operations.add(Operation.NEW_DOMAIN_ADDED);
-        data.setOperations(operations);
+            actionBefore.add(Action_Before.NEW_DOMAIN_ADDED);
+        actionAfter = EnumSet.noneOf(Action_After.class);
+        data.setActionBefore(actionBefore);
+        data.setActionAfter(actionAfter);
         data.setChanged(changed);
+        data.setUid(uid);
         data.setManager(manager);
         data.setAnalyses(analyses);
         data.setResults(results);
         data.setAuxData(auxData);
+        data.setChangedUids(new HashSet<String>());
 
         /*
          * run the scritplet and show the errors and the changed data
@@ -4257,26 +4307,44 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager = data.getManager();
         evaluateEdit();
         setData();
-        if (Operation.RESULT_CHANGED == operation) {
-            bus.fireEvent(new ResultChangeEvent(Constants.uid().getAnalysis(res.getAnalysisId())));
-        } else {
-            setState(state);
-            fireDataChange();
+
+        selUid = sampleItemAnalysisTreeTab.getSelectedUid();
+
+        itemAddedFired = false;
+        resultChangedFired = false;
+        /*
+         * go through the changed uids and fire appropriate events to refresh
+         * particular parts of the screen
+         */
+        for (String cuid : data.getChangedUids()) {
+            obj = manager.getObject(cuid);
+            if (obj instanceof ResultDO && !resultChangedFired) {
+                /*
+                 * if any results were changed and if any of them belong to the
+                 * analysis selected in the tree then refresh the result tab,
+                 * otherwise don't
+                 */
+                res = (ResultViewDO)obj;
+                auid = Constants.uid().getAnalysis(res.getAnalysisId());
+                if (auid.equals(selUid)) {
+                    bus.fireEvent(new ResultChangeEvent(auid));
+                    resultChangedFired = true;
+                }
+            } else if (obj instanceof SampleItemDO &&
+                       data.getActionAfter().contains(Action_After.SAMPLE_ITEM_ADDED) &&
+                       !itemAddedFired) {
+                /*
+                 * if a sample item was addedd then refresh the tree, otherwise
+                 * don't
+                 */
+                item = (SampleItemViewDO)obj;
+                iuid = Constants.uid().getSampleItem(item.getId());
+                // if (iuid.equals(selUid)) {
+                bus.fireEventFromSource(new SampleItemAddedEvent(iuid), screen);
+                itemAddedFired = true;
+                // }
+            }
         }
-    }
-
-    /**
-     * Runs the scriptlet for the neonatal domain
-     */
-    private void runDomainScriptlet(String changed) {
-        runScriptlet(null, changed, Operation.NEW_DOMAIN_ADDED);
-    }
-
-    /**
-     * Runs the scriptlet for the neonatal domain
-     */
-    private void runDomainScriptlet(Operation operation) {
-        runScriptlet(null, null, operation);
     }
 
     /**
@@ -4408,6 +4476,32 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         return scids;
     }
 
+    /**
+     * Returns a hashmap between the ids of analyses and the test managers for
+     * the tests that they're linked to; doesn't include cancelled analyses
+     */
+    private HashMap<Integer, TestManager> getAnalysisTestMap() {
+        int i;
+        int j;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestManager tm;
+        HashMap<Integer, TestManager> analyses;
+
+        analyses = new HashMap<Integer, TestManager>();
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                    continue;
+                tm = get(ana.getTestId(), TestManager.class);
+                analyses.put(ana.getId(), tm);
+            }
+        }
+        return analyses;
+    }
+
     /*
      * getters and setters for the fields at the sample or domain level
      */
@@ -4454,7 +4548,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     @Override
                     public void success(SampleManager1 result) {
                         manager = result;
-                        runDomainScriptlet(Operation.NEW_DOMAIN_ADDED);
+                        runScriptlets(null, null, Action_Before.NEW_DOMAIN_ADDED);
                         setData();
                         setState(UPDATE);
                         fireDataChange();
@@ -4545,9 +4639,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * screen with the returned manager.
      */
     private void setOrderId(Integer ordId) {
-        SampleTestReturnVO ret;
-        ValidationErrorsList errors;
-
         if (ordId == null) {
             manager.getSample().setOrderId(ordId);
             return;
@@ -4560,20 +4651,20 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         setBusy(Messages.get().gen_fetching());
-        
+
         if (setOrderIdCall == null) {
             setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
                 public void success(SampleTestReturnVO result) {
                     ValidationErrorsList errors;
-                    
+
                     manager = result.getManager();
                     setData();
                     fireDataChange();
                     clearStatus();
                     /*
-                     * show any validation errors encountered while importing the order
-                     * or the pop up for selecting the prep/reflex tests for the tests
-                     * added during the import
+                     * show any validation errors encountered while importing
+                     * the order or the pop up for selecting the prep/reflex
+                     * tests for the tests added during the import
                      */
                     errors = result.getErrors();
                     if (errors != null && errors.size() > 0) {
@@ -4596,7 +4687,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 }
             };
         }
-        
+
         SampleService1.get().importOrder(manager, ordId, setOrderIdCall);
     }
 
@@ -5066,13 +5157,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (manager == null || manager.getSampleNeonatal() == null)
             return null;
         return manager.getSampleNeonatal().getCollectionAge();
-    }
-
-    /**
-     * sets the collection age
-     */
-    private void setCollectionAge(Integer collectionAge) {
-        manager.getSampleNeonatal().setCollectionAge(collectionAge);
     }
 
     /**
@@ -5621,7 +5705,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (getPatientAddressStreetAddress() != null)
             patientAddrStreetAddress.clearExceptions();
 
-        runDomainScriptlet(SampleMeta.getNeonatalPatientId());
+        runScriptlets(null, SampleMeta.getNeonatalPatientId(), null);
     }
 
     /**
@@ -5643,7 +5727,33 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (getNextOfKinAddressStreetAddress() != null)
             nextOfKinAddrStreetAddress.clearExceptions();
 
-        runDomainScriptlet(SampleMeta.getNeonatalNextOfKinId());
+        runScriptlets(null, SampleMeta.getNeonatalNextOfKinId(), null);
+    }
+
+    /**
+     * TODO change comment Returns true if the collection date-time is after the
+     * patient birth date-time
+     */
+    private void collectionAgeChanged(String changed) {
+        Integer accession;
+        Datetime cd, ct, bd, bt;
+
+        cd = getCollectionDate();
+        ct = getCollectionTime();
+        bd = getPatientBirthDate();
+        bt = getPatientBirthTime();
+
+        accession = manager.getSample().getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
+        if (bd != null &&
+            cd != null &&
+            DataBaseUtil.isAfter(bd, cd) ||
+            (DataBaseUtil.isSame(cd, bd) && bt != null && ct != null && DataBaseUtil.isAfter(bt, ct)))
+            setError(Messages.get().sampleNeonatal_patBirthDateAfterCollectDateException(accession));
+        else
+            runScriptlets(null, changed, null);
     }
 
     /**
@@ -5900,7 +6010,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
-        HashSet<Integer> ids;
+        HashSet<Integer> scids;
         ValidationErrorsList errors;
 
         setBusy();
@@ -5937,7 +6047,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     showErrors(errors);
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
-                runDomainScriptlet(Operation.TEST_ADDED);
+                runScriptlets(null, null, Action_Before.TEST_ADDED);
             } else {
                 showTests(ret);
             }
@@ -5945,10 +6055,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             /*
              * add scriptlets for any newly added tests and aux data
              */
-            ids = new HashSet<Integer>();
-            ids.addAll(getTestScriptlets(true));
-            ids.addAll(getAuxScriptlets(true));
-            addScriptlets(ids);
+            scids = new HashSet<Integer>();
+            scids.addAll(getTestScriptlets(true));
+            scids.addAll(getAuxScriptlets(true));
+            addScriptlets(scids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
