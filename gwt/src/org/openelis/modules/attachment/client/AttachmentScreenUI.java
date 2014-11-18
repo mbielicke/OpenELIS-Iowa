@@ -275,8 +275,8 @@ public class AttachmentScreenUI extends Screen {
             public void onSelection(SelectionEvent<Integer> event) {
                 nodeSelected(event.getSelectedItem());
                 if (isDataEntry())
-                    displayAttachment(event.getSelectedItem(), Messages.get()
-                                                                       .attachment_attachment());
+                    displayAttachment(tree.getNodeAt(event.getSelectedItem()),
+                                      Messages.get().attachment_attachment());
             }
         });
 
@@ -284,7 +284,7 @@ public class AttachmentScreenUI extends Screen {
             @Override
             public void onDoubleClick(DoubleClickEvent event) {
                 if ( !isState(UPDATE))
-                    displayAttachment(tree.getSelectedNode(), null);
+                    displayAttachment(tree.getNodeAt(tree.getSelectedNode()), null);
             }
         });
 
@@ -471,7 +471,7 @@ public class AttachmentScreenUI extends Screen {
                     tree.selectNodeAt(0);
                     nodeSelected(0);
                     if (isDataEntry())
-                        displayAttachment(0, Messages.get().attachment_attachment());
+                        displayAttachment(tree.getNodeAt(0), Messages.get().attachment_attachment());
                     setDone(Messages.get().gen_savingComplete());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -744,15 +744,12 @@ public class AttachmentScreenUI extends Screen {
     }
 
     /**
-     * Opens the file linked to the attachment showing on the node at the passed
-     * index. If "name" is null or if it's different from the previous time this
-     * method was called then the file is opened in a new window, otherwise it's
-     * opened in the same window as before.
+     * Opens the file linked to the attachment showing on the passed node. If
+     * "name" is null or if it's different from the previous time this method
+     * was called then the file is opened in a new window, otherwise it's opened
+     * in the same window as before.
      */
-    public void displayAttachment(int index, String name) {
-        Node node;
-
-        node = tree.getNodeAt(index);
+    public void displayAttachment(Node node, String name) {
         if ( !ATTACHMENT_LEAF.equals(node.getType()))
             return;
 
@@ -818,7 +815,7 @@ public class AttachmentScreenUI extends Screen {
                     nodeSelected(0);
                     searchSuccessful();
                     if (isDataEntry())
-                        displayAttachment(0, Messages.get().attachment_attachment());
+                        displayAttachment(tree.getNodeAt(0), Messages.get().attachment_attachment());
                 }
 
                 public void notFound() {
@@ -869,7 +866,7 @@ public class AttachmentScreenUI extends Screen {
      */
     public AttachmentManager getReserved() {
         AttachmentManager am;
-        Node node, next;
+        Node node, next, prevSelNode;
         AttachmentNode anode;
 
         node = tree.getNodeAt(tree.getSelectedNode());
@@ -923,7 +920,14 @@ public class AttachmentScreenUI extends Screen {
             while (node != null && ATTACHMENT_LEAF.equals(node.getType())) {
                 anode = (AttachmentNode)node;
                 try {
+                    prevSelNode = tree.getNodeAt(tree.getSelectedNode());
                     am = reserve(anode);
+                    /*
+                     * show the attachment linked to the currently selected node
+                     * but only if the node wasn't already selected
+                     */
+                    if (anode != prevSelNode)
+                        displayAttachment(anode, Messages.get().attachment_attachment());
                     break;
                 } catch (EntityLockedException e) {
                     /*
@@ -1257,8 +1261,8 @@ public class AttachmentScreenUI extends Screen {
 
     /**
      * This class allows changing the image shown on the node for attachment
-     * based on the various operations being performed for that attachment e.g.
-     * locked by other or attached etc.
+     * depending upon the various operations being performed for that attachment
+     * e.g. locked by other or attached etc.
      */
     private static class AttachmentNode extends Node {
         enum Status {
