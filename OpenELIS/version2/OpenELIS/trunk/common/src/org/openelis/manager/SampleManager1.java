@@ -49,12 +49,12 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -94,8 +94,8 @@ public class SampleManager1 implements Serializable {
     protected SampleEnvironmentalDO               sampleEnvironmental;
     protected SampleSDWISViewDO                   sampleSDWIS;
     protected SamplePrivateWellViewDO             samplePrivateWell;
-    protected SampleNeonatalDO                    sampleNeonatal;
-    protected SampleClinicalDO                    sampleClinical;
+    protected SampleNeonatalViewDO                sampleNeonatal;
+    protected SampleClinicalViewDO                sampleClinical;
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
@@ -160,11 +160,11 @@ public class SampleManager1 implements Serializable {
         return samplePrivateWell;
     }
 
-    public SampleNeonatalDO getSampleNeonatal() {
+    public SampleNeonatalViewDO getSampleNeonatal() {
         return sampleNeonatal;
     }
     
-    public SampleClinicalDO getSampleClinical() {
+    public SampleClinicalViewDO getSampleClinical() {
         return sampleClinical;
     }
 

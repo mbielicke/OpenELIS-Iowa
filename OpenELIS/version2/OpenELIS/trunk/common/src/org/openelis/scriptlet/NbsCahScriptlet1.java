@@ -32,7 +32,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -127,7 +127,7 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
         Integer interp, colAge;
         Double cahVal;
         String val;
-        SampleNeonatalDO sn;
+        SampleNeonatalViewDO sn;
         SampleManager1 sm;
         ResultViewDO res, resOver, resInter;
         DictionaryDO dict;

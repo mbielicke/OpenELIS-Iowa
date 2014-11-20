@@ -38,7 +38,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
@@ -106,7 +106,7 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
     @Override
     public SampleSO run(SampleSO data) {
         String changed;
-        SampleNeonatalDO sn;
+        SampleNeonatalViewDO sn;
         SampleManager1 sm;
 
         proxy.log(Level.FINE, "In NeonatalIAScriptlet1.run");
@@ -192,7 +192,7 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
         Long diff;
         Integer age;
         SampleManager1 sm;
-        SampleNeonatalDO sn;
+        SampleNeonatalViewDO sn;
 
         sm = data.getManager();
         sn = sm.getSampleNeonatal();
@@ -299,7 +299,7 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
      */
     private void setRepeat(SampleSO data) throws Exception {
         String changed;
-        SampleNeonatalDO sn;
+        SampleNeonatalViewDO sn;
         SampleManager1 sm;
 
         sm = data.getManager();

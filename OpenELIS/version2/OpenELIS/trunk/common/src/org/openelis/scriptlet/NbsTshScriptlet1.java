@@ -32,7 +32,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -129,7 +129,7 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         String sign;
         Double tshVal, lower, upper;
         SampleManager1 sm;
-        SampleNeonatalDO sn;
+        SampleNeonatalViewDO sn;
         ResultViewDO res, resTsh, resOver, resInter;
         DictionaryDO dict;
         QaEventDO qa;

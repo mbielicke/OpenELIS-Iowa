@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -4408,6 +4408,195 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String environmentalSampleLoginDescription();
 
   /**
+   * Translated "EOrder Lookup".
+   * 
+   * @return translated "EOrder Lookup"
+   */
+  @DefaultMessage("EOrder Lookup")
+  @Key("eorder.eorderLookup")
+  String eorder_eorderLookup();
+
+  /**
+   * Translated "Order Number".
+   * 
+   * @return translated "Order Number"
+   */
+  @DefaultMessage("Order Number")
+  @Key("eorder.orderNumber")
+  String eorder_orderNumber();
+
+  /**
+   * Translated "System failure when looking up dictionary entry for mapping ''{0}''.".
+   * 
+   * @return translated "System failure when looking up dictionary entry for mapping ''{0}''."
+   */
+  @DefaultMessage("System failure when looking up dictionary entry for mapping ''{0}''.")
+  @Key("eorderImport.dictionaryLookupFailure")
+  String eorderImport_dictionaryLookupFailure(String arg0);
+
+  /**
+   * Translated "Dictionary entry not found for mapping ''{0}''.".
+   * 
+   * @return translated "Dictionary entry not found for mapping ''{0}''."
+   */
+  @DefaultMessage("Dictionary entry not found for mapping ''{0}''.")
+  @Key("eorderImport.dictionaryNotFound")
+  String eorderImport_dictionaryNotFound(String arg0);
+
+  /**
+   * Translated "Error loading result formatter for test Id: {0}.".
+   * 
+   * @return translated "Error loading result formatter for test Id: {0}."
+   */
+  @DefaultMessage("Error loading result formatter for test Id: {0}.")
+  @Key("eorderImport.errorLoadingResultFormatter")
+  String eorderImport_errorLoadingResultFormatter(String arg0);
+
+  /**
+   * Translated "The organization ''{1} ({2})'' for code ''{0}'' is inactive.".
+   * 
+   * @return translated "The organization ''{1} ({2})'' for code ''{0}'' is inactive."
+   */
+  @DefaultMessage("The organization ''{1} ({2})'' for code ''{0}'' is inactive.")
+  @Key("eorderImport.inactiveOrgWarning")
+  String eorderImport_inactiveOrgWarning(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Invalid value ''{0}'' for test ''{1}, {2}'' analyte ''{3}'' in order.".
+   * 
+   * @return translated "Invalid value ''{0}'' for test ''{1}, {2}'' analyte ''{3}'' in order."
+   */
+  @DefaultMessage("Invalid value ''{0}'' for test ''{1}, {2}'' analyte ''{3}'' in order.")
+  @Key("eorderImport.invalidValue")
+  String eorderImport_invalidValue(String arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "System failure when looking up terms for the value ''{0}'' in the order field ''{1}''.".
+   * 
+   * @return translated "System failure when looking up terms for the value ''{0}'' in the order field ''{1}''."
+   */
+  @DefaultMessage("System failure when looking up terms for the value ''{0}'' in the order field ''{1}''.")
+  @Key("eorderImport.localTermLookupFailure")
+  String eorderImport_localTermLookupFailure(String arg0,  String arg1);
+
+  /**
+   * Translated "No terms were found for the value ''{0}'' in the order field ''{1}''.".
+   * 
+   * @return translated "No terms were found for the value ''{0}'' in the order field ''{1}''."
+   */
+  @DefaultMessage("No terms were found for the value ''{0}'' in the order field ''{1}''.")
+  @Key("eorderImport.localTermNotFound")
+  String eorderImport_localTermNotFound(String arg0,  String arg1);
+
+  /**
+   * Translated "Path to eorder import file directory is missing. Please contact the system administrator.".
+   * 
+   * @return translated "Path to eorder import file directory is missing. Please contact the system administrator."
+   */
+  @DefaultMessage("Path to eorder import file directory is missing. Please contact the system administrator.")
+  @Key("eorderImport.missingPath")
+  String eorderImport_missingPath();
+
+  /**
+   * Translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient.".
+   * 
+   * @return translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient."
+   */
+  @DefaultMessage("Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient.")
+  @Key("eorderImport.mulitpleMatchPatients")
+  String eorderImport_mulitpleMatchPatients();
+
+  /**
+   * Translated "Multiple terms were found for the value ''{0}'' in the order field ''{1}''.".
+   * 
+   * @return translated "Multiple terms were found for the value ''{0}'' in the order field ''{1}''."
+   */
+  @DefaultMessage("Multiple terms were found for the value ''{0}'' in the order field ''{1}''.")
+  @Key("eorderImport.multipleLocalTerms")
+  String eorderImport_multipleLocalTerms(String arg0,  String arg1);
+
+  /**
+   * Translated "Note From EOrder".
+   * 
+   * @return translated "Note From EOrder"
+   */
+  @DefaultMessage("Note From EOrder")
+  @Key("eorderImport.orderNoteSubject")
+  String eorderImport_orderNoteSubject();
+
+  /**
+   * Translated "The organization name was not supplied in the order.".
+   * 
+   * @return translated "The organization name was not supplied in the order."
+   */
+  @DefaultMessage("The organization name was not supplied in the order.")
+  @Key("eorderImport.organizationNotSupplied")
+  String eorderImport_organizationNotSupplied();
+
+  /**
+   * Translated "System failure when looking up existing patient records for matching against order data.".
+   * 
+   * @return translated "System failure when looking up existing patient records for matching against order data."
+   */
+  @DefaultMessage("System failure when looking up existing patient records for matching against order data.")
+  @Key("eorderImport.patientLookupFailure")
+  String eorderImport_patientLookupFailure();
+
+  /**
+   * Translated "Source of Sample ''{0}'' does not match source specified in order ''{1}''".
+   * 
+   * @return translated "Source of Sample ''{0}'' does not match source specified in order ''{1}''"
+   */
+  @DefaultMessage("Source of Sample ''{0}'' does not match source specified in order ''{1}''")
+  @Key("eorderImport.sourceOfSampleMismatch")
+  String eorderImport_sourceOfSampleMismatch(String arg0,  String arg1);
+
+  /**
+   * Translated "Source Other ''{0}'' does not match source other specified in order ''{1}''".
+   * 
+   * @return translated "Source Other ''{0}'' does not match source other specified in order ''{1}''"
+   */
+  @DefaultMessage("Source Other ''{0}'' does not match source other specified in order ''{1}''")
+  @Key("eorderImport.sourceOtherMismatch")
+  String eorderImport_sourceOtherMismatch(String arg0,  String arg1);
+
+  /**
+   * Translated "Unable to parse birth date ''{0}'' from eorder.".
+   * 
+   * @return translated "Unable to parse birth date ''{0}'' from eorder."
+   */
+  @DefaultMessage("Unable to parse birth date ''{0}'' from eorder.")
+  @Key("eorderImport.unparsableBirthDate")
+  String eorderImport_unparsableBirthDate(String arg0);
+
+  /**
+   * Translated "Unable to parse birth time ''{0}'' from eorder.".
+   * 
+   * @return translated "Unable to parse birth time ''{0}'' from eorder."
+   */
+  @DefaultMessage("Unable to parse birth time ''{0}'' from eorder.")
+  @Key("eorderImport.unparsableBirthTime")
+  String eorderImport_unparsableBirthTime(String arg0);
+
+  /**
+   * Translated "Unable to parse collection date ''{0}'' from eorder.".
+   * 
+   * @return translated "Unable to parse collection date ''{0}'' from eorder."
+   */
+  @DefaultMessage("Unable to parse collection date ''{0}'' from eorder.")
+  @Key("eorderImport.unparsableCollectionDate")
+  String eorderImport_unparsableCollectionDate(String arg0);
+
+  /**
+   * Translated "Unable to parse collection time ''{0}'' from eorder.".
+   * 
+   * @return translated "Unable to parse collection time ''{0}'' from eorder."
+   */
+  @DefaultMessage("Unable to parse collection time ''{0}'' from eorder.")
+  @Key("eorderImport.unparsableCollectionTime")
+  String eorderImport_unparsableCollectionTime(String arg0);
+
+  /**
    * Translated "Error with sample accession #".
    * 
    * @return translated "Error with sample accession #"
@@ -4426,11 +4615,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String errorsWithAuxFieldValuesException();
 
   /**
-   * Translated "Ethinicity ".
+   * Translated "Ethnicity ".
    * 
-   * @return translated "Ethinicity "
+   * @return translated "Ethnicity "
    */
-  @DefaultMessage("Ethinicity ")
+  @DefaultMessage("Ethnicity ")
   @Key("ethnicity")
   String ethnicity();
 
