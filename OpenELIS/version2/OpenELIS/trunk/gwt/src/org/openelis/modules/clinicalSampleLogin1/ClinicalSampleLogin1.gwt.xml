@@ -42,6 +42,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.analyte.AnalyteService"/>
   <inherits name="org.openelis.modules.attachment.Attachment"/>
   <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
+  <inherits name="org.openelis.modules.eorder.EOrder"/>
   
   <entry-point class="org.openelis.modules.clinicalSampleLogin1.client.ClinicalSampleLoginEntry"/>
 </module>

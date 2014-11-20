@@ -48,6 +48,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.EOrderDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PatientDO;
@@ -76,6 +77,7 @@ import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
+import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.patient.client.PatientLookupUI;
@@ -187,11 +189,11 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     receivedDate, patientBirthDate;
 
     @UiField
-    protected TextBox<Integer>                          accessionNumber, orderId, patientId;
+    protected TextBox<Integer>                          accessionNumber, patientId;
 
     @UiField
-    protected TextBox<String>                           clientReference, patientLastName,
-                    patientFirstName, patientNationalId, patientAddrMultipleUnit,
+    protected TextBox<String>                           clientReference, orderId,
+                    patientLastName, patientFirstName, patientNationalId, patientAddrMultipleUnit,
                     patientAddrStreetAddress, patientAddrCity, patientAddrZipCode,
                     providerFirstName, providerPhone;
 
@@ -272,6 +274,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
     protected PatientLookupUI                           patientLookup;
+    
+    protected EOrderLookupUI                            eorderLookup;
 
     protected AttachmentScreenUI                        attachmentScreen;
 
@@ -286,7 +290,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
     protected AsyncCallbackUI<Void>                     validateAccessionNumberCall;
 
-    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall, setOrderIdCall;
+    protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall;
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
 
@@ -747,24 +751,19 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
                          });
 
-        addScreenHandler(orderId, SampleMeta.getOrderId(), new ScreenHandler<Integer>() {
+        addScreenHandler(orderId, SampleMeta.getEorderPaperOrderValidator(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 orderId.setValue(getOrderId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
+            public void onValueChange(ValueChangeEvent<String> event) {
                 setOrderId(event.getValue());
+                focusedWidget = orderId;
             }
 
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disabled until the functionality for the orders for this
-                 * domain has been implemented
-                 */
-                // orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD,
-                // UPDATE)));
-                // orderId.setQueryMode(isState(QUERY));
-                orderId.setEnabled(false);
+                orderId.setEnabled(isState(QUERY) || (canEditSample && isState(ADD, UPDATE)));
+                orderId.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -774,13 +773,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disabled until the functionality for the orders for this
-                 * domain has been implemented
-                 */
-                // orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit &&
-                // isState(ADD, UPDATE)));
-                orderLookupButton.setEnabled(false);
+                orderLookupButton.setEnabled(isState(DISPLAY) || (canEditSample && isState(ADD, UPDATE)));
             }
         });
 
@@ -3678,10 +3671,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     /**
      * Returns the order id or null if the manager is null
      */
-    private Integer getOrderId() {
+    private String getOrderId() {
         if (manager == null)
             return null;
-        return manager.getSample().getOrderId();
+        return manager.getSampleClinical().getPaperOrderValidator();
     }
 
     /**
@@ -3689,11 +3682,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * specified id, if the id and the accession number are not null. Loads the
      * screen with the returned manager.
      */
-    private void setOrderId(Integer ordId) {
-        if (ordId == null) {
-            manager.getSample().setOrderId(ordId);
+    private void setOrderId(String ordId) {
+        if (ordId == null || ordId.length() == 0)
             return;
-        }
 
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
@@ -3701,51 +3692,78 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             return;
         }
 
-        setBusy(Messages.get().gen_fetching());
+        showEOrderLookup(ordId);
+    }
+    
+    private void showEOrderLookup(String ordId) {
+        ModalWindow modal;
 
-        if (setOrderIdCall == null) {
-            setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
-                public void success(SampleTestReturnVO result) {
+        if (eorderLookup == null) {
+            eorderLookup = new EOrderLookupUI() {
+                @Override
+                public void select() {
+                    EOrderDO eorderDO;
+                    SampleTestReturnVO ret;
                     ValidationErrorsList errors;
 
-                    manager = result.getManager();
-                    setData();
-                    fireDataChange();
-                    clearStatus();
-                    /*
-                     * show any validation errors encountered while importing
-                     * the order or the pop up for selecting the prep/reflex
-                     * tests for the tests added during the import
-                     */
-                    errors = result.getErrors();
-                    if (errors != null && errors.size() > 0) {
-                        if (errors.hasWarnings())
-                            Window.alert(getWarnings(errors.getErrorList(), false));
-                        if (errors.hasErrors())
-                            showErrors(errors);
-                        isBusy = false;
-                    } else if (result.getTests() == null || result.getTests().size() == 0) {
-                        isBusy = false;
-                    } else {
-                        /*
-                         * this will make sure that the focus gets set to the
-                         * field next in the tabbing order after this field
-                         * after the tests have been added
-                         */
-                        focusedWidget = orderId;
-                        showTests(result);
+                    eorderDO = eorderLookup.getSelectedEOrder();
+                    if (eorderDO == null) {
+                        orderId.setValue(getOrderId());
+                        setFocusToNext();
+                        return;
                     }
+                    
+                    manager.getSample().setOrderId(eorderDO.getId());
+                    manager.getSampleClinical().setPaperOrderValidator(eorderDO.getPaperOrderValidator());
+                    orderId.setValue(eorderDO.getPaperOrderValidator());
+                    try {
+                        screen.setBusy(Messages.get().fetching());
+                        ret = SampleService1.get().importOrder(manager, eorderDO.getId());
+                        manager = ret.getManager();
+                        setData();
+                        screen.fireDataChange();
+                        screen.clearStatus();
+                        /*
+                         * show any validation errors encountered while importing the order
+                         * or the pop up for selecting the prep/reflex tests for the tests
+                         * added during the import
+                         */
+                        errors = ret.getErrors();
+                        if (errors != null && errors.size() > 0) {
+                            if (errors.hasWarnings())
+                                Window.alert(getWarnings(errors.getErrorList(), false));
+                            if (errors.hasErrors())
+                                screen.showErrors(errors);
+                            isBusy = false;
+                        } else if (ret.getTests() == null || ret.getTests().size() == 0) {
+                            isBusy = false;
+                        } else {
+                            showTests(ret);
+                        }
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        screen.clearStatus();
+                    }
+                    setFocusToNext();
                 }
-
-                public void failure(Throwable error) {
-                    Window.alert(error.getMessage());
-                    logger.log(Level.SEVERE, error.getMessage(), error);
-                    clearStatus();
+                
+                @Override
+                public void cancel() {
+                    orderId.setValue(getOrderId());
+                    setFocusToNext();
                 }
             };
         }
+        
+        modal = new ModalWindow();
+        modal.setSize("735px", "350px");
+        modal.setName(Messages.get().eorder_eorderLookup());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(eorderLookup);
 
-        SampleService1.get().importOrder(manager, ordId, setOrderIdCall);
+        eorderLookup.setWindow(modal);
+        eorderLookup.setPaperOrderValidator(ordId);
     }
 
     /**
