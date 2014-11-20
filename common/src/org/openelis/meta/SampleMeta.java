@@ -376,7 +376,9 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID = "_testResult.flagsId",
 
                     ORG_PARAM_VALUE = "_organizationParameter.value",
-    
+                    
+                    EORDER_PAPER_ORDER_VALIDATOR = "_eorder.paperOrderValidator",
+                                    
                     ATT_ITEM_ATTACHMENT_CREATED_DATE = "_attachmentItem.attachment.createdDate",
                     ATT_ITEM_ATTACHMENT_SECTION_ID = "_attachmentItem.attachment.sectionId",
                     ATT_ITEM_ATTACHMENT_DESCRIPTION = "_attachmentItem.attachment.description";
@@ -679,6 +681,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   ANALYSIS_TEST_IS_ACTIVE,
                                                   ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
                                                   ORG_PARAM_VALUE,
+                                                  EORDER_PAPER_ORDER_VALIDATOR,
                                                   ATT_ITEM_ATTACHMENT_CREATED_DATE,
                                                   ATT_ITEM_ATTACHMENT_SECTION_ID,
                                                   ATT_ITEM_ATTACHMENT_DESCRIPTION));
@@ -1876,6 +1879,10 @@ public class SampleMeta implements Meta, MetaMap {
         return ATT_ITEM_ATTACHMENT_DESCRIPTION;
     }
 
+    public static String getEorderPaperOrderValidator() {
+        return EORDER_PAPER_ORDER_VALIDATOR;
+    }
+
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
@@ -1950,6 +1957,9 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("clinicalProvider.") > -1)
             from += " LEFT JOIN _sampleClinical.provider _clinicalProvider ";
+
+        if (where.indexOf("eorder.") > -1)
+            from += ", IN (_sample.eorder) _eorder ";
 
         // common sample fields
         if (where.indexOf("_sampleOrganization.") > -1)
