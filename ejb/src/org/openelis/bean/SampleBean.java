@@ -45,7 +45,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
-import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
 import org.openelis.gwt.widget.QueryFieldUtil;

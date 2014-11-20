@@ -37,11 +37,11 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -89,19 +89,19 @@ public class SampleManager1Accessor {
         sm.samplePrivateWell = samplePrivateWell;
     }
     
-    public static SampleNeonatalDO getSampleNeonatal(SampleManager1 sm) {
+    public static SampleNeonatalViewDO getSampleNeonatal(SampleManager1 sm) {
         return sm.sampleNeonatal;
     }
     
-    public static void setSampleNeonatal(SampleManager1 sm, SampleNeonatalDO sampleNeonatal) {
+    public static void setSampleNeonatal(SampleManager1 sm, SampleNeonatalViewDO sampleNeonatal) {
         sm.sampleNeonatal = sampleNeonatal;
     }
     
-    public static SampleClinicalDO getSampleClinical(SampleManager1 sm) {
+    public static SampleClinicalViewDO getSampleClinical(SampleManager1 sm) {
         return sm.sampleClinical;
     }
     
-    public static void setSampleClinical(SampleManager1 sm, SampleClinicalDO sampleClinical) {
+    public static void setSampleClinical(SampleManager1 sm, SampleClinicalViewDO sampleClinical) {
         sm.sampleClinical = sampleClinical;
     }
     

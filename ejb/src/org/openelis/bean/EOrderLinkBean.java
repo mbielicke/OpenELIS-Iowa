@@ -53,7 +53,7 @@ public class EOrderLinkBean {
         List list;
 
         query = manager.createNamedQuery("EOrderLink.FetchByEOrderId");
-        query.setParameter("eOrderId", eOrderId);
+        query.setParameter("eorderId", eOrderId);
 
         list = query.getResultList();
         if (list.isEmpty())
@@ -62,7 +62,7 @@ public class EOrderLinkBean {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public EOrderLinkDO add(EOrderLinkDO data) {
+    public EOrderLinkDO add(EOrderLinkDO data) throws Exception {
         EOrderLink entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

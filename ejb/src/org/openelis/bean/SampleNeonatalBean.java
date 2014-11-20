@@ -28,6 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -37,9 +39,13 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
+import org.openelis.domain.EOrderDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.entity.SampleNeonatal;
 import org.openelis.ui.common.DataBaseUtil;
 
@@ -48,32 +54,55 @@ import org.openelis.ui.common.DataBaseUtil;
 public class SampleNeonatalBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager       manager;
 
     @EJB
-    private PatientBean   patient;
+    private EOrderBean          eorder;
 
     @EJB
-    private ProviderBean  provider;
+    private PatientBean         patient;
+
+    @EJB
+    private ProviderBean        provider;
+
+    @EJB
+    private SampleBean          sample;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     @SuppressWarnings("unchecked")
-    public ArrayList<SampleNeonatalDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+    public ArrayList<SampleNeonatalViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
-        List<SampleNeonatalDO> result;
-        ArrayList<SampleNeonatalDO> list;
-        HashMap<Integer, ArrayList<SampleNeonatalDO>> pat, pro;
+        List<SampleNeonatalViewDO> result;
+        ArrayList<SampleNeonatalViewDO> list;
+        EOrderDO eorderDO;
+        HashMap<Integer, ArrayList<SampleNeonatalViewDO>> pat, pro;
+        HashMap<Integer, String> pov;
 
         query = manager.createNamedQuery("SampleNeonatal.FetchBySampleIds");
         query.setParameter("ids", sampleIds);
         result = query.getResultList();
 
-        pat = new HashMap<Integer, ArrayList<SampleNeonatalDO>>();
-        pro = new HashMap<Integer, ArrayList<SampleNeonatalDO>>();
-        for (SampleNeonatalDO data : result) {
+        pov = new HashMap<Integer, String>();
+        for (SampleDO s : sample.fetchByIds(sampleIds)) {
+            if (Constants.domain().NEONATAL.equals(s.getDomain()) && s.getOrderId() != null) {
+                try {
+                    eorderDO = eorder.fetchById(s.getOrderId());
+                    pov.put(s.getId(), eorderDO.getPaperOrderValidator());
+                } catch (Exception anyE) {
+                    log.log(Level.SEVERE, "Error looking up eorder for sample.", anyE);
+                }
+            }
+        }
+        
+        pat = new HashMap<Integer, ArrayList<SampleNeonatalViewDO>>();
+        pro = new HashMap<Integer, ArrayList<SampleNeonatalViewDO>>();
+        for (SampleNeonatalViewDO data : result) {
+            data.setPaperOrderValidator(pov.get(data.getSampleId()));
             if (data.getPatientId() != null) {
                 list = pat.get(data.getPatientId());
                 if (list == null) {
-                    list = new ArrayList<SampleNeonatalDO>();
+                    list = new ArrayList<SampleNeonatalViewDO>();
                     pat.put(data.getPatientId(), list);
                 }
                 list.add(data);
@@ -81,7 +110,7 @@ public class SampleNeonatalBean {
             if (data.getNextOfKinId() != null) {
                 list = pat.get(data.getNextOfKinId());
                 if (list == null) {
-                    list = new ArrayList<SampleNeonatalDO>();
+                    list = new ArrayList<SampleNeonatalViewDO>();
                     pat.put(data.getNextOfKinId(), list);
                 }
                 list.add(data);
@@ -89,7 +118,7 @@ public class SampleNeonatalBean {
             if (data.getProviderId() != null) {
                 list = pro.get(data.getProviderId());
                 if (list == null) {
-                    list = new ArrayList<SampleNeonatalDO>();
+                    list = new ArrayList<SampleNeonatalViewDO>();
                     pro.put(data.getProviderId(), list);
                 }
                 list.add(data);
@@ -97,7 +126,7 @@ public class SampleNeonatalBean {
         }
 
         for (PatientDO p : patient.fetchByIds(pat.keySet())) {
-            for (SampleNeonatalDO data : pat.get(p.getId())) {
+            for (SampleNeonatalViewDO data : pat.get(p.getId())) {
                 if (p.getId().equals(data.getPatientId()))
                     data.setPatient(p);
                 if (p.getId().equals(data.getNextOfKinId()))
@@ -106,7 +135,7 @@ public class SampleNeonatalBean {
         }
 
         for (ProviderDO p : provider.fetchByIds(pro.keySet())) {
-            for (SampleNeonatalDO data : pro.get(p.getId())) {
+            for (SampleNeonatalViewDO data : pro.get(p.getId())) {
                 if (p.getId().equals(data.getProviderId()))
                     data.setProvider(p);
             }

@@ -83,11 +83,11 @@ import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -744,7 +744,7 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element toXML(Document doc, SampleNeonatalDO neonatal) {
+    public Element toXML(Document doc, SampleNeonatalViewDO neonatal) {
         Element elm;
 
         elm = doc.createElement("sample_neonatal");
@@ -773,15 +773,15 @@ public class DataExchangeXMLMapperBean {
         return elm;
     }
 
-    public Element toXML(Document doc, SampleClinicalDO neonatal) {
+    public Element toXML(Document doc, SampleClinicalViewDO clinical) {
         Element elm;
 
         elm = doc.createElement("sample_clinical");
-        setAttribute(elm, "id", neonatal.getId());
-        setAttribute(elm, "sample_id", neonatal.getSampleId());
-        setAttribute(elm, "patient_id", neonatal.getPatientId());
-        setAttribute(elm, "provider_id", neonatal.getProviderId());
-        setText(doc, elm, "provider_phone", neonatal.getProviderPhone());
+        setAttribute(elm, "id", clinical.getId());
+        setAttribute(elm, "sample_id", clinical.getSampleId());
+        setAttribute(elm, "patient_id", clinical.getPatientId());
+        setAttribute(elm, "provider_id", clinical.getProviderId());
+        setText(doc, elm, "provider_phone", clinical.getProviderPhone());
 
         return elm;
     }
