@@ -25,19 +25,5 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-  <inherits name="org.openelis.modules.sample1.Sample1"/>
-  <inherits name="org.openelis.modules.sample.Sample"/>
-  <inherits name="org.openelis.modules.auxData.AuxData"/>
-  <inherits name="org.openelis.modules.patient.Patient"/>
-  <inherits name="org.openelis.modules.provider.ProviderService"/>
-  <inherits name="org.openelis.modules.project.ProjectService"/>
-  <inherits name="org.openelis.modules.test.TestService"/>
-  <inherits name="org.openelis.modules.auxiliary.AuxiliaryService"/>
-  <inherits name="org.openelis.modules.organization.OrganizationService"/>
-  <inherits name="org.openelis.modules.analysis.Analysis"/>
-  <inherits name="org.openelis.modules.history.History"/>
-  <inherits name="org.openelis.modules.standardnote.StandardNoteService"/>
-  <inherits name="org.openelis.modules.eorder.EOrder"/>
-  
-  <entry-point class="org.openelis.modules.neonatalScreeningSampleLogin.client.NeonatalScreeningSampleLoginEntry"/>
+
 </module>

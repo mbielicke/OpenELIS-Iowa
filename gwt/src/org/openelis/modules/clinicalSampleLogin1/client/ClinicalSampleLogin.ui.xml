@@ -84,7 +84,7 @@
                 </td>
                 <td>
                   <g:HorizontalPanel>
-                    <w:TextBox ui:field="orderId" width="103px" field="Integer" />
+                    <w:TextBox ui:field="orderId" width="103px" field="String" />
                     <g:AbsolutePanel>
                       <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
                         text="" css="{res.FormFieldButton}" />

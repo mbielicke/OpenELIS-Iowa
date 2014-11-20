@@ -34,10 +34,10 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -114,7 +114,7 @@ public class SampleHistoryUtility1 {
      */
     public static void neonatal(SampleManager1 manager) {
         IdNameVO hist;
-        SampleNeonatalDO data;
+        SampleNeonatalViewDO data;
 
         data = manager.getSampleNeonatal();
         hist = new IdNameVO(data.getId(), "");
@@ -128,7 +128,7 @@ public class SampleHistoryUtility1 {
      */
     public static void clinical(SampleManager1 manager) {
         IdNameVO hist;
-        SampleClinicalDO data;
+        SampleClinicalViewDO data;
 
         data = manager.getSampleClinical();
         hist = new IdNameVO(data.getId(), "");
@@ -141,7 +141,7 @@ public class SampleHistoryUtility1 {
      * shows the history of sample neonatal's patient
      */
     public static void neonatalPatient(SampleManager1 manager) {
-        SampleNeonatalDO data;
+        SampleNeonatalViewDO data;
 
         data = manager.getSampleNeonatal();
         patient(data.getPatient().getId(), Messages.get().history_patient());
@@ -151,7 +151,7 @@ public class SampleHistoryUtility1 {
      * shows the history of sample neonatal's next of kin
      */
     public static void neonatalNextOfKin(SampleManager1 manager) {
-        SampleNeonatalDO data;
+        SampleNeonatalViewDO data;
 
         data = manager.getSampleNeonatal();
         patient(data.getNextOfKin().getId(), Messages.get().history_nextOfKin());
@@ -161,7 +161,7 @@ public class SampleHistoryUtility1 {
      * shows the history of sample clinical's patient
      */
     public static void clinicalPatient(SampleManager1 manager) {
-        SampleClinicalDO data;
+        SampleClinicalViewDO data;
 
         data = manager.getSampleClinical();
         patient(data.getPatient().getId(), Messages.get().history_patient());
