@@ -48,6 +48,7 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
@@ -647,6 +648,11 @@ public class Sample implements Auditable, Cloneable {
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleClinical>      sampleClinical;
 
+    // eorder
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
+    private EOrder                          eorder;
+
     // sample organizations
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
@@ -918,6 +924,14 @@ public class Sample implements Auditable, Cloneable {
 
     public void setAttachmentItem(Collection<AttachmentItem> attachmentItem) {
         this.attachmentItem = attachmentItem;
+    }
+
+    public EOrder getEOrder() {
+        return eorder;
+    }
+
+    public void setEOrder(EOrder eorder) {
+        this.eorder = eorder;
     }
 
     public void setClone() {

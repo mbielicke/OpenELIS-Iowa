@@ -77,7 +77,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -998,7 +998,7 @@ public class DataViewBean {
         SampleEnvironmentalDO env;
         SamplePrivateWellViewDO well;
         SampleSDWISViewDO sdwis;
-        SampleClinicalDO clinical;
+        SampleClinicalViewDO clinical;
         SampleItemViewDO item;
         AnalysisViewDO ana;
         AnalysisQaEventViewDO aqe;
@@ -2684,11 +2684,11 @@ public class DataViewBean {
         }
     }
 
-    private void addClinicalCells(Row row, int startCol, DataViewVO data, SampleClinicalDO clinical) {
+    private void addClinicalCells(Row row, int startCol, DataViewVO data, SampleClinicalViewDO clinical) {
         Cell cell;
 
         /*
-         * the SampleClinicalDO can be null if a sample is not a Clinical sample
+         * the SampleClinicalViewDO can be null if a sample is not a Clinical sample
          * but the user has requested to view Clinical fields and so we need to
          * add empty cells in the columns for those fields, because otherwise
          * the data in the cells to the right of those columns will be shifted

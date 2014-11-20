@@ -59,7 +59,13 @@ import org.openelis.utils.Auditable;
                         "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem, et.version," +
                         "e.referenceTableId, e.referenceId)"
                       + " from ExchangeExternalTerm et left join et.exchangeLocalTerm e where e.referenceTableId = :referenceTableId"
-                      + " and e.referenceId in (:referenceIds) and et.profileId in (:profileIds)")})                  
+                      + " and e.referenceId in (:referenceIds) and et.profileId in (:profileIds)"),                         
+    @NamedQuery( name = "ExchangeExternalTerm.FetchByExternalTerms",
+                query = "select new org.openelis.domain.ExchangeExternalTermViewDO(et.id, et.exchangeLocalTermId," +
+                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem, et.version," +
+                        "e.referenceTableId, e.referenceId)"
+                      + " from ExchangeExternalTerm et left join et.exchangeLocalTerm e where et.externalTerm in (:externalTerms)"
+                      + " order by et.externalTerm, et.externalCodingSystem, et.profileId")})                  
 
 @Entity
 @Table(name = "exchange_external_term")

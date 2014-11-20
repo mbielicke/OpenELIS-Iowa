@@ -3,6 +3,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -12,9 +14,13 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
+import org.openelis.domain.EOrderDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.entity.SampleClinical;
 import org.openelis.gwt.common.DataBaseUtil;
 
@@ -23,32 +29,55 @@ import org.openelis.gwt.common.DataBaseUtil;
 public class SampleClinicalBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager       manager;
 
     @EJB
-    private PatientBean   patient;
+    private EOrderBean          eorder;
 
     @EJB
-    private ProviderBean  provider;
-    
+    private PatientBean         patient;
+
+    @EJB
+    private ProviderBean        provider;
+
+    @EJB
+    private SampleBean          sample;
+
+    private static final Logger log = Logger.getLogger("openelis");
+
     @SuppressWarnings("unchecked")
-    public ArrayList<SampleClinicalDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+    public ArrayList<SampleClinicalViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
-        List<SampleClinicalDO> result;
-        ArrayList<SampleClinicalDO> list;
-        HashMap<Integer, ArrayList<SampleClinicalDO>> pat, pro;
+        List<SampleClinicalViewDO> result;
+        ArrayList<SampleClinicalViewDO> list;
+        EOrderDO eorderDO;
+        HashMap<Integer, ArrayList<SampleClinicalViewDO>> pat, pro;
+        HashMap<Integer, String> pov;
 
         query = manager.createNamedQuery("SampleClinical.FetchBySampleIds");
         query.setParameter("ids", sampleIds);
         result = query.getResultList();
 
-        pat = new HashMap<Integer, ArrayList<SampleClinicalDO>>();
-        pro = new HashMap<Integer, ArrayList<SampleClinicalDO>>();
-        for (SampleClinicalDO data : result) {
+        pov = new HashMap<Integer, String>();
+        for (SampleDO s : sample.fetchByIds(sampleIds)) {
+            if (Constants.domain().CLINICAL.equals(s.getDomain()) && s.getOrderId() != null) {
+                try {
+                    eorderDO = eorder.fetchById(s.getOrderId());
+                    pov.put(s.getId(), eorderDO.getPaperOrderValidator());
+                } catch (Exception anyE) {
+                    log.log(Level.SEVERE, "Error looking up eorder for sample.", anyE);
+                }
+            }
+        }
+        
+        pat = new HashMap<Integer, ArrayList<SampleClinicalViewDO>>();
+        pro = new HashMap<Integer, ArrayList<SampleClinicalViewDO>>();
+        for (SampleClinicalViewDO data : result) {
+            data.setPaperOrderValidator(pov.get(data.getSampleId()));
             if (data.getPatientId() != null) {
                 list = pat.get(data.getPatientId());
                 if (list == null) {
-                    list = new ArrayList<SampleClinicalDO>();
+                    list = new ArrayList<SampleClinicalViewDO>();
                     pat.put(data.getPatientId(), list);
                 }
                 list.add(data);
@@ -56,7 +85,7 @@ public class SampleClinicalBean {
             if (data.getProviderId() != null) {
                 list = pro.get(data.getProviderId());
                 if (list == null) {
-                    list = new ArrayList<SampleClinicalDO>();
+                    list = new ArrayList<SampleClinicalViewDO>();
                     pro.put(data.getProviderId(), list);
                 }
                 list.add(data);
@@ -64,14 +93,14 @@ public class SampleClinicalBean {
         }
         
         for (PatientDO p : patient.fetchByIds(pat.keySet())) {
-            for (SampleClinicalDO data : pat.get(p.getId())) {
+            for (SampleClinicalViewDO data : pat.get(p.getId())) {
                 if (p.getId().equals(data.getPatientId()))
                     data.setPatient(p);                
             }
         }
 
         for (ProviderDO p : provider.fetchByIds(pro.keySet())) {
-            for (SampleClinicalDO data : pro.get(p.getId())) {
+            for (SampleClinicalViewDO data : pro.get(p.getId())) {
                 if (p.getId().equals(data.getProviderId()))
                     data.setProvider(p);
             }

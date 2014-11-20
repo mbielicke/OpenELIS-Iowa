@@ -37,15 +37,17 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "EOrderLink.FetchByEOrderId",
-                           query = "select distinct new org.openelis.domain.EOrderLinkDO(el.id, el.eOrderId, el.reference, el.subId, el.name, el.value)"
-                                   + " from EOrderLink el where el.eOrderId = :eOrderId")})
+                           query = "select distinct new org.openelis.domain.EOrderLinkDO(el.id, el.eorderId, el.reference, el.subId, el.name, el.value)"
+                                   + " from EOrderLink el where el.eorderId = :eorderId")})
 @Entity
 @Table(name = "eorder_link")
 @EntityListeners({AuditUtil.class})
@@ -54,22 +56,25 @@ public class EOrderLink implements Auditable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Integer    id;
 
     @Column(name = "eorder_id")
-    private Integer eOrderId;
+    private Integer    eorderId;
 
     @Column(name = "reference")
-    private String  reference;
+    private String     reference;
 
     @Column(name = "sub_id")
-    private String  subId;
+    private String     subId;
 
     @Column(name = "name")
-    private String  name;
+    private String     name;
 
     @Column(name = "value")
-    private String  value;
+    private String     value;
+
+    @Transient
+    private EOrderLink original;
 
     public Integer getId() {
         return id;
@@ -81,12 +86,12 @@ public class EOrderLink implements Auditable, Cloneable {
     }
 
     public Integer geteOrderId() {
-        return eOrderId;
+        return eorderId;
     }
 
-    public void setEOrderId(Integer eOrderId) {
-        if (DataBaseUtil.isDifferent(eOrderId, this.eOrderId))
-            this.eOrderId = eOrderId;
+    public void setEOrderId(Integer eorderId) {
+        if (DataBaseUtil.isDifferent(eorderId, this.eorderId))
+            this.eorderId = eorderId;
     }
 
     public String getReference() {
@@ -127,12 +132,27 @@ public class EOrderLink implements Auditable, Cloneable {
 
     @Override
     public void setClone() {
-
+        try {
+            original = (EOrderLink)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Audit getAudit(Integer op) {
-        return null;
-    }
+    public Audit getAudit(Integer activity) {
+        Audit audit;
 
+        audit = new Audit(activity);
+        audit.setReferenceTableId(Constants.table().EORDER_LINK);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("eorder_id", eorderId, original.eorderId)
+                 .setField("reference", reference, original.reference)
+                 .setField("sub_id", subId, original.subId)
+                 .setField("name", name, original.name);
+
+        return audit;
+    }
 }

@@ -132,6 +132,21 @@ public class ExchangeExternalTermBean {
         return returnList;
     }
 
+    public ArrayList<ExchangeExternalTermViewDO> fetchByExternalTerms(Collection<String> externalTerms) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("ExchangeExternalTerm.FetchByExternalTerms");
+        query.setParameter("externalTerms", externalTerms);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();       
+        
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public ExchangeExternalTermDO add(ExchangeExternalTermDO data) throws Exception {
         ExchangeExternalTerm entity;
         

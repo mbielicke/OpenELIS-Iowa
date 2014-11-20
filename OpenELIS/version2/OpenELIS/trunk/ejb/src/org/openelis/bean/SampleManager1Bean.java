@@ -57,11 +57,11 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleClinicalDO;
+import org.openelis.domain.SampleClinicalViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -292,12 +292,12 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
 
-        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
 
-        for (SampleClinicalDO data : sampleClinical.fetchBySampleIds(ids1)) {
+        for (SampleClinicalViewDO data : sampleClinical.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleClinical(sm, data);
         }
@@ -515,12 +515,12 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
 
-        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
 
-        for (SampleClinicalDO data : sampleClinical.fetchBySampleIds(ids1)) {
+        for (SampleClinicalViewDO data : sampleClinical.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleClinical(sm, data);
         }
@@ -1049,10 +1049,10 @@ public class SampleManager1Bean {
                         sampleSDWIS.delete( ((SampleSDWISViewDO)data));
                     else if (data instanceof SamplePrivateWellViewDO)
                         samplePrivate.delete( ((SamplePrivateWellViewDO)data));
-                    else if (data instanceof SampleNeonatalDO)
-                        sampleNeonatal.delete( ((SampleNeonatalDO)data));
-                    else if (data instanceof SampleClinicalDO)
-                        sampleClinical.delete( ((SampleClinicalDO)data));
+                    else if (data instanceof SampleNeonatalViewDO)
+                        sampleNeonatal.delete( ((SampleNeonatalViewDO)data));
+                    else if (data instanceof SampleClinicalViewDO)
+                        sampleClinical.delete( ((SampleClinicalViewDO)data));
                     else if (data instanceof SampleOrganizationViewDO)
                         sampleOrganization.delete( ((SampleOrganizationViewDO)data));
                     else if (data instanceof SampleProjectViewDO)
@@ -1560,6 +1560,9 @@ public class SampleManager1Bean {
             Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
             Constants.domain().SDWIS.equals(data.getDomain()))
             return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
+        else if (Constants.domain().CLINICAL.equals(data.getDomain()) ||
+                 Constants.domain().NEONATAL.equals(data.getDomain()))
+            return sampleManagerOrderHelper.importEOrder(sm, orderId, e);
         else
             return null;
     }
@@ -2491,9 +2494,9 @@ public class SampleManager1Bean {
 
             s.setDomain(domain);
         } else if (Constants.domain().NEONATAL.equals(domain)) {
-            SampleNeonatalDO snn;
+            SampleNeonatalViewDO snn;
 
-            snn = new SampleNeonatalDO();
+            snn = new SampleNeonatalViewDO();
             snn.setIsRepeat("N");
             snn.setIsNicu("N");
             snn.setIsTransfused("N");
@@ -2503,9 +2506,9 @@ public class SampleManager1Bean {
             setSampleNeonatal(sm, snn);
             s.setDomain(domain);
         } else if (Constants.domain().CLINICAL.equals(domain)) {
-            SampleClinicalDO sc;
+            SampleClinicalViewDO sc;
 
-            sc = new SampleClinicalDO();
+            sc = new SampleClinicalViewDO();
             sc.setPatient(new PatientDO());
             setSampleClinical(sm, sc);
             s.setDomain(domain);

@@ -50,7 +50,7 @@ public class EOrderBodyBean {
         EOrderBodyDO data;
 
         query = manager.createNamedQuery("EOrderBody.FetchByEOrderId");
-        query.setParameter("eOrderId", eOrderId);
+        query.setParameter("eorderId", eOrderId);
 
         try {
             data = (EOrderBodyDO)query.getSingleResult();
@@ -62,7 +62,7 @@ public class EOrderBodyBean {
         return data;
     }
 
-    public EOrderBodyDO add(EOrderBodyDO data) {
+    public EOrderBodyDO add(EOrderBodyDO data) throws Exception {
         EOrderBody entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

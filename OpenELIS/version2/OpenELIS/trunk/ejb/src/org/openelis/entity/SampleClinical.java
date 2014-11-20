@@ -51,7 +51,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "SampleClinical.FetchBySampleIds",
-                query = "select distinct new org.openelis.domain.SampleClinicalDO(s.id, s.sampleId, s.patientId,"
+                query = "select distinct new org.openelis.domain.SampleClinicalViewDO(s.id, s.sampleId, s.patientId,"
                       + "s.providerId, s.providerPhone)"
                       + " from SampleClinical s where s.sampleId in (:ids)")})
 @Entity

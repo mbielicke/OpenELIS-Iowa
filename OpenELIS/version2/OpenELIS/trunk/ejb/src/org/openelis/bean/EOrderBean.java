@@ -75,6 +75,16 @@ public class EOrderBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<EOrderDO> fetchByPaperOrderValidator(String pov) {
+        Query query;
+
+        query = manager.createNamedQuery("EOrder.FetchByPaperOrderValidator");
+        query.setParameter("pov", pov);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public EOrderDO add(EOrderDO data) throws Exception {
         EOrder entity;
 
