@@ -781,18 +781,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             parentBus.fireEvent(new SelectionEvent(SelectedType.ANALYSIS, anaUid));
         else
             parentBus.fireEvent(new SelectionEvent(SelectedType.SAMPLE_ITEM, itemUid));
-
-        /*
-         * set the focus to the autocomplete for adding tests, so that the user
-         * can add more tests, if need be
-         */
-        cmd = new ScheduledCommand() {
-            @Override
-            public void execute() {
-                test.setFocus(true);
-            }
-        };
-        Scheduler.get().scheduleDeferred(cmd);
     }
     
     private void sampleItemAdded(String uid) {

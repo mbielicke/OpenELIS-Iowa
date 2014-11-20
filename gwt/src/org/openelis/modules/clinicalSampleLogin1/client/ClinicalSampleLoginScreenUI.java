@@ -3727,6 +3727,12 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     } else if (result.getTests() == null || result.getTests().size() == 0) {
                         isBusy = false;
                     } else {
+                        /*
+                         * this will make sure that the focus gets set to the
+                         * field next in the tabbing order after this field
+                         * after the tests have been added
+                         */
+                        focusedWidget = orderId;
                         showTests(result);
                     }
                 }
@@ -4534,9 +4540,27 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
+                /*
+                 * if any widget like order # had focus before adding tests,
+                 * this will set the focus to the field next in the tabbing
+                 * order
+                 */
+                if (focusedWidget != null) {
+                    screen.focusNextWidget(focusedWidget, true);
+                    focusedWidget = null;
+                }
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.TEST_ADDED);
+                /*
+                 * if any widget like order # had focus before adding tests,
+                 * this will set the focus to the field next in the tabbing
+                 * order
+                 */
+                if (focusedWidget != null) {
+                    screen.focusNextWidget(focusedWidget, true);
+                    focusedWidget = null;
+                }
             } else {
                 showTests(ret);
             }

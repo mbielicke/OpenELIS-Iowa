@@ -99,8 +99,6 @@ import org.openelis.modules.sample1.client.SampleOrganizationLookupUI;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupUI;
 import org.openelis.modules.sample1.client.SampleService1;
-import org.openelis.modules.sample1.client.SelectedType;
-import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
@@ -271,6 +269,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
     protected AttachmentScreenUI                        attachmentScreen;
+
+    protected Focusable                                 focusedWidget;
 
     protected HashMap<String, Object>                   cache;
 
@@ -1220,7 +1220,9 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setLocationAddressStreetAddress(event.getValue());
-                                 runScriptlets(null, SampleMeta.getLocationAddrStreetAddress(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getLocationAddrStreetAddress(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2318,7 +2320,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     fireDataChange();
                     accessionNumber.setFocus(true);
                     if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                        .getStatusId()))
+                                                                               .getStatusId()))
                         addScriptlet(null);
                 }
 
@@ -3043,7 +3045,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     b.append(" * ").append(ex.getMessage()).append("\n");
             }
         }
-        
+
         if (isConfirm)
             b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
@@ -3083,7 +3085,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
                 }
                 scids.add(domainScriptletId);
-                
+
                 /*
                  * add all the scriptlets for all tests, test analytes and aux
                  * fields linked to the manager
@@ -3128,7 +3130,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         HashMap<Integer, TestManager> analyses, results;
         HashMap<Integer, AuxFieldGroupManager> auxData;
         ValidationErrorsList errors;
-        
+
         analyses = null;
         results = null;
         auxData = null;
@@ -3230,7 +3232,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 }
             }
         }
-        
+
         /*
          * if there were any other actions performed by scriptlets not involving
          * uids, then respond to them
@@ -3367,7 +3369,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         return scids;
     }
-    
 
     /**
      * Returns a hashmap between the ids of analyses and the test managers for
@@ -3394,7 +3395,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
         return analyses;
     }
-    
+
     /*
      * getters and setters for the fields at the sample or domain level
      */
@@ -3544,20 +3545,20 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
 
         setBusy(Messages.get().gen_fetching());
-        
+
         if (setOrderIdCall == null) {
             setOrderIdCall = new AsyncCallbackUI<SampleTestReturnVO>() {
                 public void success(SampleTestReturnVO result) {
                     ValidationErrorsList errors;
-                    
+
                     manager = result.getManager();
                     setData();
                     fireDataChange();
                     clearStatus();
                     /*
-                     * show any validation errors encountered while importing the order
-                     * or the pop up for selecting the prep/reflex tests for the tests
-                     * added during the import
+                     * show any validation errors encountered while importing
+                     * the order or the pop up for selecting the prep/reflex
+                     * tests for the tests added during the import
                      */
                     errors = result.getErrors();
                     if (errors != null && errors.size() > 0) {
@@ -3569,6 +3570,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     } else if (result.getTests() == null || result.getTests().size() == 0) {
                         isBusy = false;
                     } else {
+                        /*
+                         * this will make sure that the focus gets set to the
+                         * field next in the tabbing order after this field
+                         * after the tests have been added
+                         */
+                        focusedWidget = orderId;
                         showTests(result);
                     }
                 }
@@ -3580,8 +3587,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 }
             };
         }
-        
-        SampleService1.get().importOrder(manager, ordId, setOrderIdCall);        
+
+        SampleService1.get().importOrder(manager, ordId, setOrderIdCall);
     }
 
     /**
@@ -4095,7 +4102,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * add scriptlets for the newly added aux data
              */
             addScriptlets(getAuxScriptlets(true));
-            
+
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
@@ -4194,13 +4201,31 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
+                /*
+                 * if any widget like order # had focus before adding tests,
+                 * this will set the focus to the field next in the tabbing
+                 * order
+                 */
+                if (focusedWidget != null) {
+                    screen.focusNextWidget(focusedWidget, true);
+                    focusedWidget = null;
+                }
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
                 runScriptlets(null, null, Action_Before.TEST_ADDED);
+                /*
+                 * if any widget like order # had focus before adding tests,
+                 * this will set the focus to the field next in the tabbing
+                 * order
+                 */
+                if (focusedWidget != null) {
+                    screen.focusNextWidget(focusedWidget, true);
+                    focusedWidget = null;
+                }
             } else {
                 showTests(ret);
             }
-            
+
             /*
              * add scriptlets for any newly added tests and aux data
              */
@@ -4400,10 +4425,15 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                      * keep isBusy to be true if some tests were selected on the
                      * popup because they need to be added to the manager
                      */
-                    if (tests != null && tests.size() > 0)
+                    if (tests != null && tests.size() > 0) {
                         addAnalyses(tests);
-                    else
+                    } else {
                         isBusy = false;
+                        if (focusedWidget != null) {
+                            screen.focusNextWidget(focusedWidget, true);
+                            focusedWidget = null;
+                        }
+                    }
                 }
             };
         }
