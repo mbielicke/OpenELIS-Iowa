@@ -279,6 +279,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
     protected AttachmentScreenUI                        attachmentScreen;
+    
+    protected Focusable                                 focusedWidget;
 
     protected HashMap<String, Object>                   cache;
 
@@ -3538,6 +3540,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     } else if (result.getTests() == null || result.getTests().size() == 0) {
                         isBusy = false;
                     } else {
+                        /*
+                         * this will make sure that the focus gets set to the
+                         * field next in the tabbing order after this field
+                         * after the tests have been added
+                         */
+                        focusedWidget = orderId;
                         showTests(result);
                     }
                 }
@@ -4122,6 +4130,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     private void addAnalyses(ArrayList<SampleTestRequestVO> tests) {
         int numAuxBef, numAuxAft;
         SampleTestReturnVO ret;
+        HashSet<Integer> scids;
         ValidationErrorsList errors;
 
         setBusy();
@@ -4156,11 +4165,38 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     Window.alert(getWarnings(errors.getErrorList(), false));
                 if (errors.hasErrors())
                     showErrors(errors);
+                /*
+                 * if any widget like order # had focus before adding tests,
+                 * this will set the focus to the field next in the tabbing
+                 * order
+                 */
+                if (focusedWidget != null) {
+                    screen.focusNextWidget(focusedWidget, true);
+                    focusedWidget = null;
+                }
             } else if (ret.getTests() == null || ret.getTests().size() == 0) {
                 isBusy = false;
+                runScriptlets(null, null, Action_Before.TEST_ADDED);
+                /*
+                 * if any widget like order # had focus before adding tests,
+                 * this will set the focus to the field next in the tabbing
+                 * order
+                 */
+                if (focusedWidget != null) {
+                    screen.focusNextWidget(focusedWidget, true);
+                    focusedWidget = null;
+                }
             } else {
                 showTests(ret);
             }
+            
+            /*
+             * add scriptlets for any newly added tests and aux data
+             */
+            scids = new HashSet<Integer>();
+            scids.addAll(getTestScriptlets(true));
+            scids.addAll(getAuxScriptlets(true));
+            addScriptlets(scids);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
