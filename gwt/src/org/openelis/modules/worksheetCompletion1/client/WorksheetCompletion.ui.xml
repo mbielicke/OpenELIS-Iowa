@@ -26,7 +26,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
              xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:ws="urn:import:org.openelis.modules.worksheet1.client"
-             xmlns:wc="urn:import:org.openelis.modules.worksheetCompletion1.client">
+             xmlns:wc="urn:import:org.openelis.modules.worksheetCompletion1.client"
+             xmlns:s="urn:import:org.openelis.modules.sample1.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
@@ -233,6 +234,16 @@
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <ws:WorksheetNotesTabUI ui:field="notesTab" />
+                </g:layer>
+              </g:LayoutPanel>
+            </w:tab>
+            <w:tab>
+              <w:customHeader>
+                <w:TabWidget text="{msg.attachment_attachment}" />
+              </w:customHeader>
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                <g:layer>
+                  <s:AttachmentTabUI ui:field="attachmentTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>

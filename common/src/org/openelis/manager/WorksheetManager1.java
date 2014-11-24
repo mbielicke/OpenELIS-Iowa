@@ -31,6 +31,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
@@ -55,7 +57,7 @@ public class WorksheetManager1 implements Serializable {
      * Flags that specify what optional data to load with the manager
      */
     public enum Load {
-        DETAIL, REAGENT, NOTE
+        DETAIL, REAGENT, NOTE, ATTACHMENT
     };
 
     /**
@@ -75,15 +77,17 @@ public class WorksheetManager1 implements Serializable {
     protected ArrayList<NoteViewDO>               notes;
     protected ArrayList<DataObject>               removed;
     protected ArrayList<ResultViewDO>             modifiedResults;
+    protected ArrayList<AttachmentItemViewDO>     attachments;
     protected int                                 nextUID  = -1;
     protected Integer                             totalCapacity;
 
-    transient public final WorksheetItem          item     = new WorksheetItem();
-    transient public final WorksheetAnalysis      analysis = new WorksheetAnalysis();
-    transient public final WorksheetResult        result   = new WorksheetResult();
-    transient public final WorksheetQcResult      qcResult = new WorksheetQcResult();
-    transient public final WorksheetReagent       reagent  = new WorksheetReagent();
-    transient public final WorksheetNote          note     = new WorksheetNote();
+    transient public final WorksheetItem          item       = new WorksheetItem();
+    transient public final WorksheetAnalysis      analysis   = new WorksheetAnalysis();
+    transient public final WorksheetResult        result     = new WorksheetResult();
+    transient public final WorksheetQcResult      qcResult   = new WorksheetQcResult();
+    transient public final WorksheetReagent       reagent    = new WorksheetReagent();
+    transient public final WorksheetNote          note       = new WorksheetNote();
+    transient public final Attachment             attachment = new Attachment();
     transient private HashMap<String, DataObject> uidMap;
 
     /**
@@ -137,6 +141,10 @@ public class WorksheetManager1 implements Serializable {
         return getNoteUid(data.getId());
     }
 
+    public String getUid(AttachmentItemDO data) {
+        return getAttachmentUid(data.getId());
+    }
+
     /**
      * Returns the data object using its Uid.
      */
@@ -167,6 +175,10 @@ public class WorksheetManager1 implements Serializable {
             if (notes != null)
                 for (NoteDO data : notes)
                     uidMap.put(getNoteUid(data.getId()), data);
+
+            if (attachments != null)
+                for (AttachmentItemDO data : attachments)
+                    uidMap.put(getAttachmentUid(data.getId()), data);
         }
         return uidMap.get(uid);
     }
@@ -197,6 +209,10 @@ public class WorksheetManager1 implements Serializable {
 
     public String getNoteUid(Integer id) {
         return "N:" + id;
+    }
+    
+    public String getAttachmentUid(Integer id) {
+        return "T:" + id;
     }
     
     public Integer getTotalCapacity() {
@@ -1016,6 +1032,61 @@ public class WorksheetManager1 implements Serializable {
         }
     }
     
+    /**
+     * Class to manage the attachments associated with the sample
+     */
+    public class Attachment {
+        /**
+         * Returns the attachment item at specified index.
+         */
+        public AttachmentItemViewDO get(int i) {
+            return attachments.get(i);
+        }
+
+        /**
+         * Returns an attachment item
+         */
+        public AttachmentItemViewDO add() {
+            AttachmentItemViewDO data;
+
+            data = new AttachmentItemViewDO();
+            data.setId(getNextUID());            
+            if (attachments == null)
+                attachments = new ArrayList<AttachmentItemViewDO>();
+            attachments.add(data);
+            uidMapAdd(getAttachmentUid(data.getId()), data);
+            
+            return data;
+        }
+
+        /**
+         * Removes an attachment item from the list
+         */
+        public void remove(int i) {
+            AttachmentItemDO data;
+
+            data = attachments.get(i);
+            attachments.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getAttachmentUid(data.getId()));
+        }
+
+        public void remove(AttachmentItemDO data) {
+            attachments.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getAttachmentUid(data.getId()));
+        }
+
+        /**
+         * Returns the number of attachment items associated with this sample
+         */
+        public int count() {
+            if (attachments != null)
+                return attachments.size();
+            return 0;
+        }
+    }
+
     /**
      * adds an object to uid map
      */

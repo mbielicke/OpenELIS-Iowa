@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
@@ -133,6 +134,20 @@ public class WorksheetManager1Accessor {
         if (wm.notes == null)
             wm.notes = new ArrayList<NoteViewDO>();
         wm.notes.add(note);
+    }
+
+    public static ArrayList<AttachmentItemViewDO> getAttachments(WorksheetManager1 wm) {
+        return wm.attachments;
+    }
+    
+    public static void setAttachments(WorksheetManager1 wm, ArrayList<AttachmentItemViewDO> attachments) {
+        wm.attachments = attachments;
+    }
+    
+    public static void addAttachment(WorksheetManager1 wm, AttachmentItemViewDO attachment) {
+        if (wm.attachments == null)
+            wm.attachments = new ArrayList<AttachmentItemViewDO>();
+        wm.attachments.add(attachment);
     }
 
     public static ArrayList<DataObject> getRemoved(WorksheetManager1 wm) {
