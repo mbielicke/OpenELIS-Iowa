@@ -52,6 +52,7 @@ import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteParameterViewDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -106,6 +107,8 @@ public class WorksheetManager1Bean {
     private AnalyteBean                  analyte;
     @EJB
     private AnalyteParameterBean         analyteParameter;
+    @EJB
+    private AttachmentItemBean           attachmentItem;
     @EJB
     private CategoryCacheBean            category;
     @EJB
@@ -243,6 +246,13 @@ public class WorksheetManager1Bean {
                 }
             }
     
+            if (el.contains(WorksheetManager1.Load.ATTACHMENT)) {
+                for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().WORKSHEET)) {
+                    wm = map1.get(data.getReferenceId());
+                    addAttachment(wm, data);
+                }
+            }
+
             if (el.contains(WorksheetManager1.Load.DETAIL)) {
                 /*
                  * build level 2, everything is based on item ids
@@ -385,6 +395,12 @@ public class WorksheetManager1Bean {
                 addNote(wm, data);
         }
 
+        if (el.contains(WorksheetManager1.Load.ATTACHMENT)) {
+            setAttachments(wm, null);
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(worksheetId, Constants.table().WORKSHEET))
+                addAttachment(wm, data);
+        }
+
         if (el.contains(WorksheetManager1.Load.DETAIL)) {
             /*
              * build level 2, everything is based on item ids
@@ -483,7 +499,7 @@ public class WorksheetManager1Bean {
 
         ids = new ArrayList<Integer>(1);
         ids.add(worksheetId);
-        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT, WorksheetManager1.Load.NOTE);
+        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT, WorksheetManager1.Load.NOTE, WorksheetManager1.Load.ATTACHMENT);
         return wms.size() == 0 ? null : wms.get(0);
     }
     
@@ -505,7 +521,7 @@ public class WorksheetManager1Bean {
 
         ids = new ArrayList<Integer>(1);
         ids.add(worksheetId);
-        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT, WorksheetManager1.Load.NOTE);
+        wms = fetchByIds(ids, WorksheetManager1.Load.DETAIL, WorksheetManager1.Load.REAGENT, WorksheetManager1.Load.NOTE, WorksheetManager1.Load.ATTACHMENT);
         if (wms.size() > 0) {
             wMan = wms.get(0);
             analysisIds = new HashSet<Integer>();
@@ -619,6 +635,8 @@ public class WorksheetManager1Bean {
                     reagent.delete((WorksheetReagentViewDO)data);
                 else if (data instanceof NoteViewDO)
                     note.delete((NoteViewDO)data);
+                else if (data instanceof AttachmentItemViewDO)
+                    attachmentItem.delete((AttachmentItemViewDO)data);
             }
         }
 
@@ -676,6 +694,18 @@ public class WorksheetManager1Bean {
                     note.add(data);
                 } else {
                     note.update(data);
+                }
+            }
+        }
+
+        if (getAttachments(wm) != null) {
+            for (AttachmentItemViewDO data : getAttachments(wm)) {
+                if (data.getId() < 0) {
+                    data.setReferenceTableId(Constants.table().WORKSHEET);
+                    data.setReferenceId(getWorksheet(wm).getId());
+                    attachmentItem.add(data);
+                } else {
+                    attachmentItem.update(data);
                 }
             }
         }

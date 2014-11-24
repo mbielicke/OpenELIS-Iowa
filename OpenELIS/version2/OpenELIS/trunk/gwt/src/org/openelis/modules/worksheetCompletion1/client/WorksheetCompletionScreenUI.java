@@ -52,6 +52,8 @@ import org.openelis.cache.UserCache;
 import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AttachmentDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -70,14 +72,18 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.meta.SampleMeta;
 import org.openelis.meta.WorksheetBuilderMeta;
 import org.openelis.meta.WorksheetMeta;
+import org.openelis.modules.attachment.client.AttachmentUtil;
+import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.modules.pws.client.StatusBarPopupScreenUI;
+import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.TestReflexUtility1;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
@@ -176,6 +182,8 @@ public class WorksheetCompletionScreenUI extends Screen {
     protected WorksheetReagentTabUI                       reagentTab;
     @UiField(provided = true)
     protected WorksheetNotesTabUI                         notesTab;
+    @UiField(provided = true)
+    protected AttachmentTabUI                             attachmentTab;
 
     protected ArrayList<SampleManager1>                   sampleMans;
     protected AsyncCallbackUI<ArrayList<IdNameVO>>        queryCall;
@@ -200,7 +208,8 @@ public class WorksheetCompletionScreenUI extends Screen {
     protected WorksheetLookupScreenUI                     wLookupScreen;
     protected WorksheetManager1.Load                      elements[] = {WorksheetManager1.Load.DETAIL,
                                                                         WorksheetManager1.Load.REAGENT,
-                                                                        WorksheetManager1.Load.NOTE};
+                                                                        WorksheetManager1.Load.NOTE,
+                                                                        WorksheetManager1.Load.ATTACHMENT};
 
     public WorksheetCompletionScreenUI(WindowInt window) throws Exception {
         SystemVariableDO sysVarDO;
@@ -222,6 +231,54 @@ public class WorksheetCompletionScreenUI extends Screen {
         overridesTab = new OverridesTabUI(this);
         reagentTab = new WorksheetReagentTabUI(this);
         notesTab = new WorksheetNotesTabUI(this);
+        attachmentTab = new AttachmentTabUI(this) {
+            @Override
+            public int count() {
+                if (manager != null)
+                    return manager.attachment.count();
+                return 0;
+            }
+
+            @Override
+            public AttachmentItemViewDO get(int i) {
+                return manager.attachment.get(i);
+            }
+
+            @Override
+            public String getAttachmentCreatedDateMetaKey() {
+                return SampleMeta.getAttachmentItemAttachmentCreatedDate();
+            }
+
+            @Override
+            public String getAttachmentSectionIdKey() {
+                return SampleMeta.getAttachmentItemAttachmentSectionId();
+            }
+
+            @Override
+            public String getAttachmentDescriptionKey() {
+                return SampleMeta.getAttachmentItemAttachmentDescription();
+            }
+
+            @Override
+            public AttachmentItemViewDO createAttachmentItem(AttachmentDO att) {
+                AttachmentItemViewDO atti;
+
+                atti = manager.attachment.add();
+                atti.setId(manager.getNextUID());
+                atti.setAttachmentId(att.getId());
+                atti.setAttachmentCreatedDate(att.getCreatedDate());
+                atti.setAttachmentSectionId(att.getSectionId());
+                atti.setAttachmentDescription(att.getDescription());
+
+                return atti;
+            }
+
+            @Override
+            public void remove(int i) {
+                manager.attachment.remove(i);
+            }
+        };
+
         initWidget(uiBinder.createAndBindUi(this));
         
         manager = null;
@@ -610,6 +667,24 @@ public class WorksheetCompletionScreenUI extends Screen {
             }
         });
 
+        addScreenHandler(attachmentTab, "attachmentTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                attachmentTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                if (isState(UPDATE) && (updateTransferMode || !canEdit()))
+                    attachmentTab.setState(DISPLAY);
+                else
+                    attachmentTab.setState(event.getState());
+            }
+        });
+
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        attachmentTab.setCanQuery(false);
+
         //
         // left hand navigation panel
         //
@@ -674,6 +749,13 @@ public class WorksheetCompletionScreenUI extends Screen {
             }
         });
         
+        bus.addHandler(DisplayAttachmentEvent.getType(), new DisplayAttachmentEvent.Handler() {
+            @Override
+            public void onDisplayAttachment(DisplayAttachmentEvent event) {
+                displayAttachment(event.getId(), event.getIsSameWindow());
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(UPDATE)) {
@@ -1694,6 +1776,30 @@ public class WorksheetCompletionScreenUI extends Screen {
                     logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                 }
             }
+        }
+    }
+
+    /**
+     * Opens the file linked to the attachment on the selected row in the table
+     * showing the sample's attachment items. If isSameWindow is true then the
+     * file is opened in the same browser window/tab as before, otherwise it's
+     * opened in a different one.
+     */
+    private void displayAttachment(Integer id, boolean isSameWindow) {
+        String name;
+
+        /*
+         * if isSameWindow is true then the name passed to displayAttachment is
+         * this screen's window's title because ReportScreen sets that as the
+         * title of the window passed to it, so if the name is not the same,
+         * then the screen's window's title will get changed
+         */
+        name = isSameWindow ? Messages.get().worksheetCompletion() : null;
+        try {
+            AttachmentUtil.displayAttachment(id, name, window);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

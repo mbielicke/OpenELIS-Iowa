@@ -182,7 +182,8 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected WorksheetLookupScreenUI                     wLookupScreen;
     protected WorksheetManager1.Load                      elements[] = {WorksheetManager1.Load.DETAIL,
                                                                         WorksheetManager1.Load.REAGENT,
-                                                                        WorksheetManager1.Load.NOTE};
+                                                                        WorksheetManager1.Load.NOTE,
+                                                                        WorksheetManager1.Load.ATTACHMENT};
 
     public WorksheetBuilderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
