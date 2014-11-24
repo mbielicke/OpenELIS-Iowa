@@ -3,7 +3,6 @@ package org.openelis.modules.main.client;
 import java.util.logging.LogRecord;
 
 import com.google.gwt.logging.client.ConsoleLogHandler;
-import com.google.gwt.logging.client.FirebugLogHandler;
 import com.google.gwt.logging.client.HasWidgetsLogHandler;
 import com.google.gwt.logging.client.HtmlLogFormatter;
 import com.google.gwt.logging.client.SimpleRemoteLogHandler;
@@ -22,7 +21,6 @@ public class Logger {
 
         logPanel = new VerticalPanel();
         logger = java.util.logging.Logger.getLogger("openelis");
-        logger.addHandler(new FirebugLogHandler());
         logger.addHandler(new ConsoleLogHandler());
         handler = new HasWidgetsLogHandler(logPanel);
         formatter = new HtmlLogFormatter(true) {
