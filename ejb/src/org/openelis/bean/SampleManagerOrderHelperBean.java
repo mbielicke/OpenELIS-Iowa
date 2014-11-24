@@ -1091,7 +1091,11 @@ public class SampleManagerOrderHelperBean {
                         } else {
                             analyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
                                                                      externalTermMap,
-                                                                     Constants.table().ANALYTE, e);
+                                                                     Constants.table().TEST_ANALYTE, e);
+                            if (analyteId == null)
+                                analyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
+                                                                         externalTermMap,
+                                                                         Constants.table().ANALYTE, e);
                             if (analyteId != null) {
                                 resultIndex = resultIndexMap.get(analyteId);
                                 if (resultIndex != null) {
