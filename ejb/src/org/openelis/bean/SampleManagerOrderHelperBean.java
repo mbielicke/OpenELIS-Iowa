@@ -979,6 +979,16 @@ public class SampleManagerOrderHelperBean {
         }
         
         ret = sampleManager1.addAnalyses(sm, tests);
+        /*
+         * add the errors found during importing the order to the ones found
+         * while adding tests, because the object returned by the above method
+         * is different from the one created at the start of this method
+         */
+        if (ret.getErrors() != null)
+            for (Exception ex : ret.getErrors().getErrorList())
+                e.add(ex);
+        ret.setErrors(e);
+
         copyResults(ret, siVDO, testCodeIdMap, resultMap, externalTermMap);
         
         return ret;
@@ -1193,7 +1203,7 @@ public class SampleManagerOrderHelperBean {
         patDO.setMiddleName(dataMap.get(prefix+".maiden_name"));
         patDO.setNationalId(dataMap.get(prefix+".nid"));
         
-        loadAddressData(patDO.getAddress(), prefix, dataMap);
+        loadAddressData(patDO.getAddress(), prefix+".address", dataMap);
 
         birthDateString = dataMap.get(prefix+".birth_date");
         birthDate = ReportUtil.getDate(birthDateString);
@@ -1432,17 +1442,19 @@ public class SampleManagerOrderHelperBean {
                     }
                 }
             }
+
+            if (matchedTerms.size() == 1) {
+                return matchedTerms.get(0).getExchangeLocalTermReferenceId();
+            } else {
+                if (matchedTerms.size() == 0) {
+                    if (!Constants.table().PANEL.equals(referenceTableId))
+                        e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(externalTerm, fieldName)));
+                } else {
+                    e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(externalTerm, fieldName)));
+                }
+            }
         }
-        
-        if (matchedTerms.size() == 1) {
-            return matchedTerms.get(0).getExchangeLocalTermReferenceId();
-        } else {
-            if (matchedTerms.size() == 0 && !Constants.table().PANEL.equals(referenceTableId))
-                e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(externalTerm, fieldName)));
-            else
-                e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(externalTerm, fieldName)));
-            return null;
-        }
+        return null;
     }
 
     /**
