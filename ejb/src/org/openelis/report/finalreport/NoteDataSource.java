@@ -32,7 +32,6 @@ import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.openelis.bean.AnalysisQAEventBean;
-import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.NoteBean;
 import org.openelis.bean.SampleQAEventBean;
 import org.openelis.bean.TestTrailerBean;
