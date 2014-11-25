@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleProject" pageWidth="142" pageHeight="572" orientation="Landscape" columnWidth="142" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 5.6.2.final using JasperReports Library version 5.6.1  -->
+<!-- 2014-11-25T11:53:39 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleProject" pageWidth="142" pageHeight="572" orientation="Landscape" columnWidth="142" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2a3dbc99-00c9-432d-8af5-091302540886">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="openelis dev"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
-	<queryString>
-		<![CDATA[SELECT first 1
-     sp.id sp_id, p.name project_name
+	<queryString language="SQL">
+		<![CDATA[SELECT  sp.id sp_id, p.name project_name
 FROM
-     sample_project sp,
-     project p
+     sample_project sp
+     join project p on  sp.project_id = p.id
 WHERE
      sp.sample_id = $P{SAMPLE_ID} and
-     sp.project_id = p.id and
      sp.is_permanent = 'Y'
 ORDER BY sp_id]]>
 	</queryString>
@@ -21,11 +22,13 @@ ORDER BY sp_id]]>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="142" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				<reportElement key="" positionType="Float" x="0" y="0" width="142" height="12" uuid="73e9153d-e330-4336-a1b4-6d54963d18fe">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.equals(1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}.toUpperCase()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{project_name}.toUpperCase()]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

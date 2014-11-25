@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyses" pageWidth="550" pageHeight="572" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 5.6.2.final using JasperReports Library version 5.6.1  -->
+<!-- 2014-11-25T10:42:58 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyses" pageWidth="550" pageHeight="572" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="86297330-c2c4-4e42-803b-de754f202c67">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.utils.JasperUtil"/>
-	<import value="org.openelis.report.finalreport.ResultDataSource"/>
-	<import value="org.openelis.report.finalreport.NoteDataSource"/>
-	<import value="org.openelis.report.finalreport.SectionLocationUtil"/>
+	<import value="org.openelis.report.finalreport.*"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
@@ -81,111 +81,111 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	<detail>
 		<band height="60" splitType="Stretch">
 			<textField>
-				<reportElement mode="Opaque" x="120" y="0" width="310" height="12" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="120" y="0" width="310" height="12" backcolor="#C0C0C0" uuid="50671300-ac49-4d93-b0a1-1705fd5c60bd"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="40" y="24" width="90" height="12"/>
+				<reportElement x="40" y="24" width="90" height="12" uuid="dbf60cac-dfb2-47d5-b42d-2431e0c03323"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="40" y="36" width="90" height="12"/>
+				<reportElement x="40" y="36" width="90" height="12" uuid="37a29443-37bb-489e-b427-746127ded0e1"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Date Analyzed]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="40" y="48" width="90" height="12"/>
+				<reportElement x="40" y="48" width="90" height="12" uuid="a0bdaeb2-c53b-4834-b7e4-62f9c20ac01a"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyst]]></text>
 			</staticText>
 			<line>
-				<reportElement x="135" y="24" width="1" height="36"/>
+				<reportElement x="135" y="24" width="1" height="36" uuid="2896c3e4-383f-4581-a6db-1c5e5a7207a8"/>
 			</line>
 			<staticText>
-				<reportElement x="289" y="24" width="71" height="12"/>
+				<reportElement x="289" y="24" width="71" height="12" uuid="a2d0aa87-358b-40b4-8bda-3cff251148a3"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyzed In]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="289" y="36" width="71" height="12"/>
+				<reportElement x="289" y="36" width="71" height="12" uuid="10140acb-f850-46c5-abf1-4762711681c7"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Date Verified]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="289" y="48" width="71" height="12"/>
+				<reportElement x="289" y="48" width="71" height="12" uuid="006b8919-0c99-4307-9c6e-7cc087b5f63d"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Verifier]]></text>
 			</staticText>
 			<line>
-				<reportElement x="365" y="24" width="1" height="36"/>
+				<reportElement x="365" y="24" width="1" height="36" uuid="5c23d460-5567-4689-a728-0e8edb7414dd"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="140" y="24" width="149" height="12"/>
+				<reportElement x="140" y="24" width="149" height="12" uuid="ee8e47e6-d9c7-4996-9a93-6553e8021e88"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{unit_name}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="140" y="36" width="149" height="12">
+				<reportElement x="140" y="36" width="149" height="12" uuid="6f9906a4-ab5b-4aab-9358-c86d43a2f8e8">
 					<printWhenExpression><![CDATA[$V{NOTE_DATASOURCE}.hasOverride() == false]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{a_started_date}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="140" y="48" width="149" height="12">
+				<reportElement x="140" y="48" width="149" height="12" uuid="1856d48d-08cd-4878-aeec-adcd6f2fd0d2">
 					<printWhenExpression><![CDATA[$V{NOTE_DATASOURCE}.hasOverride() == false]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isBlankWhenNull="false">
-				<reportElement x="370" y="24" width="180" height="12"/>
+				<reportElement x="370" y="24" width="180" height="12" uuid="279bc729-48c5-47a4-8f41-dd78b22bfcce"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[SectionLocationUtil.getLocation($F{s_name})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[SectionLocationUtil.getLocation($F{s_name})]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="370" y="36" width="109" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="370" y="36" width="109" height="12" isRemoveLineWhenBlank="true" uuid="65d7e031-1f5c-45d8-8bf6-d5647f2e5c29"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_released_date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{a_released_date}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="452" y="36" width="98" height="12">
+				<reportElement mode="Transparent" x="452" y="36" width="98" height="12" uuid="10d00927-6874-4d30-8cb5-71319cccd9ff">
 					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
 					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="370" y="48" width="180" height="12"/>
+				<reportElement x="370" y="48" width="180" height="12" uuid="960a3b06-e401-4e44-8803-cabf22f138bb"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -193,81 +193,80 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 					<subreportParameterExpression><![CDATA["an_user_ac_released"]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisVerifier.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "analysisVerifier.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="12" width="163" height="0"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Boolean"><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
+				<reportElement x="0" y="12" width="163" height="0" uuid="1622039b-a5f6-446f-a49e-e6c327667cda"/>
+				<textFieldExpression><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="12" splitType="Stretch">
 			<printWhenExpression><![CDATA[$F{pat_reporting_description} != null]]></printWhenExpression>
 			<staticText>
-				<reportElement x="40" y="0" width="90" height="12"/>
+				<reportElement x="40" y="0" width="90" height="12" uuid="e6f5726d-b82c-44bc-82a5-c9b4afe12960"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analysis Prep]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="140" y="0" width="410" height="12"/>
+				<reportElement x="140" y="0" width="410" height="12" uuid="63fe0318-16f3-4b5c-b42a-b567c5d85a4d"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{pat_reporting_description},", ", $F{pam_reporting_description})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[JasperUtil.concatWithSeparator($F{pat_reporting_description},", ", $F{pam_reporting_description})]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="135" y="0" width="1" height="12"/>
+				<reportElement x="135" y="0" width="1" height="12" uuid="033c669a-b025-483a-bafb-3fbe06517a88"/>
 			</line>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="28891d01-c0d4-4acd-ab25-35d4afab30b6">
 					<printWhenExpression><![CDATA["test_format_two_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "twoColumn.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "twoColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="405ceb42-4bc8-4477-9139-c0868521a156">
 					<printWhenExpression><![CDATA["test_format_three_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "threeColumn.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "threeColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="67582cad-359f-433f-b61d-0597b78022ed">
 					<printWhenExpression><![CDATA["test_format_four_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fourColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="a66e65c1-c47b-4054-a7fd-75216795f99c">
 					<printWhenExpression><![CDATA["test_format_four_column_1w".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn1W.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fourColumn1W.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="84bf2fc0-05e9-445f-b822-c2da4101fb92">
 					<printWhenExpression><![CDATA["test_format_five_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="4b00b547-96f8-4c17-8a2b-d95c7d79a563">
 					<printWhenExpression><![CDATA["test_format_five_column_1w".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn1W.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn1W.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="12">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="ba1b03de-2643-44b8-bf63-2f42dd33b37b"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -275,7 +274,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

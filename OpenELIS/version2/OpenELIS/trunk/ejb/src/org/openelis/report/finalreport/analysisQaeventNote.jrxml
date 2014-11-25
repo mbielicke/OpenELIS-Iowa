@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysesQaeventNote" pageWidth="550" pageHeight="572" whenNoDataType="NoDataSection" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 5.6.2.final using JasperReports Library version 5.6.1  -->
+<!-- 2014-11-25T11:12:39 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysesQaeventNote" pageWidth="550" pageHeight="572" whenNoDataType="NoDataSection" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="085e7eb3-a0c5-4184-b601-c7eca29afa84">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="openelis dev"/>
+	<import value="org.openelis.report.finalreport.*"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -10,33 +14,33 @@
 	<detail>
 		<band height="24" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="12" width="30" height="12"/>
+				<reportElement x="0" y="12" width="30" height="12" uuid="8d19e366-9216-4764-8463-c74e910dc02d"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="30" y="12" width="520" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="30" y="12" width="520" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a84f3910-c13e-4f66-9672-c47088ca6df5"/>
 				<textElement markup="styled">
 					<font fontName="Times New Roman" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{styled_text}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{styled_text}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<noData>
 		<band height="24" splitType="Stretch">
-			<printWhenExpression><![CDATA[((org.openelis.report.finalreport.NoteDataSource)$P{REPORT_DATA_SOURCE}).hasSampleOverride()]]></printWhenExpression>
+			<printWhenExpression><![CDATA[((NoteDataSource)$P{REPORT_DATA_SOURCE}).hasSampleOverride()]]></printWhenExpression>
 			<staticText>
-				<reportElement x="0" y="12" width="30" height="12"/>
+				<reportElement x="0" y="12" width="30" height="12" uuid="9bf53dd9-01f3-4d9f-9094-f64a5e716cb8"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="30" y="12" width="520" height="12"/>
+				<reportElement x="30" y="12" width="520" height="12" uuid="e789d0c1-c144-4c5a-84b0-9c4dea815510"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" isBold="true" isItalic="false" pdfFontName="Times-Bold"/>
 				</textElement>
