@@ -88,6 +88,9 @@ public class BillingExportBean {
     
     @EJB
     private DictionaryCacheBean     dictionary;
+    
+    @EJB
+    private ProviderBean            provider;
 
     @EJB
     private LockBean                lock;
@@ -214,13 +217,13 @@ public class BillingExportBean {
         PAT pat;
         INS ins;
         DTR charge, credit;
-        boolean billSample, outputHeader, cancelled;
+        boolean billSample, outputHeader, cancelled, providerOverride;
         Integer BILLING_PO_GROUPID, BILLING_INS_GROUPID, BILLING_MISC_ID, BILLING_RUSH_ID, SECTION_ANALYTE_ID,
                 MALE_ID, FEMALE_ID, TYPE_PRELIM_ID, TYPE_DILUTION_ID; 
         Datetime currentDate;
         DictionaryDO dictDO;
-        PatientDO patient;
-        ProviderDO provider;
+        PatientDO patientDO;
+        ProviderDO providerDO;
         AnalysisReportFlagsDO flags;
         ArrayList<Integer> ids;
         ArrayList<ResultViewDO> results;
@@ -380,6 +383,8 @@ public class BillingExportBean {
             /*
              * parse aux data for insurance, po, ...
              */
+            providerDO = null;
+            providerOverride = false;
             if (getAuxiliary(sm) != null) {
                 for (AuxDataViewDO aux : getAuxiliary(sm)) {
                     if (aux.getAuxFieldGroupId().equals(BILLING_INS_GROUPID) && aux.getAnalyteExternalId() != null) {
@@ -403,6 +408,19 @@ public class BillingExportBean {
                             case "clinical_diagnosis":
                                 pat.diagnosisCode = aux.getValue();
                                 break;
+                            case "medipass_npi_number":
+                                //
+                                // for mediapass insurance, we need patient manager and not
+                                // the provider that ordered the test. Override provider by
+                                // using the NPI key in the auxdata
+                                //
+                                if (aux.getValue() != null)
+                                    try {
+                                        providerOverride = true;
+                                        providerDO = provider.fetchByNpi(aux.getValue(), 1).get(0);
+                                    } catch (Exception anyE) {
+                                        providerDO = null;
+                                    }
                         }
                     }
                     if (aux.getAuxFieldGroupId().equals(BILLING_PO_GROUPID) && "purchase_order".equals(aux.getAnalyteExternalId()))
@@ -413,31 +431,32 @@ public class BillingExportBean {
             /*
              * check for clinical/newborn
              */
-            patient = null;
-            provider = null;
+            patientDO = null;
             if (getSampleClinical(sm) != null) { 
-                patient = getSampleClinical(sm).getPatient();
-                provider = getSampleClinical(sm).getProvider();
+                patientDO = getSampleClinical(sm).getPatient();
+                if (! providerOverride)
+                    providerDO = getSampleClinical(sm).getProvider();
             } else if (getSampleNeonatal(sm) != null) {
-                patient = getSampleNeonatal(sm).getPatient();
-                provider = getSampleNeonatal(sm).getProvider();
+                patientDO = getSampleNeonatal(sm).getPatient();
+                if (! providerOverride)
+                    providerDO = getSampleNeonatal(sm).getProvider();
             }
-            if (patient != null) {
+            if (patientDO != null) {
                 pat.isValid = true;
-                pat.patientId = patient.getId();
-                pat.last = patient.getLastName();
-                pat.first = patient.getFirstName();
-                pat.birthDate = DataBaseUtil.toDate(patient.getBirthDate());
-                if (DataBaseUtil.isSame(patient.getGenderId(), MALE_ID))
+                pat.patientId = patientDO.getId();
+                pat.last = patientDO.getLastName();
+                pat.first = patientDO.getFirstName();
+                pat.birthDate = DataBaseUtil.toDate(patientDO.getBirthDate());
+                if (DataBaseUtil.isSame(patientDO.getGenderId(), MALE_ID))
                     pat.gender = "M";
-                else if (DataBaseUtil.isSame(patient.getGenderId(), FEMALE_ID))
+                else if (DataBaseUtil.isSame(patientDO.getGenderId(), FEMALE_ID))
                     pat.gender = "F";
-                pat.streetAddress = patient.getAddress().getStreetAddress();
-                pat.multipleUnit = patient.getAddress().getMultipleUnit();
-                pat.city = patient.getAddress().getCity();
-                pat.state = patient.getAddress().getState();
-                pat.zipCode = patient.getAddress().getZipCode();
-                pat.phone = patient.getAddress().getHomePhone();
+                pat.streetAddress = patientDO.getAddress().getStreetAddress();
+                pat.multipleUnit = patientDO.getAddress().getMultipleUnit();
+                pat.city = patientDO.getAddress().getCity();
+                pat.state = patientDO.getAddress().getState();
+                pat.zipCode = patientDO.getAddress().getZipCode();
+                pat.phone = patientDO.getAddress().getHomePhone();
 
                 /*
                  * insurance related info
@@ -447,11 +466,11 @@ public class BillingExportBean {
                     ins.last = pat.last;
                     ins.first = pat.first;
                 }
-                if (provider != null) {
-                    ins.providerId = provider.getId();
-                    ins.providerNpi = provider.getNpi();
-                    ins.providerLast = provider.getLastName();
-                    ins.providerFirst = provider.getFirstName();
+                if (providerDO != null) {
+                    ins.providerId = providerDO.getId();
+                    ins.providerNpi = providerDO.getNpi();
+                    ins.providerLast = providerDO.getLastName();
+                    ins.providerFirst = providerDO.getFirstName();
                 }
             }
 
@@ -868,8 +887,8 @@ public class BillingExportBean {
                   .append(DataBaseUtil.toString(relationShip)).append("|")
                   .append(DataBaseUtil.toString(providerId)).append("|")
                   .append(DataBaseUtil.toString(providerNpi)).append("|")
-                  .append(DataBaseUtil.toString(providerFirst)).append("|")
                   .append(DataBaseUtil.toString(providerLast)).append("|")
+                  .append(DataBaseUtil.toString(providerFirst)).append("|")
                   .append("\r\n");
             }
 
