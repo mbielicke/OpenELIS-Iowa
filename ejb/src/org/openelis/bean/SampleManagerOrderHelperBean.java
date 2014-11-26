@@ -28,7 +28,6 @@ package org.openelis.bean;
 import static org.openelis.manager.OrderManager1Accessor.*;
 import static org.openelis.manager.SampleManager1Accessor.*;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +65,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.exception.ParseException;
 import org.openelis.manager.OrderManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
@@ -1467,7 +1467,8 @@ public class SampleManagerOrderHelperBean {
                 return matchedTerms.get(0).getExchangeLocalTermReferenceId();
             } else {
                 if (matchedTerms.size() == 0) {
-                    if (!Constants.table().PANEL.equals(referenceTableId))
+                    if (!Constants.table().PANEL.equals(referenceTableId) &&
+                        !Constants.table().TEST_ANALYTE.equals(referenceTableId))
                         e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(externalTerm, fieldName)));
                 } else {
                     e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(externalTerm, fieldName)));
