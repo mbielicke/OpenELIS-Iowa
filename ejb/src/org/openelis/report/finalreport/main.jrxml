@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.2.final using JasperReports Library version 5.6.1  -->
-<!-- 2014-11-25T10:40:41 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="finalreport" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18" uuid="c6e3e854-cbc9-424f-8c15-455cdc9e4ce4">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="finalreport" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="240"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="openelis dev"/>
-	<import value="org.openelis.report.finalreport.*"/>
+	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
+	<import value="org.openelis.report.finalreport.NoteDataSource"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -42,7 +40,7 @@
 		<groupHeader>
 			<band height="12" splitType="Stretch">
 				<subreport>
-					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" uuid="db41840f-855e-4f79-97cd-ee42469e8dd1">
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA["W".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
@@ -55,10 +53,10 @@
 						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "samplePrivateWell.jasper"]]></subreportExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePrivateWell.jasper"]]></subreportExpression>
 				</subreport>
 				<subreport>
-					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" uuid="9b69dc16-8a89-466f-ab3c-2d0fe35e43a9">
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA["E".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
@@ -71,10 +69,10 @@
 						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "sampleEnvironmental.jasper"]]></subreportExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleEnvironmental.jasper"]]></subreportExpression>
 				</subreport>
 				<subreport>
-					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" uuid="42ead101-0a83-4c29-aa1e-69e49b1d91cc">
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA["S".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
@@ -87,14 +85,10 @@
 						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "sampleSDWIS.jasper"]]></subreportExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleSDWIS.jasper"]]></subreportExpression>
 				</subreport>
 				<subreport>
-					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" uuid="b39cffb2-8b1c-4dcd-b2e9-f236345f1b29">
-						<property name="local_mesure_unitx" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-						<property name="local_mesure_unity" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA["C".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
@@ -107,7 +101,7 @@
 						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "sampleClinical.jasper"]]></subreportExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleClinical.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
 		</groupHeader>
@@ -115,7 +109,7 @@
 	<background>
 		<band height="750" splitType="Stretch">
 			<staticText>
-				<reportElement key="internalUseOnlyBackground" positionType="Float" x="206" y="40" width="200" height="706" forecolor="#DCC8C8" uuid="1dac4344-334c-4e4c-a38d-0eee9d0b2c53">
+				<reportElement key="internalUseOnlyBackground" positionType="Float" x="206" y="40" width="200" height="706" forecolor="#DCC8C8">
 					<printWhenExpression><![CDATA["C".equals($P{REPORT_TYPE})]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Right">
@@ -127,64 +121,64 @@
 	</background>
 	<pageHeader>
 		<band height="96" splitType="Stretch">
-			<image onErrorType="Blank">
-				<reportElement key="uhl-logo-image" positionType="Float" x="1" y="0" width="85" height="85" uuid="c1ddb44c-f809-4233-abd7-78ad47c1174b"/>
-				<imageExpression><![CDATA[$P{SUBREPORT_DIR} + "/uhlseal.gif"]]></imageExpression>
+			<image>
+				<reportElement key="uhl-logo-image" positionType="Float" x="1" y="0" width="85" height="85"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "/uhlseal.gif"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement key="header-top" x="139" y="0" width="437" height="47" uuid="5038a94e-644f-4360-8f21-d64b94df4278"/>
+				<reportElement key="header-top" x="139" y="0" width="437" height="47"/>
 				<textElement textAlignment="Left">
 					<font fontName="Times New Roman" size="33" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[State Hygienic Laboratory]]></text>
 			</staticText>
 			<line>
-				<reportElement key="header-divide-line" x="139" y="46" width="437" height="1" uuid="e682f45b-bf66-4664-a9fa-45e91e1a23ec"/>
+				<reportElement key="header-divide-line" x="139" y="46" width="437" height="1"/>
 				<graphicElement>
 					<pen lineWidth="2.0" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
 			<rectangle>
-				<reportElement positionType="Float" x="139" y="53" width="437" height="28" forecolor="#E7E4E4" backcolor="#E7E4E4" uuid="aac3c2b3-6964-4a4c-af02-31b4a2b33919"/>
+				<reportElement positionType="Float" x="139" y="53" width="437" height="28" forecolor="#E7E4E4" backcolor="#E7E4E4"/>
 				<graphicElement>
 					<pen lineWidth="0.0" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement key="header-bottom" x="148" y="53" width="248" height="28" backcolor="#E7E4E4" uuid="d2f14436-ca52-41ae-9575-fcbe6294fa7e"/>
+				<reportElement key="header-bottom" x="148" y="53" width="248" height="28" backcolor="#E7E4E4"/>
 				<textElement textAlignment="Left">
 					<font fontName="Times New Roman" size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[The University of Iowa]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="317" y="84" width="107" height="12" uuid="3c92ac6d-7998-43b4-b988-81f649cc6c9f"/>
+				<reportElement x="317" y="84" width="107" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Accession Number]]></text>
 			</staticText>
 			<line>
-				<reportElement x="429" y="84" width="1" height="12" uuid="a3cccf96-b0f7-49b3-be66-5a5b48f68170"/>
+				<reportElement x="429" y="84" width="1" height="12"/>
 			</line>
 			<textField>
-				<reportElement x="435" y="84" width="50" height="12" uuid="9c7c841b-5446-4a11-8e1e-6780adcc114f"/>
+				<reportElement x="435" y="84" width="50" height="12"/>
 				<textElement textAlignment="Left">
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{accession_number}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="492" y="84" width="78" height="12" uuid="06e1cf8d-8aec-4406-88e2-e172912747b5">
+				<reportElement x="492" y="84" width="78" height="12">
 					<printWhenExpression><![CDATA[$F{revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
 					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Revision "+$F{revision}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{revision}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement key="counter-incrementer" positionType="Float" mode="Transparent" x="0" y="0" width="12" height="12" uuid="04dae0c1-41c3-4df2-b317-844969fb1187">
+				<reportElement key="counter-incrementer" positionType="Float" mode="Transparent" x="0" y="0" width="12" height="12">
 					<printWhenExpression><![CDATA[$V{PAGE_COUNTER}.incrementCount()]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -196,7 +190,7 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<subreport isUsingCache="true">
-				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="fd76c03f-090b-45a4-b86f-4acc1f3909f9"/>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -204,12 +198,12 @@
 					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "sampleQaeventNote.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="56688f8d-398f-4ee1-adca-aa781eb56968"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -217,12 +211,12 @@
 					<subreportParameterExpression><![CDATA[8]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "sampleAuxData.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleAuxData.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="a14eaa42-2e6f-4f9d-8e93-f73707b3d414"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -230,19 +224,19 @@
 					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "analysisPending.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisPending.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="30" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="548" height="18" uuid="cedd46ac-92a2-4448-a6a4-c8f0fe630378"/>
+				<reportElement positionType="Float" x="0" y="0" width="548" height="18"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" size="12" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Results of Analyses]]></text>
 			</staticText>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true" uuid="1fc580e2-eedd-4206-99b7-d9c9bd1fe2c8"/>
+				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -256,12 +250,12 @@
 					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="b3d3071a-a03a-40fb-a0fc-8b95682ffb6a">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["W".equals($F{domain}) == false]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SAMPLE_ID">
@@ -271,12 +265,12 @@
 					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "analysisUnitList.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisUnitList.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" uuid="54c3db3d-ea66-4844-b99b-c9a9b618a190"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_DOMAIN">
 					<subreportParameterExpression><![CDATA[$F{domain}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -287,136 +281,136 @@
 					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "reportTrailer.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "reportTrailer.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
 	<pageFooter>
 		<band height="60" splitType="Stretch">
 			<textField>
-				<reportElement x="139" y="5" width="158" height="12" uuid="154e11c7-fb4c-496d-afe9-248fc7a268b4"/>
+				<reportElement x="139" y="5" width="158" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="Sample_Organization">
-				<reportElement x="300" y="5" width="27" height="12" uuid="c5917dae-0f6b-4f23-aa41-07d62b63b205"/>
+				<reportElement x="300" y="5" width="27" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="18" width="552" height="1" uuid="9a942e1f-67c6-46b3-bf95-89141267490b"/>
+				<reportElement x="0" y="18" width="552" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="2" y="20" width="118" height="10" uuid="1325f2dc-0562-4264-b241-d9a15e7ac673"/>
+				<reportElement x="2" y="20" width="118" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="20" width="142" height="10" uuid="35f01b7f-a03f-414d-88b2-aa7dcfe65ad3"/>
+				<reportElement x="120" y="20" width="142" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[University of Iowa Research Park]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="20" width="150" height="10" uuid="cb39f1a5-6846-479e-93fe-9be434cee9e8"/>
+				<reportElement x="262" y="20" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Lakeside Laboratory]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="50" width="118" height="10" uuid="dfa38324-6a6d-47e7-8323-980b7a3cd7e5"/>
+				<reportElement x="2" y="50" width="118" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[http://www.shl.uiowa.edu]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="30" width="118" height="10" uuid="dfadf0f6-f9b9-44e9-a94f-4291f1a24280"/>
+				<reportElement x="2" y="30" width="118" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Wade K. Aldous, Ph.D (D)ABMM]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="2" y="40" width="118" height="10" uuid="31e62ff3-eb4b-46db-9738-5767d2554811"/>
+				<reportElement x="2" y="40" width="118" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Associate Directors]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="50" width="150" height="10" uuid="fcbdaf74-feb0-451f-947f-9e475932105f"/>
+				<reportElement x="120" y="50" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="412" y="20" width="150" height="10" uuid="74d0421f-83b8-4798-8fb5-770d59e5ecb1"/>
+				<reportElement x="412" y="20" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="412" y="50" width="150" height="10" uuid="6fd79b84-7d47-42ae-bbda-7c4680cf0627"/>
+				<reportElement x="412" y="50" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="50" width="170" height="10" uuid="f0118831-8a06-4d12-97e9-e921a0e1f575"/>
+				<reportElement x="262" y="50" width="170" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="30" width="150" height="10" uuid="efb456b2-6256-46c5-8b01-5141dc83b23f"/>
+				<reportElement x="120" y="30" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[2490 Crosspark Road]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="40" width="150" height="10" uuid="01f62e78-2e5f-4009-ba04-4926d150077e"/>
+				<reportElement x="262" y="40" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Milford, IA 51351]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="40" width="150" height="10" uuid="353cd7f8-fb6e-4b56-a98f-37bb5beb6c64"/>
+				<reportElement x="120" y="40" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Coralville, IA 52241]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="30" width="150" height="10" uuid="5361c132-2423-4bf5-a4b3-f531493a4d81"/>
+				<reportElement x="262" y="30" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[1838 Highway 86]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="412" y="40" width="150" height="10" uuid="5b1ef3b4-4f89-4095-ac4c-843f6332992a"/>
+				<reportElement x="412" y="40" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Ankeny, IA  50023 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="412" y="30" width="150" height="10" uuid="cfa34e85-b21d-4b6f-9ef8-f0e13700bf0c"/>
+				<reportElement x="412" y="30" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>

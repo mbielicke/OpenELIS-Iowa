@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.2.final using JasperReports Library version 5.6.1  -->
-<!-- 2014-11-24T16:45:40 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="address" pageWidth="250" pageHeight="572" columnWidth="250" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2afa22b7-429e-42ce-a778-777f532e24d6">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="address" pageWidth="250" pageHeight="572" columnWidth="250" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -29,41 +27,41 @@ WHERE
 		<band height="12" splitType="Stretch">
 			<printWhenExpression><![CDATA[$P{ATTENTION} != null && $P{ATTENTION}.length() > 0]]></printWhenExpression>
 			<textField>
-				<reportElement positionType="Float" x="0" y="0" width="250" height="12" uuid="0f2eb20a-0edd-4c11-a311-1a786f88fb78"/>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{ATTENTION}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ATTENTION}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="48" splitType="Stretch">
 			<textField>
-				<reportElement positionType="Float" x="0" y="0" width="250" height="12" uuid="65eb4ccb-d0ff-4a0f-8e3f-16954cca04aa"/>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{NAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{NAME}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="12" width="250" height="12" isRemoveLineWhenBlank="true" uuid="7a769ab1-d025-4458-9807-ab181663accd"/>
+				<reportElement positionType="Float" x="0" y="12" width="250" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{multiple_unit}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{multiple_unit}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement positionType="Float" x="0" y="24" width="250" height="12" uuid="7f61f031-9b2a-4470-9d86-53b235ac9d51"/>
+				<reportElement positionType="Float" x="0" y="24" width="250" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{street_address}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement positionType="Float" x="0" y="36" width="250" height="12" uuid="a0957bf0-580b-43b1-be39-ef2685793f84"/>
+				<reportElement positionType="Float" x="0" y="36" width="250" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression><![CDATA[JasperUtil.concatWithSeparator($F{city},", ",JasperUtil.concatWithSeparator($F{state}, " ", $F{zip_code}))]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{city},", ",JasperUtil.concatWithSeparator($F{state}, " ", $F{zip_code}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
