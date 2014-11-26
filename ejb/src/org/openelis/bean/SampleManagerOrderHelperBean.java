@@ -1004,15 +1004,16 @@ public class SampleManagerOrderHelperBean {
                              HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap) throws Exception {
         int i;
         AnalysisViewDO aVDO;
+        ArrayList<HashMap<Integer, Integer>> indexMaps;
         ArrayList<Integer> testIds;
         ArrayList<OrderResult> orderResults;
         DictionaryDO dictDO;
         HashMap<Integer, AnalysisViewDO> testAnalysisMap;
-        HashMap<Integer, HashMap<Integer, Integer>> analysisResultIndexMap;
-        HashMap<Integer, Integer> resultIndexMap;
+        HashMap<Integer, ArrayList<HashMap<Integer, Integer>>> analysisResultIndexMap;
+        HashMap<Integer, Integer> analyteResultIndexMap, testAnalyteResultIndexMap;
         HashMap<Integer, TestManager> tManMap;
         HashSet<Integer> analysisIds;
-        Integer analyteId, dictId, resultIndex;
+        Integer analyteId, dictId, resultIndex, testAnalyteId;
         Iterator<String> orderTestCodes;
         NoteViewDO noteVDO;
         ResultFormatter rf;
@@ -1033,24 +1034,32 @@ public class SampleManagerOrderHelperBean {
                 aVDO = getAnalyses(sm).get(i);
                 if (aVDO.getSampleItemId().equals(siVDO.getId()) && aVDO.getTestId() != null &&
                     !Constants.dictionary().ANALYSIS_CANCELLED.equals(aVDO.getStatusId()) &&
-                    !Constants.dictionary().ANALYSIS_RELEASED.equals(aVDO.getStatusId())) {
+                    !Constants.dictionary().ANALYSIS_RELEASED.equals(aVDO.getStatusId()) &&
+                    !testAnalysisMap.containsKey(aVDO.getTestId())) {
                     analysisIds.add(aVDO.getId());
                     testAnalysisMap.put(aVDO.getTestId(), aVDO);
                 }
             }
         }
 
-        analysisResultIndexMap = new HashMap<Integer, HashMap<Integer, Integer>>();
+        analysisResultIndexMap = new HashMap<Integer, ArrayList<HashMap<Integer, Integer>>>();
         if (getResults(sm) != null) {
             for (i = 0; i < getResults(sm).size(); i++) {
                 rVDO = getResults(sm).get(i);
                 if (analysisIds.contains(rVDO.getAnalysisId()) && "N".equals(rVDO.getIsColumn())) {
-                    resultIndexMap = analysisResultIndexMap.get(rVDO.getAnalysisId());
-                    if (resultIndexMap == null) {
-                        resultIndexMap = new HashMap<Integer, Integer>();
-                        analysisResultIndexMap.put(rVDO.getAnalysisId(), resultIndexMap);
+                    indexMaps = analysisResultIndexMap.get(rVDO.getAnalysisId());
+                    if (indexMaps == null) {
+                        indexMaps = new ArrayList<HashMap<Integer, Integer>>();
+                        indexMaps.add(new HashMap<Integer, Integer>());
+                        indexMaps.add(new HashMap<Integer, Integer>());
+                        analysisResultIndexMap.put(rVDO.getAnalysisId(), indexMaps);
                     }
-                    resultIndexMap.put(rVDO.getAnalyteId(), i);
+                    testAnalyteResultIndexMap = indexMaps.get(0);
+                    if (!testAnalyteResultIndexMap.containsKey(rVDO.getTestAnalyteId()))
+                        testAnalyteResultIndexMap.put(rVDO.getTestAnalyteId(), i);
+                    analyteResultIndexMap = indexMaps.get(1);
+                    if (!analyteResultIndexMap.containsKey(rVDO.getAnalyteId()))
+                        analyteResultIndexMap.put(rVDO.getAnalyteId(), i);
                 }
             }
         }
@@ -1074,7 +1083,7 @@ public class SampleManagerOrderHelperBean {
                         }
                     }
                     aVDO = testAnalysisMap.get(testId);
-                    resultIndexMap = analysisResultIndexMap.get(aVDO.getId());
+                    indexMaps = analysisResultIndexMap.get(aVDO.getId());
                     for (OrderResult orderResult : orderResults) {
                         if ("note".equals(orderResult.analyte)) {
                             noteVDO = new NoteViewDO();
@@ -1089,50 +1098,57 @@ public class SampleManagerOrderHelperBean {
                             noteVDO.setText(orderResult.result);
                             addAnalysisInternalNote(sm, noteVDO);
                         } else {
+                            testAnalyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
+                                                                         externalTermMap,
+                                                                         Constants.table().TEST_ANALYTE, e);
                             analyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
                                                                      externalTermMap,
-                                                                     Constants.table().TEST_ANALYTE, e);
-                            if (analyteId == null)
-                                analyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
-                                                                         externalTermMap,
-                                                                         Constants.table().ANALYTE, e);
-                            if (analyteId != null) {
-                                resultIndex = resultIndexMap.get(analyteId);
-                                if (resultIndex != null) {
-                                    rf = tMan.getFormatter();
-                                    rVDO = getResults(sm).get(resultIndex);
-                                    if (orderResult.result.startsWith("extTerm:")) {
-                                        dictId = getLocalTermFromCodedElement("result",
-                                                                              orderResult.result,
-                                                                              externalTermMap,
-                                                                              Constants.table().DICTIONARY, e);
-                                        if (dictId != null) {
-                                            dictDO = null;
-                                            try {
-                                                dictDO = dictionaryCache.getById(dictId);
-                                                if (dictDO != null)
-                                                    ResultHelper.formatValue(rVDO, dictDO.getEntry(), aVDO.getUnitOfMeasureId(), rf);
-                                            } catch (NotFoundException nfE) {
-                                                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(orderResult.result)));
-                                            } catch (ParseException parE) {
-                                                e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(dictDO.getEntry(),
-                                                                                                                    tMan.getTest().getName(),
-                                                                                                                    tMan.getTest().getMethodName(),
-                                                                                                                    rVDO.getAnalyte())));
-                                            } catch (Exception anyE) {
-                                                log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                                                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(orderResult.result)));
-                                            }
-                                        }
-                                    } else {
+                                                                     Constants.table().ANALYTE, e);
+                            if (testAnalyteId != null || analyteId != null) {
+                                resultIndex = null;
+                                if (testAnalyteId != null) {
+                                    testAnalyteResultIndexMap = indexMaps.get(0);
+                                    resultIndex = testAnalyteResultIndexMap.get(testAnalyteId);
+                                } else if (analyteId != null) {
+                                    analyteResultIndexMap = indexMaps.get(1);
+                                    resultIndex = analyteResultIndexMap.get(analyteId);
+                                }
+                                rf = tMan.getFormatter();
+                                rVDO = getResults(sm).get(resultIndex);
+                                if (orderResult.result.startsWith("extTerm:")) {
+                                    dictId = getLocalTermFromCodedElement("result",
+                                                                          orderResult.result,
+                                                                          externalTermMap,
+                                                                          Constants.table().DICTIONARY, e);
+                                    if (dictId != null) {
+                                        dictDO = null;
                                         try {
-                                            ResultHelper.formatValue(rVDO, orderResult.result, aVDO.getUnitOfMeasureId(), rf);
+                                            dictDO = dictionaryCache.getById(dictId);
+                                            if (dictDO != null)
+                                                ResultHelper.formatValue(rVDO, dictDO.getEntry(), aVDO.getUnitOfMeasureId(), rf);
+                                        } catch (NotFoundException nfE) {
+                                            e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(orderResult.result)));
                                         } catch (ParseException parE) {
-                                            e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(orderResult.result,
+                                            e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(dictDO.getEntry(),
                                                                                                                 tMan.getTest().getName(),
                                                                                                                 tMan.getTest().getMethodName(),
                                                                                                                 rVDO.getAnalyte())));
+                                        } catch (Exception anyE) {
+                                            log.log(Level.SEVERE, anyE.getMessage(), anyE);
+                                            e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(orderResult.result)));
                                         }
+                                    }
+                                } else {
+                                    try {
+                                        ResultHelper.formatValue(rVDO, orderResult.result, aVDO.getUnitOfMeasureId(), rf);
+                                    } catch (ParseException parE) {
+                                        e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(orderResult.result,
+                                                                                                            tMan.getTest().getName(),
+                                                                                                            tMan.getTest().getMethodName(),
+                                                                                                            rVDO.getAnalyte())));
+                                    } catch (Exception anyE) {
+                                        log.log(Level.SEVERE, anyE.getMessage(), anyE);
+                                        e.add(new FormErrorWarning(anyE.getMessage()));
                                     }
                                 }
                             }
