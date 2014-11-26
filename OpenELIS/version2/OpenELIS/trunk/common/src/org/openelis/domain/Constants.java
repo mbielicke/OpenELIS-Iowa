@@ -164,8 +164,19 @@ public class Constants implements Serializable {
     public static class Domain implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        public final String       QUICKENTRY       = "Q", ENVIRONMENTAL = "E", SDWIS = "S",
-                        PRIVATEWELL = "W", NEONATAL = "N", CLINICAL = "C", ANIMAL = "A", PT = "P";
+        public final String       QUICKENTRY, ENVIRONMENTAL, SDWIS,
+                        PRIVATEWELL, NEONATAL, CLINICAL, ANIMAL, PT;
+        
+        private Domain() {
+        	 QUICKENTRY = "Q";
+        	 ENVIRONMENTAL = "E";
+        	 SDWIS = "S";
+        	 PRIVATEWELL = "W";
+        	 NEONATAL = "N";
+        	 CLINICAL = "C";
+        	 ANIMAL = "A";
+        	 PT = "P";
+        }
     }
 
     /**
@@ -236,7 +247,13 @@ public class Constants implements Serializable {
     public static class Order implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        public final String       INTERNAL         = "I", VENDOR = "V", SEND_OUT = "S";
+        public final String       INTERNAL, VENDOR, SEND_OUT;
+        
+        private Order() {
+        	INTERNAL = "I";
+        	VENDOR = "V";
+        	SEND_OUT = "S";
+        }
     }
 
     /**
