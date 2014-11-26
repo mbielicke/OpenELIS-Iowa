@@ -164,6 +164,8 @@ public class DataExchangeXMLMapperBean {
     private HashSet<Integer>          users, dicts, tests, testAnalytes, testResults, methods,
                     analytes, projects, organizations, qas, trailers, sections, panels;
 
+    private HashMap<String, Integer>  resultRepeat;
+
     private static SimpleDateFormat   dateFormat, timeFormat;
 
     private static Integer            ORG_PROD_EPARTNER_URL, ORG_TEST_EPARTNER_URL,
@@ -222,7 +224,8 @@ public class DataExchangeXMLMapperBean {
         profiles = new ArrayList<Integer>();
         onlyTests = new HashSet<Integer>();
         analyses = new HashMap<Integer, Boolean>();
-
+        resultRepeat = new HashMap<String, Integer>();
+        
         /*
          * this xml doc is for sending results
          */
@@ -1039,7 +1042,7 @@ public class DataExchangeXMLMapperBean {
 
     public Element toXML(Document doc, TestResultViewDO testResult) {
         Element elm;
-
+        
         elm = doc.createElement("test_result");
         setAttribute(elm, "id", testResult.getId());
         setAttribute(elm, "test_id", testResult.getTestId());
@@ -1213,8 +1216,19 @@ public class DataExchangeXMLMapperBean {
     }
 
     public Element toXML(Document doc, ResultViewDO result, boolean showValue) {
+        Integer i;
+        String key;
         Element elm;
 
+        //
+        // count the occurrence of an analyte based on analysis
+        //
+        key = result.getAnalysisId()+":"+result.getAnalyteId();
+        i = resultRepeat.get(key);
+        if (i == null)
+            i = 1;
+        resultRepeat.put(key, i++);
+                        
         elm = doc.createElement("result");
         setAttribute(elm, "id", result.getId());
         setAttribute(elm, "analysis_id", result.getAnalysisId());
@@ -1224,6 +1238,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "sort_order", result.getSortOrder());
         setAttribute(elm, "is_reportable", result.getIsReportable());
         setAttribute(elm, "analyte_id", result.getAnalyteId());
+        setAttribute(elm, "analyte_repeat", i);
         setAttribute(elm, "type_id", result.getTypeId());
 
         /*

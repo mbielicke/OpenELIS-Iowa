@@ -91,6 +91,17 @@ public class ProviderBean {
     }
 
     @SuppressWarnings("unchecked")
+    public ArrayList<ProviderDO> fetchByNpi(String npi, int max) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Provider.FetchByNpi");
+        query.setParameter("npi", npi);
+        query.setMaxResults(max);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search, int max) throws Exception {
         Query query;
 

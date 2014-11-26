@@ -493,13 +493,13 @@
 		</xs:sequence>
 		<xs:attribute name="id" use="required" type="xs:integer" />
 		<xs:attribute name="analysis_id" type="xs:integer" use="required" />
-		<xs:attribute name="test_analyte_id" type="xs:integer"
-			use="required" />
+		<xs:attribute name="test_analyte_id" type="xs:integer" use="required" />
 		<xs:attribute name="test_result_id" type="xs:integer" />
 		<xs:attribute name="is_column" type="xs:string" use="required" />
 		<xs:attribute name="sort_order" type="xs:integer" use="required" />
 		<xs:attribute name="is_reportable" type="xs:string" use="required" />
-		<xs:attribute name="analyte_id" type="xs:integer" use="required" />
+        <xs:attribute name="analyte_id" type="xs:integer" use="required" />
+        <xs:attribute name="analyte_repeat" type="xs:integer" use="required" />
 		<xs:attribute name="type_id" type="xs:integer" />
 	</xs:complexType>
 
