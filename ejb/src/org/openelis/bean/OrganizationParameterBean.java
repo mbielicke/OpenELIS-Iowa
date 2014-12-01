@@ -49,10 +49,12 @@ import org.openelis.utils.EmailUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrganizationParameterBean  {
+public class OrganizationParameterBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+
+    private static char   delim = ';';
 
     public ArrayList<OrganizationParameterDO> fetchByOrganizationId(Integer id) throws Exception {
         Query query;
@@ -136,30 +138,72 @@ public class OrganizationParameterBean  {
 
     public void validate(OrganizationParameterDO data) throws Exception {
         Integer typeId;
-        String value;
+        String value, email;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
         typeId = data.getTypeId();
         value = data.getValue();
+        email = decode(value)[0];
 
         if (DataBaseUtil.isEmpty(typeId))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrganizationMeta.getOrganizationParameterTypeId()));
-        if (DataBaseUtil.isEmpty(value)) {
+        if (DataBaseUtil.isEmpty(email)) {
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrganizationMeta.getOrganizationParameterValue()));
         } else if (Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL.equals(typeId) ||
                    Constants.dictionary().RELEASED_REPORTTO_EMAIL.equals(typeId)) {
             try {
-                EmailUtil.validateAddress(value);
+                EmailUtil.validateAddress(email);
             } catch (AddressException e) {
-                list.add(new FieldErrorException(Messages.get().invalidFormatEmailException(value),
+                list.add(new FieldErrorException(Messages.get().invalidFormatEmailException(email),
                                                  OrganizationMeta.getOrganizationParameterValue()));
             }
         }
 
         if (list.size() > 0)
             throw list;
+    }
+
+    /**
+     * separates the email string from the filter data using the delimiter
+     * character
+     */
+    private String[] decode(String encoded) throws Exception {
+        int i;
+        char character, str[];
+        StringBuffer sb;
+        String[] decoded;
+
+        sb = new StringBuffer();
+        decoded = new String[3];
+
+        str = encoded.toCharArray();
+        for (i = 0; i < encoded.length(); i++ ) {
+            character = str[i];
+            if (character == '\\') {
+                try {
+                    character = str[ ++i];
+                } catch (IndexOutOfBoundsException e) {
+                    throw new Exception("invalid escape character");
+                }
+                sb.append(character);
+            } else if (character == delim) {
+                break;
+            } else {
+                sb.append(character);
+            }
+        }
+        decoded[0] = sb.toString();
+        if (i == encoded.length())
+            return decoded;
+        try {
+            decoded[1] = encoded.substring(i + 1, i + 3);
+            decoded[2] = encoded.substring(i + 3);
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception("Invalid filter string");
+        }
+        return decoded;
     }
 }

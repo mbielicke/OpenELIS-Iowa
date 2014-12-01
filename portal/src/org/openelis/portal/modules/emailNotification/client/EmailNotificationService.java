@@ -20,7 +20,7 @@ public class EmailNotificationService implements EmailNotificationServiceInt,
 
     private EmailNotificationServiceIntAsync service;
 
-    public EmailNotificationService get() {
+    public static EmailNotificationService get() {
         if (instance == null)
             instance = new EmailNotificationService();
 

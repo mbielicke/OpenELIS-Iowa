@@ -42,6 +42,7 @@ import org.openelis.meta.SampleWebMeta;
 import org.openelis.portal.cache.CategoryCache;
 import org.openelis.portal.cache.UserCache;
 import org.openelis.portal.messages.Messages;
+import org.openelis.portal.modules.finalReport.client.StatusBarPopupScreenUI;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
@@ -62,17 +63,21 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DataViewScreen extends Screen {
 
-    private DataViewUI       ui = GWT.create(DataViewUIImpl.class);
+    private DataViewUI             ui = GWT.create(DataViewUIImpl.class);
 
-    private ModulePermission userPermission;
+    private ModulePermission       userPermission;
 
-    private DataViewVO       data;
+    private DataViewVO             data;
+
+    private StatusBarPopupScreenUI statusScreen;
 
     public DataViewScreen() {
         initWidget(ui.asWidget());
@@ -1361,25 +1366,84 @@ public class DataViewScreen extends Screen {
             }
         }
 
-        window.setBusy(Messages.get().gen_genReportMessage());
+        popup(data);
+    }
+
+    /**
+     * creates a popup that shows the progress of creating data view report
+     */
+    private void popup(DataViewVO data) {
+        final PopupPanel statusPanel;
+
+        if (statusScreen == null)
+            statusScreen = new StatusBarPopupScreenUI();
+        statusScreen.setStatus(null);
+
+        /*
+         * initialize and show the popup screen
+         */
+        statusPanel = new PopupPanel();
+        statusPanel.setSize("450px", "125px");
+        statusScreen.setSize("450px", "125px");
+        statusPanel.setWidget(statusScreen);
+        statusPanel.setPopupPosition(this.getAbsoluteLeft() + 20, this.getAbsoluteTop() + 20);
+        statusPanel.setModal(true);
+        statusPanel.show();
+
+        /*
+         * Create final reports. Hide popup when database is updated
+         * successfully or error is thrown.
+         */
         DataViewService.get().runReportForPortal(data, new AsyncCallback<ReportStatus>() {
+
             @Override
             public void onSuccess(ReportStatus result) {
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/portal/portal/report?file=" + result.getMessage();
-                    Window.open(URL.encode(url), "FinalReport", null);
+                    Window.open(URL.encode(url), "DataView", null);
                 }
                 window.clearStatus();
+                statusPanel.hide();
+                statusScreen.setStatus(null);
             }
 
             @Override
             public void onFailure(Throwable caught) {
                 window.clearStatus();
+                statusPanel.hide();
+                statusScreen.setStatus(null);
                 if (caught instanceof NotFoundException)
                     window.setError(Messages.get().dataView_error_noResults());
                 else
                     Window.alert(caught.getMessage());
             }
+
         });
+
+        /*
+         * refresh the status of creating the reports every second, until the
+         * process successfully completes or is aborted because of an error
+         */
+        Timer timer = new Timer() {
+            public void run() {
+                ReportStatus status;
+                try {
+                    status = DataViewService.get().getStatus();
+                    /*
+                     * the status only needs to be refreshed while the status
+                     * panel is showing because once the job is finished, the
+                     * panel is closed
+                     */
+                    if (statusPanel.isShowing()) {
+                        statusScreen.setStatus(status);
+                        this.schedule(50);
+                    }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    remote.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        };
+        timer.schedule(50);
     }
 }

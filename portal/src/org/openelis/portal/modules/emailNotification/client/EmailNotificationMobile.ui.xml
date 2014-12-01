@@ -34,6 +34,58 @@
 						</span>
 					</td>
 				</tr>
+				<tr>
+					<td>
+						<g:LayoutPanel height="300px" width="300px">
+							<g:layer>
+								<t:Table ui:field="table" header="true"
+									styleName="{res.table.ScreenTableWithSides}" enabled="true">
+									<t:Column width="10">
+										<t:ImageCell />
+									</t:Column>
+									<t:Column width="200" label="{msg.emailNotification_org}">
+										<t:DropdownCell>
+											<w:Dropdown ui:field="org" width="250" field="Integer" />
+										</t:DropdownCell>
+									</t:Column>
+									<t:Column width="200" label="{msg.emailNotification_email}">
+										<t:TextBoxCell>
+											<w:TextBox case="MIXED" field="String" />
+										</t:TextBoxCell>
+									</t:Column>
+									<t:Column width="75" label="{msg.emailNotification_filter}">
+										<t:DropdownCell>
+											<w:Dropdown ui:field="filter" width="250" field="String" />
+										</t:DropdownCell>
+									</t:Column>
+									<t:Column width="75" label="{msg.emailNotification_filterValue}">
+										<t:TextBoxCell>
+											<w:TextBox case="MIXED" field="String" />
+										</t:TextBoxCell>
+									</t:Column>
+									<t:Column width="60" label="{msg.sample_received}">
+										<t:CheckBoxCell>
+											<w:CheckBox />
+										</t:CheckBoxCell>
+									</t:Column>
+									<t:Column width="60" label="{msg.sample_released}">
+										<t:CheckBoxCell>
+											<w:CheckBox />
+										</t:CheckBoxCell>
+									</t:Column>
+								</t:Table>
+							</g:layer>
+						</g:LayoutPanel>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<w:Button ui:field="addButton" text="{msg.gen_addRow}"
+							enabled="true" />
+						<w:Button ui:field="commitButton" text="{msg.btn_commit}"
+							enabled="true" />
+					</td>
+				</tr>
 			</table>
 		</g:HTMLPanel>
 	</w:PortalPanel>

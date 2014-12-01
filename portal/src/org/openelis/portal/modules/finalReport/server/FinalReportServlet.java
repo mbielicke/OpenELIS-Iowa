@@ -31,6 +31,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.stfu.bean.FinalReportPortalBean;
+import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.portal.modules.finalReport.client.FinalReportServiceInt;
@@ -42,6 +43,9 @@ import org.openelis.ui.server.RemoteServlet;
 public class FinalReportServlet extends RemoteServlet implements FinalReportServiceInt {
 
     private static final long     serialVersionUID = 1L;
+
+    @EJB
+    private SessionCacheBean      session;
 
     @EJB
     private FinalReportPortalBean finalReportPortal;
@@ -76,6 +80,11 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
             anyE.printStackTrace();
             throw serializeForGWT(anyE);
         }
+    }
+
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        return (ReportStatus)session.getAttribute("FinalReport");
     }
 
 }

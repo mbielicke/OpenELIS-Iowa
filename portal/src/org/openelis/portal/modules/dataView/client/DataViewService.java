@@ -51,6 +51,11 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
     }
 
     @Override
+    public void getStatus(AsyncCallback<ReportStatus> callback) {
+        service.getStatus(callback);
+    }
+
+    @Override
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
 
@@ -83,6 +88,15 @@ public class DataViewService implements DataViewServiceInt, DataViewServiceIntAs
 
         callback = new Callback<ReportStatus>();
         service.runReportForPortal(data, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getStatus(callback);
         return callback.getResult();
     }
 

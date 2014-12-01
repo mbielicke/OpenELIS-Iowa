@@ -259,6 +259,87 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String emailNotification_email();
 
   /**
+   * Translated "This string cannot contain {0}".
+   * 
+   * @return translated "This string cannot contain {0}"
+   */
+  @DefaultMessage("This string cannot contain {0}")
+  @Key("emailNotification.error.invalidChar")
+  String emailNotification_error_invalidChar(String arg0);
+
+  /**
+   * Translated "Invalid email address".
+   * 
+   * @return translated "Invalid email address"
+   */
+  @DefaultMessage("Invalid email address")
+  @Key("emailNotification.error.invalidEmail")
+  String emailNotification_error_invalidEmail();
+
+  /**
+   * Translated "Must input email address".
+   * 
+   * @return translated "Must input email address"
+   */
+  @DefaultMessage("Must input email address")
+  @Key("emailNotification.error.noEmail")
+  String emailNotification_error_noEmail();
+
+  /**
+   * Translated "Must input organization".
+   * 
+   * @return translated "Must input organization"
+   */
+  @DefaultMessage("Must input organization")
+  @Key("emailNotification.error.noOrganization")
+  String emailNotification_error_noOrganization();
+
+  /**
+   * Translated "You don''t have the permission to add emails for any organization. Please contact the system administrator".
+   * 
+   * @return translated "You don''t have the permission to add emails for any organization. Please contact the system administrator"
+   */
+  @DefaultMessage("You don''t have the permission to add emails for any organization. Please contact the system administrator")
+  @Key("emailNotification.error.noPermToAddEmail")
+  String emailNotification_error_noPermToAddEmail();
+
+  /**
+   * Translated "Filter".
+   * 
+   * @return translated "Filter"
+   */
+  @DefaultMessage("Filter")
+  @Key("emailNotification.filter")
+  String emailNotification_filter();
+
+  /**
+   * Translated "Filter Value".
+   * 
+   * @return translated "Filter Value"
+   */
+  @DefaultMessage("Filter Value")
+  @Key("emailNotification.filterValue")
+  String emailNotification_filterValue();
+
+  /**
+   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events.".
+   * 
+   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events."
+   */
+  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events.")
+  @Key("emailNotification.help.description")
+  String emailNotification_help_description();
+
+  /**
+   * Translated "<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Add Your Email Address </span><br/><span style=\"float:left;font-size:11pt;\"> <ul> <li> Click on the \"Add Row\" button to create a new entry.</li><li>Choose the organization associated with the samples.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notification for each type of event.</li><li>Enter a valid email address in the <b>Email</b> field.</li><li>Click <b>Commit</b> to add this notification or remove the row to abort.</li></ul><br/> <span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Edit an Existing Email Address </span><br/><span style=\"float:left;font-size:11pt;\"> <ul> <li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter data</ul></span><br/><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Remove an Email Notification</span><br/><span style=\"float:left;font-size:11pt;\"><ul> <li>Click on the remove icon next to the entry you want to remove</li></ul></span>".
+   * 
+   * @return translated "<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Add Your Email Address </span><br/><span style=\"float:left;font-size:11pt;\"> <ul> <li> Click on the \"Add Row\" button to create a new entry.</li><li>Choose the organization associated with the samples.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notification for each type of event.</li><li>Enter a valid email address in the <b>Email</b> field.</li><li>Click <b>Commit</b> to add this notification or remove the row to abort.</li></ul><br/> <span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Edit an Existing Email Address </span><br/><span style=\"float:left;font-size:11pt;\"> <ul> <li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter data</ul></span><br/><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Remove an Email Notification</span><br/><span style=\"float:left;font-size:11pt;\"><ul> <li>Click on the remove icon next to the entry you want to remove</li></ul></span>"
+   */
+  @DefaultMessage("<span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Add Your Email Address </span><br/><span style=\"float:left;font-size:11pt;\"> <ul> <li> Click on the \"Add Row\" button to create a new entry.</li><li>Choose the organization associated with the samples.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notification for each type of event.</li><li>Enter a valid email address in the <b>Email</b> field.</li><li>Click <b>Commit</b> to add this notification or remove the row to abort.</li></ul><br/> <span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Edit an Existing Email Address </span><br/><span style=\"float:left;font-size:11pt;\"> <ul> <li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter data</ul></span><br/><span style=\"float:left;font-size:13pt;\" class = \"helpHeader\">To Remove an Email Notification</span><br/><span style=\"float:left;font-size:11pt;\"><ul> <li>Click on the remove icon next to the entry you want to remove</li></ul></span>")
+  @Key("emailNotification.help.screen")
+  String emailNotification_help_screen();
+
+  /**
    * Translated "Organization".
    * 
    * @return translated "Organization"
@@ -268,6 +349,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String emailNotification_org();
 
   /**
+   * Translated "Remove".
+   * 
+   * @return translated "Remove"
+   */
+  @DefaultMessage("Remove")
+  @Key("emailNotification.remove")
+  String emailNotification_remove();
+
+  /**
    * Translated "You do not have permission to access {0}".
    * 
    * @return translated "You do not have permission to access {0}"
@@ -275,6 +365,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("You do not have permission to access {0}")
   @Key("error.screenPerm")
   String error_screenPerm(String arg0);
+
+  /**
+   * Translated "This record is not available at this time for you to add/edit/remove. Please try at another time. (Locked)".
+   * 
+   * @return translated "This record is not available at this time for you to add/edit/remove. Please try at another time. (Locked)"
+   */
+  @DefaultMessage("This record is not available at this time for you to add/edit/remove. Please try at another time. (Locked)")
+  @Key("exc.recordNotAvailableLock")
+  String exc_recordNotAvailableLock();
 
   /**
    * Translated "ANY SAMPLES".

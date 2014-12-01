@@ -31,6 +31,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.DataViewBean;
+import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.portal.modules.dataView.client.DataViewServiceInt;
@@ -41,6 +42,9 @@ import org.openelis.ui.server.RemoteServlet;
 public class DataViewServlet extends RemoteServlet implements DataViewServiceInt {
 
     private static final long serialVersionUID = 1L;
+
+    @EJB
+    private SessionCacheBean  session;
 
     @EJB
     private DataViewBean      dataView;
@@ -89,5 +93,10 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
+    }
+
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        return (ReportStatus)session.getAttribute("DataViewReportStatus");
     }
 }

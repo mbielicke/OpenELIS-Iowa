@@ -23,4 +23,7 @@ public interface Resources extends UIResources {
 
     @Source("images/help.png")
     ImageResource helpImage();
+    
+    @Source("images/remove.jpeg")
+    ImageResource removeImage();
 }
