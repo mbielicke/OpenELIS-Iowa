@@ -67,6 +67,7 @@ import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.Caution;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
@@ -121,8 +122,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiTemplate("SendoutOrder.ui.xml")
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
-
-
 
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
 
@@ -1370,7 +1369,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                  * show the warnings and ask the user if the data should still
                  * be committed; commit only if the user says yes
                  */
-                if ( !Window.confirm(getWarnings(validation.getExceptions())))
+                if ( !Window.confirm(getWarnings(validation.getExceptions(), true)))
                     return;
                 break;
             case FLAGGED:
@@ -1425,8 +1424,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
                 public void validationErrors(ValidationErrorsList e) {
                     showErrors(e);
-                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
-                        showWarningsDialog(e);
+                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning) {
+                        if (Window.confirm(getWarnings(e.getErrorList(), true)))
+                            commitUpdate(true);
+                    }
                 }
 
                 public void failure(Throwable e) {
@@ -1505,9 +1506,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             duplicateCall = new AsyncCallbackUI<OrderReturnVO>() {
                 public void success(OrderReturnVO result) {
                     manager = result.getManager();
-                    if (result.getErrors() != null && result.getErrors().size() > 0) {
+                    if (result.getErrors().hasWarnings())
+                        Window.alert(getWarnings(result.getErrors().getErrorList(), false));
+                    if ( !result.getErrors().hasWarnings() && result.getErrors().hasErrors())
                         showErrors(result.getErrors());
-                    }
                     manager.getOrder().setParentOrderId(null);
                     /*
                      * the screen is in add state, so we need the cache here
@@ -2164,40 +2166,26 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * creates a string containing the message that there are warnings on the
+     * Creates a string containing the message that there are warnings on the
      * screen, followed by all warning messages, followed by the question
      * whether the data should be committed
      */
-    private String getWarnings(ArrayList<Exception> warnings) {
+    private String getWarnings(ArrayList<Exception> warnings, boolean isConfirm) {
         StringBuilder b;
 
         b = new StringBuilder();
         b.append(Messages.get().gen_warningDialogLine1()).append("\n");
         if (warnings != null) {
-            for (Exception ex : warnings)
-                b.append(" * ").append(ex.getMessage()).append("\n");
+            for (Exception ex : warnings) {
+                if (ex instanceof Warning || ex instanceof Caution)
+                    b.append(" * ").append(ex.getMessage()).append("\n");
+            }
         }
-        b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+
+        if (isConfirm)
+            b.append("\n").append(Messages.get().gen_warningDialogLastLine());
 
         return b.toString();
-    }
-
-    /**
-     * Shows a list of warnings in the form of a confirm dialog. Specific
-     * screens need to override the commitWithWarnings() method to catch the
-     * user's response.
-     */
-    private void showWarningsDialog(ValidationErrorsList warnings) {
-        String warningText = "There are warnings on the screen:" + "\n";
-
-        for (Exception ex : warnings.getErrorList()) {
-            if (ex instanceof Warning)
-                warningText += " * " + ex.getMessage() + "\n";
-        }
-        warningText += "\n" + "Press Ok to commit anyway or cancel to fix these warnings.";
-
-        if (Window.confirm(warningText))
-            commit(true);
     }
 
     private void addTest(Integer id, boolean isTest, Integer index) {
@@ -2213,9 +2201,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             fireDataChange();
             if (numAuxAft > numAuxBef) {
                 /*
-                 * the number of aux data after adding the test is more than
-                 * the ones before, so it means that a panel was added which
-                 * linked to some aux groups, so notify the tabs 
+                 * the number of aux data after adding the test is more than the
+                 * ones before, so it means that a panel was added which linked
+                 * to some aux groups, so notify the tabs
                  */
                 bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
             }
