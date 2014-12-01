@@ -19,4 +19,6 @@ public interface FinalReportServiceInt extends XsrfProtectedService {
 
     ArrayList<SampleViewVO> getSampleList(Query query) throws Exception;
 
+    ReportStatus getStatus() throws Exception;
+
 }

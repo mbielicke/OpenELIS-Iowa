@@ -18,4 +18,6 @@ public interface DataViewServiceIntAsync {
 
     void runReportForPortal(DataViewVO data, AsyncCallback<ReportStatus> callback);
 
+    void getStatus(AsyncCallback<ReportStatus> callback);
+
 }

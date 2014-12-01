@@ -17,4 +17,5 @@ public interface FinalReportServiceIntAsync {
 
     void getSampleList(Query query, AsyncCallback<ArrayList<SampleViewVO>> callback);
 
+    void getStatus(AsyncCallback<ReportStatus> callback);
 }

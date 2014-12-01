@@ -37,8 +37,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class FinalReportScreen extends Screen {
@@ -50,6 +52,8 @@ public class FinalReportScreen extends Screen {
     private FinalReportFormVO        form;
 
     private HashMap<Integer, String> status;
+
+    private StatusBarPopupScreenUI   statusScreen;
 
     public FinalReportScreen() {
         initWidget(ui.asWidget());
@@ -861,5 +865,80 @@ public class FinalReportScreen extends Screen {
                 Window.alert(caught.getMessage());
             }
         });
+    }
+
+    /**
+     * creates a popup that shows the progress of creating final reports
+     */
+    private void popup(Query query) {
+        final PopupPanel statusPanel;
+
+        if (statusScreen == null)
+            statusScreen = new StatusBarPopupScreenUI();
+
+        /*
+         * initialize and show the popup screen
+         */
+        statusPanel = new PopupPanel();
+        statusPanel.setSize("450px", "125px");
+        statusScreen.setSize("450px", "125px");
+        statusPanel.setWidget(statusScreen);
+        statusPanel.setPopupPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
+        statusPanel.setModal(true);
+        statusPanel.show();
+        statusScreen.setStatus(null);
+
+        /*
+         * Create final reports. Hide popup when database is updated
+         * successfully or error is thrown.
+         */
+        FinalReportService.get().runReportForWeb(query, new AsyncCallback<ReportStatus>() {
+
+            @Override
+            public void onSuccess(ReportStatus result) {
+                window.clearStatus();
+                statusPanel.hide();
+                statusScreen.setStatus(null);
+                if (result.getStatus() == ReportStatus.Status.SAVED) {
+                    String url = "/portal/portal/report?file=" + result.getMessage();
+                    Window.open(URL.encode(url), "FinalReport", null);
+                }
+                window.clearStatus();
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                window.clearStatus();
+                statusPanel.hide();
+                statusScreen.setStatus(null);
+                Window.alert(caught.getMessage());
+            }
+        });
+
+        /*
+         * refresh the status of creating the reports every second, until the
+         * process successfully completes or is aborted because of an error
+         */
+        Timer timer = new Timer() {
+            public void run() {
+                ReportStatus status;
+                try {
+                    status = FinalReportService.get().getStatus();
+                    /*
+                     * the status only needs to be refreshed while the status
+                     * panel is showing because once the job is finished, the
+                     * panel is closed
+                     */
+                    if (statusPanel.isShowing()) {
+                        statusScreen.setStatus(status);
+                        this.schedule(1000);
+                    }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    remote.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        };
+        timer.schedule(1000);
     }
 }

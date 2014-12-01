@@ -20,4 +20,6 @@ public interface DataViewServiceInt extends XsrfProtectedService {
 
     ReportStatus runReportForPortal(DataViewVO data) throws Exception;
 
+    ReportStatus getStatus() throws Exception;
+
 }

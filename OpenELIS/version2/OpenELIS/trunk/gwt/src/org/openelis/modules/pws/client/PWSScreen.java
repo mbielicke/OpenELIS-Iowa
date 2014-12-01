@@ -214,7 +214,6 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
-        // TODO remove these menu items for scanning. They are for testing only
         violationScan = (MenuItem)def.getWidget("violationScan");
         addScreenHandler(violationScan, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {

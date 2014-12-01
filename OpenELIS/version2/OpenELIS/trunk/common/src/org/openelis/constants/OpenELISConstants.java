@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -13622,6 +13622,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Export")
   @Key("report.export")
   String report_export();
+
+  /**
+   * Translated "Generating Data View...".
+   * 
+   * @return translated "Generating Data View..."
+   */
+  @DefaultMessage("Generating Data View...")
+  @Key("report.genDataView")
+  String report_genDataView();
 
   /**
    * Translated "Reset".

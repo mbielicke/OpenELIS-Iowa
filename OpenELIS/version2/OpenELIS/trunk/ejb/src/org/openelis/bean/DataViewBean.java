@@ -1003,6 +1003,7 @@ public class DataViewBean {
         AnalysisViewDO ana;
         AnalysisQaEventViewDO aqe;
         AnalysisUserViewDO anaUser;
+        ReportStatus status;
         HashMap<Integer, PWSDO> pwsMap;
         HashMap<Integer, ArrayList<ResultViewDO>> groupResMap;
         HashMap<String, Integer> colIndexAnaMap;
@@ -1073,12 +1074,17 @@ public class DataViewBean {
         numAuxVals = auxDataList == null ? 0 : auxDataList.size();
         numNoResAuxVals = noResAuxList == null ? 0 : noResAuxList.size();
         currRow = prevRow = null;
+        status = new ReportStatus();
+        status.setMessage(Messages.get().report_genDataView());
 
         /*
          * the list of results and that of aux data are iterated through until
          * there are no more elements left in each of them to read from
          */
         while (resIndex < numResults || auxIndex < numAuxVals || noResAuxIndex < numNoResAuxVals) {
+            status.setPercentComplete(100 * (resIndex + auxIndex + noResAuxIndex) /
+                                      (numResults + numAuxVals + numNoResAuxVals));
+            session.setAttribute("DataViewReportStatus", status);
             if (excludeResults && excludeAuxData) {
                 if (noResAuxIndex < numNoResAuxVals) {
                     noResAux = noResAuxList.get(noResAuxIndex++ );

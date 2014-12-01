@@ -47,6 +47,11 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     }
 
     @Override
+    public void getStatus(AsyncCallback<ReportStatus> callback) {
+        service.getStatus(callback);
+    }
+    
+    @Override
     public ReportStatus runReportForWeb(Query query) throws Exception {
         Callback<ReportStatus> callback;
 
@@ -70,6 +75,15 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
 
         callback = new Callback<ArrayList<SampleViewVO>>();
         service.getSampleList(query, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public ReportStatus getStatus() throws Exception {
+        Callback<ReportStatus> callback;
+
+        callback = new Callback<ReportStatus>();
+        service.getStatus(callback);
         return callback.getResult();
     }
 

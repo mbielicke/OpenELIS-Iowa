@@ -1,3 +1,9 @@
 @sprite .helpImage {
-	gwt-image:'helpImage';
+	gwt-image: 'helpImage';
+}
+
+@sprite .removeImage {
+	gwt-image: 'removeImage';
+	margin-right: 50%;
+	margin-left: 50%;
 }
