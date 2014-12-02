@@ -428,6 +428,7 @@
 		<xs:attribute name="id" type="xs:integer" use="required" />
 		<xs:attribute name="parent_section_id" type="xs:integer" />
 		<xs:attribute name="is_external" type="xs:string" use="required" />
+        <xs:attribute name="organization_id" type="xs:integer" />
 	</xs:complexType>
 
 	<xs:complexType name="panel">
