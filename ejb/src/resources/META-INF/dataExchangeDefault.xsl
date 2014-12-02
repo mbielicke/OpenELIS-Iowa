@@ -417,6 +417,16 @@
 
 		</xsl:copy>
 	</xsl:template>
+  
+    <xsl:template match="section">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+
+            <xsl:apply-templates
+                select="//organization_translations/translation[@organization_id = current()/@id]" />
+
+        </xsl:copy>
+    </xsl:template>
 
 	<xsl:template match="panel">
 		<xsl:copy>
