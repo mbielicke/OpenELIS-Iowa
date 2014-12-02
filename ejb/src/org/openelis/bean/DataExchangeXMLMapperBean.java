@@ -1042,7 +1042,7 @@ public class DataExchangeXMLMapperBean {
 
     public Element toXML(Document doc, TestResultViewDO testResult) {
         Element elm;
-        
+
         elm = doc.createElement("test_result");
         setAttribute(elm, "id", testResult.getId());
         setAttribute(elm, "test_id", testResult.getTestId());
@@ -1221,14 +1221,17 @@ public class DataExchangeXMLMapperBean {
         Element elm;
 
         //
-        // count the occurrence of an analyte based on analysis
+        // count the occurrence of reportable analyte based on analysis
         //
-        key = result.getAnalysisId()+":"+result.getAnalyteId();
-        i = resultRepeat.get(key);
-        if (i == null)
-            i = 1;
-        resultRepeat.put(key, i++);
-                        
+        i = null;
+        if ("Y".equals(result.getIsReportable())) {
+            key = result.getAnalysisId() + ":" + result.getAnalyteId();
+            i = resultRepeat.get(key);
+            if (i == null)
+                i = 1;            
+            resultRepeat.put(key, i + 1);
+        }
+
         elm = doc.createElement("result");
         setAttribute(elm, "id", result.getId());
         setAttribute(elm, "analysis_id", result.getAnalysisId());
@@ -1238,7 +1241,7 @@ public class DataExchangeXMLMapperBean {
         setAttribute(elm, "sort_order", result.getSortOrder());
         setAttribute(elm, "is_reportable", result.getIsReportable());
         setAttribute(elm, "analyte_id", result.getAnalyteId());
-        setAttribute(elm, "analyte_repeat", i);
+        setAttribute(elm, "analyte_reportable_repeat", i);
         setAttribute(elm, "type_id", result.getTypeId());
 
         /*
