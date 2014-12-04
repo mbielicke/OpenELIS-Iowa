@@ -1113,42 +1113,44 @@ public class SampleManagerOrderHelperBean {
                                     analyteResultIndexMap = indexMaps.get(1);
                                     resultIndex = analyteResultIndexMap.get(analyteId);
                                 }
-                                rf = tMan.getFormatter();
-                                rVDO = getResults(sm).get(resultIndex);
-                                if (orderResult.result.startsWith("extTerm:")) {
-                                    dictId = getLocalTermFromCodedElement("result",
-                                                                          orderResult.result,
-                                                                          externalTermMap,
-                                                                          Constants.table().DICTIONARY, e);
-                                    if (dictId != null) {
-                                        dictDO = null;
+                                if (resultIndex != null) {
+                                    rf = tMan.getFormatter();
+                                    rVDO = getResults(sm).get(resultIndex);
+                                    if (orderResult.result.startsWith("extTerm:")) {
+                                        dictId = getLocalTermFromCodedElement("result",
+                                                                              orderResult.result,
+                                                                              externalTermMap,
+                                                                              Constants.table().DICTIONARY, e);
+                                        if (dictId != null) {
+                                            dictDO = null;
+                                            try {
+                                                dictDO = dictionaryCache.getById(dictId);
+                                                if (dictDO != null)
+                                                    ResultHelper.formatValue(rVDO, dictDO.getEntry(), aVDO.getUnitOfMeasureId(), rf);
+                                            } catch (NotFoundException nfE) {
+                                                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(orderResult.result)));
+                                            } catch (ParseException parE) {
+                                                e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(dictDO.getEntry(),
+                                                                                                                    tMan.getTest().getName(),
+                                                                                                                    tMan.getTest().getMethodName(),
+                                                                                                                    rVDO.getAnalyte())));
+                                            } catch (Exception anyE) {
+                                                log.log(Level.SEVERE, anyE.getMessage(), anyE);
+                                                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(orderResult.result)));
+                                            }
+                                        }
+                                    } else {
                                         try {
-                                            dictDO = dictionaryCache.getById(dictId);
-                                            if (dictDO != null)
-                                                ResultHelper.formatValue(rVDO, dictDO.getEntry(), aVDO.getUnitOfMeasureId(), rf);
-                                        } catch (NotFoundException nfE) {
-                                            e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(orderResult.result)));
+                                            ResultHelper.formatValue(rVDO, orderResult.result, aVDO.getUnitOfMeasureId(), rf);
                                         } catch (ParseException parE) {
-                                            e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(dictDO.getEntry(),
+                                            e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(orderResult.result,
                                                                                                                 tMan.getTest().getName(),
                                                                                                                 tMan.getTest().getMethodName(),
                                                                                                                 rVDO.getAnalyte())));
                                         } catch (Exception anyE) {
                                             log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                                            e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(orderResult.result)));
+                                            e.add(new FormErrorWarning(anyE.getMessage()));
                                         }
-                                    }
-                                } else {
-                                    try {
-                                        ResultHelper.formatValue(rVDO, orderResult.result, aVDO.getUnitOfMeasureId(), rf);
-                                    } catch (ParseException parE) {
-                                        e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(orderResult.result,
-                                                                                                            tMan.getTest().getName(),
-                                                                                                            tMan.getTest().getMethodName(),
-                                                                                                            rVDO.getAnalyte())));
-                                    } catch (Exception anyE) {
-                                        log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                                        e.add(new FormErrorWarning(anyE.getMessage()));
                                     }
                                 }
                             }
@@ -1471,6 +1473,10 @@ public class SampleManagerOrderHelperBean {
                         !Constants.table().TEST_ANALYTE.equals(referenceTableId))
                         e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(externalTerm, fieldName)));
                 } else {
+                    for (ExchangeExternalTermViewDO eetVDO : matchedTerms) {
+                        if (Constants.dictionary().PROFILE_ORDER_IN.equals(eetVDO.getProfileId()))
+                            return eetVDO.getExchangeLocalTermReferenceId();
+                    }
                     e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(externalTerm, fieldName)));
                 }
             }

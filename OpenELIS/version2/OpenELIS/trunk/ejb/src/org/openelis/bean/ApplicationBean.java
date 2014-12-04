@@ -89,14 +89,15 @@ public class ApplicationBean {
                         "org_birth_hospital", "patient_relation_mother", "patient_relation_father",
                         "patient_relation_guardian", "patient_relation_self", "pos_duplicate",
                         "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
-                        "pos_last_of_run", "pos_last_of_subset_and_run", "private_well", "pt",
-                        "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
-                        "qc_blank", "qc_duplicate", "qc_spike", "quick_entry",
-                        "receivable_reportto_email", "released_reportto_email", "org_hold_sample",
-                        "profile_air_string", "reflex_auto", "reflex_prompt", "reflex_auto_ndup",
-                        "reflex_prompt_ndup", "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n",
-                        "rf_h", "round_int", "round_int_sig_fig", "round_int_sig_fig_noe",
-                        "round_sig_fig", "round_sig_fig_noe", "sample_completed", "sample_error",
+                        "pos_last_of_run", "pos_last_of_subset_and_run", "private_well",
+                        "profile_order_in", "pt", "pt_sample", "qaevent_internal",
+                        "qaevent_override", "qaevent_warning", "qc_blank", "qc_duplicate",
+                        "qc_spike", "quick_entry", "receivable_reportto_email",
+                        "released_reportto_email", "org_hold_sample", "profile_air_string",
+                        "reflex_auto", "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
+                        "rf_a", "rf_ac", "rf_an", "rf_ah", "rf_c", "rf_n", "rf_h", "round_int",
+                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
+                        "round_sig_fig_noe", "sample_completed", "sample_error",
                         "sample_logged_in", "sample_not_verified", "sample_released", "sdwis",
                         "scriptlet_neonatal_domain", "scriptlet_pws_validate",
                         "sdwis_category_bacterial", "sdwis_category_chemical",
@@ -213,6 +214,7 @@ public class ApplicationBean {
         Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map,
                                                                    "pos_last_of_subset_and_run");
         Constants.dictionary().PRIVATE_WELL = dictId(map, "private_well");
+        Constants.dictionary().PROFILE_ORDER_IN = dictId(map, "profile_order_in");
         Constants.dictionary().PT = dictId(map, "pt");
         Constants.dictionary().PROFILE_AIR_STRING = dictId(map, "profile_air_string");
         Constants.dictionary().PT_SAMPLE = dictId(map, "pt_sample");
