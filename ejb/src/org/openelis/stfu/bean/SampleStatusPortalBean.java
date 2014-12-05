@@ -73,15 +73,14 @@ public class SampleStatusPortalBean {
 
     private static final SampleViewMeta meta = new SampleViewMeta();
 
+    /**
+     * fetch samples that match the search criteria
+     */
     @RolesAllowed("w_status-select")
     public ArrayList<SampleViewVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
-        int analysisId;
-        Integer prevSampleId;
         String clause, orgIds;
         HashMap<String, String> clauseMap;
         ArrayList<SampleViewVO> returnList;
-        ArrayList<SampleQaEventViewDO> sampleQAList;
-        ArrayList<AnalysisQaEventViewDO> analysisQAList;
 
         returnList = new ArrayList<SampleViewVO>();
 
@@ -98,57 +97,16 @@ public class SampleStatusPortalBean {
          * the QueryBuilder can understand.
          */
         clauseMap = ReportUtil.parseClauseAsString(clause);
-        // orgIds = clauseMap.get("organizationId");
-        // if (DataBaseUtil.isEmpty(orgIds))
-        // return returnList;
+        orgIds = clauseMap.get("organizationId");
+        if (DataBaseUtil.isEmpty(orgIds))
+            return returnList;
 
-        returnList = getSamples(fields, clause);
-
-        prevSampleId = -1;
-        for (SampleViewVO vo : returnList) {
-            if ( !prevSampleId.equals(vo.getSampleId())) {
-                // try {
-                // sampleQAList =
-                // sampleQa.fetchExternalBySampleId(vo.getSampleId());
-                // for (SampleQaEventViewDO sq : sampleQAList) {
-                // if
-                // (Constants.dictionary().QAEVENT_WARNING.equals(sq.getTypeId()))
-                // {
-                // vo.setSampleQA(QAEventType.WARNING);
-                // } else if
-                // (Constants.dictionary().QAEVENT_OVERRIDE.equals(sq.getTypeId()))
-                // {
-                // vo.setSampleQA(QAEventType.OVERRIDE);
-                // break;
-                // }
-                // }
-                // } catch (NotFoundException e) {
-                // // ignore
-                // }
-            }
-            analysisId = vo.getAnalysisId();
-            // try {
-            // analysisQAList =
-            // analysisQa.fetchExternalByAnalysisId(analysisId);
-            // for (AnalysisQaEventViewDO aq : analysisQAList) {
-            // if
-            // (Constants.dictionary().QAEVENT_WARNING.equals(aq.getTypeId())) {
-            // vo.setAnalysisQA(QAEventType.WARNING);
-            // } else if
-            // (Constants.dictionary().QAEVENT_OVERRIDE.equals(aq.getTypeId()))
-            // {
-            // vo.setAnalysisQA(QAEventType.OVERRIDE);
-            // break;
-            // }
-            // }
-            // } catch (NotFoundException e) {
-            // // ignore
-            // }
-            prevSampleId = vo.getSampleId();
-        }
-        return returnList;
+        return getSamples(fields, clause);
     }
 
+    /**
+     * fetch samples that match the search criteria
+     */
     private ArrayList<SampleViewVO> getSamples(ArrayList<QueryData> fields, String clause) throws Exception {
         QueryBuilderV2 builder;
         Query query;
@@ -174,8 +132,6 @@ public class SampleStatusPortalBean {
                          Constants.dictionary().SAMPLE_NOT_VERIFIED);
         builder.addWhere("(" + clause + ")");
 
-        // TODO
-        // builder.addWhere(SampleViewMeta.getReportToId() + clause);
         builder.setOrderBy(SampleViewMeta.getAccessionNumber());
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
@@ -217,6 +173,10 @@ public class SampleStatusPortalBean {
         return returnList;
     }
 
+    /**
+     * fetch project list for the organizations that the user is allowed to
+     * access
+     */
     @RolesAllowed("w_status-select")
     public ArrayList<IdNameVO> getProjectList() throws Exception {
         String clause;
@@ -233,6 +193,9 @@ public class SampleStatusPortalBean {
         return new ArrayList<IdNameVO>();
     }
 
+    /**
+     * fetch sample QA events for the given samples
+     */
     @RolesAllowed("w_status-select")
     public HashMap<Integer, ArrayList<String>> getSampleQaEvents(ArrayList<Integer> sampleIds) throws Exception {
         ArrayList<SampleQaEventViewDO> list;
@@ -251,6 +214,9 @@ public class SampleStatusPortalBean {
         return qaMap;
     }
 
+    /**
+     * fetch analysis QA events for the given analyses
+     */
     @RolesAllowed("w_status-select")
     public HashMap<Integer, ArrayList<String>> getAnalysisQaEvents(ArrayList<Integer> analysisIds) throws Exception {
         ArrayList<AnalysisQaEventViewDO> list;

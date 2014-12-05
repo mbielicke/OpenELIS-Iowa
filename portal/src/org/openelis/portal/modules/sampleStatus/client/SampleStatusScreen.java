@@ -276,6 +276,9 @@ public class SampleStatusScreen extends Screen {
         ui.getProjectCode().setModel(model);
     }
 
+    /**
+     * create the range queries for variables with from and to fields
+     */
     private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) throws Exception {
         boolean error;
         HashMap<String, QueryData> fieldMap;
@@ -315,6 +318,9 @@ public class SampleStatusScreen extends Screen {
         return new ArrayList<QueryData>(fieldMap.values());
     }
 
+    /**
+     * create a range query string
+     */
     private HashMap<String, QueryData> getRangeQuery(String fromKey, String toKey, String key,
                                                      HashMap<String, QueryData> fieldMap) throws Exception {
         QueryData from, to, range;
@@ -345,6 +351,9 @@ public class SampleStatusScreen extends Screen {
         return fieldMap;
     }
 
+    /**
+     * create the table from sample objects
+     */
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
         int currRow, qaCount;
@@ -424,9 +433,8 @@ public class SampleStatusScreen extends Screen {
 
                 ui.getTable().setText(currRow, 0, DataBaseUtil.toString(data.getAccessionNumber()));
 
-                // TODO
                 if (data.getCollector() == null)
-                    collector = "Collector Not Available";
+                    collector = Messages.get().sampleStatus_noCollector();
                 else
                     collector = data.getCollector();
                 sb.append("<font color=\"red\"><ol>");
@@ -494,6 +502,9 @@ public class SampleStatusScreen extends Screen {
         }
     }
 
+    /**
+     * fetch samples that match the search criteria
+     */
     private void getSampleList() {
         Query query;
         ArrayList<QueryData> queryList;
@@ -547,7 +558,9 @@ public class SampleStatusScreen extends Screen {
                                                                });
     }
 
-    // TODO
+    /**
+     * retrieve sample and analysis QA data for all of the samples
+     */
     private void fetchQaData(ArrayList<SampleViewVO> samples) throws Exception {
         HashSet<Integer> sids, aids;
 
@@ -563,6 +576,9 @@ public class SampleStatusScreen extends Screen {
         analysisQas = SampleStatusService.get().getAnalysisQaEvents(new ArrayList<Integer>(aids));
     }
 
+    /**
+     * add HTML to a cell in the table
+     */
     private void addHtml(int row, int column, String html) {
         ui.getTable().setHTML(row, column, ui.getTable().getHTML(row, column) + html);
     }

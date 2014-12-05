@@ -4,11 +4,14 @@ import static org.openelis.portal.client.Logger.remote;
 
 import java.util.logging.Level;
 
+import org.openelis.constants.Messages;
 import org.openelis.portal.client.OpenELISService;
 import org.openelis.portal.modules.dataView.client.DataViewScreen;
 import org.openelis.portal.modules.emailNotification.client.EmailNotificationScreen;
 import org.openelis.portal.modules.finalReport.client.FinalReportScreen;
 import org.openelis.portal.modules.sampleStatus.client.SampleStatusScreen;
+import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.PortalWindow;
 
 import com.google.gwt.core.client.GWT;
@@ -19,8 +22,10 @@ import com.google.gwt.user.client.ui.Composite;
 
 public class MainScreen extends Composite {
 
-    MainUI       ui = GWT.create(MainUIImpl.class);
-    PortalWindow window;
+    MainUI                    ui = GWT.create(MainUIImpl.class);
+    PortalWindow              window;
+
+    protected QuestionPopupUI questionPopup;
 
     public MainScreen() {
         initWidget(ui.asWidget());
@@ -73,16 +78,20 @@ public class MainScreen extends Composite {
         ui.navigation().logout().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                try {
-                    OpenELISService.get().logout();
-                } catch (Exception e) {
-                    remote().log(Level.SEVERE, e.getMessage(), e);
-                    Window.alert(e.getMessage());
-                }
-
-                Window.open("/portal/Portal.html", "_self", null);
+                QuestionPopupUI.popup();
             }
         });
+    }
+
+    public static void logout() {
+        try {
+            OpenELISService.get().logout();
+        } catch (Exception e) {
+            remote().log(Level.SEVERE, e.getMessage(), e);
+            Window.alert(e.getMessage());
+        }
+
+        Window.open("/portal/Portal.html", "_self", null);
     }
 
 }
