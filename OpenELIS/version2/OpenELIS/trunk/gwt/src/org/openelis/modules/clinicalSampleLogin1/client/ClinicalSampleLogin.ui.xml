@@ -159,7 +159,7 @@
                       </td>
                       <td colspan="3">
                         <w:TextBox ui:field="patientLastName" width="290px" field="String"
-                          maxLength="30" case="UPPER" />
+                          maxLength="30" case="UPPER" required="true" />
                       </td>
                     </tr>
                     <tr>
@@ -168,7 +168,7 @@
                       </td>
                       <td colspan="3">
                         <w:TextBox ui:field="patientFirstName" width="225px" field="String"
-                          maxLength="20" case="UPPER" />
+                          maxLength="20" case="UPPER" required="true" />
                       </td>
                     </tr>
                     <tr>
@@ -177,7 +177,7 @@
                       </td>
                       <td>
                         <c:Calendar ui:field="patientBirthDate" width="90px" begin="0"
-                          end="2" />
+                          end="2" required="true" />
                       </td>
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_nationalId}:" />
