@@ -27,18 +27,21 @@ package org.openelis.modules.scriptlet.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.NbsCahScriptlet1;
+import org.openelis.domain.QaEventDO;
+import org.openelis.modules.qaevent.client.QaEventService;
+import org.openelis.scriptlet.NBSScriptlet1Proxy;
 
 /**
- * This class is used for providing the front-end functionality for "nbs cah"
- * scriptlet
+ * This class is used for providing the front-end functionality for the
+ *  newborn screening test scriptlets
  */
-public class NbsCahProxy1 implements NbsCahScriptlet1.Proxy {
-
+public class NBSScriptletProxy1 implements NBSScriptlet1Proxy {
+    
     @Override
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
         return DictionaryCache.getById(id);
@@ -48,9 +51,14 @@ public class NbsCahProxy1 implements NbsCahScriptlet1.Proxy {
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
         return DictionaryCache.getBySystemName(systemName);
     }
+    
+    @Override
+    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
+        return QaEventService.get().fetchByNames(names);
+    }
 
     @Override
-    public void log(Level level, String message) {
-        logger.log(level, message);
+    public void log(Level level, String message, Exception e) {
+        logger.log(level, message, e);
     }
 }

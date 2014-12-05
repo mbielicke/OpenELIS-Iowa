@@ -738,7 +738,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     private void testsAdded(ArrayList<SampleTestRequestVO> tests) {
         String itemUid, anaUid;
         Node node, child;
-        ScheduledCommand cmd;
 
         /*
          * this reloads the tab
