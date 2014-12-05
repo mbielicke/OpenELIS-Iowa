@@ -88,14 +88,14 @@ public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
          * if a default note was found then add it if it's either an uncommitted
          * sample or was previously a quick-entry sample
          */
-        if (defaultNote != null && data.getActionBefore().contains(NEW_DOMAIN_ADDED))
+        if (defaultNote != null && data.getActionBefore().contains(NEW_DOMAIN))
             addDefaultNote(data);
 
         /*
          * if an item was added to the sample then set its sample type to
          * "Drinking Water"
          */
-        if (data.getActionBefore().contains(SAMPLE_ITEM_ADDED))
+        if (data.getActionBefore().contains(SAMPLE_ITEM))
             setSampleType(data);        
 
         return data;
@@ -112,7 +112,7 @@ public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
         note = data.getManager().sampleExternalNote.getEditing();
         note.setIsExternal("Y");
         note.setText(defaultNote.getText());
-        data.getActionAfter().add(Action_After.SAMPLE_EXTERNAL_NOTE_ADDED);
+        data.getChangedUids().add(Constants.uid().getNote(note.getId()));
     }
 
     /**
@@ -128,7 +128,7 @@ public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
         item.setTypeOfSampleId(drinkingWaterDict.getId());
         item.setTypeOfSample(drinkingWaterDict.getEntry());
         data.getChangedUids().add(Constants.uid().getSampleItem(item.getId()));
-        data.getActionAfter().add(Action_After.SAMPLE_ITEM_TYPE_CHANGED);
+        data.getActionAfter().add(Action_After.SAMPLE_ITEM_CHANGED);
     }
 
     public static interface Proxy {

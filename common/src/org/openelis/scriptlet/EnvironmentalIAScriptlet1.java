@@ -29,9 +29,9 @@ import static org.openelis.scriptlet.SampleSO.Action_Before.*;
 
 import java.util.logging.Level;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.manager.SampleManager1;
 import org.openelis.scriptlet.SampleSO.Action_After;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
@@ -76,7 +76,7 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
          * if a default note was found then add it if it's either an uncommitted
          * sample or was previously a quick-entry sample
          */
-        if (defaultNote != null && data.getActionBefore().contains(NEW_DOMAIN_ADDED))
+        if (defaultNote != null && data.getActionBefore().contains(NEW_DOMAIN))
             addDefaultNote(data);
 
         return data;
@@ -93,7 +93,7 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
         note = data.getManager().sampleExternalNote.getEditing();
         note.setIsExternal("Y");
         note.setText(defaultNote.getText());
-        data.getActionAfter().add(Action_After.SAMPLE_EXTERNAL_NOTE_ADDED);
+        data.getChangedUids().add(Constants.uid().getNote(note.getId()));
     }
 
     public static interface Proxy {

@@ -27,6 +27,7 @@ package org.openelis.scriptlet;
 
 import java.util.logging.Level;
 
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -50,65 +51,83 @@ import org.openelis.utilcommon.ResultHelper;
  */
 public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
 
-    private ScriptletUtility scriptletUtility;
+    private NBSScriptlet1Proxy proxy;
 
-    private Proxy            proxy;
+    private Integer          analysisId;
 
-    private static final String TEST_NAME = "nbs tsh", METHOD_NAME = "immunoassay",
-                    TSH = "nbs_tsh", OVERRIDE_INTER = "nbs_override_inter",
+    private static final String TSH = "nbs_tsh", OVERRIDE_INTER = "nbs_override_inter",
                     INTERPRETATION = "nbs_tsh_inter", NO = "no", LOWER_LIMIT = "nbs_lower_limit",
                     UPPER_LIMIT = "nbs_upper_limit";
 
-    public NbsTshScriptlet1(ScriptletUtility scriptletUtility, Proxy proxy) {
-        this.scriptletUtility = scriptletUtility;
-        this.proxy = proxy;
+    private static Integer       INTER_N, INTER_PP_NR, INTER_EC, INTER_ECU, INTER_PQ, INTER_BORD;
+    
+    private NBSCache1 nbsCache1;
 
-        proxy.log(Level.FINE, "Initializing NbsTshScriptlet1");
+    public NbsTshScriptlet1(NBSScriptlet1Proxy proxy, Integer analysisId) throws Exception {
+        this.proxy = proxy;
+        this.analysisId = analysisId;
+
+        proxy.log(Level.FINE, "Initializing NbsTshScriptlet1", null);
+
+        if (INTER_N == null) {
+            INTER_N = proxy.getDictionaryBySystemName("newborn_inter_n").getId();
+            INTER_PP_NR = proxy.getDictionaryBySystemName("newborn_inter_pp_nr").getId();
+            INTER_ECU = proxy.getDictionaryBySystemName("newborn_inter_ecu").getId();
+            INTER_PQ = proxy.getDictionaryBySystemName("newborn_inter_pq").getId();
+            INTER_BORD = proxy.getDictionaryBySystemName("newborn_inter_bord").getId();
+        }
+        
+        if (nbsCache1 == null)
+            nbsCache1 = NBSCache1.getInstance(proxy);
+
+        proxy.log(Level.FINE, "Initialized NbsTshScriptlet1", null);
     }
 
     @Override
     public SampleSO run(SampleSO data) {
-        ResultViewDO res;
         AnalysisViewDO ana;
         TestManager tm;
 
-        proxy.log(Level.FINE, "In NbsTshScriptlet1.run");
+        proxy.log(Level.FINE, "In NbsTshScriptlet1.run", null);
 
-        if (data.getActionBefore().contains(Action_Before.RESULT_CHANGED)) {
-            /*
-             * find the result that made this scriptlet get executed
-             */
-            res = scriptletUtility.getChangedResult(data, TEST_NAME, METHOD_NAME);
-
-            if (res == null)
+        try {
+            if (data.getActionBefore().contains(Action_Before.RESULT)) {
                 /*
-                 * the result doesn't belong to this test
+                 * find out if the changed result belongs to the analysis
+                 * managed by this scriptlet; don't do anything if it doesn't
+                 */
+                if ( !ScriptletUtility.isManagedResult(data, analysisId))
+                    return data;
+                ana = (AnalysisViewDO)data.getManager()
+                                          .getObject(Constants.uid().getAnalysis(analysisId));
+            } else if (data.getActionBefore().contains(Action_Before.QA) ||
+                       SampleMeta.getNeonatalCollectionAge().equals(data.getChanged())) {
+                /*
+                 * a sample qa event was added or removed or the collection age
+                 * changed; find the analysis managed by this scriptlet
+                 */
+                ana = (AnalysisViewDO)data.getManager()
+                                          .getObject(Constants.uid().getAnalysis(analysisId));
+            } else {
+                /*
+                 * nothing concerning this scriptlet happened
                  */
                 return data;
-            ana = (AnalysisViewDO)data.getManager()
-                                      .getObject(Constants.uid().getAnalysis(res.getAnalysisId()));
-            tm = data.getResults().get(res.getId());
-        } else if (data.getActionBefore().contains(Action_Before.SAMPLE_QA_ADDED) ||
-                   data.getActionBefore().contains(Action_Before.SAMPLE_QA_REMOVED) ||
-                   SampleMeta.getNeonatalCollectionAge().equals(data.getChanged())) {
-            /*
-             * a sample qa event was added or removed or the collection age
-             * changed
-             */
-            ana = scriptletUtility.getAnalysis(data, TEST_NAME, METHOD_NAME);
-            if (ana == null)
-                /*
-                 * the sample doesn't have an active version of this test
-                 */
-                return data;
-            tm = data.getAnalyses().get(ana.getId());
-        } else {
-            /*
-             * nothing concerning this scriptlet happened
-             */
+            }
+        } catch (Exception e) {
+            data.setStatus(Status.FAILED);
+            data.addException(e);
             return data;
         }
 
+        /*
+         * don't do anything if the analysis is released or cancelled
+         */
+        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+            return data;
+
+        tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         /*
          * set the value of interpretation based on the value of this result
          */
@@ -133,6 +152,7 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         ResultViewDO res, resTsh, resOver, resInter;
         DictionaryDO dict;
         QaEventDO qa;
+        AnalysisQaEventViewDO aqa;
         FormattedValue fv;
         ResultFormatter rf;
 
@@ -145,7 +165,7 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         upper = null;
 
         proxy.log(Level.FINE,
-                  "Going through the manager to find the result that triggered the scriptlet");
+                  "Going through the manager to find the result that triggered the scriptlet", null);
         /*
          * find the values for the various analytes
          */
@@ -168,7 +188,7 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         try {
-            proxy.log(Level.FINE, "Finding the values of override interpretation");
+            proxy.log(Level.FINE, "Finding the values of override interpretation", null);
             /*
              * proceed only if the value for override interpretation has been
              * validated and is "No"
@@ -203,16 +223,16 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
              * value of interpretation is "within normal limits" if the value of
              * tsh is between 0 and 24
              */
-            proxy.log(Level.FINE, "Getting the value for interretation based on the value for tsh");
+            proxy.log(Level.FINE, "Getting the value for interretation based on the value for tsh", null);
 
             if ( (tshVal >= 0 && tshVal < 25.0) || (tshVal == 25.0 && lt))
-                interp = scriptletUtility.INTER_N;
+                interp = INTER_N;
             else if (tshVal < 60.0 || (tshVal == 60.0 && lt))
-                interp = scriptletUtility.INTER_BORD;
+                interp = INTER_BORD;
             else
-                interp = scriptletUtility.INTER_PP_NR;
+                interp = INTER_PP_NR;
 
-            proxy.log(Level.FINE, "Finding the qa event to be added to the analysis");
+            proxy.log(Level.FINE, "Finding the qa event to be added to the analysis", null);
             /*
              * find the qa event to be added to the analysis
              */
@@ -226,32 +246,33 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
                  */
                 if (sm.getSample().getCollectionTime() != null ||
                     sn.getPatient().getBirthTime() != null)
-                    qa = scriptletUtility.getQaEvent(scriptletUtility.QA_EC, ana.getTestId());
+                    qa = nbsCache1.getQaEvent(NBSCache1.QA_EC, ana.getTestId());
                 else
-                    qa = scriptletUtility.getQaEvent(scriptletUtility.QA_ECU, ana.getTestId());
+                    qa = nbsCache1.getQaEvent(NBSCache1.QA_ECU, ana.getTestId());
             }
 
             /*
              * add the qa event if it's not already added
              */
-            if (qa != null && !scriptletUtility.analysisHasQA(sm, ana, qa.getName())) {
-                proxy.log(Level.FINE, "Adding the qa event: " + qa.getName());
-                sm.qaEvent.add(ana, qa);
+            if (qa != null && !ScriptletUtility.analysisHasQA(sm, ana, qa.getName())) {
+                proxy.log(Level.FINE, "Adding the qa event: " + qa.getName(), null);
+                aqa = sm.qaEvent.add(ana, qa);
+                data.getChangedUids().add(Constants.uid().getAnalysisQAEvent(aqa.getId()));
             }
 
             /*
              * the original interpretation overrides qa events if it's
              * "presumptive positive"; otherwise it's overridden by other data
              */
-            if ( !scriptletUtility.INTER_PP_NR.equals(interp)) {
-                proxy.log(Level.FINE, "Setting the interpretation based on qa events");
-                if (scriptletUtility.sampleHasRejectQA(sm, true)) {
+            if ( !INTER_PP_NR.equals(interp)) {
+                proxy.log(Level.FINE, "Setting the interpretation based on qa events", null);
+                if (ScriptletUtility.sampleHasRejectQA(sm, true)) {
                     /*
                      * the sample has reject qas so set the interpretation as
                      * "poor quality"
                      */
-                    interp = scriptletUtility.INTER_PQ;
-                } else if ( !scriptletUtility.INTER_BORD.equals(interp)) {
+                    interp = INTER_PQ;
+                } else if ( !INTER_BORD.equals(interp)) {
                     /*
                      * the interpretation is "borderline - resubmit sample",
                      * then it has higher priority than "collection age"
@@ -263,10 +284,10 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
                          * then the interpretation is "early collection"
                          * otherwise it's "early collection unknown"
                          */
-                        if (scriptletUtility.QA_EC.equals(qa.getName()))
-                            interp = scriptletUtility.INTER_EC;
-                        else if (scriptletUtility.QA_ECU.equals(qa.getName()))
-                            interp = scriptletUtility.INTER_ECU;
+                        if (NBSCache1.QA_EC.equals(qa.getName()))
+                            interp = INTER_EC;
+                        else if (NBSCache1.QA_ECU.equals(qa.getName()))
+                            interp = INTER_ECU;
                     }
                 }
             }
@@ -282,7 +303,7 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
                 fv = rf.format(resInter.getResultGroup(), ana.getUnitOfMeasureId(), dict.getEntry());
                 if ( !DataBaseUtil.isSame(resInter.getTestResultId(), fv.getId())) {
                     proxy.log(Level.FINE, "Setting the value of interpretation as: " +
-                                          dict.getEntry());
+                                          dict.getEntry(), null);
                     ResultHelper.formatValue(resInter,
                                              dict.getEntry(),
                                              ana.getUnitOfMeasureId(),
@@ -319,13 +340,5 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         return null;
-    }
-
-    public static interface Proxy {
-        public DictionaryDO getDictionaryById(Integer id) throws Exception;
-
-        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
-
-        public void log(Level level, String message);
     }
 }

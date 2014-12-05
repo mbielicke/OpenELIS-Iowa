@@ -25,159 +25,24 @@
  */
 package org.openelis.scriptlet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleQaEventDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.TestManager;
 
 /**
  * This class implements the common functionality for all scriptlets
  */
 public class ScriptletUtility {
 
-    private Proxy                                        proxy;
-    private HashMap<String, HashMap<Integer, QaEventDO>> qaTestMap;
-
-    public final String                                  QA_EC = "early collection",
-                    QA_ECU = "early collection unk", QA_U = "unknown weight",
-                    QA_UE = "unknown weight elev", QA_TRAN = "transfused",
-                    QA_TRANU = "transfused unknown", QA_PQ = "poor quality";
-
-    public final Integer                                 INTER_N, INTER_PP_NR, INTER_BORD_NR,
-                    INTER_DFNT, INTER_AA_NR, INTER_EC, INTER_UE, INTER_U, INTER_FETAL, INTER_BARTS,
-                    INTER_TRAN, INTER_TRAIT_NR, INTER_DIS, INTER_D_B, INTER_ECU, INTER_TRANU,
-                    INTER_T_B, INTER_PSBL, INTER_PQ, INTER_PP, INTER_NEG, INTER_PS, INTER_INC,
-                    INTER_INS, INTER_INV, INTER_SNTL, INTER_AA, INTER_BORD, INTER_TRAIT,
-                    ETHN_JEWISH, ETHN_CAUCASIAN, ETHN_HISPANIC, ETHN_AFRICAN, ETHN_ASIAN,
-                    FAM_HIST_CARRIER, FAM_HIST_DISORDER, RELAT_PARENT, RELAT_SIBLING,
-                    RELAT_DAUGHTER, RELAT_AUNT, RELAT_NIECE, RELAT_COUSIN, RELAT_8, RELAT_16,
-                    RELAT_INDIVIDUAL, NORMAL, NEGATIVE, NOT_TESTED;
-
-    public ScriptletUtility(Proxy proxy) throws Exception {
-        ArrayList<String> names;
-        ArrayList<QaEventDO> qas;
-        HashMap<Integer, QaEventDO> tmap;
-
-        this.proxy = proxy;
-
-        proxy.log(Level.FINE, "In ScriptletUtility. Initializing dictionary constants");
-
-        INTER_N = proxy.getDictionaryBySystemName("newborn_inter_n").getId();
-        INTER_PP_NR = proxy.getDictionaryBySystemName("newborn_inter_pp_nr").getId();
-        INTER_BORD_NR = proxy.getDictionaryBySystemName("newborn_inter_bord_nr").getId();
-        INTER_DFNT = proxy.getDictionaryBySystemName("newborn_inter_dfnt").getId();
-        INTER_AA_NR = proxy.getDictionaryBySystemName("newborn_inter_aa_nr").getId();
-        INTER_EC = proxy.getDictionaryBySystemName("newborn_inter_ec").getId();
-        INTER_UE = proxy.getDictionaryBySystemName("newborn_inter_ue").getId();
-        INTER_U = proxy.getDictionaryBySystemName("newborn_inter_u").getId();
-        INTER_FETAL = proxy.getDictionaryBySystemName("newborn_inter_fetal").getId();
-        INTER_BARTS = proxy.getDictionaryBySystemName("newborn_inter_barts").getId();
-        INTER_TRAN = proxy.getDictionaryBySystemName("newborn_inter_tran").getId();
-        INTER_TRAIT_NR = proxy.getDictionaryBySystemName("newborn_inter_trait_nr").getId();
-        INTER_DIS = proxy.getDictionaryBySystemName("newborn_inter_dis").getId();
-        INTER_D_B = proxy.getDictionaryBySystemName("newborn_inter_d_b").getId();
-        INTER_ECU = proxy.getDictionaryBySystemName("newborn_inter_ecu").getId();
-        INTER_TRANU = proxy.getDictionaryBySystemName("newborn_inter_tranu").getId();
-        INTER_T_B = proxy.getDictionaryBySystemName("newborn_inter_t_b").getId();
-        INTER_PSBL = proxy.getDictionaryBySystemName("newborn_inter_psbl").getId();
-        INTER_PQ = proxy.getDictionaryBySystemName("newborn_inter_pq").getId();
-        INTER_PP = proxy.getDictionaryBySystemName("newborn_inter_pp").getId();
-        INTER_NEG = proxy.getDictionaryBySystemName("newborn_inter_neg").getId();
-        INTER_PS = proxy.getDictionaryBySystemName("newborn_inter_ps").getId();
-        INTER_INC = proxy.getDictionaryBySystemName("newborn_inter_inc").getId();
-        INTER_INS = proxy.getDictionaryBySystemName("newborn_inter_ins").getId();
-        INTER_INV = proxy.getDictionaryBySystemName("newborn_inter_inv").getId();
-        INTER_SNTL = proxy.getDictionaryBySystemName("newborn_inter_sntl").getId();
-        INTER_AA = proxy.getDictionaryBySystemName("newborn_inter_aa").getId();
-        INTER_BORD = proxy.getDictionaryBySystemName("newborn_inter_bord").getId();
-        INTER_TRAIT = proxy.getDictionaryBySystemName("newborn_inter_trait").getId();
-        ETHN_JEWISH = proxy.getDictionaryBySystemName("cf_ethnicity_jewish").getId();
-        ETHN_CAUCASIAN = proxy.getDictionaryBySystemName("cf_ethnicity_caucasian").getId();
-        ETHN_HISPANIC = proxy.getDictionaryBySystemName("cf_ethnicity_hispanic").getId();
-        ETHN_AFRICAN = proxy.getDictionaryBySystemName("cf_ethnicity_african").getId();
-        ETHN_ASIAN = proxy.getDictionaryBySystemName("cf_ethnicity_asian").getId();
-        FAM_HIST_CARRIER = proxy.getDictionaryBySystemName("cf_fam_hist_carrier").getId();
-        FAM_HIST_DISORDER = proxy.getDictionaryBySystemName("cf_fam_hist_disorder").getId();
-        RELAT_PARENT = proxy.getDictionaryBySystemName("cf_relation_parent").getId();
-        RELAT_SIBLING = proxy.getDictionaryBySystemName("cf_relation_sibling").getId();
-        RELAT_DAUGHTER = proxy.getDictionaryBySystemName("cf_relation_daughter").getId();
-        RELAT_AUNT = proxy.getDictionaryBySystemName("cf_relation_aunt").getId();
-        RELAT_NIECE = proxy.getDictionaryBySystemName("cf_relation_niece").getId();
-        RELAT_COUSIN = proxy.getDictionaryBySystemName("cf_relation_cousin").getId();
-        RELAT_8 = proxy.getDictionaryBySystemName("cf_relation_8").getId();
-        RELAT_16 = proxy.getDictionaryBySystemName("cf_relation_16").getId();
-        RELAT_INDIVIDUAL = proxy.getDictionaryBySystemName("cf_relation_individual").getId();
-        NORMAL = proxy.getDictionaryBySystemName("normal").getId();
-        NEGATIVE = proxy.getDictionaryBySystemName("negative").getId();
-        NOT_TESTED = proxy.getDictionaryBySystemName("not_tested").getId();
-
-        if (qaTestMap == null) {
-            proxy.log(Level.FINE, "Initializing qa events");
-
-            names = new ArrayList<String>();
-            names.add(QA_EC);
-            names.add(QA_ECU);
-            names.add(QA_U);
-            names.add(QA_UE);
-            names.add(QA_TRAN);
-            names.add(QA_TRANU);
-            names.add(QA_PQ);
-
-            /*
-             * the following mapping allows looking up a qa event using its name
-             * and the id of a test that it's linked to; for generic qa events,
-             * the test id is null
-             */
-            qas = proxy.fetchByNames(names);
-            qaTestMap = new HashMap<String, HashMap<Integer, QaEventDO>>();
-            for (QaEventDO qa : qas) {
-                tmap = qaTestMap.get(qa.getName());
-                if (tmap == null) {
-                    tmap = new HashMap<Integer, QaEventDO>();
-                    qaTestMap.put(qa.getName(), tmap);
-                }
-                tmap.put(qa.getTestId(), qa);
-            }
-        }
-    }
-
-    /**
-     * Returns the qa event with the passed name and linked to the test with the
-     * passed id. Returns the generic qa event with this name if either the test
-     * id is null or a qa event is not found for the test id.
-     */
-    public QaEventDO getQaEvent(String name, Integer testId) {
-        QaEventDO qa;
-        HashMap<Integer, QaEventDO> tmap;
-
-        tmap = qaTestMap.get(name);
-        if (tmap == null)
-            return null;
-
-        qa = tmap.get(testId);
-        if (testId != null && qa == null)
-            qa = tmap.get(null);
-
-        return qa;
-    }
-
     /**
      * Returns true if the sample has any "reject" sample qa events i.e. the
      * ones with type result override; considers qa events of type warning as
      * "reject" also, if the passed flag is true. Returns false otherwise.
      */
-    public boolean sampleHasRejectQA(SampleManager1 sm, boolean includeWarning) {
+    public static boolean sampleHasRejectQA(SampleManager1 sm, boolean includeWarning) {
         SampleQaEventDO sqa;
 
         for (int i = 0; i < sm.qaEvent.count(); i++ ) {
@@ -195,7 +60,8 @@ public class ScriptletUtility {
      * with type result override; considers qa events of type warning as
      * "reject" also, if the passed flag is true. Returns false otherwise.
      */
-    public boolean analysisHasRejectQA(SampleManager1 sm, AnalysisViewDO ana, boolean includeWarning) {
+    public static boolean analysisHasRejectQA(SampleManager1 sm, AnalysisViewDO ana,
+                                              boolean includeWarning) {
         AnalysisQaEventViewDO aqa;
 
         for (int i = 0; i < sm.qaEvent.count(ana); i++ ) {
@@ -212,7 +78,7 @@ public class ScriptletUtility {
      * Returns true if the passed analysis has a qa event with the passed name;
      * false otherwise
      */
-    public boolean analysisHasQA(SampleManager1 sm, AnalysisViewDO ana, String name) {
+    public static boolean analysisHasQA(SampleManager1 sm, AnalysisViewDO ana, String name) {
         AnalysisQaEventViewDO aqa;
 
         for (int i = 0; i < sm.qaEvent.count(ana); i++ ) {
@@ -225,65 +91,21 @@ public class ScriptletUtility {
     }
 
     /**
-     * Returns the result whose value was changed to make the scriptlet for the
-     * to the active version of the test with the passed name and method ;
-     * returns null if such a result couldn't be found
+     * Returns true if the result specified by the uid in the passed SO belongs
+     * to the analysis with the passed id; returns false otherwise
      */
-    public ResultViewDO getChangedResult(SampleSO data, String testName, String methodName) {
+    public static boolean isManagedResult(SampleSO data, Integer analysisId) {
         ResultViewDO res;
-        TestViewDO test;
-        TestManager tm;
-
-        res = null;
-        proxy.log(Level.FINE,
-                  "Going through the SO to find the result that trigerred the scriptlet for test: " +
-                                  testName + ", " + methodName);
-        for (Map.Entry<Integer, TestManager> entry : data.getResults().entrySet()) {
-            tm = entry.getValue();
-            test = tm.getTest();
-            if (test.getName().equals(testName) && test.getMethodName().equals(methodName) &&
-                "Y".equals(test.getIsActive())) {
-                res = (ResultViewDO)data.getManager()
-                                        .getObject(Constants.uid().getResult(entry.getKey()));
-                break;
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * Returns the analysis corresponding to the active version of the test with
-     * the passed name and method; returns null if such an analysis couldn't be
-     * found
-     */
-    public AnalysisViewDO getAnalysis(SampleSO data, String testName, String methodName) {
         AnalysisViewDO ana;
-        TestViewDO test;
-        TestManager tm;
+        SampleManager1 sm;
 
-        ana = null;
-        proxy.log(Level.FINE, "Going through the SO to find the analysis for test: " + testName +
-                              ", " + methodName);
-        for (Map.Entry<Integer, TestManager> entry : data.getAnalyses().entrySet()) {
-            tm = entry.getValue();
-            test = tm.getTest();
-            if (test.getName().equals(testName) && test.getMethodName().equals(methodName) &&
-                "Y".equals(test.getIsActive())) {
-                ana = (AnalysisViewDO)data.getManager()
-                                          .getObject(Constants.uid().getAnalysis(entry.getKey()));
-                break;
-            }
-        }
-
-        return ana;
-    }
-
-    public static interface Proxy {
-        public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
-
-        public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception;
-
-        public void log(Level level, String message);
+        sm = data.getManager();
+        /*
+         * get the result specified by the uid in the SO and find out if its
+         * analysis' test is linked to the analysis specified by the passed id
+         */
+        res = (ResultViewDO)sm.getObject(data.getUid());
+        ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(res.getAnalysisId()));
+        return ana.getId().equals(analysisId);
     }
 }

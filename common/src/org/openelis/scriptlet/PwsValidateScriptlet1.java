@@ -25,18 +25,13 @@
  */
 package org.openelis.scriptlet;
 
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PWSDO;
-import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.AuxFieldManager;
-import org.openelis.meta.SampleMeta;
+import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
@@ -49,19 +44,13 @@ public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Proxy               proxy;
 
-    private static DictionaryDO pwsValidateDict;
+    private Integer             auxDataId;
 
-    public PwsValidateScriptlet1(Proxy proxy) throws Exception {
+    public PwsValidateScriptlet1(Proxy proxy, Integer auxDataId) throws Exception {
         this.proxy = proxy;
+        this.auxDataId = auxDataId;
 
         proxy.log(Level.FINE, "Initializing PwsValidateScriptlet1");
-        /*
-         * the dictionary entry for this scriptlet
-         */
-        if (pwsValidateDict == null) {
-            proxy.log(Level.FINE, "Getting the dictionary for 'scriptlet_pws_validate1'");
-            pwsValidateDict = proxy.getDictionaryBySystemName("scriptlet_pws_validate1");
-        }
     }
 
     @Override
@@ -70,7 +59,7 @@ public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
         /*
          * validate only if an aux data was changed
          */
-        if ( !SampleMeta.getAuxDataValue().equals(data.getChanged()))
+        if ( !data.getActionBefore().contains(Action_Before.AUX_DATA))
             return data;
 
         validatePWS(data);
@@ -83,38 +72,23 @@ public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
      * the scriptlet
      */
     private void validatePWS(SampleSO data) {
-        int i;
-        String uid;
         AuxDataViewDO aux;
-        AuxFieldViewDO auxf;
-        AuxFieldManager auxfm;
 
         try {
-            /*
-             * go through the hashmap for aux data in the SO to find the aux
-             * data that was changed
-             */
             proxy.log(Level.FINE,
-                      "Going through the SO to find the aux data that was changed to trigger the scriptlet");
-            for (Map.Entry<Integer, AuxFieldGroupManager> entry : data.getAuxData().entrySet()) {
-                uid = Constants.uid().getAuxData(entry.getKey());
-                aux = (AuxDataViewDO)data.getManager().getObject(uid);
-                auxfm = entry.getValue().getFields();
-                for (i = 0; i < auxfm.count(); i++ ) {
-                    auxf = auxfm.getAuxFieldAt(i);
-                    /*
-                     * make sure that the scriptlet linked to the aux data is
-                     * for validating PWS, and if it is, then try to fetch a PWS
-                     * record whose number0 is the aux data's value
-                     */
-                    if (aux.getAuxFieldId().equals(auxf.getId()) &&
-                        pwsValidateDict.getId().equals(auxf.getScriptletId())) {
-                        proxy.log(Level.FINE, "Fetching PWS record for number0: " + aux.getValue());
-                        proxy.fetchPwsByNumber0(aux.getValue());
-                        break;
-                    }
-                }
-            }
+                      "Finding the aux data and aux field that was changed to trigger the scriptlet");
+            /*
+             * get the changed aux data by using the uid in the SO and find out
+             * if it's managed by this scriptlet; don't do anything if it's not
+             */
+            aux = (AuxDataViewDO)data.getManager().getObject(data.getUid());
+            if ( !aux.getId().equals(auxDataId))
+                return;
+            /*
+             * try to fetch a PWS record whose number0 is the aux data's value
+             */
+            proxy.log(Level.FINE, "Fetching PWS record for number0: " + aux.getValue());
+            proxy.fetchPwsByNumber0(aux.getValue());
         } catch (NotFoundException e) {
             data.setStatus(Status.FAILED);
             data.addException(new FormErrorException(Messages.get().gen_invalidValueException()));

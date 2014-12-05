@@ -30,104 +30,7 @@ import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
-import org.openelis.bean.AnalysisBean;
-import org.openelis.bean.AnalysisQAEventBean;
-import org.openelis.bean.AnalysisReportFlagsBean;
-import org.openelis.bean.AnalysisUserBean;
-import org.openelis.bean.AnalyteBean;
-import org.openelis.bean.AnalyteParameterBean;
-import org.openelis.bean.AuxDataBean;
-import org.openelis.bean.AuxFieldBean;
-import org.openelis.bean.AuxFieldGroupBean;
-import org.openelis.bean.AuxFieldValueBean;
-import org.openelis.bean.CategoryBean;
-import org.openelis.bean.CategoryCacheBean;
-import org.openelis.bean.DictionaryBean;
-import org.openelis.bean.DictionaryCacheBean;
-import org.openelis.bean.EventLogBean;
-import org.openelis.bean.ExchangeCriteriaBean;
-import org.openelis.bean.ExchangeExternalTermBean;
-import org.openelis.bean.ExchangeLocalTermBean;
-import org.openelis.bean.ExchangeProfileBean;
-import org.openelis.bean.FinalReportBean;
-import org.openelis.bean.HistoryBean;
-import org.openelis.bean.InstrumentBean;
-import org.openelis.bean.InstrumentLogBean;
-import org.openelis.bean.InventoryAdjustmentBean;
-import org.openelis.bean.InventoryComponentBean;
-import org.openelis.bean.InventoryItemBean;
-import org.openelis.bean.InventoryItemCacheBean;
-import org.openelis.bean.InventoryLocationBean;
-import org.openelis.bean.InventoryReceiptBean;
-import org.openelis.bean.InventoryXAdjustBean;
-import org.openelis.bean.InventoryXPutBean;
-import org.openelis.bean.InventoryXUseBean;
-import org.openelis.bean.LockBean;
-import org.openelis.bean.NoteBean;
-import org.openelis.bean.OrderBean;
-import org.openelis.bean.OrderContainerBean;
-import org.openelis.bean.OrderItemBean;
-import org.openelis.bean.OrderOrganizationBean;
-import org.openelis.bean.OrderRecurrenceBean;
-import org.openelis.bean.OrderTestAnalyteBean;
-import org.openelis.bean.OrderTestBean;
-import org.openelis.bean.OrganizationBean;
-import org.openelis.bean.OrganizationContactBean;
-import org.openelis.bean.OrganizationParameterBean;
-import org.openelis.bean.PWSAddressBean;
-import org.openelis.bean.PWSBean;
-import org.openelis.bean.PWSFacilityBean;
-import org.openelis.bean.PWSMonitorBean;
-import org.openelis.bean.PWSViolationBean;
-import org.openelis.bean.PanelBean;
-import org.openelis.bean.PanelItemBean;
-import org.openelis.bean.PreferencesBean;
-import org.openelis.bean.PrinterCacheBean;
-import org.openelis.bean.ProjectBean;
-import org.openelis.bean.ProjectParameterBean;
-import org.openelis.bean.ProviderBean;
-import org.openelis.bean.ProviderLocationBean;
-import org.openelis.bean.QaEventBean;
-import org.openelis.bean.QcAnalyteBean;
-import org.openelis.bean.QcBean;
-import org.openelis.bean.QcLotBean;
-import org.openelis.bean.ResultBean;
-import org.openelis.bean.SampleBean;
-import org.openelis.bean.SampleEnvironmentalBean;
-import org.openelis.bean.SampleItemBean;
-import org.openelis.bean.SampleManagerBean;
-import org.openelis.bean.SampleOrganizationBean;
-import org.openelis.bean.SamplePrivateWellBean;
-import org.openelis.bean.SampleProjectBean;
-import org.openelis.bean.SampleQAEventBean;
-import org.openelis.bean.SampleSDWISBean;
-import org.openelis.bean.SectionBean;
-import org.openelis.bean.SectionCacheBean;
-import org.openelis.bean.SectionParameterBean;
-import org.openelis.bean.SessionCacheBean;
-import org.openelis.bean.ShippingBean;
-import org.openelis.bean.ShippingItemBean;
-import org.openelis.bean.ShippingTrackingBean;
-import org.openelis.bean.StorageBean;
-import org.openelis.bean.StorageLocationBean;
-import org.openelis.bean.SystemVariableBean;
-import org.openelis.bean.TestAnalyteBean;
-import org.openelis.bean.TestBean;
-import org.openelis.bean.TestPrepBean;
-import org.openelis.bean.TestReflexBean;
-import org.openelis.bean.TestResultBean;
-import org.openelis.bean.TestSectionBean;
-import org.openelis.bean.TestTrailerBean;
-import org.openelis.bean.TestTypeOfSampleBean;
-import org.openelis.bean.TestWorksheetAnalyteBean;
-import org.openelis.bean.TestWorksheetBean;
-import org.openelis.bean.TestWorksheetItemBean;
-import org.openelis.bean.UserCacheBean;
-import org.openelis.bean.WorksheetAnalysisBean;
-import org.openelis.bean.WorksheetBean;
-import org.openelis.bean.WorksheetItemBean;
-import org.openelis.bean.WorksheetQcResultBean;
-import org.openelis.bean.WorksheetResultBean;
+import org.openelis.bean.*;
 import org.openelis.security.remote.SystemUserPermissionRemote;
 
 /**
@@ -378,6 +281,10 @@ public class EJBFactory {
     public static SampleManagerBean getSampleManager() {
         return lookup("SampleManagerBean");
     }
+    
+    public static SampleManager1Bean getSampleManager1() {
+        return lookup("SampleManager1Bean");
+    }
 
     public static SampleOrganizationBean getSampleOrganization() {
         return lookup("SampleOrganizationBean");
@@ -418,6 +325,10 @@ public class EJBFactory {
     public static ShippingTrackingBean getShippingTracking() {
         return lookup("ShippingTrackingBean");
     }
+    
+    public static StandardNoteBean getStandardNote() {
+        return lookup("StandardNoteBean");
+    }
 
     public static StorageBean getStorage() {
         return lookup("StorageBean");
@@ -437,6 +348,10 @@ public class EJBFactory {
 
     public static TestBean getTest() {
         return lookup("TestBean");
+    }
+    
+    public static TestManagerBean getTestManager() {
+        return lookup("TestManagerBean");
     }
 
     public static TestPrepBean getTestPrep() {

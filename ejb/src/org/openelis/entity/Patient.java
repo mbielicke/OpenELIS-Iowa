@@ -56,27 +56,21 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Patient.FetchById",
                 query = "select new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName," +
                 		"p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
-                		"p.ethnicityId, p.nationalId, p.address.multipleUnit, p.address.streetAddress," +
-                        "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
-                        "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
-                        "p.address.country)"
-                      + " from Patient p where p.id = :id"),
+                		"p.ethnicityId, p.nationalId, a.multipleUnit, a.streetAddress, a.city, a.state," +
+                		"a.zipCode, a.workPhone, a.homePhone, a.cellPhone, a.faxPhone, a.email, a.country)"
+                      + " from Patient p LEFT JOIN p.address a where p.id = :id"),
      @NamedQuery(name = "Patient.FetchByIds",
                 query = "select distinct new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName," +
                         "p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
-                        "p.ethnicityId, p.nationalId, p.address.multipleUnit, p.address.streetAddress," +
-                        "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
-                        "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
-                        "p.address.country)"
-                      + " from Patient p where p.id in (:ids)"),
+                        "p.ethnicityId, p.nationalId, a.multipleUnit, a.streetAddress, a.city, a.state," +
+                        "a.zipCode, a.workPhone, a.homePhone, a.cellPhone, a.faxPhone, a.email, a.country)"
+                      + " from Patient p LEFT JOIN p.address a where p.id in (:ids)"),
     @NamedQuery(name = "Patient.FetchByRelatedPatientId",
                 query = "select new org.openelis.domain.PatientRelationVO(p.id, p.lastName, p.firstName," +
                         "p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
-                        "p.ethnicityId, p.nationalId, p.address.multipleUnit, p.address.streetAddress," +
-                        "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
-                        "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
-                        "p.address.country, pr.relationId)"
-                      + " from Patient p, PatientRelation pr where pr.relatedPatientId = p.id and pr.patientId = :patientId")})
+                        "p.ethnicityId, p.nationalId, a.multipleUnit, a.streetAddress, a.city, a.state," +
+                        "a.zipCode, a.workPhone, a.homePhone, a.cellPhone, a.faxPhone, a.email, a.country, pr.relationId)"
+                      + " from Patient p, PatientRelation pr LEFT JOIN p.address a where pr.relatedPatientId = p.id and pr.patientId = :patientId")})
 @Entity
 @Table(name = "patient")
 @EntityListeners( {AuditUtil.class})
