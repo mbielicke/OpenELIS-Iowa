@@ -103,7 +103,7 @@ public class ResultTabUI extends Screen {
 
     @UiField
     protected Button                                    addResultButton, removeResultButton,
-                    checkAllButton, uncheckAllButton;
+                    checkAllButton, uncheckAllButton, runScriptletsButton;
 
     @UiField
     protected Label<String>                             overrideLabel;
@@ -153,6 +153,7 @@ public class ResultTabUI extends Screen {
                 if (table.getRowCount() > 0 && (isState(ADD, UPDATE) && canEdit)) {
                     checkAllButton.setEnabled(true);
                     uncheckAllButton.setEnabled(true);
+                    runScriptletsButton.setEnabled(true);
                 }
             }
 
@@ -270,9 +271,11 @@ public class ResultTabUI extends Screen {
                     rc = (ResultCell)table.getColumnAt(event.getCol()).getCellEditor();
                     rc.setModel(model);
                     if (rc.getWidget() instanceof TextBox) {
-                        if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(caseFlag))
+                        if (caseFlag != null &&
+                            Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(caseFlag))
                             ((TextBox)rc.getWidget()).setCase(TextBase.Case.LOWER);
-                        else if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(caseFlag))
+                        else if (caseFlag != null &&
+                                 Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(caseFlag))
                             ((TextBox)rc.getWidget()).setCase(TextBase.Case.UPPER);
                         else
                             ((TextBox)rc.getWidget()).setCase(TextBase.Case.MIXED);
@@ -323,7 +326,6 @@ public class ResultTabUI extends Screen {
                     return;
                 }
 
-                tm = null;
                 if (c == 0) {
                     data = manager.result.get(analysis, index, c);
                     data.setIsReportable((String)val);
@@ -331,35 +333,36 @@ public class ResultTabUI extends Screen {
                     data = manager.result.get(analysis, index, c - 2);
                     value = (Value)val;
                     table.clearExceptions(r, c);
-                    if ( !DataBaseUtil.isEmpty(value.getDisplay())) {
-                        /*
-                         * validate the value entered by the user
-                         */
-                        try {
-                            tm = getTestManager(analysis.getTestId());
+                    try {
+                        tm = getTestManager(analysis.getTestId());
+                        if ( !DataBaseUtil.isEmpty(value.getDisplay())) {
+                            /*
+                             * validate the value entered by the user
+                             */
+
                             rf = tm.getFormatter();
                             ResultHelper.formatValue(data,
                                                      value.getDisplay(),
                                                      analysis.getUnitOfMeasureId(),
                                                      rf);
-                        } catch (ParseException e) {
-                            /*
-                             * the value is not valid
-                             */
-                            table.addException(r, c, e);
-                            data.setValue(value.getDisplay());
+                        } else {
+                            data.setValue(null);
                             data.setTypeId(null);
                             data.setTestResultId(null);
-                            return;
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            logger.log(Level.SEVERE, e.getMessage(), e);
-                            return;
                         }
-                    } else {
-                        data.setValue(null);
+                    } catch (ParseException e) {
+                        /*
+                         * the value is not valid
+                         */
+                        table.addException(r, c, e);
+                        data.setValue(value.getDisplay());
                         data.setTypeId(null);
                         data.setTestResultId(null);
+                        return;
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        return;
                     }
                     /*
                      * Set the formatted and validated value as the displayed
@@ -372,9 +375,6 @@ public class ResultTabUI extends Screen {
 
                     table.setValueAt(r, c, value);
 
-                    if (data.getValue() == null)
-                        return;
-
                     /*
                      * execute any scriptlet specified for the test
                      */
@@ -382,9 +382,12 @@ public class ResultTabUI extends Screen {
                         parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                      .getResult(data.getId()),
                                                                             data.getAnalyteExternalId(),
-                                                                            Action_Before.RESULT_CHANGED),
+                                                                            Action_Before.RESULT),
                                                       screen);
                     }
+
+                    if (data.getValue() == null)
+                        return;
 
                     if (testReflexUtility == null) {
                         testReflexUtility = new TestReflexUtility1() {
@@ -494,7 +497,17 @@ public class ResultTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? table : checkAllButton;
+                return forward ? runScriptletsButton : checkAllButton;
+            }
+        });
+        
+        addScreenHandler(runScriptletsButton, "runScriptletsButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                runScriptletsButton.setEnabled(false);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? table : uncheckAllButton;
             }
         });
 
@@ -785,6 +798,14 @@ public class ResultTabUI extends Screen {
     @UiHandler("uncheckAllButton")
     protected void uncheckAll(ClickEvent event) {
         check("N");
+    }
+    
+    @UiHandler("runScriptletsButton")
+    protected void runScriptlets(ClickEvent event) {
+        parentBus.fireEventFromSource(new RunScriptletEvent(null,
+                                                   null,
+                                                   Action_Before.RECOMPUTE),
+                             screen);
     }
 
     private Integer getSectionId() {

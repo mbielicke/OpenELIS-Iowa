@@ -191,7 +191,7 @@ UIRF Software License are applicable instead of those above.
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"turnAroundMax")' />:
                             </text>
-                            <textbox key="{meta:getTimeTaMax()}" width="50" tab="{meta:getTimeTaAverage()},{meta:getIsReportable()}" field="Integer" required="true" />
+                            <textbox key="{meta:getTimeTaMax()}" width="50" tab="{meta:getTimeTaAverage()},{meta:getReportingDescription()}" field="Integer" required="true" />
                             <text style="Prompt">
                               <xsl:value-of select="resource:getString($constants,'timeTransit')" />:
                             </text>
@@ -271,7 +271,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"sections")' />
                         </text>
                         <widget valign="bottom">
-                          <table key="sectionTable" width="auto" maxRows="2" showScroll="ALWAYS" tab="removeTestSectionButton,{meta:getIsReportable()}" title="">
+                          <table key="sectionTable" width="auto" maxRows="2" showScroll="ALWAYS" tab="{meta:getRevisionMethodId()},{meta:getIsReportable()}" title="">
                             <col key="{meta:getSectionSectionId()}" width="119" header="{resource:getString($constants,'name')}">
                               <dropdown width="85" case="MIXED" field="Integer" required="true" />
                             </col>
@@ -315,7 +315,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'revisionMethod')" />:
                         </text>
-                        <dropdown key="{meta:getRevisionMethodId()}" width="190" tab="{meta:getSortingMethodId()},removeTestSectionButton" field="Integer" />
+                        <dropdown key="{meta:getRevisionMethodId()}" width="190" tab="{meta:getSortingMethodId()},sectionTable" field="Integer" />
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'testTrailer')" />:
                         </text>

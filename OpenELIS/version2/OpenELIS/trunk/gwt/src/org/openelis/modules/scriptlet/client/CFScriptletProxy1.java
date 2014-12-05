@@ -27,20 +27,25 @@ package org.openelis.modules.scriptlet.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventDO;
-import org.openelis.modules.qaevent.client.QaEventService;
-import org.openelis.scriptlet.ScriptletUtility;
+import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1.Load;
+import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.scriptlet.CFScriptlet1Proxy;
 
 /**
- * This class is used for providing the front-end functionality for
- * ScriptletUtility
+ * This class is used for providing the front-end functionality for the
+ * "cf (Cystic Fibrosis)" test scriptlets
  */
-public class ScriptletUtilityProxy implements ScriptletUtility.Proxy {
+public class CFScriptletProxy1 implements CFScriptlet1Proxy {
+
+    @Override
+    public DictionaryDO getDictionaryById(Integer id) throws Exception {
+        return DictionaryCache.getById(id);
+    }
 
     @Override
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
@@ -48,12 +53,12 @@ public class ScriptletUtilityProxy implements ScriptletUtility.Proxy {
     }
 
     @Override
-    public ArrayList<QaEventDO> fetchByNames(ArrayList<String> names) throws Exception {
-        return QaEventService.get().fetchByNames(names);
+    public void log(Level level, String message, Exception e) {
+        logger.log(level, message, e);
     }
 
     @Override
-    public void log(Level level, String message) {
-        logger.log(level, message);
+    public SampleManager1 fetchByAccession(Integer accessionNumber, Load... elements) throws Exception {
+        return SampleService1.get().fetchByAccession(accessionNumber, elements);
     }
 }

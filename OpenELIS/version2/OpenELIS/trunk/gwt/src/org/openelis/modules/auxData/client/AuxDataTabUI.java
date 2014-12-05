@@ -270,7 +270,7 @@ public abstract class AuxDataTabUI extends Screen {
                                         parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                                      .getAuxData(data.getId()),
                                                                                             getValueMetaKey(),
-                                                                                            Action_Before.AUX_DATA_CHANGED),
+                                                                                            Action_Before.AUX_DATA),
                                                                       screen);
                                 }
                             } catch (ParseException e) {

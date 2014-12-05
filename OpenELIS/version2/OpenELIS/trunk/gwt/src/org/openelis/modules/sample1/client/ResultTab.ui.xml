@@ -33,6 +33,7 @@
         <w:Button ui:field="removeResultButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
         <w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" leftIcon="{uiRes.checkbox.Checked}" />
         <w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" leftIcon="{uiRes.checkbox.Unchecked}" />
+        <w:Button ui:field="runScriptletsButton" text="Run Scriptlets" />
         <g:HTMLPanel>
           <w:Label ui:field="overrideLabel" styleName="{res.style.WarningLabel}"/>
         </g:HTMLPanel>

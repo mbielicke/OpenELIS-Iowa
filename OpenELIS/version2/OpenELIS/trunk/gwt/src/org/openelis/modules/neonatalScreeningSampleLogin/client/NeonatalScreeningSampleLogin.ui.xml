@@ -159,7 +159,7 @@
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="patientLastName" width="222px" field="String"
-                        maxLength="30" required="true" case="UPPER" />
+                        maxLength="30" case="UPPER" required="true" />
                     </td>
                   </tr>
                   <tr>
@@ -168,7 +168,7 @@
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="patientFirstName" width="222px" field="String"
-                        maxLength="20" case="UPPER" />
+                        maxLength="20" case="UPPER" required="true" />
                     </td>
                   </tr>
                   <tr>
@@ -178,7 +178,7 @@
                     <td>
                       <g:HorizontalPanel>
                         <c:Calendar ui:field="patientBirthDate" width="90px" begin="0"
-                          end="2" />
+                          end="2" required="true" />
                         <g:HorizontalPanel width="4px" />
                         <c:Calendar ui:field="patientBirthTime" width="60px" begin="3"
                           end="4" />
@@ -370,7 +370,7 @@
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinLastName" width="222px" field="String"
-                        maxLength="30" required="true" case="UPPER" />
+                        maxLength="30" case="UPPER" required="true" />
                     </td>
                   </tr>
                   <tr>
@@ -388,7 +388,7 @@
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinFirstName" width="222px" field="String"
-                        maxLength="30" case="UPPER" />
+                        maxLength="30" case="UPPER" required="true" />
                     </td>
                   </tr>
                   <tr>
@@ -404,7 +404,7 @@
                     </td>
                     <td>
                       <c:Calendar ui:field="nextOfKinBirthDate" width="80px" begin="0"
-                        end="2" />
+                        end="2" required="true" />
                     </td>
                   </tr>
                   <tr>

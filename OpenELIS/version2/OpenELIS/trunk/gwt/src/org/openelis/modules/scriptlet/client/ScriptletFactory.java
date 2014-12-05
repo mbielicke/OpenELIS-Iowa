@@ -27,6 +27,7 @@ package org.openelis.modules.scriptlet.client;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.scriptlet.CFCarrierScriptlet1;
+import org.openelis.scriptlet.CFPregnancyScriptlet1;
 import org.openelis.scriptlet.EnvironmentalIAScriptlet1;
 import org.openelis.scriptlet.NbsBtScriptlet1;
 import org.openelis.scriptlet.NbsCahScriptlet1;
@@ -35,26 +36,21 @@ import org.openelis.scriptlet.NbsTshScriptlet1;
 import org.openelis.scriptlet.NeonatalIAScriptlet1;
 import org.openelis.scriptlet.PwsValidateScriptlet1;
 import org.openelis.scriptlet.SDWISIAScriptlet1;
-import org.openelis.scriptlet.ScriptletUtility;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
 /**
  * This class is used to obtain instances of scriptlet classes for the front-end
  */
 public class ScriptletFactory {
-    private static ScriptletUtility scriptletUtility;
-    
-    public static <T extends ScriptletInt<?>> T get(Integer id) throws Exception {
-        return get(DictionaryCache.getById(id).getSystemName());
+
+    public static <T extends ScriptletInt<?>> T get(Integer scriptletId, Integer managedId) throws Exception {
+        return get(DictionaryCache.getById(scriptletId).getSystemName(), managedId);
     }
     
     @SuppressWarnings("unchecked")
-    public static <T extends ScriptletInt<?>> T get(String systemName) throws Exception {
+    public static <T extends ScriptletInt<?>> T get(String systemName, Integer managedId) throws Exception {
         T script;
 
-        if (scriptletUtility == null)
-            scriptletUtility = new ScriptletUtility(new ScriptletUtilityProxy());
-        
         script = null;
         switch (systemName) {
             case "scriptlet_environmental_ia1":
@@ -67,22 +63,25 @@ public class ScriptletFactory {
                 script = (T)new NeonatalIAScriptlet1(new NeonatalIAProxy1());
                 break;
             case "scriptlet_nbs_bt1":
-                script = (T)new NbsBtScriptlet1(scriptletUtility, new NbsBtProxy1());
+                script = (T)new NbsBtScriptlet1(new NBSScriptletProxy1(), managedId);
                 break;
             case "scriptlet_nbs_tsh1":
-                script = (T)new NbsTshScriptlet1(scriptletUtility, new NbsTshProxy1());
+                script = (T)new NbsTshScriptlet1(new NBSScriptletProxy1(), managedId);
                 break;
             case "scriptlet_nbs_galt1":
-                script = (T)new NbsGaltScriptlet1(scriptletUtility, new NbsGaltProxy1());
+                script = (T)new NbsGaltScriptlet1(new NBSScriptletProxy1(), managedId);
                 break;
             case "scriptlet_nbs_cah1":
-                script = (T)new NbsCahScriptlet1(scriptletUtility, new NbsCahProxy1());
+                script = (T)new NbsCahScriptlet1(new NBSScriptletProxy1(), managedId);
                 break;
             case "scriptlet_pws_validate1":
-                script = (T)new PwsValidateScriptlet1(new PwsValidateProxy1());
+                script = (T)new PwsValidateScriptlet1(new PwsValidateProxy1(), managedId);
                 break;
             case "scriptlet_cf_carrier1":
-                script = (T)new CFCarrierScriptlet1(scriptletUtility, new CFCarrierProxy1());
+                script = (T)new CFCarrierScriptlet1(new CFScriptletProxy1(), managedId);
+                break;
+            case "scriptlet_cf_pregnancy1":
+                script = (T)new CFPregnancyScriptlet1(new CFScriptletProxy1(), managedId);
                 break;
         }
 

@@ -68,8 +68,6 @@ import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.VisibleEvent;
@@ -433,6 +431,15 @@ public class QAEventTabUI extends Screen {
                 }
             }
         });
+        
+        parentBus.addHandler(QAEventAddedEvent.getType(), new QAEventAddedEvent.Handler() {
+            @Override
+            public void onQAEventAdded(QAEventAddedEvent event) {
+                redraw = true;
+                analysis = (AnalysisViewDO)manager.getObject(event.getUid());
+                displayQAEvents();
+            }
+        });
 
         // qa event type dropdown
         model = new ArrayList<Item<Integer>>();
@@ -520,7 +527,7 @@ public class QAEventTabUI extends Screen {
             sampleQATable.removeRowAt(r);
             parentBus.fireEventFromSource(new RunScriptletEvent(null,
                                                                 null,
-                                                                Action_Before.SAMPLE_QA_REMOVED),
+                                                                Action_Before.QA),
                                           screen);
             notifyQAChanged(null);
         }
@@ -555,7 +562,7 @@ public class QAEventTabUI extends Screen {
             analysisQATable.removeRowAt(r);
             parentBus.fireEventFromSource(new RunScriptletEvent(null,
                                                                 null,
-                                                                Action_Before.ANALYSIS_QA_REMOVED),
+                                                                Action_Before.QA),
                                           screen);
             notifyQAChanged(analysis.getId());
         }
@@ -669,7 +676,7 @@ public class QAEventTabUI extends Screen {
                             parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                 .getAnalysisQAEvent(aqa.getId()),
                                                                        null,
-                                                                       Action_Before.ANALYSIS_QA_ADDED),
+                                                                       Action_Before.QA),
                                                  screen);
                         }
                         notifyQAChanged(analysis.getId());
@@ -719,7 +726,7 @@ public class QAEventTabUI extends Screen {
                             parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
                                                                                          .getSampleQAEvent(sqa.getId()),
                                                                                 null,
-                                                                                Action_Before.SAMPLE_QA_ADDED),
+                                                                                Action_Before.QA),
                                                           screen);
                         }
                         notifyQAChanged(null);
