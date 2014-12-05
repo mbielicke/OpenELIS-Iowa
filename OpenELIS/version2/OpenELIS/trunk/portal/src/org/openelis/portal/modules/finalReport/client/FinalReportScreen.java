@@ -627,6 +627,9 @@ public class FinalReportScreen extends Screen {
         return fieldMap;
     }
 
+    /**
+     * create the table from sample objects
+     */
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
         SampleViewVO sample;

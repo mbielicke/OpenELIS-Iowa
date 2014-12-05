@@ -18,22 +18,13 @@ import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.table.Row;
-import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.CellClickedEvent;
 import org.openelis.ui.widget.table.event.CellClickedHandler;
-import org.openelis.ui.widget.table.event.CellEditedEvent;
-import org.openelis.ui.widget.table.event.CellEditedHandler;
-import org.openelis.ui.widget.table.event.RowAddedEvent;
-import org.openelis.ui.widget.table.event.RowAddedHandler;
-import org.openelis.ui.widget.table.event.RowDeletedEvent;
-import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -90,33 +81,8 @@ public class EmailNotificationScreen extends Screen {
         };
 
         addScreenHandler(ui.getTable(), "table", new ScreenHandler<ArrayList<Row>>() {
-            public void onDataChange(DataChangeEvent event) {
-                // ui.getTable().setModel(getTableModel());
-                // ui.getTable().onResize();
-            }
-
             public void onStateChange(StateChangeEvent event) {
                 ui.getTable().setEnabled(true);
-            }
-        });
-
-        ui.getTable().addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-            }
-        });
-
-        ui.getTable().addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-            }
-        });
-
-        ui.getTable().addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-            }
-        });
-
-        ui.getTable().addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
             }
         });
 
@@ -188,6 +154,10 @@ public class EmailNotificationScreen extends Screen {
         Scheduler.get().scheduleDeferred(cmd);
     }
 
+    /**
+     * Creates a table model from the parameters of each organization in the
+     * organization list
+     */
     private ArrayList<Row> getTableModel() {
         int i;
         boolean isRec, isRel;
@@ -249,6 +219,9 @@ public class EmailNotificationScreen extends Screen {
         return model;
     }
 
+    /**
+     * fetch the organization list
+     */
     private void fetchByIdList() {
         if (idList == null) {
             idList = getIdListFromClause();
@@ -268,6 +241,9 @@ public class EmailNotificationScreen extends Screen {
         }
     }
 
+    /**
+     * parse the IDs from the user permission clause
+     */
     private ArrayList<Integer> getIdListFromClause() {
         String full[], part[];
         ArrayList<Integer> ids;
@@ -288,7 +264,8 @@ public class EmailNotificationScreen extends Screen {
     }
 
     /**
-     * called when the commit button is pressed
+     * Validates the organization parameter data and commits if there are no
+     * errors.
      */
     private void commit() {
         boolean exceptions;
@@ -334,6 +311,11 @@ public class EmailNotificationScreen extends Screen {
                 email = encode((String)row.getCell(2));
                 filter = (String)row.getCell(3);
                 filterValue = (String)row.getCell(4);
+
+                /*
+                 * set all of the correct data in the organization parameter
+                 * objects
+                 */
                 if (DataBaseUtil.isEmpty(filter) || DataBaseUtil.isEmpty(filterValue))
                     p.setValue(email);
                 else
@@ -375,6 +357,10 @@ public class EmailNotificationScreen extends Screen {
         }
         if (exceptions)
             return;
+
+        /*
+         * if there are no errors, commit the data
+         */
         for (Integer key : allParams.keySet()) {
             update(allParams.get(key));
         }

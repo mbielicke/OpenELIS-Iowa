@@ -1283,6 +1283,9 @@ public class DataViewScreen extends Screen {
         return fieldMap;
     }
 
+    /**
+     * create the model for the analyte table from the data view object
+     */
     private ArrayList<Row> getAnalyteTableModel() {
         Row row;
         ArrayList<Row> model;
@@ -1301,6 +1304,9 @@ public class DataViewScreen extends Screen {
         return model;
     }
 
+    /**
+     * create the model for the auxiliary data table from the data view object
+     */
     private ArrayList<Row> getAuxTableModel() {
         Row row;
         ArrayList<Row> model;
@@ -1337,6 +1343,9 @@ public class DataViewScreen extends Screen {
             value.setIsIncluded(val);
     }
 
+    /**
+     * create a spreadsheet with the checked data fields
+     */
     protected void runReport() {
         int numTA, numAux;
         ArrayList<TestAnalyteDataViewVO> taList;

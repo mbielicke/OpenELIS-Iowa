@@ -43,14 +43,9 @@
 						</tr>
 						<tr>
 							<td width="500">
-								<span style="float:left;font-size:11pt;">
+								<span class="helpText">
 									<ui:text from="{msg.emailNotification_help_description}" />
 								</span>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<br />
 							</td>
 						</tr>
 						<tr>

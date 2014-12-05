@@ -1,19 +1,18 @@
-@external  .gwt-TabLayoutPanel, .gwt-TabLayoutPanelTabs, .gwt-TabLayoutPanelContentContainer, .gwt-TabLayoutPanelContent, .gwt-TabLayoutPanelTab, .gwt-TabLayoutPanelTab-selected;
-
-a, a:visited {
-  color: #0066cc;
-  text-decoration:none;
+@external  .gwt-TabLayoutPanel, .gwt-TabLayoutPanelTabs, .gwt-TabLayoutPanelContentContainer, .gwt-TabLayoutPanelContent, .gwt-TabLayoutPanelTab, .gwt-TabLayoutPanelTab-selected, .helpHeader, helpText, helpBoldText;
+a,a:visited {
+	color: #0066cc;
+	text-decoration: none;
 }
 
 a:hover {
-  color: #0066cc;
-  text-decoration:underline;
+	color: #0066cc;
+	text-decoration: underline;
 }
 
 .Link {
-	padding:  3px;
-	font-size : 12px;
-	font-weight : bold;	
+	padding: 3px;
+	font-size: 12px;
+	font-weight: bold;
 }
 
 .WhiteContentPanel {
@@ -23,8 +22,8 @@ a:hover {
 .PopupPanelWithBorder {
 	background: #F0F0F0;
 	border-style: groove;
-    border-width: 5px;
-    border-color:green
+	border-width: 5px;
+	border-color: green
 }
 
 .Form {
@@ -32,11 +31,12 @@ a:hover {
 }
 
 .FormTitle {
-    -moz-user-select: none;
-    color:#486095;
-    text-align:center;
-    height:18px;
-    background:transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0 0;
+	-moz-user-select: none;
+	color: #486095;
+	text-align: center;
+	height: 18px;
+	background: transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0
+		0;
 }
 
 .Prompt {
@@ -49,10 +49,10 @@ a:hover {
 }
 
 .WarningLabel {
-    -moz-user-select: none;
-    color: #FF0000;
-    padding: 5px 0 0 12px;
-    font-weight: bold;
+	-moz-user-select: none;
+	color: #FF0000;
+	padding: 5px 0 0 12px;
+	font-weight: bold;
 }
 
 .ScreenLabelLink {
@@ -61,57 +61,82 @@ a:hover {
 	cursor: pointer;
 }
 
-
 .Title {
-    -moz-user-select: none;
-    color:gray;
-    padding:2px;
-    padding-left:4px;
+	-moz-user-select: none;
+	color: gray;
+	padding: 2px;
+	padding-left: 4px;
 }
 
 .gwt-TabLayoutPanel {
+	
 }
+
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
-  background: #ccc;
-  padding-top: 6px;
-  padding-left: 5px;
+	background: #ccc;
+	padding-top: 6px;
+	padding-left: 5px;
 }
+
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelContentContainer {
-  border-color: #ccc;
-  border-style: solid;
-  border-width: 0px 1px 1px;
+	border-color: #ccc;
+	border-style: solid;
+	border-width: 0px 1px 1px;
 }
+
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
-  overflow: hidden;
-  padding: 6px;
+	overflow: hidden;
+	padding: 6px;
 }
+
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
-  margin-left: 4px;
-  padding: 4px 8px 4px 8px;
-  cursor: pointer;
-  cursor: hand;
-  color: white;
-  font-weight: normal;
-  text-align: center;
-  background: #8E8E8E;
-  -moz-border-radius: 3px 3px 0px 0px;
-  border-radius: 3px 3px 0px 0px;
+	margin-left: 4px;
+	padding: 4px 8px 4px 8px;
+	cursor: pointer;
+	cursor: hand;
+	color: white;
+	font-weight: normal;
+	text-align: center;
+	background: #8E8E8E;
+	-moz-border-radius: 3px 3px 0px 0px;
+	border-radius: 3px 3px 0px 0px;
 }
+
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
-  cursor: default;
-  background: white;
-  color: #333;
-  font-weight: bold;
+	cursor: default;
+	background: white;
+	color: #333;
+	font-weight: bold;
 }
 
 @sprite .header_logo {
-    gwt-image : 'headerLogo';
-    height: 134px;
-    margin: -6px 0 0 8px;
-    width: 230px;
-    cursor:pointer;
+	gwt-image: 'headerLogo';
+	height: 134px;
+	margin: -6px 0 0 8px;
+	width: 230px;
+	cursor: pointer;
 }
 
 .AppBackground {
-    background: #343434;
+	background: #343434;
+}
+
+.helpHeader {
+	-moz-user-select: none;
+	color: #c74a1e;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background: none;
+	text-align: left;
+}
+
+.helpText {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: gray;
+}
+
+.helpBoldText {
+	font-weight: bold;
+	color: black;
 }
