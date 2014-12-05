@@ -113,7 +113,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<AnalysisWorksheetVO>      worksheets;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID              = -1;
-    protected PostProcessing                      postProcessing; 
+    protected PostProcessing                      postProcessing;
 
     transient public final SampleOrganization     organization         = new SampleOrganization();
     transient public final SampleProject          project              = new SampleProject();
@@ -186,7 +186,7 @@ public class SampleManager1 implements Serializable {
             if (sampleQAs != null)
                 for (SampleQaEventDO data : sampleQAs)
                     uidMap.put(Constants.uid().get(data), data);
-            
+
             if (auxiliary != null)
                 for (AuxDataViewDO data : auxiliary)
                     uidMap.put(Constants.uid().get(data), data);
@@ -198,7 +198,7 @@ public class SampleManager1 implements Serializable {
             if (sampleIntNotes != null)
                 for (NoteDO data : sampleIntNotes)
                     uidMap.put(Constants.uid().get(data), data);
-            
+
             if (attachments != null)
                 for (AttachmentItemDO data : attachments)
                     uidMap.put(Constants.uid().get(data), data);
@@ -1061,6 +1061,23 @@ public class SampleManager1 implements Serializable {
                 if (l != null)
                     return l.size();
             }
+            return 0;
+        }
+
+        /**
+         * Returns the analysis at specified index in the list of all analyses,
+         * regardless of the sample item.
+         */
+        public AnalysisViewDO get(int i) {
+            return analyses.get(i);
+        }
+
+        /**
+         * Returns the total number of analyses, regardless of the sample item
+         */
+        public int count() {
+            if (analyses != null)
+                return analyses.size();
             return 0;
         }
 

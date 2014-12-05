@@ -48,6 +48,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
@@ -79,6 +80,10 @@ import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.scriptlet.SampleSO;
+import org.openelis.scriptlet.SampleSO.Action_After;
+import org.openelis.scriptlet.SampleSO.Action_Before;
+import org.openelis.scriptlet.ScriptletFactory;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -90,6 +95,8 @@ import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletRunner;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -187,7 +194,7 @@ public class SampleManager1Bean {
 
     @EJB
     private SampleClinicalBean           sampleClinical;
-    
+
     @EJB
     private AttachmentItemBean           attachmentItem;
 
@@ -196,6 +203,9 @@ public class SampleManager1Bean {
 
     @EJB
     private TestBean                     test;
+
+    @EJB
+    private ScriptletHelperBean          scriptletHelper;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -342,9 +352,10 @@ public class SampleManager1Bean {
                     addSampleInternalNote(sm, data);
             }
         }
-        
+
         if (el.contains(SampleManager1.Load.ATTACHMENT)) {
-            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().SAMPLE)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1,
+                                                                       Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addAttachment(sm, data);
             }
@@ -565,14 +576,15 @@ public class SampleManager1Bean {
                     addSampleInternalNote(sm, data);
             }
         }
-        
+
         if (el.contains(SampleManager1.Load.ATTACHMENT)) {
-            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1, Constants.table().SAMPLE)) {
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids1,
+                                                                       Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addAttachment(sm, data);
             }
         }
-        
+
         /*
          * build level 3, everything is based on analysis ids
          */
@@ -893,6 +905,7 @@ public class SampleManager1Bean {
         HashMap<Integer, Integer> imap, amap, rmap, seq;
         AnalysisReportFlagsDO defaultARF;
         Datetime now;
+        HashMap<String, Object> cache;
 
         /*
          * validation needs test, aux group manager and pws DO. Build lists of
@@ -917,19 +930,24 @@ public class SampleManager1Bean {
 
         /*
          * build test map and aux map for easy access to a manager during
-         * validation
+         * validation; also populate the cache used by scriptlets
          */
+        cache = new HashMap<String, Object>();
         tms = new HashMap<Integer, TestManager>();
         if (ids.size() > 0) {
-            for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids)))
+            for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids))) {
                 tms.put(tm.getTest().getId(), tm);
+                cache.put(Constants.uid().getTest(tm.getTest().getId()), tm);
+            }
         }
 
         ams = null;
         if (ids1.size() > 0) {
             ams = new HashMap<Integer, AuxFieldGroupManager>();
-            for (AuxFieldGroupManager am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1)))
+            for (AuxFieldGroupManager am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1))) {
                 ams.put(am.getGroup().getId(), am);
+                cache.put(Constants.uid().getAuxFieldGroup(am.getGroup().getId()), am);
+            }
         }
 
         // user permission for adding/updating analysis
@@ -960,6 +978,11 @@ public class SampleManager1Bean {
          */
         for (SampleManager1 sm : sms) {
             try {
+                /*
+                 * run the scriptlets for this manager
+                 */
+                scriptletHelper.runScriptlets(sm, cache, null, null, Action_Before.UPDATE);
+
                 validate(sm, permission, maxAccession, tms, ams, qas);
                 /*
                  * the status will be the lowest of the statuses of the analyses
@@ -1204,7 +1227,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-            
+
             if (getAttachments(sm) != null) {
                 for (AttachmentItemViewDO data : getAttachments(sm)) {
                     if (data.getId() < 0) {
@@ -1758,7 +1781,7 @@ public class SampleManager1Bean {
         }
 
         setSampleInternalNotes(sm, null);
-        
+
         if (getAttachments(sm) != null) {
             for (AttachmentItemViewDO data : getAttachments(sm)) {
                 data.setId(sm.getNextUID());
@@ -2401,11 +2424,56 @@ public class SampleManager1Bean {
     /**
      * This method changes the specified analysis's status to the specified
      * status. It also updates any links between other analyses and this one, if
-     * need be, because of the change in status.
+     * need be and runs the scriptlets linked to any part of the sample, because
+     * of the change in status.
      */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
                                                Integer statusId) throws Exception {
-        return analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
+        Integer prevStatusId;
+        Action_Before action;
+        AnalysisViewDO ana;
+
+        /*
+         * find the status of the analysis
+         */
+        ana = null;
+        prevStatusId = null;
+        for (AnalysisViewDO data : getAnalyses(sm)) {
+            if (data.getId().equals(analysisId)) {
+                ana = data;
+                prevStatusId = data.getStatusId();
+                break;
+            }
+        }
+        sm = analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
+        /*
+         * determine if scriptlets need to be run because of the changed status
+         */
+        action = null;
+        if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
+            /*
+             * find out if the analysis was completed or unreleased
+             */
+            if (Constants.dictionary().ANALYSIS_RELEASED.equals(prevStatusId))
+                action = Action_Before.UNRELEASE;
+            else
+                action = Action_Before.COMPLETE;
+        } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
+            action = Action_Before.RELEASE;
+        }
+
+        if (action == null)
+            return sm;
+        /*
+         * run the scriptlets
+         */
+        scriptletHelper.runScriptlets(sm,
+                                      scriptletHelper.createCache(sm),
+                                      Constants.uid().get(ana),
+                                      SampleMeta.getAnalysisStatusId(),
+                                      action);
+
+        return sm;
     }
 
     /**
@@ -2570,7 +2638,7 @@ public class SampleManager1Bean {
         cnt = 0;
         if (getSamplePrivateWell(sm) != null &&
             (getSamplePrivateWell(sm).getOrganizationId() != null || getSamplePrivateWell(sm).getReportToAddress() != null))
-            cnt = 1;        
+            cnt = 1;
 
         /*
          * samples have to have one report to.

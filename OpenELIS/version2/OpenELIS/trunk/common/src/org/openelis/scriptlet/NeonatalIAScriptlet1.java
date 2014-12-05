@@ -141,7 +141,7 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
          * don't do anything if it's an existing neonatal sample or if it
          * doesn't have a patient
          */
-        if ( !data.getActionBefore().contains(NEW_DOMAIN_ADDED) || sn.getPatientId() == null)
+        if ( !data.getActionBefore().contains(NEW_DOMAIN) || sn.getPatientId() == null)
             return data;
 
         try {
@@ -151,7 +151,7 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
                  * previously for its patient
                  */
                 setRepeat(data);
-            else if (data.getActionBefore().contains(TEST_ADDED) && "Y".equals(sn.getIsRepeat()))
+            else if (data.getActionBefore().contains(ANALYSIS) && "Y".equals(sn.getIsRepeat()))
                 /*
                  * since the current sample is a repeat sample, remove those
                  * uncommitted tests from it that didn't have any abnormal

@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -1220,6 +1220,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required")
   @Key("analysis.unitRequiredException")
   String analysis_unitRequiredException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Valid ''cf-carrier, pcr'' analysis not found on current sample".
+   * 
+   * @return translated "Valid ''cf-carrier, pcr'' analysis not found on current sample"
+   */
+  @DefaultMessage("Valid ''cf-carrier, pcr'' analysis not found on current sample")
+  @Key("analysis.validIndCarrierNotFoundException")
+  String analysis_validIndCarrierNotFoundException();
+
+  /**
+   * Translated "Valid ''cf-carrier, pcr'' analysis not found on partner sample  ".
+   * 
+   * @return translated "Valid ''cf-carrier, pcr'' analysis not found on partner sample  "
+   */
+  @DefaultMessage("Valid ''cf-carrier, pcr'' analysis not found on partner sample  ")
+  @Key("analysis.validPartCarrierNotFoundException")
+  String analysis_validPartCarrierNotFoundException();
 
   /**
    * Translated "Analysis has already been completed".
@@ -11653,6 +11671,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_birthDT();
 
   /**
+   * Translated "Birth date is required for a patient ".
+   * 
+   * @return translated "Birth date is required for a patient "
+   */
+  @DefaultMessage("Birth date is required for a patient ")
+  @Key("patient.birthDateRequiredException")
+  String patient_birthDateRequiredException();
+
+  /**
    * Translated "City is required for a patient ".
    * 
    * @return translated "City is required for a patient "
@@ -11678,6 +11705,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Ethnicity")
   @Key("patient.ethnicity")
   String patient_ethnicity();
+
+  /**
+   * Translated "First name is required for a patient ".
+   * 
+   * @return translated "First name is required for a patient "
+   */
+  @DefaultMessage("First name is required for a patient ")
+  @Key("patient.firstNameRequiredException")
+  String patient_firstNameRequiredException();
 
   /**
    * Translated "Full Window Search".
@@ -13786,6 +13822,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_atleastOneResultInRowGroup();
 
   /**
+   * Translated "Cannot compute risks because the sample has a released ''cf-pregnancy, pcr'' analysis".
+   * 
+   * @return translated "Cannot compute risks because the sample has a released ''cf-pregnancy, pcr'' analysis"
+   */
+  @DefaultMessage("Cannot compute risks because the sample has a released ''cf-pregnancy, pcr'' analysis")
+  @Key("result.cantComputeRisksRelPregException")
+  String result_cantComputeRisksRelPregException();
+
+  /**
    * Translated "Current Result".
    * 
    * @return translated "Current Result"
@@ -13822,11 +13867,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_missingEthnicityException();
 
   /**
-   * Translated "Famility history not specified".
+   * Translated "Family history not specified".
    * 
-   * @return translated "Famility history not specified"
+   * @return translated "Family history not specified"
    */
-  @DefaultMessage("Famility history not specified")
+  @DefaultMessage("Family history not specified")
   @Key("result.missingFamilyHistoryException")
   String result_missingFamilyHistoryException();
 
@@ -14549,6 +14594,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Organization")
   @Key("sample.organization")
   String sample_organization();
+
+  /**
+   * Translated "Partner Accession # cannot be the same as individual Accession # ".
+   * 
+   * @return translated "Partner Accession # cannot be the same as individual Accession # "
+   */
+  @DefaultMessage("Partner Accession # cannot be the same as individual Accession # ")
+  @Key("sample.partAccCantBeSameAsIndException")
+  String sample_partAccCantBeSameAsIndException();
 
   /**
    * Translated "Accession # ''{0,number}'': Last name is required for a patient".

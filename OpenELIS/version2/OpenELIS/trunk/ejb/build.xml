@@ -35,6 +35,7 @@
 			<include name="org/openelis/local/*.class" />
 			<include name="org/openelis/report/**/*" />
 			<include name="org/openelis/utils/*.class" />
+            <include name="org/openelis/scriptlet/*.class" />
 			<exclude name="org/openelis/report/**/*.jrxml" />
 			<include name="ehcache.xml" />
 			<include name="dataExchangeDefault.xsl" />

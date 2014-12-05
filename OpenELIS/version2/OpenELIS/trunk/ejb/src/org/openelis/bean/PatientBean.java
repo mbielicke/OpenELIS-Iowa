@@ -149,7 +149,12 @@ public class PatientBean {
         
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        address.add(data.getAddress());
+        // first insert the address so we can reference its id        
+        if (address.isEmpty(data.getAddress()))     
+            data.getAddress().setId(null);                                       
+        else  
+            address.add(data.getAddress());  
+        
         entity = new Patient();
         entity.setLastName(data.getLastName());
         entity.setFirstName(data.getFirstName());
@@ -182,18 +187,30 @@ public class PatientBean {
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Patient.class, data.getId());
+        if (address.isEmpty(data.getAddress())) {
+            if (data.getAddress().getId() != null) {
+                address.delete(data.getAddress());                
+                data.getAddress().setId(null);
+            }
+        } else {
+            if (data.getAddress().isChanged()) {
+                if (data.getAddress().getId() != null)
+                    address.update(data.getAddress());
+                else
+                    address.add(data.getAddress());
+            }                       
+        }
+        
         entity.setLastName(data.getLastName());
         entity.setFirstName(data.getFirstName());
         entity.setMiddleName(data.getMiddleName());
+        entity.setAddressId(data.getAddress().getId());
         entity.setBirthDate(data.getBirthDate());
         entity.setBirthTime(data.getBirthTime());
         entity.setGenderId(data.getGenderId());
         entity.setRaceId(data.getRaceId());
         entity.setEthnicityId(data.getEthnicityId());
         entity.setNationalId(data.getNationalId());
-        
-        if (data.getAddress().isChanged())
-            address.update(data.getAddress());
 
         lock.unlock(Constants.table().PATIENT, data.getId());
         
@@ -223,13 +240,13 @@ public class PatientBean {
             e.add(new FormErrorException(Messages.get()
                                          .patient_lastnameRequiredException()));
         
-        if (data.getAddress().getStreetAddress() == null)
+        if (data.getFirstName() == null)
             e.add(new FormErrorException(Messages.get()
-                                         .patient_streetAddressRequiredException()));
+                                         .patient_firstNameRequiredException()));
         
-        if (data.getAddress().getCity() == null)
+        if (data.getBirthDate() == null)
             e.add(new FormErrorException(Messages.get()
-                                         .patient_cityRequiredException()));
+                                         .patient_birthDateRequiredException()));
         if (e.size() > 0)
             throw e;
     }

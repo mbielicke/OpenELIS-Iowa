@@ -29,9 +29,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.TestManager;
 import org.openelis.ui.scriptlet.ScriptletObject;
 
 /**
@@ -43,14 +41,12 @@ public class SampleSO extends ScriptletObject {
     private static final long serialVersionUID = 1L;
 
     public enum Action_Before {
-        NEW_DOMAIN_ADDED, TEST_ADDED, RESULT_CHANGED, AUX_DATA_CHANGED, SAMPLE_QA_ADDED,
-        SAMPLE_QA_REMOVED, ANALYSIS_QA_ADDED, ANALYSIS_QA_REMOVED, SAMPLE_ITEM_ADDED
+        NEW_DOMAIN, ANALYSIS, RESULT, AUX_DATA, QA, SAMPLE_ITEM, PATIENT,
+        RECOMPUTE, UPDATE, COMPLETE, RELEASE, UNRELEASE
     }
 
     public enum Action_After {
-        SAMPLE_EXTERNAL_NOTE_ADDED, SAMPLE_ITEM_ADDED, SAMPLE_ITEM_TYPE_CHANGED
-        // RESULT_CHANGED, ANALYSIS_QA_ADDED,
-        // SAMPLE_ITEM_CHANGED
+        SAMPLE_ITEM_ADDED, SAMPLE_ITEM_CHANGED
     }
 
     protected EnumSet<Action_Before>                 actionBefore;
@@ -59,10 +55,8 @@ public class SampleSO extends ScriptletObject {
 
     protected SampleManager1                         manager;
 
-    protected HashMap<Integer, TestManager>          analyses, results;
-
-    protected HashMap<Integer, AuxFieldGroupManager> auxData;
-
+    protected HashMap<String, Object>                cache;
+    
     protected String                                 uid;
 
     protected HashSet<String>                        changedUids;
@@ -91,28 +85,12 @@ public class SampleSO extends ScriptletObject {
         return manager;
     }
 
-    public HashMap<Integer, TestManager> getAnalyses() {
-        return analyses;
+    public HashMap<String, Object> getCache() {
+        return cache;
     }
 
-    public void setAnalyses(HashMap<Integer, TestManager> analyses) {
-        this.analyses = analyses;
-    }
-
-    public HashMap<Integer, TestManager> getResults() {
-        return results;
-    }
-
-    public void setResults(HashMap<Integer, TestManager> results) {
-        this.results = results;
-    }
-
-    public HashMap<Integer, AuxFieldGroupManager> getAuxData() {
-        return auxData;
-    }
-
-    public void setAuxData(HashMap<Integer, AuxFieldGroupManager> auxData) {
-        this.auxData = auxData;
+    public void setCache(HashMap<String, Object> cache) {
+        this.cache = cache;
     }
 
     public String getUid() {
