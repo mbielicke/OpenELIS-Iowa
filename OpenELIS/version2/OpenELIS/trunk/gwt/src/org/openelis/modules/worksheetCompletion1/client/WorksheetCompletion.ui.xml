@@ -90,6 +90,8 @@
                 </w:display>
                 <w:MenuItem ui:field="worksheetHistory" description="" enabled="false"
                             icon="{res.icon.historyIcon}" display="{msg.worksheet_worksheetHistory}"/>
+                <w:MenuItem ui:field="print" description="" enabled="false"
+                            display="{msg.gen_print}"/>
               </w:Menu>
             </g:HorizontalPanel>
           </g:AbsolutePanel>

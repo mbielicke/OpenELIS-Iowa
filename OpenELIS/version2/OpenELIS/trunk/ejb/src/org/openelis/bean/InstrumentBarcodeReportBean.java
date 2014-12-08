@@ -94,14 +94,14 @@ public class InstrumentBarcodeReportBean {
             p.add(new Prompt("BARCODE_TYPE", Prompt.Type.ARRAY).setPrompt(Messages.get().instrumentBarcode_barcodeType()+":")
                                                                .setWidth(150)
                                                                .setOptionList(barcodeType)
-                                                               .setMutiSelect(false));
+                                                               .setMultiSelect(false));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt(Messages.get().gen_printer()+":")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {

@@ -120,22 +120,22 @@ public class ToDoAnalyteReportBean {
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
                                                           .setWidth(250)
                                                           .setOptionList(getSections())
-                                                          .setMutiSelect(true));
+                                                          .setMultiSelect(true));
 
             p.add(new Prompt("TEST", Prompt.Type.ARRAY).setPrompt("Test Name:")
                                                        .setWidth(250)
                                                        .setOptionList(getTests())
-                                                       .setMutiSelect(true));
+                                                       .setMultiSelect(true));
 
             p.add(new Prompt("PREP_TEST", Prompt.Type.ARRAY).setPrompt("Prep Test Name:")
                                                             .setWidth(250)
                                                             .setOptionList(getTests())
-                                                            .setMutiSelect(true));
+                                                            .setMultiSelect(true));
 
             p.add(new Prompt("STATUS", Prompt.Type.ARRAY).setPrompt("Analysis Status:")
                                                          .setWidth(250)
                                                          .setOptionList(getStatus())
-                                                         .setMutiSelect(true));
+                                                         .setMultiSelect(true));
 
             orderBy = new ArrayList<OptionListItem>();
             orderBy.add(0, new OptionListItem("accession_number", "Accession Number"));
@@ -147,7 +147,7 @@ public class ToDoAnalyteReportBean {
             p.add(new Prompt("ORDER_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
                                                            .setWidth(250)
                                                            .setOptionList(orderBy)
-                                                           .setMutiSelect(true)
+                                                           .setMultiSelect(true)
                                                            .setRequired(true));
 
             prn = printers.getListByType("pdf");
@@ -155,7 +155,7 @@ public class ToDoAnalyteReportBean {
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(250)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
