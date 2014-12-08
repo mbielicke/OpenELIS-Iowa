@@ -73,7 +73,6 @@ import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
-import org.openelis.modules.sample1.client.QAEventChangeEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.QuickEntryTabUI;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -1301,7 +1300,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("complete")
     protected void complete(ClickEvent event) {
-        int i, count;
+        int i;
         Integer selRows[];
         String completed, onHold;
         UUID data;
@@ -1318,7 +1317,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             !Window.confirm(Messages.get().completeRelease_completeMultipleWarning(selRows.length)))
             return;
 
-        logger.log(Level.SEVERE, "Fetching locked samples at " + new Date().getTime());
         /*
          * lock and refetch the samples
          */
@@ -1340,8 +1338,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         completed = analysisStatuses.get(Constants.dictionary().ANALYSIS_COMPLETED);
         onHold = analysisStatuses.get(Constants.dictionary().ANALYSIS_ON_HOLD);
         errors = new ArrayList<Exception>();
-        logger.log(Level.SEVERE, "Starting complete at " + new Date().getTime());
-        count = 0;
         for (i = 0; i < selRows.length; i++ ) {
             data = table.getRowAt(selRows[i]).getData();
             sm = managers.get(data.sampleId);
@@ -1376,7 +1372,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                    .changeAnalysisStatus(sm,
                                                          ana.getId(),
                                                          Constants.dictionary().ANALYSIS_COMPLETED);
-                count++ ;
                 managers.put(data.sampleId, sm);
                 refreshRow(selRows[i]);
                 /*
@@ -1392,9 +1387,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         }
 
-        logger.log(Level.SEVERE, "Completed: " + count + " analyses at " + new Date().getTime());
         updateAndRefreshScreen(selectedSams, errors);
-
     }
 
     /**
@@ -1402,7 +1395,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      */
     @UiHandler("release")
     protected void release(ClickEvent event) {
-        int i, count;
+        int i;
         Integer selRows[];
         UUID data;
         AnalysisViewDO ana;
@@ -1418,7 +1411,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             !Window.confirm(Messages.get().completeRelease_releaseMultipleWarning(selRows.length)))
             return;
 
-        logger.log(Level.SEVERE, "Fetching locked samples " + new Date().getTime());
         setBusy(Messages.get().gen_lockForUpdate());
         /*
          * lock and refetch the samples
@@ -1437,8 +1429,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          */
         selectedSams = new HashMap<Integer, Boolean>();
         errors = new ArrayList<Exception>();
-        logger.log(Level.SEVERE, "Starting release at " + new Date().getTime());
-        count = 0;
         for (i = 0; i < selRows.length; i++ ) {
             data = table.getRowAt(selRows[i]).getData();
             sm = managers.get(data.sampleId);
@@ -1471,7 +1461,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                    .changeAnalysisStatus(sm,
                                                          ana.getId(),
                                                          Constants.dictionary().ANALYSIS_RELEASED);
-                count++ ;
                 managers.put(data.sampleId, sm);
                 refreshRow(selRows[i]);
                 /*
@@ -1487,7 +1476,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             }
         }
 
-        logger.log(Level.SEVERE, "Released: " + count + " analyses at " + new Date().getTime());
         updateAndRefreshScreen(selectedSams, errors);
     }
 
@@ -2753,8 +2741,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              */
             unlockSams.add(entry.getKey());
         }
-        logger.log(Level.SEVERE, "Updated samples with completed/released analyses at " +
-                                 new Date().getTime());
 
         if (unlockSams.size() > 0) {
             anaIds = new ArrayList<Integer>();
