@@ -194,7 +194,7 @@ public class AirQualityExportBean {
             p.add(new Prompt("ACTION", Prompt.Type.ARRAY).setPrompt("Action:")
                                                          .setWidth(150)
                                                          .setOptionList(options)
-                                                         .setMutiSelect(false)
+                                                         .setMultiSelect(false)
                                                          .setRequired(true)
                                                          .setDefaultValue(options.get(0).getLabel()));
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="wrFinalValue" pageWidth="100" pageHeight="12" columnWidth="100" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="ireport.scriptlethandling" value="2"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
+	<parameter name="WORKSHEET_ANALYSIS_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT wav.accession_number, wi.position
+from worksheet_analysis_view wav
+     join worksheet_item wi on wav.worksheet_item_id = wi.id
+where wav.id = $P{WORKSHEET_ANALYSIS_ID}]]>
+	</queryString>
+	<field name="accession_number" class="java.lang.String"/>
+	<field name="position" class="java.lang.Integer"/>
+	<detail>
+		<band height="12">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="qcLink" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="100" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number} + " (" + $F{position} + ")"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

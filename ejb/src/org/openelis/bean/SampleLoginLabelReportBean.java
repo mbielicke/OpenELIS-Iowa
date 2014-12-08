@@ -96,7 +96,7 @@ public class SampleLoginLabelReportBean {
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(124)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
@@ -236,7 +236,7 @@ public class SampleLoginLabelReportBean {
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(124)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {

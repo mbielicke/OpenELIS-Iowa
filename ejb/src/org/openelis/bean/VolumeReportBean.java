@@ -104,7 +104,7 @@ public class VolumeReportBean {
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
                                                           .setWidth(150)
                                                           .setOptionList(getSections())
-                                                          .setMutiSelect(true));
+                                                          .setMultiSelect(true));
 
             
             return p;

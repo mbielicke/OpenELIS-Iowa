@@ -72,7 +72,7 @@ public class RequestformReportBean {
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {

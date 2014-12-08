@@ -108,12 +108,12 @@ public class KitTrackingReportBean {
             p.add(new Prompt(OrderMeta.getShipFromId(), Prompt.Type.ARRAY).setPrompt("Ship From:")
                                                                           .setWidth(150)
                                                                           .setOptionList(getDictionaryList("laboratory_location"))
-                                                                          .setMutiSelect(true));
+                                                                          .setMultiSelect(true));
 
             p.add(new Prompt("SECTION_ID", Prompt.Type.ARRAY).setPrompt("Section:")
                                                              .setWidth(150)
                                                              .setOptionList(getSections())
-                                                             .setMutiSelect(true));
+                                                             .setMultiSelect(true));
 
             p.add(new Prompt("SHIP_TO", Prompt.Type.STRING).setPrompt("Ship To:")
                                                            .setWidth(150)
@@ -130,7 +130,7 @@ public class KitTrackingReportBean {
             p.add(new Prompt(OrderMeta.getStatusId(), Prompt.Type.ARRAY).setPrompt("Status:")
                                                                         .setWidth(150)
                                                                         .setOptionList(getDictionaryList("order_status"))
-                                                                        .setMutiSelect(false));
+                                                                        .setMultiSelect(false));
 
             orderBy = new ArrayList<OptionListItem>();
             orderBy.add(0, new OptionListItem("o_id", "Order#"));
@@ -145,7 +145,7 @@ public class KitTrackingReportBean {
             p.add(new Prompt("SORT_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
                                                           .setWidth(150)
                                                           .setOptionList(orderBy)
-                                                          .setMutiSelect(false));
+                                                          .setMultiSelect(false));
             return p;
         } catch (Exception e) {
             e.printStackTrace();

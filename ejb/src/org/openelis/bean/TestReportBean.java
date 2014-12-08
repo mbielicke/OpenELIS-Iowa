@@ -69,12 +69,12 @@ public class TestReportBean {
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
                                                           .setWidth(200)
                                                           .setOptionList(getSections())
-                                                          .setMutiSelect(true));
+                                                          .setMultiSelect(true));
 
             p.add(new Prompt("TEST", Prompt.Type.ARRAY).setPrompt("Test Name:")
                                                        .setWidth(300)
                                                        .setOptionList(getTests())
-                                                       .setMutiSelect(true));
+                                                       .setMultiSelect(true));
 
             detail = new ArrayList<OptionListItem>();
             detail.add(new OptionListItem("NL", "Name List"));
@@ -84,7 +84,7 @@ public class TestReportBean {
             p.add(new Prompt("DETAIL", Prompt.Type.ARRAY).setPrompt("Detail:")
                                                          .setWidth(200)
                                                          .setOptionList(detail)
-                                                         .setMutiSelect(false)
+                                                         .setMultiSelect(false)
                                                          .setRequired(true));
 
             prn = printers.getListByType("pdf");
@@ -92,7 +92,7 @@ public class TestReportBean {
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {

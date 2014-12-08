@@ -108,14 +108,14 @@ public class TurnaroundReportBean {
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
                                                           .setWidth(200)
                                                           .setOptionList(getSections())
-                                                          .setMutiSelect(true));
+                                                          .setMultiSelect(true));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {

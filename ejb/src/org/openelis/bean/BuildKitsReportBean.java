@@ -114,12 +114,12 @@ public class BuildKitsReportBean {
             p.add(new Prompt("SPECIAL_INSTRUCTIONS", Prompt.Type.ARRAY).setPrompt("Special Instructions:")
                                                                        .setWidth(200)
                                                                        .setOptionList(list)
-                                                                       .setMutiSelect(false));
+                                                                       .setMultiSelect(false));
             list = printer.getListByType("zpl");
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Barcode Printer:")
                                                           .setWidth(150)
                                                           .setOptionList(list)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {

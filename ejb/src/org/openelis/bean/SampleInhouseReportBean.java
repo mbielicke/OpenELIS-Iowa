@@ -120,22 +120,22 @@ public class SampleInhouseReportBean {
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
                                                           .setWidth(250)
                                                           .setOptionList(getSections())
-                                                          .setMutiSelect(true));
+                                                          .setMultiSelect(true));
 
             p.add(new Prompt("TEST", Prompt.Type.ARRAY).setPrompt("Test Name:")
                                                        .setWidth(250)
                                                        .setOptionList(getTests())
-                                                       .setMutiSelect(true));
+                                                       .setMultiSelect(true));
 
             p.add(new Prompt("STATUS", Prompt.Type.ARRAY).setPrompt("Analysis Status:")
                                                          .setWidth(250)
                                                          .setOptionList(getStatus())
-                                                         .setMutiSelect(true));
+                                                         .setMultiSelect(true));
 
             p.add(new Prompt("PROJECT", Prompt.Type.ARRAY).setPrompt("Project:")
                                                           .setWidth(250)
                                                           .setOptionList(getProjects())
-                                                          .setMutiSelect(true));
+                                                          .setMultiSelect(true));
 
             p.add(new Prompt("ORGANIZATION_ID", Prompt.Type.INTEGER).setPrompt("Organization Id:")
                                                           .setWidth(150));
@@ -150,14 +150,14 @@ public class SampleInhouseReportBean {
             p.add(new Prompt("ORDER_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
                                                            .setWidth(250)
                                                            .setOptionList(orderBy)
-                                                           .setMutiSelect(true));
+                                                           .setMultiSelect(true));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(250)
                                                           .setOptionList(prn)
-                                                          .setMutiSelect(false)
+                                                          .setMultiSelect(false)
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
