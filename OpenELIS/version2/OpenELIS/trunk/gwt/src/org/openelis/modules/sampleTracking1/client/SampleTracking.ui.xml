@@ -141,7 +141,7 @@
                 <g:layer bottom="0px" top="0px" width="24%" right="0px">
                   <g:HorizontalPanel>
                     <w:Button ui:field="popoutTreeButton" leftIcon="{res.icon.popoutIcon}"
-                      text="{msg.gen_popout}" width="60px" />
+                      text="{msg.gen_popout}" />
                   </g:HorizontalPanel>
                 </g:layer>
               </g:LayoutPanel>
