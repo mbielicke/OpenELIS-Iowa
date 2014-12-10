@@ -42,4 +42,7 @@ public interface Resources extends UIResources {
 
     @Source("images/table.png")
     ImageResource spreadsheetImage();
+    
+    @Source("images/arrow_undo.png")
+    ImageResource reset();
 }

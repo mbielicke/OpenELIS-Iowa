@@ -535,8 +535,8 @@ public class SampleStatusScreen extends Screen {
                                                                new AsyncCallback<ArrayList<SampleViewVO>>() {
                                                                    @Override
                                                                    public void onSuccess(ArrayList<SampleViewVO> list) {
+                                                                       window.clearStatus();
                                                                        if (list.size() > 0) {
-                                                                           window.clearStatus();
                                                                            try {
                                                                                fetchQaData(list);
                                                                            } catch (Exception e) {

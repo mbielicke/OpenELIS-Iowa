@@ -297,12 +297,12 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
-										enabled="true" />
+									<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
+										enabled="true" image="{uiRes.find}" />
 								</td>
 								<td>
-									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" />
+									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+										enabled="true" image="{res.reset}" />
 								</td>
 							</tr>
 						</table>
@@ -324,8 +324,8 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.gen_back}"
-								enabled="true" />
+							<w:Button ui:field="backButton" rightText="{msg.gen_back}"
+								enabled="true" image="{uiRes.previousPage}" />
 						</td>
 					</tr>
 					<tr>
@@ -336,12 +336,14 @@
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
-								enabled="true" />
-							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" />
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="selectAllButton" rightText="{msg.finalReport_selectAll}"
+									enabled="true" image="{uiRes.apply}" />
+								<w:Button ui:field="unselectAllButton" rightText="{msg.finalReport_unselectAll}"
+									enabled="true" image="{uiRes.unapply}" />
+								<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
+									enabled="true" image="{uiRes.report}" />
+							</g:HorizontalPanel>
 						</td>
 					</tr>
 				</table>

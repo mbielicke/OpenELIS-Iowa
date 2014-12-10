@@ -134,12 +134,12 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
-										enabled="true" />
+									<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
+										enabled="true" image="{uiRes.find}" />
 								</td>
 								<td>
-									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" />
+									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+										enabled="true" image="{res.reset}" />
 								</td>
 							</tr>
 						</table>
@@ -161,8 +161,8 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.gen_back}"
-								enabled="true" />
+							<w:Button ui:field="backButton" rightText="{msg.gen_back}"
+								enabled="true" image="{uiRes.previousPage}" />
 						</td>
 					</tr>
 					<tr>

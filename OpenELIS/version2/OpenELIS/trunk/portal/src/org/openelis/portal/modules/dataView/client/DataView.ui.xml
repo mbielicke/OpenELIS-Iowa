@@ -177,12 +177,12 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="continueButton" text="{msg.dataView_continue}"
-										enabled="true" css="{res.webLinkCss}"/>
+									<w:Button ui:field="continueButton" rightText="{msg.dataView_continue}"
+										enabled="true" image="{uiRes.find}" css="{res.webLinkCss}" />
 								</td>
 								<td>
-									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" css="{res.webLinkCss}"/>
+									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+										enabled="true" image="{res.reset}" css="{res.webLinkCss}" />
 								</td>
 							</tr>
 						</table>
@@ -203,20 +203,27 @@
 			<g:HTMLPanel>
 				<table>
 					<tr>
+						<td>
+							<w:Button ui:field="backButton" enabled="true" visible="true"
+								image="{res.backImage}" pixelSize="20,20" css="{res.webLinkCss}" />
+						</td>
+					</tr>
+					<tr>
 						<td colspan="8">
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_sampleFields}- " />
 							</span>
-							<w:Button ui:field="selectAllSampleFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" css="{res.webLinkCss}"/>
+							<w:Button ui:field="selectAllSampleFieldsButton"
+								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
+								image="{uiRes.apply}" css="{res.webLinkCss}" />
 						</td>
 						<td />
 						<td colspan="7">
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_orgFields}- " />
 							</span>
-							<w:Button ui:field="selectAllOrgFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" css="{res.webLinkCss}"/>
+							<w:Button ui:field="selectAllOrgFieldsButton" rightText="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" image="{uiRes.apply}" css="{res.webLinkCss}" />
 						</td>
 					</tr>
 					<tr>
@@ -361,16 +368,18 @@
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_analysisFields}- " />
 							</span>
-							<w:Button ui:field="selectAllAnalysisFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" css="{res.webLinkCss}"/>
+							<w:Button ui:field="selectAllAnalysisFieldsButton"
+								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
+								image="{uiRes.apply}" css="{res.webLinkCss}" />
 						</td>
 						<td />
 						<td colspan="7">
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_patientFields}- " />
 							</span>
-							<w:Button ui:field="selectAllPatientFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" css="{res.webLinkCss}"/>
+							<w:Button ui:field="selectAllPatientFieldsButton"
+								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
+								image="{uiRes.apply}" css="{res.webLinkCss}" />
 						</td>
 					</tr>
 					<tr>
@@ -525,28 +534,27 @@
 					</tr>
 					<tr>
 						<td>
-                            <g:HorizontalPanel spacing="2">
-							  <w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
-								  enabled="true" visible="true" css="{res.webLinkCss}"/>
-							  <w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
-								  enabled="true" visible="true" css="{res.webLinkCss}"/>
-                            </g:HorizontalPanel>
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="selectAllAnalytesButton" rightText="{msg.finalReport_selectAll}"
+									enabled="true" visible="true" image="{uiRes.apply}" css="{res.webLinkCss}" />
+								<w:Button ui:field="unselectAllAnalytesButton"
+									rightText="{msg.finalReport_unselectAll}" enabled="true"
+									visible="true" image="{uiRes.unapply}" css="{res.webLinkCss}" />
+							</g:HorizontalPanel>
 						</td>
 						<td>
-                            <g:HorizontalPanel spacing="2">
-							  <w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
-								  enabled="true" visible="true" css="{res.webLinkCss}"/>
-							  <w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
-								  enabled="true" visible="true" css="{res.webLinkCss}"/>
-                            </g:HorizontalPanel>
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="selectAllAuxButton" rightText="{msg.finalReport_selectAll}"
+									enabled="true" visible="true" image="{uiRes.apply}" css="{res.webLinkCss}" />
+								<w:Button ui:field="unselectAllAuxButton" rightText="{msg.finalReport_unselectAll}"
+									enabled="true" visible="true" image="{uiRes.unapply}" css="{res.webLinkCss}" />
+							</g:HorizontalPanel>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" image="{res.backImage}" pixelSize="20,20" css="{res.unstyledButtonCss}"
-								enabled="true" visible="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" visible="true" css="{res.webLinkCss}"/>
+							<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
+								enabled="true" visible="true" image="{uiRes.report}" css="{res.webLinkCss}" />
 						</td>
 					</tr>
 					<tr>

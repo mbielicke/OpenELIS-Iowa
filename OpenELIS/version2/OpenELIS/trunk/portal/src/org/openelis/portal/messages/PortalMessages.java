@@ -322,11 +322,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String emailNotification_filterValue();
 
   /**
-   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events.".
+   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events. You can also add a filter on the Collector, Provider, or Client Reference fields of the sample, to only receive emails that match the filter.".
    * 
-   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events."
+   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events. You can also add a filter on the Collector, Provider, or Client Reference fields of the sample, to only receive emails that match the filter."
    */
-  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events.")
+  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events. You can also add a filter on the Collector, Provider, or Client Reference fields of the sample, to only receive emails that match the filter.")
   @Key("emailNotification.help.description")
   String emailNotification_help_description();
 
