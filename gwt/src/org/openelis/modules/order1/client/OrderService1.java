@@ -34,9 +34,11 @@ import org.openelis.manager.OrderManager1;
 import org.openelis.manager.OrderManager1.Load;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 /**
  * This class implements and provides clients with the standard Sync and Async
@@ -59,6 +61,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     private OrderService1() {
         service = (OrderServiceInt1Async)GWT.create(OrderServiceInt1.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

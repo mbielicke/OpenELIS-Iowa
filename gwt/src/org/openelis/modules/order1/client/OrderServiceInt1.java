@@ -33,8 +33,8 @@ import org.openelis.manager.OrderManager1;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 /**
  * ScreenServiceInt is a GWT RemoteService interface for the Screen Widget. GWT
@@ -42,7 +42,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * implement this interface.
  */
 @RemoteServiceRelativePath("order1")
-public interface OrderServiceInt1 extends RemoteService {
+public interface OrderServiceInt1 extends XsrfProtectedService {
 
     public OrderManager1 getInstance(String type) throws Exception;
 
