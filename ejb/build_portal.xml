@@ -43,6 +43,7 @@
 		<fileset dir="src/resources/">
 			<include name="META-INF/persistence.xml" />
 			<include name="META-INF/ehcache.xml" />
+			<include name="META-INF/beans.xml"/>
 		</fileset>
 		<fileset dir="../OpenELIS-Common/bin">
 			<include name="org/openelis/manager/*.class" />
@@ -56,6 +57,12 @@
 			<include name="org/openelis/stfu/manager/*.class"/>
 			<include name="org/openelis/stfu/entity/*.class"/>
 		</fileset>
+		<fileset dir="src/resources/">
+			<include name="META-INF/beans.xml"/>
+		</fileset>
+		<fileset dir="../OpenELIS-Common/bin">
+			<include name="org/openelis/stfu/manager/*.class"/>
+	    </fileset>
 	</jar>
 
 	<delete file="build/openelis-common.jar" />
@@ -73,7 +80,7 @@
 			<include name="org/openelis/report/*.class" />
 			<include name="org/openelis/utilcommon/*.class" />
 			<include name="org/openelis/stfu/domain/*.class"/>
-			<include name="org/openelis/stfu/manager/*.class"/>
+			<!--<include name="org/openelis/stfu/manager/*.class"/>-->
 		</fileset>
 	</jar>
     

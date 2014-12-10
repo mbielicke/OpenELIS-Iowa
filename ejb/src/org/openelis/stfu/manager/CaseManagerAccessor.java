@@ -2,6 +2,10 @@ package org.openelis.stfu.manager;
 
 import java.util.ArrayList;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+
 import org.openelis.domain.DataObject;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.PatientDO;
@@ -14,13 +18,17 @@ import org.openelis.stfu.domain.CaseTagDO;
 import org.openelis.stfu.domain.CaseUserDO;
 
 public class CaseManagerAccessor {
+
+	public CaseManagerAccessor() {
+		
+	}
 	
 	public CaseDO getCase(CaseManager cm) {
 		return cm.getCase();
 	}
 	
 	public void setCase(CaseManager cm, CaseDO _case) {
-		cm._case = _case;
+		cm.mycase = _case;
 	}
 	
 	public PatientDO gePatient(CaseManager cm) {

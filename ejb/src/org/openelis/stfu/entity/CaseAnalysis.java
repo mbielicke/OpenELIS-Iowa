@@ -23,18 +23,19 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseAnalysis.fetchById",
-			     query = "select new org.openelis.common.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
+			     query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
 			             +"collectionDate,completedDate,conditionId) from CaseAnalysis where id = :id"),
 	@NamedQuery( name = "CaseAnalysis.fetchByIds",
-			     query = "select new org.openelis.common.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
+			     query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
 			             +"collectionDate,completedDate,conditionId) from CaseAnalysis where id in (:ids)"),		
 	@NamedQuery( name = "CaseAnalysis.fetchByCaseId",
-                 query = "select new org.openelis.common.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
+                 query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
                          +"collectionDate,completedDate,conditionId) from CaseAnalysis where caseId = :id"),
     @NamedQuery( name = "CaseAnalysis.fetchByCaseIds",
-                 query = "select new org.openelis.common.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
+                 query = "select new org.openelis.stfu.domain.CaseAnalysisDO(id,caseId,accessionNumber,organizationId,testId,statusId,"
                          +"collectionDate,completedDate,conditionId) from CaseAnalysis where caseId in (:ids)")			
 })
+
 @Entity
 @Table(name = "case_analysis")
 @EntityListeners(value=AuditUtil.class)

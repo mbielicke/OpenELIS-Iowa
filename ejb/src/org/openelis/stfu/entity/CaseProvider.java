@@ -20,16 +20,16 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseProvider.fetchById",
-			     query = "select new org.openelis.common.stfu.domain(id,caseId,caseContactId,typeId) "
+			     query = "select new org.openelis.stfu.domain.CaseProviderDO(id,caseId,caseContactId,typeId) "
 			             +"from CaseProvider where id = :id"),
 	@NamedQuery( name = "CaseProvider.fetchByIds",
-	     	     query = "select new org.openelis.common.stfu.domain(id,caseId,caseContactId,typeId) "
+	     	     query = "select new org.openelis.stfu.domain.CaseProviderDO(id,caseId,caseContactId,typeId) "
 		                 +"from CaseProvider where id in(:ids)"),
 	@NamedQuery( name = "CaseProvider.fetchByCaseId",
-                 query = "select new org.openelis.common.stfu.domain(id,caseId,caseContactId,typeId) "
+                 query = "select new org.openelis.stfu.domain.CaseProviderDO(id,caseId,caseContactId,typeId) "
                          +"from CaseProvider where caseId = :id"),
     @NamedQuery( name = "CaseProvider.fetchByCaseIds",
-                 query = "select new org.openelis.common.stfu.domain(id,caseId,caseContactId,typeId) "
+                 query = "select new org.openelis.stfu.domain.CaseProviderDO(id,caseId,caseContactId,typeId) "
                          +"from CaseProvider where caseId in(:ids)")
 })
 
