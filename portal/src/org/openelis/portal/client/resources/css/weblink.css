@@ -5,6 +5,7 @@
 	font-weight : bold;
 	color : #005d8d;
 	padding : 3px;
+    cursor : pointer;
 }
 
 .Button:hover {
@@ -20,6 +21,7 @@
 	font-style: normal;
 	font-size : 12px;
 	font-family : arial;
+	cursor : default;
 }
 
 .Focus {
