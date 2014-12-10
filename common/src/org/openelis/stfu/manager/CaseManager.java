@@ -22,7 +22,7 @@ public class CaseManager implements Serializable {
 		PATIENT,NEXTKIN,ORGANIZAITON,USER,PROVIDER,ANALYSIS,RESULT,TAGS;
 	}
 	
-	protected CaseDO                        _case;
+	protected CaseDO                        mycase;
 	protected PatientDO                     patient,nextkin;
 	protected CasePatientDO                 casePatient,caseNextkin;
 	protected OrganizationViewDO            organization;
@@ -33,6 +33,8 @@ public class CaseManager implements Serializable {
 	protected ArrayList<CaseTagDO>          caseTags;
 	protected ArrayList<DataObject>         removed;
 	
+	protected int                           nextUID              = -1;
+	
 	public transient final Analysis analysis = new Analysis();
 	public transient final Result   result   = new Result();
 	public transient final Tag      tag      = new Tag();
@@ -42,7 +44,7 @@ public class CaseManager implements Serializable {
 	}
 	
 	public CaseDO getCase() {
-		return _case;
+		return mycase;
 	}
 	
 	public PatientDO getPatient() {
@@ -68,6 +70,18 @@ public class CaseManager implements Serializable {
 	public CaseUserDO getCaseUser() {
 		return caseUser;
 	}
+	
+	public OrganizationViewDO getOrganization() {
+		return organization;
+	}
+	
+    /**
+     * Returns the next negative Id for this sample's newly created and as yet
+     * uncommitted data objects e.g. sample items, analyses and results etc.
+     */
+    public int getNextUID() {
+        return --nextUID;
+    }
 	
 	public class Analysis {
 		
