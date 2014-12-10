@@ -20,11 +20,11 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseContact.fetchById",
-			     query = "select new org.openelis.common.stfu.domain.CaseContactDO(id,sourceReference,sourceReferenceId,lastName,"
-			             +"firstName,typeId,npi) from CaseContact where id = :id"),
+			     query = "select new org.openelis.stfu.domain.CaseContactDO(id,sourceReference,sourceReferenceId,lastName,"
+			             +"firstName,middleName,typeId,npi) from CaseContact where id = :id"),
     @NamedQuery( name = "CaseContact.fetchByIds",
-			     query = "select new org.openelis.common.stfu.domain.CaseContactDO(id,sourceReference,sourceReferenceId,lastName,"
-	      	             +"firstName,typeId,npi) from CaseContact where id in (:ids)")			             
+			     query = "select new org.openelis.stfu.domain.CaseContactDO(id,sourceReference,sourceReferenceId,lastName,"
+	      	             +"firstName,middleName,typeId,npi) from CaseContact where id in (:ids)")			             
 })
 
 @Entity
@@ -48,7 +48,10 @@ public class CaseContact implements Auditable, Cloneable {
 	
 	@Column(name = "first_name")
 	private String firstName;
-		
+	
+	@Column(name = "middle_name")
+	private String middleName;
+	
 	@Column(name = "type_id")
 	private Integer typeId;
 	
@@ -101,6 +104,15 @@ public class CaseContact implements Auditable, Cloneable {
 	public void setFirstName(String firstName) {
 		if(isDifferent(firstName,this.firstName))
 			this.firstName = firstName;
+	}
+	
+	public String getMiddleName() {
+		return middleName;
+	}
+	
+	public void setMiddleName(String middleName) {
+		if(isDifferent(middleName,this.middleName))
+			this.middleName = middleName;
 	}
 
 	public Integer getTypeId() {

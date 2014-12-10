@@ -9,14 +9,17 @@ import java.util.logging.Logger;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.bean.LockBean;
 import org.openelis.bean.OrganizationBean;
 import org.openelis.bean.PatientBean;
+import org.openelis.bean.UserCacheBean;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.stfu.domain.CaseAnalysisDO;
 import org.openelis.stfu.domain.CaseDO;
@@ -25,9 +28,11 @@ import org.openelis.stfu.domain.CaseProviderDO;
 import org.openelis.stfu.domain.CaseResultDO;
 import org.openelis.stfu.domain.CaseTagDO;
 import org.openelis.stfu.domain.CaseUserDO;
+import org.openelis.stfu.entity.CaseTag;
 import org.openelis.stfu.manager.CaseManager;
 import org.openelis.stfu.manager.CaseManagerAccessor;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -64,7 +69,10 @@ public class CaseManagerBean {
 	CaseTagBean                          tagBean;
 	
 	@EJB
-	private LockBean                     lock;
+	LockBean                             lock;
+	
+	@EJB
+	UserCacheBean                        userCache;
 	
 	private static final Logger          log = Logger.getLogger("openelis");
 
@@ -159,6 +167,69 @@ public class CaseManagerBean {
         	}
         }
 		
+		return cms;
+	}
+	
+	public ArrayList<CaseManager> fetchActiveCasesByUser() throws Exception {		
+		ArrayList<CaseManager> cms;
+		CaseManager cm;
+		ArrayList<CaseDO> cases;
+		
+		cases = caseBean.fetchActiveCasesByUser(userCache.getSystemUser().getId());
+		cms = new ArrayList<CaseManager>();
+		for(CaseDO data : cases) {
+			cm = new CaseManager();
+        	accessor.setCase(cm, data);
+        	cms.add(cm);
+		}
+		
+		return cms;
+		
+	}
+	
+	public ArrayList<CaseManager> fetchTestCases() throws Exception {
+		ArrayList<CaseManager> cms;
+		CaseManager cm;
+		CaseDO _case;
+		OrganizationViewDO org;
+		PatientDO patient;
+		CaseUserDO user;
+		ArrayList<CaseTagDO> tags;
+		CaseTagDO tag;
+		
+		
+		cms = new ArrayList<CaseManager>();
+		
+		for(int i = 0; i < 20; i++) {
+		cm = new CaseManager();
+		_case = new CaseDO();
+		patient = new PatientDO();
+		org = new OrganizationViewDO();
+		user = new CaseUserDO();
+		tags = new ArrayList<CaseTagDO>();
+		tag = new CaseTagDO();
+		
+		patient.setBirthDate(Datetime.getInstance());
+		patient.setFirstName("first"+i);
+		patient.setLastName("last"+i);
+		org.setName("UIHC");
+		user.setSystemUserId(1);
+		tag.setTypeId(6358);
+		tag.setCreatedDate(Datetime.getInstance());
+		tags.add(tag);
+		tag = new CaseTagDO();
+		tag.setTypeId(6359);
+		tag.setCreatedDate(Datetime.getInstance());
+		tags.add(tag);
+		
+		accessor.setCase(cm, _case);
+		accessor.setOrganization(cm, org);
+		accessor.setPatient(cm, patient);
+		accessor.setCaseUser(cm, user);
+		accessor.setCaseTags(cm, tags);
+		
+		cms.add(cm);
+		}
 		return cms;
 	}
 	

@@ -44,6 +44,13 @@ public class CaseBean {
     	return toArrayList(query.getResultList());
     }
     
+    public ArrayList<CaseDO> fetchActiveCasesByUser(Integer systemUserId) throws Exception {
+    	Query query = manager.createNamedQuery("Case.fetchActiveCasesByUser");
+    	query.setParameter("systemUserId", systemUserId);
+    	
+    	return toArrayList(query.getResultList());
+    }
+    
     public CaseDO add(CaseDO data) throws Exception {
     	Case entity;
     	

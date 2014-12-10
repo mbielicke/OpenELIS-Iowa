@@ -7,11 +7,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -23,13 +25,19 @@ import org.openelis.utils.AuditUtil;
 
 @NamedQueries ({
 	@NamedQuery( name = "Case.fetchById",
-			     query = "select new org.openelis.common.domain.CaseDO(id,createdDate,patientId,nextOfKinId,casePatientId,caseNextOfKinId,organizationId," 
+			     query = "select new org.openelis.stfu.domain.CaseDO(id,createdDate,patientId,nextOfKinId,casePatientId,caseNextOfKinId,organizationId," 
 	                     +"completedDate,isFinalized) from Case where id = :id"),
 	               
 	@NamedQuery( name = "Case.fetchByIds",
-	             query = "select new org.openelis.common.domain.CaseDO(id,createdDate,patientId,nextOfKinId,casePatientId,caseNextOfKinId,organizationId," 
+	             query = "select new org.openelis.stfu.domain.CaseDO(id,createdDate,patientId,nextOfKinId,casePatientId,caseNextOfKinId,organizationId," 
 	                     +"completedDate,isFinalized) from Case where id in (:ids)")
+	/*
+	@NamedQuery( name = "Case.FetchActiveByUser",
+	             query = "select new org.openelis.stfu.domain.CaseDO(c.id,c.createdDate,c.patientId,c.nextOfKinId,c.casePatientId,c.caseNextOfKinId,"
+	                     +"c.organizationId,c.completedDate,c.isFinalized) form Case c where c.caseUser.systemUserId = :systemUserId")
+	*/
 })
+
 @Entity
 @Table(name="case")
 @EntityListeners({AuditUtil.class})

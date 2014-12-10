@@ -20,18 +20,19 @@ import org.openelis.utils.AuditUtil;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseResult.fetchById",
-			     query = "select new org.openelis.common.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
+			     query = "select new org.openelis.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
 			             +"isReportable,analyteId,typeId,value) from CaseResult where id = :id"),
     @NamedQuery( name = "CaseResult.fetchByIds",
-	    	     query = "select new org.openelis.common.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
+	    	     query = "select new org.openelis.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
 		                 +"isReportable,analyteId,typeId,value) from CaseResult where id in (:ids)"),
 	@NamedQuery( name = "CaseResult.fetchByAnalysisId",
-	     	     query = "select new org.openelis.common.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
+	     	     query = "select new org.openelis.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
 		                 +"isReportable,analyteId,typeId,value) from CaseResult where caseAnalysisId = :id"),
     @NamedQuery( name = "CaseResult.fetchByAnalysisIds",
-	    	     query = "select new org.openelis.common.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
+	    	     query = "select new org.openelis.stfu.domain.CaseResultDO(id,caseAnalysisId,testAnalyteId,testResultId,row,col,"
 		                 +"isReportable,analyteId,typeId,value) from CaseResult where caseAnalysisId in (:ids)")			                 
 })
+
 @Entity
 @Table(name = "case_result")
 @EntityListeners(value=AuditUtil.class)

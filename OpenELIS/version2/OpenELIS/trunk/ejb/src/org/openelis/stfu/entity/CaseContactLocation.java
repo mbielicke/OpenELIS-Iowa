@@ -20,10 +20,10 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseContactLocation.fetchById",
-			     query = "select new org.openelis.common.stfu.domain.CaseContactLocationDO(id,caseContactId,"
+			     query = "select new org.openelis.stfu.domain.CaseContactLocationDO(id,caseContactId,"
 			             +"location,addressId) from CaseContactLocation where id = :id"),
     @NamedQuery( name = "CaseContactLocation.fetchByIds",
-	    	     query = "select new org.openelis.common.stfu.domain.CaseContactLocationDO(id,caseContactId,"
+	    	     query = "select new org.openelis.stfu.domain.CaseContactLocationDO(id,caseContactId,"
 		                 +"location,addressId) from CaseContactLocation where id in (:ids)")			             
 })
 

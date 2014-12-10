@@ -29,6 +29,7 @@ import org.openelis.utils.Auditable;
 	    	     query = "select new org.openelis.stfu.domain.CasePatientDO(id,lastName,firstName,maidenName,addressId,birthDate,"
 		                 +"birthTime,genderId,raceId,ethnicityId,nationalId) from CasePatient where id in (:ids)")			             
 })
+
 @Entity
 @Table(name = "case_patient")
 @EntityListeners({AuditUtil.class})

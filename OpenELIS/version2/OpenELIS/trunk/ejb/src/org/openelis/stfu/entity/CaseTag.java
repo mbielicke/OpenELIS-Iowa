@@ -23,17 +23,17 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	@NamedQuery( name = "CaseTag.fetchById",
-			     query = "select new org.openelis.common.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
-                         +"reminderDate,completedDate,note) from CaseTag where id = :id"),
+			     query = "select new org.openelis.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
+                         +"remindDate,completedDate,note) from CaseTag where id = :id"),
     @NamedQuery( name = "CaseTag.fetchByIds",
-    		     query = "select new org.openelis.common.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
-                         +"reminderDate,completedDate,note) from CaseTag where id in (:ids)"),
+    		     query = "select new org.openelis.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
+                         +"remindDate,completedDate,note) from CaseTag where id in (:ids)"),
 	@NamedQuery( name = "CaseTag.fetchByCaseId",
-    			 query = "select new org.openelis.common.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
-    					 +"reminderDate,completedDate,note) from CaseTag where caseId = :id"),
+    			 query = "select new org.openelis.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
+    					 +"remindDate,completedDate,note) from CaseTag where caseId = :id"),
     @NamedQuery( name = "CaseTag.fetchByCaseIds",
-                 query = "select new org.openelis.common.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
-                         +"reminderDate,completedDate,note) from CaseTag where caseId in (:ids)")	
+                 query = "select new org.openelis.stfu.domain.CaseTagDO(id,caseId,typeId,systemUserId,createdDate,"
+                         +"remindDate,completedDate,note) from CaseTag where caseId in (:ids)")	
 })
 
 @Entity
