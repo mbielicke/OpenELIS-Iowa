@@ -4,6 +4,7 @@ import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -268,15 +269,17 @@ public class EmailNotificationScreen extends Screen {
      * errors.
      */
     private void commit() {
-        boolean exceptions;
-        String email, filter, filterValue;
+        boolean exceptions, duplicateRow;
+        String email, filter, filterValue, rowString;
         OrganizationParameterDO param;
         ArrayList<OrganizationParameterDO> params, commitList;
         HashMap<Integer, ArrayList<OrganizationParameterDO>> allParams;
+        HashSet<String> rows;
 
         ui.getTable().clearExceptions();
         exceptions = false;
         allParams = new HashMap<Integer, ArrayList<OrganizationParameterDO>>();
+        rows = new HashSet<String>();
         for (Row row : ui.getTable().getModel()) {
 
             /*
@@ -296,6 +299,19 @@ public class EmailNotificationScreen extends Screen {
                                 2,
                                 new Exception(Messages.get().emailNotification_error_noEmail()));
                 exceptions = true;
+            }
+
+            /*
+             * determine if any of the rows contain the same data
+             */
+            rowString = row.getCell(1).toString() + (String)row.getCell(2) +
+                        (String)row.getCell(3) + (String)row.getCell(4) + (String)row.getCell(5) +
+                        (String)row.getCell(6);
+            if (rows.contains(rowString)) {
+                duplicateRow = true;
+            } else {
+                rows.add(rowString);
+                duplicateRow = false;
             }
 
             params = row.getData();
@@ -343,9 +359,15 @@ public class EmailNotificationScreen extends Screen {
                         p.setValue(null);
                     }
                 }
+                if (duplicateRow) {
+                    if (p.getId() == null)
+                        continue;
+                    else
+                        p.setValue(null);
+                }
                 commitList.add(p);
             }
-            if (param != null)
+            if (param != null && !duplicateRow)
                 commitList.add(param);
             if (commitList.size() > 0) {
                 if (allParams.get(commitList.get(0).getOrganizationId()) == null) {

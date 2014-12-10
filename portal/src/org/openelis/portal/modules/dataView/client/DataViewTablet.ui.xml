@@ -209,12 +209,12 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="continueButton" text="{msg.dataView_continue}"
-										enabled="true" />
+									<w:Button ui:field="continueButton" rightText="{msg.dataView_continue}"
+										enabled="true" image="{uiRes.find}" />
 								</td>
 								<td>
-									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" />
+									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+										enabled="true" image="{res.reset}" />
 								</td>
 							</tr>
 						</table>
@@ -239,16 +239,17 @@
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_sampleFields}- " />
 							</span>
-							<w:Button ui:field="selectAllSampleFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+							<w:Button ui:field="selectAllSampleFieldsButton"
+								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
+								image="{uiRes.apply}" />
 						</td>
 						<td />
 						<td colspan="7">
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_orgFields}- " />
 							</span>
-							<w:Button ui:field="selectAllOrgFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+							<w:Button ui:field="selectAllOrgFieldsButton" rightText="{msg.finalReport_selectAll}"
+								enabled="true" visible="true" image="{uiRes.apply}" />
 						</td>
 					</tr>
 					<tr>
@@ -413,16 +414,18 @@
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_analysisFields}- " />
 							</span>
-							<w:Button ui:field="selectAllAnalysisFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+							<w:Button ui:field="selectAllAnalysisFieldsButton"
+								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
+								image="{uiRes.apply}" />
 						</td>
 						<td />
 						<td colspan="7">
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_patientFields}- " />
 							</span>
-							<w:Button ui:field="selectAllPatientFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+							<w:Button ui:field="selectAllPatientFieldsButton"
+								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
+								image="{uiRes.apply}" />
 						</td>
 					</tr>
 					<tr>
@@ -593,24 +596,31 @@
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
-							<w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" visible="true" />
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="selectAllAnalytesButton" rightText="{msg.finalReport_selectAll}"
+									enabled="true" visible="true" image="{uiRes.apply}" />
+								<w:Button ui:field="unselectAllAnalytesButton"
+									rightText="{msg.finalReport_unselectAll}" enabled="true"
+									visible="true" image="{uiRes.unapply}" />
+							</g:HorizontalPanel>
 						</td>
 						<td>
-							<w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
-							<w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" visible="true" />
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="selectAllAuxButton" rightText="{msg.finalReport_selectAll}"
+									enabled="true" visible="true" image="{uiRes.apply}" />
+								<w:Button ui:field="unselectAllAuxButton" rightText="{msg.finalReport_unselectAll}"
+									enabled="true" visible="true" image="{uiRes.unapply}" />
+							</g:HorizontalPanel>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.gen_back}"
-								enabled="true" visible="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" visible="true" />
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="backButton" rightText="{msg.gen_back}"
+									enabled="true" visible="true" image="{uiRes.previousPage}" />
+								<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
+									enabled="true" visible="true" image="{uiRes.report}" />
+							</g:HorizontalPanel>
 						</td>
 					</tr>
 				</table>

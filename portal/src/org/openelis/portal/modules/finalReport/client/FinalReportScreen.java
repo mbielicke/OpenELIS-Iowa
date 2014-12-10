@@ -674,16 +674,21 @@ public class FinalReportScreen extends Screen {
             ui.getTable().setWidget(j, 0, check);
             ui.getTable().setText(j, 1, DataBaseUtil.toString(sample.getAccessionNumber()));
             collectionTime = sample.getCollectionTime();
-            collection = sample.getCollectionDate().getDate();
+            collection = null;
             try {
+                collection = sample.getCollectionDate().getDate();
                 collection.setHours(collectionTime.get(Datetime.HOUR));
                 collection.setMinutes(collectionTime.get(Datetime.MINUTE));
             } catch (Exception e) {
-                // time is null
+                // date or time is null
             }
 
-            ui.getTable()
-              .setText(j, 2, dh.format(new Datetime(Datetime.YEAR, Datetime.MINUTE, collection)));
+            if (collection != null)
+                ui.getTable().setText(j,
+                                      2,
+                                      dh.format(new Datetime(Datetime.YEAR,
+                                                             Datetime.MINUTE,
+                                                             collection)));
 
             /*
              * show the collector for environmental and SDWIS samples and show

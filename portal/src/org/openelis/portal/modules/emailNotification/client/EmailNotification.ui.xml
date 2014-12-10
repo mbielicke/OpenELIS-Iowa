@@ -95,12 +95,12 @@
 						</tr>
 						<tr>
 							<td>
-                                <g:HorizontalPanel spacing="2">
-								  <w:Button ui:field="addButton" text="{msg.gen_addRow}"
-									  enabled="true" css="{res.webLinkCss}"/>
-								  <w:Button ui:field="commitButton" text="{msg.btn_commit}"
-									  enabled="true" css="{res.webLinkCss}"/>
-                                </g:HorizontalPanel>
+								<g:HorizontalPanel spacing="4">
+									<w:Button ui:field="addButton" rightText="{msg.gen_addRow}"
+										enabled="true" image="{uiRes.addButton}" css="{res.webLinkCss}"/>
+									<w:Button ui:field="commitButton" rightText="{msg.btn_commit}"
+										enabled="true" image="{uiRes.commit}" css="{res.webLinkCss}"/>
+								</g:HorizontalPanel>
 							</td>
 						</tr>
 					</table>
