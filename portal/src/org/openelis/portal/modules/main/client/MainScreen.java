@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.portal.client.OpenELISService;
+import org.openelis.portal.modules.cases.client.CasesScreen;
 import org.openelis.portal.modules.dataView.client.DataViewScreen;
 import org.openelis.portal.modules.emailNotification.client.EmailNotificationScreen;
 import org.openelis.portal.modules.finalReport.client.FinalReportScreen;
@@ -15,17 +16,20 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.PortalWindow;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.LayoutPanel;
 
 public class MainScreen extends Composite {
 
-    MainUI                    ui = GWT.create(MainUIImpl.class);
-    PortalWindow              window;
-
-    protected QuestionPopupUI questionPopup;
+    MainUI ui = GWT.create(MainUIImpl.class);
+    PortalWindow window;
 
     public MainScreen() {
         initWidget(ui.asWidget());
@@ -33,8 +37,8 @@ public class MainScreen extends Composite {
     }
 
     protected void initialize() {
-        window = new PortalWindow();
-
+    	window = new PortalWindow();
+    	
         ui.navigation().finalReport().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -54,7 +58,29 @@ public class MainScreen extends Composite {
                 ui.main().add(screen);
             }
         });
-
+        
+        ui.navigation().cases.addClickHandler(new ClickHandler() {
+        	@Override
+        	public void onClick(ClickEvent event) {
+        		ui.main().clear();
+        		try {
+        			final CasesScreen screen = new CasesScreen();
+        			screen.setSize((Window.getClientWidth()-20)+"px",(Window.getClientHeight()-ui.main().getAbsoluteTop()-10)+"px");
+        			screen.setWindow(window);
+        			ui.main().add(screen);
+        			//Window.addResizeHandler(new ResizeHandler() {
+						//@Override
+						//public void onResize(ResizeEvent event) {
+							//screen.setSize((Window.getClientWidth()-20)+"px",(Window.getClientHeight()-ui.main().getAbsoluteTop()-10)+"px");
+						//}
+					//});
+        		}catch(Exception e) {
+        			e.printStackTrace();
+        			Window.alert(e.getMessage());
+        		}
+        	}
+        });
+        
         ui.navigation().dataView().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

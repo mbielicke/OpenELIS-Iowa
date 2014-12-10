@@ -37,9 +37,10 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     protected MultiDropdown<Integer>           projectCode;
 
     @UiField
-    protected Button                           getSampleListButton, resetButton, backButton,
+    protected Button                 getSampleListButton, resetButton,backButton,          
                     selectAllButton, unselectAllButton, runReportButton;
 
+    
     @UiField
     protected FlexTable                        table;
 

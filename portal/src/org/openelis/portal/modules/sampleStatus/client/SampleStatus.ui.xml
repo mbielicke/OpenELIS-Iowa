@@ -24,7 +24,7 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-	<w:PortalPanel>
+	<w:PortalPanel styleName="{res.style.ScreenPanel}">
 		<g:DeckPanel ui:field="deck">
 			<g:DockPanel>
 				<g:Dock direction="WEST" size="400">
@@ -119,11 +119,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
-										enabled="true" />
+										enabled="true" css="{res.webLinkCss}" />
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" />
+										enabled="true" css="{res.webLinkCss}"/>
 								</td>
 							</tr>
 						</table>
@@ -145,7 +145,7 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.gen_back}"
+							<w:Button ui:field="backButton" image="{res.backImage}" pixelSize="20,20" css="{res.unstyledButtonCss}"
 								enabled="true" />
 						</td>
 					</tr>

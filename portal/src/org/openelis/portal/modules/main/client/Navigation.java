@@ -1,10 +1,11 @@
 package org.openelis.portal.modules.main.client;
 
+import org.openelis.ui.widget.Button;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -15,36 +16,38 @@ public class Navigation extends ResizeComposite {
 	protected static final NavigationUiBinder uiBinder = GWT.create(NavigationUiBinder.class);
 	
 	@UiField
-	Anchor finalReport,dataView,sampleStatus,testRequest,
-	       emailNotification, logout; 
+	Button finalReport,dataView,sampleStatus,testRequest,
+	       emailNotification, cases, logout; 
 	
 	public Navigation() {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	public Anchor finalReport() {
+	public Button finalReport() {
 		return finalReport;
 	}
 	
-	public Anchor dataView() {
+	public Button dataView() {
 		return dataView;
 	}
 	
-	public Anchor sampleStatus() {
+	public Button sampleStatus() {
 		return sampleStatus;
 	}
 	
-	public Anchor testRequest() {
+	public Button testRequest() {
 		return testRequest;
 	}
 	
-	public Anchor emailNotification() {
+	public Button emailNotification() {
 		return emailNotification;
 	}
 	
-	public Anchor logout() {
+	public Button logout() {
 		return logout;
 	}
 	
-
+	public Button cases() {
+		return cases;
+	}
 }

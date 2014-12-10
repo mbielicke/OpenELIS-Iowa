@@ -1,0 +1,33 @@
+.Button{
+	display :inline-block;
+	font-size : 12px;
+	font-family : arial;
+	font-weight : bold;
+	color : #005d8d;
+	padding : 3px;
+}
+
+.Button:hover {
+	text-decoration : underline;
+	font-weight : bolder;
+	font-style: italic;
+	font-size : 12px;
+}
+
+.Button.Disabled:hover {
+	text-decoration : inherit;
+	font-weight : bold;
+	font-style: normal;
+	font-size : 12px;
+	font-family : arial;
+}
+
+.Focus {
+}
+
+.Pressed {
+}
+
+.Disabled {
+	color : grey;
+}

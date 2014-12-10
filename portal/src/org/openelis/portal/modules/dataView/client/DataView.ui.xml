@@ -24,7 +24,7 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-	<w:PortalPanel>
+	<w:PortalPanel styleName="{res.style.ScreenPanel}">
 		<g:DeckPanel ui:field="deck">
 			<g:DockPanel>
 				<g:Dock direction="WEST" size="400">
@@ -178,11 +178,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="continueButton" text="{msg.dataView_continue}"
-										enabled="true" />
+										enabled="true" css="{res.webLinkCss}"/>
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" />
+										enabled="true" css="{res.webLinkCss}"/>
 								</td>
 							</tr>
 						</table>
@@ -208,7 +208,7 @@
 								<ui:text from="{msg.dataView_sampleFields}- " />
 							</span>
 							<w:Button ui:field="selectAllSampleFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+								enabled="true" visible="true" css="{res.webLinkCss}"/>
 						</td>
 						<td />
 						<td colspan="7">
@@ -216,7 +216,7 @@
 								<ui:text from="{msg.dataView_orgFields}- " />
 							</span>
 							<w:Button ui:field="selectAllOrgFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+								enabled="true" visible="true" css="{res.webLinkCss}"/>
 						</td>
 					</tr>
 					<tr>
@@ -362,7 +362,7 @@
 								<ui:text from="{msg.dataView_analysisFields}- " />
 							</span>
 							<w:Button ui:field="selectAllAnalysisFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+								enabled="true" visible="true" css="{res.webLinkCss}"/>
 						</td>
 						<td />
 						<td colspan="7">
@@ -370,7 +370,7 @@
 								<ui:text from="{msg.dataView_patientFields}- " />
 							</span>
 							<w:Button ui:field="selectAllPatientFieldsButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
+								enabled="true" visible="true" css="{res.webLinkCss}"/>
 						</td>
 					</tr>
 					<tr>
@@ -525,24 +525,28 @@
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
-							<w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" visible="true" />
+                            <g:HorizontalPanel spacing="2">
+							  <w:Button ui:field="selectAllAnalytesButton" text="{msg.finalReport_selectAll}"
+								  enabled="true" visible="true" css="{res.webLinkCss}"/>
+							  <w:Button ui:field="unselectAllAnalytesButton" text="{msg.finalReport_unselectAll}"
+								  enabled="true" visible="true" css="{res.webLinkCss}"/>
+                            </g:HorizontalPanel>
 						</td>
 						<td>
-							<w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" />
-							<w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" visible="true" />
+                            <g:HorizontalPanel spacing="2">
+							  <w:Button ui:field="selectAllAuxButton" text="{msg.finalReport_selectAll}"
+								  enabled="true" visible="true" css="{res.webLinkCss}"/>
+							  <w:Button ui:field="unselectAllAuxButton" text="{msg.finalReport_unselectAll}"
+								  enabled="true" visible="true" css="{res.webLinkCss}"/>
+                            </g:HorizontalPanel>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.gen_back}"
+							<w:Button ui:field="backButton" image="{res.backImage}" pixelSize="20,20" css="{res.unstyledButtonCss}"
 								enabled="true" visible="true" />
 							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" visible="true" />
+								enabled="true" visible="true" css="{res.webLinkCss}"/>
 						</td>
 					</tr>
 					<tr>
