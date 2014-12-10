@@ -42,7 +42,7 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     @UiField
     protected Button                           getSampleListButton, resetButton, backButton,
                     selectAllButton, unselectAllButton, runReportButton;
-
+    
     @UiField
     protected FlexTable                        table;
 

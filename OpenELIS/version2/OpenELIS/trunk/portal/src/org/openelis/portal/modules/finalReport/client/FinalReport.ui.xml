@@ -24,8 +24,8 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-	<w:PortalPanel>
-		<g:DeckPanel ui:field="deck">
+	<w:PortalPanel styleName="{res.style.ScreenPanel}">
+		<g:DeckPanel  ui:field="deck">
 			<g:DockPanel>
 				<g:Dock direction="WEST" size="400">
 					<g:HTMLPanel>
@@ -254,11 +254,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="getSampleListButton" text="{msg.finalReport_getSampleList}"
-										enabled="true" />
+										enabled="true" css="{res.webLinkCss}"/>
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" text="{msg.finalReport_reset}"
-										enabled="true" />
+										enabled="true" css="{res.webLinkCss}"/>
 								</td>
 							</tr>
 						</table>
@@ -280,8 +280,7 @@
 				<table width="728">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" text="{msg.gen_back}"
-								enabled="true" />
+							<w:Button ui:field="backButton" image="{res.backImage}" pixelSize="20,20" css="{res.unstyledButtonCss}" enabled="true"/>
 						</td>
 					</tr>
 					<tr>
@@ -292,12 +291,14 @@
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
-								enabled="true" />
-							<w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
-								enabled="true" />
-							<w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
-								enabled="true" />
+                            <g:HorizontalPanel spacing="2">
+							 <w:Button ui:field="selectAllButton" text="{msg.finalReport_selectAll}"
+								enabled="true" css="{res.webLinkCss}"/>
+							 <w:Button ui:field="unselectAllButton" text="{msg.finalReport_unselectAll}"
+								enabled="true" css="{res.webLinkCss}"/>
+							 <w:Button ui:field="runReportButton" text="{msg.finalReport_run}"
+								enabled="true" css="{res.webLinkCss}"/>
+                            </g:HorizontalPanel>
 						</td>
 					</tr>
 				</table>

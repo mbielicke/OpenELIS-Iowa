@@ -2,7 +2,7 @@ package org.openelis.portal.messages;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Portal/src/org/openelis/portal/messages/PortalMessages.properties'.
+ * 	/home/tschmidt/luna/workspace/OpenELIS-Portal/src/org/openelis/portal/messages/PortalMessages.properties'.
  */
 public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   

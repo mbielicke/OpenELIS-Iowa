@@ -41,6 +41,8 @@
 	<set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true" />
 	<set-configuration-property name="compiler.emulatedStack.recordFileNames" value="true" />
     <set-property name="rpc.XserializeFinalFields" value="true"/>
+    
+    <set-property name="platform" value="desktop"/>
 
 	<replace-with class="org.openelis.portal.modules.mobile.client.MobileScreen">
 		<when-type-assignable class="org.openelis.portal.client.PortalEntry" />

@@ -24,7 +24,7 @@
 		field="res" />
 	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
-	<w:PortalPanel>
+	<w:PortalPanel styleName="{res.style.ScreenPanel}">
 		<g:DockPanel>
 			<g:Dock direction="WEST" size="800">
 				<g:HTMLPanel>
@@ -95,10 +95,12 @@
 						</tr>
 						<tr>
 							<td>
-								<w:Button ui:field="addButton" text="{msg.gen_addRow}"
-									enabled="true" />
-								<w:Button ui:field="commitButton" text="{msg.btn_commit}"
-									enabled="true" />
+                                <g:HorizontalPanel spacing="2">
+								  <w:Button ui:field="addButton" text="{msg.gen_addRow}"
+									  enabled="true" css="{res.webLinkCss}"/>
+								  <w:Button ui:field="commitButton" text="{msg.btn_commit}"
+									  enabled="true" css="{res.webLinkCss}"/>
+                                </g:HorizontalPanel>
 							</td>
 						</tr>
 					</table>
