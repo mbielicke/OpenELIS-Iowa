@@ -91,7 +91,7 @@
 	
 	<copy file="build/openelis.ear" todir="/usr/local/java/jboss-as-7.1.1.Final/standalone/deployments"/>
 	
-	<delete dir="deploylib"/>
+	<!--<delete dir="deploylib"/>-->
 
 </project>
 
