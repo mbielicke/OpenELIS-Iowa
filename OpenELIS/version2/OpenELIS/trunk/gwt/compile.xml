@@ -7,7 +7,8 @@
 		         uri="antlib:org.apache.ivy.ant" classpath="/usr/share/java/ivy.jar"/>
 	
 	<ivy:configure file="ivysettings.xml"/>
-	<ivy:retrieve pattern="ivylib/[artifact]-[type]-[revision].[ext]" sync="true"/>
+	<ivy:retrieve pattern="ivylib/[artifact]-[type]-[revision].[ext]"/>
+	<ivy:retrieve file="../OpenELIS-EJB/ivy.xml" pattern="ivylib/[artifact]-[type]-[revision].[ext]"/>
 	
 	<path id="ivy.lib">
 	   <fileset dir="ivylib" includes="*.jar"/>
