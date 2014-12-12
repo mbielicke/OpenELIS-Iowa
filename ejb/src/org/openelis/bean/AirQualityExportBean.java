@@ -1129,7 +1129,7 @@ public class AirQualityExportBean {
         boolean addTds, addAll;
         Integer analysisCount;
         Double ttds, tmnoc;
-        String stateCode, countyCode, siteId, parameter, durationCode, methodCode, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, key;
+        String stateCode, countyCode, siteId, parameter, durationCode, methodCode, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, key, qualifiers[];
         StringBuilder sb;
         SimpleDateFormat dateTimeFormat;
         HashMap<String, ArrayList<String>> airToxicsStrings;
@@ -1337,8 +1337,17 @@ public class AirQualityExportBean {
                      * are empty
                      */
                     sb.append(delim);
-                    if (qualifierStrings.contains(qualifier))
-                        sb.append(qualifierCode);
+                    /*
+                     * determine if any string in the qualifier field matches an
+                     * "under limit" string
+                     */
+                    qualifiers = qualifier.split(";");
+                    for (int i = 0; i < qualifiers.length; i++ ) {
+                        if (qualifierStrings.contains(qualifiers[i])) {
+                            sb.append(qualifierCode);
+                            break;
+                        }
+                    }
                     sb.append(delim)
                       .append(delim)
                       .append(delim)
