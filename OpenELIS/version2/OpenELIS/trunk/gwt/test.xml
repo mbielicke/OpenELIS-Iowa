@@ -46,8 +46,9 @@
             	<pathelement location="../OpenELIS-Lib/bin"/>
             	<pathelement location="../Security/shared"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
-            	<fileset dir="${selenium.home}/libs/" includes="*.jar" />
-            	<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>
+            	<!--<fileset dir="${selenium.home}/libs/" includes="*.jar" />-->
+            	<!--<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>-->
+            	<fileset dir="lib" includes="ui.jar"/>
             </classpath>
 		</javac>
 	</target>
@@ -69,13 +70,14 @@
 				<pathelement location="../Security/shared"/>
 				<pathelement location="war/WEB-INF/classes" />
 				<pathelement location="${junit.home}/junit-4.11.jar" />
-				<fileset dir="${selenium.home}/libs/" includes="*.jar" />
-				<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>
+				<!--<fileset dir="${selenium.home}/libs/" includes="*.jar" />-->
+				<!--<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>-->
         		<path refid="ivy.lib"/>
             	<pathelement location="../OpenELIS-Common/bin"/>
             	<pathelement location="../OpenELIS-EJB/bin"/>
             	<pathelement location="../OpenELIS-Lib/bin"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+				<fileset dir="lib" includes="ui.jar"/>
             </classpath>
 			<batchtest todir="reports/junit">
 				<fileset dir="../OpenELIS-EJB/test">
@@ -108,13 +110,14 @@
 				<pathelement location="../Security/shared"/>
 				<pathelement location="war/WEB-INF/classes" />
 				<pathelement location="${junit.home}/junit-4.11.jar" />
-				<fileset dir="${selenium.home}/libs/" includes="*.jar" />
-				<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>
+				<!--<fileset dir="${selenium.home}/libs/" includes="*.jar" />-->
+				<!--<fileset dir="${selenium.home}" includes="selenium-java-2.41.0.jar"/>-->
         		<path refid="ivy.lib"/>
             	<pathelement location="../OpenELIS-Common/bin"/>
             	<pathelement location="../OpenELIS-EJB/bin"/>
             	<pathelement location="../OpenELIS-Lib/bin"/>
             	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
+				<fileset dir="lib" includes="ui.jar"/>
             </classpath>
 			<batchtest todir="reports/junit">
 				<fileset dir="test">
