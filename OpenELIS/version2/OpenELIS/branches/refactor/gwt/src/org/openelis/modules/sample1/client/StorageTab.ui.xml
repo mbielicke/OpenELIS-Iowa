@@ -12,6 +12,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -22,38 +23,38 @@
       <t:Table ui:field="table" verticalScroll="ALWAYS" visibleRows="8"
         horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="155" label="{msg.gen_user}">
-          <t:LabelCell>
+          <cell:LabelCell>
             <w:Label field="Integer" />
-          </t:LabelCell>
+          </cell:LabelCell>
         </t:Column>
         <t:Column width="259" label="{msg.gen_location}" required="true">
-          <t:AutoCompleteCell>
+          <cell:AutoCompleteCell>
             <w:AutoComplete ui:field = "location" width="215" case="LOWER" dropWidth = "430">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="140" label="{msg.gen_parent}">
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </t:Column>
                   <t:Column width="140" label="{msg.gen_storageUnit}">
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </t:Column>
                   <t:Column width="140" label="{msg.gen_location}">
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </t:Column>
                 </t:Table>
               </w:popup>
             </w:AutoComplete>
-          </t:AutoCompleteCell>
+          </cell:AutoCompleteCell>
         </t:Column>
         <t:Column width="135" label="{msg.gen_checkIn}" required="true">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar begin="0" end="4" />
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="136" label="{msg.gen_checkOut}">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar begin="0" end="4" />
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
       </t:Table>
     </g:layer>

@@ -48,8 +48,8 @@ import org.openelis.ui.resources.CheckboxCSS;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.widget.Check;
 import org.openelis.ui.widget.CheckBox;
-import org.openelis.ui.widget.table.CellEditor;
-import org.openelis.ui.widget.table.CellRenderer;
+import org.openelis.ui.widget.cell.CellEditor;
+import org.openelis.ui.widget.cell.CellRenderer;
 import org.openelis.ui.widget.table.ColumnInt;
 import org.openelis.ui.widget.table.Container;
 

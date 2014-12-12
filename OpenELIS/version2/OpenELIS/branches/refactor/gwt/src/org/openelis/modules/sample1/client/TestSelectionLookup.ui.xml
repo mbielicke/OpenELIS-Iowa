@@ -11,6 +11,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -30,28 +31,28 @@
         <r:Column width="50" label="{msg.gen_select}" />
         <r:Leaf key="analysis">
           <r:LeafColumn>
-            <t:LabelCell />
+            <cell:LabelCell />
           </r:LeafColumn>
           <r:LeafColumn>
-            <t:LabelCell />
+            <cell:LabelCell />
           </r:LeafColumn>
           <r:LeafColumn>
-            <t:LabelCell />
+            <cell:LabelCell />
           </r:LeafColumn>
         </r:Leaf>
         <r:Leaf key="test">
           <r:LeafColumn>
-            <t:LabelCell />
+            <cell:LabelCell />
           </r:LeafColumn>
           <r:LeafColumn>
-            <t:DropdownCell>
+            <cell:DropdownCell>
               <w:Dropdown width="200px" field="Integer" ui:field="section" />
-            </t:DropdownCell>
+            </cell:DropdownCell>
           </r:LeafColumn>
           <r:LeafColumn>
-            <t:CheckBoxCell>
+            <cell:CheckBoxCell>
               <w:Check/>
-            </t:CheckBoxCell>
+            </cell:CheckBoxCell>
           </r:LeafColumn>
         </r:Leaf>
       </r:Tree>

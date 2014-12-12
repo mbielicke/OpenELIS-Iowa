@@ -11,6 +11,7 @@
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -62,12 +63,12 @@
             <r:Column width="230" label="{msg.gen_commentLibrary}" />
             <r:Leaf key="category">
               <r:LeafColumn>
-                <t:LabelCell />
+                <cell:LabelCell />
               </r:LeafColumn>
             </r:Leaf>
             <r:Leaf key="note">
               <r:LeafColumn>
-                <t:LabelCell />
+                <cell:LabelCell />
               </r:LeafColumn>
             </r:Leaf>
           </r:Tree>

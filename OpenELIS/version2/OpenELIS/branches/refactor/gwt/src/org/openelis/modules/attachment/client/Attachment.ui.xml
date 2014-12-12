@@ -10,7 +10,9 @@
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
-  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:t='urn:import:org.openelis.ui.widget.table' 
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
+  xmlns:c="urn:import:org.openelis.ui.widget.calendar"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -57,40 +59,40 @@
             <r:Column width="50" label="{msg.gen_id}" />
             <r:Leaf key="attachment">
               <r:LeafColumn required = "true">
-                <t:TextBoxCell>
+                <cell:TextBoxCell>
                   <w:TextBox field="String"/>
-                </t:TextBoxCell>
+                </cell:TextBoxCell>
               </r:LeafColumn>
               <r:LeafColumn>
-                <t:CalendarCell>
+                <cell:CalendarCell>
                   <c:Calendar width="115" begin="0" end="4" />
-                </t:CalendarCell>
+                </cell:CalendarCell>
               </r:LeafColumn>
               <r:LeafColumn>
-                <t:DropdownCell>
+                <cell:DropdownCell>
                   <w:Dropdown ui:field="tableSection" field="Integer" dropWidth="150" />
-                </t:DropdownCell>
+                </cell:DropdownCell>
               </r:LeafColumn>
               <r:LeafColumn>
-                <t:DropdownCell>
+                <cell:DropdownCell>
                   <w:Dropdown ui:field="type" field="Integer" dropWidth="100" />
-                </t:DropdownCell>
+                </cell:DropdownCell>
               </r:LeafColumn>
               <r:LeafColumn>
-                <t:LabelCell />
+                <cell:LabelCell />
               </r:LeafColumn>
               <r:LeafColumn>
-                <t:LabelCell />
+                <cell:LabelCell />
               </r:LeafColumn>
             </r:Leaf>
             <r:Leaf key="attachmentItem">
               <r:LeafColumn>
-                <t:LabelCell />
+                <cell:LabelCell />
               </r:LeafColumn>
             </r:Leaf>
             <r:Leaf key="clickForMore">
               <r:LeafColumn>
-                <t:LabelCell />
+                <cell:LabelCell />
               </r:LeafColumn>
             </r:Leaf>
           </r:Tree>

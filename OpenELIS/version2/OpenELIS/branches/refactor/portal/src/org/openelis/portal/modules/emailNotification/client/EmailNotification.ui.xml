@@ -16,7 +16,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
 	xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:wb="urn:import:org.openelis.ui.widget.web"
-	xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+	xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+    xmlns:cell="urn:import:org.openelis.ui.widget.cell"
+>
 
 	<ui:with type="org.openelis.portal.messages.PortalMessages"
 		field="msg" />
@@ -55,38 +57,38 @@
 										<t:Table ui:field="table" header="true"
 											styleName="{res.table.ScreenTableWithSides}" enabled="true">
 											<t:Column width="10">
-												<t:ImageCell />
+												<cell:ImageCell />
 											</t:Column>
 											<t:Column width="200" label="{msg.emailNotification_org}">
-												<t:DropdownCell>
+												<cell:DropdownCell>
 													<w:Dropdown ui:field="org" width="250" field="Integer" />
-												</t:DropdownCell>
+												</cell:DropdownCell>
 											</t:Column>
 											<t:Column width="200" label="{msg.emailNotification_email}">
-												<t:TextBoxCell>
+												<cell:TextBoxCell>
 													<w:TextBox case="MIXED" field="String" />
-												</t:TextBoxCell>
+												</cell:TextBoxCell>
 											</t:Column>
 											<t:Column width="100" label="{msg.emailNotification_filter}">
-												<t:DropdownCell>
+												<cell:DropdownCell>
 													<w:Dropdown ui:field="filter" width="250" field="String" />
-												</t:DropdownCell>
+												</cell:DropdownCell>
 											</t:Column>
 											<t:Column width="100"
 												label="{msg.emailNotification_filterValue}">
-												<t:TextBoxCell>
+												<cell:TextBoxCell>
 													<w:TextBox case="MIXED" field="String" />
-												</t:TextBoxCell>
+												</cell:TextBoxCell>
 											</t:Column>
 											<t:Column width="60" label="{msg.sample_received}">
-												<t:CheckBoxCell>
+												<cell:CheckBoxCell>
 													<w:CheckBox />
-												</t:CheckBoxCell>
+												</cell:CheckBoxCell>
 											</t:Column>
 											<t:Column width="60" label="{msg.sample_released}">
-												<t:CheckBoxCell>
+												<cell:CheckBoxCell>
 													<w:CheckBox />
-												</t:CheckBoxCell>
+												</cell:CheckBoxCell>
 											</t:Column>
 										</t:Table>
 									</g:layer>

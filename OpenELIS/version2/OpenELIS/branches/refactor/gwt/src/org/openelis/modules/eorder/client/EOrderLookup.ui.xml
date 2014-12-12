@@ -29,6 +29,7 @@ UIRF Software License are applicable instead of those above.
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget'
              xmlns:t='urn:import:org.openelis.ui.widget.table' 
+             xmlns:cell='urn:import:org.openelis.ui.widget.cell'
              xmlns:c="urn:import:org.openelis.ui.widget.calendar"
              xmlns:o="urn:import:org.openelis.modules.eorder.client">
 
@@ -54,18 +55,18 @@ UIRF Software License are applicable instead of those above.
     <g:layer top="34px" bottom="25px">
       <t:Table ui:field="eorderTable" visibleRows="9" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="100" label="{msg.gen_id}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="130" label="{msg.gen_enteredDate}" sortable="true">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="130px" begin="0" end="4" /> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="200" label="{msg.eorder_orderNumber}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="400" label="{msg.gen_description}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
       </t:Table>
     </g:layer>

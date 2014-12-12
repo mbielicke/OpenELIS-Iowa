@@ -30,6 +30,7 @@ UIRF Software License are applicable instead of those above.
              xmlns:w='urn:import:org.openelis.ui.widget'
              xmlns:t='urn:import:org.openelis.ui.widget.table' 
              xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+             xmlns:cell='urn:import:org.openelis.ui.widget.cell'
              xmlns:o="urn:import:org.openelis.modules.worksheet.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -50,7 +51,7 @@ UIRF Software License are applicable instead of those above.
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
                     <t:Column width="166" label="{msg.gen_username}">
-                      <t:LabelCell />
+                      <cell:LabelCell />
                     </t:Column>
                   </t:Table>
                 </w:popup>
@@ -82,23 +83,23 @@ UIRF Software License are applicable instead of those above.
     <g:layer top="85px" bottom="25px">
       <t:Table ui:field="worksheetTable" visibleRows="9" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="100" label="{msg.worksheet_worksheetNumber}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.gen_username}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="130" label="{msg.gen_created}" sortable="true">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="130px" begin="0" end="4" /> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="100" label="{msg.gen_status}" sortable="true">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown ui:field="tableStatusId" width="84px" field="Integer"/>
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
         <t:Column width="175" label="{msg.gen_description}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
       </t:Table>
     </g:layer>

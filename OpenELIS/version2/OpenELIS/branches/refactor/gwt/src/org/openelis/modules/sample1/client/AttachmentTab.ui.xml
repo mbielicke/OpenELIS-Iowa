@@ -12,6 +12,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -26,20 +27,20 @@
                 header="true" styleName="{res.table.ScreenTableWithSides}"
               >
                 <t:Column width="90" label="{msg.worksheet_createdDate}">
-                  <t:CalendarCell>
+                  <cell:CalendarCell>
                     <c:Calendar width="90px" begin="0" end="4" />
-                  </t:CalendarCell>
+                  </cell:CalendarCell>
                 </t:Column>
                 <t:Column width="90" label="{msg.gen_section}">
-                  <t:DropdownCell>
+                  <cell:DropdownCell>
                     <w:Dropdown ui:field="currentTableSection" field="Integer" dropWidth="110"
                       required="true" />
-                  </t:DropdownCell>
+                  </cell:DropdownCell>
                 </t:Column>
                 <t:Column width="133" label="{msg.gen_description}">
-                  <t:TextBoxCell>
+                  <cell:TextBoxCell>
                     <w:TextBox width="133px" field="String" />
-                  </t:TextBoxCell>
+                  </cell:TextBoxCell>
                 </t:Column>
               </t:Table>
             </g:layer>
@@ -92,19 +93,19 @@
                 header="true" styleName="{res.table.ScreenTableWithSides}"
               >
                 <t:Column width="90" label="{msg.worksheet_createdDate}" sortable="true">
-                  <t:CalendarCell>
+                  <cell:CalendarCell>
                     <c:Calendar width="90px" begin="0" end="4" />
-                  </t:CalendarCell>
+                  </cell:CalendarCell>
                 </t:Column>
                 <t:Column width="70" label="{msg.gen_section}" sortable="true" filterable = "true">
-                  <t:DropdownCell>
+                  <cell:DropdownCell>
                     <w:Dropdown ui:field="searchTableSection" field="Integer" required="true" />
-                  </t:DropdownCell>
+                  </cell:DropdownCell>
                 </t:Column>
                 <t:Column width="163" label="{msg.gen_description}" sortable="true">
-                  <t:TextBoxCell>
+                  <cell:TextBoxCell>
                     <w:TextBox width="163px" field="String" />
-                  </t:TextBoxCell>
+                  </cell:TextBoxCell>
                 </t:Column>
               </t:Table>
             </g:layer>

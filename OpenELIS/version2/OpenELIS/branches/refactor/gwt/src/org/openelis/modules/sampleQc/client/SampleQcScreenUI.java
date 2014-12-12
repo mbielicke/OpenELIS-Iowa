@@ -65,7 +65,7 @@ import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
-import org.openelis.ui.widget.table.CheckLabelValue;
+import org.openelis.ui.widget.cell.CheckLabelValue;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;

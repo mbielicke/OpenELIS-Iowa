@@ -12,6 +12,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
   xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -81,47 +82,47 @@
                 <r:Column width="280" label="{msg.sample_sample}" />
                 <r:Leaf key="sample">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="sampleItem">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="analysis">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="storage">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="note">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="qaEvent">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="auxData">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="result">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
                 <r:Leaf key="attachment">
                   <r:LeafColumn>
-                    <t:LabelCell />
+                    <cell:LabelCell />
                   </r:LeafColumn>
                 </r:Leaf>
               </r:Tree>

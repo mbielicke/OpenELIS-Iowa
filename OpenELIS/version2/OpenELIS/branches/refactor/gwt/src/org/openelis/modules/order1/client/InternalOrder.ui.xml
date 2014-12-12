@@ -15,6 +15,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
 	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'
+    xmlns:cell='urn:import:org.openelis.ui.widget.cell'
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:o="urn:import:org.openelis.modules.order1.client"
 	xmlns:s="urn:import:org.openelis.modules.auxData.client">
 	
@@ -39,10 +40,10 @@
 								verticalScroll="ALWAYS" header="true"
 								styleName="{res.table.ScreenTableWithSides}">
 								<t:Column width="75" label="{msg.order_orderNum}">
-									<t:LabelCell />
+									<cell:LabelCell />
 								</t:Column>
 								<t:Column width="150" label="{msg.order_requestedBy}">
-									<t:LabelCell />
+									<cell:LabelCell />
 								</t:Column>
 							</t:Table>
 						</g:layer>

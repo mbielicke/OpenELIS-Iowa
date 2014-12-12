@@ -25,7 +25,9 @@
 -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
-             xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:ws="urn:import:org.openelis.modules.worksheet1.client"
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar" 
+             xmlns:cell="urn:import:org.openelis.ui.widget.cell"
+             xmlns:ws="urn:import:org.openelis.modules.worksheet1.client"
              xmlns:wc="urn:import:org.openelis.modules.worksheetCompletion1.client"
              xmlns:s="urn:import:org.openelis.modules.sample1.client">
 
@@ -41,10 +43,10 @@
               <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
                        header="true" styleName="{res.table.ScreenTableWithSides}">
                 <t:Column width="50" label="{msg.gen_id}">
-                  <t:LabelCell/>
+                  <cell:LabelCell/>
                 </t:Column>
                 <t:Column width="150" label="{msg.gen_description}">
-                  <t:LabelCell/>
+                  <cell:LabelCell/>
                 </t:Column>
               </t:Table>
             </g:layer>
@@ -133,7 +135,7 @@
                     <w:popup>
                       <t:Table>
                         <t:Column>
-                          <t:LabelCell/>
+                          <cell:LabelCell/>
                         </t:Column>
                       </t:Table>
                     </w:popup>
@@ -164,16 +166,16 @@
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
                         <t:Column width="150" label="{msg.gen_name}">
-                          <t:LabelCell/>
+                          <cell:LabelCell/>
                         </t:Column>
                         <t:Column width="200" label="{msg.gen_description}">
-                          <t:LabelCell/>
+                          <cell:LabelCell/>
                         </t:Column>
                         <t:Column width="200" label="{msg.gen_type}">
-                          <t:LabelCell/>
+                          <cell:LabelCell/>
                         </t:Column>
                         <t:Column width="200" label="{msg.gen_location}">
-                          <t:LabelCell/>
+                          <cell:LabelCell/>
                         </t:Column>
                       </t:Table>
                     </w:popup>

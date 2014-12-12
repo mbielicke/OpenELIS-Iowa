@@ -25,6 +25,7 @@
 -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:cell='urn:import:org.openelis.ui.widget.cell'
              xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:b="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -35,34 +36,34 @@
       <t:Table ui:field="worksheetReagentTable" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="210" label="{msg.gen_description}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="60" label="{msg.gen_location}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="110" label="{msg.qc_preparedDate}">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="110px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="110" label="{msg.qc_usableDate}">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="110px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="110" label="{msg.qc_expireDate}">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="110px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="105" label="{msg.qc_preparedVolume}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="100" label="{msg.qc_preparedUnit}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="145" label="{msg.qc_preparedBy}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
       </t:Table>
     </g:layer>

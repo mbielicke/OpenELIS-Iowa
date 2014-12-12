@@ -16,7 +16,7 @@ import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.table.CheckLabelValue;
+import org.openelis.ui.widget.cell.CheckLabelValue;
 import org.openelis.ui.widget.table.Row;
 
 import com.google.gwt.aria.client.CheckedValue;
