@@ -31,19 +31,20 @@
       <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" transitive="false"/>
       <dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.41.0"/>
       <dependency org="org.javassist" name="javassist" rev="3.18.1-GA" conf="default->master"/>
-      <!-- <dependency org="net.sf.ehcache" name="ehcache" rev="2.8.2"/> -->
-      <!-- <dependency org="net.sf.jasperreports" name="jasperreports" rev="4.0.1" conf="default->master"/> -->
-      <!-- <dependency org="net.sf.jasperreports" name="jasperreports-fonts" rev="4.0.0"/> -->
-      <!-- <dependency org="org.apache.poi" name="poi" rev="3.6"/> -->
       <dependency org="org.jboss.spec" name="jboss-javaee-6.0" rev="3.0.2.Final"/>
       <dependency org="org.picketbox" name="picketbox-spi-bare" rev="4.0.7.Final"/>
       <dependency org="org.jboss.ejb3" name="jboss-ejb3-ext-api" rev="2.0.0"/>
       <dependency org="xalan" name="xalan" rev="2.7.1"/> 
-      <!-- <dependency org="org.jfree" name="jfreechart" rev="1.0.17"/> -->
-      <!-- <dependency org="org.jfree" name="jcommon" rev="1.0.21"/> -->
+      <dependency org="org.jfree" name="jfreechart" rev="1.0.17"/>
+      <dependency org="org.jfree" name="jcommon" rev="1.0.21"/> 
       <!-- 
       <dependency org="org.openelis" name="ui" rev="latest.integration"/>  
       <dependency org="org.openelis" name="security" rev="latest.integration"/>
       -->
+      <dependency org="ehcache" name="ehcache" rev="1.2"/>
+      <dependency org="org.apache.poi" name="poi" rev="3.6" />
+      <dependency org="edu.uiowa.shl" name="report-fonts" rev="1.0"/>
+      
+
     </dependencies>
 </ivy-module>
