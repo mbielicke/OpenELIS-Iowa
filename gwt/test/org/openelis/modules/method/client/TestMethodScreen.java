@@ -175,6 +175,14 @@ public class TestMethodScreen {
         doAnswer(createAnswerWithResult(new MethodDO()))
         .when(methodService).fetchById(Mockito.anyInt(),any(AsyncCallbackUI.class));
         
+        when(screen.activeBegin.getQuery()).thenReturn(null);
+        when(screen.activeEnd.getQuery()).thenReturn(null);
+        when(screen.atozTable.getQuery()).thenReturn(null);
+        when(screen.description.getQuery()).thenReturn(null);
+        when(screen.isActive.getQuery()).thenReturn(null);
+        when(screen.name.getQuery()).thenReturn(null);
+        when(screen.reportingDescription.getQuery()).thenReturn(null);
+       
         screen.setState(State.QUERY);
         
         screen.commit(null);
