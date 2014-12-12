@@ -27,6 +27,7 @@ UIRF Software License are applicable instead of those above.
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:cell='urn:import:org.openelis.ui.widget.cell'
              xmlns:b="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -37,19 +38,19 @@ UIRF Software License are applicable instead of those above.
       <t:Table ui:field="worksheetAnalysisTable" horizontalScroll="ALWAYS"
               verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="50" label="{msg.worksheet_position}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="90" sortable="true" label="{msg.sample_accessionNum}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="110" sortable="true" label="{msg.gen_description}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="110" sortable="true" label="{msg.gen_test}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="110" sortable="true" label="{msg.gen_method}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
       </t:Table>
     </g:layer>

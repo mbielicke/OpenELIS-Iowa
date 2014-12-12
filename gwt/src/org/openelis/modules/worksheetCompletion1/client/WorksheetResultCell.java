@@ -39,12 +39,12 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
-import org.openelis.ui.widget.table.CellEditor;
-import org.openelis.ui.widget.table.CellRenderer;
+import org.openelis.ui.widget.cell.CellEditor;
+import org.openelis.ui.widget.cell.CellRenderer;
+import org.openelis.ui.widget.cell.DropdownCell;
+import org.openelis.ui.widget.cell.TextBoxCell;
 import org.openelis.ui.widget.table.ColumnInt;
 import org.openelis.ui.widget.table.Container;
-import org.openelis.ui.widget.table.DropdownCell;
-import org.openelis.ui.widget.table.TextBoxCell;
 
 /**
  * This class is used for displaying, editing and validating the data in the

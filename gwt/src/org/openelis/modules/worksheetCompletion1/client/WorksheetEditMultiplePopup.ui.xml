@@ -26,7 +26,9 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'>
+             xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:cell="urn:import:org.openelis.ui.widget.cell"             
+             >
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -50,7 +52,7 @@ UIRF Software License are applicable instead of those above.
       <t:Table ui:field="analyteResultTable" horizontalScroll="ALWAYS"
               verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="150" label="{msg.gen_analyte}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
       </t:Table>
     </g:layer>

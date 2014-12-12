@@ -15,6 +15,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
 	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'
+    xmlns:cell='urn:import:org.openelis.ui.widget.cell'
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -26,34 +27,34 @@
 				verticalScroll="ALWAYS" width="697px" header="true"
 				styleName="{res.table.ScreenTableWithSides}">
 				<t:Column width="205" label="{msg.gen_inventoryItem}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox
 							field="String"/>
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 				<t:Column width="235" label="{msg.gen_location}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox
 							field="String"/>
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 				<t:Column width="65" label="{msg.gen_quantity}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox required="true"
 							field="Integer" textAlignment="RIGHT" />
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 				<t:Column width="85" label="{msg.gen_lotNum}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox
 							field="String"/>
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 				<t:Column width="92" label="{msg.gen_expDate}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox
 							field="String"/>
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 			</t:Table>
 		</g:layer>

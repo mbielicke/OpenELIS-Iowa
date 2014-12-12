@@ -15,6 +15,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
 	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'
+    xmlns:cell='urn:import:org.openelis.ui.widget.cell'
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -26,57 +27,57 @@
 				verticalScroll="ALWAYS" width="697px" header="true"
 				styleName="{res.table.ScreenTableWithSides}">
 				<t:Column width="60" label="{msg.gen_quantity}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox required="true"
 							field="Integer" textAlignment="RIGHT" />
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 				<t:Column width="178" label="{msg.gen_inventoryItem}">
-					<t:AutoCompleteCell>
+					<cell:AutoCompleteCell>
 						<w:AutoComplete ui:field="inventoryItem" required="true"
 							width="210" dropWidth="600px">
 							<w:popup>
 								<t:Table visibleRows="11" header="true">
 									<t:Column width="155" label="{msg.gen_name}">
-										<t:LabelCell />
+										<cell:LabelCell />
 									</t:Column>
 									<t:Column width="200" label="{msg.gen_description}">
-										<t:LabelCell />
+										<cell:LabelCell />
 									</t:Column>
 									<t:Column width="110" label="{msg.gen_store}">
-										<t:LabelCell />
-										<t:DropdownCell>
+										<cell:LabelCell />
+										<cell:DropdownCell>
 											<w:Dropdown width="110" field="Integer" ui:field="autocompleteStore" />
-										</t:DropdownCell>
+										</cell:DropdownCell>
 									</t:Column>
 									<t:Column width="110" label="{msg.gen_dispensedUnits}">
-										<t:LabelCell />
-										<t:DropdownCell>
+										<cell:LabelCell />
+										<cell:DropdownCell>
 											<w:Dropdown width="110" field="Integer" ui:field="dispensedUnits" />
-										</t:DropdownCell>
+										</cell:DropdownCell>
 									</t:Column>
 								</t:Table>
 							</w:popup>
 						</w:AutoComplete>
-					</t:AutoCompleteCell>
+					</cell:AutoCompleteCell>
 				</t:Column>
 				<t:Column width="163" label="{msg.gen_store}">
-					<t:DropdownCell>
+					<cell:DropdownCell>
 						<w:Dropdown width="238" required="true" field="Integer"
 							ui:field="store" />
-					</t:DropdownCell>
+					</cell:DropdownCell>
 				</t:Column>
 				<t:Column width="70" label="{msg.order_unitCost}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox required="true"
 							field="Double" />
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 				<t:Column width="87" label="{msg.order_catalogNum}">
-					<t:TextBoxCell>
+					<cell:TextBoxCell>
 						<w:TextBox required="true"
 							field="String" textAlignment="RIGHT" />
-					</t:TextBoxCell>
+					</cell:TextBoxCell>
 				</t:Column>
 			</t:Table>
 		</g:layer>

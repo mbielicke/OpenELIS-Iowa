@@ -25,6 +25,7 @@
 -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:cell='urn:import:org.openelis.ui.widget.cell'
              xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
@@ -78,7 +79,7 @@
                 <w:popup>
                   <t:Table>
                     <t:Column>
-                      <t:LabelCell/>
+                      <cell:LabelCell/>
                     </t:Column>
                   </t:Table>
                 </w:popup>
@@ -130,24 +131,24 @@
     <g:layer top="155px" bottom="25px" left="5px" width="99%">
       <t:Table ui:field="quickEntryTable" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="90" label="{msg.accessionNum}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="130" label="{msg.received}">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="110px" begin="0" end="4"/>
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="160" label="{msg.test}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="150" label="{msg.method}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="150" label="{msg.sampleType}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
         <t:Column width="80" label="{msg.tubeNum}">
-          <t:LabelCell/>
+          <cell:LabelCell/>
         </t:Column>
       </t:Table>
     </g:layer>

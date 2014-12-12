@@ -11,6 +11,7 @@
              xmlns:w='urn:import:org.openelis.ui.widget'
              xmlns:t='urn:import:org.openelis.ui.widget.table'
              xmlns:c='urn:import:org.openelis.ui.widget.calendar'
+             xmlns:cell="urn:import:org.openelis.ui.widget.cell"
              xmlns:case='urn:import:org.openelis.portal.modules.cases.client'>
 
   <ui:with type="org.openelis.portal.messages.PortalMessages" field="msg" />
@@ -24,7 +25,7 @@
         <g:west size="200">
           <t:Table ui:field="tagTable" header="false">
             <t:Column>
-              <t:LabelCell/>
+              <cell:LabelCell/>
             </t:Column>
           </t:Table>
         </g:west>
@@ -50,21 +51,21 @@
                  <g:layer>
                <t:Table ui:field="cases" header="true" styleName="{res.table.ScreenTableWithSides}">
                  <t:Column width="150" label="Patient">
-                   <t:CheckLabelCell/>
+                   <cell:CheckLabelCell/>
                  </t:Column>
                  <t:Column width="85" label="Birth Date">
-                   <t:CalendarCell>
+                   <cell:CalendarCell>
                      <c:Calendar begin="0" end="2"/>
-                   </t:CalendarCell>
+                   </cell:CalendarCell>
                  </t:Column>
                  <t:Column width="200" label="Organization">
-                   <t:LabelCell/>
+                   <cell:LabelCell/>
                  </t:Column>
                  <t:Column width="75" label="Owner">
-                   <t:LabelCell/>
+                   <cell:LabelCell/>
                  </t:Column>
                  <t:Column width="200" label="Status/Waiting">
-                   <t:LabelCell></t:LabelCell>
+                   <cell:LabelCell/>
                  </t:Column>
                </t:Table>
                  </g:layer>

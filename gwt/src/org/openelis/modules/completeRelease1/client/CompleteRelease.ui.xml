@@ -12,6 +12,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
   xmlns:s="urn:import:org.openelis.modules.sample1.client" xmlns:a="urn:import:org.openelis.modules.auxData.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -73,29 +74,29 @@
             <g:layer top="0px" bottom="25px">
               <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
                 <t:Column width="115" label="{msg.sample_accessionNum}" sortable="true">
-                  <t:TextBoxCell>
+                  <cell:TextBoxCell>
                     <w:TextBox field="Integer" />
-                  </t:TextBoxCell>
+                  </cell:TextBoxCell>
                 </t:Column>
                 <t:Column width="192" label="{msg.gen_test}" sortable="true">
-                  <t:TextBoxCell>
+                  <cell:TextBoxCell>
                     <w:TextBox case="LOWER" field="String" />
-                  </t:TextBoxCell>
+                  </cell:TextBoxCell>
                 </t:Column>
                 <t:Column width="192" label="{msg.gen_method}" sortable="true">
-                  <t:TextBoxCell>
+                  <cell:TextBoxCell>
                     <w:TextBox case="LOWER" field="String" />
-                  </t:TextBoxCell>
+                  </cell:TextBoxCell>
                 </t:Column>
                 <t:Column width="101" label="{msg.analysis_status}" sortable="true">
-                  <t:DropdownCell>
+                  <cell:DropdownCell>
                     <w:Dropdown width="100" ui:field="analysisStatus" field="Integer" />
-                  </t:DropdownCell>
+                  </cell:DropdownCell>
                 </t:Column>
                 <t:Column width="100" label="{msg.sample_status}" sortable="true">
-                  <t:DropdownCell>
+                  <cell:DropdownCell>
                     <w:Dropdown width="100" ui:field="sampleStatus" field="Integer" />
-                  </t:DropdownCell>
+                  </cell:DropdownCell>
                 </t:Column>
               </t:Table>
             </g:layer>

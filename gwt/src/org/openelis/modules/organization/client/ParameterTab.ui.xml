@@ -6,7 +6,9 @@
   ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" may be used under the terms of 
   a UIRF Software license ("UIRF Software License"), in which case the provisions of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
-  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' 
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
+  xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -15,14 +17,14 @@
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="table" visibleRows="10" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
         <t:Column width="300" label="{msg.type}">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown width="300" field="Integer" ui:field="type" required="true" />
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
         <t:Column width="287" label="{msg.value}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="80" required="true" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
       </t:Table>
     </g:layer>

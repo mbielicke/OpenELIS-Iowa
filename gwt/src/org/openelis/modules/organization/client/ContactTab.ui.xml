@@ -6,7 +6,9 @@
   ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" may be used under the terms of 
   a UIRF Software license ("UIRF Software License"), in which case the provisions of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
-  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar">
+  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' 
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
+  xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -15,69 +17,69 @@
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="106" label="{msg.type}">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown width="90" required="true" field="Integer" ui:field="type" />
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
         <t:Column width="130" label="{msg.contactName}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="40" required="true" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="100" label="{msg.workNumber}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="21" mask="{msg.phoneWithExtensionPattern}" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="90" label="{msg.homeNumber}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="16" mask="{msg.phonePattern}" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="90" label="{msg.cellNumber}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="16" mask="{msg.phonePattern}" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="90" label="{msg.faxNumber}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="16" mask="{msg.phonePattern}" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="150" label="{msg.email}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="130" label="{msg.aptSuite}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox case="UPPER" maxLength="30" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="130" label="{msg.address}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox case="UPPER" maxLength="40" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="130" sortable="true" label="{msg.city}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox case="UPPER" maxLength="30" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="56" label="{msg.state}">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown width="40" case="UPPER" ui:field="state"/>
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
         <t:Column width="68" label="{msg.zipcode}">
-          <t:TextBoxCell>
+          <cell:TextBoxCell>
             <w:TextBox mask="99999-9999" />
-          </t:TextBoxCell>
+          </cell:TextBoxCell>
         </t:Column>
         <t:Column width="126" label="{msg.country}">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown width="110" field="String" ui:field="country"/>
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
       </t:Table>
     </g:layer>

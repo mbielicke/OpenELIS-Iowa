@@ -10,6 +10,7 @@
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:cell='urn:import:org.openelis.ui.widget.cell'
   xmlns:c="urn:import:org.openelis.ui.widget.calendar"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
@@ -56,43 +57,43 @@
         styleName="{res.table.ScreenTableWithSides}"
       >
         <t:Column width="50" label="{msg.gen_id}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="125" label="{msg.gen_lastName}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="125" label="{msg.gen_firstName}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="75" label="{msg.patient_birth}" sortable="true">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="75" begin="0" end="2" />
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="75" label="{msg.patient_gender}" sortable="true">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown ui:field="gender" width="75" field="Integer" />
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
         <t:Column width="85" label="{msg.patient_nationalId}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.address_aptSuite}">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.address_address}">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.address_city}">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="50" label="{msg.address_state}">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown ui:field="state" width="50" field="Integer" />
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
         <t:Column width="75" label="{msg.address_zipcode}">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
       </t:Table>
     </g:layer>
@@ -101,20 +102,20 @@
         styleName="{res.table.ScreenTableWithSides}"
       >
         <t:Column width="125" label="{msg.gen_lastName}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="125" label="{msg.gen_firstName}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="75" label="{msg.patient_birth}" sortable="true">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="75" begin="0" end="2" />
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="75" label="{msg.patient_relation}" sortable="true">
-          <t:DropdownCell>
+          <cell:DropdownCell>
             <w:Dropdown ui:field="patientRelation" width="59" field="Integer" />
-          </t:DropdownCell>
+          </cell:DropdownCell>
         </t:Column>
       </t:Table>
     </g:layer>
@@ -123,18 +124,18 @@
         styleName="{res.table.ScreenTableWithSides}"
       >
         <t:Column width="100" label="{msg.sample_accessionNum}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.sample_received}" sortable="true">
-          <t:CalendarCell>
+          <cell:CalendarCell>
             <c:Calendar width="100px" begin="0" end="2" />
-          </t:CalendarCell>
+          </cell:CalendarCell>
         </t:Column>
         <t:Column width="100" label="{msg.gen_test}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.gen_method}" sortable="true">
-          <t:LabelCell />
+          <cell:LabelCell />
         </t:Column>
       </t:Table>
     </g:layer>
