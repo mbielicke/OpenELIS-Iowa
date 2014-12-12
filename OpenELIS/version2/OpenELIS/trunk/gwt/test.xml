@@ -4,7 +4,7 @@
 	<property name="gwt.args" value="" />
 
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" location="/usr/local/java/gwt-2.6.0" />
+	<property name="gwt.sdk" location="/usr/local/java/gwt-2.7.0" />
 	<property name="junit.home" location="/usr/local/java/junit"/>
 	<property name="checkstyle.home" location="/usr/local/java/checkstyle-5.7" />
 	<property name="findbugs.home" location="/usr/local/java/findbugs-2.0.3" />
@@ -14,7 +14,7 @@
 	         uri="antlib:org.apache.ivy.ant" classpath="/usr/share/java/ivy.jar"/>
 	
 	<ivy:configure file="ivysettings.xml"/>
-	<ivy:retrieve pattern="lib/[artifact]-[type]-[revision].[ext]"/>
+	<ivy:retrieve pattern="lib/[artifact]-[type]-[revision].[ext]" sync="true"/>
 	
 	<path id="ivy.lib">
 	   <fileset dir="lib" includes="*.jar"/>
