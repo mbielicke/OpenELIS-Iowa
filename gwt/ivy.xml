@@ -41,10 +41,10 @@
       <dependency org="org.openelis" name="ui" rev="latest.integration"/>  
       <dependency org="org.openelis" name="security" rev="latest.integration"/>
       -->
-      <dependency org="ehcache" name="ehcache" rev="1.2"/>
-      <dependency org="org.apache.poi" name="poi" rev="3.6" />
-      <dependency org="edu.uiowa.shl" name="report-fonts" rev="1.0"/>
+
       <dependency org="org.slf4j" name="slf4j-api" rev="1.7.7"/>
+      
+      
 
     </dependencies>
 </ivy-module>
