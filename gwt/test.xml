@@ -14,10 +14,10 @@
 	         uri="antlib:org.apache.ivy.ant" classpath="/usr/share/java/ivy.jar"/>
 	
 	<ivy:configure file="ivysettings.xml"/>
-	<ivy:retrieve pattern="lib/[artifact]-[type]-[revision].[ext]" sync="true"/>
+	<ivy:retrieve pattern="ivylib/[artifact]-[type]-[revision].[ext]"/>
 	
 	<path id="ivy.lib">
-	   <fileset dir="lib" includes="*.jar"/>
+	   <fileset dir="ivylib" includes="*.jar"/>
     </path>
 	
 	<taskdef name="findbugs" classpath="${findbugs.home}/lib/findbugs-ant.jar" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" />
