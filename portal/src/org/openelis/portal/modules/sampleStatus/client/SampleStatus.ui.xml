@@ -119,11 +119,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
-										enabled="true" image="{uiRes.find}" css="{res.webLinkCss}" />
+										enabled="true" image="{uiRes.find}" css="{res.portalButton}" />
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-										enabled="true" image="{res.reset}" css="{res.webLinkCss}" />
+										enabled="true" image="{res.reset}" css="{res.portalButton}" />
 								</td>
 							</tr>
 						</table>
@@ -146,7 +146,7 @@
 					<tr>
 						<td>
 							<w:Button ui:field="backButton" image="{res.backImage}"
-								pixelSize="20,20" css="{res.unstyledButtonCss}" enabled="true" />
+								pixelSize="20,20" css="{res.portalButton}" rightText="Back" enabled="true" />
 						</td>
 					</tr>
 					<tr>

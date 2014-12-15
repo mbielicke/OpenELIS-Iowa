@@ -22,16 +22,16 @@
                 <g:layer>
                   <g:HTMLPanel styleName="{style.flow}">
                     <div style="width:175px;">
-              	      <w:Button ui:field="finalReport" text="{msg.main_finalReport}" css="{res.webLinkCss}" enabled="true"/>
+              	      <w:Button ui:field="finalReport" text="{msg.main_finalReport}" css="{res.portalButton}" enabled="true"/>
               	    </div>
               	    <div style="width:175px;">
-              	      <w:Button ui:field="dataView" text="{msg.main_dataView}" css="{res.webLinkCss}" enabled="true"/>
+              	      <w:Button ui:field="dataView" text="{msg.main_dataView}" css="{res.portalButton}" enabled="true"/>
               	    </div>
               	    <div style="width:175px;">
-                      <w:Button ui:field="sampleStatus" text="{msg.main_sampleStatus}" css="{res.webLinkCss}" enabled="true"/>
+                      <w:Button ui:field="sampleStatus" text="{msg.main_sampleStatus}" css="{res.portalButton}" enabled="true"/>
               	    </div>
                     <div style="width:175px;">
-                	  <w:Button ui:field="testRequest" text="{msg.main_testRequest}" css="{res.webLinkCss}" enabled="true"/>
+                	  <w:Button ui:field="testRequest" text="{msg.main_testRequest}" css="{res.portalButton}" enabled="true"/>
                     </div>
                   </g:HTMLPanel>
                 </g:layer>
@@ -43,10 +43,10 @@
                 <g:layer>
                   <g:HTMLPanel styleName="{style.flow}">
                     <div style="width:175px">
-                      <w:Button ui:field="emailNotification" text="{msg.main_emailNotification}" css="{res.webLinkCss}" enabled="true"/>
+                      <w:Button ui:field="emailNotification" text="{msg.main_emailNotification}" css="{res.portalButton}" enabled="true"/>
                     </div>
                     <div style="width:175px">
-              	      <w:Button ui:field="logout" text="{msg.main_logout}" css="{res.webLinkCss}" enabled="true"/>
+              	      <w:Button ui:field="logout" text="{msg.main_logout}" css="{res.portalButton}" enabled="true"/>
                   	</div>
                   </g:HTMLPanel>
                 </g:layer>
@@ -58,7 +58,7 @@
                 <g:layer>
                   <g:HTMLPanel styleName="{style.flow}">
                     <div style="width:175px">
-                      <w:Button ui:field="cases" text="Active Cases" css="{res.webLinkCss}" enabled="false"/>
+                      <w:Button ui:field="cases" text="Active Cases" css="{res.portalButton}" enabled="false"/>
                     </div>
                   </g:HTMLPanel>
                 </g:layer>

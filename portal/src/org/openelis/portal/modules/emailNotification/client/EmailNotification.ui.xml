@@ -97,9 +97,9 @@
 							<td>
 								<g:HorizontalPanel spacing="4">
 									<w:Button ui:field="addButton" rightText="{msg.gen_addRow}"
-										enabled="true" image="{uiRes.addButton}" css="{res.webLinkCss}"/>
+										enabled="true" image="{uiRes.addButton}" css="{res.portalButton}"/>
 									<w:Button ui:field="commitButton" rightText="{msg.btn_commit}"
-										enabled="true" image="{uiRes.commit}" css="{res.webLinkCss}"/>
+										enabled="true" image="{uiRes.commit}" css="{res.portalButton}"/>
 								</g:HorizontalPanel>
 							</td>
 						</tr>
