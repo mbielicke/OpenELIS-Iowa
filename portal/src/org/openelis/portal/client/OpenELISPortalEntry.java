@@ -12,7 +12,9 @@ import org.openelis.ui.screen.Screen;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -55,7 +57,8 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
             
             MainScreen screen = GWT.create(MainScreen.class);
             RootPanel.get().add(screen);
-            RootPanel.get().getElement().getStyle().setBackgroundColor("#ececec");
+            RootPanel.get().getElement().getStyle().setBackgroundColor("#ffffff");
+            Document.get().getBody().getStyle().setMargin(0, Unit.PX);
 
             SessionTimer.start();
         } catch (Throwable e) {

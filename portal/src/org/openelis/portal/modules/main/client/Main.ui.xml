@@ -12,9 +12,15 @@
 
   <ui:with type="org.openelis.portal.messages.PortalMessages" field="msg" />
   <ui:with type="org.openelis.portal.client.resources.Resources" field="res" />
+  
+  <ui:style>
+    .fixMargin {
+	   margin : -8px;
+    }
+  </ui:style>
 
   <w:PortalPanel>
-    <g:AbsolutePanel  styleName="{res.style.ScreenPanel}" height="128px" width="100%">
+    <g:AbsolutePanel  styleName="{res.style.ScreenPanel}" height="128px">
     <g:LayoutPanel>
       <g:layer top="0px" height="128px">
         <g:LayoutPanel>
