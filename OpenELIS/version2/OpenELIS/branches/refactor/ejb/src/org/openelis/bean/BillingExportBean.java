@@ -355,7 +355,7 @@ public class BillingExportBean {
                      */
                     if (Constants.dictionary().ORG_BILL_TO.equals(o.getTypeId()) ||
                         Constants.dictionary().ORG_REPORT_TO.equals(o.getTypeId())) {
-                        hdr.organizationId = o.getId();
+                        hdr.organizationId = o.getOrganizationId();
                         hdr.organizationName = o.getOrganizationName();
                         hdr.streetAddress = o.getOrganizationStreetAddress();
                         hdr.multipleUnit = o.getOrganizationMultipleUnit();
