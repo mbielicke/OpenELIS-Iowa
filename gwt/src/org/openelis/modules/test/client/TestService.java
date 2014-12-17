@@ -92,7 +92,7 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     }
 
     @Override
-    public void fetchList(AsyncCallback<ArrayList<TestMethodVO>> callback) {
+    public void fetchList(AsyncCallback<ArrayList<TestViewDO>> callback) {
         service.fetchList(callback);
     }
 
@@ -259,10 +259,10 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     }
 
     @Override
-    public ArrayList<TestMethodVO> fetchList() throws Exception {
-        Callback<ArrayList<TestMethodVO>> callback;
+    public ArrayList<TestViewDO> fetchList() throws Exception {
+        Callback<ArrayList<TestViewDO>> callback;
         
-        callback = new Callback<ArrayList<TestMethodVO>>();
+        callback = new Callback<ArrayList<TestViewDO>>();
         service.fetchList(callback);
         return callback.getResult();
     }

@@ -40,7 +40,7 @@ public interface TestServiceInt extends XsrfProtectedService {
 
     ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception;
 
-    ArrayList<TestMethodVO> fetchList() throws Exception;
+    ArrayList<TestViewDO> fetchList() throws Exception;
 
     ArrayList<TestSectionViewDO> fetchTestSectionsByTestId(Integer testId) throws Exception;
 

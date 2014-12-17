@@ -36,12 +36,13 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 /**
  * This class implements and provides clients with the standard Sync and Async
@@ -65,6 +66,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     private SampleService1() {
         service = (SampleServiceInt1Async)GWT.create(SampleServiceInt1.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

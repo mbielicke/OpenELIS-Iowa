@@ -38,6 +38,8 @@
               <w:Menu label="{msg.label}" ui:field="labelMenu">
                 <w:MenuItem description="" enabled="false" icon="" ui:field="sampleLoginLabelReport" display="{msg.loginBarcode}" />
                 <w:MenuItem description="" enabled="false" icon="" ui:field="sampleLoginLabelAdditionalReport" display="{msg.loginBarcodeAdd}" />
+                <w:MenuItem description="{msg.secondaryLabel_description}" enabled="false" icon="{res.icon.labelForIcon}" ui:field="secondaryLabel"
+                  display="{msg.secondaryLabel_secondaryLabel}" />
               </w:Menu>
               <w:Menu label="{msg.sample}" ui:field="sampleMenu">
                 <w:MenuItem description="{msg.quickEntryDescription}" enabled="false" icon="{res.icon.quickEntryIcon}" ui:field="quickEntry"
@@ -86,8 +88,6 @@
                   ui:field="reviewAndRelease" display="{msg.completeRelease_completeAndRelease}" />
                 <w:MenuItem description="{msg.toDoDescription}" enabled="false" icon="{res.icon.toDoIcon}" ui:field="toDo"
                   display="{msg.toDo}" />
-                <w:MenuItem description="{msg.labelForDescription}" enabled="false" icon="{res.icon.labelForIcon}" ui:field="labelFor"
-                  display="{msg.labelFor}" />
                 <w:MenuItem description="{msg.storageDescription}" enabled="false" icon="{res.icon.storageIcon}" ui:field="storage"
                   display="{msg.storage}" />
                 <w:MenuItem description="{msg.QCDescription}" enabled="false" icon="QCIcon" ui:field="QC" display="{msg.QC}" />
