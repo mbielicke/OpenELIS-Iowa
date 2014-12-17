@@ -41,7 +41,7 @@ public interface TestServiceIntAsync {
 
     void fetchForUpdate(Integer testId, AsyncCallback<TestManager> callback);
 
-    void fetchList(AsyncCallback<ArrayList<TestMethodVO>> callback);
+    void fetchList(AsyncCallback<ArrayList<TestViewDO>> callback);
 
     void fetchNameMethodSectionByName(String name, AsyncCallback<ArrayList<PanelVO>> callback);
 

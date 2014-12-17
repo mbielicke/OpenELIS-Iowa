@@ -48,7 +48,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
@@ -80,10 +79,7 @@ import org.openelis.manager.SampleManager1.PostProcessing;
 import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.scriptlet.SampleSO;
-import org.openelis.scriptlet.SampleSO.Action_After;
 import org.openelis.scriptlet.SampleSO.Action_Before;
-import org.openelis.scriptlet.ScriptletFactory;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -95,8 +91,6 @@ import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.scriptlet.ScriptletInt;
-import org.openelis.ui.scriptlet.ScriptletRunner;
 
 @Stateless
 @SecurityDomain("openelis")

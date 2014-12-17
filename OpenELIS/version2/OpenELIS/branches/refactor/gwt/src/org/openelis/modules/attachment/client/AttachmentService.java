@@ -33,9 +33,11 @@ import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 /**
  * This class implements and provides clients with the standard Sync and Async
@@ -58,6 +60,7 @@ public class AttachmentService implements AttachmentServiceInt, AttachmentServic
 
     private AttachmentService() {
         service = (AttachmentServiceIntAsync)GWT.create(AttachmentServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -72,7 +72,7 @@ public class OpenELIS extends Screen {
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
                     worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
-                    labelFor, storage, QC, analyteParameter, internalOrder, vendorOrder,
+                    secondaryLabel, storage, QC, analyteParameter, internalOrder, vendorOrder,
                     sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
@@ -259,9 +259,9 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(labelFor, null, new Command() {
+        addCommand(secondaryLabel, "openelis", new Command() {
             public void execute() {
-                // browser.addScreen(new )
+                showScreen(SECONDARY_LABEL);
             }
         });
 

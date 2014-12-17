@@ -156,7 +156,7 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
         }
     }
 
-    public ArrayList<TestMethodVO> fetchList() throws Exception {
+    public ArrayList<TestViewDO> fetchList() throws Exception {
         try {        
             return test.fetchList();
         } catch (Exception anyE) {
