@@ -43,6 +43,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -923,7 +924,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         String label, value;
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> entries;
-        ArrayList<TestMethodVO> tests;
+        ArrayList<TestViewDO> tests;
         ArrayList<OrganizationParameterDO> params;
         HashSet<String> values;
         Dropdown<Integer> profile;
@@ -985,15 +986,15 @@ public class ExchangeDataSelectionScreen extends Screen {
             tests = TestService.get().fetchList();
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
-            for (TestMethodVO n : tests) {
+            for (TestViewDO n : tests) {
                 if ("N".equals(n.getIsActive())) {
-                    label = DataBaseUtil.concatWithSeparator(DataBaseUtil.concatWithSeparator(n.getTestName(), ", ", n.getMethodName()),
+                    label = DataBaseUtil.concatWithSeparator(DataBaseUtil.concatWithSeparator(n.getName(), ", ", n.getMethodName()),
                             " [", DataBaseUtil.concatWithSeparator(n.getActiveBegin(),"..", n.getActiveEnd()+"]"));
                 } else {
-                    label = DataBaseUtil.concatWithSeparator(n.getTestName(), ", ", n.getMethodName());
+                    label = DataBaseUtil.concatWithSeparator(n.getName(), ", ", n.getMethodName());
                 }
 
-                row = new TableDataRow(n.getTestId(), label);
+                row = new TableDataRow(n.getId(), label);
                 model.add(row);
             }
             
