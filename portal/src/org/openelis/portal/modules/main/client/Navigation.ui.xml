@@ -15,7 +15,7 @@
 	}
   </ui:style>
   
-          <g:TabLayoutPanel barHeight="20" barUnit="PX">
+          <g:TabLayoutPanel barHeight="25" barUnit="PX">
             <g:tab>
               <g:header><ui:text from="{msg.main_reports}"/></g:header>
               <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
