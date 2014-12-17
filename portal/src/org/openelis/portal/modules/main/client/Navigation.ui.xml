@@ -12,6 +12,7 @@
 		flex-wrap:wrap;
 		width:10px;
 		height : 100%;
+		margin-top:5px;
 	}
   </ui:style>
   
