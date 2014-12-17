@@ -99,6 +99,15 @@ public class TestBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    public ArrayList<TestViewDO> fetchByName(String name) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchByName");
+        query.setParameter("name", name);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public ArrayList<TestMethodVO> fetchActiveByName(String name, int max) throws Exception{
         Query query;
         
@@ -173,7 +182,7 @@ public class TestBean {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public ArrayList<TestMethodVO> fetchList() throws Exception {
+    public ArrayList<TestViewDO> fetchList() throws Exception {
         Query query;
         
         query = manager.createNamedQuery("Test.FetchList");

@@ -126,4 +126,59 @@ public class LabelReportBean {
         f.print("^FO15,800^FDCollector: __________________________________________^FS");
         f.print("^XZ");
     }
+    
+    
+    /*
+     * Print a test label showing accession number and received date;
+     * quantity is the number of copies to be printed
+     */
+    public void accessionReceivedLabel(PrintStream f, int accession, String received, int quantity) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO60,35^AE^BCN,50,Y,N,N^FD"+accession+"^FS");     // barcoded accession
+        f.print("^FO60,130^AE^BCN,50,Y,N,N^FD"+received+"^FS");     // barcoded received date
+        f.print("^PQ"+quantity+",,1,^XZ");
+    }
+    
+    /*
+     * Print a test label showing accession number, received date and test name;
+     * quantity is the number of copies to be printed
+     */
+    public void accessionReceivedTestLabel(PrintStream f, int accession, String received, String testName,
+                                int quantity) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO60,35^AE^BCN,50,Y,N,N^FD"+accession+"^FS");     // barcoded accession
+        f.print("^FO60,130^AE^FD"+received+"^FS");                  // readable received date
+        f.print("^FO60,165^AE^FD"+testName+"^FS");                  // readable test name
+        f.print("^PQ"+quantity+",,1,^XZ");
+    }
+    
+    /*
+     * Print a test label showing accession number, received date and test and method names;
+     * quantity is the number of copies to be printed
+     */
+    public void accessionReceivedTestMethodLabel(PrintStream f, int accession, String received,
+                                      String testName, String methodName, int quantity) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO60,35^AE^BCN,50,Y,N,N^FD"+accession+"^FS");       // barcoded accession
+        f.print("^FO60,130^AE^FD"+received+"^FS");                    // readable received date
+        f.print("^FO60,165^AD^FD"+testName+","+methodName+"^FS");     // readable test name + method name
+        f.print("^PQ"+quantity+",,1,^XZ");
+    }
+    
+    /*
+     * Print a test label showing accession number, patient name, received date and test name;
+     * quantity is the number of copies to be printed
+     */
+    public void accessionPatientReceivedTestLabel(PrintStream f, int accession, String patientName,
+                                   String received, String testName, int quantity) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO60,35^AE^BCN,50,Y,N,N^FD"+accession+"^FS");     // barcoded accession
+        f.print("^FO60,130^AE^FD"+patientName+"^FS");               // readable patient name
+        f.print("^FO60,170^AE^FD"+received+" "+testName+"^FS");     // readable received date + test name  
+        f.print("^PQ"+quantity+",,1,^XZ");
+    }
 }
