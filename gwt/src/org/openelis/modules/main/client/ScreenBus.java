@@ -82,7 +82,8 @@ public class ScreenBus extends SimpleEventBus {
                     HOLD_REFUSE_REPORT = new ShowScreenType("Hold Refuse Report"),
                     INSTRUMENT_BARCODE_REPORT = new ShowScreenType("Instrument Barcode Report"),
                     AIR_QUALITY_EXPORT = new ShowScreenType("Air Quality Export"),
-                    ATTACHMENT = new ShowScreenType("Attachment");
+                    ATTACHMENT = new ShowScreenType("Attachment"),
+                    SECONDARY_LABEL = new ShowScreenType("Secondary Label");
 
     public static ScreenBus get() {
         if (instance == null)

@@ -106,13 +106,17 @@ import org.openelis.utils.Auditable;
                       + " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name,m.name"),
     @NamedQuery( name = "Test.FetchTestMethodSampleTypeList",
                 query = "select distinct new org.openelis.domain.TestMethodSampleTypeVO(t.id, t.name, m.name, type.typeOfSampleId, d.entry)"
-                       + " from Test t left join t.method m INNER JOIN t.testTypeOfSample type LEFT JOIN type.typeDictionary d where t.isActive='Y' order by t.name,m.name,d.entry"),
+                      + " from Test t left join t.method m INNER JOIN t.testTypeOfSample type LEFT JOIN type.typeDictionary d where t.isActive='Y' order by t.name,m.name,d.entry"),
     @NamedQuery( name = "Test.FetchByPanelId",
                 query = "select new org.openelis.domain.TestMethodVO(t.id,t.name,t.description,t.method.id,t.method.name,t.method.description,t.isActive,t.activeBegin,t.activeEnd)"
                       + " from Test t, PanelItem i where t.name = i.name and t.method.name = i.methodName and t.isActive ='Y' and i.panelId = :panelId order by t.name,t.method.name"),
     @NamedQuery( name = "Test.FetchList", 
-                query = "select new org.openelis.domain.TestMethodVO(t.id,t.name,t.description,m.id,m.name,m.description,t.isActive,t.activeBegin,t.activeEnd)"
-                      + " from Test t LEFT JOIN t.method m order by t.name, m.name") })
+                query = "select new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
+                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name)"
+                      + " from Test t left join t.testTrailer tt left join t.label l left join t.method m order by t.name, m.name") })
 
 @Entity
 @Table(name = "test")

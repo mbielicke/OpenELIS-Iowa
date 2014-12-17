@@ -131,6 +131,11 @@ public class LabelService implements LabelServiceInt, LabelServiceIntAsync{
         
         callback = new Callback<Void>();
         service.delete(data, callback);
+        /*
+         * this is done to make sure that the exceptions thrown in the back-end
+         * get to the screen
+         */
+        callback.getResult();
     }
 
     @Override
