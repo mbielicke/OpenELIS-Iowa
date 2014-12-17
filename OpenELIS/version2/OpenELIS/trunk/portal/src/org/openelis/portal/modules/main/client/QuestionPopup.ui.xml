@@ -36,10 +36,14 @@
 					</tr>
 					<tr>
 						<td>
-							<w:Button ui:field="yesButton" text="{msg.gen_yes}"
-								enabled="true" />
-							<w:Button ui:field="noButton" text="{msg.gen_no}"
-								enabled="true" />
+							<g:HorizontalPanel spacing="4">
+								<w:Button ui:field="yesButton" text="{msg.gen_yes}"
+									css="{res.portalButton}" enabled="true" width="60px" height="25px" />
+								<w:Button ui:field="noButton" text="{msg.gen_no}" css="{res.portalButton}"
+									enabled="true" width="60px" height="25px" />
+								<w:Button ui:field="cancelButton" text="{msg.gen_cancel}"
+									css="{res.portalButton}" enabled="true" width="60px" height="25px" />
+							</g:HorizontalPanel>
 						</td>
 					</tr>
 				</table>
