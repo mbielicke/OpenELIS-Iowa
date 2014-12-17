@@ -91,7 +91,7 @@ a:hover {
   padding: 6px;
 }
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
-  padding: 2px 4px 2px 4px;
+  padding: 2px 8px 2px 8px;
   cursor: pointer;
   cursor: hand;
   color: #404040;
