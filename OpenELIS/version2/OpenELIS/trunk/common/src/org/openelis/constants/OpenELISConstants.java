@@ -5875,6 +5875,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_enteredDate();
 
   /**
+   * Translated "Entry".
+   * 
+   * @return translated "Entry"
+   */
+  @DefaultMessage("Entry")
+  @Key("gen.entry")
+  String gen_entry();
+
+  /**
    * Translated "Exp Date".
    * 
    * @return translated "Exp Date"
@@ -8672,6 +8681,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Label")
   @Key("label")
   String label();
+
+  /**
+   * Translated "Secondary Label".
+   * 
+   * @return translated "Secondary Label"
+   */
+  @DefaultMessage("Secondary Label")
+  @Key("label.secondary")
+  String label_secondary();
 
   /**
    * Translated "Label cannot be deleted, it is being used by one or more tests".
@@ -13669,6 +13687,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String report_genDataView();
 
   /**
+   * Translated "Outputing report".
+   * 
+   * @return translated "Outputing report"
+   */
+  @DefaultMessage("Outputing report")
+  @Key("report.outputReport")
+  String report_outputReport();
+
+  /**
    * Translated "Reset".
    * 
    * @return translated "Reset"
@@ -15973,6 +16000,141 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondEntryDescription();
 
   /**
+   * Translated "Please correct the errors indicated, then press Print".
+   * 
+   * @return translated "Please correct the errors indicated, then press Print"
+   */
+  @DefaultMessage("Please correct the errors indicated, then press Print")
+  @Key("secondaryLabel.correctErrorsPrint")
+  String secondaryLabel_correctErrorsPrint();
+
+  /**
+   * Translated "Print additional labels for analyses.".
+   * 
+   * @return translated "Print additional labels for analyses."
+   */
+  @DefaultMessage("Print additional labels for analyses.")
+  @Key("secondaryLabel.description")
+  String secondaryLabel_description();
+
+  /**
+   * Translated "The following errors occurred while printing labels ".
+   * 
+   * @return translated "The following errors occurred while printing labels "
+   */
+  @DefaultMessage("The following errors occurred while printing labels ")
+  @Key("secondaryLabel.errorsPrintingLabels")
+  String secondaryLabel_errorsPrintingLabels();
+
+  /**
+   * Translated "Accession # ''{0,number}'' : Failed to fetch test record with id ''{1,number}''".
+   * 
+   * @return translated "Accession # ''{0,number}'' : Failed to fetch test record with id ''{1,number}''"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : Failed to fetch test record with id ''{1,number}''")
+  @Key("secondaryLabel.failedToFetchTestException")
+  String secondaryLabel_failedToFetchTestException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Accession # ''{0,number}'' : {1}, {2} - No label type defined".
+   * 
+   * @return translated "Accession # ''{0,number}'' : {1}, {2} - No label type defined"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - No label type defined")
+  @Key("secondaryLabel.labelNotDefinedException")
+  String secondaryLabel_labelNotDefinedException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'' : {1}, {2} - Label quantity must be at least one".
+   * 
+   * @return translated "Accession # ''{0,number}'' : {1}, {2} - Label quantity must be at least one"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - Label quantity must be at least one")
+  @Key("secondaryLabel.labelQtyLessThanOneException")
+  String secondaryLabel_labelQtyLessThanOneException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "There are no labels to print".
+   * 
+   * @return translated "There are no labels to print"
+   */
+  @DefaultMessage("There are no labels to print")
+  @Key("secondaryLabel.noLabelsToPrintException")
+  String secondaryLabel_noLabelsToPrintException();
+
+  /**
+   * Translated "Accession # ''{0,number}'' : {1}, {2} - The sample does not have a patient".
+   * 
+   * @return translated "Accession # ''{0,number}'' : {1}, {2} - The sample does not have a patient"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - The sample does not have a patient")
+  @Key("secondaryLabel.noPatientOnSampleException")
+  String secondaryLabel_noPatientOnSampleException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Please select a test".
+   * 
+   * @return translated "Please select a test"
+   */
+  @DefaultMessage("Please select a test")
+  @Key("secondaryLabel.pleaseSelectTest")
+  String secondaryLabel_pleaseSelectTest();
+
+  /**
+   * Translated "You must specify a printer for this report".
+   * 
+   * @return translated "You must specify a printer for this report"
+   */
+  @DefaultMessage("You must specify a printer for this report")
+  @Key("secondaryLabel.printerUnspecifiedException")
+  String secondaryLabel_printerUnspecifiedException();
+
+  /**
+   * Translated "A sample record with id ''{0,number}'' does not exist".
+   * 
+   * @return translated "A sample record with id ''{0,number}'' does not exist"
+   */
+  @DefaultMessage("A sample record with id ''{0,number}'' does not exist")
+  @Key("secondaryLabel.sampleNotExistException")
+  String secondaryLabel_sampleNotExistException(Integer arg0);
+
+  /**
+   * Translated "Secondary Label".
+   * 
+   * @return translated "Secondary Label"
+   */
+  @DefaultMessage("Secondary Label")
+  @Key("secondaryLabel.secondaryLabel")
+  String secondaryLabel_secondaryLabel();
+
+  /**
+   * Translated "Accession # ''{0,number}'' : A test record with id ''{1,number}'' does not exist".
+   * 
+   * @return translated "Accession # ''{0,number}'' : A test record with id ''{1,number}'' does not exist"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : A test record with id ''{1,number}'' does not exist")
+  @Key("secondaryLabel.testNotExistException")
+  String secondaryLabel_testNotExistException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "The test is either not on the sample or is cancelled".
+   * 
+   * @return translated "The test is either not on the sample or is cancelled"
+   */
+  @DefaultMessage("The test is either not on the sample or is cancelled")
+  @Key("secondaryLabel.testNotOnSampleException")
+  String secondaryLabel_testNotOnSampleException();
+
+  /**
+   * Translated "Accession # ''{0,number}'' : {1}, {2} - Unknown label type defined".
+   * 
+   * @return translated "Accession # ''{0,number}'' : {1}, {2} - Unknown label type defined"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - Unknown label type defined")
+  @Key("secondaryLabel.unknownLabelTypeException")
+  String secondaryLabel_unknownLabelTypeException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "A section cannot be made its own parent section".
    * 
    * @return translated "A section cannot be made its own parent section"
@@ -17195,6 +17357,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Invalid value for selected type")
   @Key("test.invalidValue")
   String test_invalidValue();
+
+  /**
+   * Translated "Test Name".
+   * 
+   * @return translated "Test Name"
+   */
+  @DefaultMessage("Test Name")
+  @Key("test.name")
+  String test_name();
 
   /**
    * Translated "You must first select a table row before clicking add".

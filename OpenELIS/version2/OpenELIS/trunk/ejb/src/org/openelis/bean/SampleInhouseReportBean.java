@@ -53,6 +53,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.OptionListItem;
@@ -311,21 +312,21 @@ public class SampleInhouseReportBean {
     }
 
     private ArrayList<OptionListItem> getTests() {
-        ArrayList<TestMethodVO> t;
+        ArrayList<TestViewDO> t;
         ArrayList<OptionListItem> l;
 
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
         try {
             t = test.fetchList();
-            for (TestMethodVO n : t)
+            for (TestViewDO n : t)
                 if ("N".equals(n.getIsActive()))
-                    l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
+                    l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
                                                                        n.getMethodName() + " [" +
                                                                        n.getActiveBegin() + ".." +
                                                                        n.getActiveEnd() + "]"));
                 else
-                    l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
+                    l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
                                                                        n.getMethodName()));
         } catch (Exception e) {
             e.printStackTrace();
