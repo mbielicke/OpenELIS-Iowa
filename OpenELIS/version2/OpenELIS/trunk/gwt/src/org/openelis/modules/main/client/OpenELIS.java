@@ -259,7 +259,7 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(secondaryLabel, "openelis", new Command() {
+        addCommand(secondaryLabel, "sampletracking", new Command() {
             public void execute() {
                 showScreen(SECONDARY_LABEL);
             }

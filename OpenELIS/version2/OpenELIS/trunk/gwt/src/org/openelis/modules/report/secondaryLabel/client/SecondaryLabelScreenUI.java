@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -44,8 +45,10 @@ import org.openelis.modules.preferences.client.PrinterService;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
@@ -101,6 +104,8 @@ public class SecondaryLabelScreenUI extends Screen {
 
     @UiField
     protected Table                            table;
+    
+    protected ModulePermission                 userPermission;
 
     protected SecondaryLabelReportScreen       secondaryLabelReportScreen;
 
@@ -109,14 +114,27 @@ public class SecondaryLabelScreenUI extends Screen {
     protected HashMap<Integer, SampleManager1> managers;
 
     public SecondaryLabelScreenUI(WindowInt window) throws Exception {
+        ScheduledCommand cmd;
+        
         setWindow(window);
+        
+        userPermission = UserCache.getPermission().getModule("sampletracking");
+        if (userPermission == null)
+            throw new PermissionException(Messages.get()
+                                                  .screenPermException("Secondary Label Screen"));
 
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
         setState(DEFAULT);
         fireDataChange();
-        entry.setFocus(true);
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                entry.setFocus(true);
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
 
         logger.fine("Secondary Label Screen Opened");
     }
