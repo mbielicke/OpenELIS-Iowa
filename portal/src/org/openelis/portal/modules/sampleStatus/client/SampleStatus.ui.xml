@@ -54,7 +54,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -74,7 +74,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -87,7 +87,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_clientReference}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -111,7 +111,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 						</table>

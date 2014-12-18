@@ -808,13 +808,40 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String main_logout();
 
   /**
-   * Translated "Data View by\nSpreadsheet ".
+   * Translated "Spreadsheet\nView".
    * 
-   * @return translated "Data View by\nSpreadsheet "
+   * @return translated "Spreadsheet\nView"
    */
-  @DefaultMessage("Data View by\nSpreadsheet ")
+  @DefaultMessage("Spreadsheet\nView")
   @Key("main.menu.dataView")
   String main_menu_dataView();
+
+  /**
+   * Translated "Email\nNotification".
+   * 
+   * @return translated "Email\nNotification"
+   */
+  @DefaultMessage("Email\nNotification")
+  @Key("main.menu.emailNotification")
+  String main_menu_emailNotification();
+
+  /**
+   * Translated "Final\nReport".
+   * 
+   * @return translated "Final\nReport"
+   */
+  @DefaultMessage("Final\nReport")
+  @Key("main.menu.finalReport")
+  String main_menu_finalReport();
+
+  /**
+   * Translated "Status of\nSamples".
+   * 
+   * @return translated "Status of\nSamples"
+   */
+  @DefaultMessage("Status of\nSamples")
+  @Key("main.menu.sampleStatus")
+  String main_menu_sampleStatus();
 
   /**
    * Translated "Clinical Test\nRequest Form".

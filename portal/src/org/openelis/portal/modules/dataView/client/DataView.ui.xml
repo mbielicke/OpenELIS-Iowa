@@ -54,7 +54,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collected}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -74,7 +74,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_released}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -94,7 +94,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_accession}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -107,7 +107,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collector}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -120,7 +120,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_clientReference}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -133,7 +133,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collectionSite}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -146,7 +146,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collectionTown}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -170,7 +170,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_project}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 						</table>

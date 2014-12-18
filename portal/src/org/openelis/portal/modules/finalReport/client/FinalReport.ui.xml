@@ -61,7 +61,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -81,7 +81,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_released}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -101,7 +101,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -114,7 +114,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_clientReference}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -138,7 +138,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr cellSpacing="1" />
@@ -159,7 +159,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_envCollector}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -179,7 +179,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_sdwisCollector}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -192,7 +192,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_pws}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr cellSpacing="1" />
@@ -213,7 +213,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -226,7 +226,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -246,7 +246,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientBirth}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 						</table>

@@ -17,7 +17,7 @@ public class Navigation extends ResizeComposite {
 	
 	@UiField
 	Button finalReport,dataView,sampleStatus,testRequest,
-	       emailNotification, cases, logout; 
+	       emailNotification, /*cases,*/ logout; 
 	
 	public Navigation() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -47,7 +47,7 @@ public class Navigation extends ResizeComposite {
 		return logout;
 	}
 	
-	public Button cases() {
-		return cases;
-	}
+//	public Button cases() {
+//		return cases;
+//	}
 }
