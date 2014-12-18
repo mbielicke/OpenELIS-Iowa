@@ -25,18 +25,22 @@
 			<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
 				<g:layer>
 					<g:HTMLPanel styleName="{style.flow}">
-						<w:Button ui:field="finalReport" bottomText="{msg.main_finalReport}"
+						<w:Button ui:field="finalReport" bottomText="{msg.main_menu_finalReport}"
 							image="{res.reportImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="true" width="85px" height="109px" />
+							css="{res.menuButton}" enabled="true" width="75px" height="80px" />
 						<w:Button ui:field="dataView" bottomText="{msg.main_menu_dataView}"
 							image="{res.spreadsheetImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="true" width="85px" height="109px" />
-						<w:Button ui:field="sampleStatus" bottomText="{msg.main_sampleStatus}"
+							css="{res.menuButton}" enabled="true" width="75px" height="80px" />
+						<w:Button ui:field="sampleStatus" bottomText="{msg.main_menu_sampleStatus}"
 							image="{res.statusImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="true" width="85px" height="109px" />
+							css="{res.menuButton}" enabled="true" width="75px" height="80px" />
 						<w:Button ui:field="testRequest" bottomText="{msg.main_menu_testRequest}"
 							image="{res.formImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="false" width="85px" height="109px" />
+							css="{res.menuButton}" enabled="false" width="75px" height="80px"
+							visible="false" />
+						<w:Button ui:field="emailNotification" bottomText="{msg.main_menu_emailNotification}"
+							image="{res.emailImage}" pixelSize="35,35" topOffset="9"
+							css="{res.menuButton}" enabled="true" width="75px" height="80px" />
 					</g:HTMLPanel>
 				</g:layer>
 			</g:LayoutPanel>
@@ -48,29 +52,26 @@
 			<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
 				<g:layer>
 					<g:HTMLPanel styleName="{style.flow}">
-						<w:Button ui:field="emailNotification" bottomText="{msg.main_emailNotification}"
-							image="{res.emailImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="true" width="85px" height="114px" />
 						<w:Button ui:field="logout" bottomText="{msg.main_logout}"
 							image="{res.logoutImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="true" width="85px" height="114px" />
+							css="{res.menuButton}" enabled="true" width="75px" height="80px" />
 					</g:HTMLPanel>
 				</g:layer>
 			</g:LayoutPanel>
 		</g:tab>
-		<g:tab>
-			<g:header>
-				<ui:text from="{msg.main_stfu}" />
-			</g:header>
-			<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-				<g:layer>
-					<g:HTMLPanel styleName="{style.flow}">
-						<w:Button ui:field="cases" bottomText="Active Cases"
-							image="{res.reportImage}" pixelSize="35,35" topOffset="9"
-							css="{res.menuButton}" enabled="false" width="85px" height="114px" />
-					</g:HTMLPanel>
-				</g:layer>
-			</g:LayoutPanel>
-		</g:tab>
+<!-- 		<g:tab> -->
+<!-- 			<g:header> -->
+<!-- 				<ui:text from="{msg.main_stfu}" /> -->
+<!-- 			</g:header> -->
+<!-- 			<g:LayoutPanel styleName="{res.style.WhiteContentPanel}"> -->
+<!-- 				<g:layer> -->
+<!-- 					<g:HTMLPanel styleName="{style.flow}"> -->
+<!-- 						<w:Button ui:field="cases" bottomText="Active Cases" -->
+<!-- 							image="{res.reportImage}" pixelSize="35,35" topOffset="9" -->
+<!-- 							css="{res.menuButton}" enabled="false" width="85px" height="100px" /> -->
+<!-- 					</g:HTMLPanel> -->
+<!-- 				</g:layer> -->
+<!-- 			</g:LayoutPanel> -->
+<!-- 		</g:tab> -->
 	</g:TabLayoutPanel>
 </ui:UiBinder>

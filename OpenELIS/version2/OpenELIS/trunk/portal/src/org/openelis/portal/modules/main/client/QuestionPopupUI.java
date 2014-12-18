@@ -179,7 +179,7 @@ public abstract class QuestionPopupUI extends Screen {
                     }
                 }
             };
-            questionPopup.setStylePrimaryName("uiRes.style.");
+            questionPopup.setStyleName("uiRes.portalStatus.Button");
         }
         if (popup == null) {
             popup = new PopupPanel();

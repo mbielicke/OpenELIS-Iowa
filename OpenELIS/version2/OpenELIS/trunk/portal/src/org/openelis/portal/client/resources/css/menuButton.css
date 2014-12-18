@@ -13,9 +13,8 @@
 
 .Button:hover {
 	cursor: pointer;
-	background: #c64a1a;
+	background: #e1662f;
 	color: white;
-	opacity: 0.6;
 }
 
 .Button.Disabled:hover {
