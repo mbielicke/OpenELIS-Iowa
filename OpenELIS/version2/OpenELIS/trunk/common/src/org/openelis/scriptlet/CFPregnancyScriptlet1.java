@@ -54,8 +54,8 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Integer           analysisId, carrierIndex;
 
-    private static final String CARRIER_TEST_NAME = "cf-carrier", METHOD_NAME = "pcr",
-                    IND_ETHNICITY = "cf_ind_ethnicity", IND_FAMILY_HISTORY = "cf_ind_fam_history",
+    private static final String CARR_TEST_NAME = "cf-carrier", METHOD_NAME = "pcr",
+                    IND_ETHNICITY = "cf_ind_ethnicity", IND_FAM_HISTORY = "cf_ind_fam_history",
                     IND_RELATION = "cf_ind_relation", IND_RESULT = "cf_ind_result",
                     IND_INITIAL_RISK = "cf_ind_initial_risk", IND_FINAL_RISK = "cf_ind_final_risk",
                     PART_ACCESSION = "cf_part_accession", PART_ETHNICITY = "cf_part_ethnicity",
@@ -64,9 +64,9 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                     PART_FINAL_RISK = "cf_part_final_risk",
                     PREG_INITIAL_RISK = "cf_preg_initial_risk",
                     PREG_FINAL_RISK = "cf_preg_final_risk", PREG_RESULT = "cf_preg_result",
-                    CAR_ETHNICITY = "cf_ethnicity", CAR_FAMILY_HISTORY = "cf_family_history",
-                    CAR_RELATION = "cf_relation", CAR_RESULT = "result",
-                    CAR_INITIAL_RISK = "cf_initial_risk", CAR_FINAL_RISK = "cf_final_risk";
+                    CARR_ETHNICITY = "cf_ethnicity", CARR_FAM_HISTORY = "cf_family_history",
+                    CARR_RELATION = "cf_relation", CARR_RESULT = "result",
+                    CARR_INITIAL_RISK = "cf_initial_risk", CARR_FINAL_RISK = "cf_final_risk";
 
     private static CFRisk1      cfRisk1;
 
@@ -84,14 +84,13 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
 
     @Override
     public SampleSO run(SampleSO data) {
-        Integer accNum;
-        AnalysisViewDO ana, crAna;
+        boolean fetchPartner;
+        AnalysisViewDO ana;
         ResultViewDO res;
-        SampleManager1 psm;
 
         proxy.log(Level.FINE, "In CFPregnancyScriptlet1.run", null);
         try {
-            psm = null;
+            fetchPartner = false;
             if (data.getActionBefore().contains(Action_Before.RESULT)) {
                 /*
                  * find out if the changed result belongs to the analysis
@@ -107,52 +106,31 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                  */
                 res = (ResultViewDO)data.getManager().getObject(data.getUid());
 
-                if (PART_ACCESSION.equals(res.getAnalyteExternalId()) && res.getValue() != null) {
-                    accNum = Integer.valueOf(res.getValue());
-                    /*
-                     * partner accession number can't be the same as the current
-                     * sample's accession number
-                     */
-                    if (data.getManager().getSample().getAccessionNumber().equals(accNum)) {
-                        data.setStatus(Status.FAILED);
-                        data.addException(new FormErrorException(Messages.get()
-                                                                         .sample_partAccCantBeSameAsIndException()));
-                        return data;
-                    }
-                    try {
-                        proxy.log(Level.FINE,
-                                  "Fetching sample with accession number: " + accNum,
-                                  null);
-                        psm = proxy.fetchByAccession(accNum, SampleManager1.Load.RESULT);
-                    } catch (NotFoundException e) {
-                        data.setStatus(Status.FAILED);
-                        data.addException(new FormErrorException(Messages.get()
-                                                                         .gen_noRecordsFound()));
-                        return data;
-                    }
-                }
-            } else if (data.getActionBefore().contains(Action_Before.QA) ||
-                       data.getActionBefore().contains(Action_Before.RECOMPUTE)) {
+                fetchPartner = PART_ACCESSION.equals(res.getAnalyteExternalId());
+            } else if (data.getActionBefore().contains(Action_Before.RECOMPUTE)) {
                 /*
-                 * a sample or analysis qa event was added or removed or the
-                 * risks need to be recomputed e.g. on updating a sample; find
-                 * the analysis managed by this scriptlet
+                 * the risks need to be recomputed e.g. because of a user
+                 * clicking "Run Scriptlets" button; find the analysis managed
+                 * by this scriptlet
                  */
                 ana = (AnalysisViewDO)data.getManager()
                                           .getObject(Constants.uid().getAnalysis(analysisId));
+                fetchPartner = true;
             } else if (data.getActionBefore().contains(Action_Before.COMPLETE) ||
                        data.getActionBefore().contains(Action_Before.RELEASE)) {
 
                 /*
                  * an analysis got completed or released; don't anything if it's
-                 * not a cf-carrier analysis or the one managed by this
-                 * scriptlet
+                 * not the analysis managed by this scriptlet
                  */
-                crAna = (AnalysisViewDO)data.getManager().getObject(data.getUid());
-                if ( !analysisId.equals(crAna.getId()) && !isValidCarrier(crAna))
+                ana = (AnalysisViewDO)data.getManager().getObject(data.getUid());
+                if ( !analysisId.equals(ana.getId()))
                     return data;
+                fetchPartner = true;
+            } else if (data.getActionBefore().contains(Action_Before.QA)) {
                 /*
-                 * find the analysis managed by this scriptlet
+                 * a sample or analysis qa event was added or removed; find the
+                 * analysis managed by this scriptlet
                  */
                 ana = (AnalysisViewDO)data.getManager()
                                           .getObject(Constants.uid().getAnalysis(analysisId));
@@ -178,7 +156,7 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
         /*
          * set the value of risks based on the value of this result
          */
-        setRisks(data, ana, psm);
+        setRisks(data, ana, fetchPartner);
 
         return data;
     }
@@ -187,82 +165,174 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
      * Set the pregnancy initial and final risks and result based on individual
      * and partner risks
      */
-    private void setRisks(SampleSO data, AnalysisViewDO ana, SampleManager1 psm) {
-        Integer index, pregResult;
+    private void setRisks(SampleSO data, AnalysisViewDO ana, boolean fetchPartner) {
+        Integer index, pregResult, indAcc, partAcc;
         String value;
         Double indRisk, partRisk, pregRisk;
-        SampleManager1 sm;
+        SampleManager1 sm, psm;
         AnalysisViewDO crAna;
-        ResultViewDO resInit, resFinal, resResult;
+        ResultViewDO resPartAcc, resInit, resFinal, resResult;
         TestManager tm;
         ResultFormatter rf;
         HashMap<String, ResultViewDO> prs, crs;
 
+        sm = data.getManager();
+        indAcc = sm.getSample().getAccessionNumber();
+        tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
+
         /*
-         * find the carrier analysis; don't do anything if it's not found
+         * find the carrier analysis; show an error if it's not found
          */
         proxy.log(Level.FINE, "Finding the analysis for the cf-carrier test", null);
         crAna = getCarrierAnalysis(data);
-        if (crAna == null)
-            return;
-
-        sm = data.getManager();
         /*
-         * find the values for the various analytes for the pregnancy and
-         * carrier analysis
+         * find the values for the various analytes for the pregnancy analysis
          */
-        proxy.log(Level.FINE,
-                  "Finding the various analytes for cf-pregnancy and cf-carrier to get their values",
-                  null);
         prs = getResults(sm, ana);
-        crs = getResults(sm, crAna);
-
-        tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         try {
+            rf = tm.getFormatter();
+            if (crAna == null) {
+                data.setStatus(Status.FAILED);
+                data.addException(new FormErrorException(Messages.get()
+                                                                 .analysis_validIndCarrierNotFoundException(indAcc,
+                                                                                                            ana.getTestName(),
+                                                                                                            ana.getMethodName(),
+                                                                                                            CARR_TEST_NAME,
+                                                                                                            METHOD_NAME)));
+                /*
+                 * blank the individual's values because carrier analysis was
+                 * not found on the current sample
+                 */
+                setValue(prs.get(IND_ETHNICITY), null, false, rf, ana, data);
+                setValue(prs.get(IND_FAM_HISTORY), null, false, rf, ana, data);
+                setValue(prs.get(IND_RELATION), null, false, rf, ana, data);
+                setValue(prs.get(IND_RESULT), null, false, rf, ana, data);
+                setValue(prs.get(IND_INITIAL_RISK), null, false, rf, ana, data);
+                setValue(prs.get(IND_FINAL_RISK), null, false, rf, ana, data);
+                
+                /*
+                 * blank preganancy risk and results, because they're not valid
+                 * anymore
+                 */
+                clearPregnancyValues(prs, rf, ana, data);
+                return;
+            }
+
+            /*
+             * find the values for the various analytes for the carrier analysis
+             */
+            crs = getResults(sm, crAna);
+
             /*
              * copy the results from cf-carrier on the same sample
              */
-            rf = tm.getFormatter();
             proxy.log(Level.FINE,
                       "Copying results from cf-carrier on the same sample to cf-pregnancy",
                       null);
-            copyValue(crs.get(CAR_ETHNICITY), prs.get(IND_ETHNICITY), rf, ana, data);
-            copyValue(crs.get(CAR_FAMILY_HISTORY), prs.get(IND_FAMILY_HISTORY), rf, ana, data);
-            copyValue(crs.get(CAR_RELATION), prs.get(IND_RELATION), rf, ana, data);
-            copyValue(crs.get(CAR_RESULT), prs.get(IND_RESULT), rf, ana, data);
-            copyValue(crs.get(CAR_INITIAL_RISK), prs.get(IND_INITIAL_RISK), rf, ana, data);
-            copyValue(crs.get(CAR_FINAL_RISK), prs.get(IND_FINAL_RISK), rf, ana, data);
+            copyValue(crs.get(CARR_ETHNICITY), prs.get(IND_ETHNICITY), rf, ana, data);
+            copyValue(crs.get(CARR_FAM_HISTORY), prs.get(IND_FAM_HISTORY), rf, ana, data);
+            copyValue(crs.get(CARR_RELATION), prs.get(IND_RELATION), rf, ana, data);
+            copyValue(crs.get(CARR_RESULT), prs.get(IND_RESULT), rf, ana, data);
+            copyValue(crs.get(CARR_INITIAL_RISK), prs.get(IND_INITIAL_RISK), rf, ana, data);
+            copyValue(crs.get(CARR_FINAL_RISK), prs.get(IND_FINAL_RISK), rf, ana, data);
 
-            if (psm != null) {
+            psm = null;
+            resPartAcc = prs.get(PART_ACCESSION);
+            /*
+             * find out if a partner sample needs to be fetched
+             */
+            if (fetchPartner && resPartAcc.getValue() != null) {
                 /*
-                 * a partner sample has been specified
+                 * get the partner accession number
                  */
-                index = getCarrierIndex(psm);
+                partAcc = Integer.valueOf(resPartAcc.getValue());
                 /*
-                 * find the carrier analysis in the partner sample; don't do
-                 * anything if it's not found
+                 * partner accession number can't be the same as the current
+                 * sample's accession number
                  */
-                if (index == null)                   
-                    return;                
+                if (indAcc.equals(partAcc)) {
+                    data.setStatus(Status.FAILED);
+                    data.addException(new FormErrorException(Messages.get()
+                                                                     .analysis_partAccCantBeSameAsIndException(partAcc,
+                                                                                                               ana.getTestName(),
+                                                                                                               ana.getMethodName())));
+                    /*
+                     * blank the partner values because they need to be from a
+                     * partner sample; also blank preganancy risk and results,
+                     * because they're not valid anymore
+                     */
+                    clearPartnerValues(prs, rf, ana, data);
+                    clearPregnancyValues(prs, rf, ana, data);
+                    return;
+                }
 
-                crAna = psm.analysis.get(index);
-                /*
-                 * find the values for the various analytes for the carrier
-                 * analysis
-                 */
-                crs = getResults(psm, crAna);
-                /*
-                 * copy the results from cf-carrier on the partner sample
-                 */
-                proxy.log(Level.FINE,
-                          "Copying results from cf-carrier on the partner sample to cf-pregnancy",
-                          null);
-                copyValue(crs.get(CAR_ETHNICITY), prs.get(PART_ETHNICITY), rf, ana, data);
-                copyValue(crs.get(CAR_FAMILY_HISTORY), prs.get(PART_FAM_HISTORY), rf, ana, data);
-                copyValue(crs.get(CAR_RELATION), prs.get(PART_RELATION), rf, ana, data);
-                copyValue(crs.get(CAR_RESULT), prs.get(PART_RESULT), rf, ana, data);
-                copyValue(crs.get(CAR_INITIAL_RISK), prs.get(PART_INITIAL_RISK), rf, ana, data);
-                copyValue(crs.get(CAR_FINAL_RISK), prs.get(PART_FINAL_RISK), rf, ana, data);
+                try {
+                    proxy.log(Level.FINE, "Fetching sample with accession number: " + partAcc, null);
+                    psm = proxy.fetchByAccession(partAcc, SampleManager1.Load.RESULT);
+
+                    /*
+                     * a partner sample was found
+                     */
+                    index = getCarrierIndex(psm);
+                    /*
+                     * find the carrier analysis in the partner sample; don't do
+                     * anything if it's not found
+                     */
+                    if (index != null) {
+                        crAna = psm.analysis.get(index);
+                        /*
+                         * find the values for the various analytes for the
+                         * carrier analysis
+                         */
+                        crs = getResults(psm, crAna);
+                        /*
+                         * copy the results from cf-carrier on the partner
+                         * sample
+                         */
+                        proxy.log(Level.FINE,
+                                  "Copying results from cf-carrier on the partner sample to cf-pregnancy",
+                                  null);
+                        copyValue(crs.get(CARR_ETHNICITY), prs.get(PART_ETHNICITY), rf, ana, data);
+                        copyValue(crs.get(CARR_FAM_HISTORY), prs.get(PART_FAM_HISTORY), rf, ana, data);
+                        copyValue(crs.get(CARR_RELATION), prs.get(PART_RELATION), rf, ana, data);
+                        copyValue(crs.get(CARR_RESULT), prs.get(PART_RESULT), rf, ana, data);
+                        copyValue(crs.get(CARR_INITIAL_RISK), prs.get(PART_INITIAL_RISK), rf, ana, data);
+                        copyValue(crs.get(CARR_FINAL_RISK), prs.get(PART_FINAL_RISK), rf, ana, data);
+                    } else {
+                        /*
+                         * no valid carrier analysis was found on the partner
+                         * sample, so blank all partner values; also blank
+                         * preganancy risk and results, because they're not
+                         * valid anymore
+                         */
+                        clearPartnerValues(prs, rf, ana, data);
+                        clearPregnancyValues(prs, rf, ana, data);
+                        data.setStatus(Status.FAILED);
+                        data.addException(new FormErrorException(Messages.get()
+                                                                         .analysis_validPartCarrierNotFoundException(indAcc,
+                                                                                                                     ana.getTestName(),
+                                                                                                                     ana.getMethodName(),
+                                                                                                                     CARR_TEST_NAME,
+                                                                                                                     METHOD_NAME)));
+                        return;
+                    }
+                } catch (NotFoundException e) {
+                    /*
+                     * no sample was found for the partner accession number, so
+                     * blank all partner values; also blank preganancy risk and
+                     * results, because they're not valid anymore
+                     */
+                    clearPartnerValues(prs, rf, crAna, data);
+                    clearPregnancyValues(prs, rf, ana, data);
+                    data.setStatus(Status.FAILED);
+                    data.addException(new FormErrorException(Messages.get()
+                                                                     .result_partSamNotFoundException(sm.getSample()
+                                                                                                        .getAccessionNumber(),
+                                                                                                      ana.getTestName(),
+                                                                                                      ana.getMethodName(),
+                                                                                                      partAcc)));
+                    return;
+                }
             }
 
             /*
@@ -283,12 +353,9 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
             if (ScriptletUtility.sampleHasRejectQA(sm, false) ||
                 ScriptletUtility.analysisHasRejectQA(sm, ana, false)) {
                 /*
-                 * blank the risks and result
+                 * blank the pregnancy risks and result
                  */
-                setValue(resInit, null, false, rf, ana, data);
-                setValue(resFinal, null, false, rf, ana, data);
-                setValue(resResult, null, false, rf, ana, data);
-
+                clearPregnancyValues(prs, rf, ana, data);
                 return;
             }
 
@@ -331,6 +398,21 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
             pregResult = cfRisk1.computePregnancyResult(pregRisk);
             value = pregResult != null ? pregResult.toString() : null;
             setValue(resResult, value, value != null, rf, ana, data);
+
+            /*
+             * if the analysis is being completed or released then it needs to
+             * have a pregnancy result because the results are not overrriden
+             */
+            if (data.getActionBefore().contains(Action_Before.COMPLETE) ||
+                data.getActionBefore().contains(Action_Before.RELEASE) &&
+                resResult.getValue() == null) {
+                data.setStatus(Status.FAILED);
+                data.addException(new FormErrorException(Messages.get()
+                                             .result_valueRequiredException(indAcc,
+                                                                            ana.getTestName(),
+                                                                            ana.getMethodName(),
+                                                                            resResult.getAnalyte())));
+            }
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);
@@ -414,12 +496,37 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
 
     /**
      * Returns true if the passed analysis is for the cf-carrier test and is
-     * completed or released; returns false otherwise
+     * released; returns false otherwise
      */
     private boolean isValidCarrier(AnalysisViewDO ana) {
-        return CARRIER_TEST_NAME.equals(ana.getTestName()) &&
+        return CARR_TEST_NAME.equals(ana.getTestName()) &&
                METHOD_NAME.equals(ana.getMethodName()) &&
-               (Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()));
+               (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()));
+    }
+
+    /**
+     * Sets the values of analytes for the partner to null, if they aren't
+     * already null
+     */
+    private void clearPartnerValues(HashMap<String, ResultViewDO> prs, ResultFormatter rf,
+                                    AnalysisViewDO ana, SampleSO data) throws Exception {
+        setValue(prs.get(PART_ETHNICITY), null, false, rf, ana, data);
+        setValue(prs.get(PART_FAM_HISTORY), null, false, rf, ana, data);
+        setValue(prs.get(PART_RELATION), null, false, rf, ana, data);
+        setValue(prs.get(PART_RESULT), null, false, rf, ana, data);
+        setValue(prs.get(PART_INITIAL_RISK), null, false, rf, ana, data);
+        setValue(prs.get(PART_FINAL_RISK), null, false, rf, ana, data);
+    }
+
+    /**
+     * Sets the values of analytes for the pregnancy risk and results to null,
+     * if they aren't already null
+     */
+    private void clearPregnancyValues(HashMap<String, ResultViewDO> prs, ResultFormatter rf,
+                                      AnalysisViewDO ana, SampleSO data) throws Exception {
+        setValue(prs.get(PREG_INITIAL_RISK), null, false, rf, ana, data);
+        setValue(prs.get(PREG_FINAL_RISK), null, false, rf, ana, data);
+        setValue(prs.get(PREG_RESULT), null, false, rf, ana, data);
     }
 
     /**
