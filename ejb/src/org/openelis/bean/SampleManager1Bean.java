@@ -2423,32 +2423,33 @@ public class SampleManager1Bean {
      */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
                                                Integer statusId) throws Exception {
-        Integer prevStatusId;
         Action_Before action;
         AnalysisViewDO ana;
 
         /*
-         * find the status of the analysis
+         * find the analysis
          */
         ana = null;
-        prevStatusId = null;
         for (AnalysisViewDO data : getAnalyses(sm)) {
             if (data.getId().equals(analysisId)) {
                 ana = data;
-                prevStatusId = data.getStatusId();
                 break;
             }
         }
-        sm = analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
+
         /*
-         * determine if scriptlets need to be run because of the changed status
+         * determine if scriptlets need to be run because of the potential
+         * change in status; runScriptlets is called before changeAnalysisStatus
+         * because scriptlets can't be run if the status gets changed to
+         * released and also some scriptlet may need to prevent an analysis from
+         * changing status
          */
         action = null;
         if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
             /*
              * find out if the analysis was completed or unreleased
              */
-            if (Constants.dictionary().ANALYSIS_RELEASED.equals(prevStatusId))
+            if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()))
                 action = Action_Before.UNRELEASE;
             else
                 action = Action_Before.COMPLETE;
@@ -2456,16 +2457,18 @@ public class SampleManager1Bean {
             action = Action_Before.RELEASE;
         }
 
-        if (action == null)
-            return sm;
-        /*
-         * run the scriptlets
-         */
-        scriptletHelper.runScriptlets(sm,
-                                      scriptletHelper.createCache(sm),
-                                      Constants.uid().get(ana),
-                                      SampleMeta.getAnalysisStatusId(),
-                                      action);
+        if (action != null) {
+            /*
+             * run the scriptlets
+             */
+            scriptletHelper.runScriptlets(sm,
+                                          scriptletHelper.createCache(sm),
+                                          Constants.uid().get(ana),
+                                          SampleMeta.getAnalysisStatusId(),
+                                          action);
+        }
+        
+        sm = analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
 
         return sm;
     }

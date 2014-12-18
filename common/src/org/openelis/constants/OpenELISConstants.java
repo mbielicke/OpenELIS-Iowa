@@ -871,6 +871,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantSetAsPrepException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
+   * Translated "Accession # ''{0,number}'': Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot unrelease {1}, {2} - Sample has a released {3}, {4} "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ")
+  @Key("analysis.cantUnreleaseCarrierException")
+  String analysis_cantUnreleaseCarrierException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
+
+  /**
    * Translated "An analysis can not be its own prep analysis".
    * 
    * @return translated "An analysis can not be its own prep analysis"
@@ -1078,6 +1087,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_notes();
 
   /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} - Partner and individual accession numbers cannot be the same".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - Partner and individual accession numbers cannot be the same"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Partner and individual accession numbers cannot be the same")
+  @Key("analysis.partAccCantBeSameAsIndException")
+  String analysis_partAccCantBeSameAsIndException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
@@ -1222,22 +1240,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_unitRequiredException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Valid ''cf-carrier, pcr'' analysis not found on current sample".
+   * Translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on this sample".
    * 
-   * @return translated "Valid ''cf-carrier, pcr'' analysis not found on current sample"
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on this sample"
    */
-  @DefaultMessage("Valid ''cf-carrier, pcr'' analysis not found on current sample")
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on this sample")
   @Key("analysis.validIndCarrierNotFoundException")
-  String analysis_validIndCarrierNotFoundException();
+  String analysis_validIndCarrierNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Valid ''cf-carrier, pcr'' analysis not found on partner sample  ".
+   * Translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on partner sample".
    * 
-   * @return translated "Valid ''cf-carrier, pcr'' analysis not found on partner sample  "
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on partner sample"
    */
-  @DefaultMessage("Valid ''cf-carrier, pcr'' analysis not found on partner sample  ")
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on partner sample")
   @Key("analysis.validPartCarrierNotFoundException")
-  String analysis_validPartCarrierNotFoundException();
+  String analysis_validPartCarrierNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Analysis has already been completed".
@@ -13912,6 +13930,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_overridden();
 
   /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} - Sample not found for partner accession # ''{3,number}''".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - Sample not found for partner accession # ''{3,number}''"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Sample not found for partner accession # ''{3,number}''")
+  @Key("result.partSamNotFoundException")
+  String result_partSamNotFoundException(Integer arg0,  String arg1,  String arg2,  Integer arg3);
+
+  /**
    * Translated "Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid".
    * 
    * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid"
@@ -14621,15 +14648,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Organization")
   @Key("sample.organization")
   String sample_organization();
-
-  /**
-   * Translated "Partner Accession # cannot be the same as individual Accession # ".
-   * 
-   * @return translated "Partner Accession # cannot be the same as individual Accession # "
-   */
-  @DefaultMessage("Partner Accession # cannot be the same as individual Accession # ")
-  @Key("sample.partAccCantBeSameAsIndException")
-  String sample_partAccCantBeSameAsIndException();
 
   /**
    * Translated "Accession # ''{0,number}'': Last name is required for a patient".
@@ -16018,11 +16036,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_description();
 
   /**
-   * Translated "The following errors occurred while printing labels ".
+   * Translated "Some errors occurred while printing labels".
    * 
-   * @return translated "The following errors occurred while printing labels "
+   * @return translated "Some errors occurred while printing labels"
    */
-  @DefaultMessage("The following errors occurred while printing labels ")
+  @DefaultMessage("Some errors occurred while printing labels")
   @Key("secondaryLabel.errorsPrintingLabels")
   String secondaryLabel_errorsPrintingLabels();
 

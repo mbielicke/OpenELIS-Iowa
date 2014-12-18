@@ -52,7 +52,7 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Integer           analysisId;
 
-    private static final String PREGNANCY_TEST_NAME = "cf-pregnancy", METHOD_NAME = "pcr",
+    private static final String PREG_TEST_NAME = "cf-pregnancy", METHOD_NAME = "pcr",
                     ETHNICITY = "cf_ethnicity", FAMILY_HISTORY = "cf_family_history",
                     RELATION = "cf_relation", RESULT = "result", INITIAL_RISK = "cf_initial_risk",
                     FINAL_RISK = "cf_final_risk";
@@ -64,16 +64,18 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
         this.analysisId = analysisId;
 
         proxy.log(Level.FINE, "Initializing CFCarrierScriptlet1", null);
-        
+
         if (cfRisk1 == null)
             cfRisk1 = CFRisk1.getInstance(proxy);
-        
+
         proxy.log(Level.FINE, "Initialized CFCarrierScriptlet1", null);
     }
 
     @Override
     public SampleSO run(SampleSO data) {
-        AnalysisViewDO ana;
+        int i;
+        Integer accNum;
+        AnalysisViewDO ana, prAna;
 
         proxy.log(Level.FINE, "In CFCarrierScriptlet1.run", null);
         try {
@@ -86,6 +88,35 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
                     return data;
                 ana = (AnalysisViewDO)data.getManager()
                                           .getObject(Constants.uid().getAnalysis(analysisId));
+            } else if (data.getActionBefore().contains(Action_Before.UNRELEASE)) {
+                /*
+                 * an analysis is being unreleased; find out if it's the one
+                 * managed by this scriptlet
+                 */
+                ana = (AnalysisViewDO)data.getManager().getObject(data.getUid());
+                if ( !analysisId.equals(ana.getId()))
+                    return data;
+
+                /*
+                 * don't let the analysis be unreleased if there's a released
+                 * cf-pregnancy analysis on the sample
+                 */
+                for (i = 0; i < data.getManager().analysis.count(); i++ ) {
+                    prAna = data.getManager().analysis.get(i);
+                    if (PREG_TEST_NAME.equals(prAna.getTestName()) &&
+                        METHOD_NAME.equals(prAna.getMethodName()) &&
+                        Constants.dictionary().ANALYSIS_RELEASED.equals(prAna.getStatusId())) {
+                        accNum = data.getManager().getSample().getAccessionNumber();
+                        data.setStatus(Status.FAILED);
+                        data.addException(new FormErrorException(Messages.get()
+                                                                         .analysis_cantUnreleaseCarrierException(accNum,
+                                                                                                                 ana.getTestName(),
+                                                                                                                 ana.getMethodName(),
+                                                                                                                 PREG_TEST_NAME,
+                                                                                                                 METHOD_NAME)));
+                        return data;
+                    }
+                }
             } else if (data.getActionBefore().contains(Action_Before.QA)) {
                 /*
                  * a sample or analysis qa event was added or removed; find the
@@ -130,7 +161,6 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
         Integer ethnicityId, famHistId, relationId, resultId;
         String value;
         SampleManager1 sm;
-        AnalysisViewDO prAna;
         ResultViewDO res, resInit, resFinal;
         TestManager tm;
         ResultFormatter rf;
@@ -214,24 +244,6 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
                 setValue(resInit, null, rf, ana, data);
                 setValue(resFinal, null, rf, ana, data);
                 return;
-            }
-
-            /*
-             * find out if the sample has a released cf-pregnancy analysis and
-             * if it does than blank the risks
-             */
-            for (i = 0; i < sm.analysis.count(); i++ ) {
-                prAna = sm.analysis.get(i);
-                if (PREGNANCY_TEST_NAME.equals(prAna.getTestName()) &&
-                    METHOD_NAME.equals(prAna.getMethodName()) &&
-                    Constants.dictionary().ANALYSIS_RELEASED.equals(prAna.getStatusId())) {
-                    data.setStatus(Status.FAILED);
-                    data.addException(new FormErrorException(Messages.get()
-                                                                     .result_cantComputeRisksRelPregException()));
-                    setValue(resInit, null, rf, ana, data);
-                    setValue(resFinal, null, rf, ana, data);
-                    return;
-                }
             }
 
             /*
