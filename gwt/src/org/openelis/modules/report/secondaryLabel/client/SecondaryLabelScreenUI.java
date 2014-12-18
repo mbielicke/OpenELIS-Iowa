@@ -56,6 +56,7 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Label;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.table.Row;
@@ -91,7 +92,7 @@ public class SecondaryLabelScreenUI extends Screen {
     protected TextBox<String>                  entry;
 
     @UiField
-    protected TextBox<Integer>                 accessionNumber;
+    protected Label<Integer>                   accessionNumber;
 
     @UiField
     protected Dropdown<Integer>                testName;
@@ -104,8 +105,6 @@ public class SecondaryLabelScreenUI extends Screen {
 
     @UiField
     protected Table                            table;
-    
-    protected ModulePermission                 userPermission;
 
     protected SecondaryLabelReportScreen       secondaryLabelReportScreen;
 
@@ -114,10 +113,10 @@ public class SecondaryLabelScreenUI extends Screen {
     protected HashMap<Integer, SampleManager1> managers;
 
     public SecondaryLabelScreenUI(WindowInt window) throws Exception {
-        ScheduledCommand cmd;
+        ModulePermission userPermission;
         
         setWindow(window);
-        
+
         userPermission = UserCache.getPermission().getModule("sampletracking");
         if (userPermission == null)
             throw new PermissionException(Messages.get()
@@ -128,13 +127,22 @@ public class SecondaryLabelScreenUI extends Screen {
         initialize();
         setState(DEFAULT);
         fireDataChange();
-        cmd = new ScheduledCommand() {
+        /*
+         * the following is used instead of a ScheduledCommand to make sure
+         * that the focus gets set after the widget gets attached to the DOM,
+         * which ScheduledCommand doesn't do, as it executes after the creation
+         * of the widget, which doesn't mean that the widget is attached
+         */
+        Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
             @Override
-            public void execute() {
-                entry.setFocus(true);
+            public boolean execute() {
+                if (entry.isAttached()) {
+                    entry.setFocus(true);
+                    return false;
+                }
+                return true;
             }
-        };
-        Scheduler.get().scheduleDeferred(cmd);
+        });
 
         logger.fine("Secondary Label Screen Opened");
     }
@@ -181,10 +189,6 @@ public class SecondaryLabelScreenUI extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(null);
             }
-
-            public void onStateChange(StateChangeEvent event) {
-                accessionNumber.setEnabled(false);
-            }
         });
 
         addScreenHandler(testName, "testName", new ScreenHandler<Integer>() {
@@ -197,7 +201,7 @@ public class SecondaryLabelScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? printer : accessionNumber;
+                return forward ? printer : entry;
             }
         });
 
@@ -364,8 +368,8 @@ public class SecondaryLabelScreenUI extends Screen {
              * print the same labels again
              */
             table.setModel(null);
-            
-            secondaryLabelReportScreen.runReport(labels);        
+
+            secondaryLabelReportScreen.runReport(labels);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

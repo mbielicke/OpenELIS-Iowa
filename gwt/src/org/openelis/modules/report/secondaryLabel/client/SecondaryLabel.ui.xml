@@ -33,7 +33,7 @@
                   <ui:text from="{msg.sample_accessionNum}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
+                  <w:Label ui:field="accessionNumber" width="75px" field="Integer" />
                 </td>
               </tr>
               <tr>
