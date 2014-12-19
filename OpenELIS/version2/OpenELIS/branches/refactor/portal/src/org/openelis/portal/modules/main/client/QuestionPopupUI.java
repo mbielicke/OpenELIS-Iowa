@@ -37,7 +37,6 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.ModalWindow;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -46,6 +45,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class QuestionPopupUI extends Screen {
@@ -57,9 +57,11 @@ public abstract class QuestionPopupUI extends Screen {
     private static QuestionPopupUIBinder uiBinder = GWT.create(QuestionPopupUIBinder.class);
 
     @UiField
-    protected Button                     yesButton, noButton;
+    protected Button                     yesButton, noButton, cancelButton;
 
     protected static QuestionPopupUI     questionPopup;
+
+    protected static PopupPanel          popup;
 
     public QuestionPopupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -73,7 +75,7 @@ public abstract class QuestionPopupUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? noButton : noButton;
+                return forward ? noButton : cancelButton;
             }
         });
 
@@ -83,7 +85,17 @@ public abstract class QuestionPopupUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? yesButton : yesButton;
+                return forward ? cancelButton : yesButton;
+            }
+        });
+
+        addScreenHandler(cancelButton, "cancelButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                cancelButton.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? yesButton : noButton;
             }
         });
     }
@@ -98,67 +110,94 @@ public abstract class QuestionPopupUI extends Screen {
      */
     public abstract void no();
 
+    /**
+     * overridden to respond to the user clicking "cancel"
+     */
+    public abstract void cancel();
+
     @UiHandler("yesButton")
     protected void yes(ClickEvent event) {
-        window.close();
+        popup.hide();
         yes();
     }
 
     @UiHandler("noButton")
-    protected void cancel(ClickEvent event) {
-        window.close();
+    protected void no(ClickEvent event) {
+        popup.hide();
         no();
     }
 
+    @UiHandler("cancelButton")
+    protected void cancel(ClickEvent event) {
+        popup.hide();
+        cancel();
+    }
+
     public static void popup() {
-        ModalWindow modal;
-
-        questionPopup = new QuestionPopupUI() {
-            @Override
-            public void yes() {
-                submit(Messages.get().gen_yes());
-                MainScreen.logout();
-            }
-
-            @Override
-            public void no() {
-                submit(Messages.get().gen_no());
-                MainScreen.logout();
-            }
-
-            private void submit(String response) {
-                try {
-                    UserResponseService.get().saveResponse(response,
-                                                           new AsyncCallback<ReportStatus>() {
-                                                               @Override
-                                                               public void onSuccess(ReportStatus result) {
-                                                                   if (Status.SAVED.equals(result.getStatus())) {
-                                                                       // do
-                                                                       // nothing
-                                                                   } else {
-                                                                       remote.log(Level.SEVERE,
-                                                                                  result.getMessage());
-                                                                   }
-                                                               }
-
-                                                               @Override
-                                                               public void onFailure(Throwable caught) {
-                                                                   remote.log(Level.SEVERE,
-                                                                              caught.getMessage(),
-                                                                              caught);
-                                                               }
-                                                           });
-                } catch (Exception e) {
-                    remote.log(Level.SEVERE, e.getMessage(), e);
+        if (questionPopup == null) {
+            questionPopup = new QuestionPopupUI() {
+                @Override
+                public void yes() {
+                    submit(Messages.get().gen_yes());
+                    MainScreen.logout();
                 }
-            }
-        };
-        modal = new ModalWindow();
-        modal.setSize("500px", "200px");
-        modal.setName(Messages.get().gen_noteEditor());
-        modal.setCSS(UIResources.INSTANCE.popupWindow());
-        modal.setContent(questionPopup);
 
-        questionPopup.setWindow(modal);
+                @Override
+                public void no() {
+                    submit(Messages.get().gen_no());
+                    MainScreen.logout();
+                }
+
+                public void cancel() {
+                    // TODO this breaks the screen
+                }
+
+                private void submit(String response) {
+                    try {
+                        UserResponseService.get().saveResponse(response,
+                                                               new AsyncCallback<ReportStatus>() {
+                                                                   @Override
+                                                                   public void onSuccess(ReportStatus result) {
+                                                                       if (Status.SAVED.equals(result.getStatus())) {
+                                                                           // do
+                                                                           // nothing
+                                                                       } else {
+                                                                           remote.log(Level.SEVERE,
+                                                                                      result.getMessage());
+                                                                       }
+                                                                   }
+
+                                                                   @Override
+                                                                   public void onFailure(Throwable caught) {
+                                                                       remote.log(Level.SEVERE,
+                                                                                  caught.getMessage(),
+                                                                                  caught);
+                                                                   }
+                                                               });
+                    } catch (Exception e) {
+                        remote.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+            };
+            questionPopup.setStyleName("uiRes.portalStatus.Button");
+        }
+        if (popup == null) {
+            popup = new PopupPanel();
+            popup.setSize("500px", "200px");
+            popup.setModal(true);
+            popup.setAutoHideEnabled(false);
+        }
+
+        popup.setWidget(questionPopup);
+
+        popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+
+            @Override
+            public void setPosition(int offsetWidth, int offsetHeight) {
+                int width = com.google.gwt.user.client.Window.getClientWidth();
+                popup.setPopupPosition( (width - offsetWidth) / 2, 200);
+            }
+
+        });
     }
 }
