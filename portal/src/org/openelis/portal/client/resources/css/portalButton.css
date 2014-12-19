@@ -3,7 +3,7 @@
 	font-size: 12px;
 	color: #444444;
 	border: 1px solid #ababab;
-	display: inline-block;
+	display: flex;
 	background: #fdfdfd;
 }
 

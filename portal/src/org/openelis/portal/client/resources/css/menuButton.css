@@ -3,7 +3,7 @@
 	font-size: inherit;
 	color: 444444;
 	border: 0px;
-	display: inline-block;
+	display: flex;
 }
 
 .Button>div {
