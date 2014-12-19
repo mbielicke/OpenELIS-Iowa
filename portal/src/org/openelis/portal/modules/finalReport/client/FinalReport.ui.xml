@@ -63,7 +63,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_collected}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -83,7 +83,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_released}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -103,7 +103,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -116,7 +116,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_clientReference}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -140,7 +140,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_project}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr cellSpacing="1" />
@@ -161,7 +161,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_envCollector}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -181,7 +181,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_sdwisCollector}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -194,7 +194,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_pws}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr cellSpacing="1" />
@@ -215,7 +215,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -228,7 +228,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -248,7 +248,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_patientBirth}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 						</table>
@@ -256,11 +256,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
-										enabled="true" image="{uiRes.find}" css="{res.portalButton}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-										enabled="true" image="{res.reset}" css="{res.portalButton}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</td>
 							</tr>
 						</table>
@@ -283,7 +283,8 @@
 					<tr>
 						<td>
 							<w:Button ui:field="backButton" image="{res.backImage}"
-								pixelSize="20,20" css="{res.portalButton}" rightText="Back" enabled="true" />
+								pixelSize="20,20" css="{res.portalButton}" rightText="Back"
+								enabled="true" width="70px" height="25px" />
 						</td>
 					</tr>
 					<tr>
@@ -296,11 +297,14 @@
 						<td>
 							<g:HorizontalPanel spacing="4">
 								<w:Button ui:field="selectAllButton" rightText="{msg.finalReport_selectAll}"
-									enabled="true" image="{uiRes.apply}" css="{res.portalButton}" />
+									enabled="true" image="{uiRes.apply}" css="{res.portalButton}"
+									width="100px" height="25px" />
 								<w:Button ui:field="unselectAllButton" rightText="{msg.finalReport_unselectAll}"
-									enabled="true" image="{uiRes.unapply}" css="{res.portalButton}" />
+									enabled="true" image="{uiRes.unapply}" css="{res.portalButton}"
+									width="100px" height="25px" />
 								<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
-									enabled="true" image="{uiRes.report}" css="{res.portalButton}" />
+									enabled="true" image="{uiRes.report}" css="{res.portalButton}"
+									width="100px" height="25px" />
 							</g:HorizontalPanel>
 						</td>
 					</tr>

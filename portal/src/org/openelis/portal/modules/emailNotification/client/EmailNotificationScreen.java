@@ -304,14 +304,17 @@ public class EmailNotificationScreen extends Screen {
             /*
              * determine if any of the rows contain the same data
              */
-            rowString = row.getCell(1).toString() + (String)row.getCell(2) +
-                        (String)row.getCell(3) + (String)row.getCell(4) + (String)row.getCell(5) +
-                        (String)row.getCell(6);
-            if (rows.contains(rowString)) {
-                duplicateRow = true;
-            } else {
-                rows.add(rowString);
-                duplicateRow = false;
+            duplicateRow = false;
+            if ( !exceptions) {
+                rowString = row.getCell(1).toString() + (String)row.getCell(2) +
+                            (String)row.getCell(3) + (String)row.getCell(4) +
+                            (String)row.getCell(5) + (String)row.getCell(6);
+                if (rows.contains(rowString)) {
+                    duplicateRow = true;
+                } else {
+                    rows.add(rowString);
+                    duplicateRow = false;
+                }
             }
 
             params = row.getData();

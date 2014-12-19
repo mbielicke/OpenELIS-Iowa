@@ -56,7 +56,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collected}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -76,7 +76,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_released}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -96,7 +96,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_accession}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -109,7 +109,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collector}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -122,7 +122,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_clientReference}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -135,7 +135,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collectionSite}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -148,7 +148,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_collectionTown}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -172,7 +172,7 @@
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_project}"
-										placement="RIGHT" balloonWidth="200px" />
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 						</table>
@@ -180,11 +180,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="continueButton" rightText="{msg.dataView_continue}"
-										enabled="true" image="{uiRes.find}" css="{res.portalButton}" />
+										enabled="true" css="{res.portalButton}" width="170px" height="25px" />
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-										enabled="true" image="{res.reset}" css="{res.portalButton}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</td>
 							</tr>
 						</table>
@@ -207,7 +207,8 @@
 					<tr>
 						<td>
 							<w:Button ui:field="backButton" enabled="true" visible="true"
-								image="{res.backImage}" pixelSize="20,20" rightText="Back" css="{res.portalButton}" />
+								image="{res.backImage}" pixelSize="20,20" rightText="Back"
+								css="{res.portalButton}" width="70px" height="25px" />
 						</td>
 					</tr>
 					<tr>
@@ -217,7 +218,7 @@
 							</span>
 							<w:Button ui:field="selectAllSampleFieldsButton"
 								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
-								image="{uiRes.apply}" css="{res.portalButton}" />
+								image="{uiRes.apply}" css="{res.portalButton}" height="25px" />
 						</td>
 						<td />
 						<td colspan="7">
@@ -225,7 +226,8 @@
 								<ui:text from="{msg.dataView_orgFields}- " />
 							</span>
 							<w:Button ui:field="selectAllOrgFieldsButton" rightText="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}" />
+								enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}"
+								height="25px" />
 						</td>
 					</tr>
 					<tr>
@@ -372,7 +374,7 @@
 							</span>
 							<w:Button ui:field="selectAllAnalysisFieldsButton"
 								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
-								image="{uiRes.apply}" css="{res.portalButton}" />
+								image="{uiRes.apply}" css="{res.portalButton}" height="25px" />
 						</td>
 						<td />
 						<td colspan="7">
@@ -381,7 +383,7 @@
 							</span>
 							<w:Button ui:field="selectAllPatientFieldsButton"
 								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
-								image="{uiRes.apply}" css="{res.portalButton}" />
+								image="{uiRes.apply}" css="{res.portalButton}" height="25px" />
 						</td>
 					</tr>
 					<tr>
@@ -538,25 +540,30 @@
 						<td>
 							<g:HorizontalPanel spacing="4">
 								<w:Button ui:field="selectAllAnalytesButton" rightText="{msg.finalReport_selectAll}"
-									enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}" />
+									enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}"
+									height="25px" />
 								<w:Button ui:field="unselectAllAnalytesButton"
 									rightText="{msg.finalReport_unselectAll}" enabled="true"
-									visible="true" image="{uiRes.unapply}" css="{res.portalButton}" />
+									visible="true" image="{uiRes.unapply}" css="{res.portalButton}"
+									height="25px" />
 							</g:HorizontalPanel>
 						</td>
 						<td>
 							<g:HorizontalPanel spacing="4">
 								<w:Button ui:field="selectAllAuxButton" rightText="{msg.finalReport_selectAll}"
-									enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}" />
+									enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}"
+									height="25px" />
 								<w:Button ui:field="unselectAllAuxButton" rightText="{msg.finalReport_unselectAll}"
-									enabled="true" visible="true" image="{uiRes.unapply}" css="{res.portalButton}" />
+									enabled="true" visible="true" image="{uiRes.unapply}" css="{res.portalButton}"
+									height="25px" />
 							</g:HorizontalPanel>
 						</td>
 					</tr>
 					<tr>
 						<td>
 							<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
-								enabled="true" visible="true" image="{uiRes.report}" css="{res.portalButton}" />
+								enabled="true" visible="true" image="{uiRes.report}" css="{res.portalButton}"
+								width="100px" height="25px" />
 						</td>
 					</tr>
 					<tr>

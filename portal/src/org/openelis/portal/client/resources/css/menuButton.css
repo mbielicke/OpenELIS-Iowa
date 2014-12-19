@@ -1,14 +1,14 @@
 .Button {
 	font-family: inherit;
-	font-size: 12px;
-	color: #444444;
-	border: 1px solid #ababab;
+	font-size: inherit;
+	color: 444444;
+	border: 0px;
 	display: flex;
-	background: #fdfdfd;
 }
 
 .Button>div {
-	
+	padding: 2px;
+	margin: 1px;
 }
 
 .Button:hover {
