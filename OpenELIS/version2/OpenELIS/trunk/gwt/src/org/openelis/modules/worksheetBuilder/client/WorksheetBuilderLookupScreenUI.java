@@ -432,27 +432,6 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         }
     }
 
-    //
-    // overriding AutoComplete's getQuery to return the id of the
-    // selection instead of the text
-    //
-    public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> fields;
-        QueryData            field;
-
-        fields = super.getQueryFields();
-        
-        if (testId.getValue() != null && testId.getValue().getId() != null) {
-            field = new QueryData();
-            field.setKey(AnalysisViewMeta.getTestId());
-            field.setQuery(testId.getValue().getId().toString());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-        }
-
-        return fields;
-    }
-
     @SuppressWarnings("unused")
     @UiHandler("addRow")
     protected void addAnalyses(ClickEvent event) {
