@@ -1005,63 +1005,46 @@ public class WorksheetBuilderScreenUI extends Screen {
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fields;
         ArrayList<SystemUserVO> userList;
-        QueryData field;
         String loginName;
         StringBuffer userIds;
         
-        fields = new ArrayList<QueryData>();
-        for (String key : handlers.keySet()) {
-            if (WorksheetBuilderMeta.getWorksheetSystemUserId().equals(key))
-                continue;
-            Object query = handlers.get(key).getQuery();
-            if (query instanceof ArrayList<?>) {
-                ArrayList<QueryData> qds = (ArrayList<QueryData>)query;
-                fields.addAll(qds);
-            } else if (query instanceof Object[]) {
-                QueryData[] qds = (QueryData[])query;
-                for (int i = 0; i < qds.length; i++ )
-                    fields.add(qds[i]);
-            } else if (query != null) {
-                ((QueryData)query).setKey(key);
-                fields.add((QueryData)query);
-            }
-        }
-
-        //
-        // Since we cannot join with the security database to link system user's
-        // login name to the query, we need to lookup the matching id(s) from the
-        // UserCache to input into the query
-        //
-        loginName = systemUserId.getDisplay();
-        if (!"".equals(loginName) && !"*".equals(loginName) && !"!=".equals(loginName)) {
-            field = new QueryData();
-            field.setKey(WorksheetBuilderMeta.getWorksheetSystemUserId());
-            field.setType(QueryData.Type.INTEGER);
-            if ("=".equals(loginName)) {
-                field.setQuery("-1");
-                fields.add(field);
-            } else {
-                userIds = new StringBuffer();
-                try {
-                    userList = UserCacheService.get().getEmployees(loginName);
-                    if (userList.size() == 0) {
+        fields = super.getQueryFields();
+        for (QueryData field : fields) {
+            if (WorksheetBuilderMeta.getWorksheetSystemUserId().equals(field.getKey())) {
+                //
+                // Since we cannot join with the security database to link system user's
+                // login name to the query, we need to lookup the matching id(s) from the
+                // UserCache to input into the query
+                //
+                loginName = field.getQuery();
+                if (!"".equals(loginName) && !"*".equals(loginName) && !"!=".equals(loginName)) {
+                    field.setType(QueryData.Type.INTEGER);
+                    if ("=".equals(loginName)) {
                         field.setQuery("-1");
                     } else {
-                        for (SystemUserVO userVO : userList) {
-                            if (userIds.length() > 0)
-                                userIds.append(" | ");
-                            userIds.append(userVO.getId());
+                        userIds = new StringBuffer();
+                        try {
+                            userList = UserCacheService.get().getEmployees(loginName);
+                            if (userList.size() == 0) {
+                                field.setQuery("-1");
+                            } else {
+                                for (SystemUserVO userVO : userList) {
+                                    if (userIds.length() > 0)
+                                        userIds.append(" | ");
+                                    userIds.append(userVO.getId());
+                                }
+                                field.setQuery(userIds.toString());
+                            }
+                        } catch (Exception anyE) {
+                            Window.alert(anyE.getMessage());
+                            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                         }
-                        field.setQuery(userIds.toString());
                     }
-                    fields.add(field);
-                } catch (Exception anyE) {
-                    Window.alert(anyE.getMessage());
-                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
                 }
+                break;
             }
         }
-        
+            
         return fields;
     }
 
