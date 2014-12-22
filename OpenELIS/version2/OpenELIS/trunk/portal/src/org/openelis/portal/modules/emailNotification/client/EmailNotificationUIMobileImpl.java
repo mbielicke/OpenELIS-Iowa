@@ -29,7 +29,7 @@ public class EmailNotificationUIMobileImpl extends ResizeComposite implements Em
     protected Dropdown<String>                       filter;
 
     @UiField
-    protected Button                                 addButton, commitButton;
+    protected Button                                 addButton, removeButton, saveButton;
 
     public EmailNotificationUIMobileImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -61,7 +61,12 @@ public class EmailNotificationUIMobileImpl extends ResizeComposite implements Em
     }
 
     @Override
-    public Button getCommitButton() {
-        return commitButton;
+    public Button getRemoveButton() {
+        return removeButton;
+    }
+
+    @Override
+    public Button getSaveButton() {
+        return saveButton;
     }
 }

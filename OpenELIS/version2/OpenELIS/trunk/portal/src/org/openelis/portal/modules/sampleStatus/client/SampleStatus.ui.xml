@@ -118,12 +118,12 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
-										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
-								</td>
-								<td>
-									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<g:HorizontalPanel spacing="10">
+										<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
+											enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+										<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+											enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									</g:HorizontalPanel>
 								</td>
 							</tr>
 						</table>

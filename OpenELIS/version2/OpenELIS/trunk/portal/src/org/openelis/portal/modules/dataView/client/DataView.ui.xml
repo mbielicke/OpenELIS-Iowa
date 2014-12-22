@@ -177,12 +177,12 @@
 						<table class="{res.style.Form}">
 							<tr>
 								<td>
-									<w:Button ui:field="continueButton" rightText="{msg.dataView_continue}"
-										enabled="true" css="{res.portalButton}" width="170px" height="25px" />
-								</td>
-								<td>
-									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<g:HorizontalPanel spacing="10">
+										<w:Button ui:field="continueButton" rightText="{msg.dataView_continue}"
+											enabled="true" css="{res.portalButton}" width="170px" height="25px" />
+										<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
+											enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									</g:HorizontalPanel>
 								</td>
 							</tr>
 						</table>
@@ -536,7 +536,7 @@
 					</tr>
 					<tr>
 						<td>
-							<g:HorizontalPanel spacing="4">
+							<g:HorizontalPanel spacing="10">
 								<w:Button ui:field="selectAllAnalytesButton" rightText="{msg.finalReport_selectAll}"
 									enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}"
 									height="25px" />
@@ -547,7 +547,7 @@
 							</g:HorizontalPanel>
 						</td>
 						<td>
-							<g:HorizontalPanel spacing="4">
+							<g:HorizontalPanel spacing="10">
 								<w:Button ui:field="selectAllAuxButton" rightText="{msg.finalReport_selectAll}"
 									enabled="true" visible="true" image="{uiRes.apply}" css="{res.portalButton}"
 									height="25px" />
@@ -560,8 +560,8 @@
 					<tr>
 						<td>
 							<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
-								enabled="true" visible="true" image="{uiRes.report}" css="{res.portalButton}"
-								width="100px" height="25px" />
+								enabled="true" visible="true" css="{res.portalButton}" width="100px"
+								height="25px" />
 						</td>
 					</tr>
 					<tr>

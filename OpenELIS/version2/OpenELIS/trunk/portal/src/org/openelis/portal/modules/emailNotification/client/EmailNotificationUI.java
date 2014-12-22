@@ -16,6 +16,8 @@ public interface EmailNotificationUI extends IsWidget {
 
     public Button getAddButton();
 
-    public Button getCommitButton();
+    public Button getRemoveButton();
+
+    public Button getSaveButton();
 
 }

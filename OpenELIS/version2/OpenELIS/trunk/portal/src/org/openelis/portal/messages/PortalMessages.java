@@ -250,6 +250,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_selectedAnalytes();
 
   /**
+   * Translated "Add".
+   * 
+   * @return translated "Add"
+   */
+  @DefaultMessage("Add")
+  @Key("emailNotification.add")
+  String emailNotification_add();
+
+  /**
    * Translated "Email".
    * 
    * @return translated "Email"
@@ -304,20 +313,20 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String emailNotification_error_noPermToAddEmail();
 
   /**
-   * Translated "Filter".
+   * Translated "Filter By".
    * 
-   * @return translated "Filter"
+   * @return translated "Filter By"
    */
-  @DefaultMessage("Filter")
+  @DefaultMessage("Filter By")
   @Key("emailNotification.filter")
   String emailNotification_filter();
 
   /**
-   * Translated "Filter Value".
+   * Translated "Filter Match".
    * 
-   * @return translated "Filter Value"
+   * @return translated "Filter Match"
    */
-  @DefaultMessage("Filter Value")
+  @DefaultMessage("Filter Match")
   @Key("emailNotification.filterValue")
   String emailNotification_filterValue();
 
@@ -356,6 +365,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Remove")
   @Key("emailNotification.remove")
   String emailNotification_remove();
+
+  /**
+   * Translated "Save Changes".
+   * 
+   * @return translated "Save Changes"
+   */
+  @DefaultMessage("Save Changes")
+  @Key("emailNotification.save")
+  String emailNotification_save();
 
   /**
    * Translated "You do not have permission to access {0}".
