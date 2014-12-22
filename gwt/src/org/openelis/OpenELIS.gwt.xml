@@ -53,7 +53,7 @@ UIRF Software License are applicable instead of those above.
     <define-property name="props" values="org_openelis_constants_OpenELISConstants"/>
     <set-property name="props" value="org_openelis_constants_OpenELISConstants"/>
     
-    <set-property name="gwt.logging.logLevel" value="SEVERE"/>
+    <set-property name="gwt.logging.enabled" value="TRUE"/>
     <set-property name="gwt.logging.consoleHandler" value="DISABLED"/>
     <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED"/>
     <set-property name="gwt.logging.systemHandler" value="DISABLED"/>
