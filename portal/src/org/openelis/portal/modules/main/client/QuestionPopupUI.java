@@ -149,7 +149,7 @@ public abstract class QuestionPopupUI extends Screen {
                 }
 
                 public void cancel() {
-                    // TODO this breaks the screen
+                    // Do nothing
                 }
 
                 private void submit(String response) {
@@ -179,11 +179,12 @@ public abstract class QuestionPopupUI extends Screen {
                     }
                 }
             };
-            questionPopup.setStyleName("uiRes.portalStatus.Button");
+            UIResources.INSTANCE.portalStatus().ensureInjected();
+            questionPopup.setStyleName(UIResources.INSTANCE.portalStatus().Button());
         }
         if (popup == null) {
             popup = new PopupPanel();
-            popup.setSize("500px", "200px");
+            popup.setSize("500px", "100px");
             popup.setModal(true);
             popup.setAutoHideEnabled(false);
         }
@@ -195,7 +196,7 @@ public abstract class QuestionPopupUI extends Screen {
             @Override
             public void setPosition(int offsetWidth, int offsetHeight) {
                 int width = com.google.gwt.user.client.Window.getClientWidth();
-                popup.setPopupPosition( (width - offsetWidth) / 2, 200);
+                popup.setPopupPosition(width - 550, 50);
             }
 
         });

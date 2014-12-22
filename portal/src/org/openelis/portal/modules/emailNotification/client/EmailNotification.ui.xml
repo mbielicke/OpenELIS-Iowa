@@ -50,13 +50,10 @@
 						</tr>
 						<tr>
 							<td>
-								<g:LayoutPanel height="300px" width="748px">
+								<g:LayoutPanel height="300px" width="738px">
 									<g:layer>
 										<t:Table ui:field="table" header="true"
 											styleName="{res.table.ScreenTableWithSides}" enabled="true">
-											<t:Column width="10">
-												<t:ImageCell />
-											</t:Column>
 											<t:Column width="200" label="{msg.emailNotification_org}">
 												<t:DropdownCell>
 													<w:Dropdown ui:field="org" width="250" field="Integer" />
@@ -95,10 +92,12 @@
 						</tr>
 						<tr>
 							<td>
-								<g:HorizontalPanel spacing="4">
-									<w:Button ui:field="addButton" rightText="{msg.gen_addRow}"
+								<g:HorizontalPanel spacing="10">
+									<w:Button ui:field="addButton" rightText="{msg.emailNotification_add}"
 										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
-									<w:Button ui:field="commitButton" rightText="{msg.btn_commit}"
+									<w:Button ui:field="removeButton" rightText="{msg.emailNotification_remove}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<w:Button ui:field="saveButton" rightText="{msg.emailNotification_save}"
 										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</g:HorizontalPanel>
 							</td>

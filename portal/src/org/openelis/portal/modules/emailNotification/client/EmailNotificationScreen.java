@@ -100,10 +100,6 @@ public class EmailNotificationScreen extends Screen {
 
             @Override
             public void onCellClicked(CellClickedEvent event) {
-                if (event.getCol() == 0) {
-                    remove(event.getRow());
-                    Scheduler.get().scheduleDeferred(cmd);
-                }
             }
         });
 
@@ -113,20 +109,27 @@ public class EmailNotificationScreen extends Screen {
             public void onClick(ClickEvent event) {
                 Row row;
 
-                row = new Row(7);
-                row.setCell(0, Resources.INSTANCE.icon().removeImage());
+                row = new Row(6);
+                row.setCell(0, null);
                 row.setCell(1, null);
                 row.setCell(2, null);
                 row.setCell(3, null);
-                row.setCell(4, null);
+                row.setCell(4, "N");
                 row.setCell(5, "N");
-                row.setCell(6, "N");
                 ui.getTable().addRow(row);
                 ui.getTable().selectRowAt(ui.getTable().getRowCount() - 1);
             }
         });
 
-        ui.getCommitButton().addClickHandler(new ClickHandler() {
+        ui.getRemoveButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                remove(ui.getTable().getSelectedRow());
+            }
+        });
+
+        ui.getSaveButton().addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
@@ -192,20 +195,19 @@ public class EmailNotificationScreen extends Screen {
                     filter = value[1];
                     filterValue = value[2];
 
-                    row = new Row(7);
-                    row.setCell(0, Resources.INSTANCE.icon().removeImage());
-                    row.setCell(1, org.getId());
-                    row.setCell(2, email);
-                    row.setCell(3, filter);
-                    row.setCell(4, filterValue);
+                    row = new Row(6);
+                    row.setCell(0, org.getId());
+                    row.setCell(1, email);
+                    row.setCell(2, filter);
+                    row.setCell(3, filterValue);
                     if (isRec)
+                        row.setCell(4, "Y");
+                    else
+                        row.setCell(4, "N");
+                    if (isRel)
                         row.setCell(5, "Y");
                     else
                         row.setCell(5, "N");
-                    if (isRel)
-                        row.setCell(6, "Y");
-                    else
-                        row.setCell(6, "N");
                     list = new ArrayList<OrganizationParameterDO>();
                     list.add(data);
                     row.setData(list);
@@ -285,18 +287,18 @@ public class EmailNotificationScreen extends Screen {
             /*
              * validate that all data is correct before commit
              */
-            if (DataBaseUtil.isEmpty(row.getCell(1))) {
+            if (DataBaseUtil.isEmpty(row.getCell(0))) {
                 ui.getTable()
                   .addException(row,
-                                1,
+                                0,
                                 new Exception(Messages.get()
                                                       .emailNotification_error_noOrganization()));
                 exceptions = true;
             }
-            if (DataBaseUtil.isEmpty(row.getCell(2))) {
+            if (DataBaseUtil.isEmpty(row.getCell(1))) {
                 ui.getTable()
                   .addException(row,
-                                2,
+                                1,
                                 new Exception(Messages.get().emailNotification_error_noEmail()));
                 exceptions = true;
             }
@@ -306,9 +308,9 @@ public class EmailNotificationScreen extends Screen {
              */
             duplicateRow = false;
             if ( !exceptions) {
-                rowString = row.getCell(1).toString() + (String)row.getCell(2) +
-                            (String)row.getCell(3) + (String)row.getCell(4) +
-                            (String)row.getCell(5) + (String)row.getCell(6);
+                rowString = row.getCell(0).toString() + (String)row.getCell(1) +
+                            (String)row.getCell(2) + (String)row.getCell(3) +
+                            (String)row.getCell(4) + (String)row.getCell(5);
                 if (rows.contains(rowString)) {
                     duplicateRow = true;
                 } else {
@@ -326,10 +328,10 @@ public class EmailNotificationScreen extends Screen {
             }
             param = null;
             for (OrganizationParameterDO p : params) {
-                p.setOrganizationId((Integer)row.getCell(1));
-                email = encode((String)row.getCell(2));
-                filter = (String)row.getCell(3);
-                filterValue = (String)row.getCell(4);
+                p.setOrganizationId((Integer)row.getCell(0));
+                email = encode((String)row.getCell(1));
+                filter = (String)row.getCell(2);
+                filterValue = (String)row.getCell(3);
 
                 /*
                  * set all of the correct data in the organization parameter
@@ -341,8 +343,8 @@ public class EmailNotificationScreen extends Screen {
                     p.setValue(email + delim + filter + filterValue);
                 if (p.getTypeId() == null)
                     p.setTypeId(Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL);
-                if ("Y".equals(row.getCell(5))) {
-                    if ("Y".equals(row.getCell(6))) {
+                if ("Y".equals(row.getCell(4))) {
+                    if ("Y".equals(row.getCell(5))) {
                         param = new OrganizationParameterDO();
                         param.setOrganizationId(p.getOrganizationId());
                         param.setValue(p.getValue());
@@ -354,7 +356,7 @@ public class EmailNotificationScreen extends Screen {
                         p.setTypeId(Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL);
                     }
                 } else {
-                    if ("Y".equals(row.getCell(6))) {
+                    if ("Y".equals(row.getCell(5))) {
                         p.setTypeId(Constants.dictionary().RELEASED_REPORTTO_EMAIL);
                     } else if (p.getId() == null) {
                         continue;
@@ -435,6 +437,7 @@ public class EmailNotificationScreen extends Screen {
      * if it was never committed to the database
      */
     private void remove(int r) {
+        boolean update;
         Integer orgId;
         ArrayList<OrganizationParameterDO> params, list;
         OrganizationParameterDO data, par;
@@ -443,43 +446,41 @@ public class EmailNotificationScreen extends Screen {
         window.setBusy(Messages.get().msg_deleting());
         row = ui.getTable().getRowAt(r);
         list = (ArrayList<OrganizationParameterDO>)row.getData();
+        update = false;
         if (list == null || list.size() < 1) {
             ui.getTable().removeRowAt(r);
             window.clearStatus();
             return;
         }
 
-        for (int i = 0; i < organizationList.size(); i++ ) {
-            try {
-                orgId = row.getCell(1);
-                params = EmailNotificationService.get().fetchParametersByOrganizationId(orgId);
-                /*
-                 * all the fetched DOs that have the same ids as the ones linked
-                 * to the row being deleted are searched for and removed if
-                 * found
-                 */
-                for (int j = 0; j < list.size(); j++ ) {
-                    data = list.get(j);
-                    for (int k = 0; k < params.size(); k++ ) {
-                        par = params.get(k);
-                        if (par.getId().equals(data.getId())) {
-                            /*
-                             * the criteria used by the code in the back-end to
-                             * remove existing DOs is the value being null
-                             */
-                            par.setValue(null);
-                            break;
-                        }
+        try {
+            orgId = row.getCell(0);
+            params = EmailNotificationService.get().fetchParametersByOrganizationId(orgId);
+            /*
+             * all the fetched DOs that have the same ids as the ones linked to
+             * the row being deleted are searched for and removed if found
+             */
+            for (int i = 0; i < list.size(); i++ ) {
+                data = list.get(i);
+                for (int j = 0; j < params.size(); j++ ) {
+                    par = params.get(j);
+                    if (par.getId().equals(data.getId())) {
+                        /*
+                         * the criteria used by the code in the back-end to
+                         * remove existing DOs is the value being null
+                         */
+                        par.setValue(null);
+                        update = true;
+                        break;
                     }
                 }
-                EmailNotificationService.get().updateForNotify(params);
-                break;
-
-            } catch (EntityLockedException e) {
-                Window.alert(Messages.get().exc_recordNotAvailableLock());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
             }
+            if (update)
+                EmailNotificationService.get().updateForNotify(params);
+        } catch (EntityLockedException e) {
+            Window.alert(Messages.get().exc_recordNotAvailableLock());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
         }
 
         ui.getTable().removeRowAt(r);
