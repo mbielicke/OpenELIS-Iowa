@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -4442,6 +4442,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Fully login environmental sample and analysis related information.")
   @Key("environmentalSampleLoginDescription")
   String environmentalSampleLoginDescription();
+
+  /**
+   * Translated "EOrder cannot be deleted, one or more samples are still linked to it".
+   * 
+   * @return translated "EOrder cannot be deleted, one or more samples are still linked to it"
+   */
+  @DefaultMessage("EOrder cannot be deleted, one or more samples are still linked to it")
+  @Key("eorder.deleteException")
+  String eorder_deleteException();
 
   /**
    * Translated "EOrder Lookup".
@@ -19249,6 +19258,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_insertAnalysisBelow();
 
   /**
+   * Translated "Analysis This Position".
+   * 
+   * @return translated "Analysis This Position"
+   */
+  @DefaultMessage("Analysis This Position")
+  @Key("worksheet.insertAnalysisThisPosition")
+  String worksheet_insertAnalysisThisPosition();
+
+  /**
    * Translated "From QC Table Above".
    * 
    * @return translated "From QC Table Above"
@@ -19267,6 +19285,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_insertFromQcTableBelow();
 
   /**
+   * Translated "From QC Table This Position".
+   * 
+   * @return translated "From QC Table This Position"
+   */
+  @DefaultMessage("From QC Table This Position")
+  @Key("worksheet.insertFromQcTableThisPosition")
+  String worksheet_insertFromQcTableThisPosition();
+
+  /**
    * Translated "From Another Worksheet Above".
    * 
    * @return translated "From Another Worksheet Above"
@@ -19283,6 +19310,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("From Another Worksheet Below")
   @Key("worksheet.insertFromWorksheetBelow")
   String worksheet_insertFromWorksheetBelow();
+
+  /**
+   * Translated "From Another Worksheet This Position".
+   * 
+   * @return translated "From Another Worksheet This Position"
+   */
+  @DefaultMessage("From Another Worksheet This Position")
+  @Key("worksheet.insertFromWorksheetThisPosition")
+  String worksheet_insertFromWorksheetThisPosition();
 
   /**
    * Translated "Instrument Name".

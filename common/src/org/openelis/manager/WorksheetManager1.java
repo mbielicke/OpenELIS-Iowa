@@ -348,6 +348,15 @@ public class WorksheetManager1 implements Serializable {
         }
         
         /**
+         * Returns the index of the specified item
+         */
+        public int indexOf(WorksheetItemDO data) {
+            if (items != null)
+                return items.indexOf(data);
+            return -1;
+        }
+        
+        /**
          * Moves the worksheet item at the specified index up/down by one position
          */
         public void move(int index, boolean up) {
