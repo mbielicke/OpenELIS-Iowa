@@ -110,8 +110,8 @@ public class WorksheetItemTabUI extends Screen {
     
     private static WorksheetItemTabUiBinder             uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
-    private boolean                                     addRowDirection, canEdit,
-                                                        isVisible, redraw;
+    private boolean                                     canEdit, isVisible, redraw;
+    private int                                         addRowDirection;
     private WorksheetItemTabUI                          screen;
     private WorksheetManager1                           manager;
 
@@ -128,10 +128,12 @@ public class WorksheetItemTabUI extends Screen {
     protected Menu                                      addRowMenu, loadTemplateMenu,
                                                         undoQcsMenu;
     @UiField
-    protected MenuItem                                  insertAnalysisAbove, insertAnalysisBelow,
-                                                        insertFromWorksheetAbove, 
+    protected MenuItem                                  insertAnalysisAbove, insertAnalysisThisPosition,
+                                                        insertAnalysisBelow, insertFromWorksheetAbove, 
+                                                        insertFromWorksheetThisPosition,
                                                         insertFromWorksheetBelow, 
                                                         insertFromQcTableAbove,
+                                                        insertFromQcTableThisPosition,
                                                         insertFromQcTableBelow, 
                                                         undoAll, undoManual, undoTemplate;
     @UiField
@@ -170,7 +172,7 @@ public class WorksheetItemTabUI extends Screen {
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
         
-        addRowDirection = true;
+        addRowDirection = 1;
         manager = null;
         qcErrors = new HashMap<Integer, Exception>();
         templateMap = new HashMap<MenuItem, Integer>();
@@ -203,28 +205,36 @@ public class WorksheetItemTabUI extends Screen {
 
         worksheetItemTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                int itemIndex;
                 Row row;
                 SelectionEvent selEvent;
+                WorksheetAnalysisViewDO waVDO;
+                WorksheetItemDO wiDO;
                 
                 if (worksheetItemTable.getSelectedRow() != -1) {
+                    row = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow());
                     if (isState(ADD, UPDATE) && canEdit) {
                         removeRowButton.setEnabled(true);
                         if (worksheetItemTable.getSelectedRows().length == 1)
                             duplicateRowButton.setEnabled(true);
                         else
                             duplicateRowButton.setEnabled(false);
-                        if (worksheetItemTable.getSelectedRow() != 0 &&
-                            worksheetItemTable.getSelectedRows().length == 1)
+                        
+                        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)row.getData());
+                        wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+                        itemIndex = manager.item.indexOf(wiDO);
+
+                        if (itemIndex != 0 && worksheetItemTable.getSelectedRows().length == 1)
                             moveUpButton.setEnabled(true);
                         else
                             moveUpButton.setEnabled(false);
-                        if (worksheetItemTable.getSelectedRow() != worksheetItemTable.getRowCount() - 1 &&
+
+                        if (itemIndex != manager.item.count() - 1 &&
                             worksheetItemTable.getSelectedRows().length == 1)
                             moveDownButton.setEnabled(true);
                         else
                             moveDownButton.setEnabled(false);
                     }
-                    row = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow());
                     selEvent = new SelectionEvent(SelectedType.ANALYSIS, (String)row.getData());
                 } else {
                     removeRowButton.setEnabled(false);
@@ -395,6 +405,13 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
+        insertAnalysisThisPosition.addCommand(new Command() {
+            @Override
+            public void execute() {
+                insertAnalysisThisPosition();
+            }
+        });
+
         insertAnalysisBelow.addCommand(new Command() {
             @Override
             public void execute() {
@@ -409,6 +426,13 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
+        insertFromWorksheetThisPosition.addCommand(new Command() {
+            @Override
+            public void execute() {
+                insertFromWorksheetThisPosition();
+            }
+        });
+
         insertFromWorksheetBelow.addCommand(new Command() {
             @Override
             public void execute() {
@@ -420,6 +444,13 @@ public class WorksheetItemTabUI extends Screen {
             @Override
             public void execute() {
                 insertFromQcTableAbove();
+            }
+        });
+
+        insertFromQcTableThisPosition.addCommand(new Command() {
+            @Override
+            public void execute() {
+                insertFromQcTableThisPosition();
             }
         });
 
@@ -500,28 +531,16 @@ public class WorksheetItemTabUI extends Screen {
                 ArrayList<WorksheetAnalysisViewDO> newData;
                 ArrayList<Row> list;
                 Integer selectedRows[];
-                WorksheetItemDO itemDO;
-                WorksheetAnalysisViewDO data;
+                Row selectedRow;
+                WorksheetItemDO itemDO, rowItemDO;
+                WorksheetAnalysisViewDO data, rowData;
                 
                 if (!wbLookupScreen.equals(event.getSource()))
                     return;
 
-                selectedRows = worksheetItemTable.getSelectedRows();
-                if (selectedRows.length > 0) {
-                    Arrays.sort(selectedRows);
-                    if (addRowDirection) {
-                        index = selectedRows[selectedRows.length - 1];
-                        index++;
-                    } else {
-                        index = selectedRows[0];
-                    }
-                } else {
-                    index = worksheetItemTable.getRowCount();
-                }
-                
                 list = (ArrayList<Row>)event.getRows();
                 if (list != null && list.size() > 0) {
-                    if (manager.getTotalCapacity() != null &&
+                    if (addRowDirection != 0 && manager.getTotalCapacity() != null &&
                         worksheetItemTable.getRowCount() + list.size() > manager.getTotalCapacity()) {
                         extra = worksheetItemTable.getRowCount() + list.size() - manager.getTotalCapacity();
                         Window.alert(Messages.get().worksheet_capacityExceeded(extra));
@@ -529,11 +548,38 @@ public class WorksheetItemTabUI extends Screen {
                             list.remove(list.size() - 1);
                             extra--;
                         }
+                        if (list.size() == 0)
+                            return;
                     }
-                               
+
+                    selectedRows = worksheetItemTable.getSelectedRows();
+                    if (selectedRows.length > 0) {
+                        Arrays.sort(selectedRows);
+                        if (addRowDirection > 0) {
+                            selectedRow = worksheetItemTable.getRowAt(selectedRows[selectedRows.length - 1]);
+                            rowData = (WorksheetAnalysisViewDO)manager.getObject((String)selectedRow.getData());
+                            rowItemDO = manager.item.getById(rowData.getWorksheetItemId());
+                            index = manager.item.indexOf(rowItemDO) + 1;
+                        } else {
+                            selectedRow = worksheetItemTable.getRowAt(selectedRows[0]);
+                            rowData = (WorksheetAnalysisViewDO)manager.getObject((String)selectedRow.getData());
+                            rowItemDO = manager.item.getById(rowData.getWorksheetItemId());
+                            index = manager.item.indexOf(rowItemDO);
+                        }
+                    } else {
+                        index = manager.item.count();
+                    }
+                
                     newData = new ArrayList<WorksheetAnalysisViewDO>();
                     for (Row row : list) {
-                        itemDO = manager.item.add(index++);
+                        if (addRowDirection == 0) {
+                            if (manager.item.count() == index)
+                                itemDO = manager.item.add(index);
+                            else
+                                itemDO = manager.item.get(index);
+                        } else {
+                            itemDO = manager.item.add(index++);
+                        }
                         data = manager.analysis.add(itemDO);
                         copyViewToDO((AnalysisViewVO)row.getData(), data);
                         newData.add(data);
@@ -764,12 +810,17 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private void insertAnalysisAbove() {
-        addRowDirection = false;
+        addRowDirection = -1;
+        openLookupWindow();
+    }
+    
+    private void insertAnalysisThisPosition() {
+        addRowDirection = 0;
         openLookupWindow();
     }
     
     private void insertAnalysisBelow() {
-        addRowDirection = true;
+        addRowDirection = 1;
         openLookupWindow();
     }
     
@@ -872,12 +923,17 @@ public class WorksheetItemTabUI extends Screen {
     }
     
     private void insertFromWorksheetAbove() {
-        addRowDirection = false;
+        addRowDirection = -1;
+        openWorksheetAnalysisLookup();
+    }
+    
+    private void insertFromWorksheetThisPosition() {
+        addRowDirection = 0;
         openWorksheetAnalysisLookup();
     }
     
     private void insertFromWorksheetBelow() {
-        addRowDirection = true;
+        addRowDirection = 1;
         openWorksheetAnalysisLookup();
     }
     
@@ -917,13 +973,14 @@ public class WorksheetItemTabUI extends Screen {
                                                 int index, extra;
                                                 ArrayList<WorksheetAnalysisViewDO> list, newData;
                                                 Integer fromWorksheetId, selectedRows[];
-                                                WorksheetItemDO itemDO;
-                                                WorksheetAnalysisViewDO data;
+                                                Row selectedRow;
+                                                WorksheetItemDO itemDO, rowItemDO;
+                                                WorksheetAnalysisViewDO data, rowData;
     
                                                 if (event.getAction() == WorksheetAnalysisSelectionScreenUI.Action.SELECT) {
                                                     list = (ArrayList<WorksheetAnalysisViewDO>)event.getData();
                                                     if (list != null && list.size() > 0) {
-                                                        if (manager.getTotalCapacity() != null &&
+                                                        if (addRowDirection != 0 && manager.getTotalCapacity() != null &&
                                                             worksheetItemTable.getRowCount() + list.size() > manager.getTotalCapacity()) {
                                                             extra = worksheetItemTable.getRowCount() + list.size() - manager.getTotalCapacity();
                                                             Window.alert(Messages.get().worksheet_capacityExceeded(extra));
@@ -931,20 +988,27 @@ public class WorksheetItemTabUI extends Screen {
                                                                 list.remove(list.size() - 1);
                                                                 extra--;
                                                             }
+                                                            if (list.size() == 0)
+                                                                return;
                                                         }
 
                                                         newData = new ArrayList<WorksheetAnalysisViewDO>();
                                                         selectedRows = worksheetItemTable.getSelectedRows();
                                                         if (selectedRows.length > 0) {
                                                             Arrays.sort(selectedRows);
-                                                            if (addRowDirection) {
-                                                                index = selectedRows[selectedRows.length - 1];
-                                                                index++;
+                                                            if (addRowDirection > 0) {
+                                                                selectedRow = worksheetItemTable.getRowAt(selectedRows[selectedRows.length - 1]);
+                                                                rowData = (WorksheetAnalysisViewDO)manager.getObject((String)selectedRow.getData());
+                                                                rowItemDO = manager.item.getById(rowData.getWorksheetItemId());
+                                                                index = manager.item.indexOf(rowItemDO) + 1;
                                                             } else {
-                                                                index = selectedRows[0];
+                                                                selectedRow = worksheetItemTable.getRowAt(selectedRows[0]);
+                                                                rowData = (WorksheetAnalysisViewDO)manager.getObject((String)selectedRow.getData());
+                                                                rowItemDO = manager.item.getById(rowData.getWorksheetItemId());
+                                                                index = manager.item.indexOf(rowItemDO);
                                                             }
                                                         } else {
-                                                            index = worksheetItemTable.getRowCount();
+                                                            index = manager.item.count();
                                                         }
                                                         
                                                         if (manualAnalysisUids == null)
@@ -955,7 +1019,14 @@ public class WorksheetItemTabUI extends Screen {
                                                             if (fromWorksheetId == null)
                                                                 fromWorksheetId = waDO.getWorksheetId();
                                                             
-                                                            itemDO = manager.item.add(index++);
+                                                            if (addRowDirection == 0) {
+                                                                if (manager.item.count() == index)
+                                                                    itemDO = manager.item.add(index);
+                                                                else
+                                                                    itemDO = manager.item.get(index);
+                                                            } else {
+                                                                itemDO = manager.item.add(index++);
+                                                            }
                                                             data = manager.analysis.add(itemDO);
                                                             copyDO(waDO, data);
                                                             data.setFromOtherId(waDO.getId());
@@ -1007,12 +1078,17 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private void insertFromQcTableAbove() {
-        addRowDirection = false;
+        addRowDirection = -1;
+        openQCLookup();
+    }
+    
+    private void insertFromQcTableThisPosition() {
+        addRowDirection = 0;
         openQCLookup();
     }
     
     private void insertFromQcTableBelow() {
-        addRowDirection = true;
+        addRowDirection = 1;
         openQCLookup();
     }
     
@@ -1036,13 +1112,14 @@ public class WorksheetItemTabUI extends Screen {
                         ArrayList<QcLotViewDO> list;
                         ArrayList<WorksheetAnalysisViewDO> newData;
                         Integer selectedRows[];
-                        WorksheetItemDO itemDO;
-                        WorksheetAnalysisViewDO data;
+                        Row selectedRow;
+                        WorksheetItemDO itemDO, rowItemDO;
+                        WorksheetAnalysisViewDO data, rowData;
 
                         if (event.getAction() == QcLookupScreen.Action.OK) {
                             list = (ArrayList<QcLotViewDO>)event.getData();
                             if (list != null && list.size() > 0) {
-                                if (manager.getTotalCapacity() != null &&
+                                if (addRowDirection != 0 && manager.getTotalCapacity() != null &&
                                     worksheetItemTable.getRowCount() + list.size() > manager.getTotalCapacity()) {
                                     extra = worksheetItemTable.getRowCount() + list.size() - manager.getTotalCapacity();
                                     Window.alert(Messages.get().worksheet_capacityExceeded(extra));
@@ -1050,27 +1127,41 @@ public class WorksheetItemTabUI extends Screen {
                                         list.remove(list.size() - 1);
                                         extra--;
                                     }
+                                    if (list.size() == 0)
+                                        return;
                                 }
                                            
                                 newData = new ArrayList<WorksheetAnalysisViewDO>();
                                 selectedRows = worksheetItemTable.getSelectedRows();
                                 if (selectedRows.length > 0) {
                                     Arrays.sort(selectedRows);
-                                    if (addRowDirection) {
-                                        index = selectedRows[selectedRows.length - 1];
-                                        index++;
+                                    if (addRowDirection > 0) {
+                                        selectedRow = worksheetItemTable.getRowAt(selectedRows[selectedRows.length - 1]);
+                                        rowData = (WorksheetAnalysisViewDO)manager.getObject((String)selectedRow.getData());
+                                        rowItemDO = manager.item.getById(rowData.getWorksheetItemId());
+                                        index = manager.item.indexOf(rowItemDO) + 1;
                                     } else {
-                                        index = selectedRows[0];
+                                        selectedRow = worksheetItemTable.getRowAt(selectedRows[0]);
+                                        rowData = (WorksheetAnalysisViewDO)manager.getObject((String)selectedRow.getData());
+                                        rowItemDO = manager.item.getById(rowData.getWorksheetItemId());
+                                        index = manager.item.indexOf(rowItemDO);
                                     }
                                 } else {
-                                    index = worksheetItemTable.getRowCount();
+                                    index = manager.item.count();
                                 }
                                 
                                 if (manualAnalysisUids == null)
                                     manualAnalysisUids = new ArrayList<String>();
 
                                 for (QcLotViewDO qcLotVDO : list) {
-                                    itemDO = manager.item.add(index++);
+                                    if (addRowDirection == 0) {
+                                        if (manager.item.count() == index)
+                                            itemDO = manager.item.add(index);
+                                        else
+                                            itemDO = manager.item.get(index);
+                                    } else {
+                                        itemDO = manager.item.add(index++);
+                                    }
                                     data = manager.analysis.add(itemDO);
                                     data.setAccessionNumber("X." + itemDO.getPosition());
                                     data.setQcLotId(qcLotVDO.getId());
@@ -1304,10 +1395,10 @@ public class WorksheetItemTabUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("duplicateRowButton")
     protected void duplicateRow(ClickEvent event) {
-        int index;
+        int index, itemIndex;
         Row dataRow;
         SectionPermission perm;
-        WorksheetItemDO wiDO, newWIDO;
+        WorksheetItemDO wiDO;
         WorksheetAnalysisViewDO waVDO;
 
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
@@ -1338,16 +1429,24 @@ public class WorksheetItemTabUI extends Screen {
             Window.alert(Messages.get().worksheet_atCapacity());
             return;
         }
-                               
-        manager.item.duplicate(index);
+        
+        wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+        itemIndex = manager.item.indexOf(wiDO);
+        manager.item.duplicate(itemIndex);
         worksheetItemTable.setModel(getTableModel());
-        worksheetItemTable.selectRowAt(index + 1);
+        while (waVDO.getWorksheetItemId().equals(wiDO.getId())) {
+            index++;
+            waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        }
+        worksheetItemTable.selectRowAt(index);
     }
         
     @SuppressWarnings("unused")
     @UiHandler("moveDownButton")
     protected void moveRowDown(ClickEvent event) {
-        int index;
+        int index, itemIndex;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
 
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
@@ -1357,23 +1456,33 @@ public class WorksheetItemTabUI extends Screen {
 
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
-        manager.item.move(index, false);
+        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+        itemIndex = manager.item.indexOf(wiDO);
+        manager.item.move(itemIndex, false);
         worksheetItemTable.setModel(getTableModel());
-        worksheetItemTable.selectRowAt(++index);
+        while (waVDO.getWorksheetItemId().equals(wiDO.getId())) {
+            index++;
+            waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        }
+        worksheetItemTable.selectRowAt(index);
         //
         // Programmatically selecting the row doesn't fire selection events, so
         // we need to enable/disable the move buttons accordingly
         //
-        if (index >= worksheetItemTable.getRowCount() - 1)
+        itemIndex++;
+        if (itemIndex >= manager.item.count() - 1)
             moveDownButton.setEnabled(false);
-        if (!moveUpButton.isEnabled() && index > 0)
+        if (!moveUpButton.isEnabled() && itemIndex > 0)
             moveUpButton.setEnabled(true);
     }
         
     @SuppressWarnings("unused")
     @UiHandler("moveUpButton")
     protected void moveRowUp(ClickEvent event) {
-        int index;
+        int index, itemIndex;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
 
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
@@ -1383,16 +1492,24 @@ public class WorksheetItemTabUI extends Screen {
 
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
-        manager.item.move(index, true);
+        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+        itemIndex = manager.item.indexOf(wiDO);
+        manager.item.move(itemIndex, true);
         worksheetItemTable.setModel(getTableModel());
-        worksheetItemTable.selectRowAt(--index);
+        while (waVDO.getWorksheetItemId().equals(wiDO.getId())) {
+            index--;
+            waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
+        }
+        worksheetItemTable.selectRowAt(index);
         //
         // Programmatically selecting the row doesn't fire selection events, so
         // we need to enable/disable the move buttons accordingly
         //
-        if (!moveDownButton.isEnabled() && index < worksheetItemTable.getRowCount() - 1)
+        itemIndex--;
+        if (!moveDownButton.isEnabled() && itemIndex < manager.item.count() - 1)
             moveDownButton.setEnabled(true);
-        if (index <= 0)
+        if (itemIndex <= 0)
             moveUpButton.setEnabled(false);
     }
         
@@ -1400,10 +1517,13 @@ public class WorksheetItemTabUI extends Screen {
         addRowMenu.setEnabled(enable);
         addRowButton.setEnabled(enable);
         insertAnalysisAbove.setEnabled(enable);
+        insertAnalysisThisPosition.setEnabled(enable);
         insertAnalysisBelow.setEnabled(enable);
         insertFromWorksheetAbove.setEnabled(enable);
+        insertFromWorksheetThisPosition.setEnabled(enable);
         insertFromWorksheetBelow.setEnabled(enable);
         insertFromQcTableAbove.setEnabled(enable);
+        insertFromQcTableThisPosition.setEnabled(enable);
         insertFromQcTableBelow.setEnabled(enable);
     }
     
