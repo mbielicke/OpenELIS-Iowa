@@ -111,18 +111,27 @@
           <w:MenuItem ui:field="insertAnalysisAbove" description=""
                       enabled="false" icon="{res.icon.addRowIcon}"
                       display="{msg.worksheet_insertAnalysisAbove}"/>
+          <w:MenuItem ui:field="insertAnalysisThisPosition" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertAnalysisThisPosition}"/>
           <w:MenuItem ui:field="insertAnalysisBelow" description=""
                       enabled="false" icon="{res.icon.addRowIcon}"
                       display="{msg.worksheet_insertAnalysisBelow}"/>
           <w:MenuItem ui:field="insertFromWorksheetAbove" description=""
                       enabled="false" icon="{res.icon.addRowIcon}"
                       display="{msg.worksheet_insertFromWorksheetAbove}"/>
+          <w:MenuItem ui:field="insertFromWorksheetThisPosition" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromWorksheetThisPosition}"/>
           <w:MenuItem ui:field="insertFromWorksheetBelow" description=""
                       enabled="false" icon="{res.icon.addRowIcon}"
                       display="{msg.worksheet_insertFromWorksheetBelow}"/>
           <w:MenuItem ui:field="insertFromQcTableAbove" description=""
                       enabled="false" icon="{res.icon.addRowIcon}"
                       display="{msg.worksheet_insertFromQcTableAbove}"/>
+          <w:MenuItem ui:field="insertFromQcTableThisPosition" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromQcTableThisPosition}"/>
           <w:MenuItem ui:field="insertFromQcTableBelow" description=""
                       enabled="false" icon="{res.icon.addRowIcon}"
                       display="{msg.worksheet_insertFromQcTableBelow}"/>
