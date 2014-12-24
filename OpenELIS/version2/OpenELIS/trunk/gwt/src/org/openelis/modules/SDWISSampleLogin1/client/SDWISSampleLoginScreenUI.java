@@ -94,7 +94,6 @@ import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.AttachmentTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
-import org.openelis.modules.sample1.client.QAEventChangeEvent;
 import org.openelis.modules.sample1.client.QAEventTabUI;
 import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
@@ -279,7 +278,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
     protected AttachmentScreenUI                        attachmentScreen;
-    
+
     protected Focusable                                 focusedWidget;
 
     protected HashMap<String, Object>                   cache;
@@ -294,6 +293,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     protected AsyncCallbackUI<SampleTestReturnVO>       duplicateCall, setOrderIdCall;
 
     protected ScriptletRunner<SampleSO>                 scriptletRunner;
+
+    protected HashMap<Integer, HashSet<Integer>>        scriptlets;
 
     protected SystemVariableDO                          domainScriptletVariable,
                     attachmentPatternVariable;
@@ -2182,14 +2183,20 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     if (isAttachmentScreenOpen)
                         addReservedAttachment();
                     cache = new HashMap<String, Object>();
-                    addScriptlet(null);
-                    runScriptlets(null, null, Action_Before.NEW_DOMAIN);
-                    evaluateEdit();
-                    setData();
-                    setState(ADD);
-                    fireDataChange();
-                    accessionNumber.setFocus(true);
-                    setDone(Messages.get().gen_enterInformationPressCommit());
+                    try {
+                        addScriptlets();
+                        runScriptlets(null, null, Action_Before.NEW_DOMAIN);
+                        evaluateEdit();
+                        setData();
+                        setState(ADD);
+                        fireDataChange();
+                        accessionNumber.setFocus(true);
+                        setDone(Messages.get().gen_enterInformationPressCommit());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                    }
                 }
 
                 public void failure(Throwable error) {
@@ -2234,8 +2241,14 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     fireDataChange();
                     accessionNumber.setFocus(true);
                     if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                               .getStatusId()))
-                        addScriptlet(null);
+                                                                               .getStatusId())) {
+                        try {
+                            addScriptlets();
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                        }
+                    }
                 }
 
                 public void failure(Throwable e) {
@@ -2336,12 +2349,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     clearStatus();
 
                     /*
-                     * the cache and scriptlet runner are set to null only if
-                     * the add/update succeeds because otherwise, they can't be
-                     * used by any tabs if the user wants to change any data
+                     * the cache and scriptlets are cleared only if the
+                     * add/update succeeds because otherwise, they can't be used
+                     * by any tabs if the user wants to change any data
                      */
                     cache = null;
-                    scriptletRunner = null;
+                    clearScriptlets();
                     if (attachmentScreen != null)
                         attachmentScreen.removeReservation(true);
                 }
@@ -2394,7 +2407,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             fireDataChange();
             setDone(Messages.get().gen_addAborted());
             cache = null;
-            scriptletRunner = null;
+            clearScriptlets();
             if (attachmentScreen != null)
                 attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
@@ -2421,7 +2434,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                         fireDataChange();
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
-                        scriptletRunner = null;
+                        clearScriptlets();
                     }
 
                     public void failure(Throwable e) {
@@ -2429,7 +2442,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
-                        scriptletRunner = null;
+                        clearScriptlets();
                     }
                 };
             }
@@ -2482,21 +2495,27 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     setState(ADD);
                     fireDataChange();
                     accessionNumber.setFocus(true);
-                    addScriptlet(null);
+                    try {
+                        addScriptlets();
 
-                    /*
-                     * show any errors/warnings found during duplication
-                     */
-                    errors = result.getErrors();
-                    if (errors != null && errors.size() > 0) {
-                        if (errors.hasWarnings())
-                            Window.alert(getWarnings(errors.getErrorList(), false));
-                        if (errors.hasErrors())
-                            showErrors(errors);
-                        else
+                        /*
+                         * show any errors/warnings found during duplication
+                         */
+                        errors = result.getErrors();
+                        if (errors != null && errors.size() > 0) {
+                            if (errors.hasWarnings())
+                                Window.alert(getWarnings(errors.getErrorList(), false));
+                            if (errors.hasErrors())
+                                showErrors(errors);
+                            else
+                                setDone(Messages.get().gen_enterInformationPressCommit());
+                        } else {
                             setDone(Messages.get().gen_enterInformationPressCommit());
-                    } else {
-                        setDone(Messages.get().gen_enterInformationPressCommit());
+                        }
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
                     }
                 }
 
@@ -2615,9 +2634,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         org.openelis.ui.widget.Window window;
         final SendoutOrderScreenUI orderScreen;
         ScheduledCommand cmd;
-
-        if (getOrderId() == null)
-            return;
 
         try {
             window = new org.openelis.ui.widget.Window();
@@ -3015,47 +3031,58 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * If the passed id is not null then adds the scriptlet with the id to the
-     * scriptlet runner; otherwise adds the scriptlets for the domain and for
-     * all the records in the manager to the scriptlet runner
+     * Adds the scriptlets for the domain and for all the records in the manager
+     * to the scriptlet runner
      */
-    private void addScriptlet(Integer scriptletId) {
+    private void addScriptlets() throws Exception {
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
-        try {
-            if (scriptletId == null) {
-                /*
-                 * add the scriptlet for the domain, which is the value of this
-                 * system variable
-                 */
-                if (domainScriptletVariable == null) {
-                    domainScriptletVariable = SystemVariableService.get()
-                                                                   .fetchByExactName("sdwis_ia_scriptlet_1");
-                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
-                }
-                addScriptlet(domainScriptletId, null);
-
-                /*
-                 * add all the scriptlets for all tests, test analytes and aux
-                 * fields linked to the manager
-                 */
-                addTestScriptlets(false);
-                addAuxScriptlets(false);
-            } else {
-                addScriptlet(scriptletId, null);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+        /*
+         * add the scriptlet for the domain, which is the value of this system
+         * variable
+         */
+        if (domainScriptletVariable == null) {
+            domainScriptletVariable = SystemVariableService.get()
+                                                           .fetchByExactName("sdwis_ia_scriptlet_1");
+            domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
         }
+        addScriptlet(domainScriptletId, null);
+
+        /*
+         * add all the scriptlets for all tests, test analytes and aux fields
+         * linked to the manager
+         */
+        addTestScriptlets();
+        addAuxScriptlets();
+
     }
 
     /**
-     * Adds the scriptlet with the passed ids to the scriptlet runner
+     * Adds the scriptlet with the passed id for the record with the passed id,
+     * but only if it's not already added
      */
-    private void addScriptlet(Integer scriptletId, Integer managedId) throws Exception {
-        scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, managedId));
+    private void addScriptlet(Integer scriptletId, Integer recordId) throws Exception {
+        HashSet<Integer> ids;
+
+        if (scriptlets == null)
+            scriptlets = new HashMap<Integer, HashSet<Integer>>();
+
+        /*
+         * the same scriptlet can be added for multiple records e.g. when a test
+         * is added multiple times; get the ids of all the records for which
+         * this scriptlet has been added
+         */
+        ids = scriptlets.get(scriptletId);
+        if (ids == null) {
+            ids = new HashSet<Integer>();
+            scriptlets.put(scriptletId, ids);
+        }
+
+        if ( !ids.contains(recordId)) {
+            ids.add(recordId);
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, recordId));
+        }
     }
 
     /**
@@ -3176,6 +3203,103 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Clears the scriptlet runner and scriptlet hash
+     */
+    private void clearScriptlets() {
+        scriptletRunner = null;
+        scriptlets = null;
+    }
+
+    /**
+     * Adds scriptlets for analyses and results, to the scriptlet runner
+     */
+    private void addTestScriptlets() throws Exception {
+        int i, j, k;
+        Integer sid;
+        AnalysisViewDO ana;
+        TestAnalyteViewDO ta;
+        ResultViewDO res;
+        TestManager tm;
+        HashMap<Integer, Integer> tasids;
+
+        tasids = new HashMap<Integer, Integer>();
+        /*
+         * find out the tests and test analytes in the manager for which
+         * scriptlets need to be added
+         */
+        for (i = 0; i < manager.analysis.count(); i++ ) {
+            ana = manager.analysis.get(i);
+            tm = get(ana.getTestId(), TestManager.class);
+            /*
+             * scriptlets for analyses
+             */
+            if (tm.getTest().getScriptletId() != null)
+                addScriptlet(tm.getTest().getScriptletId(), ana.getId());
+
+            /*
+             * find out which test analytes have scriptlets
+             */
+            for (j = 0; j < tm.getTestAnalytes().rowCount(); j++ ) {
+                for (k = 0; k < tm.getTestAnalytes().columnCount(j); k++ ) {
+                    ta = tm.getTestAnalytes().getAnalyteAt(j, k);
+                    if (ta.getScriptletId() != null && tasids.get(ta.getId()) == null)
+                        tasids.put(ta.getId(), ta.getScriptletId());
+                }
+            }
+
+            /*
+             * scriptlets for results
+             */
+            for (j = 0; j < manager.result.count(ana); j++ ) {
+                for (k = 0; k < manager.result.count(ana, j); k++ ) {
+                    res = manager.result.get(ana, j, k);
+                    sid = tasids.get(res.getTestAnalyteId());
+                    if (sid != null)
+                        addScriptlet(sid, res.getId());
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds scriptlets for aux data, to the scriptlet runner
+     */
+    private void addAuxScriptlets() throws Exception {
+        int i;
+        AuxFieldViewDO auxf;
+        AuxDataViewDO aux;
+        AuxFieldGroupManager auxfgm;
+        HashSet<Integer> auxfgids;
+        HashMap<Integer, Integer> auxfids;
+
+        auxfids = new HashMap<Integer, Integer>();
+        auxfgids = new HashSet<Integer>();
+        /*
+         * find the ids of the aux groups and also find which aux field is
+         * linked to which aux data; duplicate aux groups are not allowed, so an
+         * aux field won't be repeated
+         */
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            aux = manager.auxData.get(i);
+            auxfgids.add(aux.getAuxFieldGroupId());
+            auxfids.put(aux.getAuxFieldId(), aux.getId());
+        }
+
+        /*
+         * add the scriptlets linked to the aux fields for the aux data
+         * belonging to the groups found above
+         */
+        for (Integer id : auxfgids) {
+            auxfgm = get(id, AuxFieldGroupManager.class);
+            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
+                auxf = auxfgm.getFields().getAuxFieldAt(i);
+                if (auxf.getScriptletId() != null)
+                    addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
+            }
+        }
+    }
+
+    /**
      * Gets the next attachment reserved for the current user on Attachment
      * screen, if any, and adds it to the sample.
      */
@@ -3213,101 +3337,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             addReservedAttachment();
             setData();
             bus.fireEvent(new AttachmentAddedEvent());
-        }
-    }
-
-    /**
-     * Adds scriptlets for analyses and results, to the scriptlet runner. If
-     * onlyNew is true then only adds the scriptlets for uncommitted records.
-     */
-    private void addTestScriptlets(boolean onlyNew) throws Exception {
-        int i, j, k;
-        Integer sid;
-        AnalysisViewDO ana;
-        TestAnalyteViewDO ta;
-        ResultViewDO res;
-        TestManager tm;
-        HashMap<Integer, Integer> tasids;
-
-        tasids = new HashMap<Integer, Integer>();
-        /*
-         * find out the tests and test analytes in the manager for which
-         * scriptlets need to be added
-         */
-        for (i = 0; i < manager.analysis.count(); i++ ) {
-            ana = manager.analysis.get(i);
-            if ((ana.getId() < 0 && onlyNew) || ((ana.getId() > 0 && !onlyNew))) {
-                tm = get(ana.getTestId(), TestManager.class);
-                /*
-                 * scriptlets for analyses
-                 */
-                if (tm.getTest().getScriptletId() != null)
-                    addScriptlet(tm.getTest().getScriptletId(), ana.getId());
-
-                /*
-                 * find out which test analytes have scriptlets
-                 */
-                for (j = 0; j < tm.getTestAnalytes().rowCount(); j++ ) {
-                    for (k = 0; k < tm.getTestAnalytes().columnCount(j); k++ ) {
-                        ta = tm.getTestAnalytes().getAnalyteAt(j, k);
-                        if (ta.getScriptletId() != null && tasids.get(ta.getId()) == null)
-                            tasids.put(ta.getId(), ta.getScriptletId());
-                    }
-                }
-
-                /*
-                 * scriptlets for results
-                 */
-                for (j = 0; j < manager.result.count(ana); j++ ) {
-                    for (k = 0; k < manager.result.count(ana, j); k++ ) {
-                        res = manager.result.get(ana, j, k);
-                        sid = tasids.get(res.getTestAnalyteId());
-                        if (sid != null)
-                            addScriptlet(sid, res.getId());
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Adds scriptlets for aux data, to the scriptlet runner. If onlyNew is true
-     * then only adds the scriptlets for uncommitted records.
-     */
-    private void addAuxScriptlets(boolean onlyNew) throws Exception {
-        int i;
-        AuxFieldViewDO auxf;
-        AuxDataViewDO aux;
-        AuxFieldGroupManager auxfgm;
-        HashSet<Integer> auxfgids;
-        HashMap<Integer, Integer> auxfids;
-
-        auxfids = new HashMap<Integer, Integer>();
-        auxfgids = new HashSet<Integer>();
-        /*
-         * find the ids of the aux groups and also find which aux field is
-         * linked to which aux data; duplicate aux groups are not allowed, so an
-         * aux field won't be repeated
-         */
-        for (i = 0; i < manager.auxData.count(); i++ ) {
-            aux = manager.auxData.get(i);
-            if ((aux.getId() < 0 && onlyNew) || ((aux.getId() > 0 && !onlyNew))) {
-                auxfgids.add(aux.getAuxFieldGroupId());
-                auxfids.put(aux.getAuxFieldId(), aux.getId());
-            }
-        }
-
-        /*
-         * add the scriptlets linked to the aux fields for the aux data
-         * belonging to the groups found above
-         */
-        for (Integer id : auxfgids) {
-            auxfgm = get(id, AuxFieldGroupManager.class);
-            for (i = 0; i < auxfgm.getFields().count(); i++ ) {
-                auxf = auxfgm.getFields().getAuxFieldAt(i);
-                if (auxf.getScriptletId() != null)
-                    addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
-            }
         }
     }
 
@@ -3357,10 +3386,21 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     @Override
                     public void success(SampleManager1 result) {
                         manager = result;
-                        runScriptlets(null, null, Action_Before.NEW_DOMAIN);
-                        setData();
-                        setState(UPDATE);
-                        fireDataChange();
+                        try {
+                            /*
+                             * add scriptlets for any newly added tests and aux
+                             * data
+                             */
+                            addTestScriptlets();
+                            addAuxScriptlets();
+                            runScriptlets(null, null, Action_Before.NEW_DOMAIN);
+                            setData();
+                            setState(UPDATE);
+                            fireDataChange();
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                        }
                     }
 
                     public void notFound() {
@@ -3470,28 +3510,40 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     setData();
                     fireDataChange();
                     clearStatus();
-                    /*
-                     * show any validation errors encountered while importing
-                     * the order or the pop up for selecting the prep/reflex
-                     * tests for the tests added during the import
-                     */
-                    errors = result.getErrors();
-                    if (errors != null && errors.size() > 0) {
-                        if (errors.hasWarnings())
-                            Window.alert(getWarnings(errors.getErrorList(), false));
-                        if (errors.hasErrors())
-                            showErrors(errors);
-                        isBusy = false;
-                    } else if (result.getTests() == null || result.getTests().size() == 0) {
-                        isBusy = false;
-                    } else {
+                    try {
                         /*
-                         * this will make sure that the focus gets set to the
-                         * field next in the tabbing order after this field
-                         * after the tests have been added
+                         * add scriptlets for any newly added tests and aux data
                          */
-                        focusedWidget = orderId;
-                        showTests(result);
+                        addTestScriptlets();
+                        addAuxScriptlets();
+
+                        /*
+                         * show any validation errors encountered while
+                         * importing the order or the pop up for selecting the
+                         * prep/reflex tests for the tests added during the
+                         * import
+                         */
+                        errors = result.getErrors();
+                        if (errors != null && errors.size() > 0) {
+                            if (errors.hasWarnings())
+                                Window.alert(getWarnings(errors.getErrorList(), false));
+                            if (errors.hasErrors())
+                                showErrors(errors);
+                            isBusy = false;
+                        } else if (result.getTests() == null || result.getTests().size() == 0) {
+                            isBusy = false;
+                        } else {
+                            /*
+                             * this will make sure that the focus gets set to
+                             * the field next in the tabbing order after this
+                             * field after the tests have been added
+                             */
+                            focusedWidget = orderId;
+                            showTests(result);
+                        }
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
 
@@ -4012,6 +4064,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             setState(state);
             bus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
             clearStatus();
+            
+            /*
+             * add scriptlets for the newly added aux data
+             */
+            addAuxScriptlets();
+            
             errors = ret.getErrors();
             if (errors != null && errors.size() > 0) {
                 if (errors.hasWarnings())
@@ -4098,6 +4156,13 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
             }
             clearStatus();
+
+            /*
+             * add scriptlets for any newly added tests and aux data
+             */
+            addTestScriptlets();
+            addAuxScriptlets();
+            
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -4133,12 +4198,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
             } else {
                 showTests(ret);
             }
-            
-            /*
-             * add scriptlets for any newly added tests and aux data
-             */
-            addTestScriptlets(true);
-            addAuxScriptlets(true);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -4174,6 +4233,12 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                     screen);
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
+            
+            /*
+             * add scriptlets for the changed test
+             */
+            addTestScriptlets();
+            
             /*
              * show any validation errors encountered while changing the method
              * or the pop up for selecting the prep/reflex tests for the tests

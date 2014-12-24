@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -263,6 +262,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     protected AsyncCallbackUI<SampleManager1>            fetchForUpdateCall, commitUpdateCall;
 
     protected ScriptletRunner<SampleSO>                  scriptletRunner;
+
+    protected HashMap<Integer, HashSet<Integer>>         scriptlets;
 
     protected Integer                                    lastAccession, neonatalScriptletId,
                     envScriptletId, sdwisScriptletId;
@@ -1271,8 +1272,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     data = table.getRowAt(table.getSelectedRow()).getData();
                     refreshTabs(data, true);
                     if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                               .getStatusId()))
-                        addScriptlet(null);
+                                                                               .getStatusId())) {
+                        try {
+                            addScriptlets();
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                        }
+                    }
                 }
 
                 public void failure(Throwable e) {
@@ -1632,12 +1639,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     clearStatus();
 
                     /*
-                     * the cache and scriptlet runner are set to null only if
-                     * the add/update succeeds because otherwise, it can't be
-                     * used by any tabs if the user wants to change any data
+                     * the cache and scriptlets are cleared only if the
+                     * add/update succeeds because otherwise, they can't be used
+                     * by any tabs if the user wants to change any data
                      */
                     cache = null;
-                    scriptletRunner = null;
+                    clearScriptlets();
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -1717,7 +1724,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
                         setDone(Messages.get().gen_updateAborted());
                         cache = null;
-                        scriptletRunner = null;
+                        clearScriptlets();
                     }
 
                     public void failure(Throwable e) {
@@ -1725,7 +1732,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                         logger.log(Level.SEVERE, e.getMessage(), e);
                         clearStatus();
                         cache = null;
-                        scriptletRunner = null;
+                        clearScriptlets();
                     }
                 };
             }
@@ -2041,45 +2048,57 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * If the passed id is not null then adds the scriptlet with the id to the
-     * scriptlet runner; otherwise adds the scriptlets for the domain and for
-     * all the records in the manager to the scriptlet runner
+     * Adds the scriptlets for the domain and for all the records in the manager
+     * to the scriptlet runner
      */
-    private void addScriptlet(Integer scriptletId) {
+    private void addScriptlets() throws Exception {
         Integer id;
 
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
 
-        try {
-            if (scriptletId == null) {
-                /*
-                 * add the scriptlet for the domain
-                 */
-                id = getDomainScriptlet();
-                if (id != null)
-                    addScriptlet(id, null);
+        /*
+         * add the scriptlet for the domain
+         */
+        id = getDomainScriptlet();
+        if (id != null)
+            addScriptlet(id, null);
 
-                /*
-                 * add all the scriptlets for all tests, test analytes and aux
-                 * fields linked to the manager
-                 */
-                addTestScriptlets(false);
-                addAuxScriptlets(false);
-            } else {
-                addScriptlet(scriptletId, null);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        /*
+         * add all the scriptlets for all tests, test analytes and aux fields
+         * linked to the manager
+         */
+        addTestScriptlets();
+        addAuxScriptlets();
     }
 
+
     /**
-     * Adds the scriptlet with the passed ids to the scriptlet runner
+     * Adds the scriptlet with the passed id for the record with the passed id,
+     * but only if it's not already added
      */
-    private void addScriptlet(Integer scriptletId, Integer managedId) throws Exception {
-        scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, managedId));
+    private void addScriptlet(Integer scriptletId, Integer recordId) throws Exception {
+        HashSet<Integer> ids;
+
+        if (scriptlets == null)
+            scriptlets = new HashMap<Integer, HashSet<Integer>>();
+
+        /*
+         * the same scriptlet can be added for multiple records e.g. when a test
+         * is added multiple times; get the ids of all the records for which
+         * this scriptlet has been added
+         */
+        ids = scriptlets.get(scriptletId);
+        if (ids == null) {
+            ids = new HashSet<Integer>();
+            scriptlets.put(scriptletId, ids);
+        }
+
+        if ( !ids.contains(recordId)) {
+            ids.add(recordId);
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, recordId));
+            logger.log(Level.SEVERE, "added scriptlet "+ scriptletId+ " for record "+ recordId);
+        }
     }
 
     /**
@@ -2232,10 +2251,17 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
     }
 
     /**
-     * Adds scriptlets for analyses and results, to the scriptlet runner. If
-     * onlyNew is true then only adds the scriptlets for uncommitted records.
+     * Clears the scriptlet runner and scriptlet hash
      */
-    private void addTestScriptlets(boolean onlyNew) throws Exception {
+    private void clearScriptlets() {
+        scriptletRunner = null;
+        scriptlets = null;
+    }
+
+    /**
+     * Adds scriptlets for analyses and results, to the scriptlet runner
+     */
+    private void addTestScriptlets() throws Exception {
         int i, j, k;
         Integer sid;
         AnalysisViewDO ana;
@@ -2251,45 +2277,42 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          */
         for (i = 0; i < manager.analysis.count(); i++ ) {
             ana = manager.analysis.get(i);
-            if ( (ana.getId() < 0 && onlyNew) || ( (ana.getId() > 0 && !onlyNew))) {
-                tm = get(ana.getTestId(), TestManager.class);
-                /*
-                 * scriptlets for analyses
-                 */
-                if (tm.getTest().getScriptletId() != null)
-                    addScriptlet(tm.getTest().getScriptletId(), ana.getId());
+            tm = get(ana.getTestId(), TestManager.class);
+            /*
+             * scriptlets for analyses
+             */
+            if (tm.getTest().getScriptletId() != null)
+                addScriptlet(tm.getTest().getScriptletId(), ana.getId());
 
-                /*
-                 * find out which test analytes have scriptlets
-                 */
-                for (j = 0; j < tm.getTestAnalytes().rowCount(); j++ ) {
-                    for (k = 0; k < tm.getTestAnalytes().columnCount(j); k++ ) {
-                        ta = tm.getTestAnalytes().getAnalyteAt(j, k);
-                        if (ta.getScriptletId() != null && tasids.get(ta.getId()) == null)
-                            tasids.put(ta.getId(), ta.getScriptletId());
-                    }
+            /*
+             * find out which test analytes have scriptlets
+             */
+            for (j = 0; j < tm.getTestAnalytes().rowCount(); j++ ) {
+                for (k = 0; k < tm.getTestAnalytes().columnCount(j); k++ ) {
+                    ta = tm.getTestAnalytes().getAnalyteAt(j, k);
+                    if (ta.getScriptletId() != null && tasids.get(ta.getId()) == null)
+                        tasids.put(ta.getId(), ta.getScriptletId());
                 }
+            }
 
-                /*
-                 * scriptlets for results
-                 */
-                for (j = 0; j < manager.result.count(ana); j++ ) {
-                    for (k = 0; k < manager.result.count(ana, j); k++ ) {
-                        res = manager.result.get(ana, j, k);
-                        sid = tasids.get(res.getTestAnalyteId());
-                        if (sid != null)
-                            addScriptlet(sid, res.getId());
-                    }
+            /*
+             * scriptlets for results
+             */
+            for (j = 0; j < manager.result.count(ana); j++ ) {
+                for (k = 0; k < manager.result.count(ana, j); k++ ) {
+                    res = manager.result.get(ana, j, k);
+                    sid = tasids.get(res.getTestAnalyteId());
+                    if (sid != null)
+                        addScriptlet(sid, res.getId());
                 }
             }
         }
     }
 
     /**
-     * Adds scriptlets for aux data, to the scriptlet runner. If onlyNew is true
-     * then only adds the scriptlets for uncommitted records.
+     * Adds scriptlets for aux data, to the scriptlet runner
      */
-    private void addAuxScriptlets(boolean onlyNew) throws Exception {
+    private void addAuxScriptlets() throws Exception {
         int i;
         AuxFieldViewDO auxf;
         AuxDataViewDO aux;
@@ -2306,10 +2329,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          */
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
-            if ( (aux.getId() < 0 && onlyNew) || ( (aux.getId() > 0 && !onlyNew))) {
-                auxfgids.add(aux.getAuxFieldGroupId());
-                auxfids.put(aux.getAuxFieldId(), aux.getId());
-            }
+            auxfgids.add(aux.getAuxFieldGroupId());
+            auxfids.put(aux.getAuxFieldId(), aux.getId());
         }
 
         /*
@@ -3060,7 +3081,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             /*
              * add scriptlets for the newly added aux data
              */
-            addAuxScriptlets(true);
+            addAuxScriptlets();
+            
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -3177,6 +3199,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
             }
             clearStatus();
+            
+            /*
+             * add scriptlets for any newly added tests and aux data
+             */
+            addTestScriptlets();
+            addAuxScriptlets();
+            
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -3194,12 +3223,6 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             } else {
                 showTests(ret);
             }
-
-            /*
-             * add scriptlets for any newly added tests and aux data
-             */
-            addTestScriptlets(true);
-            addAuxScriptlets(true);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3237,6 +3260,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                                     screen);
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
+
+            /*
+             * add scriptlets for the changed test
+             */
+            addTestScriptlets();
+            
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests

@@ -18,16 +18,19 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.eorder.client.EOrderLookupUI;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
@@ -36,6 +39,7 @@ import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.Queryable;
 import org.openelis.ui.widget.TextBox;
@@ -76,13 +80,13 @@ public class SampleTabUI extends Screen {
     private static SampleTabUIBinder uiBinder = GWT.create(SampleTabUIBinder.class);
 
     @UiField
-    protected TextBox<Integer>       accessionNumber, orderId;
+    protected TextBox<Integer>       accessionNumber;
 
     @UiField
     protected Calendar               collectionDate, collectionTime, receivedDate;
 
     @UiField
-    protected TextBox<String>        clientReference;
+    protected TextBox<String>        clientReference, orderId;
 
     @UiField
     protected Dropdown<Integer>      status, type;
@@ -99,6 +103,8 @@ public class SampleTabUI extends Screen {
     @UiField
     protected Button                 orderLookupButton, addOrganizationButton,
                     removeOrganizationButton, addProjectButton, removeProjectButton;
+
+    protected EOrderLookupUI         eorderLookup;
 
     protected SampleManager1         manager;
 
@@ -149,18 +155,38 @@ public class SampleTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(orderId, SampleMeta.getOrderId(), new ScreenHandler<Integer>() {
+        addScreenHandler(orderId, "orderId", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 orderId.setValue(getOrderId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setOrderId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
                 orderId.setEnabled(isState(QUERY));
                 orderId.setQueryMode(isState(QUERY));
+            }
+
+            public Object getQuery() {
+                String query;
+                QueryData qd;
+
+                qd = (QueryData)orderId.getQuery();
+                if (qd != null) {
+                    /*
+                     * if the query string is a valid integer then it's assumed
+                     * to be the id of a send-out order, otherwise it's assumed
+                     * to be a paper order validator
+                     */
+                    query = qd.getQuery();
+                    try {
+                        Integer.valueOf(query);
+                        qd.setKey(SampleMeta.getOrderId());
+                        qd.setType(QueryData.Type.INTEGER);
+                    } catch (NumberFormatException e) {
+                        qd.setKey(SampleMeta.getEorderPaperOrderValidator());
+                    }
+                }
+
+                return qd;
             }
 
             public Widget onTab(boolean forward) {
@@ -361,7 +387,8 @@ public class SampleTabUI extends Screen {
         organizationTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @Override
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( ! (canEdit && isState(ADD, UPDATE)) || event.getCol() == 2 || event.getCol() > 3)
+                if ( ! (canEdit && isState(ADD, UPDATE)) || event.getCol() == 2 ||
+                    event.getCol() > 3)
                     event.cancel();
             }
         });
@@ -413,7 +440,7 @@ public class SampleTabUI extends Screen {
                             data.setOrganizationZipCode(null);
                             data.setOrganizationCountry(null);
                         }
-                        
+
                         organizationTable.setValueAt(r, 2, data.getOrganizationId());
                         organizationTable.setValueAt(r, 4, data.getOrganizationMultipleUnit());
                         organizationTable.setValueAt(r, 5, data.getOrganizationStreetAddress());
@@ -737,7 +764,8 @@ public class SampleTabUI extends Screen {
 
     /**
      * Shows the order linked to the sample on the screen corresponding to the
-     * type of order e.g. Send-out order screen for environmental samples
+     * type of order e.g. Send-out order screen for environmental samples and
+     * E-Order look up screen for clinical samples
      */
     @UiHandler("orderLookupButton")
     protected void orderLookup(ClickEvent event) {
@@ -772,6 +800,10 @@ public class SampleTabUI extends Screen {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
+        } else if (Constants.domain().CLINICAL.equals(domain)) {
+            showEOrderLookup(manager.getSampleClinical().getPaperOrderValidator());
+        } else if (Constants.domain().NEONATAL.equals(domain)) {
+            showEOrderLookup(manager.getSampleNeonatal().getPaperOrderValidator());
         }
     }
 
@@ -833,6 +865,32 @@ public class SampleTabUI extends Screen {
         }
     }
 
+    private void showEOrderLookup(String ordId) {
+        ModalWindow modal;
+
+        if (eorderLookup == null) {
+            eorderLookup = new EOrderLookupUI() {
+                @Override
+                public void select() {
+                }
+
+                @Override
+                public void cancel() {
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("735px", "350px");
+        modal.setName(Messages.get().eorder_eorderLookup());
+        modal.setCSS(UIResources.INSTANCE.window());
+        modal.setContent(eorderLookup);
+
+        eorderLookup.setWindow(modal);
+        eorderLookup.setState(state);
+        eorderLookup.setPaperOrderValidator(ordId);
+    }
+
     /*
      * getters and setters for the fields at the sample level
      */
@@ -880,19 +938,28 @@ public class SampleTabUI extends Screen {
     }
 
     /**
-     * returns the order id or null if the manager is null
+     * returns the order id or the paper order validator for the electronic
+     * order or null if the manager is null
      */
-    private Integer getOrderId() {
+    private String getOrderId() {
+        String domain, orderId;
+
         if (manager == null)
             return null;
-        return manager.getSample().getOrderId();
-    }
 
-    /**
-     * sets the order id
-     */
-    private void setOrderId(Integer orderId) {
-        manager.getSample().setOrderId(orderId);
+        domain = manager.getSample().getDomain();
+        orderId = null;
+        if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
+            Constants.domain().PRIVATEWELL.equals(domain) ||
+            Constants.domain().SDWIS.equals(domain)) {
+            orderId = DataBaseUtil.toString(manager.getSample().getOrderId());
+        } else if (Constants.domain().CLINICAL.equals(domain)) {
+            orderId = manager.getSampleClinical().getPaperOrderValidator();
+        } else if (Constants.domain().NEONATAL.equals(domain)) {
+            orderId = manager.getSampleNeonatal().getPaperOrderValidator();
+        }
+
+        return orderId;
     }
 
     /**
