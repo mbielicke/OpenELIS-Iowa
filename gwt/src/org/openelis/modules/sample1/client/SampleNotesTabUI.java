@@ -25,14 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
-
-import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.manager.SampleManager1;

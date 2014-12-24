@@ -107,7 +107,7 @@ public abstract class PatientLookupUI extends Screen {
     protected PatientRelationVO                             selectedNextOfKin;
 
     protected boolean                                       selectFirstPatient,
-                    dontShowIfSinglePatient;
+                    dontShowIfNoPatient;
 
     protected AsyncCallbackUI<ArrayList<PatientDO>>         queryCall;
 
@@ -325,14 +325,14 @@ public abstract class PatientLookupUI extends Screen {
 
     /**
      * Finds patients based on the data in the DO. If the flag is true then the
-     * lookup screen is not shown if one or no patient was found; otherwise the
-     * screen is shown regardless.
+     * lookup screen is not shown if no patient was found; otherwise the screen
+     * is shown regardless.
      */
-    public void query(PatientDO data, boolean dontShowIfSinglePatient) {
+    public void query(PatientDO data, boolean dontShowIfNoPatient) {
         window = null;
         selectedPatient = null;
         selectedNextOfKin = null;
-        this.dontShowIfSinglePatient = dontShowIfSinglePatient;
+        this.dontShowIfNoPatient = dontShowIfNoPatient;
         if (data != null) {
             lastName.setValue(data.getLastName());
             firstName.setValue(data.getFirstName());
@@ -436,17 +436,6 @@ public abstract class PatientLookupUI extends Screen {
             queryCall = new AsyncCallbackUI<ArrayList<PatientDO>>() {
                 public void success(ArrayList<PatientDO> result) {
                     /*
-                     * only one patient was found, so set it as the selected one
-                     * by default and don't show the popup because
-                     * "dontShowIfSinglePatient" is true
-                     */
-                    if (dontShowIfSinglePatient && result.size() == 1) {
-                        selectedPatient = result.get(0);
-                        select();
-                        return;
-                    }
-
-                    /*
                      * load the widgets with the query's results and show the
                      * screen if it isn't showing currently
                      */
@@ -465,9 +454,9 @@ public abstract class PatientLookupUI extends Screen {
                 public void notFound() {
                     /*
                      * no patient was found, so don't show the popup because
-                     * "dontShowIfSinglePatient" is true
+                     * "dontShowIfNoPatient" is true
                      */
-                    if (dontShowIfSinglePatient) {
+                    if (dontShowIfNoPatient) {
                         cancel();
                         return;
                     }
