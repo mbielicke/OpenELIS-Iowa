@@ -107,6 +107,11 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
                         METHOD_NAME.equals(prAna.getMethodName()) &&
                         Constants.dictionary().ANALYSIS_RELEASED.equals(prAna.getStatusId())) {
                         accNum = data.getManager().getSample().getAccessionNumber();
+                        /*
+                         * for display
+                         */
+                        if (accNum == null)
+                            accNum = 0;
                         data.setStatus(Status.FAILED);
                         data.addException(new FormErrorException(Messages.get()
                                                                          .analysis_cantUnreleaseCarrierException(accNum,
@@ -137,9 +142,10 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * don't do anything if the analysis is released or cancelled
+         * don't do anything if the analysis is not in the manager anymore or if
+         * it is released or cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 

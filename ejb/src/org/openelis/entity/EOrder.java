@@ -62,7 +62,7 @@ import org.openelis.utils.Auditable;
                                    + " from EOrder e where e.id in (:ids)"),
                @NamedQuery(name = "EOrder.FetchByPaperOrderValidator",
                            query = "select distinct new org.openelis.domain.EOrderDO(e.id, e.enteredDate, e.paperOrderValidator, e.description)"
-                                   + " from EOrder e where e.paperOrderValidator = :pov")})
+                                   + " from EOrder e where e.paperOrderValidator like (:pov)")})
 @Entity
 @Table(name = "eorder")
 @EntityListeners({AuditUtil.class})

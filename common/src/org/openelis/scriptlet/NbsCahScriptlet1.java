@@ -53,15 +53,15 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
 
     private NBSScriptlet1Proxy proxy;
 
-    private Integer          analysisId;
+    private Integer            analysisId;
 
     private static final String CAH = "nbs_cah", OVERRIDE_INTER = "nbs_override_inter",
                     INTERPRETATION = "nbs_cah_inter", NO = "no";
 
-    private static Integer       INTER_N, INTER_PP_NR, INTER_EC, INTER_UE, INTER_U, INTER_ECU,
+    private static Integer      INTER_N, INTER_PP_NR, INTER_EC, INTER_UE, INTER_U, INTER_ECU,
                     INTER_PQ, INTER_AA, INTER_BORD;
-    
-    private NBSCache1 nbsCache1;
+
+    private NBSCache1           nbsCache1;
 
     public NbsCahScriptlet1(NBSScriptlet1Proxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -83,7 +83,7 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
 
         if (nbsCache1 == null)
             nbsCache1 = NBSCache1.getInstance(proxy);
-        
+
         proxy.log(Level.FINE, "Initialized NbsCahScriptlet1", null);
     }
 
@@ -127,9 +127,10 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * don't do anything if the analysis is released or cancelled
+         * don't do anything if the analysis is not in the manager anymore or if
+         * it is released or cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 
@@ -167,7 +168,8 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
         resOver = null;
         resInter = null;
         proxy.log(Level.FINE,
-                  "Going through the scriptlet object to find the result that trigerred the scriptlet", null);
+                  "Going through the scriptlet object to find the result that trigerred the scriptlet",
+                  null);
         /*
          * find the values for the various analytes
          */
@@ -203,7 +205,8 @@ public class NbsCahScriptlet1 implements ScriptletInt<SampleSO> {
                 return;
 
             proxy.log(Level.FINE,
-                      "Getting the value for interpretation based on the value for 17-Hydroxyprogesterone and weight", null);
+                      "Getting the value for interpretation based on the value for 17-Hydroxyprogesterone and weight",
+                      null);
             /*
              * determine the initial interpretation based on weight and the
              * value for 17-Hydroxyprogesterone

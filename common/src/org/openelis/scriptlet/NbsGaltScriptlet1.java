@@ -47,19 +47,19 @@ import org.openelis.utilcommon.ResultHelper;
  * The scriptlet for performing operations for "nbs galt (Galactosemia)" test
  */
 public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
-    
+
     private NBSScriptlet1Proxy proxy;
 
-    private Integer analysisId;
+    private Integer            analysisId;
 
     private static final String GALT = "nbs_galt", OVERRIDE_INTER = "nbs_override_inter",
                     INTERPRETATION = "nbs_galt_inter", NO = "no", LOWER_LIMIT = "nbs_lower_limit",
                     UPPER_LIMIT = "nbs_upper_limit";
 
-    private static Integer       INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ,
+    private static Integer      INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ,
                     INTER_BORD;
-    
-    private NBSCache1 nbsCache1;
+
+    private NBSCache1           nbsCache1;
 
     public NbsGaltScriptlet1(NBSScriptlet1Proxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -78,7 +78,7 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
 
         if (nbsCache1 == null)
             nbsCache1 = NBSCache1.getInstance(proxy);
-        
+
         proxy.log(Level.FINE, "Initialized NbsGaltScriptlet1", null);
     }
 
@@ -115,9 +115,10 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * don't do anything if the analysis is released or cancelled
+         * don't do anything if the analysis is not in the manager anymore or if
+         * it is released or cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 
@@ -155,7 +156,8 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
         overVal = null;
         resInter = null;
         proxy.log(Level.FINE,
-                  "Going through the scriptlet object to find the result that trigerred the scriptlet", null);
+                  "Going through the scriptlet object to find the result that trigerred the scriptlet",
+                  null);
         /*
          * find the values for the various analytes
          */
@@ -194,7 +196,8 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
              * tsh is between 0 and 3.1
              */
             proxy.log(Level.FINE,
-                      "Getting the value for interpretation based on the value for biotinidase", null);
+                      "Getting the value for interpretation based on the value for biotinidase",
+                      null);
             if (galtVal >= 0 && galtVal < 3.2)
                 interp = INTER_PP_NR;
             else if (galtVal < 3.8)
