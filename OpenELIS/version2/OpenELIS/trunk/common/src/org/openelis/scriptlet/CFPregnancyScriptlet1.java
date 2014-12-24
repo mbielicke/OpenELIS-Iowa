@@ -124,7 +124,7 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                  * not the analysis managed by this scriptlet
                  */
                 ana = (AnalysisViewDO)data.getManager().getObject(data.getUid());
-                if ( !analysisId.equals(ana.getId()))
+                if (!analysisId.equals(ana.getId()))
                     return data;
                 fetchPartner = true;
             } else if (data.getActionBefore().contains(Action_Before.QA)) {
@@ -147,9 +147,10 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * don't do anything if the analysis is released or cancelled
+         * don't do anything if the analysis is not in the manager anymore or if
+         * it is released or cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 
@@ -166,7 +167,7 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
      * and partner risks
      */
     private void setRisks(SampleSO data, AnalysisViewDO ana, boolean fetchPartner) {
-        Integer index, pregResult, indAcc, partAcc;
+        Integer index, pregResult, indAccNum, partAccNum;
         String value;
         Double indRisk, partRisk, pregRisk;
         SampleManager1 sm, psm;
@@ -177,7 +178,13 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
         HashMap<String, ResultViewDO> prs, crs;
 
         sm = data.getManager();
-        indAcc = sm.getSample().getAccessionNumber();
+        indAccNum = sm.getSample().getAccessionNumber();
+        /*
+         * for display
+         */
+        if (indAccNum == null)
+            indAccNum = 0;
+        
         tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
 
         /*
@@ -194,7 +201,7 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
             if (crAna == null) {
                 data.setStatus(Status.FAILED);
                 data.addException(new FormErrorException(Messages.get()
-                                                                 .analysis_validIndCarrierNotFoundException(indAcc,
+                                                                 .analysis_validIndCarrierNotFoundException(indAccNum,
                                                                                                             ana.getTestName(),
                                                                                                             ana.getMethodName(),
                                                                                                             CARR_TEST_NAME,
@@ -245,15 +252,15 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                 /*
                  * get the partner accession number
                  */
-                partAcc = Integer.valueOf(resPartAcc.getValue());
+                partAccNum = Integer.valueOf(resPartAcc.getValue());
                 /*
                  * partner accession number can't be the same as the current
                  * sample's accession number
                  */
-                if (indAcc.equals(partAcc)) {
+                if (indAccNum.equals(partAccNum)) {
                     data.setStatus(Status.FAILED);
                     data.addException(new FormErrorException(Messages.get()
-                                                                     .analysis_partAccCantBeSameAsIndException(partAcc,
+                                                                     .analysis_partAccCantBeSameAsIndException(partAccNum,
                                                                                                                ana.getTestName(),
                                                                                                                ana.getMethodName())));
                     /*
@@ -267,8 +274,8 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                 }
 
                 try {
-                    proxy.log(Level.FINE, "Fetching sample with accession number: " + partAcc, null);
-                    psm = proxy.fetchByAccession(partAcc, SampleManager1.Load.RESULT);
+                    proxy.log(Level.FINE, "Fetching sample with accession number: " + partAccNum, null);
+                    psm = proxy.fetchByAccession(partAccNum, SampleManager1.Load.RESULT);
 
                     /*
                      * a partner sample was found
@@ -309,7 +316,7 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                         clearPregnancyValues(prs, rf, ana, data);
                         data.setStatus(Status.FAILED);
                         data.addException(new FormErrorException(Messages.get()
-                                                                         .analysis_validPartCarrierNotFoundException(indAcc,
+                                                                         .analysis_validPartCarrierNotFoundException(indAccNum,
                                                                                                                      ana.getTestName(),
                                                                                                                      ana.getMethodName(),
                                                                                                                      CARR_TEST_NAME,
@@ -326,11 +333,10 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
                     clearPregnancyValues(prs, rf, ana, data);
                     data.setStatus(Status.FAILED);
                     data.addException(new FormErrorException(Messages.get()
-                                                                     .result_partSamNotFoundException(sm.getSample()
-                                                                                                        .getAccessionNumber(),
+                                                                     .result_partSamNotFoundException(indAccNum,
                                                                                                       ana.getTestName(),
                                                                                                       ana.getMethodName(),
-                                                                                                      partAcc)));
+                                                                                                      partAccNum)));
                     return;
                 }
             }
@@ -403,12 +409,12 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
              * if the analysis is being completed or released then it needs to
              * have a pregnancy result because the results are not overrriden
              */
-            if (data.getActionBefore().contains(Action_Before.COMPLETE) ||
-                data.getActionBefore().contains(Action_Before.RELEASE) &&
+            if ((data.getActionBefore().contains(Action_Before.COMPLETE) ||
+                data.getActionBefore().contains(Action_Before.RELEASE)) &&
                 resResult.getValue() == null) {
                 data.setStatus(Status.FAILED);
                 data.addException(new FormErrorException(Messages.get()
-                                             .result_valueRequiredException(indAcc,
+                                             .result_valueRequiredException(indAccNum,
                                                                             ana.getTestName(),
                                                                             ana.getMethodName(),
                                                                             resResult.getAnalyte())));

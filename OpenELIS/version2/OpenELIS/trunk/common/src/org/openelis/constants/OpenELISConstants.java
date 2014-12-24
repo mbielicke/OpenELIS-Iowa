@@ -1852,11 +1852,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_autoSelectNext();
 
   /**
-   * Translated "Attachment ''{0}'': Description is required ".
+   * Translated "Attachment ''{0}'': Description is required".
    * 
-   * @return translated "Attachment ''{0}'': Description is required "
+   * @return translated "Attachment ''{0}'': Description is required"
    */
-  @DefaultMessage("Attachment ''{0}'': Description is required ")
+  @DefaultMessage("Attachment ''{0}'': Description is required")
   @Key("attachment.descRequiredException")
   String attachment_descRequiredException(String arg0);
 
@@ -1915,13 +1915,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_moveFileException(String arg0);
 
   /**
-   * Translated "Sample # ''{0,number}''".
+   * Translated "Sample # ''{0}''".
    * 
-   * @return translated "Sample # ''{0,number}''"
+   * @return translated "Sample # ''{0}''"
    */
-  @DefaultMessage("Sample # ''{0,number}''")
+  @DefaultMessage("Sample # ''{0}''")
   @Key("attachment.sampleDescription")
-  String attachment_sampleDescription(Integer arg0);
+  String attachment_sampleDescription(String arg0);
 
   /**
    * Translated "Attachment ''{0}'': You do not have permission to view the attachment".
@@ -18392,6 +18392,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Trend")
   @Key("trendable")
   String trendable();
+
+  /**
+   * Translated "Reserve".
+   * 
+   * @return translated "Reserve"
+   */
+  @DefaultMessage("Reserve")
+  @Key("trfAttachment.reserve")
+  String trfAttachment_reserve();
+
+  /**
+   * Translated "TRF Attachment".
+   * 
+   * @return translated "TRF Attachment"
+   */
+  @DefaultMessage("TRF Attachment")
+  @Key("trfAttachment.trfAttachment")
+  String trfAttachment_trfAttachment();
 
   /**
    * Translated "Tube #".

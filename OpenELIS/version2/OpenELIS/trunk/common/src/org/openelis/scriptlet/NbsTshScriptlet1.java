@@ -53,15 +53,15 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
 
     private NBSScriptlet1Proxy proxy;
 
-    private Integer          analysisId;
+    private Integer            analysisId;
 
     private static final String TSH = "nbs_tsh", OVERRIDE_INTER = "nbs_override_inter",
                     INTERPRETATION = "nbs_tsh_inter", NO = "no", LOWER_LIMIT = "nbs_lower_limit",
                     UPPER_LIMIT = "nbs_upper_limit";
 
-    private static Integer       INTER_N, INTER_PP_NR, INTER_EC, INTER_ECU, INTER_PQ, INTER_BORD;
-    
-    private NBSCache1 nbsCache1;
+    private static Integer      INTER_N, INTER_PP_NR, INTER_EC, INTER_ECU, INTER_PQ, INTER_BORD;
+
+    private NBSCache1           nbsCache1;
 
     public NbsTshScriptlet1(NBSScriptlet1Proxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -76,7 +76,7 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
             INTER_PQ = proxy.getDictionaryBySystemName("newborn_inter_pq").getId();
             INTER_BORD = proxy.getDictionaryBySystemName("newborn_inter_bord").getId();
         }
-        
+
         if (nbsCache1 == null)
             nbsCache1 = NBSCache1.getInstance(proxy);
 
@@ -121,9 +121,10 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * don't do anything if the analysis is released or cancelled
+         * don't do anything if the analysis is not in the manager anymore or if
+         * it is released or cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 
@@ -165,7 +166,8 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
         upper = null;
 
         proxy.log(Level.FINE,
-                  "Going through the manager to find the result that triggered the scriptlet", null);
+                  "Going through the manager to find the result that triggered the scriptlet",
+                  null);
         /*
          * find the values for the various analytes
          */
@@ -223,7 +225,9 @@ public class NbsTshScriptlet1 implements ScriptletInt<SampleSO> {
              * value of interpretation is "within normal limits" if the value of
              * tsh is between 0 and 24
              */
-            proxy.log(Level.FINE, "Getting the value for interretation based on the value for tsh", null);
+            proxy.log(Level.FINE,
+                      "Getting the value for interretation based on the value for tsh",
+                      null);
 
             if ( (tshVal >= 0 && tshVal < 25.0) || (tshVal == 25.0 && lt))
                 interp = INTER_N;

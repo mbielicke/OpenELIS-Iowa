@@ -51,14 +51,14 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
 
     private NBSScriptlet1Proxy proxy;
 
-    private Integer analysisId;
+    private Integer            analysisId;
 
     private static final String BIOTINIDASE = "nbs_biotinidase", INTERPRETATION = "nbs_bt_inter",
                     OVERRIDE_INTER = "nbs_override_inter", NO = "no";
 
     public static Integer       INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ;
-    
-    private NBSCache1 nbsCache1;
+
+    private NBSCache1           nbsCache1;
 
     public NbsBtScriptlet1(NBSScriptlet1Proxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -73,7 +73,7 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
             INTER_TRANU = proxy.getDictionaryBySystemName("newborn_inter_tranu").getId();
             INTER_PQ = proxy.getDictionaryBySystemName("newborn_inter_pq").getId();
         }
-        
+
         if (nbsCache1 == null)
             nbsCache1 = NBSCache1.getInstance(proxy);
 
@@ -113,9 +113,10 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         /*
-         * don't do anything if the analysis is released or cancelled
+         * don't do anything if the analysis is not in the manager anymore or if
+         * it is released or cancelled
          */
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+        if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 
@@ -153,7 +154,8 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
         resOver = null;
         resInter = null;
         proxy.log(Level.FINE,
-                  "Going through the SO to find the result that trigerred the scriptlet", null);
+                  "Going through the SO to find the result that trigerred the scriptlet",
+                  null);
         for (i = 0; i < sm.result.count(ana); i++ ) {
             for (j = 0; j < sm.result.count(ana, i); j++ ) {
                 res = sm.result.get(ana, i, j);
@@ -192,7 +194,8 @@ public class NbsBtScriptlet1 implements ScriptletInt<SampleSO> {
              * value for biotinidase
              */
             proxy.log(Level.FINE,
-                      "Getting the value for interretation based on the value of biotinidase", null);
+                      "Getting the value for interretation based on the value of biotinidase",
+                      null);
             sysName = dict.getSystemName();
             interp = null;
             if (sysName.endsWith("1+") || sysName.endsWith("0"))
