@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="slide6x10" columnCount="3" pageWidth="612" pageHeight="792" columnWidth="190" columnSpacing="1" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="slide6x10" columnCount="2" pageWidth="612" pageHeight="792" columnWidth="286" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.report.worksheetPrint.DiagramDataSource"/>
-	<subDataset name="Table Dataset 1">
-		<queryString language="SQL">
-			<![CDATA[]]>
-		</queryString>
-	</subDataset>
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
@@ -1638,27 +1633,27 @@
 	<columnHeader>
 		<band height="12">
 			<rectangle>
-				<reportElement key="columnHeader.background" x="0" y="0" width="190" height="12" backcolor="#C0C0C0"/>
+				<reportElement key="columnHeader.background" x="12" y="0" width="262" height="12" backcolor="#C0C0C0"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement key="position.header" mode="Transparent" x="0" y="0" width="35" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="position.header" mode="Transparent" x="12" y="0" width="35" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Position]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="accessionNumber.header" mode="Transparent" x="35" y="0" width="55" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="accessionNumber.header" mode="Transparent" x="47" y="0" width="55" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Accession #]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="result.header" mode="Transparent" x="90" y="0" width="100" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="result.header" mode="Transparent" x="102" y="0" width="172" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -1669,30 +1664,33 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<line>
-				<reportElement key="detail.line" x="0" y="11" width="190" height="1"/>
+				<reportElement key="detail.line" x="12" y="11" width="262" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement key="position" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="35" height="12" backcolor="#FFFFFF"/>
+				<reportElement key="position" isPrintRepeatedValues="false" mode="Transparent" x="12" y="0" width="35" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{position}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement key="accessionNumber" mode="Transparent" x="35" y="0" width="55" height="12" backcolor="#FFFFFF"/>
+				<reportElement key="accessionNumber" mode="Transparent" x="47" y="0" width="55" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
 			<break>
-				<reportElement mode="Transparent" x="0" y="11" width="190" height="1">
+				<reportElement mode="Transparent" x="0" y="11" width="286" height="1">
 					<printWhenExpression><![CDATA[$V{REPORT_COUNT} % 60 == 0]]></printWhenExpression>
 				</reportElement>
 			</break>
 		</band>
 	</detail>
+	<pageFooter>
+		<band height="68"/>
+	</pageFooter>
 </jasperReport>

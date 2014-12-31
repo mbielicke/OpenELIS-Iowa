@@ -26,7 +26,9 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -35,11 +37,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.EOrderDO;
 import org.openelis.entity.EOrder;
+import org.openelis.entity.EOrderBody;
+import org.openelis.entity.EOrderLink;
+import org.openelis.meta.EOrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -47,6 +57,9 @@ public class EOrderBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+
+    @EJB
+    private LockBean      lock;
 
     public EOrderDO fetchById(Integer id) throws Exception {
         Query query;
@@ -88,6 +101,8 @@ public class EOrderBean {
     public EOrderDO add(EOrderDO data) throws Exception {
         EOrder entity;
 
+        validate(data);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = new EOrder();
@@ -99,5 +114,90 @@ public class EOrderBean {
         data.setId(entity.getId());
 
         return data;
+    }
+
+    public EOrderDO update(EOrderDO data) throws Exception {
+        EOrder entity;
+
+        if (!data.isChanged()) {
+            lock.unlock(Constants.table().EORDER, data.getId());
+            return data;
+        }
+
+        validate(data);
+
+        lock.validateLock(Constants.table().EORDER, data.getId());
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(EOrder.class, data.getId());
+        entity.setEnteredDate(data.getEnteredDate());
+        entity.setPaperOrderValidator(data.getPaperOrderValidator());
+        entity.setDescription(data.getDescription());
+
+        lock.unlock(Constants.table().EORDER, data.getId());
+
+        return data;
+    }
+
+    public EOrderDO fetchForUpdate(Integer id) throws Exception {
+        try {
+            lock.lock(Constants.table().EORDER, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public EOrderDO abortUpdate(Integer id) throws Exception {
+        lock.unlock(Constants.table().EORDER, id);
+        return fetchById(id);
+    }
+
+    public void delete(EOrderDO data) throws Exception {
+        Query query;
+        List<Long> list;
+        EOrder entity;
+        ValidationErrorsList errors;
+
+        errors = new ValidationErrorsList();
+        // reference check
+        query = manager.createNamedQuery("EOrder.ReferenceCount");
+        query.setParameter("id", data.getId());
+        list = query.getResultList();
+        for (Long i : list) {
+            if (i > 0) {
+                errors.add(new FormErrorException(Messages.get().eorder_deleteException()));
+                throw errors;
+            }
+        }
+        lock.validateLock(Constants.table().EORDER, data.getId());
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(EOrder.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+
+        lock.unlock(Constants.table().EORDER, data.getId());
+    }
+
+    public void validate(EOrderDO data) throws Exception {
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+
+        if (DataBaseUtil.isEmpty(data.getEnteredDate()))
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             EOrderMeta.getEnteredDate()));
+
+        if (DataBaseUtil.isEmpty(data.getPaperOrderValidator()))
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             EOrderMeta.getPaperOrderValidator()));
+
+        if (DataBaseUtil.isEmpty(data.getDescription()))
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             EOrderMeta.getDescription()));
+
+        if (list.size() > 0)
+            throw list;
     }
 }

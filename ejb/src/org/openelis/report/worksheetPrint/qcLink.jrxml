@@ -5,7 +5,6 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<parameter name="WORKSHEET_ANALYSIS_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT DISTINCT wav.accession_number, wi.position

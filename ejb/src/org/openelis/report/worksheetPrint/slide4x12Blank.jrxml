@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="slide4x12Blank" columnCount="3" pageWidth="612" pageHeight="792" columnWidth="190" columnSpacing="1" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="slide4x12Blank" columnCount="2" pageWidth="612" pageHeight="792" columnWidth="276" columnSpacing="20" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.report.worksheetPrint.DiagramDataSource"/>
-	<subDataset name="Table Dataset 1">
-		<queryString language="SQL">
-			<![CDATA[]]>
-		</queryString>
-	</subDataset>
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
@@ -714,7 +709,7 @@ ORDER BY
 	<columnHeader>
 		<band height="12">
 			<rectangle>
-				<reportElement key="columnHeader.background" x="0" y="0" width="190" height="12" backcolor="#C0C0C0"/>
+				<reportElement key="columnHeader.background" x="0" y="0" width="276" height="12" backcolor="#C0C0C0"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
@@ -734,7 +729,7 @@ ORDER BY
 				<text><![CDATA[Accession #]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="result.header" mode="Transparent" x="90" y="0" width="100" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="result.header" mode="Transparent" x="90" y="0" width="186" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -745,7 +740,7 @@ ORDER BY
 	<detail>
 		<band height="12" splitType="Stretch">
 			<line>
-				<reportElement key="detail.line" x="0" y="11" width="190" height="1"/>
+				<reportElement key="detail.line" x="0" y="11" width="276" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
@@ -765,7 +760,7 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
 			<break>
-				<reportElement mode="Transparent" x="0" y="11" width="190" height="1">
+				<reportElement mode="Transparent" x="0" y="11" width="276" height="1">
 					<printWhenExpression><![CDATA[$V{REPORT_COUNT} % 28 == 0]]></printWhenExpression>
 				</reportElement>
 			</break>
