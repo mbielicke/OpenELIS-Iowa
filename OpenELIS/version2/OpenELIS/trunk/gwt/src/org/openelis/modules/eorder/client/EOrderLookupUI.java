@@ -31,6 +31,16 @@ import static org.openelis.ui.screen.State.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.constants.Messages;
 import org.openelis.domain.EOrderDO;
 import org.openelis.meta.EOrderMeta;
@@ -51,16 +61,6 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
 
 public abstract class EOrderLookupUI extends Screen {
 
@@ -186,25 +186,21 @@ public abstract class EOrderLookupUI extends Screen {
         }
         
         setBusy(Messages.get().gen_querying());
-        EOrderService.get().fetchByPaperOrderValidator(pov,
-                                                       new AsyncCallback<ArrayList<EOrderDO>>() {
-                                                           public void onSuccess(ArrayList<EOrderDO> list) {
-                                                               setQueryResult(list);
-                                                           }
+        EOrderService.get().fetchByPaperOrderValidator(pov, new AsyncCallback<ArrayList<EOrderDO>>() {
+            public void onSuccess(ArrayList<EOrderDO> list) {
+                setQueryResult(list);
+            }
 
-                                                           public void onFailure(Throwable error) {
-                                                               setQueryResult(null);
-                                                               if (error instanceof NotFoundException) {
-                                                                   setDone(Messages.get()
-                                                                                   .gen_noRecordsFound());
-                                                               } else {
-                                                                   Window.alert("Error: EOrderLookup call query failed; " +
-                                                                                error.getMessage());
-                                                                   setError(Messages.get()
-                                                                                    .gen_queryFailed());
-                                                               }
-                                                           }
-                                                       });
+            public void onFailure(Throwable error) {
+                setQueryResult(null);
+                if (error instanceof NotFoundException) {
+                    setDone(Messages.get().gen_noRecordsFound());
+                } else {
+                    Window.alert("Error: EOrderLookup call query failed; "+error.getMessage());
+                    setError(Messages.get().gen_queryFailed());
+                }
+            }
+        });
     }
 
     private void setQueryResult(ArrayList<EOrderDO> list) {

@@ -35,6 +35,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.sample.Sample"/>
   <inherits name="org.openelis.modules.test.TestService"/>
   <inherits name="org.openelis.modules.auxData.AuxData"/>
+  <inherits name="org.openelis.modules.attachment.Attachment"/>
   
   <entry-point class="org.openelis.modules.worksheetBuilder.client.WorksheetBuilderEntry"/>
 </module>

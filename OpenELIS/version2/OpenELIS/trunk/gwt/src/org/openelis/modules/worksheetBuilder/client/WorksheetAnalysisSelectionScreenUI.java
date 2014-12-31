@@ -42,13 +42,16 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.ActionEvent;
 import org.openelis.ui.event.ActionHandler;
 import org.openelis.ui.event.BeforeCloseEvent;
@@ -144,13 +147,28 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
         int i;
         ArrayList<WorksheetAnalysisViewDO> data;
         Integer[] selections;
+        StringBuffer message;
+        WorksheetAnalysisViewDO waVDO;
         
         
         data = new ArrayList<WorksheetAnalysisViewDO>();
+        message = new StringBuffer();
         selections = worksheetAnalysisTable.getSelectedRows();
-        for (i = 0; i < selections.length; i++)
-            data.add((WorksheetAnalysisViewDO)worksheetAnalysisTable.getRowAt(selections[i]).getData());
+        for (i = 0; i < selections.length; i++) {
+            waVDO = worksheetAnalysisTable.getRowAt(selections[i]).getData();
+            if (!isAnalysisEditable(waVDO)) {
+                message.append(Messages.get().accessionNum()).append(waVDO.getAccessionNumber())
+                       .append("\t").append(waVDO.getTestName().trim()).append(", ")
+                       .append(waVDO.getMethodName().trim()).append("\t\t").append(waVDO.getSectionName().trim())
+                       .append("\n");
+            } else {
+                data.add(waVDO);
+            }
+        }
 
+        if (message.length() > 0)
+            Window.alert(Messages.get().worksheet_itemsNotAdded()+":\n\n"+message.toString());
+        
         ActionEvent.fire(this, Action.SELECT, data);
         window.close();
     }
@@ -202,6 +220,43 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
         }
             
         return model;
+    }
+    
+    /**
+     * Returns true if analysis can be added to the worksheet and the user has
+     * permission to addRow it.
+     */
+    private boolean isAnalysisEditable(WorksheetAnalysisViewDO waVDO) {
+        boolean editable;
+        
+        editable = false;
+        if (waVDO != null) {
+            editable = canAddTest(waVDO) &&
+                       !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(waVDO.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_INPREP.equals(waVDO.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId());
+        }
+        return editable;
+    }
+
+    private boolean canAddTest(WorksheetAnalysisViewDO waVDO) {
+        boolean       allow;
+        SectionPermission perm;
+
+        allow = false;
+        if (waVDO == null)
+            return allow;
+
+        try {
+            perm = UserCache.getPermission().getSection(waVDO.getSectionName()); 
+            if (perm != null && perm.hasCompletePermission())
+                allow = true;
+        } catch (Exception anyE) {
+            Window.alert(anyE.getMessage());
+        }
+
+        return allow;
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
