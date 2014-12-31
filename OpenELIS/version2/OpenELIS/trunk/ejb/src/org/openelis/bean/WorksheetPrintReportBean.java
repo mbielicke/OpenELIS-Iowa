@@ -92,10 +92,13 @@ public class WorksheetPrintReportBean {
             format = new ArrayList<OptionListItem>();
             format.add(new OptionListItem("4x12B", "4 Slides 12 Blank Wells"));
             format.add(new OptionListItem("6x10", "6 Slides 10 Wells"));
+            format.add(new OptionListItem("6x12", "6 Slides 12 Wells"));
+            format.add(new OptionListItem("8x4Arbo", "8 Slides 4 Wells Arbovirus"));
             format.add(new OptionListItem("96H", "96 Well Plate Horizontal"));
             format.add(new OptionListItem("96V", "96 Well Plate Vertical"));
             format.add(new OptionListItem("LLS", "Line List Single Line"));
             format.add(new OptionListItem("LLM", "Line List Multi Line"));
+            format.add(new OptionListItem("QFTG", "QFTG Plate"));
 
             p.add(new Prompt("FORMAT", Prompt.Type.ARRAY).setPrompt("Format:")
                                                          .setWidth(200)
@@ -187,6 +190,24 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
             
+                case "6x12":
+                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 72);
+                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide6x12.jasper");
+                    dir = ReportUtil.getResourcePath(url);
+                    status.setMessage("Outputing report").setPercentComplete(20);
+                    jreport = (JasperReport)JRLoader.loadObject(url);
+                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
+                    break;
+            
+                case "8x4Arbo":
+                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide8x4Arbo.jasper");
+                    dir = ReportUtil.getResourcePath(url);
+                    jparam.put("WORKSHEET_ID", worksheetId);
+                    status.setMessage("Outputing report").setPercentComplete(20);
+                    jreport = (JasperReport)JRLoader.loadObject(url);
+                    jprint = JasperFillManager.fillReport(jreport, jparam, con);
+                    break;
+            
                 case "96H":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 96);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plate96Horizontal.jasper");
@@ -225,6 +246,15 @@ public class WorksheetPrintReportBean {
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
                     
+                case "QFTG":
+                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 36);
+                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
+                    dir = ReportUtil.getResourcePath(url);
+                    status.setMessage("Outputing report").setPercentComplete(20);
+                    jreport = (JasperReport)JRLoader.loadObject(url);
+                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
+                    break;
+            
                 default:
                     throw new InconsistencyException("An invalid format was specified for this report");
             }

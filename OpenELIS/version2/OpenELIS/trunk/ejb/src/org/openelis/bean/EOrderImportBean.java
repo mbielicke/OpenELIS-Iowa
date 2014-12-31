@@ -48,6 +48,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.EOrderBodyDO;
 import org.openelis.domain.EOrderDO;
 import org.openelis.domain.EOrderLinkDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.util.XMLUtil;
@@ -65,6 +66,8 @@ public class EOrderImportBean {
     EOrderBodyBean                   eorderBody;
     @EJB
     EOrderLinkBean                   eorderLink;
+    @EJB
+    SampleBean                       sample;
     @EJB
     private SystemVariableBean       systemVariable;
 
@@ -110,12 +113,17 @@ public class EOrderImportBean {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void importData(Path file) throws Exception {
         int i;
-        Document document;
+        ArrayList<EOrderDO> prevEOrders;
+        ArrayList<EOrderLinkDO> eorderLinkDOs, prevEOrderLinkDOs;
+        ArrayList<SampleDO> samples;
+        Document document, document2;
         EOrderDO eorderDO;
-        EOrderBodyDO eorderBodyDO;
+        EOrderBodyDO eorderBodyDO, prevEOrderBodyDO;
         EOrderLinkDO eorderLinkDO;
-        Element orderElem, eorderElem, eorderBodyElem, eorderLinkElem, eorderLinkItemElem;
-        NodeList nodes;
+        Element orderElem, eorderElem, eorderBodyElem, eorderLinkElem, eorderLinkItemElem,
+                orgElem, prevEOrderBodyElem, testElem;
+        NodeList nodes, nodes2;
+        String organizationName, placerOrderNum;
 
         document = XMLUtil.load(file.toAbsolutePath().toString());
         orderElem = (Element) document.getDocumentElement();
@@ -125,16 +133,15 @@ public class EOrderImportBean {
         eorderDO.setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         eorderDO.setPaperOrderValidator(XMLUtil.getNodeText(eorderElem, "paper_order_validator"));
         eorderDO.setDescription(XMLUtil.getNodeText(eorderElem, "description"));
-        eorder.add(eorderDO);
 
         eorderBodyElem = (Element) orderElem.getElementsByTagName("eorder_body").item(0);
         eorderBodyDO = new EOrderBodyDO();
         eorderBodyDO.setEOrderId(eorderDO.getId());
         eorderBodyDO.setXml(XMLUtil.toString(eorderBodyElem));
-        eorderBody.add(eorderBodyDO);
         
         eorderLinkElem = (Element) orderElem.getElementsByTagName("eorder_link").item(0);
         nodes = eorderLinkElem.getElementsByTagName("eorder_link_item");
+        eorderLinkDOs = new ArrayList<EOrderLinkDO>();
         if (nodes.getLength() > 0) {
             for (i = 0; i < nodes.getLength(); i++) {
                 eorderLinkItemElem = (Element) nodes.item(i);
@@ -144,8 +151,71 @@ public class EOrderImportBean {
                 eorderLinkDO.setSubId(XMLUtil.getNodeText(eorderLinkItemElem, "sub_id"));
                 eorderLinkDO.setName(XMLUtil.getNodeText(eorderLinkItemElem, "name"));
                 eorderLinkDO.setValue(XMLUtil.getNodeText(eorderLinkItemElem, "value"));
-                eorderLink.add(eorderLinkDO);
+                if ("ORC-1".equals(eorderLinkDO.getName().trim()) && "CA".equals(eorderLinkDO.getValue().trim())) {
+                    organizationName = null;
+                    nodes2 = eorderBodyElem.getElementsByTagName("organization");
+                    if (nodes2.getLength() > 0)
+                        organizationName = XMLUtil.getNodeText((Element)nodes2.item(0), "name");
+
+                    placerOrderNum = null;
+                    nodes2 = eorderBodyElem.getElementsByTagName("test");
+                    if (nodes2.getLength() > 0)
+                        placerOrderNum = XMLUtil.getNodeText((Element)nodes2.item(0), "placer_order_num");
+                    
+                    prevEOrders = eorder.fetchByPaperOrderValidator(eorderDO.getPaperOrderValidator());
+                    if (prevEOrders != null && prevEOrders.size() > 0) {
+                        for (EOrderDO prevEOrderDO : prevEOrders) {
+                            try {
+                                prevEOrderBodyDO = eorderBody.fetchByEOrderId(prevEOrderDO.getId());
+                                document2 = XMLUtil.parse(prevEOrderBodyDO.getXml());
+                                prevEOrderBodyElem = (Element) document2.getDocumentElement();
+                                nodes2 = eorderBodyElem.getElementsByTagName("organization");
+                                if (nodes2.getLength() > 0 && organizationName != null &&
+                                    organizationName.equals(XMLUtil.getNodeText((Element)nodes2.item(0), "name"))) {
+                                    nodes2 = eorderBodyElem.getElementsByTagName("test");
+                                    if (nodes2.getLength() > 0 && placerOrderNum != null &&
+                                        placerOrderNum.equals(XMLUtil.getNodeText((Element)nodes2.item(0), "placer_order_num"))) {
+                                        prevEOrderDO = eorder.fetchForUpdate(prevEOrderDO.getId());
+                                        try {
+                                            samples = sample.fetchByEOrderId(prevEOrderDO.getId());
+                                            if (samples != null && samples.size() > 0) {
+                                                prevEOrderDO.setDescription("(Cancelled) "+prevEOrderDO.getDescription());
+                                                eorder.update(prevEOrderDO);
+                                            } else {
+                                                eorderBody.delete(prevEOrderBodyDO);
+                                                prevEOrderLinkDOs = eorderLink.fetchByEOrderId(prevEOrderDO.getId());
+                                                if (prevEOrderLinkDOs != null && prevEOrderLinkDOs.size() > 0) {
+                                                    for (EOrderLinkDO prevEOrderLinkDO : prevEOrderLinkDOs)
+                                                        eorderLink.delete(prevEOrderLinkDO);
+                                                }
+                                                eorder.delete(prevEOrderDO);
+                                            }
+                                        } catch (Exception anyE1) {
+                                            eorder.abortUpdate(prevEOrderDO.getId());
+                                            throw anyE1;
+                                        }
+                                    }
+                                }
+                            } catch (Exception anyE) {
+                                throw new Exception("Error cancelling previous orders for ID "+eorderDO.getId()+
+                                                    ": "+anyE.getMessage());
+                            }
+                        }
+                    }
+                    return;
+                }
+                eorderLinkDOs.add(eorderLinkDO);
             }
+        }
+        
+        eorder.add(eorderDO);
+        
+        eorderBodyDO.setEOrderId(eorderDO.getId());
+        eorderBody.add(eorderBodyDO);
+        for (i = 0; i < eorderLinkDOs.size(); i++) {
+            eorderLinkDO = eorderLinkDOs.get(i);
+            eorderLinkDO.setEOrderId(eorderDO.getId());
+            eorderLink.add(eorderLinkDO);
         }
     }                        
                             

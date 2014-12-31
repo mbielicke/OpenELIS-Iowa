@@ -213,6 +213,15 @@ public class SampleBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    public ArrayList<SampleDO> fetchByEOrderId(Integer eorderId) {
+        Query query;
+
+        query = manager.createNamedQuery("Sample.FetchByEOrderId");
+        query.setParameter("eorderId", eorderId);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public ArrayList<SampleDO> fetchSDWISByReleased(Date startDate, Date endDate) throws Exception {
         List<SampleDO> list;
         Query query;

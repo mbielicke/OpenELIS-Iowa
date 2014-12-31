@@ -43,8 +43,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -71,6 +73,9 @@ import org.openelis.utilcommon.ResultFormatter;
 @Stateless
 @SecurityDomain("openelis")
 public class InstrumentInterfaceImportBean {
+    @Resource
+    private SessionContext           ctx;
+
     @EJB
     LockBean                         lock;
     @EJB
@@ -176,7 +181,6 @@ public class InstrumentInterfaceImportBean {
                     importData(worksheetId, position, bReader, formatColumnMap, fileColumnMap);
                 } catch (Exception anyE1) {
                     writeErrorFile(file, anyE1.getMessage());
-                    worksheetManager.unlock(worksheetId, (WorksheetManager1.Load[])null);
                     continue;
                 } finally {
                     bReader.close();
@@ -249,6 +253,7 @@ public class InstrumentInterfaceImportBean {
         ArrayList<InstrumentViewDO> instruments;
         ArrayList<Integer> excludedIds;
         ArrayList<TestAnalyteViewDO> taRow;
+        ArrayList<WorksheetAnalysisViewDO> waVDOs;
         ArrayList<WorksheetResultViewDO> wrVDOs;
         ArrayList<WorksheetQcResultViewDO> wqrVDOs;
         HashMap<Integer, ArrayList<ArrayList<TestAnalyteViewDO>>> testAnalyteMap;
@@ -259,15 +264,13 @@ public class InstrumentInterfaceImportBean {
         HashMap<String, ArrayList<WorksheetResultViewDO>> wrMap;
         HashMap<String, ArrayList<WorksheetQcResultViewDO>> wqrMap;
         HashMap<String, Integer> taColumnMap;
-        HashMap<String, WorksheetAnalysisViewDO> waVDOsByAccessionNumber;
         HashSet<Integer> analysisIds;
         Integer colNum;
         ResultFormatter rf;
         SimpleDateFormat format;
-        String line, data[], columnName, value;
+        String line, data[], columnName, value, accessionNumber;
         TestAnalyteViewDO taVDO;
         TestManager tMan;
-        WorksheetAnalysisViewDO waVDO;
         WorksheetManager1 manager;
         WorksheetQcResultViewDO wqrVDO;
         WorksheetResultViewDO wrVDO;
@@ -283,7 +286,7 @@ public class InstrumentInterfaceImportBean {
         excludedMap = new HashMap<Integer, ArrayList<Integer>>();
         rfMap = new HashMap<Integer, ResultFormatter>();
         testAnalyteMap = new HashMap<Integer, ArrayList<ArrayList<TestAnalyteViewDO>>>();
-        waVDOsByAccessionNumber = new HashMap<String, WorksheetAnalysisViewDO>();
+        waVDOs = new ArrayList<WorksheetAnalysisViewDO>();
         wrMapsByAnalysisId = new HashMap<Integer, HashMap<String, ArrayList<WorksheetResultViewDO>>>();
         wqrMapsByAnalysisId = new HashMap<Integer, HashMap<String, ArrayList<WorksheetQcResultViewDO>>>();
         if (getItems(manager) != null) {
@@ -294,7 +297,7 @@ public class InstrumentInterfaceImportBean {
                         for (WorksheetAnalysisViewDO ana : getAnalyses(manager)) {
                             if (!item.getId().equals(ana.getWorksheetItemId()))
                                 continue;
-                            waVDOsByAccessionNumber.put(ana.getAccessionNumber(), ana);
+                            waVDOs.add(ana);
                             analysisIds.add(ana.getId());
                         }
                         if (getResults(manager) != null) {
@@ -346,8 +349,15 @@ public class InstrumentInterfaceImportBean {
         setInstrument = false;
         while ((line = file.readLine()) != null) {
             data = line.split("\\|", fileColumnMap.size());
-            waVDO = waVDOsByAccessionNumber.get(data[fileColumnMap.get(Messages.get().instrumentInterface_accessionNumber())]);
-            if (waVDO != null) {
+            for (WorksheetAnalysisViewDO waVDO : waVDOs) {
+                accessionNumber = data[fileColumnMap.get(Messages.get().instrumentInterface_accessionNumber())];
+                if (accessionNumber != null)
+                    accessionNumber = accessionNumber.trim();
+                if (waVDOs.size() == 1 && !waVDO.getAccessionNumber().equals(accessionNumber)) {
+                    ctx.setRollbackOnly();
+                    throw new Exception("Accession Number mismatch: File = '"+accessionNumber+"' Worksheet = '"+waVDO.getAccessionNumber()+"'");
+                }
+
                 if (waVDO.getAnalysisId() != null) {
                     wrMap = wrMapsByAnalysisId.get(waVDO.getId());
                     if (wrMap != null) {
@@ -360,6 +370,7 @@ public class InstrumentInterfaceImportBean {
                                     taList = testAnalyte.fetchByTestId(waVDO.getTestId());
                                     testAnalyteMap.put(waVDO.getTestId(), taList);
                                 } catch (Exception anyE) {
+                                    ctx.setRollbackOnly();
                                     throw new Exception("Error loading analyte list for '" +
                                                         waVDO.getTestName() + ", " +
                                                         waVDO.getMethodName() + "' : " +
@@ -372,6 +383,7 @@ public class InstrumentInterfaceImportBean {
                                     for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(waVDO.getTestId()))
                                         excludedIds.add(twaVDO.getTestAnalyteId());
                                 } catch (Exception anyE) {
+                                    ctx.setRollbackOnly();
                                     throw new Exception("Error loading excluded analytes for '" +
                                                         waVDO.getTestName() + ", " +
                                                         waVDO.getMethodName() + "' : " +
@@ -405,6 +417,7 @@ public class InstrumentInterfaceImportBean {
                                                     rf = tMan.getFormatter();
                                                     rfMap.put(taVDO.getTestId(), rf);
                                                 } catch (Exception anyE) {
+                                                    ctx.setRollbackOnly();
                                                     throw new Exception("Error loading result formatter for '" +
                                                                         waVDO.getTestName() + ", " +
                                                                         waVDO.getMethodName() + "' : " +
