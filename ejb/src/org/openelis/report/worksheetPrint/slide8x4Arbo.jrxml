@@ -11,7 +11,8 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     w.description as worksheet_description, wi.position, wav.worksheet_id, wav.accession_number
+     w.description as worksheet_description, wi.position, wav.worksheet_id, wav.accession_number,
+     wav.test_name
 FROM
      worksheet_analysis_view wav
      join worksheet w on wav.worksheet_id = w.id
@@ -25,6 +26,7 @@ ORDER BY
 	<field name="position" class="java.lang.Integer"/>
 	<field name="worksheet_id" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.String"/>
+	<field name="test_name" class="java.lang.String"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
@@ -520,7 +522,14 @@ ORDER BY
 				<text><![CDATA[Accession #]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="result.header" mode="Transparent" x="102" y="0" width="172" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="testName.header" mode="Transparent" x="102" y="0" width="86" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Test]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="result.header" mode="Transparent" x="188" y="0" width="86" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -549,6 +558,13 @@ ORDER BY
 					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement key="testName" mode="Transparent" x="102" y="0" width="86" height="12" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{test_name}]]></textFieldExpression>
 			</textField>
 			<break>
 				<reportElement mode="Transparent" x="0" y="11" width="286" height="1">

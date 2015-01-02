@@ -99,6 +99,7 @@ public class WorksheetPrintReportBean {
             format.add(new OptionListItem("LLS", "Line List Single Line"));
             format.add(new OptionListItem("LLM", "Line List Multi Line"));
             format.add(new OptionListItem("QFTG", "QFTG Plate"));
+            format.add(new OptionListItem("WNV", "WNV Plate"));
 
             p.add(new Prompt("FORMAT", Prompt.Type.ARRAY).setPrompt("Format:")
                                                          .setWidth(200)
@@ -249,6 +250,15 @@ public class WorksheetPrintReportBean {
                 case "QFTG":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 36);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
+                    dir = ReportUtil.getResourcePath(url);
+                    status.setMessage("Outputing report").setPercentComplete(20);
+                    jreport = (JasperReport)JRLoader.loadObject(url);
+                    jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
+                    break;
+            
+                case "WNV":
+                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 15);
+                    url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateWNV.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);
                     jreport = (JasperReport)JRLoader.loadObject(url);

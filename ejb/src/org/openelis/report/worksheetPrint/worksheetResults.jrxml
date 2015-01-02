@@ -18,7 +18,7 @@
 	<field name="analyte_name" class="java.lang.String"/>
 	<field name="result_record" class="org.openelis.domain.DataObject"/>
 	<detail>
-		<band height="24">
+		<band height="24" splitType="Prevent">
 			<staticText>
 				<reportElement key="rowAnalyte.header" mode="Opaque" x="52" y="0" width="100" height="12" forecolor="#404040" backcolor="#C0C0C0"/>
 				<textElement verticalAlignment="Bottom">
