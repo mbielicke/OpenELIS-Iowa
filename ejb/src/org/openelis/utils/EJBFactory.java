@@ -390,6 +390,10 @@ public class EJBFactory {
         return lookup("TestWorksheetBean");
     }
 
+    public static WorksheetBean getWorksheet() {
+        return lookup("WorksheetBean");
+    }
+
     public static WorksheetAnalysisBean getWorksheetAnalysis() {
         return lookup("WorksheetAnalysisBean");
     }
@@ -398,8 +402,8 @@ public class EJBFactory {
         return lookup("WorksheetItemBean");
     }
 
-    public static WorksheetBean getWorksheet() {
-        return lookup("WorksheetBean");
+    public static WorksheetManager1Bean getWorksheetManager1() {
+        return lookup("WorksheetManager1Bean");
     }
 
     public static WorksheetQcResultBean getWorksheetQcResult() {
