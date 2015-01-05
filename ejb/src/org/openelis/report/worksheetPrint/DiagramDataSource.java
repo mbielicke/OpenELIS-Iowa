@@ -31,9 +31,11 @@ import java.util.HashMap;
 import org.openelis.bean.WorksheetAnalysisBean;
 import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetItemBean;
+import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
+import org.openelis.manager.WorksheetManager1;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.EJBFactory;
 
@@ -49,15 +51,12 @@ public class DiagramDataSource implements JRDataSource {
     private String worksheetDescription;
 	
 	private DiagramDataSource(Integer worksheetId, Integer diagramCapacity) throws Exception {
-        ArrayList<WorksheetAnalysisViewDO> waList;
-        ArrayList<WorksheetItemDO> wiList;
-	    HashMap<Integer, Integer> waIndexMap, wiIndexMap;
-	    Integer index;
+	    int i, j;
 	    RowObject row;
-        WorksheetAnalysisBean wa;
-        WorksheetBean w;
-        WorksheetItemBean wi;
-        WorksheetViewDO wVDO;
+	    WorksheetAnalysisViewDO waVDO;
+	    WorksheetItemDO wiDO;
+	    WorksheetManager1 wman;
+        WorksheetManager1Bean wm;
 
         if (diagramCapacity != null)
             this.diagramCapacity = diagramCapacity;
@@ -65,9 +64,7 @@ public class DiagramDataSource implements JRDataSource {
             this.diagramCapacity = 500;
         
 		try {
-            w = EJBFactory.getWorksheet();
-            wa = EJBFactory.getWorksheetAnalysis();
-            wi = EJBFactory.getWorksheetItem();
+            wm = EJBFactory.getWorksheetManager1();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw e;
@@ -75,32 +72,18 @@ public class DiagramDataSource implements JRDataSource {
 
         if (worksheetId != null) {
             try {
-                wVDO = w.fetchById(worksheetId);
-                this.worksheetId = wVDO.getId();
-                worksheetDescription = wVDO.getDescription();
+                wman = wm.fetchById(worksheetId, WorksheetManager1.Load.DETAIL);
+                this.worksheetId = wman.getWorksheet().getId();
+                worksheetDescription = wman.getWorksheet().getDescription();
                 
-                waList = wa.fetchByWorksheetId(worksheetId);
                 rowList = new ArrayList<RowObject>();
-                wiIndexMap = new HashMap<Integer, Integer>();
-                waIndexMap = new HashMap<Integer, Integer>();
-                for (WorksheetAnalysisViewDO data: waList) {
-                    row = new RowObject(data);
-                    rowList.add(row);
-                    wiIndexMap.put(data.getWorksheetItemId(), rowList.size() - 1);
-                    waIndexMap.put(data.getId(), rowList.size() - 1);
-                }
-                
-                try {
-                    wiList = wi.fetchByWorksheetId(worksheetId);
-                    for (WorksheetItemDO data2 : wiList) {
-                        index = wiIndexMap.get(data2.getId());
-                        if (index != null) {
-                            row = rowList.get(index);
-                            row.wiDO = data2;
-                        }
+                for (i = 0; i < wman.item.count(); i++) {
+                    wiDO = wman.item.get(i);
+                    for (j = 0; j < wman.analysis.count(wiDO); j++) {
+                        waVDO = wman.analysis.get(wiDO, j);
+                        row = new RowObject(wiDO, waVDO);
+                        rowList.add(row);
                     }
-                } catch (NotFoundException e) {
-                    // ignore
                 }
             } catch (NotFoundException e) {
                 // ignore
@@ -137,9 +120,16 @@ public class DiagramDataSource implements JRDataSource {
 	        } else if ("position".equals(field.getName())) {
     	        if (row.wiDO != null)
     	            ret = row.wiDO.getPosition(); 
-    	    } else if ("accession_number".equals(field.getName())) {
-    	        if (row.waVDO != null)
-    	            ret = row.waVDO.getAccessionNumber();
+            } else if ("accession_number".equals(field.getName())) {
+                if (row.waVDO != null)
+                    ret = row.waVDO.getAccessionNumber();
+    	    } else if ("well_label".equals(field.getName())) {
+    	        if (row.waVDO != null) {
+    	            if (row.waVDO.getAnalysisId() != null)
+    	                ret = row.waVDO.getAccessionNumber();
+    	            else if (row.waVDO.getQcLotId() != null)
+                        ret = row.waVDO.getDescription();
+    	        }
     	    }
 	    }
 	    return ret;
@@ -156,7 +146,7 @@ public class DiagramDataSource implements JRDataSource {
         return hasNext;
 	}
 	
-    public String getAccessionNumber(Integer page, Integer well) {
+    public String getWellLabel(Integer page, Integer well) {
         Integer rowIndex;
         RowObject row;
         String ret;
@@ -165,7 +155,12 @@ public class DiagramDataSource implements JRDataSource {
         rowIndex = (page - 1) * diagramCapacity + well - 1;
         if (rowIndex < rowList.size()) {
             row = rowList.get(rowIndex);
-            ret = row.waVDO.getAccessionNumber();
+            if (row.waVDO != null) {
+                if (row.waVDO.getAnalysisId() != null)
+                    ret = row.waVDO.getAccessionNumber();
+                else if (row.waVDO.getQcLotId() != null)
+                    ret = row.waVDO.getDescription();
+            }
         }
         
         return ret;
@@ -176,6 +171,11 @@ public class DiagramDataSource implements JRDataSource {
         WorksheetItemDO wiDO;
 
         public RowObject(WorksheetAnalysisViewDO waVDO) {
+            this.waVDO = waVDO;
+        }
+
+        public RowObject(WorksheetItemDO wiDO, WorksheetAnalysisViewDO waVDO) {
+            this.wiDO = wiDO;
             this.waVDO = waVDO;
         }
     }
