@@ -19,6 +19,7 @@
 	<field name="worksheet_description" class="java.lang.String"/>
 	<field name="position" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.String"/>
+	<field name="well_label" class="java.lang.String"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
@@ -474,7 +475,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 1)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 1)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellB4B5C4C5" mode="Opaque" x="158" y="72" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -500,7 +501,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 2)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 2)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellB6B7C6C7" mode="Opaque" x="250" y="72" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -526,7 +527,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 3)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 3)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellB8B9C8C9" mode="Opaque" x="342" y="72" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -552,7 +553,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 4)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 4)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellB10B11C10C11" mode="Opaque" x="434" y="72" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -578,7 +579,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 5)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 5)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellB12" mode="Opaque" x="526" y="72" width="46" height="24" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -682,7 +683,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 6)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 6)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellD4D5E4E5" mode="Opaque" x="158" y="120" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -708,7 +709,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 7)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 7)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellD6D7E6E7" mode="Opaque" x="250" y="120" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -734,7 +735,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 8)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 8)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellD8D9E8E9" mode="Opaque" x="342" y="120" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -760,7 +761,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 9)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 9)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellD10D11E10E11" mode="Opaque" x="434" y="120" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -786,7 +787,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 10)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 10)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellD12" mode="Opaque" x="526" y="120" width="46" height="24" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -890,7 +891,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 11)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 11)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellF4F5G4G5" mode="Opaque" x="158" y="168" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -916,7 +917,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 12)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 12)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellF6F7G6G7" mode="Opaque" x="250" y="168" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -942,7 +943,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 13)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 13)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellF8F9G8G9" mode="Opaque" x="342" y="168" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -968,7 +969,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 14)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 14)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellF10F11G10G11" mode="Opaque" x="434" y="168" width="92" height="48" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -994,7 +995,7 @@
 				<textElement verticalAlignment="Top">
 					<font fontName="Times New Roman" size="8" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getAccessionNumber($V{PAGE_NUMBER}, 15)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((DiagramDataSource)$P{REPORT_DATA_SOURCE}).getWellLabel($V{PAGE_NUMBER}, 15)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellF12" mode="Opaque" x="526" y="168" width="46" height="24" forecolor="#404040" backcolor="#CDCDCD"/>
@@ -1209,11 +1210,11 @@
 				<text><![CDATA[Position]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="accessionNumber.header" mode="Transparent" x="35" y="0" width="55" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="wellLabel.header" mode="Transparent" x="35" y="0" width="55" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[Accession #]]></text>
+				<text><![CDATA[Well Label]]></text>
 			</staticText>
 			<staticText>
 				<reportElement key="result.header" mode="Transparent" x="90" y="0" width="186" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
@@ -1240,11 +1241,11 @@
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{position}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement key="accessionNumber" mode="Transparent" x="35" y="0" width="55" height="12" backcolor="#FFFFFF"/>
+				<reportElement key="wellLabel" mode="Transparent" x="35" y="0" width="55" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{well_label}]]></textFieldExpression>
 			</textField>
 			<break>
 				<reportElement mode="Transparent" x="0" y="11" width="276" height="1">
