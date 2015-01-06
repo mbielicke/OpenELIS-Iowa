@@ -85,8 +85,7 @@ public class EOrder implements Auditable, Cloneable {
     @Column(name = "description")
     private String                 description;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eorder_id", insertable = false, updatable = false)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "eOrder")
     private EOrderBody             eOrderBody;
 
     @OneToMany(fetch = FetchType.LAZY)

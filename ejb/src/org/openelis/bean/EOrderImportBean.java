@@ -37,8 +37,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -60,6 +62,9 @@ import org.w3c.dom.NodeList;
 @Stateless
 @SecurityDomain("openelis")
 public class EOrderImportBean {
+    @Resource
+    private SessionContext           ctx;
+
     @EJB
     EOrderBean                       eorder;
     @EJB
@@ -169,10 +174,10 @@ public class EOrderImportBean {
                                 prevEOrderBodyDO = eorderBody.fetchByEOrderId(prevEOrderDO.getId());
                                 document2 = XMLUtil.parse(prevEOrderBodyDO.getXml());
                                 prevEOrderBodyElem = (Element) document2.getDocumentElement();
-                                nodes2 = eorderBodyElem.getElementsByTagName("organization");
+                                nodes2 = prevEOrderBodyElem.getElementsByTagName("organization");
                                 if (nodes2.getLength() > 0 && organizationName != null &&
                                     organizationName.equals(XMLUtil.getNodeText((Element)nodes2.item(0), "name"))) {
-                                    nodes2 = eorderBodyElem.getElementsByTagName("test");
+                                    nodes2 = prevEOrderBodyElem.getElementsByTagName("test");
                                     if (nodes2.getLength() > 0 && placerOrderNum != null &&
                                         placerOrderNum.equals(XMLUtil.getNodeText((Element)nodes2.item(0), "placer_order_num"))) {
                                         prevEOrderDO = eorder.fetchForUpdate(prevEOrderDO.getId());
@@ -191,12 +196,12 @@ public class EOrderImportBean {
                                                 eorder.delete(prevEOrderDO);
                                             }
                                         } catch (Exception anyE1) {
-                                            eorder.abortUpdate(prevEOrderDO.getId());
                                             throw anyE1;
                                         }
                                     }
                                 }
                             } catch (Exception anyE) {
+                                ctx.setRollbackOnly();
                                 throw new Exception("Error cancelling previous orders for ID "+eorderDO.getId()+
                                                     ": "+anyE.getMessage());
                             }
@@ -208,14 +213,19 @@ public class EOrderImportBean {
             }
         }
         
-        eorder.add(eorderDO);
-        
-        eorderBodyDO.setEOrderId(eorderDO.getId());
-        eorderBody.add(eorderBodyDO);
-        for (i = 0; i < eorderLinkDOs.size(); i++) {
-            eorderLinkDO = eorderLinkDOs.get(i);
-            eorderLinkDO.setEOrderId(eorderDO.getId());
-            eorderLink.add(eorderLinkDO);
+        try {
+            eorder.add(eorderDO);
+            
+            eorderBodyDO.setEOrderId(eorderDO.getId());
+            eorderBody.add(eorderBodyDO);
+            for (i = 0; i < eorderLinkDOs.size(); i++) {
+                eorderLinkDO = eorderLinkDOs.get(i);
+                eorderLinkDO.setEOrderId(eorderDO.getId());
+                eorderLink.add(eorderLinkDO);
+            }
+        } catch (Exception anyE) {
+            ctx.setRollbackOnly();
+            throw anyE;
         }
     }                        
                             
