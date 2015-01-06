@@ -106,6 +106,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_continue();
 
   /**
+   * Translated "Select Environmental Fields For Output".
+   * 
+   * @return translated "Select Environmental Fields For Output"
+   */
+  @DefaultMessage("Select Environmental Fields For Output")
+  @Key("dataView.environmentalFields")
+  String dataView_environmentalFields();
+
+  /**
    * Translated "no results were found".
    * 
    * @return translated "no results were found"
@@ -124,11 +133,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_accession();
 
   /**
-   * Translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.".
+   * Translated "This value is one piece of information that your organization provided on the sample paperwork. It could be your organization''s lab number, a patient ID/Chart ID/Medical Record Number, or another unique identifier for a sample that you collect.".
    * 
-   * @return translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect."
+   * @return translated "This value is one piece of information that your organization provided on the sample paperwork. It could be your organization''s lab number, a patient ID/Chart ID/Medical Record Number, or another unique identifier for a sample that you collect."
    */
-  @DefaultMessage("This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.")
+  @DefaultMessage("This value is one piece of information that your organization provided on the sample paperwork. It could be your organization''s lab number, a patient ID/Chart ID/Medical Record Number, or another unique identifier for a sample that you collect.")
   @Key("dataView.help.clientReference")
   String dataView_help_clientReference();
 
@@ -142,31 +151,40 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_collected();
 
   /**
-   * Translated "TODO".
+   * Translated "The name or ID of the collector of the environmental sample.".
    * 
-   * @return translated "TODO"
+   * @return translated "The name or ID of the collector of the environmental sample."
    */
-  @DefaultMessage("TODO")
-  @Key("dataView.help.collectionSite")
-  String dataView_help_collectionSite();
+  @DefaultMessage("The name or ID of the collector of the environmental sample.")
+  @Key("dataView.help.envCollector")
+  String dataView_help_envCollector();
 
   /**
-   * Translated "TODO".
+   * Translated "The patient''s date of birth for a clinical sample. You must enter an ending date in the To field to search for a range of birth dates.".
    * 
-   * @return translated "TODO"
+   * @return translated "The patient''s date of birth for a clinical sample. You must enter an ending date in the To field to search for a range of birth dates."
    */
-  @DefaultMessage("TODO")
-  @Key("dataView.help.collectionTown")
-  String dataView_help_collectionTown();
+  @DefaultMessage("The patient''s date of birth for a clinical sample. You must enter an ending date in the To field to search for a range of birth dates.")
+  @Key("dataView.help.patientBirth")
+  String dataView_help_patientBirth();
 
   /**
-   * Translated "The name or ID of the collector of the sample.".
+   * Translated "The first name of the patient for a clinical sample.".
    * 
-   * @return translated "The name or ID of the collector of the sample."
+   * @return translated "The first name of the patient for a clinical sample."
    */
-  @DefaultMessage("The name or ID of the collector of the sample.")
-  @Key("dataView.help.collector")
-  String dataView_help_collector();
+  @DefaultMessage("The first name of the patient for a clinical sample.")
+  @Key("dataView.help.patientFirst")
+  String dataView_help_patientFirst();
+
+  /**
+   * Translated "The last name of the patient for a clinical sample.".
+   * 
+   * @return translated "The last name of the patient for a clinical sample."
+   */
+  @DefaultMessage("The last name of the patient for a clinical sample.")
+  @Key("dataView.help.patientLast")
+  String dataView_help_patientLast();
 
   /**
    * Translated "The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.".
@@ -178,6 +196,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_project();
 
   /**
+   * Translated "The Public Water Supply ID is a unique identifier assigned by the state to all public water supplies. The PWS Id begins with a two letter state abbreviation followed by a unique seven digit number.".
+   * 
+   * @return translated "The Public Water Supply ID is a unique identifier assigned by the state to all public water supplies. The PWS Id begins with a two letter state abbreviation followed by a unique seven digit number."
+   */
+  @DefaultMessage("The Public Water Supply ID is a unique identifier assigned by the state to all public water supplies. The PWS Id begins with a two letter state abbreviation followed by a unique seven digit number.")
+  @Key("dataView.help.pws")
+  String dataView_help_pws();
+
+  /**
    * Translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
    * 
    * @return translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field."
@@ -187,13 +214,31 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_released();
 
   /**
-   * Translated "<span class = \"helpText\"><span class = \"helpHeader\"> Locating Your Result </span><ul><li>To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add \"*\" at the end of your search term. For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\".  Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul><span class = \"helpHeader\"> Disclaimer: </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul></span>".
+   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">Locating Your Results</span><p>The Spreadsheet View option will display your results in a spreadsheet that you can sort and filter. The first step is to search for the results that you would like to be displayed in the spreadsheet.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: Client Reference, Collector Name, PWS ID, Patient''s First Name, and Patient''s Last Name. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Continue to Report Fields</b> button to select the data that you want to be displayed on your spreadsheet. The <b>Reset</b> button clears all of the search fields.</p><span class=\"helpHeader\">Disclaimer</span><p>Results from this report represent analytical values as of the date they are generated. Future revisions may affect these results and official final results should be reviewed from the Final Report option to assure their accuracy.</p></span>".
    * 
-   * @return translated "<span class = \"helpText\"><span class = \"helpHeader\"> Locating Your Result </span><ul><li>To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add \"*\" at the end of your search term. For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\".  Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul><span class = \"helpHeader\"> Disclaimer: </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul></span>"
+   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">Locating Your Results</span><p>The Spreadsheet View option will display your results in a spreadsheet that you can sort and filter. The first step is to search for the results that you would like to be displayed in the spreadsheet.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: Client Reference, Collector Name, PWS ID, Patient''s First Name, and Patient''s Last Name. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Continue to Report Fields</b> button to select the data that you want to be displayed on your spreadsheet. The <b>Reset</b> button clears all of the search fields.</p><span class=\"helpHeader\">Disclaimer</span><p>Results from this report represent analytical values as of the date they are generated. Future revisions may affect these results and official final results should be reviewed from the Final Report option to assure their accuracy.</p></span>"
    */
-  @DefaultMessage("<span class = \"helpText\"><span class = \"helpHeader\"> Locating Your Result </span><ul><li>To locate <b>Test Analytes</b> and <b>Auxiliary Data</b>, enter information in one or more search fields. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date.<li>The system supports wild card searches only in the following fields: <b>Collector Name</b>, <b>Client Reference</b>, <b>Collection Site</b>, and <b>Collection Town</b>.  By using this search method you would add \"*\" at the end of your search term. For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\".  Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc.</li><li>You may also narrow your search by entering information in multiple fields.</li><li>Click the <b>Continue to Report Fields</b> button to view a list of available report fields for sample, organization, and analysis information.</li></ul><span class = \"helpHeader\"> Disclaimer: </span> <ul> <li>Results from this report represent analytical values as of the date they are generated.  Future revisions may affect these results and official final results should be reviewed from the <b>Environmental Final Report</b> function to assure their accuracy.</li></ul></span>")
+  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">Locating Your Results</span><p>The Spreadsheet View option will display your results in a spreadsheet that you can sort and filter. The first step is to search for the results that you would like to be displayed in the spreadsheet.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: Client Reference, Collector Name, PWS ID, Patient''s First Name, and Patient''s Last Name. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Continue to Report Fields</b> button to select the data that you want to be displayed on your spreadsheet. The <b>Reset</b> button clears all of the search fields.</p><span class=\"helpHeader\">Disclaimer</span><p>Results from this report represent analytical values as of the date they are generated. Future revisions may affect these results and official final results should be reviewed from the Final Report option to assure their accuracy.</p></span>")
   @Key("dataView.help.screen")
   String dataView_help_screen();
+
+  /**
+   * Translated "The name or ID of the collector of the safe drinking water sample.".
+   * 
+   * @return translated "The name or ID of the collector of the safe drinking water sample."
+   */
+  @DefaultMessage("The name or ID of the collector of the safe drinking water sample.")
+  @Key("dataView.help.sdwisCollector")
+  String dataView_help_sdwisCollector();
+
+  /**
+   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">How to Customize your Spreadsheet</span><p>Below are groups of fields containing sample, organization, analysis, patient, and other information which you can select to be displayed as columns in your spreadsheet. This screen also shows all of the test analytes and auxiliary data that matches your search criteria. You need to select at least one Test Analyte or Auxiliary Data field to run the report. You can use the <b>Select All</b> buttons if you want to view all of the available information.</p><p>Click the <b>Run Report</b> button to pop up the spreadsheet containing all of the data that you selected. You may view, save, or print your spreadsheet reports.</p><span class=\"helpHeader\">Disclaimer</span><p>Results from this report represent analytical values as of the date they are generated. Future revisions may affect these results and official final results should be reviewed from the Final Report option to assure their accuracy.</p></span>".
+   * 
+   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">How to Customize your Spreadsheet</span><p>Below are groups of fields containing sample, organization, analysis, patient, and other information which you can select to be displayed as columns in your spreadsheet. This screen also shows all of the test analytes and auxiliary data that matches your search criteria. You need to select at least one Test Analyte or Auxiliary Data field to run the report. You can use the <b>Select All</b> buttons if you want to view all of the available information.</p><p>Click the <b>Run Report</b> button to pop up the spreadsheet containing all of the data that you selected. You may view, save, or print your spreadsheet reports.</p><span class=\"helpHeader\">Disclaimer</span><p>Results from this report represent analytical values as of the date they are generated. Future revisions may affect these results and official final results should be reviewed from the Final Report option to assure their accuracy.</p></span>"
+   */
+  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">How to Customize your Spreadsheet</span><p>Below are groups of fields containing sample, organization, analysis, patient, and other information which you can select to be displayed as columns in your spreadsheet. This screen also shows all of the test analytes and auxiliary data that matches your search criteria. You need to select at least one Test Analyte or Auxiliary Data field to run the report. You can use the <b>Select All</b> buttons if you want to view all of the available information.</p><p>Click the <b>Run Report</b> button to pop up the spreadsheet containing all of the data that you selected. You may view, save, or print your spreadsheet reports.</p><span class=\"helpHeader\">Disclaimer</span><p>Results from this report represent analytical values as of the date they are generated. Future revisions may affect these results and official final results should be reviewed from the Final Report option to assure their accuracy.</p></span>")
+  @Key("dataView.help.selection")
+  String dataView_help_selection();
 
   /**
    * Translated "Select Organization Fields For Output".
@@ -230,6 +275,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Select Sample Fields For Output")
   @Key("dataView.sampleFields")
   String dataView_sampleFields();
+
+  /**
+   * Translated "Select SDWIS Fields For Output".
+   * 
+   * @return translated "Select SDWIS Fields For Output"
+   */
+  @DefaultMessage("Select SDWIS Fields For Output")
+  @Key("dataView.sdwisFields")
+  String dataView_sdwisFields();
 
   /**
    * Translated "Please select at least one test analyte or aux data".
@@ -493,11 +547,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_accession();
 
   /**
-   * Translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.".
+   * Translated "This value is one piece of information that your organization provided on the sample paperwork. It could be your organization''s lab number, a patient ID/Chart ID/Medical Record Number, or another unique identifier for a sample that you collect.".
    * 
-   * @return translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect."
+   * @return translated "This value is one piece of information that your organization provided on the sample paperwork. It could be your organization''s lab number, a patient ID/Chart ID/Medical Record Number, or another unique identifier for a sample that you collect."
    */
-  @DefaultMessage("This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.")
+  @DefaultMessage("This value is one piece of information that your organization provided on the sample paperwork. It could be your organization''s lab number, a patient ID/Chart ID/Medical Record Number, or another unique identifier for a sample that you collect.")
   @Key("finalReport.help.clientReference")
   String finalReport_help_clientReference();
 
@@ -574,11 +628,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_released();
 
   /**
-   * Translated "<span class = \"helpText\"><span class = \"helpHeader\"> Locating Your Results </span> <br/> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/> The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</span>".
+   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">Locating Your Results</span><br/><p/>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b><p/>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.<p/>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</span>".
    * 
-   * @return translated "<span class = \"helpText\"><span class = \"helpHeader\"> Locating Your Results </span> <br/> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/> The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</span>"
+   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">Locating Your Results</span><br/><p/>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b><p/>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.<p/>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</span>"
    */
-  @DefaultMessage("<span class = \"helpText\"><span class = \"helpHeader\"> Locating Your Results </span> <br/> <p/> You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b> <p/> It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. <p/> You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/> The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/> For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/> In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/> Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</span>")
+  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">Locating Your Results</span><br/><p/>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b><p/>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.<p/>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.<p/>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. <p/>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. <p/>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.<p/>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</span>")
   @Key("finalReport.help.screen")
   String finalReport_help_screen();
 
@@ -590,6 +644,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("The name or ID of the collector of the safe drinking water sample.")
   @Key("finalReport.help.sdwisCollector")
   String finalReport_help_sdwisCollector();
+
+  /**
+   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>The following is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results will be currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>".
+   * 
+   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>The following is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results will be currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>"
+   */
+  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>The following is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results will be currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>")
+  @Key("finalReport.help.selection")
+  String finalReport_help_selection();
 
   /**
    * Translated "Patient''s Date of Birth".
@@ -1042,6 +1105,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String pws_id();
 
   /**
+   * Translated "PWS Name".
+   * 
+   * @return translated "PWS Name"
+   */
+  @DefaultMessage("PWS Name")
+  @Key("pws.name")
+  String pws_name();
+
+  /**
    * Translated "Accession Number".
    * 
    * @return translated "Accession Number"
@@ -1069,11 +1141,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sample_collectedDate();
 
   /**
-   * Translated "Collection Site".
+   * Translated "Location".
    * 
-   * @return translated "Collection Site"
+   * @return translated "Location"
    */
-  @DefaultMessage("Collection Site")
+  @DefaultMessage("Location")
   @Key("sample.collectionSite")
   String sample_collectionSite();
 
@@ -1213,6 +1285,96 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sampleStatus_description();
 
   /**
+   * Translated "The lab number assigned to the sample by SHL. Enter the accession number in this field to search for a single sample or enter the beginning number in the Accession Number field and the ending number in the To field to search for a series of samples.".
+   * 
+   * @return translated "The lab number assigned to the sample by SHL. Enter the accession number in this field to search for a single sample or enter the beginning number in the Accession Number field and the ending number in the To field to search for a series of samples."
+   */
+  @DefaultMessage("The lab number assigned to the sample by SHL. Enter the accession number in this field to search for a single sample or enter the beginning number in the Accession Number field and the ending number in the To field to search for a series of samples.")
+  @Key("sampleStatus.help.accession")
+  String sampleStatus_help_accession();
+
+  /**
+   * Translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.".
+   * 
+   * @return translated "This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect."
+   */
+  @DefaultMessage("This value is one item that ties your information to the sample paperwork. It could be your organization''s lab number or another unique identifier for a sample that you collect.")
+  @Key("sampleStatus.help.clientReference")
+  String sampleStatus_help_clientReference();
+
+  /**
+   * Translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.".
+   * 
+   * @return translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field."
+   */
+  @DefaultMessage("The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.")
+  @Key("sampleStatus.help.collected")
+  String sampleStatus_help_collected();
+
+  /**
+   * Translated "The name or ID of the collector of the environmental sample.".
+   * 
+   * @return translated "The name or ID of the collector of the environmental sample."
+   */
+  @DefaultMessage("The name or ID of the collector of the environmental sample.")
+  @Key("sampleStatus.help.envCollector")
+  String sampleStatus_help_envCollector();
+
+  /**
+   * Translated "The patient''s date of birth for a clinical sample. You must enter an ending date in the To field to search for a range of birth dates.".
+   * 
+   * @return translated "The patient''s date of birth for a clinical sample. You must enter an ending date in the To field to search for a range of birth dates."
+   */
+  @DefaultMessage("The patient''s date of birth for a clinical sample. You must enter an ending date in the To field to search for a range of birth dates.")
+  @Key("sampleStatus.help.patientBirth")
+  String sampleStatus_help_patientBirth();
+
+  /**
+   * Translated "The first name of the patient for a clinical sample.".
+   * 
+   * @return translated "The first name of the patient for a clinical sample."
+   */
+  @DefaultMessage("The first name of the patient for a clinical sample.")
+  @Key("sampleStatus.help.patientFirst")
+  String sampleStatus_help_patientFirst();
+
+  /**
+   * Translated "The last name of the patient for a clinical sample.".
+   * 
+   * @return translated "The last name of the patient for a clinical sample."
+   */
+  @DefaultMessage("The last name of the patient for a clinical sample.")
+  @Key("sampleStatus.help.patientLast")
+  String sampleStatus_help_patientLast();
+
+  /**
+   * Translated "The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.".
+   * 
+   * @return translated "The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose."
+   */
+  @DefaultMessage("The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.")
+  @Key("sampleStatus.help.project")
+  String sampleStatus_help_project();
+
+  /**
+   * Translated "The Public Water Supply ID is a unique identifier assigned by the state to all public water supplies. The PWS Id begins with a two letter state abbreviation followed by a unique seven digit number.".
+   * 
+   * @return translated "The Public Water Supply ID is a unique identifier assigned by the state to all public water supplies. The PWS Id begins with a two letter state abbreviation followed by a unique seven digit number."
+   */
+  @DefaultMessage("The Public Water Supply ID is a unique identifier assigned by the state to all public water supplies. The PWS Id begins with a two letter state abbreviation followed by a unique seven digit number.")
+  @Key("sampleStatus.help.pws")
+  String sampleStatus_help_pws();
+
+  /**
+   * Translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
+   * 
+   * @return translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field."
+   */
+  @DefaultMessage("The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
+  @Key("sampleStatus.help.released")
+  String sampleStatus_help_released();
+
+  /**
    * Translated "<span class = \"helpText\"> <span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><br/><br/>To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><span class = \"helpHeader\">To Find the Status of Samples </span><br/><ul><li>If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>To</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a \"*\" at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\". Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul></span>".
    * 
    * @return translated "<span class = \"helpText\"> <span class = \"helpHeader\">Locating Samples Sent to the Laboratory </span><br/><br/>To locate samples submitted to the laboratory, you must know at least one or more of the following criteria: <ul><li>Collection Date</li><li>Accession Number</li><li>Client Reference</li><li>Project Code</li></ul><span class = \"helpHeader\">To Find the Status of Samples </span><br/><ul><li>If searching by sample collection date, specify the beginning date in the <b>Collected Date</b> and the ending date in the <b>To</b> field. It is recommended that you use the provided calendars to the right of these fields when inputting dates to eliminate any formatting errors. Click on <b>Today</b> at the bottom of the calendar to enter today''s date. </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference information in the <b>Client Reference</b> field. You may use part of a reference by adding a \"*\" at the end of your search term (known as a wildcard search). For example, to see a list of samples that share the first three letters \"BIG\", enter \"BIG*\". Matches would include \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc. </li><li>You may also narrow your search by entering information in multiple fields.</li></ul></span>"
@@ -1222,6 +1384,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sampleStatus_help_screen();
 
   /**
+   * Translated "The name or ID of the collector of the safe drinking water sample.".
+   * 
+   * @return translated "The name or ID of the collector of the safe drinking water sample."
+   */
+  @DefaultMessage("The name or ID of the collector of the safe drinking water sample.")
+  @Key("sampleStatus.help.sdwisCollector")
+  String sampleStatus_help_sdwisCollector();
+
+  /**
    * Translated "In Progress".
    * 
    * @return translated "In Progress"
@@ -1229,15 +1400,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("In Progress")
   @Key("sampleStatus.inProgress")
   String sampleStatus_inProgress();
-
-  /**
-   * Translated "Collector Not Available".
-   * 
-   * @return translated "Collector Not Available"
-   */
-  @DefaultMessage("Collector Not Available")
-  @Key("sampleStatus.noCollector")
-  String sampleStatus_noCollector();
 
   /**
    * Translated "QA Event".
@@ -1256,4 +1418,40 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Test Status")
   @Key("sampleStatus.testStatus")
   String sampleStatus_testStatus();
+
+  /**
+   * Translated "Facility ID".
+   * 
+   * @return translated "Facility ID"
+   */
+  @DefaultMessage("Facility ID")
+  @Key("sdwis.facilityId")
+  String sdwis_facilityId();
+
+  /**
+   * Translated "Sample Category".
+   * 
+   * @return translated "Sample Category"
+   */
+  @DefaultMessage("Sample Category")
+  @Key("sdwis.sampleCategory")
+  String sdwis_sampleCategory();
+
+  /**
+   * Translated "Sample Point ID".
+   * 
+   * @return translated "Sample Point ID"
+   */
+  @DefaultMessage("Sample Point ID")
+  @Key("sdwis.samplePtId")
+  String sdwis_samplePtId();
+
+  /**
+   * Translated "SDWIS Sample Type".
+   * 
+   * @return translated "SDWIS Sample Type"
+   */
+  @DefaultMessage("SDWIS Sample Type")
+  @Key("sdwis.sampleType")
+  String sdwis_sampleType();
 }

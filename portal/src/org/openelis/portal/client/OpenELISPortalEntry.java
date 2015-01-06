@@ -40,6 +40,7 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
         Resources.INSTANCE.icon().ensureInjected();
         Resources.INSTANCE.window().ensureInjected();
         Resources.INSTANCE.checkbox().ensureInjected();
+        Resources.INSTANCE.listTable().ensureInjected();
 
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             public void onUncaughtException(Throwable e) {
@@ -51,10 +52,10 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
                 Window.alert("Sorry, but an unexpected error has occurred.  Please contact IT support");
             }
         });
-        
+
         try {
             RootPanel.get("main").removeFromParent();
-            
+
             MainScreen screen = GWT.create(MainScreen.class);
             RootPanel.get().add(screen);
             RootPanel.get().getElement().getStyle().setBackgroundColor("#ffffff");
@@ -62,14 +63,14 @@ public class OpenELISPortalEntry implements EntryPoint, NativePreviewHandler {
 
             SessionTimer.start();
         } catch (Throwable e) {
-            remote.log(Level.SEVERE,e.getMessage(),e);
+            remote.log(Level.SEVERE, e.getMessage(), e);
             Window.alert("Unable to start app : " + e.getMessage());
         }
-        
+
         try {
             Constants.setConstants(OpenELISService.get().getConstants());
         } catch (Exception e) {
-        	remote.log(Level.SEVERE,e.getMessage(),e);
+            remote.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

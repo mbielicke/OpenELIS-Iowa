@@ -28,8 +28,7 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     protected TextBox<Integer>              accessionFrom, accessionTo;
 
     @UiField
-    protected TextBox<String>               clientReference, collector, collectionSite,
-                    collectionTown;
+    protected TextBox<String>               clientReference, envCollector, sdwisCollector;
 
     @UiField
     protected Calendar                      collectedFrom, collectedTo, releasedFrom, releasedTo;
@@ -51,19 +50,16 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     protected Table                         analyteTable, auxTable;
 
     @UiField
-    protected Button                        continueButton, resetButton,
-                    selectAllSampleFieldsButton, selectAllOrgFieldsButton,
-                    selectAllAnalysisFieldsButton, selectAllPatientFieldsButton,
-                    selectAllAnalytesButton, unselectAllAnalytesButton, selectAllAuxButton,
-                    unselectAllAuxButton, backButton, runReportButton;
+    protected Button                        continueButton, resetButton, selectAllAnalytesButton,
+                    unselectAllAnalytesButton, selectAllAuxButton, unselectAllAuxButton,
+                    backButton, runReportButton;
 
     @UiField
     protected DeckPanel                     deck;
 
     @UiField
     protected Help                          collectedError, releasedError, accessionError,
-                    collectorError, clientReferenceError, collectionSiteError, collectionTownError,
-                    projectError;
+                    envCollectorError, sdwisCollectorError, clientReferenceError, projectError;
 
     public DataViewUITabletImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -97,18 +93,13 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
-    public TextBox<String> getCollector() {
-        return collector;
+    public TextBox<String> getEnvCollector() {
+        return envCollector;
     }
 
     @Override
-    public TextBox<String> getCollectionSite() {
-        return collectionSite;
-    }
-
-    @Override
-    public TextBox<String> getCollectionTown() {
-        return collectionTown;
+    public TextBox<String> getSdwisCollector() {
+        return sdwisCollector;
     }
 
     @Override
@@ -172,16 +163,6 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
-    public CheckBox getCollectorHeader() {
-        return collectorHeader;
-    }
-
-    @Override
-    public CheckBox getCollectionSiteHeader() {
-        return collectionSiteHeader;
-    }
-
-    @Override
     public CheckBox getSampleDescription() {
         return sampleDescription;
     }
@@ -199,11 +180,6 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     @Override
     public CheckBox getSource() {
         return source;
-    }
-
-    @Override
-    public CheckBox getSampleLocationCity() {
-        return sampleLocationCity;
     }
 
     @Override
@@ -327,26 +303,6 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
-    public Button getSelectAllSampleFieldsButton() {
-        return selectAllSampleFieldsButton;
-    }
-
-    @Override
-    public Button getSelectAllOrgFieldsButton() {
-        return selectAllOrgFieldsButton;
-    }
-
-    @Override
-    public Button getSelectAllAnalysisFieldsButton() {
-        return selectAllAnalysisFieldsButton;
-    }
-
-    @Override
-    public Button getSelectAllPatientFieldsButton() {
-        return selectAllPatientFieldsButton;
-    }
-
-    @Override
     public Button getSelectAllAnalytesButton() {
         return selectAllAnalytesButton;
     }
@@ -412,12 +368,22 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
-    public void setCollectorError(String error) {
+    public void setEnvCollectorError(String error) {
         if (error == null) {
-            collectorError.setVisible(false);
+            envCollectorError.setVisible(false);
         } else {
-            collectorError.setText(error);
-            collectorError.setVisible(true);
+            envCollectorError.setText(error);
+            envCollectorError.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setSdwisCollectorError(String error) {
+        if (error == null) {
+            sdwisCollectorError.setVisible(false);
+        } else {
+            sdwisCollectorError.setText(error);
+            sdwisCollectorError.setVisible(true);
         }
     }
 
@@ -428,26 +394,6 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
         } else {
             clientReferenceError.setText(error);
             clientReferenceError.setVisible(true);
-        }
-    }
-
-    @Override
-    public void setCollectionSiteError(String error) {
-        if (error == null) {
-            collectionSiteError.setVisible(false);
-        } else {
-            collectionSiteError.setText(error);
-            collectionSiteError.setVisible(true);
-        }
-    }
-
-    @Override
-    public void setCollectionTownError(String error) {
-        if (error == null) {
-            collectionTownError.setVisible(false);
-        } else {
-            collectionTownError.setText(error);
-            collectionTownError.setVisible(true);
         }
     }
 
@@ -466,10 +412,129 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
         collectedError.setVisible(false);
         releasedError.setVisible(false);
         accessionError.setVisible(false);
-        collectorError.setVisible(false);
+        envCollectorError.setVisible(false);
+        sdwisCollectorError.setVisible(false);
         clientReferenceError.setVisible(false);
-        collectionSiteError.setVisible(false);
-        collectionTownError.setVisible(false);
         projectError.setVisible(false);
+    }
+
+    @Override
+    public TextBox<String> getPwsId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TextBox<String> getPatientFirst() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TextBox<String> getPatientLast() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Calendar getPatientBirthFrom() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Calendar getPatientBirthTo() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setPwsError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPatientFirstError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPatientLastError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPatientBirthError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public CheckBox getPwsIdHeader() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getPwsName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getSdwisCollectorHeader() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getSdwisLocation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getFacilityId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getSdwisSampleType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getSampleCategory() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getSamplePointId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getEnvCollectorHeader() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getEnvLocation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CheckBox getEnvLocationCity() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

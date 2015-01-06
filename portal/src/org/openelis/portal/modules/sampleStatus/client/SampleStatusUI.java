@@ -17,11 +17,29 @@ public interface SampleStatusUI extends IsWidget {
 
     public TextBox<Integer> getAccessionTo();
 
+    public TextBox<String> getPwsId();
+
     public TextBox<String> getClientReference();
+
+    public TextBox<String> getEnvCollector();
+
+    public TextBox<String> getSdwisCollector();
+
+    public TextBox<String> getPatientFirst();
+
+    public TextBox<String> getPatientLast();
 
     public Calendar getCollectedFrom();
 
     public Calendar getCollectedTo();
+
+    public Calendar getReleasedFrom();
+
+    public Calendar getReleasedTo();
+
+    public Calendar getPatientBirthFrom();
+
+    public Calendar getPatientBirthTo();
 
     public MultiDropdown<Integer> getProjectCode();
 
@@ -37,11 +55,25 @@ public interface SampleStatusUI extends IsWidget {
 
     public void setCollectedError(String error);
 
+    public void setReleasedError(String error);
+
     public void setAccessionError(String error);
 
     public void setClientReferenceError(String error);
 
     public void setProjectError(String error);
+
+    public void setEnvCollectorError(String error);
+
+    public void setSdwisCollectorError(String error);
+
+    public void setPwsError(String error);
+
+    public void setPatientFirstError(String error);
+
+    public void setPatientLastError(String error);
+
+    public void setPatientBirthError(String error);
 
     public void clearErrors();
 

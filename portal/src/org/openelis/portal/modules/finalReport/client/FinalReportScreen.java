@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.meta.SampleViewMeta;
@@ -45,15 +44,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class FinalReportScreen extends Screen {
 
-    private FinalReportUI            ui = GWT.create(FinalReportUIImpl.class);
+    private FinalReportUI          ui = GWT.create(FinalReportUIImpl.class);
 
-    private ModulePermission         userPermission;
+    private ModulePermission       userPermission;
 
-    private FinalReportFormVO        form;
+    private FinalReportFormVO      form;
 
-    private HashMap<Integer, String> status;
-
-    private StatusBarPopupScreenUI   statusScreen;
+    private StatusBarPopupScreenUI statusScreen;
 
     public FinalReportScreen() {
         initWidget(ui.asWidget());
@@ -353,28 +350,32 @@ public class FinalReportScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getSdwisCollector(),
-                         SampleViewMeta.getCollector(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getSdwisCollector().setValue(form.getSdwisCollector());
-                             }
+        addScreenHandler(ui.getSdwisCollector(), "sdwisCollector", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getSdwisCollector().setValue(form.getSdwisCollector());
+            }
 
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setSdiwsCollectorError(null);
-                                 ui.getSdwisCollector().clearExceptions();
-                                 form.setSdwisCollector(event.getValue());
-                             }
+            public void onValueChange(ValueChangeEvent<String> event) {
+                ui.setSdwisCollectorError(null);
+                ui.getSdwisCollector().clearExceptions();
+                form.setSdwisCollector(event.getValue());
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getPwsId() : ui.getEnvCollector();
-                             }
+            public Widget onTab(boolean forward) {
+                return forward ? ui.getPwsId() : ui.getEnvCollector();
+            }
 
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getSdwisCollector().getQuery();
-                             }
-                         });
+            @Override
+            public Object getQuery() {
+                QueryData q;
+
+                if (ui.getSdwisCollector().getQuery() == null)
+                    return null;
+                q = (QueryData)ui.getSdwisCollector().getQuery();
+                q.setKey(SampleViewMeta.getCollector());
+                return q;
+            }
+        });
 
         addScreenHandler(ui.getPwsId(),
                          SampleViewMeta.getPwsNumber0(),
@@ -494,13 +495,15 @@ public class FinalReportScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getGetSampleListButton(), "", new ScreenHandler<Integer>() {
-            public Widget onTab(boolean forward) {
-                return forward ? ui.getResetButton() : ui.getPatientBirthTo();
-            }
-        });
+        addScreenHandler(ui.getGetSampleListButton(),
+                         "sampleListButton",
+                         new ScreenHandler<Integer>() {
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getResetButton() : ui.getPatientBirthTo();
+                             }
+                         });
 
-        addScreenHandler(ui.getResetButton(), "", new ScreenHandler<Integer>() {
+        addScreenHandler(ui.getResetButton(), "resetButton", new ScreenHandler<Integer>() {
             public Widget onTab(boolean forward) {
                 return forward ? ui.getCollectedFrom() : ui.getGetSampleListButton();
             }
@@ -526,10 +529,6 @@ public class FinalReportScreen extends Screen {
         }
         ui.getProjectCode().setModel(model);
 
-        status = new HashMap<Integer, String>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("sample_status")) {
-            status.put(d.getId(), d.getEntry());
-        }
     }
 
     /**
@@ -632,6 +631,7 @@ public class FinalReportScreen extends Screen {
      */
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
+        String completed, inProgress;
         SampleViewVO sample;
         DateHelper dh;
         CheckBox check;
@@ -660,12 +660,14 @@ public class FinalReportScreen extends Screen {
         ui.getTable().setText(0, 4, Messages.get().finalReport_select_status());
         ui.getTable().setText(0, 5, Messages.get().finalReport_project());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
-        ui.getTable().getElement().getStyle().setTextAlign(TextAlign.CENTER);
-        ui.getTable().getElement().getStyle().setPadding(12, Unit.PX);
-        ui.getTable().getElement().getStyle().setFontSize(18, Unit.PX);
+        ui.getTable().getColumnFormatter().getElement(1).getStyle().setTextAlign(TextAlign.CENTER);
+        ui.getTable().getColumnFormatter().getElement(4).getStyle().setTextAlign(TextAlign.CENTER);
+        ui.getTable().getElement().getStyle().setFontSize(12, Unit.PX);
 
         dh = new DateHelper();
         dh.setEnd(Datetime.MINUTE);
+        completed = Messages.get().sampleStatus_completed();
+        inProgress = Messages.get().sampleStatus_inProgress();
 
         for (int i = 0, j = 1; i < samples.size(); i++ , j++ ) {
             sample = samples.get(i);
@@ -702,41 +704,19 @@ public class FinalReportScreen extends Screen {
                        sample.getPatientLastName() != null) {
                 ui.getTable().setText(j, 3, "[patient] " + sample.getPatientLastName());
             }
-            ui.getTable().setText(j, 4, status.get(sample.getSampleStatusId()));
-            if (DataBaseUtil.isSame(Constants.dictionary().SAMPLE_RELEASED,
-                                    sample.getSampleStatusId()) ||
-                DataBaseUtil.isSame(Constants.dictionary().SAMPLE_COMPLETED,
-                                    sample.getSampleStatusId())) {
-                ui.getTable().getCellFormatter().setStyleName(j,
-                                                              4,
-                                                              UIResources.INSTANCE.table()
-                                                                                  .GreenStatus());
-            } else if (DataBaseUtil.isSame(Constants.dictionary().SAMPLE_LOGGED_IN,
-                                           sample.getSampleStatusId()) ||
-                       DataBaseUtil.isSame(Constants.dictionary().SAMPLE_NOT_VERIFIED,
-                                           sample.getSampleStatusId())) {
-                ui.getTable().getCellFormatter().setStyleName(j,
-                                                              4,
-                                                              UIResources.INSTANCE.table()
-                                                                                  .YellowStatus());
-            } else if (DataBaseUtil.isSame(Constants.dictionary().SAMPLE_ERROR,
-                                           sample.getSampleStatusId())) {
-                ui.getTable().getCellFormatter().setStyleName(j,
-                                                              4,
-                                                              UIResources.INSTANCE.table()
-                                                                                  .RedStatus());
-            }
-            ui.getTable().setText(j, 5, sample.getProjectName());
 
             /*
-             * set row height higher for mobile and tablet versions
+             * If analysis status is Released, screen displays
+             * "Completed status", for all other statuses screen displays
+             * "In Progress".
              */
-            ui.getTable().getCellFormatter().getElement(j, 0).getStyle().setPadding(10, Unit.PX);
-            ui.getTable().getCellFormatter().getElement(j, 1).getStyle().setPadding(10, Unit.PX);
-            ui.getTable().getCellFormatter().getElement(j, 2).getStyle().setPadding(10, Unit.PX);
-            ui.getTable().getCellFormatter().getElement(j, 3).getStyle().setPadding(10, Unit.PX);
-            ui.getTable().getCellFormatter().getElement(j, 4).getStyle().setPadding(10, Unit.PX);
-            ui.getTable().getCellFormatter().getElement(j, 5).getStyle().setPadding(10, Unit.PX);
+            ui.getTable().setText(j,
+                                  4,
+                                  DataBaseUtil.isSame(Constants.dictionary().SAMPLE_RELEASED,
+                                                      sample.getSampleStatusId()) ? completed
+                                                                                 : inProgress);
+            ui.getTable().setText(j, 5, sample.getProjectName());
+
         }
         ui.setCheckBoxCSS();
     }
@@ -799,6 +779,8 @@ public class FinalReportScreen extends Screen {
         try {
             fields.addAll(createWhereFromParamFields(getQueryFields()));
         } catch (Exception e) {
+            Window.alert(e.getStackTrace().toString());
+            System.out.print(e);
             return;
         }
 

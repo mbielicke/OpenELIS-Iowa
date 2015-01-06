@@ -144,7 +144,7 @@ public class OrganizationParameterBean {
         list = new ValidationErrorsList();
         typeId = data.getTypeId();
         value = data.getValue();
-        email = decode(value)[0];
+        email = decodeEmail(value)[0];
 
         if (DataBaseUtil.isEmpty(typeId))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
@@ -170,7 +170,7 @@ public class OrganizationParameterBean {
      * separates the email string from the filter data using the delimiter
      * character
      */
-    private String[] decode(String encoded) throws Exception {
+    public static String[] decodeEmail(String encoded) throws Exception {
         int i;
         char character, str[];
         StringBuffer sb;

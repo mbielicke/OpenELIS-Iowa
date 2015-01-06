@@ -27,10 +27,12 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
     protected TextBox<Integer>                  accessionFrom, accessionTo;
 
     @UiField
-    protected TextBox<String>                   clientReference;
+    protected TextBox<String>                   clientReference, envCollector, sdwisCollector,
+                    pwsId, patientFirst, patientLast;
 
     @UiField
-    protected Calendar                          collectedFrom, collectedTo;
+    protected Calendar                          collectedFrom, collectedTo, releasedFrom,
+                    releasedTo, patientBirthFrom, patientBirthTo;
 
     @UiField
     protected MultiDropdown<Integer>            projectCode;
@@ -80,8 +82,33 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
     }
 
     @Override
+    public TextBox<String> getPwsId() {
+        return pwsId;
+    }
+
+    @Override
     public TextBox<String> getClientReference() {
         return clientReference;
+    }
+
+    @Override
+    public TextBox<String> getEnvCollector() {
+        return envCollector;
+    }
+
+    @Override
+    public TextBox<String> getSdwisCollector() {
+        return sdwisCollector;
+    }
+
+    @Override
+    public TextBox<String> getPatientFirst() {
+        return patientFirst;
+    }
+
+    @Override
+    public TextBox<String> getPatientLast() {
+        return patientLast;
     }
 
     @Override
@@ -92,6 +119,26 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
     @Override
     public Calendar getCollectedTo() {
         return collectedTo;
+    }
+
+    @Override
+    public Calendar getReleasedFrom() {
+        return releasedFrom;
+    }
+
+    @Override
+    public Calendar getReleasedTo() {
+        return releasedTo;
+    }
+
+    @Override
+    public Calendar getPatientBirthFrom() {
+        return patientBirthFrom;
+    }
+
+    @Override
+    public Calendar getPatientBirthTo() {
+        return patientBirthTo;
     }
 
     @Override
@@ -135,6 +182,12 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
     }
 
     @Override
+    public void setReleasedError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     public void setAccessionError(String error) {
         if (error == null) {
             accessionError.setVisible(false);
@@ -165,10 +218,47 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
     }
 
     @Override
+    public void setEnvCollectorError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setSdwisCollectorError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPwsError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPatientFirstError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPatientLastError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setPatientBirthError(String error) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     public void clearErrors() {
         collectedError.setVisible(false);
         accessionError.setVisible(false);
         clientReferenceError.setVisible(false);
         projectError.setVisible(false);
     }
+
 }

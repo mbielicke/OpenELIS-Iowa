@@ -15,6 +15,9 @@ public interface Resources extends UIResources {
     @Source("css/table.css")
     TableCSS portalTable();
 
+    @Source("css/listTable.css")
+    ListTableCSS listTable();
+
     @Source({"css/icon.css", "org/openelis/ui/resources/css/icon.css"})
     IconCSS icon();
 
@@ -33,16 +36,13 @@ public interface Resources extends UIResources {
     @Source("css/menuButton.css")
     MenuButton menuButton();
 
-    @Source("images/cross.png")
-    ImageResource removeImage();
-
     @Source("images/report.png")
     ImageResource reportImage();
 
     @Source("images/email.png")
     ImageResource emailImage();
 
-    @Source("images/table.png")
+    @Source("images/spreadsheet.png")
     ImageResource spreadsheetImage();
 
     @Source("images/arrow_undo.png")
@@ -51,7 +51,7 @@ public interface Resources extends UIResources {
     @Source("images/form.png")
     ImageResource formImage();
 
-    @Source("images/status.png")
+    @Source("images/checklist.png")
     ImageResource statusImage();
 
     @Source("images/logoutbuttonimage.gif")

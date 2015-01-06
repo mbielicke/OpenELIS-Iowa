@@ -103,21 +103,6 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.sample_collector}:" />
-						</td>
-						<td colspan="3">
-							<w:TextBox ui:field="collector" width="180px" field="String"
-								enabled="true" />
-						</td>
-						<td>
-							<w:Help css="{res.help}" text="{msg.dataView_help_collector}"
-								placement="LEFT" balloonWidth="200px" />
-							<w:Help ui:field="collectorError" css="{res.errorCss}"
-								text="" placement="LEFT" balloonWidth="200px" visible="false" />
-						</td>
-					</tr>
-					<tr>
-						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.sample_clientReference}:" />
 						</td>
 						<td colspan="3">
@@ -128,36 +113,6 @@
 							<w:Help css="{res.help}" text="{msg.dataView_help_clientReference}"
 								placement="LEFT" balloonWidth="200px" />
 							<w:Help ui:field="clientReferenceError" css="{res.errorCss}"
-								text="" placement="LEFT" balloonWidth="200px" visible="false" />
-						</td>
-					</tr>
-					<tr>
-						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.sample_collectionSite}:" />
-						</td>
-						<td colspan="3">
-							<w:TextBox ui:field="collectionSite" width="180px"
-								field="String" enabled="true" />
-						</td>
-						<td>
-							<w:Help css="{res.help}" text="{msg.dataView_help_collectionSite}"
-								placement="LEFT" balloonWidth="200px" />
-							<w:Help ui:field="collectionSiteError" css="{res.errorCss}"
-								text="" placement="LEFT" balloonWidth="200px" visible="false" />
-						</td>
-					</tr>
-					<tr>
-						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.sample_collectionTown}:" />
-						</td>
-						<td colspan="3">
-							<w:TextBox ui:field="collectionTown" width="180px"
-								field="String" enabled="true" />
-						</td>
-						<td>
-							<w:Help css="{res.help}" text="{msg.dataView_help_clientReference}"
-								placement="LEFT" balloonWidth="200px" />
-							<w:Help ui:field="collectionTownError" css="{res.errorCss}"
 								text="" placement="LEFT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
@@ -187,6 +142,36 @@
 								placement="LEFT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_collector}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="envCollector" width="180px" field="String"
+								enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_envCollector}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="envCollectorError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.sample_collector}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="sdwisCollector" width="180px"
+								field="String" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_sdwisCollector}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="sdwisCollectorError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
 				</table>
 				<table class="{res.style.Form}">
 					<tr>
@@ -208,9 +193,6 @@
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_sampleFields}- " />
 							</span>
-							<w:Button ui:field="selectAllSampleFieldsButton"
-								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
-								image="{uiRes.apply}" />
 						</td>
 					</tr>
 					<tr>
@@ -337,10 +319,6 @@
 								<ui:text from="{msg.dataView_orgFields}- " />
 							</span>
 						</td>
-						<td>
-							<w:Button ui:field="selectAllOrgFieldsButton" rightText="{msg.finalReport_selectAll}"
-								enabled="true" visible="true" image="{uiRes.apply}" />
-						</td>
 					</tr>
 					<tr>
 						<td height="36">
@@ -401,9 +379,6 @@
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_analysisFields}- " />
 							</span>
-							<w:Button ui:field="selectAllAnalysisFieldsButton"
-								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
-								image="{uiRes.apply}" />
 						</td>
 					</tr>
 					<tr>
@@ -481,9 +456,6 @@
 							<span style="float:left;font-weight:bold;font-size:10pt;">
 								<ui:text from="{msg.dataView_patientFields}- " />
 							</span>
-							<w:Button ui:field="selectAllPatientFieldsButton"
-								rightText="{msg.finalReport_selectAll}" enabled="true" visible="true"
-								image="{uiRes.apply}" />
 						</td>
 					</tr>
 					<tr>
@@ -573,10 +545,10 @@
 						<td colspan="4">
 							<g:HorizontalPanel spacing="4">
 								<w:Button ui:field="selectAllAnalytesButton" rightText="{msg.finalReport_selectAll}"
-									enabled="true" visible="true" image="{uiRes.apply}" />
+									enabled="true" visible="true" />
 								<w:Button ui:field="unselectAllAnalytesButton"
 									rightText="{msg.finalReport_unselectAll}" enabled="true"
-									visible="true" image="{uiRes.unapply}" />
+									visible="true" />
 							</g:HorizontalPanel>
 						</td>
 					</tr>
@@ -619,9 +591,9 @@
 						<td colspan="4">
 							<g:HorizontalPanel spacing="4">
 								<w:Button ui:field="selectAllAuxButton" rightText="{msg.finalReport_selectAll}"
-									enabled="true" visible="true" image="{uiRes.apply}" />
+									enabled="true" visible="true" />
 								<w:Button ui:field="unselectAllAuxButton" rightText="{msg.finalReport_unselectAll}"
-									enabled="true" visible="true" image="{uiRes.unapply}" />
+									enabled="true" visible="true" />
 							</g:HorizontalPanel>
 						</td>
 					</tr>

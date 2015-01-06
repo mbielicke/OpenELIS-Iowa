@@ -79,7 +79,8 @@ public class DataViewVO implements Serializable {
     protected Date                             analysisCompletedDateFrom, analysisCompletedDateTo,
                     analysisReleasedDateFrom, analysisReleasedDateTo, collectionDateFrom,
                     collectionDateTo, receivedDateFrom, receivedDateTo, enteredDateFrom,
-                    enteredDateTo, releasedDateFrom, releasedDateTo;
+                    enteredDateTo, releasedDateFrom, releasedDateTo,
+                    sampleClinicalPatientBirthDateFrom, sampleClinicalPatientBirthDateTo;
 
     protected ArrayList<QueryData>             queryFields;
     protected ArrayList<TestAnalyteDataViewVO> testAnalytes;
@@ -875,6 +876,22 @@ public class DataViewVO implements Serializable {
 
     public void setReleasedDateTo(Date releasedDateTo) {
         this.releasedDateTo = releasedDateTo;
+    }
+
+    public Date getSampleClinicalPatientBirthDateFrom() {
+        return sampleClinicalPatientBirthDateFrom;
+    }
+
+    public void setSampleClinicalPatientBirthDateFrom(Date sampleClinicalPatientBirthDateFrom) {
+        this.sampleClinicalPatientBirthDateFrom = sampleClinicalPatientBirthDateFrom;
+    }
+
+    public Date getSampleClinicalPatientBirthDateTo() {
+        return sampleClinicalPatientBirthDateTo;
+    }
+
+    public void setSampleClinicalPatientBirthDateTo(Date sampleClinicalPatientBirthDateTo) {
+        this.sampleClinicalPatientBirthDateTo = sampleClinicalPatientBirthDateTo;
     }
 
     public ArrayList<QueryData> getQueryFields() {

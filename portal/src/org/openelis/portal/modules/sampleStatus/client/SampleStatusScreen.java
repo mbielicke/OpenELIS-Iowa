@@ -139,12 +139,60 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getAccessionFrom() : ui.getCollectedFrom();
+                                 return forward ? ui.getReleasedFrom() : ui.getCollectedFrom();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getCollectedTo().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getReleasedFrom(),
+                         SampleViewMeta.getReleasedDateFrom(),
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getReleasedFrom().setValue(form.getReleasedFrom());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setReleasedError(null);
+                                 ui.getReleasedFrom().clearExceptions();
+                                 ui.getReleasedTo().clearExceptions();
+                                 form.setReleasedFrom(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getReleasedTo() : ui.getCollectedTo();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getReleasedFrom().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getReleasedTo(),
+                         SampleViewMeta.getReleasedDateTo(),
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getReleasedTo().setValue(form.getReleasedTo());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setReleasedError(null);
+                                 ui.getReleasedTo().clearExceptions();
+                                 ui.getReleasedFrom().clearExceptions();
+                                 form.setReleasedTo(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getAccessionFrom() : ui.getReleasedFrom();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getReleasedTo().getQuery();
                              }
                          });
 
@@ -163,7 +211,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getAccessionTo() : ui.getCollectedTo();
+                                 return forward ? ui.getAccessionTo() : ui.getReleasedTo();
                              }
 
                              @Override
@@ -233,8 +281,7 @@ public class SampleStatusScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getGetSampleListButton()
-                                               : ui.getClientReference();
+                                 return forward ? ui.getEnvCollector() : ui.getClientReference();
                              }
 
                              @Override
@@ -243,13 +290,183 @@ public class SampleStatusScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getGetSampleListButton(), "", new ScreenHandler<Integer>() {
+        addScreenHandler(ui.getEnvCollector(),
+                         SampleViewMeta.getCollector(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getEnvCollector().setValue(form.getEnvCollector());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setEnvCollectorError(null);
+                                 ui.getEnvCollector().clearExceptions();
+                                 form.setEnvCollector(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getSdwisCollector() : ui.getProjectCode();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getEnvCollector().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getSdwisCollector(), "sdwisCollector", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getSdwisCollector().setValue(form.getSdwisCollector());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                ui.setSdwisCollectorError(null);
+                ui.getSdwisCollector().clearExceptions();
+                form.setSdwisCollector(event.getValue());
+            }
+
             public Widget onTab(boolean forward) {
-                return forward ? ui.getResetButton() : ui.getProjectCode();
+                return forward ? ui.getPwsId() : ui.getEnvCollector();
+            }
+
+            @Override
+            public Object getQuery() {
+                QueryData q;
+
+                if (ui.getSdwisCollector().getQuery() == null)
+                    return null;
+                q = (QueryData)ui.getSdwisCollector().getQuery();
+                q.setKey(SampleViewMeta.getCollector());
+                return q;
             }
         });
 
-        addScreenHandler(ui.getResetButton(), "", new ScreenHandler<Integer>() {
+        addScreenHandler(ui.getPwsId(),
+                         SampleViewMeta.getPwsNumber0(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPwsId().setValue(form.getPwsId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPwsError(null);
+                                 ui.getPwsId().clearExceptions();
+                                 form.setPwsId(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientFirst() : ui.getSdwisCollector();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPwsId().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientFirst(),
+                         SampleViewMeta.getPatientFirstName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientFirst().setValue(form.getPatientFirst());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientFirstError(null);
+                                 ui.getPatientFirst().clearExceptions();
+                                 form.setPatientFirst(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientLast() : ui.getPwsId();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientFirst().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientLast(),
+                         SampleViewMeta.getPatientLastName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientLast().setValue(form.getPatientLast());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientLastError(null);
+                                 ui.getPatientLast().clearExceptions();
+                                 form.setPatientLast(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientFirst();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientLast().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientBirthFrom(),
+                         SampleViewMeta.getPatientBirthDateFrom(),
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientBirthFrom().setValue(form.getPatientBirthFrom());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setPatientBirthError(null);
+                                 ui.getPatientBirthFrom().clearExceptions();
+                                 ui.getPatientBirthTo().clearExceptions();
+                                 form.setPatientBirthFrom(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthTo() : ui.getPatientLast();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientBirthFrom().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientBirthTo(),
+                         SampleViewMeta.getPatientBirthDateTo(),
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientBirthTo().setValue(form.getPatientBirthTo());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setPatientBirthError(null);
+                                 ui.getPatientBirthTo().clearExceptions();
+                                 ui.getPatientBirthFrom().clearExceptions();
+                                 form.setPatientBirthTo(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getGetSampleListButton()
+                                               : ui.getPatientBirthFrom();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientBirthTo().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getGetSampleListButton(),
+                         "getSampleListButton",
+                         new ScreenHandler<Integer>() {
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getResetButton() : ui.getPatientBirthTo();
+                             }
+                         });
+
+        addScreenHandler(ui.getResetButton(), "resetButton", new ScreenHandler<Integer>() {
             public Widget onTab(boolean forward) {
                 return forward ? ui.getCollectedFrom() : ui.getGetSampleListButton();
             }
@@ -356,7 +573,7 @@ public class SampleStatusScreen extends Screen {
      */
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
-        int currRow, qaCount;
+        int testRow, sampleRow, qaCount;
         Integer accNumPrev, accNum;
         String completed, inProgress, collector;
         Date temp;
@@ -394,7 +611,7 @@ public class SampleStatusScreen extends Screen {
         sb = new StringBuffer();
         dh.setEnd(Datetime.MINUTE);
         accNumPrev = null;
-        currRow = qaCount = 0;
+        testRow = qaCount = sampleRow = 0;
         completed = Messages.get().sampleStatus_completed();
         inProgress = Messages.get().sampleStatus_inProgress();
 
@@ -403,20 +620,38 @@ public class SampleStatusScreen extends Screen {
             accNum = data.getAccessionNumber();
 
             if ( !accNum.equals(accNumPrev)) {
-                qaCount = 1;
-                if (currRow > 0) {
+                if (sampleRow > 0) {
                     sb.append("</ol></font>");
-                    ui.getTable().setHTML(currRow, 6, sb.toString());
+                    ui.getTable().setHTML(sampleRow, 6, sb.toString());
                     ui.getTable()
                       .getCellFormatter()
-                      .getElement(currRow, 6)
+                      .getElement(sampleRow, 6)
                       .getStyle()
                       .setWhiteSpace(WhiteSpace.PRE_WRAP);
+                    ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow,
+                                                                    0,
+                                                                    testRow - sampleRow + 1);
+                    ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow,
+                                                                    3,
+                                                                    testRow - sampleRow + 1);
+                    ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow,
+                                                                    4,
+                                                                    testRow - sampleRow + 1);
+                    ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow,
+                                                                    5,
+                                                                    testRow - sampleRow + 1);
+                    ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow,
+                                                                    6,
+                                                                    testRow - sampleRow + 1);
+                    ui.getTable()
+                      .getRowFormatter()
+                      .setVerticalAlign(sampleRow, HasVerticalAlignment.ALIGN_TOP);
                     sb.setLength(0);
                 }
-                currRow++ ;
-                ui.getTable().getRowFormatter().setVerticalAlign(currRow,
-                                                                 HasVerticalAlignment.ALIGN_TOP);
+                sampleRow = ++testRow;
+
+                qaCount = 1;
+
                 if (data.getCollectionDate() != null) {
                     temp = data.getCollectionDate().getDate();
                     if (data.getCollectionTime() == null) {
@@ -431,35 +666,43 @@ public class SampleStatusScreen extends Screen {
                     temp1 = null;
                 }
 
-                ui.getTable().setText(currRow, 0, DataBaseUtil.toString(data.getAccessionNumber()));
+                ui.getTable().setText(sampleRow,
+                                      0,
+                                      DataBaseUtil.toString(data.getAccessionNumber()));
 
                 if (data.getCollector() == null)
-                    collector = Messages.get().sampleStatus_noCollector();
+                    collector = " ";
                 else
                     collector = data.getCollector();
                 sb.append("<font color=\"red\"><ol>");
                 if (sampleQas != null && sampleQas.get(data.getSampleId()) != null) {
-                    ui.getTable().setHTML(currRow,
+                    ui.getTable().setHTML(sampleRow,
                                           1,
                                           collector + "<sub><font color=\"red\">" + qaCount++ +
                                                           "</font></sub>");
                     sb.append("<li>");
-                    ui.getTable().setHTML(currRow, 2, "<sub/>");
                     for (String qa : sampleQas.get(data.getSampleId())) {
                         sb.append(qa).append("<br>");
                     }
                     sb.append("</li><br>");
                 } else {
-                    ui.getTable().setHTML(currRow, 1, collector);
+                    ui.getTable().setHTML(sampleRow, 1, collector);
                 }
-                ui.getTable().setText(currRow, 3, dh.format(temp1));
-                ui.getTable().setText(currRow, 4, dh.format(data.getReceivedDate()));
-                ui.getTable().setText(currRow, 5, data.getClientReference());
+                ui.getTable().setText(sampleRow, 3, dh.format(temp1));
+                ui.getTable().setText(sampleRow, 4, dh.format(data.getReceivedDate()));
+                ui.getTable().setText(sampleRow, 5, data.getClientReference());
             }
+            testRow++ ;
+            /*
+             * insert QA data if there is any
+             */
             if (analysisQas != null && analysisQas.get(data.getAnalysisId()) != null) {
-                addHtml(currRow, 1, "<br><hr>" + data.getTestReportingDescription() + " : " +
-                                    data.getMethodReportingDescription() +
-                                    "<sub><font color=\"red\">" + qaCount++ + "</font></sub>");
+                ui.getTable().setHTML(testRow,
+                                      0,
+                                      data.getTestReportingDescription() + ", " +
+                                                      data.getMethodReportingDescription() +
+                                                      "<sub><font color=\"red\">" + qaCount++ +
+                                                      "</font></sub>");
                 sb.append("<li>");
                 for (String qa : analysisQas.get(data.getAnalysisId())) {
                     sb.append(qa).append("<br>");
@@ -471,18 +714,27 @@ public class SampleStatusScreen extends Screen {
                  * "Completed status", for all other statuses screen displays
                  * "In Progress".
                  */
-                addHtml(currRow, 2, "<br><hr>" +
-                                    (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
-                                                         data.getAnalysisStatusId()) ? completed
-                                                                                    : inProgress) +
-                                    "<sub/>");
+                ui.getTable()
+                  .setHTML(testRow,
+                           1,
+                           (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
+                                                data.getAnalysisStatusId()) ? completed
+                                                                           : inProgress));
             } else {
-                addHtml(currRow, 1, "<br><hr>" + data.getTestReportingDescription() + " : " +
-                                    data.getMethodReportingDescription());
-                addHtml(currRow, 2, "<br><hr>" +
-                                    (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
-                                                         data.getAnalysisStatusId()) ? completed
-                                                                                    : inProgress));
+                ui.getTable()
+                  .setHTML(testRow,
+                           0,
+                           (data.getTestReportingDescription() != null ? data.getTestReportingDescription()
+                                                                      : "") +
+                                           ", " +
+                                           (data.getMethodReportingDescription() != null ? data.getMethodReportingDescription()
+                                                                                        : ""));
+                ui.getTable()
+                  .setHTML(testRow,
+                           1,
+                           (DataBaseUtil.isSame(Constants.dictionary().ANALYSIS_RELEASED,
+                                                data.getAnalysisStatusId()) ? completed
+                                                                           : inProgress));
             }
 
             accNumPrev = accNum;
@@ -493,12 +745,19 @@ public class SampleStatusScreen extends Screen {
          */
         if (sb.length() > 0) {
             sb.append("</ol></font>");
-            ui.getTable().setHTML(currRow, 6, sb.toString());
+            ui.getTable().setHTML(testRow, 6, sb.toString());
             ui.getTable()
               .getCellFormatter()
-              .getElement(currRow, 6)
+              .getElement(testRow, 6)
               .getStyle()
               .setWhiteSpace(WhiteSpace.PRE_WRAP);
+            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 0, testRow - sampleRow + 1);
+            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 3, testRow - sampleRow + 1);
+            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 4, testRow - sampleRow + 1);
+            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 5, testRow - sampleRow + 1);
+            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 6, testRow - sampleRow + 1);
+            ui.getTable().getRowFormatter().setVerticalAlign(sampleRow,
+                                                             HasVerticalAlignment.ALIGN_TOP);
         }
     }
 
@@ -506,15 +765,60 @@ public class SampleStatusScreen extends Screen {
      * fetch samples that match the search criteria
      */
     private void getSampleList() {
+        int numDomains;
+        String domain;
         Query query;
-        ArrayList<QueryData> queryList;
+        QueryData field;
+        ArrayList<QueryData> fields;
 
         ui.clearErrors();
         ui.getTable().removeAllRows();
 
+        numDomains = 0;
+        domain = null;
         query = new Query();
+        field = new QueryData();
+        fields = new ArrayList<QueryData>();
+
+        /*
+         * determine the domain that is being queried.
+         */
+        if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
+            field = new QueryData(SampleViewMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().SDWIS);
+            domain = Constants.domain().SDWIS;
+            numDomains++ ;
+        }
+        if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
+            field = new QueryData(SampleViewMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().ENVIRONMENTAL);
+            domain = Constants.domain().ENVIRONMENTAL;
+            numDomains++ ;
+        }
+        if ( !DataBaseUtil.isEmpty(ui.getPatientFirst().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
+            field = new QueryData(SampleViewMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().CLINICAL);
+            domain = Constants.domain().CLINICAL;
+            numDomains++ ;
+        }
+
+        if (numDomains > 1) {
+            Window.alert(Messages.get().finalReport_error_queryDomainException());
+            return;
+        }
+
+        if (domain != null)
+            fields.add(field);
+
         try {
-            queryList = createWhereFromParamFields(getQueryFields());
+            fields = createWhereFromParamFields(getQueryFields());
         } catch (Exception e) {
             return;
         }
@@ -522,12 +826,12 @@ public class SampleStatusScreen extends Screen {
         /*
          * if user does not enter any search details, throw an error.
          */
-        if (queryList.size() == 0) {
+        if (fields.size() == 0) {
             Window.alert(Messages.get().finalReport_error_emptyQueryException());
             return;
         }
 
-        query.setFields(queryList);
+        query.setFields(fields);
         window.setBusy(Messages.get().gen_fetchingSamples());
 
         SampleStatusService.get()

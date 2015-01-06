@@ -62,37 +62,6 @@
 	color: white;
 }
 
-.Table>tbody>tr.LargeFont td {
-	font-size: 18px;
-}
-
-.Table>tbody>tr>td.GreenStatus {
-	border-width: 0px 2px 2px 2px;
-	border-style: solid;
-	color: white;
-	background-color: green;
-	border-color: white;
-	padding: 2px;
-}
-
-.Table>tbody>tr>td.YellowStatus {
-	border-width: 0px 2px 2px 2px;
-	border-style: solid;
-	color: black;
-	background-color: yellow;
-	border-color: white;
-	padding: 2px;
-}
-
-.Table>tbody>tr>td.RedStatus {
-	border-width: 0px 2px 2px 2px;
-	border-style: solid;
-	color: white;
-	background-color: red;
-	border-color: white;
-	padding: 2px;
-}
-
 .Header {
 	table-layout: fixed;
 	spacing: 0px;
