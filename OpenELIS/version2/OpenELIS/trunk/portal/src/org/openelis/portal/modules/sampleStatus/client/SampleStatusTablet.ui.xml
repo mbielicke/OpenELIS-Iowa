@@ -38,6 +38,13 @@
 								</td>
 							</tr>
 							<tr>
+								<td class="{res.style.Prompt}" colspan="5">
+									<span style="float:left;font-weight:bold;font-size:11pt;">
+										<ui:text from="{msg.finalReport_anySamples}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
 								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.sample_collectedDate}:" />
 								</td>
@@ -59,6 +66,26 @@
 								<td>
 									<w:Help ui:field="collectedError" css="{res.errorCss}"
 										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_releasedDate}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="releasedFrom" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="releasedTo" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_released}"
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 							<tr>
@@ -128,6 +155,114 @@
 								<td>
 									<w:Help ui:field="projectError" css="{res.errorCss}"
 										text="" placement="RIGHT" balloonWidth="200px" visible="false" />
+								</td>
+							</tr>
+							<tr cellSpacing="1" />
+							<tr>
+								<td class="{res.style.Prompt}" colspan="5">
+									<span style="float:left;font-weight:bold;font-size:11pt;">
+										<ui:text from="{msg.finalReport_environmentalOnly}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_collector}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="envCollector" width="208px"
+										field="String" enabled="true" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_envCollector}"
+										placement="RIGHT" balloonWidth="250px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}" colspan="5">
+									<span style="float:left;font-weight:bold;font-size:11pt;">
+										<ui:text from="{msg.finalReport_sdwisOnly}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_collector}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="sdwisCollector" width="208px"
+										field="String" enabled="true" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_sdwisCollector}"
+										placement="RIGHT" balloonWidth="250px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.pws_id}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="pwsId" width="208px" field="String"
+										enabled="true" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_pws}"
+										placement="RIGHT" balloonWidth="250px" />
+								</td>
+							</tr>
+							<tr cellSpacing="1" />
+							<tr>
+								<td class="{res.style.Prompt}" colspan="5">
+									<span style="float:left;font-weight:bold;font-size:11pt;">
+										<ui:text from="{msg.finalReport_clinicalOnly}" />
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.finalReport_patientFirst}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="patientFirst" width="208px"
+										field="String" enabled="true" case="UPPER" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientFirst}"
+										placement="RIGHT" balloonWidth="250px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.finalReport_patientLast}:" />
+								</td>
+								<td colspan="3">
+									<w:TextBox ui:field="patientLast" width="208px"
+										field="String" enabled="true" case="UPPER" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientLast}"
+										placement="RIGHT" balloonWidth="250px" />
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.finalReport_patientBirth}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="patientBirthFrom" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_to}:" />
+								</td>
+								<td>
+									<c:Calendar ui:field="patientBirthTo" width="90px"
+										begin="0" end="2" enabled="true" />
+								</td>
+								<td>
+									<w:Help css="{res.help}" text="{msg.finalReport_help_patientBirth}"
+										placement="RIGHT" balloonWidth="250px" />
 								</td>
 							</tr>
 						</table>

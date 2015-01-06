@@ -18,13 +18,17 @@ public interface DataViewUI extends IsWidget {
 
     public TextBox<Integer> getAccessionTo();
 
+    public TextBox<String> getPwsId();
+
     public TextBox<String> getClientReference();
 
-    public TextBox<String> getCollector();
+    public TextBox<String> getEnvCollector();
 
-    public TextBox<String> getCollectionSite();
+    public TextBox<String> getSdwisCollector();
 
-    public TextBox<String> getCollectionTown();
+    public TextBox<String> getPatientFirst();
+
+    public TextBox<String> getPatientLast();
 
     public Calendar getCollectedFrom();
 
@@ -33,6 +37,10 @@ public interface DataViewUI extends IsWidget {
     public Calendar getReleasedFrom();
 
     public Calendar getReleasedTo();
+
+    public Calendar getPatientBirthFrom();
+
+    public Calendar getPatientBirthTo();
 
     public Dropdown<Integer> getProjectCode();
 
@@ -50,19 +58,9 @@ public interface DataViewUI extends IsWidget {
 
     public CheckBox getClientReferenceHeader();
 
-    public CheckBox getCollectorHeader();
-
-    public CheckBox getCollectionSiteHeader();
-
-    public CheckBox getSampleDescription();
-
-    public CheckBox getCollectorPhone();
-
     public CheckBox getSampleType();
 
     public CheckBox getSource();
-
-    public CheckBox getSampleLocationCity();
 
     public CheckBox getOrganizationName();
 
@@ -104,6 +102,32 @@ public interface DataViewUI extends IsWidget {
 
     public CheckBox getPatientEthnicity();
 
+    public CheckBox getPwsIdHeader();
+
+    public CheckBox getPwsName();
+
+    public CheckBox getSdwisCollectorHeader();
+
+    public CheckBox getSdwisLocation();
+
+    public CheckBox getFacilityId();
+
+    public CheckBox getSdwisSampleType();
+
+    public CheckBox getSampleCategory();
+
+    public CheckBox getSamplePointId();
+
+    public CheckBox getEnvCollectorHeader();
+
+    public CheckBox getEnvLocation();
+
+    public CheckBox getEnvLocationCity();
+
+    public CheckBox getCollectorPhone();
+
+    public CheckBox getSampleDescription();
+
     public Table getAnalyteTable();
 
     public Table getAuxTable();
@@ -113,14 +137,6 @@ public interface DataViewUI extends IsWidget {
     public Button getResetButton();
 
     public Button getBackButton();
-
-    public Button getSelectAllSampleFieldsButton();
-
-    public Button getSelectAllOrgFieldsButton();
-
-    public Button getSelectAllAnalysisFieldsButton();
-
-    public Button getSelectAllPatientFieldsButton();
 
     public Button getSelectAllAnalytesButton();
 
@@ -140,15 +156,21 @@ public interface DataViewUI extends IsWidget {
 
     public void setAccessionError(String error);
 
-    public void setCollectorError(String error);
-
     public void setClientReferenceError(String error);
 
-    public void setCollectionSiteError(String error);
-
-    public void setCollectionTownError(String error);
-
     public void setProjectError(String error);
+
+    public void setEnvCollectorError(String error);
+
+    public void setSdwisCollectorError(String error);
+
+    public void setPwsError(String error);
+
+    public void setPatientFirstError(String error);
+
+    public void setPatientLastError(String error);
+
+    public void setPatientBirthError(String error);
 
     public void clearErrors();
 }

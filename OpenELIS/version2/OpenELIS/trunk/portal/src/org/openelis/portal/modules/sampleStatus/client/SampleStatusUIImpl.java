@@ -26,10 +26,12 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
     protected TextBox<Integer>                  accessionFrom, accessionTo;
 
     @UiField
-    protected TextBox<String>                   clientReference;
+    protected TextBox<String>                   clientReference, envCollector, sdwisCollector,
+                    pwsId, patientFirst, patientLast;
 
     @UiField
-    protected Calendar                          collectedFrom, collectedTo;
+    protected Calendar                          collectedFrom, collectedTo, releasedFrom,
+                    releasedTo, patientBirthFrom, patientBirthTo;
 
     @UiField
     protected MultiDropdown<Integer>            projectCode;
@@ -54,14 +56,14 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
 
     @Override
     public void initialize() {
-        table.setWidth("250%");
-        table.getColumnFormatter().setWidth(0, "75px");
-        table.getColumnFormatter().setWidth(1, "25%");
-        table.getColumnFormatter().setWidth(2, "6%");
-        table.getColumnFormatter().setWidth(3, "8%");
-        table.getColumnFormatter().setWidth(4, "8%");
-        table.getColumnFormatter().setWidth(5, "8%");
-        table.getColumnFormatter().setWidth(6, "40%");
+        // table.setWidth("100%");
+        // table.getColumnFormatter().setWidth(0, "75px");
+        // // table.getColumnFormatter().setWidth(1, "25%");
+        // table.getColumnFormatter().setWidth(2, "100px");
+        // table.getColumnFormatter().setWidth(3, "100px");
+        // table.getColumnFormatter().setWidth(4, "100px");
+        // table.getColumnFormatter().setWidth(5, "150px");
+        // table.getColumnFormatter().setWidth(6, "40%");
     }
 
     @Override
@@ -75,8 +77,33 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
     }
 
     @Override
+    public TextBox<String> getPwsId() {
+        return pwsId;
+    }
+
+    @Override
     public TextBox<String> getClientReference() {
         return clientReference;
+    }
+
+    @Override
+    public TextBox<String> getEnvCollector() {
+        return envCollector;
+    }
+
+    @Override
+    public TextBox<String> getSdwisCollector() {
+        return sdwisCollector;
+    }
+
+    @Override
+    public TextBox<String> getPatientFirst() {
+        return patientFirst;
+    }
+
+    @Override
+    public TextBox<String> getPatientLast() {
+        return patientLast;
     }
 
     @Override
@@ -87,6 +114,26 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
     @Override
     public Calendar getCollectedTo() {
         return collectedTo;
+    }
+
+    @Override
+    public Calendar getReleasedFrom() {
+        return releasedFrom;
+    }
+
+    @Override
+    public Calendar getReleasedTo() {
+        return releasedTo;
+    }
+
+    @Override
+    public Calendar getPatientBirthFrom() {
+        return patientBirthFrom;
+    }
+
+    @Override
+    public Calendar getPatientBirthTo() {
+        return patientBirthTo;
     }
 
     @Override
@@ -126,6 +173,12 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
     }
 
     @Override
+    public void setReleasedError(String error) {
+        releasedFrom.addException(new Exception(error));
+        releasedTo.addException(new Exception(error));
+    }
+
+    @Override
     public void setAccessionError(String error) {
         accessionFrom.addException(new Exception(error));
         accessionTo.addException(new Exception(error));
@@ -142,12 +195,52 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
     }
 
     @Override
+    public void setEnvCollectorError(String error) {
+        envCollector.addException(new Exception(error));
+    }
+
+    @Override
+    public void setSdwisCollectorError(String error) {
+        sdwisCollector.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPwsError(String error) {
+        pwsId.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPatientFirstError(String error) {
+        patientFirst.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPatientLastError(String error) {
+        patientLast.addException(new Exception(error));
+    }
+
+    @Override
+    public void setPatientBirthError(String error) {
+        patientBirthFrom.addException(new Exception(error));
+        patientBirthTo.addException(new Exception(error));
+    }
+
+    @Override
     public void clearErrors() {
         collectedFrom.clearExceptions();
         collectedTo.clearExceptions();
+        releasedFrom.clearExceptions();
+        releasedTo.clearExceptions();
         accessionFrom.clearExceptions();
         accessionTo.clearExceptions();
         clientReference.clearExceptions();
         projectCode.clearExceptions();
+        envCollector.clearExceptions();
+        sdwisCollector.clearExceptions();
+        pwsId.clearExceptions();
+        patientFirst.clearExceptions();
+        patientLast.clearExceptions();
+        patientBirthFrom.clearExceptions();
+        patientBirthTo.clearExceptions();
     }
 }

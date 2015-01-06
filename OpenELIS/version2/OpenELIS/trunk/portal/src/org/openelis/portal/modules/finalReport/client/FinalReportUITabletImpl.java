@@ -42,7 +42,7 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     @UiField
     protected Button                           getSampleListButton, resetButton, backButton,
                     selectAllButton, unselectAllButton, runReportButton;
-    
+
     @UiField
     protected FlexTable                        table;
 
@@ -254,7 +254,7 @@ public class FinalReportUITabletImpl extends ResizeComposite implements FinalRep
     }
 
     @Override
-    public void setSdiwsCollectorError(String error) {
+    public void setSdwisCollectorError(String error) {
         if (error == null) {
             sdwisCollectorError.setVisible(false);
         } else {

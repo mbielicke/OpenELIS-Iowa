@@ -34,6 +34,7 @@ import java.util.logging.Level;
 
 import org.openelis.domain.AuxDataDataViewVO;
 import org.openelis.domain.AuxFieldDataViewVO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultDataViewVO;
@@ -43,6 +44,7 @@ import org.openelis.portal.cache.CategoryCache;
 import org.openelis.portal.cache.UserCache;
 import org.openelis.portal.messages.Messages;
 import org.openelis.portal.modules.finalReport.client.StatusBarPopupScreenUI;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
@@ -117,6 +119,7 @@ public class DataViewScreen extends Screen {
             @Override
             public void onClick(ClickEvent event) {
                 getSamples();
+                uncheckAllFields();
             }
         });
 
@@ -134,119 +137,9 @@ public class DataViewScreen extends Screen {
 
             @Override
             public void onClick(ClickEvent event) {
-                String no;
-
-                no = "N";
                 ui.getDeck().showWidget(0);
                 data = new DataViewVO();
-                ui.getAccession().setValue(no, true);
-                ui.getSampleCollected().setValue(no, true);
-                ui.getSampleReceived().setValue(no, true);
-                ui.getSampleReleased().setValue(no, true);
-                ui.getSampleStatus().setValue(no, true);
-                ui.getProjectId().setValue(no, true);
-                ui.getClientReferenceHeader().setValue(no, true);
-                ui.getCollectorHeader().setValue(no, true);
-                ui.getCollectionSiteHeader().setValue(no, true);
-                ui.getSampleDescription().setValue(no, true);
-                ui.getCollectorPhone().setValue(no, true);
-                ui.getSampleType().setValue(no, true);
-                ui.getSource().setValue(no, true);
-                ui.getSampleLocationCity().setValue(no, true);
-                ui.getOrganizationName().setValue(no, true);
-                ui.getOrganizationApt().setValue(no, true);
-                ui.getOrganizationAddress().setValue(no, true);
-                ui.getOrganizationCity().setValue(no, true);
-                ui.getOrganizationState().setValue(no, true);
-                ui.getOrganizationZip().setValue(no, true);
-                ui.getAnalysisTest().setValue(no, true);
-                ui.getAnalysisMethod().setValue(no, true);
-                ui.getAnalysisRevision().setValue(no, true);
-                ui.getAnalysisUnit().setValue(no, true);
-                ui.getAnalysisStarted().setValue(no, true);
-                ui.getAnalysisCompleted().setValue(no, true);
-                ui.getAnalysisReleased().setValue(no, true);
-                ui.getAnalysisQa().setValue(no, true);
-                ui.getPatientLastName().setValue(no, true);
-                ui.getPatientFirstName().setValue(no, true);
-                ui.getPatientBirth().setValue(no, true);
-                ui.getPatientGender().setValue(no, true);
-                ui.getPatientRace().setValue(no, true);
-                ui.getPatientEthnicity().setValue(no, true);
-            }
-        });
-
-        ui.getSelectAllSampleFieldsButton().addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                String yes;
-
-                yes = "Y";
-                ui.getAccession().setValue(yes, true);
-                ui.getSampleCollected().setValue(yes, true);
-                ui.getSampleReceived().setValue(yes, true);
-                ui.getSampleReleased().setValue(yes, true);
-                ui.getSampleStatus().setValue(yes, true);
-                ui.getProjectId().setValue(yes, true);
-                ui.getClientReferenceHeader().setValue(yes, true);
-                ui.getCollectorHeader().setValue(yes, true);
-                ui.getCollectionSiteHeader().setValue(yes, true);
-                ui.getSampleDescription().setValue(yes, true);
-                ui.getCollectorPhone().setValue(yes, true);
-                ui.getSampleType().setValue(yes, true);
-                ui.getSource().setValue(yes, true);
-                ui.getSampleLocationCity().setValue(yes, true);
-            }
-        });
-
-        ui.getSelectAllOrgFieldsButton().addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                String yes;
-
-                yes = "Y";
-                ui.getOrganizationName().setValue(yes, true);
-                ui.getOrganizationApt().setValue(yes, true);
-                ui.getOrganizationAddress().setValue(yes, true);
-                ui.getOrganizationCity().setValue(yes, true);
-                ui.getOrganizationState().setValue(yes, true);
-                ui.getOrganizationZip().setValue(yes, true);
-            }
-        });
-
-        ui.getSelectAllAnalysisFieldsButton().addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                String yes;
-
-                yes = "Y";
-                ui.getAnalysisTest().setValue(yes, true);
-                ui.getAnalysisMethod().setValue(yes, true);
-                ui.getAnalysisRevision().setValue(yes, true);
-                ui.getAnalysisUnit().setValue(yes, true);
-                ui.getAnalysisStarted().setValue(yes, true);
-                ui.getAnalysisCompleted().setValue(yes, true);
-                ui.getAnalysisReleased().setValue(yes, true);
-                ui.getAnalysisQa().setValue(yes, true);
-            }
-        });
-
-        ui.getSelectAllPatientFieldsButton().addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                String yes;
-
-                yes = "Y";
-                ui.getPatientLastName().setValue(yes, true);
-                ui.getPatientFirstName().setValue(yes, true);
-                ui.getPatientBirth().setValue(yes, true);
-                ui.getPatientGender().setValue(yes, true);
-                ui.getPatientRace().setValue(yes, true);
-                ui.getPatientEthnicity().setValue(yes, true);
+                uncheckAllFields();
             }
         });
 
@@ -468,35 +361,12 @@ public class DataViewScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getCollector() : ui.getAccessionFrom();
+                                 return forward ? ui.getEnvCollector() : ui.getAccessionFrom();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getAccessionTo().getQuery();
-                             }
-                         });
-
-        addScreenHandler(ui.getCollector(),
-                         SampleWebMeta.getEnvCollector(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getCollector().setValue(data.getSampleEnvironmentalCollector());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setCollectorError(null);
-                                 ui.getCollector().clearExceptions();
-                                 data.setSampleEnvironmentalCollector(event.getValue());
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getClientReference() : ui.getAccessionTo();
-                             }
-
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getCollector().getQuery();
                              }
                          });
 
@@ -514,60 +384,12 @@ public class DataViewScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getCollectionSite() : ui.getCollector();
+                                 return forward ? ui.getProjectCode() : ui.getAccessionTo();
                              }
 
                              @Override
                              public Object getQuery() {
                                  return ui.getClientReference().getQuery();
-                             }
-                         });
-
-        addScreenHandler(ui.getCollectionSite(),
-                         SampleWebMeta.getEnvLocation(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getCollectionSite()
-                                   .setValue(data.getSampleEnvironmentalLocation());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setCollectionSiteError(null);
-                                 ui.getCollectionSite().clearExceptions();
-                                 data.setSampleEnvironmentalLocation(event.getValue());
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getCollectionTown() : ui.getClientReference();
-                             }
-
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getCollectionSite().getQuery();
-                             }
-                         });
-
-        addScreenHandler(ui.getCollectionTown(),
-                         SampleWebMeta.getLocationAddrCity(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 ui.getCollectionTown()
-                                   .setValue(data.getSampleEnvironmentalLocationAddressCity());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 ui.setCollectionTownError(null);
-                                 ui.getCollectionSite().clearExceptions();
-                                 data.setSampleEnvironmentalLocationAddressCity(event.getValue());
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? ui.getProjectCode() : ui.getCollectionSite();
-                             }
-
-                             @Override
-                             public Object getQuery() {
-                                 return ui.getCollectionTown().getQuery();
                              }
                          });
 
@@ -585,7 +407,7 @@ public class DataViewScreen extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? ui.getContinueButton() : ui.getCollectionTown();
+                                 return forward ? ui.getEnvCollector() : ui.getClientReference();
                              }
 
                              @Override
@@ -594,7 +416,183 @@ public class DataViewScreen extends Screen {
                              }
                          });
 
-        addScreenHandler(ui.getAccession(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getEnvCollector(),
+                         SampleWebMeta.getEnvCollector(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getEnvCollector()
+                                   .setValue(data.getSampleEnvironmentalCollector());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setEnvCollectorError(null);
+                                 ui.getEnvCollector().clearExceptions();
+                                 data.setSampleEnvironmentalCollector(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getSdwisCollector() : ui.getProjectCode();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getEnvCollector().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getSdwisCollector(), "sdwisCollector", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getSdwisCollector().setValue(data.getSampleSDWISCollector());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                ui.setSdwisCollectorError(null);
+                ui.getSdwisCollector().clearExceptions();
+                data.setSampleSDWISCollector(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? ui.getPwsId() : ui.getEnvCollector();
+            }
+
+            @Override
+            public Object getQuery() {
+                QueryData q;
+
+                if (ui.getSdwisCollector().getQuery() == null)
+                    return null;
+                q = (QueryData)ui.getSdwisCollector().getQuery();
+                q.setKey(SampleWebMeta.getSDWISCollector());
+                return q;
+            }
+        });
+
+        addScreenHandler(ui.getPwsId(), SampleWebMeta.getPwsNumber0(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getPwsId().setValue(data.getSampleSDWISPwsId());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                ui.setPwsError(null);
+                ui.getPwsId().clearExceptions();
+                data.setSampleSDWISPwsId(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? ui.getPatientFirst() : ui.getSdwisCollector();
+            }
+
+            @Override
+            public Object getQuery() {
+                return ui.getPwsId().getQuery();
+            }
+        });
+
+        addScreenHandler(ui.getPatientFirst(),
+                         SampleWebMeta.getClinPatientFirstName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientFirst()
+                                   .setValue(data.getSampleClinicalPatientFirstName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientFirstError(null);
+                                 ui.getPatientFirst().clearExceptions();
+                                 data.setSampleClinicalPatientFirstName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientLast() : ui.getPwsId();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientFirst().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientLast(),
+                         SampleWebMeta.getClinPatientLastName(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientLast()
+                                   .setValue(data.getSampleClinicalPatientLastName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 ui.setPatientLastError(null);
+                                 ui.getPatientLast().clearExceptions();
+                                 data.setSampleClinicalPatientLastName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthFrom() : ui.getPatientFirst();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientLast().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientBirthFrom(),
+                         SampleWebMeta.getClinPatientBirthDateFrom(),
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientBirthFrom()
+                                   .setValue(new Datetime(Datetime.YEAR,
+                                                          Datetime.SECOND,
+                                                          data.getSampleClinicalPatientBirthDateFrom()));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setPatientBirthError(null);
+                                 ui.getPatientBirthFrom().clearExceptions();
+                                 ui.getPatientBirthTo().clearExceptions();
+                                 data.setSampleClinicalPatientBirthDateFrom(event.getValue()
+                                                                                 .getDate());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getPatientBirthTo() : ui.getPatientLast();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientBirthFrom().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getPatientBirthTo(),
+                         SampleWebMeta.getClinPatientBirthDateFrom(),
+                         new ScreenHandler<Datetime>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientBirthTo()
+                                   .setValue(new Datetime(Datetime.YEAR,
+                                                          Datetime.SECOND,
+                                                          data.getSampleClinicalPatientBirthDateTo()));
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Datetime> event) {
+                                 ui.setPatientBirthError(null);
+                                 ui.getPatientBirthTo().clearExceptions();
+                                 ui.getPatientBirthFrom().clearExceptions();
+                                 data.setSampleClinicalPatientBirthDateTo(event.getValue()
+                                                                               .getDate());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? ui.getContinueButton() : ui.getPatientBirthFrom();
+                             }
+
+                             @Override
+                             public Object getQuery() {
+                                 return ui.getPatientBirthTo().getQuery();
+                             }
+                         });
+
+        addScreenHandler(ui.getAccession(), "accessionHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getAccession().setValue(data.getAccessionNumber());
             }
@@ -608,49 +606,55 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getSampleCollected(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleCollected().setValue(data.getCollectionDate());
-            }
+        addScreenHandler(ui.getSampleCollected(),
+                         "sampleCollectedHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSampleCollected().setValue(data.getCollectionDate());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setCollectionDate(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setCollectionDate(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getSampleReceived(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleReceived().setValue(data.getReceivedDate());
-            }
+        addScreenHandler(ui.getSampleReceived(),
+                         "sampleReceivedHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSampleReceived().setValue(data.getReceivedDate());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setReceivedDate(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setReceivedDate(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getSampleReleased(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleReleased().setValue(data.getReleasedDate());
-            }
+        addScreenHandler(ui.getSampleReleased(),
+                         "sampleReleasedHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSampleReleased().setValue(data.getReleasedDate());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setReleasedDate(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setReleasedDate(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getSampleStatus(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getSampleStatus(), "sampleStatusHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getSampleStatus().setValue(data.getStatusId());
             }
@@ -664,7 +668,7 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getProjectId(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getProjectId(), "projectHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getProjectId().setValue(data.getProjectName());
             }
@@ -678,77 +682,24 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getClientReferenceHeader(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getClientReferenceHeader().setValue(data.getClientReferenceHeader());
-            }
+        addScreenHandler(ui.getClientReferenceHeader(),
+                         "clientReferenceHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getClientReferenceHeader()
+                                   .setValue(data.getClientReferenceHeader());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setClientReferenceHeader(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setClientReferenceHeader(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getCollectorHeader(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getCollectorHeader().setValue(data.getSampleEnvironmentalCollectorHeader());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalCollectorHeader(event.getValue());
-            }
-
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
-
-        addScreenHandler(ui.getCollectionSiteHeader(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getCollectionSiteHeader().setValue(data.getSampleEnvironmentalLocationHeader());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalLocationHeader(event.getValue());
-            }
-
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
-
-        addScreenHandler(ui.getSampleDescription(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleDescription().setValue(data.getSampleEnvironmentalDescription());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalDescription(event.getValue());
-            }
-
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
-
-        addScreenHandler(ui.getCollectorPhone(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getCollectorPhone().setValue(data.getSampleEnvironmentalCollectorPhone());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalCollectorPhone(event.getValue());
-            }
-
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
-
-        addScreenHandler(ui.getSampleType(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getSampleType(), "sampleTypeHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getSampleType().setValue(data.getSampleItemTypeofSampleId());
             }
@@ -762,7 +713,7 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getSource(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getSource(), "sourceHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getSource().setValue(data.getSampleItemSourceOfSampleId());
             }
@@ -776,106 +727,108 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getSampleLocationCity(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getSampleLocationCity()
-                  .setValue(data.getSampleEnvironmentalLocationAddressCityHeader());
-            }
+        addScreenHandler(ui.getOrganizationName(),
+                         "organizationNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getOrganizationName().setValue(data.getOrganizationName());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalLocationAddressCityHeader(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setOrganizationName(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getOrganizationName(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getOrganizationName().setValue(data.getReportToOrganizationName());
-            }
+        addScreenHandler(ui.getOrganizationApt(),
+                         "organizationAptHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getOrganizationApt()
+                                   .setValue(data.getOrganizationAddressMultipleUnit());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setReportToOrganizationName(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setOrganizationAddressMultipleUnit(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getOrganizationApt(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getOrganizationApt().setValue(data.getOrganizationAddressMultipleUnit());
-            }
+        addScreenHandler(ui.getOrganizationAddress(),
+                         "organizationAddressHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getOrganizationAddress()
+                                   .setValue(data.getOrganizationAddressAddress());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setOrganizationAddressMultipleUnit(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setOrganizationAddressAddress(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getOrganizationAddress(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getOrganizationAddress().setValue(data.getOrganizationAddressAddress());
-            }
+        addScreenHandler(ui.getOrganizationCity(),
+                         "organizationCityHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getOrganizationCity()
+                                   .setValue(data.getOrganizationAddressCity());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setOrganizationAddressAddress(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setOrganizationAddressCity(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getOrganizationCity(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getOrganizationCity().setValue(data.getOrganizationAddressCity());
-            }
+        addScreenHandler(ui.getOrganizationState(),
+                         "organizationStateHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getOrganizationState()
+                                   .setValue(data.getOrganizationAddressState());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setOrganizationAddressCity(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setOrganizationAddressState(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getOrganizationState(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getOrganizationCity().setValue(data.getOrganizationAddressCity());
-            }
+        addScreenHandler(ui.getOrganizationZip(),
+                         "organizationZipHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getOrganizationZip()
+                                   .setValue(data.getOrganizationAddressZipCode());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setOrganizationAddressCity(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setOrganizationAddressZipCode(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getOrganizationZip(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getOrganizationZip().setValue(data.getOrganizationAddressZipCode());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setOrganizationAddressZipCode(event.getValue());
-            }
-
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
-
-        addScreenHandler(ui.getAnalysisTest(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getAnalysisTest(), "analysisTestHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getAnalysisTest().setValue(data.getAnalysisTestNameHeader());
             }
@@ -889,35 +842,40 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getAnalysisMethod(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisMethod().setValue(data.getAnalysisTestMethodNameHeader());
-            }
+        addScreenHandler(ui.getAnalysisMethod(),
+                         "analysisMethodHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getAnalysisMethod()
+                                   .setValue(data.getAnalysisTestMethodNameHeader());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisTestMethodNameHeader(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setAnalysisTestMethodNameHeader(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getAnalysisRevision(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisRevision().setValue(data.getAnalysisRevision());
-            }
+        addScreenHandler(ui.getAnalysisRevision(),
+                         "analysisRevisionHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getAnalysisRevision().setValue(data.getAnalysisRevision());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisRevision(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setAnalysisRevision(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getAnalysisUnit(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getAnalysisUnit(), "analysisUnitHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getAnalysisUnit().setValue(data.getAnalysisUnitOfMeasureId());
             }
@@ -931,49 +889,56 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getAnalysisStarted(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisStarted().setValue(data.getAnalysisStartedDate());
-            }
+        addScreenHandler(ui.getAnalysisStarted(),
+                         "analysisStartedHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getAnalysisStarted().setValue(data.getAnalysisStartedDate());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisStartedDate(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setAnalysisStartedDate(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getAnalysisCompleted(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisCompleted().setValue(data.getAnalysisCompletedDate());
-            }
+        addScreenHandler(ui.getAnalysisCompleted(),
+                         "analysisCompletedHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getAnalysisCompleted()
+                                   .setValue(data.getAnalysisCompletedDate());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisCompletedDate(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setAnalysisCompletedDate(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getAnalysisReleased(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getAnalysisReleased().setValue(data.getAnalysisReleasedDate());
-            }
+        addScreenHandler(ui.getAnalysisReleased(),
+                         "analysisReleasedHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getAnalysisReleased().setValue(data.getAnalysisReleasedDate());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisReleasedDate(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setAnalysisReleasedDate(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getAnalysisQa(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getAnalysisQa(), "analysisQaHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getAnalysisQa().setValue(data.getAnalysisQaName());
             }
@@ -987,35 +952,41 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getPatientLastName(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPatientLastName().setValue(data.getSampleClinicalPatientLastName());
-            }
+        addScreenHandler(ui.getPatientLastName(),
+                         "patientLastNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientLastName()
+                                   .setValue(data.getSampleClinicalPatientLastName());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientLastName(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalPatientLastName(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getPatientFirstName(), "", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                ui.getPatientFirstName().setValue(data.getSampleClinicalPatientFirstName());
-            }
+        addScreenHandler(ui.getPatientFirstName(),
+                         "patientFirstNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientFirstName()
+                                   .setValue(data.getSampleClinicalPatientFirstName());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientFirstName(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalPatientFirstName(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return ui.getBackButton();
-            }
-        });
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
-        addScreenHandler(ui.getPatientBirth(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getPatientBirth(), "patientBirthHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getPatientBirth().setValue(data.getSampleClinicalPatientBirth());
             }
@@ -1029,7 +1000,7 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getPatientGender(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getPatientGender(), "patientGenderHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getPatientGender().setValue(data.getSampleClinicalPatientGender());
             }
@@ -1043,7 +1014,7 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getPatientRace(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getPatientRace(), "patientRaceHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getPatientRace().setValue(data.getSampleClinicalPatientRace());
             }
@@ -1057,19 +1028,225 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getPatientEthnicity(), "", new ScreenHandler<String>() {
+        addScreenHandler(ui.getPatientEthnicity(),
+                         "patientEthnicityHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getPatientEthnicity()
+                                   .setValue(data.getSampleClinicalPatientEthnicity());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalPatientEthnicity(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getPwsIdHeader(), "pwsIdHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                ui.getPatientEthnicity().setValue(data.getSampleClinicalPatientEthnicity());
+                ui.getPwsIdHeader().setValue(data.getSampleSDWISPwsId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleClinicalPatientEthnicity(event.getValue());
+                data.setSampleSDWISPwsId(event.getValue());
             }
 
             public Widget onTab(boolean forward) {
                 return ui.getBackButton();
             }
         });
+
+        addScreenHandler(ui.getPwsName(), "pwsNameHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getPwsName().setValue(data.getSampleSDWISPwsName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleSDWISPwsName(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getSdwisCollectorHeader(),
+                         "sdwisCollectorHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSdwisCollectorHeader()
+                                   .setValue(data.getSampleSDWISCollector());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleSDWISCollector(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getSdwisLocation(), "sdwisLocationHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getSdwisLocation().setValue(data.getSampleSDWISLocation());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleSDWISLocation(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getFacilityId(), "facilityIdHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getFacilityId().setValue(data.getSampleSDWISFacilityId());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleSDWISFacilityId(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getSdwisSampleType(),
+                         "sdwisSampleTypeHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSdwisSampleType()
+                                   .setValue(data.getSampleSDWISSampleTypeId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleSDWISSampleTypeId(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getSampleCategory(),
+                         "sampleCategoryHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSampleCategory()
+                                   .setValue(data.getSampleSDWISSampleCategoryId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleSDWISSampleCategoryId(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getSamplePointId(), "samplePointIdHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getSamplePointId().setValue(data.getSampleSDWISSamplePointId());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleSDWISSamplePointId(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getEnvCollectorHeader(),
+                         "envCollectorHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getEnvCollectorHeader()
+                                   .setValue(data.getSampleEnvironmentalCollectorHeader());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleEnvironmentalCollectorHeader(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getEnvLocation(), "envLocationHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getEnvLocation().setValue(data.getSampleEnvironmentalLocation());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleEnvironmentalLocation(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getEnvLocationCity(),
+                         "envLocationCityHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getEnvLocationCity()
+                                   .setValue(data.getSampleEnvironmentalLocationAddressCityHeader());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleEnvironmentalLocationAddressCityHeader(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getCollectorPhone(),
+                         "collectorPhoneHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getCollectorPhone()
+                                   .setValue(data.getSampleEnvironmentalCollectorPhone());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleEnvironmentalCollectorPhone(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getSampleDescription(),
+                         "sampleDescriptionHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getSampleDescription()
+                                   .setValue(data.getSampleEnvironmentalDescription());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleEnvironmentalDescription(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
 
         ui.getAnalyteTable().addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -1108,13 +1285,13 @@ public class DataViewScreen extends Screen {
             }
         });
 
-        addScreenHandler(ui.getContinueButton(), "", new ScreenHandler<Integer>() {
+        addScreenHandler(ui.getContinueButton(), "continueButton", new ScreenHandler<Integer>() {
             public Widget onTab(boolean forward) {
                 return forward ? ui.getResetButton() : ui.getProjectCode();
             }
         });
 
-        addScreenHandler(ui.getResetButton(), "", new ScreenHandler<Integer>() {
+        addScreenHandler(ui.getResetButton(), "resetButton", new ScreenHandler<Integer>() {
             public Widget onTab(boolean forward) {
                 return forward ? ui.getCollectedFrom() : ui.getContinueButton();
             }
@@ -1146,12 +1323,54 @@ public class DataViewScreen extends Screen {
      * fetch samples that match the search criteria
      */
     private void getSamples() {
+        int numDomains;
+        String domain;
+        QueryData field;
         ArrayList<QueryData> fields;
 
-        // ui.clearErrors();
+        ui.clearErrors();
         finishEditing();
+        numDomains = 0;
+        domain = null;
+        field = new QueryData();
         fields = new ArrayList<QueryData>();
 
+        /*
+         * determine the domain that is being queried.
+         */
+        if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
+            field = new QueryData(SampleWebMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().SDWIS);
+            domain = Constants.domain().SDWIS;
+            numDomains++ ;
+        }
+        if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
+            field = new QueryData(SampleWebMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().ENVIRONMENTAL);
+            domain = Constants.domain().ENVIRONMENTAL;
+            numDomains++ ;
+        }
+        if ( !DataBaseUtil.isEmpty(ui.getPatientFirst().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
+            !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
+            field = new QueryData(SampleWebMeta.getDomain(),
+                                  QueryData.Type.STRING,
+                                  Constants.domain().CLINICAL);
+            domain = Constants.domain().CLINICAL;
+            numDomains++ ;
+        }
+
+        if (numDomains > 1) {
+            Window.alert(Messages.get().finalReport_error_queryDomainException());
+            return;
+        }
+
+        if (domain != null)
+            fields.add(field);
         try {
             fields.addAll(createWhereFromParamFields(getQueryFields()));
         } catch (Exception e) {
@@ -1454,5 +1673,53 @@ public class DataViewScreen extends Screen {
             }
         };
         timer.schedule(50);
+    }
+
+    private void uncheckAllFields() {
+        String no;
+
+        no = "N";
+        ui.getAccession().setValue(no, true);
+        ui.getSampleCollected().setValue(no, true);
+        ui.getSampleReceived().setValue(no, true);
+        ui.getSampleReleased().setValue(no, true);
+        ui.getSampleStatus().setValue(no, true);
+        ui.getProjectId().setValue(no, true);
+        ui.getClientReferenceHeader().setValue(no, true);
+        ui.getSampleType().setValue(no, true);
+        ui.getSource().setValue(no, true);
+        ui.getOrganizationName().setValue(no, true);
+        ui.getOrganizationApt().setValue(no, true);
+        ui.getOrganizationAddress().setValue(no, true);
+        ui.getOrganizationCity().setValue(no, true);
+        ui.getOrganizationState().setValue(no, true);
+        ui.getOrganizationZip().setValue(no, true);
+        ui.getAnalysisTest().setValue(no, true);
+        ui.getAnalysisMethod().setValue(no, true);
+        ui.getAnalysisRevision().setValue(no, true);
+        ui.getAnalysisUnit().setValue(no, true);
+        ui.getAnalysisStarted().setValue(no, true);
+        ui.getAnalysisCompleted().setValue(no, true);
+        ui.getAnalysisReleased().setValue(no, true);
+        ui.getAnalysisQa().setValue(no, true);
+        ui.getPatientLastName().setValue(no, true);
+        ui.getPatientFirstName().setValue(no, true);
+        ui.getPatientBirth().setValue(no, true);
+        ui.getPatientGender().setValue(no, true);
+        ui.getPatientRace().setValue(no, true);
+        ui.getPatientEthnicity().setValue(no, true);
+        ui.getPwsIdHeader().setValue(no, true);
+        ui.getPwsName().setValue(no, true);
+        ui.getSdwisCollectorHeader().setValue(no, true);
+        ui.getSdwisLocation().setValue(no, true);
+        ui.getFacilityId().setValue(no, true);
+        ui.getSdwisSampleType().setValue(no, true);
+        ui.getSampleCategory().setValue(no, true);
+        ui.getSamplePointId().setValue(no, true);
+        ui.getEnvCollectorHeader().setValue(no, true);
+        ui.getEnvLocation().setValue(no, true);
+        ui.getEnvLocationCity().setValue(no, true);
+        ui.getCollectorPhone().setValue(no, true);
+        ui.getSampleDescription().setValue(no, true);
     }
 }

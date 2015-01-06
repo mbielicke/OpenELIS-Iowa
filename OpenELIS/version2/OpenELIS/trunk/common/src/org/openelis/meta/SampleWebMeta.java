@@ -57,12 +57,12 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RELEASED_DATE_TO = "_display.releasedDateTo",
 
                     // sample clinical
-                    CLIN_PATIENT_LAST_NAME = "_clinicalPatient.lastName",
-                    CLIN_PATIENT_FIRST_NAME = "_clinicalPatient.firstName",
-                    CLIN_PATIENT_BIRTH_DATE = "_clinicalPatient.birthDate",
+                    CLIN_PATIENT_LAST_NAME = "_patient.lastName",
+                    CLIN_PATIENT_FIRST_NAME = "_patient.firstName",
+                    CLIN_PATIENT_BIRTH_DATE = "_patient.birthDate",
                     CLIN_PATIENT_BIRTH_DATE_FROM = "display.patientBirthDateFrom",
                     CLIN_PATIENT_BIRTH_DATE_TO = "display.patientBirthDateTo",
-                    CLIN_PATIENT_BIRTH_TIME = "_clinicalPatient.birthTime",
+                    CLIN_PATIENT_BIRTH_TIME = "_patient.birthTime",
 
                     // sample environmental
                     ENV_ID = "_sampleEnvironmental.id",
@@ -223,6 +223,12 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RELEASED_DATE,
                                                   RELEASED_DATE_FROM,
                                                   RELEASED_DATE_TO,
+                                                  CLIN_PATIENT_LAST_NAME,
+                                                  CLIN_PATIENT_FIRST_NAME,
+                                                  CLIN_PATIENT_BIRTH_DATE,
+                                                  CLIN_PATIENT_BIRTH_DATE_FROM,
+                                                  CLIN_PATIENT_BIRTH_DATE_TO,
+                                                  CLIN_PATIENT_BIRTH_TIME,
                                                   ENV_ID,
                                                   ENV_SAMPLE_ID,
                                                   ENV_IS_HAZARDOUS,

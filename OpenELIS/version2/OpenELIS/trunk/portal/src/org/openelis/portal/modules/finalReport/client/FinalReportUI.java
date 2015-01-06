@@ -73,7 +73,7 @@ public interface FinalReportUI extends IsWidget {
 
     public void setEnvCollectorError(String error);
 
-    public void setSdiwsCollectorError(String error);
+    public void setSdwisCollectorError(String error);
 
     public void setPwsError(String error);
 
