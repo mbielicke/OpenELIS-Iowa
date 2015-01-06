@@ -31,11 +31,14 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -63,6 +66,10 @@ public class EOrderBody implements Auditable, Cloneable {
 
     @Column(name = "xml")
     private String     xml;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "eorder_id", insertable = false, updatable = false)
+    private EOrder     eOrder;
 
     @Transient
     private EOrderBody original;
@@ -92,6 +99,14 @@ public class EOrderBody implements Auditable, Cloneable {
     public void setXml(String xml) {
         if (DataBaseUtil.isDifferent(xml, this.xml))
             this.xml = xml;
+    }
+
+    public EOrder geteOrder() {
+        return eOrder;
+    }
+
+    public void seteOrder(EOrder eOrder) {
+        this.eOrder = eOrder;
     }
 
     @Override
