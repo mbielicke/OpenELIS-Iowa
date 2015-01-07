@@ -35,7 +35,17 @@
       <t:Table ui:field="worksheetReagentTable" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="210" label="{msg.gen_description}">
-          <t:LabelCell/>
+          <t:AutoCompleteCell>
+            <w:AutoComplete ui:field="description" width="210px" dropWidth="210px" case="MIXED">
+              <w:popup>
+                <t:Table visibleRows="10" header="true" horizontalScroll="NEVER">
+                  <t:Column label="{msg.qc_qcName}">
+                    <t:LabelCell/>
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:AutoComplete>
+          </t:AutoCompleteCell>
         </t:Column>
         <t:Column width="60" label="{msg.gen_location}">
           <t:LabelCell/>

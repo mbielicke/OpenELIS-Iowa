@@ -41,8 +41,8 @@ public class WorksheetQcChoiceVO implements Serializable {
     private static final long                    serialVersionUID = 1L;
 
     protected ArrayList<WorksheetAnalysisViewDO> newAnalyses, removedAnalyses;
-    protected ArrayList<String>                  choiceUids;
-    protected ArrayList<QcLotViewDO>             choices;
+    protected ArrayList<String>                  choiceUids, reagentChoiceUids;
+    protected ArrayList<QcLotViewDO>             choices, reagentChoices;
     protected ValidationErrorsList               errors;
     protected WorksheetManager1                  manager;
 
@@ -72,6 +72,26 @@ public class WorksheetQcChoiceVO implements Serializable {
 
     public ArrayList<String> getChoiceUids() {
         return choiceUids;
+    }
+    
+    public void addReagentChoices(ArrayList<QcLotViewDO> newChoices) {
+        if (reagentChoices == null)
+            reagentChoices = new ArrayList<QcLotViewDO>();
+        reagentChoices.addAll(newChoices);
+    }
+
+    public ArrayList<QcLotViewDO> getReagentChoices() {
+        return reagentChoices;
+    }
+    
+    public void addReagentChoiceUids(ArrayList<String> newUids) {
+        if (reagentChoiceUids == null)
+            reagentChoiceUids = new ArrayList<String>();
+        reagentChoiceUids.addAll(newUids);
+    }
+
+    public ArrayList<String> getReagentChoiceUids() {
+        return reagentChoiceUids;
     }
     
     public ArrayList<WorksheetAnalysisViewDO> getNewAnalyses() {

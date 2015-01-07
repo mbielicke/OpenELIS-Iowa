@@ -53,20 +53,24 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.domain.WorksheetAnalysisViewDO;
-import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetReagentViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.qc.client.QcLookupScreen;
+import org.openelis.modules.worksheetBuilder.client.ReagentsWithChoicesEvent;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.GetMatchesEvent;
+import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.widget.AutoComplete;
+import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.MenuItem;
@@ -76,6 +80,8 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.ui.widget.table.event.CellEditedEvent;
+import org.openelis.ui.widget.table.event.CellEditedHandler;
 import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
@@ -93,6 +99,8 @@ public class WorksheetReagentTabUI extends Screen {
     private WorksheetReagentComparator                  wrComp;
 
     @UiField
+    protected AutoComplete                              description;
+    @UiField
     protected Button                                    addRowButton, moveDownButton,
                                                         moveUpButton, removeRowButton;
     @UiField
@@ -101,6 +109,7 @@ public class WorksheetReagentTabUI extends Screen {
     protected EventBus                                  parentBus;
     protected HashMap<Integer, DictionaryDO>            unitOfMeasureMap;
     protected HashMap<String, ArrayList<Item<Integer>>> unitModels;
+    protected HashMap<String, ArrayList<QcLotViewDO>>   reagentChoices;
     protected QcLookupScreen                            qcLookupScreen;
     protected Screen                                    parentScreen;
     
@@ -160,10 +169,39 @@ public class WorksheetReagentTabUI extends Screen {
         
         worksheetReagentTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                event.cancel();
+                if (!isState(ADD, UPDATE) || !canEdit || getUpdateTransferMode() || event.getCol() != 0 ||
+                    (reagentChoices == null || reagentChoices.get(worksheetReagentTable.getRowAt(worksheetReagentTable.getSelectedRow())
+                                                                                       .getData()) == null))
+                    event.cancel();
             }
         });
         
+        worksheetReagentTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                Object val;
+                Row row;
+                WorksheetReagentViewDO wrVDO;
+
+                r = event.getRow();
+                c = event.getCol();
+                
+                row = worksheetReagentTable.getRowAt(r);
+                val = worksheetReagentTable.getValueAt(r,c);
+
+                wrVDO = (WorksheetReagentViewDO)manager.getObject((String)row.getData());
+                switch (c) {
+                    case 0:
+                        if (val != null)
+                            wrVDO.setQcLotId(((AutoCompleteValue)val).getId());
+                        else
+                            wrVDO.setQcLotId(null);
+                        reloadRow(r, wrVDO, (AutoCompleteValue)val); 
+                        break;
+                }
+            }
+        });
+
         worksheetReagentTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 manager.reagent.remove(event.getIndex());
@@ -195,6 +233,19 @@ public class WorksheetReagentTabUI extends Screen {
             column.addMenuItem(sortDesc);
         }
 
+        description.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<Item<Integer>> model;
+                ArrayList<QcLotViewDO> list;
+
+                model = new ArrayList<Item<Integer>>();
+                list = reagentChoices.get(worksheetReagentTable.getRowAt(worksheetReagentTable.getSelectedRow()).getData());
+                for (QcLotViewDO qcLot : list)
+                    model.add(new Item<Integer>(qcLot.getId(), qcLot.getQcName() + "(" + qcLot.getLotNumber() + ")"));
+                description.showAutoMatches(model);
+            }
+        });
+
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 addRowButton.setEnabled(isState(ADD, UPDATE) && canEdit && !getUpdateTransferMode());
@@ -208,6 +259,33 @@ public class WorksheetReagentTabUI extends Screen {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
                 displayReagentData();
+            }
+        });
+        
+        parentBus.addHandler(ReagentsWithChoicesEvent.getType(), new ReagentsWithChoicesEvent.Handler() {
+            public void onReagentsWithChoicesLoaded(ReagentsWithChoicesEvent event) {
+                int i;
+                ArrayList<String> uids;
+                ArrayList<QcLotViewDO> choices, tempChoices;
+                String lastUid;
+
+                lastUid = null;
+                choices = event.getReagentChoices();
+                uids = event.getReagentChoiceUids();
+                tempChoices = null;
+                if (choices != null) {
+                    reagentChoices = new HashMap<String, ArrayList<QcLotViewDO>>();
+                    for (i = 0; i < choices.size(); i++) {
+                        if (!uids.get(i).equals(lastUid)) {
+                            tempChoices = new ArrayList<QcLotViewDO>();
+                            lastUid = uids.get(i);
+                            reagentChoices.put(lastUid, tempChoices);
+                        }
+                        tempChoices.add(choices.get(i));
+                    }
+                } else {
+                    reagentChoices = null;
+                }
             }
         });
     }
@@ -277,19 +355,22 @@ public class WorksheetReagentTabUI extends Screen {
         int i;
         ArrayList<Row> model;
         Row row;
+        ValidationErrorsList multiQcMessages;
         WorksheetReagentViewDO wrVDO;
         
         model = new ArrayList<Row>();
+        multiQcMessages = new ValidationErrorsList();
         if (manager != null) {
             try {
                 for (i = 0; i < manager.reagent.count(); i++) {
                     wrVDO = (WorksheetReagentViewDO)manager.reagent.get(i);
     
                     row = new Row(8);
-                    row.setCell(0, DataBaseUtil.concatWithSeparator(wrVDO.getQcName(),
-                                                                    " (",
-                                                                    DataBaseUtil.concat(wrVDO.getLotNumber(),
-                                                                                        ")")));
+                    row.setCell(0, new AutoCompleteValue(wrVDO.getQcLotId(),
+                                                         DataBaseUtil.concatWithSeparator(wrVDO.getQcName(),
+                                                                                          " (",
+                                                                                          DataBaseUtil.concat(wrVDO.getLotNumber(),
+                                                                                                              ")"))));
                     row.setCell(1, wrVDO.getLocation());
                     row.setCell(2, wrVDO.getPreparedDate());
                     row.setCell(3, wrVDO.getUsableDate());
@@ -299,7 +380,14 @@ public class WorksheetReagentTabUI extends Screen {
                     row.setCell(7, wrVDO.getPreparedByName());
                     row.setData(manager.getUid(wrVDO)); 
                     model.add(row);
+
+                    if (reagentChoices != null && reagentChoices.get(manager.getUid(wrVDO)) != null)
+                        multiQcMessages.add(new FormErrorException(Messages.get()
+                                                                           .worksheet_multiMatchingActiveReagent(i + 1)));
                 }
+                
+                if (multiQcMessages.size() > 0)
+                    parentScreen.showErrors(multiQcMessages);
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -367,11 +455,6 @@ public class WorksheetReagentTabUI extends Screen {
                                         }
                                     }
                                     wrVDO.setQcName(qcLotVDO.getQcName());
-                                    try {
-                                    } catch (Exception anyE) {
-                                        Window.alert(anyE.getMessage());
-                                        logger.log(Level.SEVERE, anyE.getMessage(), anyE);
-                                    }
 
                                     row = new Row(8);
                                     row.setCell(0, DataBaseUtil.concatWithSeparator(wrVDO.getQcName(),
@@ -410,19 +493,20 @@ public class WorksheetReagentTabUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("removeRowButton")
     protected void removeRow(ClickEvent event) {
-        int i, j, rowIndex;
+        int i, rowIndex;
         Integer rows[];
-        Row dataRow, tempRow;
-        SectionPermission perm;
-        StringBuffer buffer;
-        WorksheetItemDO wiDO;
-        WorksheetAnalysisViewDO data, tempData;
+        Row dataRow;
+        WorksheetReagentViewDO data;
 
         worksheetReagentTable.finishEditing();
         rows = worksheetReagentTable.getSelectedRows();
         Arrays.sort(rows);
         for (i = rows.length - 1; i >= 0; i--) {
             rowIndex = rows[i];
+            dataRow = worksheetReagentTable.getRowAt(rowIndex);
+            data = (WorksheetReagentViewDO)manager.getObject((String)dataRow.getData());
+            if (reagentChoices != null)
+                reagentChoices.remove(manager.getUid(data));
             worksheetReagentTable.removeRowAt(rowIndex);
         }
     }
@@ -500,6 +584,92 @@ public class WorksheetReagentTabUI extends Screen {
             return ((WorksheetCompletionScreenUI)parentScreen).getUpdateTransferMode();
         else
             return false;
+    }
+    
+    private void reloadRow(int rowIndex, WorksheetReagentViewDO wrVDO, AutoCompleteValue val) {
+        Row row;
+        
+        row = worksheetReagentTable.getRowAt(rowIndex);
+        if (val != null) {
+            for (QcLotViewDO qcLotVDO : reagentChoices.get(manager.getUid(wrVDO))) {
+                if (qcLotVDO.getId().equals(val.getId())) {
+                    wrVDO.setQcLotId(qcLotVDO.getId());
+                    wrVDO.setLotNumber(qcLotVDO.getLotNumber());
+                    wrVDO.setLocationId(qcLotVDO.getLocationId());
+                    wrVDO.setPreparedDate(qcLotVDO.getPreparedDate());
+                    wrVDO.setPreparedVolume(qcLotVDO.getPreparedVolume());
+                    wrVDO.setPreparedUnitId(qcLotVDO.getPreparedUnitId());
+                    wrVDO.setPreparedById(qcLotVDO.getPreparedById());
+                    wrVDO.setUsableDate(qcLotVDO.getUsableDate());
+                    wrVDO.setExpireDate(qcLotVDO.getExpireDate());
+                    wrVDO.setIsActive(qcLotVDO.getIsActive());
+                    if (qcLotVDO.getLocationId() != null) {
+                        try {
+                            wrVDO.setLocation(DictionaryCache.getById(qcLotVDO.getLocationId()).getEntry());
+                        } catch (Exception anyE) {
+                            Window.alert(anyE.getMessage());
+                            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                        }
+                    }
+                    if (qcLotVDO.getPreparedUnitId() != null) {
+                        try {
+                            wrVDO.setPreparedUnit(DictionaryCache.getById(qcLotVDO.getPreparedUnitId()).getEntry());
+                        } catch (Exception anyE) {
+                            Window.alert(anyE.getMessage());
+                            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                        }
+                    }
+                    if (qcLotVDO.getPreparedById() != null) {
+                        try {
+                            wrVDO.setPreparedByName(UserCache.getSystemUser(qcLotVDO.getPreparedById()).getLoginName());
+                        } catch (Exception anyE) {
+                            Window.alert(anyE.getMessage());
+                            logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                        }
+                    }
+                    wrVDO.setQcName(qcLotVDO.getQcName());
+
+                    row.setCell(0, DataBaseUtil.concatWithSeparator(wrVDO.getQcName(),
+                                                                    " (",
+                                                                    DataBaseUtil.concat(wrVDO.getLotNumber(),
+                                                                                        ")")));
+                    row.setCell(1, wrVDO.getLocation());
+                    row.setCell(2, wrVDO.getPreparedDate());
+                    row.setCell(3, wrVDO.getUsableDate());
+                    row.setCell(4, wrVDO.getExpireDate());
+                    row.setCell(5, wrVDO.getPreparedVolume());
+                    row.setCell(6, wrVDO.getPreparedUnit());
+                    row.setCell(7, wrVDO.getPreparedByName());
+                    break;
+                }
+            }
+        } else {
+            row.setCell(0, new AutoCompleteValue(null, null));
+            row.setCell(1, null);
+            row.setCell(2, null);
+            row.setCell(3, null);
+            row.setCell(4, null);
+            row.setCell(5, null);
+            row.setCell(6, null);
+            row.setCell(7, null);
+            
+            wrVDO.setQcLotId(null);
+            wrVDO.setLotNumber(null);
+            wrVDO.setLocationId(null);
+            wrVDO.setPreparedDate(null);
+            wrVDO.setPreparedVolume(null);
+            wrVDO.setPreparedUnitId(null);
+            wrVDO.setPreparedById(null);
+            wrVDO.setUsableDate(null);
+            wrVDO.setExpireDate(null);
+            wrVDO.setIsActive(null);
+            wrVDO.setLocation(null);
+            wrVDO.setPreparedUnit(null);
+            wrVDO.setPreparedByName(null);
+            wrVDO.setQcName(null);
+        }
+        
+        worksheetReagentTable.setRowAt(rowIndex, row);
     }
     
     //
