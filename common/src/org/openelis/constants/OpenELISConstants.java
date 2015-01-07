@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -19105,6 +19105,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String waterType();
 
   /**
+   * Translated "Please select at least one sample, then press Run Report".
+   * 
+   * @return translated "Please select at least one sample, then press Run Report"
+   */
+  @DefaultMessage("Please select at least one sample, then press Run Report")
+  @Key("web.noSampleSelected")
+  String web_noSampleSelected();
+
+  /**
    * Translated "Well/Collector Info".
    * 
    * @return translated "Well/Collector Info"
@@ -19339,11 +19348,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_insertAnalysisBelow();
 
   /**
-   * Translated "Analysis This Position".
+   * Translated "Analysis This Position (Pooling)".
    * 
-   * @return translated "Analysis This Position"
+   * @return translated "Analysis This Position (Pooling)"
    */
-  @DefaultMessage("Analysis This Position")
+  @DefaultMessage("Analysis This Position (Pooling)")
   @Key("worksheet.insertAnalysisThisPosition")
   String worksheet_insertAnalysisThisPosition();
 
@@ -19366,11 +19375,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_insertFromQcTableBelow();
 
   /**
-   * Translated "From QC Table This Position".
+   * Translated "From QC Table This Position (Pooling)".
    * 
-   * @return translated "From QC Table This Position"
+   * @return translated "From QC Table This Position (Pooling)"
    */
-  @DefaultMessage("From QC Table This Position")
+  @DefaultMessage("From QC Table This Position (Pooling)")
   @Key("worksheet.insertFromQcTableThisPosition")
   String worksheet_insertFromQcTableThisPosition();
 
@@ -19393,11 +19402,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_insertFromWorksheetBelow();
 
   /**
-   * Translated "From Another Worksheet This Position".
+   * Translated "From Another Worksheet This Position (Pooling)".
    * 
-   * @return translated "From Another Worksheet This Position"
+   * @return translated "From Another Worksheet This Position (Pooling)"
    */
-  @DefaultMessage("From Another Worksheet This Position")
+  @DefaultMessage("From Another Worksheet This Position (Pooling)")
   @Key("worksheet.insertFromWorksheetThisPosition")
   String worksheet_insertFromWorksheetThisPosition();
 
