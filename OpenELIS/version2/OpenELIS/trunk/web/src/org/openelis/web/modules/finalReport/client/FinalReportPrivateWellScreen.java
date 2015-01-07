@@ -608,7 +608,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         query.setFields(field);
 
         if (field.getQuery() == null) {
-            window.setError(Messages.get().noSampleSelectedError());
+            window.setError(Messages.get().web_noSampleSelected());
             return;
         }
         
