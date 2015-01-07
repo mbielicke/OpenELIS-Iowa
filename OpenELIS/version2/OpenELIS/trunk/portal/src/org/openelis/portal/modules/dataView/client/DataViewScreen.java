@@ -1185,11 +1185,11 @@ public class DataViewScreen extends Screen {
 
         addScreenHandler(ui.getEnvLocation(), "envLocationHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                ui.getEnvLocation().setValue(data.getSampleEnvironmentalLocation());
+                ui.getEnvLocation().setValue(data.getSampleEnvironmentalLocationHeader());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalLocation(event.getValue());
+                data.setSampleEnvironmentalLocationHeader(event.getValue());
             }
 
             public Widget onTab(boolean forward) {
@@ -1325,14 +1325,12 @@ public class DataViewScreen extends Screen {
     private void getSamples() {
         int numDomains;
         String domain;
-        QueryData field;
         ArrayList<QueryData> fields;
 
         ui.clearErrors();
         finishEditing();
         numDomains = 0;
         domain = null;
-        field = new QueryData();
         fields = new ArrayList<QueryData>();
 
         /*
@@ -1340,16 +1338,10 @@ public class DataViewScreen extends Screen {
          */
         if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
             !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
-            field = new QueryData(SampleWebMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().SDWIS);
             domain = Constants.domain().SDWIS;
             numDomains++ ;
         }
         if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
-            field = new QueryData(SampleWebMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().ENVIRONMENTAL);
             domain = Constants.domain().ENVIRONMENTAL;
             numDomains++ ;
         }
@@ -1357,9 +1349,6 @@ public class DataViewScreen extends Screen {
             !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
             !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
             !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
-            field = new QueryData(SampleWebMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().CLINICAL);
             domain = Constants.domain().CLINICAL;
             numDomains++ ;
         }
@@ -1369,13 +1358,14 @@ public class DataViewScreen extends Screen {
             return;
         }
 
-        if (domain != null)
-            fields.add(field);
         try {
             fields.addAll(createWhereFromParamFields(getQueryFields()));
         } catch (Exception e) {
             return;
         }
+
+        if (domain != null)
+            fields.add(new QueryData(SampleWebMeta.getDomain(), QueryData.Type.STRING, domain));
 
         if (fields.size() < 1) {
             Window.alert(Messages.get().finalReport_error_emptyQueryException());

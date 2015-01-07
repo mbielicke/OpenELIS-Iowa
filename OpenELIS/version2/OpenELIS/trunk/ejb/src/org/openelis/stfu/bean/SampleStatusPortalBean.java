@@ -115,14 +115,17 @@ public class SampleStatusPortalBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct " + SampleViewMeta.getId() + "," +
-                          SampleViewMeta.getAccessionNumber() + ", " +
+        builder.setSelect("distinct " + SampleViewMeta.getId() + "," + SampleViewMeta.getDomain() +
+                          "," + SampleViewMeta.getAccessionNumber() + ", " +
                           SampleViewMeta.getReceivedDate() + ", " +
                           SampleViewMeta.getCollectionDate() + ", " +
                           SampleViewMeta.getCollectionTime() + ", " + SampleViewMeta.getStatusId() +
                           ", " + SampleViewMeta.getClientReference() + ", " +
                           SampleViewMeta.getReportToId() + ", " + SampleViewMeta.getReportTo() +
                           ", " + SampleViewMeta.getCollector() + ", " +
+                          SampleViewMeta.getLocation() + "," + SampleViewMeta.getPwsNumber0() +
+                          "," + SampleViewMeta.getPatientLastName() + "," +
+                          SampleViewMeta.getPatientFirstName() + "," +
                           SampleViewMeta.getAnalysisId() + ", " +
                           SampleViewMeta.getAnalysisStatusId() + ", " +
                           SampleViewMeta.getTestReportingDescription() + ", " +
@@ -140,34 +143,34 @@ public class SampleStatusPortalBean {
         returnList = new ArrayList<SampleViewVO>();
         for (Object[] result : resultList) {
             returnList.add(new SampleViewVO((Integer)result[0],
+                                            (String)result[1],
+                                            (Integer)result[2],
                                             null,
-                                            (Integer)result[1],
-                                            null,
-                                            (Date)result[2],
                                             (Date)result[3],
                                             (Date)result[4],
-                                            (Integer)result[5],
-                                            (String)result[6],
+                                            (Date)result[5],
+                                            (Integer)result[6],
+                                            (String)result[7],
                                             null,
-                                            (Integer)result[7],
-                                            (String)result[8],
+                                            (Integer)result[8],
                                             (String)result[9],
+                                            (String)result[10],
+                                            (String)result[11],
                                             null,
                                             null,
                                             null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            (Integer)result[10],
-                                            null,
-                                            null,
-                                            (Integer)result[11],
                                             (String)result[12],
-                                            (String)result[13]));
+                                            null,
+                                            null,
+                                            (String)result[13],
+                                            (String)result[14],
+                                            null,
+                                            (Integer)result[15],
+                                            null,
+                                            null,
+                                            (Integer)result[16],
+                                            (String)result[17],
+                                            (String)result[18]));
         }
 
         return returnList;

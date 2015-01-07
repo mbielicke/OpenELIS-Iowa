@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -1130,6 +1130,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Released")
   @Key("analysis.released")
   String analysis_released();
+
+  /**
+   * Translated "Analysis Released Date".
+   * 
+   * @return translated "Analysis Released Date"
+   */
+  @DefaultMessage("Analysis Released Date")
+  @Key("analysis.releasedDate")
+  String analysis_releasedDate();
 
   /**
    * Translated "Revision".
@@ -4370,6 +4379,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Entry")
   @Key("entry")
   String entry();
+
+  /**
+   * Translated "Environmental Collector".
+   * 
+   * @return translated "Environmental Collector"
+   */
+  @DefaultMessage("Environmental Collector")
+  @Key("env.collector")
+  String env_collector();
+
+  /**
+   * Translated "Environmental Location".
+   * 
+   * @return translated "Environmental Location"
+   */
+  @DefaultMessage("Environmental Location")
+  @Key("env.location")
+  String env_location();
 
   /**
    * Translated "Environmental Info".
@@ -15541,6 +15568,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleRevision();
 
   /**
+   * Translated "SDWIS Collector".
+   * 
+   * @return translated "SDWIS Collector"
+   */
+  @DefaultMessage("SDWIS Collector")
+  @Key("sampleSDWIS.collector")
+  String sampleSDWIS_collector();
+
+  /**
    * Translated "Collector/Organization Info".
    * 
    * @return translated "Collector/Organization Info"
@@ -15557,6 +15593,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Facility Id")
   @Key("sampleSDWIS.facilityId")
   String sampleSDWIS_facilityId();
+
+  /**
+   * Translated "SDWIS Location".
+   * 
+   * @return translated "SDWIS Location"
+   */
+  @DefaultMessage("SDWIS Location")
+  @Key("sampleSDWIS.location")
+  String sampleSDWIS_location();
 
   /**
    * Translated "SDWIS Sample Login".
@@ -15647,6 +15692,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample SDWIS")
   @Key("sampleSDWIS.sampleSDWIS")
   String sampleSDWIS_sampleSDWIS();
+
+  /**
+   * Translated "SDWIS Sample Type".
+   * 
+   * @return translated "SDWIS Sample Type"
+   */
+  @DefaultMessage("SDWIS Sample Type")
+  @Key("sampleSDWIS.sampleType")
+  String sampleSDWIS_sampleType();
 
   /**
    * Translated "Accession # ''{0,number}'': SDWIS Sample Type is required".
