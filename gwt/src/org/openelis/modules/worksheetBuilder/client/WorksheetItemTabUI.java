@@ -882,6 +882,13 @@ public class WorksheetItemTabUI extends Screen {
                     templateAnalysisUids.add(manager.getUid(waVDO));
             }
             
+            if (wqcVO.getReagentChoices() != null) {
+                parentBus.fireEventFromSource(new ReagentsWithChoicesEvent(wqcVO.getReagentChoices(),
+                                                                           wqcVO.getReagentChoiceUids()),
+                                              screen);
+                Window.alert(Messages.get().worksheet_checkReagentTab());
+            }
+            
             lastUid = null;
             choices = wqcVO.getChoices();
             uids = wqcVO.getChoiceUids();

@@ -1268,6 +1268,8 @@ public class WorksheetManager1Bean {
         int i, j, k, numSub, pos;
         ArrayList<TestWorksheetItemDO> lastBothList, lastRunList, lastSubsetList,
                                        randList;
+        ArrayList<QcLotViewDO> qclVDOs, qclsByLoc;
+        ArrayList<String> uids;
         ArrayList<WorksheetAnalysisViewDO> newAnalyses, removed, waVDOs;
         ArrayList<WorksheetItemDO> items, newItems;
         ArrayList<WorksheetResultViewDO> wrVDOs;
@@ -1277,6 +1279,7 @@ public class WorksheetManager1Bean {
         HashMap<Integer, ArrayList<WorksheetResultViewDO>> wrVDOsByAnalysisId;
         HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> wqrVDOsByAnalysisId;
         Preferences prefs;
+        QcLotViewDO qclVDO;
         TestWorksheetDO twDO;
         TestWorksheetItemDO qcTemplate[], twiDO, twiDO1;
         TestWorksheetManager twMan;
@@ -1284,6 +1287,7 @@ public class WorksheetManager1Bean {
         WorksheetAnalysisViewDO waVDO, waVDO1;
         WorksheetItemDO wiDO;
         WorksheetQcChoiceVO wqcVO;
+        WorksheetReagentViewDO wrgVDO;
         
         errors = new ValidationErrorsList();
         prefs = null;
@@ -1320,6 +1324,12 @@ public class WorksheetManager1Bean {
             getWorksheet(wm).setSubsetCapacity(twDO.getSubsetCapacity());
         }
         
+        try {
+            prefs = Preferences.userRoot();
+        } catch (Exception anyE) {
+            errors.add(anyE);
+        }
+        
         //
         // Build the QC Template
         //
@@ -1343,6 +1353,98 @@ public class WorksheetManager1Bean {
                 lastSubsetList.add(twiDO);
             } else if (Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN.equals(twiDO.getTypeId())) {
                 lastBothList.add(twiDO);
+            } else if (Constants.dictionary().POS_REAGENT_MEDIA.equals(twiDO.getTypeId())) {
+                qclVDOs = qcMap.get(twiDO.getQcName());
+                if (qclVDOs == null) {
+                    try {
+                        qclVDOs = qcLot.fetchActiveByQcName(twiDO.getQcName(), 10);
+                        qcMap.put(twiDO.getQcName(), qclVDOs);
+                    } catch (Exception anyE) {
+                        errors.add(new FormErrorException("Error retrieving QC for Reagent/Media: " +
+                                                           twiDO.getQcName() + "; " + anyE.getMessage()));
+                        continue;
+                    }
+                }
+                if (qclVDOs.size() == 0) {
+                    errors.add(new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), "Reagent/Media")));
+                } else {
+                    wrgVDO = new WorksheetReagentViewDO();
+                    wrgVDO.setId(wm.getNextUID());
+                    if (qclVDOs.size() > 1) {
+                        qclsByLoc = null;
+                        if (prefs != null) {
+                            for (QcLotViewDO tempLot : qclVDOs) {
+                                if (tempLot.getLocationId() != null && tempLot.getLocationId().equals(prefs.getInt("location", -1))) {
+                                    if (qclsByLoc == null)
+                                        qclsByLoc = new ArrayList<QcLotViewDO>();
+                                    qclsByLoc.add(tempLot);
+                                }
+                            }
+                        }
+                        if (qclsByLoc != null) {
+                            if (qclsByLoc.size() > 1) {
+                                uids = new ArrayList<String>();
+                                for (i = 0; i < qclsByLoc.size(); i++)
+                                    uids.add(wm.getUid(wrgVDO));
+                                wqcVO.addReagentChoices(qclsByLoc);
+                                wqcVO.addReagentChoiceUids(uids);
+                            }
+                            qclVDO = qclsByLoc.get(0);
+                        } else {
+                            uids = new ArrayList<String>();
+                            for (i = 0; i < qclVDOs.size(); i++)
+                                uids.add(wm.getUid(wrgVDO));
+                            wqcVO.addReagentChoices(qclVDOs);
+                            wqcVO.addReagentChoiceUids(uids);
+
+                            qclVDO = qclVDOs.get(0);
+                        }
+                    } else {
+                        qclVDO = qclVDOs.get(0);
+                    }
+                    wrgVDO.setQcLotId(qclVDO.getId());
+                    wrgVDO.setLotNumber(qclVDO.getLotNumber());
+                    wrgVDO.setLocationId(qclVDO.getLocationId());
+                    wrgVDO.setPreparedDate(qclVDO.getPreparedDate());
+                    wrgVDO.setPreparedVolume(qclVDO.getPreparedVolume());
+                    wrgVDO.setPreparedUnitId(qclVDO.getPreparedUnitId());
+                    wrgVDO.setPreparedById(qclVDO.getPreparedById());
+                    wrgVDO.setUsableDate(qclVDO.getUsableDate());
+                    wrgVDO.setExpireDate(qclVDO.getExpireDate());
+                    wrgVDO.setIsActive(qclVDO.getIsActive());
+                    if (qclVDO.getLocationId() != null) {
+                        try {
+                            wrgVDO.setLocation(dictionary.getById(qclVDO.getLocationId()).getEntry());
+                        } catch (Exception anyE) {
+                            errors.add(new FormErrorException("Error setting location for Reagent/Media: " +
+                                                              qclVDO.getQcName() +
+                                                              "(" + qclVDO.getLotNumber() +
+                                                              "); " + anyE.getMessage()));
+                        }
+                    }
+                    if (qclVDO.getPreparedUnitId() != null) {
+                        try {
+                            wrgVDO.setPreparedUnit(dictionary.getById(qclVDO.getPreparedUnitId()).getEntry());
+                        } catch (Exception anyE) {
+                            errors.add(new FormErrorException("Error setting prepared unit for Reagent/Media: " +
+                                                              qclVDO.getQcName() +
+                                                              "(" + qclVDO.getLotNumber() +
+                                                              "); " + anyE.getMessage()));
+                        }
+                    }
+                    if (qclVDO.getPreparedById() != null) {
+                        try {
+                            wrgVDO.setPreparedByName(userCache.getSystemUser(qclVDO.getPreparedById()).getLoginName());
+                        } catch (Exception anyE) {
+                            errors.add(new FormErrorException("Error setting prepared by for Reagent/Media: " +
+                                                              qclVDO.getQcName() +
+                                                              "(" + qclVDO.getLotNumber() +
+                                                              "); " + anyE.getMessage()));
+                        }
+                    }
+                    wrgVDO.setQcName(qclVDO.getQcName());
+                    addReagent(wm, wrgVDO);
+                }
             }
         }
         
@@ -1381,12 +1483,6 @@ public class WorksheetManager1Bean {
             }
         }
 
-        try {
-            prefs = Preferences.userRoot();
-        } catch (Exception anyE) {
-            errors.add(anyE);
-        }
-        
         //
         // Merge in the existing records and add the last of run qcs.  If there
         // are more than one matching qc for a particular position, add it to 

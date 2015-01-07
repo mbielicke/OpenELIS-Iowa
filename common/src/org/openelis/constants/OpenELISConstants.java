@@ -1852,11 +1852,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_autoSelectNext();
 
   /**
-   * Translated "Attachment ''{0}'': Description is required".
+   * Translated "Attachment ''{0}'': Description is required ".
    * 
-   * @return translated "Attachment ''{0}'': Description is required"
+   * @return translated "Attachment ''{0}'': Description is required "
    */
-  @DefaultMessage("Attachment ''{0}'': Description is required")
+  @DefaultMessage("Attachment ''{0}'': Description is required ")
   @Key("attachment.descRequiredException")
   String attachment_descRequiredException(String arg0);
 
@@ -19114,6 +19114,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_capacityExceeded(Integer arg0);
 
   /**
+   * Translated "Reagents were loaded, please view the Reagent/Media tab to see issues that arose from this load.".
+   * 
+   * @return translated "Reagents were loaded, please view the Reagent/Media tab to see issues that arose from this load."
+   */
+  @DefaultMessage("Reagents were loaded, please view the Reagent/Media tab to see issues that arose from this load.")
+  @Key("worksheet.checkReagentTab")
+  String worksheet_checkReagentTab();
+
+  /**
    * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".
    * 
    * @return translated "You must choose a format for this worksheet before adding analyses from another worksheet."
@@ -19373,6 +19382,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Load QC Template")
   @Key("worksheet.loadTemplate")
   String worksheet_loadTemplate();
+
+  /**
+   * Translated "More than one active reagent lot was found for row {0,number}".
+   * 
+   * @return translated "More than one active reagent lot was found for row {0,number}"
+   */
+  @DefaultMessage("More than one active reagent lot was found for row {0,number}")
+  @Key("worksheet.multiMatchingActiveReagent")
+  String worksheet_multiMatchingActiveReagent(Integer arg0);
 
   /**
    * Translated "No Analytes Found For Selected Row".
