@@ -57,12 +57,12 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RELEASED_DATE_TO = "_display.releasedDateTo",
 
                     // sample clinical
-                    CLIN_PATIENT_LAST_NAME = "_patient.lastName",
-                    CLIN_PATIENT_FIRST_NAME = "_patient.firstName",
-                    CLIN_PATIENT_BIRTH_DATE = "_patient.birthDate",
+                    CLIN_PATIENT_LAST_NAME = "_clinicalPatient.lastName",
+                    CLIN_PATIENT_FIRST_NAME = "_clinicalPatient.firstName",
+                    CLIN_PATIENT_BIRTH_DATE = "_clinicalPatient.birthDate",
                     CLIN_PATIENT_BIRTH_DATE_FROM = "display.patientBirthDateFrom",
                     CLIN_PATIENT_BIRTH_DATE_TO = "display.patientBirthDateTo",
-                    CLIN_PATIENT_BIRTH_TIME = "_patient.birthTime",
+                    CLIN_PATIENT_BIRTH_TIME = "_clinicalPatient.birthTime",
 
                     // sample environmental
                     ENV_ID = "_sampleEnvironmental.id",
@@ -1028,6 +1028,13 @@ public class SampleWebMeta implements Meta, MetaMap {
                 from += ", IN (_sample.sampleSDWIS) _sampleSDWIS ";
             from += ", IN ( _sampleSDWIS.pws) _pws ";
         }
+
+        // sample clinical
+        if (where.indexOf("sampleClinical.") > -1 || where.indexOf("clinicalPatient.") > -1)
+            from += ", IN (_sample.sampleClinical) _sampleClinical ";
+
+        if (where.indexOf("clinicalPatient.") > -1)
+            from += " LEFT JOIN _sampleClinical.patient _clinicalPatient ";
 
         if (where.indexOf("project.") > -1) {
             from += " LEFT JOIN _sample.sampleProject _sampleProject ";

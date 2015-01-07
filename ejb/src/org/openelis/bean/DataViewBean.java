@@ -235,7 +235,7 @@ public class DataViewBean {
 
         return new ArrayList<IdNameVO>();
     }
-    
+
     @RolesAllowed("w_dataview_environmental-select")
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         String clause;
@@ -2026,7 +2026,7 @@ public class DataViewBean {
         if ("Y".equals(data.getAnalysisCompletedBy()))
             headers.add(Messages.get().completedBy());
         if ("Y".equals(data.getAnalysisReleasedDate()))
-            headers.add(Messages.get().releasedDate());
+            headers.add(Messages.get().analysis_releasedDate());
         if ("Y".equals(data.getAnalysisReleasedBy()))
             headers.add(Messages.get().releasedBy());
         if ("Y".equals(data.getAnalysisStartedDate()))
@@ -2048,11 +2048,11 @@ public class DataViewBean {
         if ("Y".equals(data.getSampleEnvironmentalPriority()))
             headers.add(Messages.get().priority());
         if ("Y".equals(data.getSampleEnvironmentalCollectorHeader()))
-            headers.add(Messages.get().collector());
+            headers.add(Messages.get().env_collector());
         if ("Y".equals(data.getSampleEnvironmentalCollectorPhone()))
             headers.add(Messages.get().phone());
         if ("Y".equals(data.getSampleEnvironmentalLocationHeader()))
-            headers.add(Messages.get().location());
+            headers.add(Messages.get().env_location());
         if ("Y".equals(data.getSampleEnvironmentalLocationAddressCityHeader()))
             headers.add(Messages.get().locationCity());
         if ("Y".equals(data.getSampleEnvironmentalDescription()))
@@ -2104,17 +2104,17 @@ public class DataViewBean {
         if ("Y".equals(data.getSampleSDWISFacilityId()))
             headers.add(Messages.get().facilityId());
         if ("Y".equals(data.getSampleSDWISSampleTypeId()))
-            headers.add(Messages.get().sampleType());
+            headers.add(Messages.get().sampleSDWIS_sampleType());
         if ("Y".equals(data.getSampleSDWISSampleCategoryId()))
             headers.add(Messages.get().sampleCat());
         if ("Y".equals(data.getSampleSDWISSamplePointId()))
             headers.add(Messages.get().samplePtId());
         if ("Y".equals(data.getSampleSDWISLocation()))
-            headers.add(Messages.get().location());
+            headers.add(Messages.get().sampleSDWIS_location());
         if ("Y".equals(data.getSampleSDWISPriority()))
             headers.add(Messages.get().priority());
         if ("Y".equals(data.getSampleSDWISCollector()))
-            headers.add(Messages.get().collector());
+            headers.add(Messages.get().sampleSDWIS_collector());
 
         return headers;
     }
@@ -2690,15 +2690,16 @@ public class DataViewBean {
         }
     }
 
-    private void addClinicalCells(Row row, int startCol, DataViewVO data, SampleClinicalViewDO clinical) {
+    private void addClinicalCells(Row row, int startCol, DataViewVO data,
+                                  SampleClinicalViewDO clinical) {
         Cell cell;
 
         /*
-         * the SampleClinicalViewDO can be null if a sample is not a Clinical sample
-         * but the user has requested to view Clinical fields and so we need to
-         * add empty cells in the columns for those fields, because otherwise
-         * the data in the cells to the right of those columns will be shifted
-         * to the left
+         * the SampleClinicalViewDO can be null if a sample is not a Clinical
+         * sample but the user has requested to view Clinical fields and so we
+         * need to add empty cells in the columns for those fields, because
+         * otherwise the data in the cells to the right of those columns will be
+         * shifted to the left
          */
         if ("Y".equals(data.getSampleClinicalPatientLastName())) {
             cell = row.createCell(startCol++ );

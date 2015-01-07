@@ -4,7 +4,6 @@ import static org.openelis.portal.client.Logger.remote;
 import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -25,7 +24,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
@@ -33,6 +31,8 @@ import com.google.gwt.dom.client.Style.WhiteSpace;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -575,10 +575,8 @@ public class SampleStatusScreen extends Screen {
     private void setTableData(ArrayList<SampleViewVO> samples) {
         int testRow, sampleRow, qaCount;
         Integer accNumPrev, accNum;
-        String completed, inProgress, collector;
-        Date temp;
-        Datetime temp1;
-        DateHelper dh;
+        String completed, inProgress, sampleData, collected;
+        DateTimeFormat df, tf, dtf;
         SampleViewVO data;
         StringBuffer sb;
 
@@ -607,9 +605,14 @@ public class SampleStatusScreen extends Screen {
         ui.getTable().setText(0, 6, Messages.get().sampleStatus_qaEvent());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
 
-        dh = new DateHelper();
+        df = new DateTimeFormat(Messages.get().gen_datePattern(), new DefaultDateTimeFormatInfo()) {
+        };
+        tf = new DateTimeFormat(Messages.get().gen_timePattern(), new DefaultDateTimeFormatInfo()) {
+        };
+        dtf = new DateTimeFormat(Messages.get().gen_dateTimePattern(),
+                                 new DefaultDateTimeFormatInfo()) {
+        };
         sb = new StringBuffer();
-        dh.setEnd(Datetime.MINUTE);
         accNumPrev = null;
         testRow = qaCount = sampleRow = 0;
         completed = Messages.get().sampleStatus_completed();
@@ -652,33 +655,46 @@ public class SampleStatusScreen extends Screen {
 
                 qaCount = 1;
 
-                if (data.getCollectionDate() != null) {
-                    temp = data.getCollectionDate().getDate();
-                    if (data.getCollectionTime() == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(data.getCollectionTime().getDate().getHours());
-                        temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
-                    }
-                    temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-                } else {
-                    temp1 = null;
+                collected = null;
+                if (data.getCollectionDate() != null && data.getCollectionDate().getDate() != null) {
+                    collected = df.format(data.getCollectionDate().getDate());
+                    if (data.getCollectionTime() != null &&
+                        data.getCollectionTime().getDate() != null)
+                        collected += tf.format(data.getCollectionTime().getDate());
                 }
 
                 ui.getTable().setText(sampleRow,
                                       0,
                                       DataBaseUtil.toString(data.getAccessionNumber()));
 
-                if (data.getCollector() == null)
-                    collector = " ";
-                else
-                    collector = data.getCollector();
+                sampleData = null;
+                if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain())) {
+                    if (data.getCollector() != null) {
+                        sampleData = data.getCollector();
+                    } else {
+                        data.getLocation();
+                    }
+                } else if (Constants.domain().SDWIS.equals(data.getDomain())) {
+                    if (data.getCollector() != null) {
+                        sampleData = data.getCollector();
+                    } else {
+                        data.getPwsNumber0();
+                    }
+                } else if (Constants.domain().CLINICAL.equals(data.getDomain())) {
+                    if (data.getPatientLastName() != null) {
+                        sampleData = data.getPatientLastName();
+                        if (data.getPatientFirstName() != null)
+                            sampleData += ", " + data.getPatientFirstName();
+                    }
+                }
+                if (sampleData == null)
+                    sampleData = "---";
+
                 sb.append("<font color=\"red\"><ol>");
                 if (sampleQas != null && sampleQas.get(data.getSampleId()) != null) {
                     ui.getTable().setHTML(sampleRow,
                                           1,
-                                          collector + "<sub><font color=\"red\">" + qaCount++ +
+                                          sampleData + "<sub><font color=\"red\">" + qaCount++ +
                                                           "</font></sub>");
                     sb.append("<li>");
                     for (String qa : sampleQas.get(data.getSampleId())) {
@@ -686,10 +702,13 @@ public class SampleStatusScreen extends Screen {
                     }
                     sb.append("</li><br>");
                 } else {
-                    ui.getTable().setHTML(sampleRow, 1, collector);
+                    ui.getTable().setHTML(sampleRow, 1, sampleData);
                 }
-                ui.getTable().setText(sampleRow, 3, dh.format(temp1));
-                ui.getTable().setText(sampleRow, 4, dh.format(data.getReceivedDate()));
+                ui.getTable().setText(sampleRow, 3, collected);
+                if (data.getReceivedDate() != null && data.getReceivedDate().getDate() != null)
+                    ui.getTable().setText(sampleRow,
+                                          4,
+                                          dtf.format(data.getReceivedDate().getDate()));
                 ui.getTable().setText(sampleRow, 5, data.getClientReference());
             }
             testRow++ ;
@@ -768,7 +787,6 @@ public class SampleStatusScreen extends Screen {
         int numDomains;
         String domain;
         Query query;
-        QueryData field;
         ArrayList<QueryData> fields;
 
         ui.clearErrors();
@@ -777,7 +795,6 @@ public class SampleStatusScreen extends Screen {
         numDomains = 0;
         domain = null;
         query = new Query();
-        field = new QueryData();
         fields = new ArrayList<QueryData>();
 
         /*
@@ -785,16 +802,10 @@ public class SampleStatusScreen extends Screen {
          */
         if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
             !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
-            field = new QueryData(SampleViewMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().SDWIS);
             domain = Constants.domain().SDWIS;
             numDomains++ ;
         }
         if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
-            field = new QueryData(SampleViewMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().ENVIRONMENTAL);
             domain = Constants.domain().ENVIRONMENTAL;
             numDomains++ ;
         }
@@ -802,9 +813,6 @@ public class SampleStatusScreen extends Screen {
             !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
             !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
             !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
-            field = new QueryData(SampleViewMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().CLINICAL);
             domain = Constants.domain().CLINICAL;
             numDomains++ ;
         }
@@ -814,14 +822,14 @@ public class SampleStatusScreen extends Screen {
             return;
         }
 
-        if (domain != null)
-            fields.add(field);
-
         try {
             fields = createWhereFromParamFields(getQueryFields());
         } catch (Exception e) {
             return;
         }
+
+        if (domain != null)
+            fields.add(new QueryData(SampleViewMeta.getDomain(), QueryData.Type.STRING, domain));
 
         /*
          * if user does not enter any search details, throw an error.

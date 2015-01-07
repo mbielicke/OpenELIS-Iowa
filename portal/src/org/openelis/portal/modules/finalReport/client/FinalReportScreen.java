@@ -728,7 +728,6 @@ public class FinalReportScreen extends Screen {
         int numDomains;
         String domain;
         Query query;
-        QueryData field;
         ArrayList<QueryData> fields;
 
         ui.clearErrors();
@@ -736,7 +735,6 @@ public class FinalReportScreen extends Screen {
         numDomains = 0;
         domain = null;
         query = new Query();
-        field = new QueryData();
         fields = new ArrayList<QueryData>();
 
         /*
@@ -744,16 +742,10 @@ public class FinalReportScreen extends Screen {
          */
         if ( !DataBaseUtil.isEmpty(ui.getPwsId().getText()) ||
             !DataBaseUtil.isEmpty(ui.getSdwisCollector().getText())) {
-            field = new QueryData(SampleViewMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().SDWIS);
             domain = Constants.domain().SDWIS;
             numDomains++ ;
         }
         if ( !DataBaseUtil.isEmpty(ui.getEnvCollector().getText())) {
-            field = new QueryData(SampleViewMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().ENVIRONMENTAL);
             domain = Constants.domain().ENVIRONMENTAL;
             numDomains++ ;
         }
@@ -761,9 +753,6 @@ public class FinalReportScreen extends Screen {
             !DataBaseUtil.isEmpty(ui.getPatientLast().getText()) ||
             !DataBaseUtil.isEmpty(ui.getPatientBirthFrom().getText()) ||
             !DataBaseUtil.isEmpty(ui.getPatientBirthTo().getText())) {
-            field = new QueryData(SampleViewMeta.getDomain(),
-                                  QueryData.Type.STRING,
-                                  Constants.domain().CLINICAL);
             domain = Constants.domain().CLINICAL;
             numDomains++ ;
         }
@@ -773,16 +762,14 @@ public class FinalReportScreen extends Screen {
             return;
         }
 
-        if (domain != null)
-            fields.add(field);
-
         try {
             fields.addAll(createWhereFromParamFields(getQueryFields()));
         } catch (Exception e) {
-            Window.alert(e.getStackTrace().toString());
-            System.out.print(e);
             return;
         }
+
+        if (domain != null)
+            fields.add(new QueryData(SampleViewMeta.getDomain(), QueryData.Type.STRING, domain));
 
         query.setFields(fields);
 

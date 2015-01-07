@@ -799,6 +799,24 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String gen_cancel();
 
   /**
+   * Translated "yyyy-MM-dd".
+   * 
+   * @return translated "yyyy-MM-dd"
+   */
+  @DefaultMessage("yyyy-MM-dd")
+  @Key("gen.datePattern")
+  String gen_datePattern();
+
+  /**
+   * Translated "yyyy-MM-dd HH:mm".
+   * 
+   * @return translated "yyyy-MM-dd HH:mm"
+   */
+  @DefaultMessage("yyyy-MM-dd HH:mm")
+  @Key("gen.dateTimePattern")
+  String gen_dateTimePattern();
+
+  /**
    * Translated "Fetching samples....".
    * 
    * @return translated "Fetching samples...."
@@ -824,6 +842,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("NO")
   @Key("gen.no")
   String gen_no();
+
+  /**
+   * Translated "HH:mm".
+   * 
+   * @return translated "HH:mm"
+   */
+  @DefaultMessage("HH:mm")
+  @Key("gen.timePattern")
+  String gen_timePattern();
 
   /**
    * Translated "To".
