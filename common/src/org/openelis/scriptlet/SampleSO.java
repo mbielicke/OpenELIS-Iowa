@@ -65,16 +65,22 @@ public class SampleSO extends ScriptletObject {
         return actionBefore;
     }
 
-    public void setActionBefore(EnumSet<Action_Before> actionBefore) {
-        this.actionBefore = actionBefore;
+    public void addActionBefore(Action_Before action) {
+        if (actionBefore == null)
+            actionBefore = EnumSet.noneOf(Action_Before.class);
+        
+        actionBefore.add(action);
     }
 
     public EnumSet<Action_After> getActionAfter() {
         return actionAfter;
     }
 
-    public void setActionAfter(EnumSet<Action_After> actionAfter) {
-        this.actionAfter = actionAfter;
+    public void addActionAfter(Action_After action) {
+        if (actionAfter == null)
+            actionAfter = EnumSet.noneOf(Action_After.class);
+        
+        actionAfter.add(action);
     }
 
     public void setManager(SampleManager1 manager) {
@@ -105,7 +111,10 @@ public class SampleSO extends ScriptletObject {
         return changedUids;
     }
 
-    public void setChangedUids(HashSet<String> changedUids) {
-        this.changedUids = changedUids;
+    public void addChangedUid(String uid) {
+        if (changedUids == null)
+            changedUids = new HashSet<String>();
+        
+        changedUids.add(uid);
     }
 }

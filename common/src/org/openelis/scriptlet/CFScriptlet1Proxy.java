@@ -40,6 +40,8 @@ public interface CFScriptlet1Proxy {
     public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception;
 
     public SampleManager1 fetchByAccession(Integer accessionNumber, SampleManager1.Load... elements) throws Exception;
-
+    
     public void log(Level level, String message, Exception e);
+
+    public String format(Double risk, String pattern);
 }

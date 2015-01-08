@@ -25,6 +25,8 @@
  */
 package org.openelis.scriptlet;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +39,8 @@ import org.openelis.utils.EJBFactory;
  * "cf (Cystic Fibrosis)" test scriptlets
  */
 public class CFScriptletProxy1 implements CFScriptlet1Proxy {
+    
+    private NumberFormat formatter;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -58,5 +62,16 @@ public class CFScriptletProxy1 implements CFScriptlet1Proxy {
     @Override
     public void log(Level level, String message, Exception e) {
         log.log(level, message, e);
+    }
+
+    @Override
+    public String format(Double risk, String pattern) {
+        if (risk == null)
+            return null;
+        
+        if (formatter == null)
+            formatter = new DecimalFormat(pattern);
+
+        return formatter.format(risk);
     }
 }

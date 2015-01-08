@@ -39,8 +39,11 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
 /**
- * The scriptlet for performing operations for the sdwis domain e.g. the one
- * related to adding a default note
+ * The scriptlet for the sdwis domain. It adds a default note to the sample
+ * based on the value of a system variable. This is done when the sample is
+ * getting assigned the domain for the first time i.e. on clicking "Add" or
+ * loading a quick entry sample on the login screen. It also sets a default
+ * sample type to a newly added sample item.
  */
 public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
 
@@ -85,18 +88,16 @@ public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
         proxy.log(Level.FINE, "In SDWISIAScriptlet1.run");
 
         /*
-         * if a default note was found then add it if it's either an uncommitted
-         * sample or was previously a quick-entry sample
+         * manager adding a default note to an uncommitted sample or previously
+         * a quick-entry sample and setting a default sample type to a newly
+         * added sample item
          */
-        if (defaultNote != null && data.getActionBefore().contains(NEW_DOMAIN))
-            addDefaultNote(data);
-
-        /*
-         * if an item was added to the sample then set its sample type to
-         * "Drinking Water"
-         */
-        if (data.getActionBefore().contains(SAMPLE_ITEM))
-            setSampleType(data);        
+        if (data.getActionBefore().contains(NEW_DOMAIN)) {
+            if (defaultNote != null)
+                addDefaultNote(data);
+        } else if (data.getActionBefore().contains(SAMPLE_ITEM)) {
+            setSampleType(data);
+        }
 
         return data;
     }
@@ -112,7 +113,7 @@ public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
         note = data.getManager().sampleExternalNote.getEditing();
         note.setIsExternal("Y");
         note.setText(defaultNote.getText());
-        data.getChangedUids().add(Constants.uid().getNote(note.getId()));
+        data.addChangedUid(Constants.uid().getNote(note.getId()));
     }
 
     /**
@@ -123,12 +124,12 @@ public class SDWISIAScriptlet1 implements ScriptletInt<SampleSO> {
         SampleItemViewDO item;
 
         item = (SampleItemViewDO)data.getManager().getObject(data.getUid());
-        proxy.log(Level.FINE, "Setting the sample type of the sample item with uid:  " + data.getUid() +
-                              " as " + drinkingWaterDict.getSystemName());
+        proxy.log(Level.FINE, "Setting the sample type of the sample item with uid:  " +
+                              data.getUid() + " as " + drinkingWaterDict.getSystemName());
         item.setTypeOfSampleId(drinkingWaterDict.getId());
         item.setTypeOfSample(drinkingWaterDict.getEntry());
-        data.getChangedUids().add(Constants.uid().getSampleItem(item.getId()));
-        data.getActionAfter().add(Action_After.SAMPLE_ITEM_CHANGED);
+        data.addChangedUid(Constants.uid().getSampleItem(item.getId()));
+        data.addActionAfter(Action_After.SAMPLE_ITEM_CHANGED);
     }
 
     public static interface Proxy {

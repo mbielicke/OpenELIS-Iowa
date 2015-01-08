@@ -28,7 +28,6 @@ package org.openelis.bean;
 import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -47,9 +46,8 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.scriptlet.SampleSO;
-import org.openelis.scriptlet.ScriptletFactory;
-import org.openelis.scriptlet.SampleSO.Action_After;
 import org.openelis.scriptlet.SampleSO.Action_Before;
+import org.openelis.scriptlet.ScriptletFactory;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletRunner;
@@ -252,16 +250,14 @@ public class ScriptletHelperBean {
     }
 
     /**
-     * runs the scriptlets for the manager; throws any exceptions found during
+     * runs all scriptlets for the manager; throws any exceptions found during
      * the execution of the scriptlets
      */
     public void runScriptlets(SampleManager1 sm, HashMap<String, Object> cache, String uid,
-                              String changed, Action_Before operation) throws Exception {
+                              String changed, Action_Before action) throws Exception {
         SampleSO data;
         ValidationErrorsList e;
         ScriptletRunner<SampleSO> sr;
-        EnumSet<Action_Before> actionBefore;
-        EnumSet<Action_After> actionAfter;
 
         /*
          * create the sciptlet object
@@ -270,17 +266,12 @@ public class ScriptletHelperBean {
         addScriptlets(sm, cache, sr);
 
         data = new SampleSO();
-        actionBefore = EnumSet.noneOf(Action_Before.class);
-        if (operation != null)
-            actionBefore.add(operation);
-        actionAfter = EnumSet.noneOf(Action_After.class);
-        data.setActionBefore(actionBefore);
-        data.setActionAfter(actionAfter);
+        if (action != null)
+            data.addActionBefore(action);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(sm);
         data.setCache(cache);
-        data.setChangedUids(new HashSet<String>());
 
         /*
          * run the scriptlets and throw any exceptions found during the

@@ -32,13 +32,14 @@ import java.util.logging.Level;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.scriptlet.SampleSO.Action_After;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
 /**
- * The scriptlet for performing operations for the environmental domain e.g. the
- * one related to adding a default note
+ * The scriptlet for the environmental domain. It adds a default note to the
+ * sample based on the value of a system variable. This is done when the sample
+ * is getting assigned the domain for the first time i.e. on clicking "Add" or
+ * loading a quick entry sample on the login screen.
  */
 public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
 
@@ -73,10 +74,10 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
         proxy.log(Level.FINE, "In EnvironmentalIAScriptlet1.run");
 
         /*
-         * if a default note was found then add it if it's either an uncommitted
-         * sample or was previously a quick-entry sample
+         * manager adding a default note to an uncommitted sample or previously
+         * a quick-entry sample
          */
-        if (defaultNote != null && data.getActionBefore().contains(NEW_DOMAIN))
+        if (data.getActionBefore().contains(NEW_DOMAIN) && defaultNote != null)
             addDefaultNote(data);
 
         return data;
@@ -87,13 +88,13 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
      */
     private void addDefaultNote(SampleSO data) {
         NoteViewDO note;
-        
+
         proxy.log(Level.FINE, "Adding the default note for this domain to the sample");
-        
+
         note = data.getManager().sampleExternalNote.getEditing();
         note.setIsExternal("Y");
         note.setText(defaultNote.getText());
-        data.getChangedUids().add(Constants.uid().getNote(note.getId()));
+        data.addChangedUid(Constants.uid().getNote(note.getId()));
     }
 
     public static interface Proxy {
