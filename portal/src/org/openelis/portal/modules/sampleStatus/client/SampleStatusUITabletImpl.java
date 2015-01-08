@@ -47,8 +47,9 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
     protected DeckPanel                         deck;
 
     @UiField
-    protected Help                              collectedError, accessionError,
-                    clientReferenceError, projectError;
+    protected Help                              collectedError, releasedError, accessionError,
+                    clientReferenceError, projectError, envCollectorError, sdwisCollectorError,
+                    pwsError, patientFirstError, patientLastError, patientBirthError;
 
     public SampleStatusUITabletImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -61,14 +62,12 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
 
     @Override
     public void initialize() {
-        table.setWidth("250%");
-        table.getColumnFormatter().setWidth(0, "75px");
-        table.getColumnFormatter().setWidth(1, "25%");
-        table.getColumnFormatter().setWidth(2, "6%");
-        table.getColumnFormatter().setWidth(3, "8%");
-        table.getColumnFormatter().setWidth(4, "8%");
-        table.getColumnFormatter().setWidth(5, "8%");
-        table.getColumnFormatter().setWidth(6, "40%");
+        collectedFrom.setWidth("105px");
+        collectedTo.setWidth("105px");
+        releasedFrom.setWidth("105px");
+        releasedTo.setWidth("105px");
+        patientBirthFrom.setWidth("105px");
+        patientBirthTo.setWidth("105px");
     }
 
     @Override
@@ -183,8 +182,12 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
 
     @Override
     public void setReleasedError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            releasedError.setVisible(false);
+        } else {
+            releasedError.setText(error);
+            releasedError.setVisible(true);
+        }
     }
 
     @Override
@@ -219,46 +222,76 @@ public class SampleStatusUITabletImpl extends ResizeComposite implements SampleS
 
     @Override
     public void setEnvCollectorError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            envCollectorError.setVisible(false);
+        } else {
+            envCollectorError.setText(error);
+            envCollectorError.setVisible(true);
+        }
     }
 
     @Override
     public void setSdwisCollectorError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            sdwisCollectorError.setVisible(false);
+        } else {
+            sdwisCollectorError.setText(error);
+            sdwisCollectorError.setVisible(true);
+        }
     }
 
     @Override
     public void setPwsError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            pwsError.setVisible(false);
+        } else {
+            pwsError.setText(error);
+            pwsError.setVisible(true);
+        }
     }
 
     @Override
     public void setPatientFirstError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            patientFirstError.setVisible(false);
+        } else {
+            patientFirstError.setText(error);
+            patientFirstError.setVisible(true);
+        }
     }
 
     @Override
     public void setPatientLastError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            patientLastError.setVisible(false);
+        } else {
+            patientLastError.setText(error);
+            patientLastError.setVisible(true);
+        }
     }
 
     @Override
     public void setPatientBirthError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            patientBirthError.setVisible(false);
+        } else {
+            patientBirthError.setText(error);
+            patientBirthError.setVisible(true);
+        }
     }
 
     @Override
     public void clearErrors() {
         collectedError.setVisible(false);
+        releasedError.setVisible(false);
         accessionError.setVisible(false);
         clientReferenceError.setVisible(false);
         projectError.setVisible(false);
+        envCollectorError.setVisible(false);
+        sdwisCollectorError.setVisible(false);
+        pwsError.setVisible(false);
+        patientFirstError.setVisible(false);
+        patientLastError.setVisible(false);
+        patientBirthError.setVisible(false);
     }
-
 }

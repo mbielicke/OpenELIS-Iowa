@@ -28,23 +28,27 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     protected TextBox<Integer>              accessionFrom, accessionTo;
 
     @UiField
-    protected TextBox<String>               clientReference, envCollector, sdwisCollector;
+    protected TextBox<String>               clientReference, envCollector, sdwisCollector, pwsId,
+                    patientFirst, patientLast;
 
     @UiField
-    protected Calendar                      collectedFrom, collectedTo, releasedFrom, releasedTo;
+    protected Calendar                      collectedFrom, collectedTo, releasedFrom, releasedTo,
+                    patientBirthFrom, patientBirthTo;
 
     @UiField
     protected Dropdown<Integer>             projectCode;
 
     @UiField
     protected CheckBox                      accession, sampleCollected, sampleReceived,
-                    sampleReleased, sampleStatus, projectId, clientReferenceHeader,
-                    collectorHeader, collectionSiteHeader, sampleDescription, collectorPhone,
-                    sampleType, source, sampleLocationCity, organizationName, organizationApt,
-                    organizationAddress, organizationCity, organizationState, organizationZip,
-                    analysisTest, analysisMethod, analysisRevision, analysisUnit, analysisStarted,
+                    sampleReleased, sampleStatus, projectId, clientReferenceHeader, sampleType,
+                    source, organizationName, organizationApt, organizationAddress,
+                    organizationCity, organizationState, organizationZip, analysisTest,
+                    analysisMethod, analysisRevision, analysisUnit, analysisStarted,
                     analysisCompleted, analysisReleased, analysisQa, patientLastName,
-                    patientFirstName, patientBirth, patientGender, patientRace, patientEthnicity;
+                    patientFirstName, patientBirth, patientGender, patientRace, patientEthnicity,
+                    pwsIdHeader, pwsName, sdwisCollectorHeader, sdwisLocation, facilityId,
+                    sdwisSampleType, sampleCategory, samplePointId, envCollectorHeader,
+                    envLocation, envLocationCity, collectorPhone, sampleDescription;
 
     @UiField
     protected Table                         analyteTable, auxTable;
@@ -59,7 +63,8 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
 
     @UiField
     protected Help                          collectedError, releasedError, accessionError,
-                    envCollectorError, sdwisCollectorError, clientReferenceError, projectError;
+                    clientReferenceError, projectError, envCollectorError, sdwisCollectorError,
+                    pwsError, patientFirstError, patientLastError, patientBirthError;
 
     public DataViewUIMobileImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -76,6 +81,8 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
         collectedTo.setWidth("75px");
         releasedFrom.setWidth("75px");
         releasedTo.setWidth("75px");
+        patientBirthFrom.setWidth("75px");
+        patientBirthTo.setWidth("75px");
     }
 
     @Override
@@ -89,6 +96,11 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
+    public TextBox<String> getPwsId() {
+        return pwsId;
+    }
+
+    @Override
     public TextBox<String> getClientReference() {
         return clientReference;
     }
@@ -96,6 +108,21 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     @Override
     public TextBox<String> getEnvCollector() {
         return envCollector;
+    }
+
+    @Override
+    public TextBox<String> getSdwisCollector() {
+        return sdwisCollector;
+    }
+
+    @Override
+    public TextBox<String> getPatientFirst() {
+        return patientFirst;
+    }
+
+    @Override
+    public TextBox<String> getPatientLast() {
+        return patientLast;
     }
 
     @Override
@@ -116,6 +143,16 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     @Override
     public Calendar getReleasedTo() {
         return releasedTo;
+    }
+
+    @Override
+    public Calendar getPatientBirthFrom() {
+        return patientBirthFrom;
+    }
+
+    @Override
+    public Calendar getPatientBirthTo() {
+        return patientBirthTo;
     }
 
     @Override
@@ -279,6 +316,61 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
+    public CheckBox getPwsIdHeader() {
+        return pwsIdHeader;
+    }
+
+    @Override
+    public CheckBox getPwsName() {
+        return pwsName;
+    }
+
+    @Override
+    public CheckBox getSdwisCollectorHeader() {
+        return sdwisCollectorHeader;
+    }
+
+    @Override
+    public CheckBox getSdwisLocation() {
+        return sdwisLocation;
+    }
+
+    @Override
+    public CheckBox getFacilityId() {
+        return facilityId;
+    }
+
+    @Override
+    public CheckBox getSdwisSampleType() {
+        return sdwisSampleType;
+    }
+
+    @Override
+    public CheckBox getSampleCategory() {
+        return sampleCategory;
+    }
+
+    @Override
+    public CheckBox getSamplePointId() {
+        return samplePointId;
+    }
+
+    @Override
+    public CheckBox getEnvCollectorHeader() {
+        return envCollectorHeader;
+    }
+
+    @Override
+    public CheckBox getEnvLocation() {
+        return envLocation;
+    }
+
+    @Override
+    public CheckBox getEnvLocationCity() {
+        return envLocationCity;
+    }
+
+    @Override
     public Table getAnalyteTable() {
         return analyteTable;
     }
@@ -364,26 +456,6 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
-    public void setEnvCollectorError(String error) {
-        if (error == null) {
-            envCollectorError.setVisible(false);
-        } else {
-            envCollectorError.setText(error);
-            envCollectorError.setVisible(true);
-        }
-    }
-
-    @Override
-    public void setSdwisCollectorError(String error) {
-        if (error == null) {
-            sdwisCollectorError.setVisible(false);
-        } else {
-            sdwisCollectorError.setText(error);
-            sdwisCollectorError.setVisible(true);
-        }
-    }
-
-    @Override
     public void setClientReferenceError(String error) {
         if (error == null) {
             clientReferenceError.setVisible(false);
@@ -404,139 +476,77 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
-    public void clearErrors() {
-        collectedError.setVisible(false);
-        releasedError.setVisible(false);
-        accessionError.setVisible(false);
-        envCollectorError.setVisible(false);
-        sdwisCollectorError.setVisible(false);
-        clientReferenceError.setVisible(false);
-        projectError.setVisible(false);
+    public void setEnvCollectorError(String error) {
+        if (error == null) {
+            envCollectorError.setVisible(false);
+        } else {
+            envCollectorError.setText(error);
+            envCollectorError.setVisible(true);
+        }
     }
 
     @Override
-    public TextBox<String> getPwsId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public TextBox<String> getSdwisCollector() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public TextBox<String> getPatientFirst() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public TextBox<String> getPatientLast() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Calendar getPatientBirthFrom() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Calendar getPatientBirthTo() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setSdwisCollectorError(String error) {
+        if (error == null) {
+            sdwisCollectorError.setVisible(false);
+        } else {
+            sdwisCollectorError.setText(error);
+            sdwisCollectorError.setVisible(true);
+        }
     }
 
     @Override
     public void setPwsError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            pwsError.setVisible(false);
+        } else {
+            pwsError.setText(error);
+            pwsError.setVisible(true);
+        }
     }
 
     @Override
     public void setPatientFirstError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            patientFirstError.setVisible(false);
+        } else {
+            patientFirstError.setText(error);
+            patientFirstError.setVisible(true);
+        }
     }
 
     @Override
     public void setPatientLastError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            patientLastError.setVisible(false);
+        } else {
+            patientLastError.setText(error);
+            patientLastError.setVisible(true);
+        }
     }
 
     @Override
     public void setPatientBirthError(String error) {
-        // TODO Auto-generated method stub
-
+        if (error == null) {
+            patientBirthError.setVisible(false);
+        } else {
+            patientBirthError.setText(error);
+            patientBirthError.setVisible(true);
+        }
     }
 
     @Override
-    public CheckBox getPwsIdHeader() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getPwsName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getSdwisCollectorHeader() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getSdwisLocation() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getFacilityId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getSdwisSampleType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getSampleCategory() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getSamplePointId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getEnvCollectorHeader() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getEnvLocation() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CheckBox getEnvLocationCity() {
-        // TODO Auto-generated method stub
-        return null;
+    public void clearErrors() {
+        collectedError.setVisible(false);
+        releasedError.setVisible(false);
+        accessionError.setVisible(false);
+        clientReferenceError.setVisible(false);
+        projectError.setVisible(false);
+        envCollectorError.setVisible(false);
+        sdwisCollectorError.setVisible(false);
+        pwsError.setVisible(false);
+        patientFirstError.setVisible(false);
+        patientLastError.setVisible(false);
+        patientBirthError.setVisible(false);
     }
 }

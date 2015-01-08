@@ -56,14 +56,12 @@ public class SampleStatusUIImpl extends ResizeComposite implements SampleStatusU
 
     @Override
     public void initialize() {
-        // table.setWidth("100%");
-        // table.getColumnFormatter().setWidth(0, "75px");
-        // // table.getColumnFormatter().setWidth(1, "25%");
-        // table.getColumnFormatter().setWidth(2, "100px");
-        // table.getColumnFormatter().setWidth(3, "100px");
-        // table.getColumnFormatter().setWidth(4, "100px");
-        // table.getColumnFormatter().setWidth(5, "150px");
-        // table.getColumnFormatter().setWidth(6, "40%");
+        collectedFrom.setWidth("105px");
+        collectedTo.setWidth("105px");
+        releasedFrom.setWidth("105px");
+        releasedTo.setWidth("105px");
+        patientBirthFrom.setWidth("105px");
+        patientBirthTo.setWidth("105px");
     }
 
     @Override
