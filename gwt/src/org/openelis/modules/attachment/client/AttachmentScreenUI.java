@@ -531,16 +531,6 @@ public class AttachmentScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(attachButton, "attachButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                attachButton.setEnabled(false);
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? updateButton : abortButton;
-            }
-        });
-
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("attachment_type")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
