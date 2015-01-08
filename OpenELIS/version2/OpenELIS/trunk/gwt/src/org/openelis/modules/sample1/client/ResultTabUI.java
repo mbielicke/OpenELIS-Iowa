@@ -335,21 +335,14 @@ public class ResultTabUI extends Screen {
                     table.clearExceptions(r, c);
                     try {
                         tm = getTestManager(analysis.getTestId());
-                        if ( !DataBaseUtil.isEmpty(value.getDisplay())) {
-                            /*
-                             * validate the value entered by the user
-                             */
-
-                            rf = tm.getFormatter();
-                            ResultHelper.formatValue(data,
-                                                     value.getDisplay(),
-                                                     analysis.getUnitOfMeasureId(),
-                                                     rf);
-                        } else {
-                            data.setValue(null);
-                            data.setTypeId(null);
-                            data.setTestResultId(null);
-                        }
+                        /*
+                         * validate the value entered by the user
+                         */
+                        rf = tm.getFormatter();
+                        ResultHelper.formatValue(data,
+                                                 value.getDisplay(),
+                                                 analysis.getUnitOfMeasureId(),
+                                                 rf);
                     } catch (ParseException e) {
                         /*
                          * the value is not valid
@@ -500,7 +493,7 @@ public class ResultTabUI extends Screen {
                 return forward ? runScriptletsButton : checkAllButton;
             }
         });
-        
+
         addScreenHandler(runScriptletsButton, "runScriptletsButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 runScriptletsButton.setEnabled(false);
@@ -799,13 +792,11 @@ public class ResultTabUI extends Screen {
     protected void uncheckAll(ClickEvent event) {
         check("N");
     }
-    
+
     @UiHandler("runScriptletsButton")
     protected void runScriptlets(ClickEvent event) {
-        parentBus.fireEventFromSource(new RunScriptletEvent(null,
-                                                   null,
-                                                   Action_Before.RECOMPUTE),
-                             screen);
+        parentBus.fireEventFromSource(new RunScriptletEvent(null, null, Action_Before.RECOMPUTE),
+                                      screen);
     }
 
     private Integer getSectionId() {

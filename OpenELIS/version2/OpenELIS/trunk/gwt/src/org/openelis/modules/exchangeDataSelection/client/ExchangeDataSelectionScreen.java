@@ -42,7 +42,6 @@ import org.openelis.domain.ExchangeProfileDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
@@ -406,7 +405,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                  * the front-end   
                  */
                 for (Exception e : exceptions) {
-                    if ("noTestForNotIncludeAllAnalysesException".equals(e.getMessage())) {
+                    if (Messages.get().noTestForNotIncludeAllAnalysesException().equals(e.getMessage())) {
                         exceptions.remove(e);
                         break;
                     }

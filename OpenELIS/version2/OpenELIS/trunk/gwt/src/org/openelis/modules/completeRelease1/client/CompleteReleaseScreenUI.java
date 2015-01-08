@@ -1801,8 +1801,17 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         Query query;
         QueryData field;
 
-        if ( !previewFinalReport.isChecked() || !isState(DISPLAY) ||
-            table.getSelectedRows().length != 1 || manager == null ||
+        if ( !previewFinalReport.isChecked()) {
+            /*
+             * this allows previewing the final report of a sample just by
+             * unchecking and checking the checkbox and not having to click the
+             * row for a different sample
+             */
+            lastAccession = null;
+            return;
+        }
+
+        if ( !isState(DISPLAY) || table.getSelectedRows().length != 1 || manager == null ||
             manager.getSample().getAccessionNumber().equals(lastAccession))
             return;
 
@@ -2072,12 +2081,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         addAuxScriptlets();
     }
 
-
     /**
-     * Adds the scriptlet with the passed id for the record with the passed id,
-     * but only if it's not already added
+     * Adds a new scriptlet to the list of scriptlets that are executed. It
+     * ensures that for each reference id, there is only one scriptlet in the
+     * list, since we go through all records and add scriptlets every time we
+     * receive the manager from the back-end.
      */
-    private void addScriptlet(Integer scriptletId, Integer recordId) throws Exception {
+    private void addScriptlet(Integer scriptletId, Integer referenceId) throws Exception {
         HashSet<Integer> ids;
 
         if (scriptlets == null)
@@ -2094,18 +2104,19 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             scriptlets.put(scriptletId, ids);
         }
 
-        if ( !ids.contains(recordId)) {
-            ids.add(recordId);
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, recordId));
-            logger.log(Level.SEVERE, "added scriptlet "+ scriptletId+ " for record "+ recordId);
+        if ( !ids.contains(referenceId)) {
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId,
+                                                                             referenceId));
+            ids.add(referenceId);
         }
     }
 
     /**
-     * Runs the scriptlet with the passed id for the passed operation performed
-     * on the field "changed" of the record with the passed uid.
+     * Runs all the scriptlets in the runner for the passed action performed on
+     * the field "changed" of the record with the passed uid. Also refreshes the
+     * screen based on the actions performed by the scriptlets.
      */
-    private void runScriptlets(String uid, String changed, Action_Before operation) {
+    private void runScriptlets(String uid, String changed, Action_Before action) {
         String auid, selUid;
         Object obj;
         SampleSO data;
@@ -2120,14 +2131,11 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * create the sciptlet object
          */
         data = new SampleSO();
-        data.setActionBefore(EnumSet.of(operation));
-        actionAfter = EnumSet.noneOf(Action_After.class);
-        data.setActionAfter(actionAfter);
+        data.addActionBefore(action);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);
-        data.setChangedUids(new HashSet<String>());
 
         /*
          * run the scritplet and show the errors and the changed data
@@ -2147,6 +2155,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         managers.put(manager.getSample().getId(), manager);
         setData();
 
+        if (data.getChangedUids() == null)
+            return;
         /*
          * go through the changed uids and fire appropriate events to refresh
          * particular parts of the screen
@@ -2171,10 +2181,12 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                  * if any sample items were changed or added then refresh the
                  * tree and sample item tabs
                  */
-                if (actionAfter.contains(Action_After.SAMPLE_ITEM_ADDED))
-                    bus.fireEventFromSource(new SampleItemAddedEvent(cuid), screen);
-                else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
-                    bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
+                if (actionAfter != null) {
+                    if (actionAfter.contains(Action_After.SAMPLE_ITEM_ADDED))
+                        bus.fireEventFromSource(new SampleItemAddedEvent(cuid), screen);
+                    else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
+                        bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
+                }
             } else if (obj instanceof AnalysisQaEventDO) {
                 /*
                  * if analysis qa events were added and if any of them belong to
@@ -3082,7 +3094,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              * add scriptlets for the newly added aux data
              */
             addAuxScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -3199,13 +3211,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 bus.fireEventFromSource(new AddAuxGroupEvent(null), this);
             }
             clearStatus();
-            
+
             /*
              * add scriptlets for any newly added tests and aux data
              */
             addTestScriptlets();
             addAuxScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -3265,7 +3277,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
              * add scriptlets for the changed test
              */
             addTestScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests

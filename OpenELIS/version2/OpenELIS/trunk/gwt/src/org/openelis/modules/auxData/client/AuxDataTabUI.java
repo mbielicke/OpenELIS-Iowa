@@ -249,46 +249,41 @@ public abstract class AuxDataTabUI extends Screen {
                     case 2:
                         value = (Value)val;
                         table.clearExceptions(r, c);
-                        if ( !DataBaseUtil.isEmpty(value.getDisplay())) {
-                            /*
-                             * validate the value entered by the user
-                             */
-                            try {
-                                agm = getAuxFieldGroupManager(data.getAuxFieldGroupId());
-                                rf = agm.getFormatter();
-                                ResultHelper.formatValue(data, value.getDisplay(), rf);
+                        /*
+                         * validate the value entered by the user
+                         */
+                        try {
+                            agm = getAuxFieldGroupManager(data.getAuxFieldGroupId());
+                            rf = agm.getFormatter();
+                            ResultHelper.formatValue(data, value.getDisplay(), rf);
 
-                                /*
-                                 * find the aux field and execute any scriptlet
-                                 * specified for it
-                                 */
-                                afm = agm.getFields();
-                                for (i = 0; i < afm.count(); i++ ) {
-                                    af = afm.getAuxFieldAt(i);
-                                    if (data.getAuxFieldId().equals(af.getId()) &&
-                                        af.getScriptletId() != null)
-                                        parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
-                                                                                                     .getAuxData(data.getId()),
-                                                                                            getValueMetaKey(),
-                                                                                            Action_Before.AUX_DATA),
-                                                                      screen);
-                                }
-                            } catch (ParseException e) {
-                                /*
-                                 * the value is not valid
-                                 */
-                                table.addException(r, c, e);
-                                data.setValue(value.getDisplay());
-                                data.setTypeId(null);
-                                return;
-                            } catch (Exception e) {
-                                Window.alert(e.getMessage());
-                                logger.log(Level.SEVERE, e.getMessage(), e);
-                                return;
+                            /*
+                             * find the aux field and execute any scriptlet
+                             * specified for it
+                             */
+                            afm = agm.getFields();
+                            for (i = 0; i < afm.count(); i++ ) {
+                                af = afm.getAuxFieldAt(i);
+                                if (data.getAuxFieldId().equals(af.getId()) &&
+                                    af.getScriptletId() != null)
+                                    parentBus.fireEventFromSource(new RunScriptletEvent(Constants.uid()
+                                                                                                 .getAuxData(data.getId()),
+                                                                                        getValueMetaKey(),
+                                                                                        Action_Before.AUX_DATA),
+                                                                  screen);
                             }
-                        } else {
-                            data.setValue(null);
+                        } catch (ParseException e) {
+                            /*
+                             * the value is not valid
+                             */
+                            table.addException(r, c, e);
+                            data.setValue(value.getDisplay());
                             data.setTypeId(null);
+                            return;
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            return;
                         }
 
                         /*
@@ -788,9 +783,11 @@ public abstract class AuxDataTabUI extends Screen {
         rc = (ResultCell)table.getColumnAt(col).getCellEditor();
         rc.setModel(model);
         if (rc.getWidget() instanceof TextBox) {
-            if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(caseFlag))
+            if (caseFlag != null &&
+                Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(caseFlag))
                 ((TextBox)rc.getWidget()).setCase(TextBase.Case.LOWER);
-            else if (caseFlag != null && Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(caseFlag))
+            else if (caseFlag != null &&
+                     Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(caseFlag))
                 ((TextBox)rc.getWidget()).setCase(TextBase.Case.UPPER);
             else
                 ((TextBox)rc.getWidget()).setCase(TextBase.Case.MIXED);
