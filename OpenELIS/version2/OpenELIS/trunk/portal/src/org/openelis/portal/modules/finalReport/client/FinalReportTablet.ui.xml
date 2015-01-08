@@ -74,14 +74,14 @@
 								</td>
 								<td>
 									<c:Calendar ui:field="releasedFrom" width="90px"
-										begin="0" end="2" enabled="true" />
+										begin="0" end="4" enabled="true" />
 								</td>
 								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.gen_to}:" />
 								</td>
 								<td>
 									<c:Calendar ui:field="releasedTo" width="90px"
-										begin="0" end="2" enabled="true" />
+										begin="0" end="4" enabled="true" />
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_released}"

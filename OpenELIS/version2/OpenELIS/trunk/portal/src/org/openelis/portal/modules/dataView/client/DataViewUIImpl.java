@@ -71,9 +71,12 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
 
     @Override
     public void initialize() {
-        /*
-         * do nothing for desktop
-         */
+        collectedFrom.setWidth("105px");
+        collectedTo.setWidth("105px");
+        releasedFrom.setWidth("105px");
+        releasedTo.setWidth("105px");
+        patientBirthFrom.setWidth("105px");
+        patientBirthTo.setWidth("105px");
     }
 
     @Override

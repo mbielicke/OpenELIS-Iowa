@@ -517,6 +517,16 @@ public class SampleStatusScreen extends Screen {
         }
 
         try {
+            getRangeQuery(SampleViewMeta.getReleasedDateFrom(),
+                          SampleViewMeta.getReleasedDateTo(),
+                          SampleViewMeta.getReleasedDate(),
+                          fieldMap);
+        } catch (Exception e) {
+            ui.setCollectedError(Messages.get().finalReport_error_noStartDate());
+            error = true;
+        }
+
+        try {
             getRangeQuery(SampleViewMeta.getAccessionNumberFrom(),
                           SampleViewMeta.getAccessionNumberTo(),
                           SampleViewMeta.getAccessionNumber(),
@@ -660,7 +670,7 @@ public class SampleStatusScreen extends Screen {
                     collected = df.format(data.getCollectionDate().getDate());
                     if (data.getCollectionTime() != null &&
                         data.getCollectionTime().getDate() != null)
-                        collected += tf.format(data.getCollectionTime().getDate());
+                        collected += " " + tf.format(data.getCollectionTime().getDate());
                 }
 
                 ui.getTable().setText(sampleRow,
@@ -764,20 +774,20 @@ public class SampleStatusScreen extends Screen {
          */
         if (sb.length() > 0) {
             sb.append("</ol></font>");
-            ui.getTable().setHTML(testRow, 6, sb.toString());
+            ui.getTable().setHTML(sampleRow, 6, sb.toString());
             ui.getTable()
               .getCellFormatter()
-              .getElement(testRow, 6)
+              .getElement(sampleRow, 6)
               .getStyle()
               .setWhiteSpace(WhiteSpace.PRE_WRAP);
-            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 0, testRow - sampleRow + 1);
-            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 3, testRow - sampleRow + 1);
-            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 4, testRow - sampleRow + 1);
-            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 5, testRow - sampleRow + 1);
-            ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 6, testRow - sampleRow + 1);
-            ui.getTable().getRowFormatter().setVerticalAlign(sampleRow,
-                                                             HasVerticalAlignment.ALIGN_TOP);
         }
+        ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 0, testRow - sampleRow + 1);
+        ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 3, testRow - sampleRow + 1);
+        ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 4, testRow - sampleRow + 1);
+        ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 5, testRow - sampleRow + 1);
+        ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 6, testRow - sampleRow + 1);
+        ui.getTable().getRowFormatter().setVerticalAlign(sampleRow, HasVerticalAlignment.ALIGN_TOP);
+
     }
 
     /**

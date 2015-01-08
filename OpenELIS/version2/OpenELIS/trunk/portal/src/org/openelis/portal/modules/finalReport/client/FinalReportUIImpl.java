@@ -57,9 +57,12 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
 
     @Override
     public void initialize() {
-        /*
-         * do nothing for desktop version
-         */
+        collectedFrom.setWidth("105px");
+        collectedTo.setWidth("105px");
+        releasedFrom.setWidth("105px");
+        releasedTo.setWidth("105px");
+        patientBirthFrom.setWidth("105px");
+        patientBirthTo.setWidth("105px");
     }
 
     @Override

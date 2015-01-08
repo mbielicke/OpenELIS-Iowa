@@ -36,6 +36,13 @@
 						</td>
 					</tr>
 					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_anySamples}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.sample_collectedDate}:" />
 						</td>
@@ -63,14 +70,14 @@
 						</td>
 						<td>
 							<c:Calendar ui:field="releasedFrom" width="75px"
-								begin="0" end="2" enabled="true" />
+								begin="0" end="4" enabled="true" />
 						</td>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.gen_to}:" />
 						</td>
 						<td>
 							<c:Calendar ui:field="releasedTo" width="75px" begin="0"
-								end="2" enabled="true" />
+								end="4" enabled="true" />
 						</td>
 						<td>
 							<w:Help css="{res.help}" text="{msg.dataView_help_released}"
@@ -142,6 +149,14 @@
 								placement="LEFT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_environmentalOnly}" />
+							</span>
+						</td>
+					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.sample_collector}:" />
@@ -157,6 +172,14 @@
 								text="" placement="LEFT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_sdwisOnly}" />
+							</span>
+						</td>
+					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
 							<ui:text from="{msg.sample_collector}:" />
@@ -169,6 +192,81 @@
 							<w:Help css="{res.help}" text="{msg.dataView_help_sdwisCollector}"
 								placement="LEFT" balloonWidth="200px" />
 							<w:Help ui:field="sdwisCollectorError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.pws_id}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="pwsId" width="180px" field="String"
+								enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_pws}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="pwsError" css="{res.errorCss}" text=""
+								placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr cellSpacing="1" />
+					<tr>
+						<td class="{res.style.Prompt}" colspan="5">
+							<span style="float:left;font-weight:bold;font-size:11pt;">
+								<ui:text from="{msg.finalReport_clinicalOnly}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientFirst}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientFirst" width="180px" field="String"
+								enabled="true" case="UPPER" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_patientFirst}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientFirstError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientLast}:" />
+						</td>
+						<td colspan="3">
+							<w:TextBox ui:field="patientLast" width="180px" field="String"
+								enabled="true" case="UPPER" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_patientLast}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientLastError" css="{res.errorCss}"
+								text="" placement="LEFT" balloonWidth="200px" visible="false" />
+						</td>
+					</tr>
+					<tr>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.finalReport_patientBirth}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="patientBirthFrom" width="75px"
+								begin="0" end="2" enabled="true" />
+						</td>
+						<td class="{res.style.Prompt}">
+							<ui:text from="{msg.gen_to}:" />
+						</td>
+						<td>
+							<c:Calendar ui:field="patientBirthTo" width="75px"
+								begin="0" end="2" enabled="true" />
+						</td>
+						<td>
+							<w:Help css="{res.help}" text="{msg.dataView_help_patientBirth}"
+								placement="LEFT" balloonWidth="200px" />
+							<w:Help ui:field="patientBirthError" css="{res.errorCss}"
 								text="" placement="LEFT" balloonWidth="200px" visible="false" />
 						</td>
 					</tr>
@@ -252,38 +350,6 @@
 							<ui:text from="{msg.sample_clientReference}" />
 						</td>
 						<td>
-							<w:CheckBox css="{res.mcheckbox}" ui:field="collectorHeader"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.sample_collector}" />
-						</td>
-					</tr>
-					<tr>
-						<td height="36">
-							<w:CheckBox css="{res.mcheckbox}" ui:field="collectionSiteHeader"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.sample_collectionSite}" />
-						</td>
-						<td>
-							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleDescription"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.sample_description}" />
-						</td>
-					</tr>
-					<tr>
-						<td height="36">
-							<w:CheckBox css="{res.mcheckbox}" ui:field="collectorPhone"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.sample_phone}" />
-						</td>
-						<td>
 							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleType"
 								enabled="true" width="36px" />
 						</td>
@@ -298,13 +364,6 @@
 						</td>
 						<td>
 							<ui:text from="{msg.sample_source}" />
-						</td>
-						<td>
-							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleLocationCity"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.sample_locationCity}" />
 						</td>
 					</tr>
 					<tr>
@@ -504,6 +563,137 @@
 						</td>
 						<td>
 							<ui:text from="{msg.patient_ethnicity}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<br />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_sdwisFields}- " />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="pwsIdHeader"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.pws_id}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="pwsName"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.pws_name}" />
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sdwisCollectorHeader"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collector}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sdwisLocation"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collectionSite}" />
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="facilityId"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sdwis_facilityId}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sdwisSampleType"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sdwis_sampleType}" />
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleCategory"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sdwis_sampleCategory}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="samplePointId"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sdwis_samplePtId}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<br />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<span style="float:left;font-weight:bold;font-size:10pt;">
+								<ui:text from="{msg.dataView_sdwisFields}- " />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="envCollectorHeader"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.pws_id}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="envLocation"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.pws_name}" />
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="envLocationCity"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collector}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="collectorPhone"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sample_collectionSite}" />
+						</td>
+					</tr>
+					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="sampleDescription"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.sdwis_facilityId}" />
 						</td>
 					</tr>
 					<tr>
