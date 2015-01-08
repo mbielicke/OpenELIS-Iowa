@@ -36,15 +36,15 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.scriptlet.SampleSO.Action_Before;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 import org.openelis.utilcommon.ResultFormatter;
-import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultHelper;
 
 /**
- * The scriptlet for performing operations for "nbs galt (Galactosemia)" test
+ * The scriptlet for "nbs galt (Galactosemia)" test. TODO add comments for the
+ * algorithm used by the scriptlet after it's been fully implemented with the
+ * use of analyte parameters for upper and lower limits.
  */
 public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
 
@@ -52,14 +52,9 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
 
     private Integer            analysisId;
 
-    private static final String GALT = "nbs_galt", OVERRIDE_INTER = "nbs_override_inter",
-                    INTERPRETATION = "nbs_galt_inter", NO = "no", LOWER_LIMIT = "nbs_lower_limit",
-                    UPPER_LIMIT = "nbs_upper_limit";
+    private static Integer     INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ, INTER_BORD;
 
-    private static Integer      INTER_N, INTER_PP_NR, INTER_TRAN, INTER_TRANU, INTER_PQ,
-                    INTER_BORD;
-
-    private NBSCache1           nbsCache1;
+    private NBSCache1          nbsCache1;
 
     public NbsGaltScriptlet1(NBSScriptlet1Proxy proxy, Integer analysisId) throws Exception {
         this.proxy = proxy;
@@ -85,58 +80,43 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
     @Override
     public SampleSO run(SampleSO data) {
         AnalysisViewDO ana;
-        TestManager tm;
+        ResultViewDO res;
 
         proxy.log(Level.FINE, "In NbsGaltScriptlet1.run", null);
-
-        if (data.getActionBefore().contains(Action_Before.RESULT)) {
-            /*
-             * find out if the changed result belongs to the analysis managed by
-             * this scriptlet; don't do anything if it doesn't
-             */
-            if ( !ScriptletUtility.isManagedResult(data, analysisId))
-                return data;
-            ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid()
-                                                                       .getAnalysis(analysisId));
-        } else if (data.getActionBefore().contains(Action_Before.QA) ||
-                   SampleMeta.getNeonatalIsTransfused().equals(data.getChanged()) ||
-                   SampleMeta.getNeonatalTransfusionDate().equals(data.getChanged())) {
-            /*
-             * a sample qa event was added or removed or a field related to
-             * transfusion changed; find the analysis managed by this scriptlet
-             */
-            ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid()
-                                                                       .getAnalysis(analysisId));
-        } else {
-            /*
-             * nothing concerning this scriptlet happened
-             */
-            return data;
-        }
-
-        /*
-         * don't do anything if the analysis is not in the manager anymore or if
-         * it is released or cancelled
-         */
+        ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
         if (ana == null || Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return data;
 
-        tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
         /*
-         * set the value of interpretation based on the value of this result
+         * manage result changed, a qa event added/removed, the sample being
+         * marked as transfused or not and the transfusion date changing
          */
-        setInterpretion(data, ana, tm);
+        if (data.getActionBefore().contains(Action_Before.RESULT)) {
+            res = (ResultViewDO)data.getManager().getObject(data.getUid());
+            if ( !analysisId.equals(res.getAnalysisId()))
+                return data;
+        } else if ( !data.getActionBefore().contains(Action_Before.QA) &&
+                   !SampleMeta.getNeonatalIsTransfused().equals(data.getChanged()) &&
+                   !SampleMeta.getNeonatalTransfusionDate().equals(data.getChanged())) {
+            return data;
+        }
+
+        /*
+         * set the value of interpretation based on whether or not the sample is
+         * transfused etc.
+         */
+        setInterpretion(data, ana);
 
         return data;
     }
 
     /**
      * Sets the value of the analyte for interpretation based on the value of
-     * the passed result, if the value to be set is different from the current
-     * value
+     * Galactose 1 phosphate uridyl transferase and whether or not the sample is
+     * transfused
      */
-    private void setInterpretion(SampleSO data, AnalysisViewDO ana, TestManager tm) {
+    private void setInterpretion(SampleSO data, AnalysisViewDO ana) {
         int i, j;
         Integer interp;
         String resVal, overVal;
@@ -145,35 +125,29 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
         ResultViewDO res, resInter;
         DictionaryDO dict;
         QaEventDO qa;
-        FormattedValue fv;
+        TestManager tm;
         ResultFormatter rf;
 
-        /*
-         * find the analysis for the result
-         */
         sm = data.getManager();
         galtVal = null;
         overVal = null;
         resInter = null;
-        proxy.log(Level.FINE,
-                  "Going through the scriptlet object to find the result that trigerred the scriptlet",
-                  null);
         /*
          * find the values for the various analytes
          */
         for (i = 0; i < sm.result.count(ana); i++ ) {
             for (j = 0; j < sm.result.count(ana, i); j++ ) {
                 res = sm.result.get(ana, i, j);
-                if (GALT.equals(res.getAnalyteExternalId())) {
+                if ("nbs_galt".equals(res.getAnalyteExternalId())) {
                     resVal = res.getValue();
                     if (resVal != null) {
                         if (resVal.startsWith(">") || resVal.startsWith("<"))
                             resVal = resVal.substring(1);
                         galtVal = Double.valueOf(resVal);
                     }
-                } else if (OVERRIDE_INTER.equals(res.getAnalyteExternalId())) {
+                } else if ("nbs_override_inter".equals(res.getAnalyteExternalId())) {
                     overVal = res.getValue();
-                } else if (INTERPRETATION.equals(res.getAnalyteExternalId())) {
+                } else if ("nbs_galt_inter".equals(res.getAnalyteExternalId())) {
                     resInter = res;
                 }
             }
@@ -185,18 +159,19 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
              * proceed only if the value for override interpretation is "No"
              */
             dict = getDictionaryByValue(overVal);
-            if (dict == null || !NO.equals(dict.getSystemName()) || galtVal == null)
+            if (dict == null || !"no".equals(dict.getSystemName()) || galtVal == null)
                 return;
 
             /*
              * the value of interpretation is "presumptive positive" if the
-             * value of tsh is between 3.8 and 99, the value of interpretation
-             * is "borderline" if the value of tsh is between 3.2 and 3.7, the
-             * value of interpretation is "within normal limits" if the value of
-             * tsh is between 0 and 3.1
+             * value of Galactose is between 3.8 and 99, the value of
+             * interpretation is "borderline" if the value of Galactose is
+             * between 3.2 and 3.7, the value of interpretation is
+             * "within normal limits" if the value of Galactose is between 0 and
+             * 3.1
              */
             proxy.log(Level.FINE,
-                      "Getting the value for interpretation based on the value for biotinidase",
+                      "Getting the value for interpretation based on the value for Galactose 1 phosphate uridyl transferase",
                       null);
             if (galtVal >= 0 && galtVal < 3.2)
                 interp = INTER_PP_NR;
@@ -205,7 +180,6 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
             else
                 interp = INTER_N;
 
-            proxy.log(Level.FINE, "Finding the qa event to be added to the analysis", null);
             /*
              * find the qa event to be added to the analysis
              */
@@ -222,23 +196,21 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
             }
 
             /*
-             * the original interpretation overrides qa events if it's
-             * "presumptive positive"; otherwise it's overridden by other data
+             * if the initial interpretation is not "presumptive positive" then
+             * it's overridden by other data
              */
             if ( !INTER_PP_NR.equals(interp)) {
                 proxy.log(Level.FINE, "Setting the interpretation based on qa events", null);
-                if (ScriptletUtility.sampleHasRejectQA(sm, true)) {
-                    /*
-                     * the sample has reject qas so set the interpretation as
-                     * "poor quality"
-                     */
+                /*
+                 * if the sample has reject qa events, the interpretation is
+                 * "poor quality"; otherwise if the sample is transfused, the
+                 * interpretation is "transfused" if transfusion date is
+                 * specified or "transfused unknown" if it's not specified
+                 */
+                if (sm.qaEvent.hasType(Constants.dictionary().QAEVENT_OVERRIDE) ||
+                    sm.qaEvent.hasType(Constants.dictionary().QAEVENT_WARNING)) {
                     interp = INTER_PQ;
                 } else if (qa != null) {
-                    /*
-                     * the sample is transfused so if a transfusion date is
-                     * specified then set "transfused" as the interpretation,
-                     * otherwise set "transfused unknown" as the interpretation
-                     */
                     if (NBSCache1.QA_TRAN.equals(qa.getName()))
                         interp = INTER_TRAN;
                     else if (NBSCache1.QA_TRANU.equals(qa.getName()))
@@ -246,24 +218,21 @@ public class NbsGaltScriptlet1 implements ScriptletInt<SampleSO> {
                 }
             }
 
+            /*
+             * set the interpretation
+             */
             if (interp != null) {
-                /*
-                 * get the value to be set in the interpretation from this test
-                 * manager's result formatter and set it only if it's different
-                 * from the current value
-                 */
+                tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
                 rf = tm.getFormatter();
                 dict = proxy.getDictionaryById(interp);
-                fv = rf.format(resInter.getResultGroup(), ana.getUnitOfMeasureId(), dict.getEntry());
-                if ( !DataBaseUtil.isSame(resInter.getTestResultId(), fv.getId())) {
-                    proxy.log(Level.FINE, "Setting the value of interpretation as: " +
-                                          dict.getEntry(), null);
-                    ResultHelper.formatValue(resInter,
+                if (ResultHelper.formatValue(resInter,
                                              dict.getEntry(),
                                              ana.getUnitOfMeasureId(),
-                                             rf);
+                                             rf)) {
+                    proxy.log(Level.FINE, "Setting the value of interpretation as: " +
+                                          dict.getEntry(), null);
                     data.addRerun(resInter.getAnalyteExternalId());
-                    data.getChangedUids().add(Constants.uid().getResult(resInter.getId()));
+                    data.addChangedUid(Constants.uid().getResult(resInter.getId()));
                 }
             }
         } catch (Exception e) {

@@ -225,7 +225,7 @@ public class DataExchangeXMLMapperBean {
         onlyTests = new HashSet<Integer>();
         analyses = new HashMap<Integer, Boolean>();
         resultRepeat = new HashMap<String, Integer>();
-        
+
         /*
          * this xml doc is for sending results
          */
@@ -237,12 +237,14 @@ public class DataExchangeXMLMapperBean {
         root.appendChild(header);
 
         /*
-         * either export all the analyses or just the specified tests
+         * either export all the analyses or just the specified tests; "|" is a
+         * meta character in regular expressions and here it needs to be treated
+         * as a literal, that is why "\\|" is used to split the query string
          */
         if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
             for (QueryData field : cm.getExchangeCriteria().getFields()) {
                 if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
-                    testIds = field.getQuery().split(",");
+                    testIds = field.getQuery().split("\\|");
                     for (String id : testIds)
                         onlyTests.add(Integer.valueOf(id));
                     break;
@@ -1228,7 +1230,7 @@ public class DataExchangeXMLMapperBean {
             key = result.getAnalysisId() + ":" + result.getAnalyteId();
             i = resultRepeat.get(key);
             if (i == null)
-                i = 1;            
+                i = 1;
             resultRepeat.put(key, i + 1);
         }
 

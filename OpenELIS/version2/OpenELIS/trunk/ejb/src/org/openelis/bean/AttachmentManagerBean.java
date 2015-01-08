@@ -176,7 +176,7 @@ public class AttachmentManagerBean {
                     if (Constants.table().SAMPLE.equals(data.getReferenceTableId())) {
                         s = smap.get(data.getReferenceId());
                         data.setReferenceDescription(Messages.get()
-                                                             .attachment_sampleDescription(s.getAccessionNumber().toString()));
+                                                             .attachment_sampleDescription(s.getAccessionNumber()));
                     }
                 }
             }

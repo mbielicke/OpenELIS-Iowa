@@ -54,8 +54,13 @@ import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 
 /**
- * The scriptlet for performing operations for the neonatal domain e.g. the ones
- * related to repeat samples
+ * The scriptlet for the neonatal domain. It adds a sample item with a default
+ * sample type to the sample if it doesn't have any sample items. It
+ * recalculates collection age if collection date-time or birth date-time
+ * changes. It sets the sample as repeat if there's another sample previosuly
+ * entered for its patient. If the sample is marked as repeat, when new tests
+ * are added to the sample, it removes those tests from the current sample that
+ * had normal results in the previous sample for the patient.
  */
 public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
 
@@ -132,11 +137,11 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
 
         sn = sm.getSampleNeonatal();
         /*
-         * no further processin 
+         * no further processing
          */
         if (sn == null)
             return data;
-        
+
         /*
          * don't do anything if it's an existing neonatal sample or if it
          * doesn't have a patient
@@ -178,8 +183,8 @@ public class NeonatalIAScriptlet1 implements ScriptletInt<SampleSO> {
         item = data.getManager().item.add();
         item.setTypeOfSampleId(driedBloodSpotDict.getId());
         item.setTypeOfSample(driedBloodSpotDict.getEntry());
-        data.getChangedUids().add(Constants.uid().getSampleItem(item.getId()));
-        data.getActionAfter().add(Action_After.SAMPLE_ITEM_ADDED);
+        data.addChangedUid(Constants.uid().getSampleItem(item.getId()));
+        data.addActionAfter(Action_After.SAMPLE_ITEM_ADDED);
     }
 
     /**

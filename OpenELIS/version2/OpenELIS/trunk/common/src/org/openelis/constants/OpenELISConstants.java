@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -763,47 +763,47 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantAddQACancelled();
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
+   * Translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
+   * @return translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}")
   @Key("analysis.cantCancelPrepWithReleasedTest")
   String analysis_cantCancelPrepWithReleasedTest(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It does not exist in the system ".
+   * Translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It does not exist in the system ".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It does not exist in the system "
+   * @return translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It does not exist in the system "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot cancel {1}, {2} - It does not exist in the system ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot cancel {1}, {2} - It does not exist in the system ")
   @Key("analysis.cantCancelUncommitedException")
   String analysis_cantCancelUncommitedException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in {3} status".
+   * Translated "Accession # {0,number,#0}: Cannot change the prep analysis of {1}, {2} - It is in {3} status".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in {3} status"
+   * @return translated "Accession # {0,number,#0}: Cannot change the prep analysis of {1}, {2} - It is in {3} status"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in {3} status")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot change the prep analysis of {1}, {2} - It is in {3} status")
   @Key("analysis.cantChangePrepException")
   String analysis_cantChangePrepException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}".
+   * Translated "Accession # {0,number,#0}: Cannot change the status of {1}, {2} from {3} to {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}"
+   * @return translated "Accession # {0,number,#0}: Cannot change the status of {1}, {2} from {3} to {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot change the status of {1}, {2} from {3} to {4}")
   @Key("analysis.cantChangeStatusException")
   String analysis_cantChangeStatusException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot complete {1}, {2}  ".
+   * Translated "Accession # {0,number,#0}: Cannot complete {1}, {2}  ".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot complete {1}, {2}  "
+   * @return translated "Accession # {0,number,#0}: Cannot complete {1}, {2}  "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot complete {1}, {2}  ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot complete {1}, {2}  ")
   @Key("analysis.cantCompleteException")
   String analysis_cantCompleteException(Integer arg0,  String arg1,  String arg2);
 
@@ -817,29 +817,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantCopyBlankSect();
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Sample is not verified".
+   * Translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Sample is not verified".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Sample is not verified"
+   * @return translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Sample is not verified"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot release {1} : {2} - Sample is not verified")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot release {1} : {2} - Sample is not verified")
   @Key("analysis.cantReleaseSampleNotVerifiedException")
   String analysis_cantReleaseSampleNotVerifiedException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system ".
+   * Translated "Accession # {0,number,#0}: Cannot remove {1}, {2} - It exists in the system ".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system "
+   * @return translated "Accession # {0,number,#0}: Cannot remove {1}, {2} - It exists in the system "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot remove {1}, {2} - It exists in the system ")
   @Key("analysis.cantRemoveCommitedException")
   String analysis_cantRemoveCommitedException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately".
+   * Translated "Accession # {0,number,#0}: Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately"
+   * @return translated "Accession # {0,number,#0}: Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately")
   @Key("analysis.cantRemoveInUpdateException")
   String analysis_cantRemoveInUpdateException(Integer arg0,  String arg1,  String arg2);
 
@@ -862,20 +862,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantRemoveQAReleased();
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}".
+   * Translated "Accession # {0,number,#0}: Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}"
+   * @return translated "Accession # {0,number,#0}: Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}")
   @Key("analysis.cantSetAsPrepException")
   String analysis_cantSetAsPrepException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ".
+   * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot unrelease {1}, {2} - Sample has a released {3}, {4} "
+   * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ")
   @Key("analysis.cantUnreleaseCarrierException")
   String analysis_cantUnreleaseCarrierException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
@@ -889,11 +889,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_circularReference();
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Status needs to be Completed".
+   * Translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Status needs to be Completed".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot release {1} : {2} - Status needs to be Completed"
+   * @return translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Status needs to be Completed"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot release {1} : {2} - Status needs to be Completed")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot release {1} : {2} - Status needs to be Completed")
   @Key("analysis.completeStatusRequiredToRelease")
   String analysis_completeStatusRequiredToRelease(Integer arg0,  String arg1,  String arg2);
 
@@ -907,101 +907,101 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_completed();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Completed date can''t be after released date".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Completed date can''t be after released date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Completed date can''t be after released date")
   @Key("analysis.completedDateAfterReleasedException")
   String analysis_completedDateAfterReleasedException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future".
+   * Translated "Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future"
+   * @return translated "Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be in the future")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future")
   @Key("analysis.completedDateInFutureException")
   String analysis_completedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated")
   @Key("analysis.inactiveUnitWarning")
   String analysis_inactiveUnitWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}".
+   * Translated "Accession # {0,number,#0}: Insufficient privileges to add {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}"
+   * @return translated "Accession # {0,number,#0}: Insufficient privileges to add {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}")
+  @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to add {1}, {2}")
   @Key("analysis.insufficientPrivilegesAddTestWarning")
   String analysis_insufficientPrivilegesAddTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to cancel {1}, {2}".
+   * Translated "Accession # {0,number,#0}: Insufficient privileges to cancel {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to cancel {1}, {2}"
+   * @return translated "Accession # {0,number,#0}: Insufficient privileges to cancel {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to cancel {1}, {2}")
+  @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to cancel {1}, {2}")
   @Key("analysis.insufficientPrivilegesCancelException")
   String analysis_insufficientPrivilegesCancelException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to complete {1}, {2}".
+   * Translated "Accession # {0,number,#0}: Insufficient privileges to complete {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to complete {1}, {2}"
+   * @return translated "Accession # {0,number,#0}: Insufficient privileges to complete {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to complete {1}, {2}")
+  @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to complete {1}, {2}")
   @Key("analysis.insufficientPrivilegesCompleteException")
   String analysis_insufficientPrivilegesCompleteException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}".
+   * Translated "Accession # {0,number,#0}: Insufficient privileges to initiate {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}"
+   * @return translated "Accession # {0,number,#0}: Insufficient privileges to initiate {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}")
+  @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to initiate {1}, {2}")
   @Key("analysis.insufficientPrivilegesInitiateException")
   String analysis_insufficientPrivilegesInitiateException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to release {1}, {2}".
+   * Translated "Accession # {0,number,#0}: Insufficient privileges to release {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to release {1}, {2}"
+   * @return translated "Accession # {0,number,#0}: Insufficient privileges to release {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to release {1}, {2}")
+  @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to release {1}, {2}")
   @Key("analysis.insufficientPrivilegesReleaseException")
   String analysis_insufficientPrivilegesReleaseException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to unrelease {1}, {2}".
+   * Translated "Accession # {0,number,#0}: Insufficient privileges to unrelease {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to unrelease {1}, {2}"
+   * @return translated "Accession # {0,number,#0}: Insufficient privileges to unrelease {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to unrelease {1}, {2}")
+  @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to unrelease {1}, {2}")
   @Key("analysis.insufficientPrivilegesUnreleaseException")
   String analysis_insufficientPrivilegesUnreleaseException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position".
+   * Translated "Accession # {0,number,#0} : Cannot add analyte ''{1}'' to {2}, {3} at this position".
    * 
-   * @return translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position"
+   * @return translated "Accession # {0,number,#0} : Cannot add analyte ''{1}'' to {2}, {3} at this position"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position")
+  @DefaultMessage("Accession # {0,number,#0} : Cannot add analyte ''{1}'' to {2}, {3} at this position")
   @Key("analysis.invalidPositionForAnalyteException")
   String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status".
+   * Translated "Accession # {0,number,#0}: Cannot initiate {1}, {2} - It is in {3} status".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status"
+   * @return translated "Accession # {0,number,#0}: Cannot initiate {1}, {2} - It is in {3} status"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot initiate {1}, {2} - It is in {3} status")
   @Key("analysis.invalidStatusForInitiateException")
   String analysis_invalidStatusForInitiateException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
@@ -1069,11 +1069,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_notBillable();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - {4}")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - {4}")
   @Key("analysis.noteException")
   String analysis_noteException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
@@ -1087,11 +1087,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_notes();
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - Partner and individual accession numbers cannot be the same".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - Partner and individual accession numbers cannot be the same".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - Partner and individual accession numbers cannot be the same"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - Partner and individual accession numbers cannot be the same"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Partner and individual accession numbers cannot be the same")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Partner and individual accession numbers cannot be the same")
   @Key("analysis.partAccCantBeSameAsIndException")
   String analysis_partAccCantBeSameAsIndException(Integer arg0,  String arg1,  String arg2);
 
@@ -1159,11 +1159,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_samplePrep();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing")
   @Key("analysis.sectionIdMissingException")
   String analysis_sectionIdMissingException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
@@ -1177,29 +1177,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_started();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be after completed".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be after completed"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be after completed")
   @Key("analysis.startedDateAfterCompletedException")
   String analysis_startedDateAfterCompletedException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date is before available date".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date is before available date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date is before available date")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date is before available date")
   @Key("analysis.startedDateBeforeAvailableCaution")
   String analysis_startedDateBeforeAvailableCaution(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be in the future".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be in the future"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be in the future")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be in the future")
   @Key("analysis.startedDateInFutureException")
   String analysis_startedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
@@ -1213,11 +1213,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_status();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - One or more tests are missing".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - One or more tests are missing"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - One or more tests are missing")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing")
   @Key("analysis.testIdMissingException")
   String analysis_testIdMissingException(Integer arg0,  Integer arg1);
 
@@ -1231,38 +1231,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_unitInvalidForSampleType();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure invalid for sample type".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure invalid for sample type".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure invalid for sample type"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure invalid for sample type"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure invalid for sample type")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure invalid for sample type")
   @Key("analysis.unitInvalidWarning")
   String analysis_unitInvalidWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure is required".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure is required")
   @Key("analysis.unitRequiredException")
   String analysis_unitRequiredException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on this sample".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on this sample. Press 'Run Scriptlets' for latest data.".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on this sample"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on this sample. Press 'Run Scriptlets' for latest data."
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on this sample")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on this sample. Press 'Run Scriptlets' for latest data.")
   @Key("analysis.validIndCarrierNotFoundException")
   String analysis_validIndCarrierNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on partner sample".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on partner sample. Press 'Run Scriptlets' for latest data.".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on partner sample"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on partner sample. Press 'Run Scriptlets' for latest data."
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Released {3}, {4} not found on partner sample")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on partner sample. Press 'Run Scriptlets' for latest data.")
   @Key("analysis.validPartCarrierNotFoundException")
   String analysis_validPartCarrierNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
@@ -1393,20 +1393,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysisQAEvent();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Invalid QA Event ''{4}''".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Invalid QA Event ''{4}''"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Invalid QA Event ''{4}''")
   @Key("analysisQAEvent.invalidQAException")
   String analysisQAEvent_invalidQAException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Type is required for QA Event ''{4}''".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Type is required for QA Event ''{4}''".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Type is required for QA Event ''{4}''"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Type is required for QA Event ''{4}''"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Type is required for QA Event ''{4}''")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Type is required for QA Event ''{4}''")
   @Key("analysisQAEvent.typeRequiredException")
   String analysisQAEvent_typeRequiredException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
@@ -1924,13 +1924,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_moveFileException(String arg0);
 
   /**
-   * Translated "Sample # ''{0}''".
+   * Translated "Sample # {0,number,#0}".
    * 
-   * @return translated "Sample # ''{0}''"
+   * @return translated "Sample # {0,number,#0}"
    */
-  @DefaultMessage("Sample # ''{0}''")
+  @DefaultMessage("Sample # {0,number,#0}")
   @Key("attachment.sampleDescription")
-  String attachment_sampleDescription(String arg0);
+  String attachment_sampleDescription(Integer arg0);
 
   /**
    * Translated "Attachment ''{0}'': You do not have permission to view the attachment".
@@ -1996,11 +1996,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String aux_data();
 
   /**
-   * Translated "Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition".
+   * Translated "Accession # {0,number,#0}: Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition".
    * 
-   * @return translated "Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition"
+   * @return translated "Accession # {0,number,#0}: Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition")
+  @DefaultMessage("Accession # {0,number,#0}: Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition")
   @Key("aux.defaultValueInvalidException")
   String aux_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2);
 
@@ -2041,11 +2041,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String aux_selectAnalyteBeforeValue();
 
   /**
-   * Translated "Accession # ''{0,number}'': Aux data ''{1}'' with value ''{2}'' invalid".
+   * Translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid".
    * 
-   * @return translated "Accession # ''{0,number}'': Aux data ''{1}'' with value ''{2}'' invalid"
+   * @return translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Aux data ''{1}'' with value ''{2}'' invalid")
+  @DefaultMessage("Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid")
   @Key("aux.valueInvalidException")
   String aux_valueInvalidException(Integer arg0,  String arg1,  String arg2);
 
@@ -3148,11 +3148,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String complete();
 
   /**
-   * Translated "Accession # ''{0,number}'' : {1}, {2} has already been released".
+   * Translated "Accession # {0,number,#0} : {1}, {2} has already been released".
    * 
-   * @return translated "Accession # ''{0,number}'' : {1}, {2} has already been released"
+   * @return translated "Accession # {0,number,#0} : {1}, {2} has already been released"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} has already been released")
+  @DefaultMessage("Accession # {0,number,#0} : {1}, {2} has already been released")
   @Key("completeRelease.alreadyReleased")
   String completeRelease_alreadyReleased(Integer arg0,  String arg1,  String arg2);
 
@@ -3175,11 +3175,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String completeRelease_completeAndRelease();
 
   /**
-   * Translated "You are about to complete {0,number} records.\n\nPress OK to continue or Cancel to abort.".
+   * Translated "You are about to complete {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.".
    * 
-   * @return translated "You are about to complete {0,number} records.\n\nPress OK to continue or Cancel to abort."
+   * @return translated "You are about to complete {0,number,#0} records.\n\nPress OK to continue or Cancel to abort."
    */
-  @DefaultMessage("You are about to complete {0,number} records.\n\nPress OK to continue or Cancel to abort.")
+  @DefaultMessage("You are about to complete {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.")
   @Key("completeRelease.completeMultipleWarning")
   String completeRelease_completeMultipleWarning(Integer arg0);
 
@@ -3211,11 +3211,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String completeRelease_queryByWorksheet();
 
   /**
-   * Translated "You are about to release {0,number} records.\n\nPress OK to continue or Cancel to abort.".
+   * Translated "You are about to release {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.".
    * 
-   * @return translated "You are about to release {0,number} records.\n\nPress OK to continue or Cancel to abort."
+   * @return translated "You are about to release {0,number,#0} records.\n\nPress OK to continue or Cancel to abort."
    */
-  @DefaultMessage("You are about to release {0,number} records.\n\nPress OK to continue or Cancel to abort.")
+  @DefaultMessage("You are about to release {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.")
   @Key("completeRelease.releaseMultipleWarning")
   String completeRelease_releaseMultipleWarning(Integer arg0);
 
@@ -5335,20 +5335,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String finalReportSingleReprint();
 
   /**
-   * Translated "FinalReport {0} R {1,number}".
+   * Translated "FinalReport {0} R {1,number,#0}".
    * 
-   * @return translated "FinalReport {0} R {1,number}"
+   * @return translated "FinalReport {0} R {1,number,#0}"
    */
-  @DefaultMessage("FinalReport {0} R {1,number}")
+  @DefaultMessage("FinalReport {0} R {1,number,#0}")
   @Key("finalreport.attachmentEsaveDescription")
   String finalreport_attachmentEsaveDescription(String arg0,  Integer arg1);
 
   /**
-   * Translated "finalreport{0}r{1,number}-{2}.pdf".
+   * Translated "finalreport{0}r{1,number,#0}-{2}.pdf".
    * 
-   * @return translated "finalreport{0}r{1,number}-{2}.pdf"
+   * @return translated "finalreport{0}r{1,number,#0}-{2}.pdf"
    */
-  @DefaultMessage("finalreport{0}r{1,number}-{2}.pdf")
+  @DefaultMessage("finalreport{0}r{1,number,#0}-{2}.pdf")
   @Key("finalreport.attachmentEsaveFileName")
   String finalreport_attachmentEsaveFileName(String arg0,  Integer arg1,  String arg2);
 
@@ -7567,11 +7567,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String inactiveAuxGroupWarning(String arg0);
 
   /**
-   * Translated "The container ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * Translated "The container ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
-   * @return translated "The container ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   * @return translated "The container ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
    */
-  @DefaultMessage("The container ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @DefaultMessage("The container ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveContainerWarning")
   String inactiveContainerWarning(String arg0,  Integer arg1);
 
@@ -7603,29 +7603,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String inactiveProjectWarning(String arg0);
 
   /**
-   * Translated "The unit ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * Translated "The unit ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
-   * @return translated "The unit ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   * @return translated "The unit ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
    */
-  @DefaultMessage("The unit ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @DefaultMessage("The unit ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveSampleItemUnitWarning")
   String inactiveSampleItemUnitWarning(String arg0,  Integer arg1);
 
   /**
-   * Translated "The sample type ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * Translated "The sample type ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
-   * @return translated "The sample type ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   * @return translated "The sample type ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
    */
-  @DefaultMessage("The sample type ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @DefaultMessage("The sample type ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveSampleTypeWarning")
   String inactiveSampleTypeWarning(String arg0,  Integer arg1);
 
   /**
-   * Translated "The source ''{0}'' is inactive and was not assigned to Item # ''{1,number}''".
+   * Translated "The source ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
-   * @return translated "The source ''{0}'' is inactive and was not assigned to Item # ''{1,number}''"
+   * @return translated "The source ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
    */
-  @DefaultMessage("The source ''{0}'' is inactive and was not assigned to Item # ''{1,number}''")
+  @DefaultMessage("The source ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveSourceWarning")
   String inactiveSourceWarning(String arg0,  Integer arg1);
 
@@ -7900,38 +7900,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String instrumentInterface_missingRequiredColumn(String arg0);
 
   /**
-   * Translated "Worksheet #{0,number} has no analyses at position #{1,number}.".
+   * Translated "Worksheet #{0,number,#0} has no analyses at position #{1,number,#0}.".
    * 
-   * @return translated "Worksheet #{0,number} has no analyses at position #{1,number}."
+   * @return translated "Worksheet #{0,number,#0} has no analyses at position #{1,number,#0}."
    */
-  @DefaultMessage("Worksheet #{0,number} has no analyses at position #{1,number}.")
+  @DefaultMessage("Worksheet #{0,number,#0} has no analyses at position #{1,number,#0}.")
   @Key("instrumentInterface.worksheetHasNoAnalysesAtPosition")
   String instrumentInterface_worksheetHasNoAnalysesAtPosition(Integer arg0,  Integer arg1);
 
   /**
-   * Translated "Worksheet #{0,number} has no items.".
+   * Translated "Worksheet #{0,number,#0} has no items.".
    * 
-   * @return translated "Worksheet #{0,number} has no items."
+   * @return translated "Worksheet #{0,number,#0} has no items."
    */
-  @DefaultMessage("Worksheet #{0,number} has no items.")
+  @DefaultMessage("Worksheet #{0,number,#0} has no items.")
   @Key("instrumentInterface.worksheetHasNoItems")
   String instrumentInterface_worksheetHasNoItems(Integer arg0);
 
   /**
-   * Translated "Worksheet #{0,number} not found for instrument import file.".
+   * Translated "Worksheet #{0,number,#0} not found for instrument import file.".
    * 
-   * @return translated "Worksheet #{0,number} not found for instrument import file."
+   * @return translated "Worksheet #{0,number,#0} not found for instrument import file."
    */
-  @DefaultMessage("Worksheet #{0,number} not found for instrument import file.")
+  @DefaultMessage("Worksheet #{0,number,#0} not found for instrument import file.")
   @Key("instrumentInterface.worksheetNotFound")
   String instrumentInterface_worksheetNotFound(Integer arg0);
 
   /**
-   * Translated "Worksheet #{0,number} it not in ''Working'' status.".
+   * Translated "Worksheet #{0,number,#0} it not in ''Working'' status.".
    * 
-   * @return translated "Worksheet #{0,number} it not in ''Working'' status."
+   * @return translated "Worksheet #{0,number,#0} it not in ''Working'' status."
    */
-  @DefaultMessage("Worksheet #{0,number} it not in ''Working'' status.")
+  @DefaultMessage("Worksheet #{0,number,#0} it not in ''Working'' status.")
   @Key("instrumentInterface.worksheetWrongStatus")
   String instrumentInterface_worksheetWrongStatus(Integer arg0);
 
@@ -10528,20 +10528,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_catalogNum();
 
   /**
-   * Translated "Order # \"{0,number}\": Container Item Sequence is required".
+   * Translated "Order # {0,number,#0}: Container Item Sequence is required".
    * 
-   * @return translated "Order # \"{0,number}\": Container Item Sequence is required"
+   * @return translated "Order # {0,number,#0}: Container Item Sequence is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Container Item Sequence is required")
+  @DefaultMessage("Order # {0,number,#0}: Container Item Sequence is required")
   @Key("order.containerItemSequenceRequiredException")
   String order_containerItemSequenceRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Container is required".
+   * Translated "Order # {0,number,#0}: Container is required".
    * 
-   * @return translated "Order # \"{0,number}\": Container is required"
+   * @return translated "Order # {0,number,#0}: Container is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Container is required")
+  @DefaultMessage("Order # {0,number,#0}: Container is required")
   @Key("order.containerRequiredException")
   String order_containerRequiredException(Integer arg0);
 
@@ -10555,11 +10555,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_costCenter();
 
   /**
-   * Translated "Order # \"{0,number}\": Cost Center is required".
+   * Translated "Order # {0,number,#0}: Cost Center is required".
    * 
-   * @return translated "Order # \"{0,number}\": Cost Center is required"
+   * @return translated "Order # {0,number,#0}: Cost Center is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Cost Center is required")
+  @DefaultMessage("Order # {0,number,#0}: Cost Center is required")
   @Key("order.costCenterRequiredException")
   String order_costCenterRequiredException(Integer arg0);
 
@@ -10582,20 +10582,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_datesFreqUnitNotSpec();
 
   /**
-   * Translated "Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once".
+   * Translated "Order # {0,number,#0}: A vendor order must not have the inventory item \"{1}\" more than once".
    * 
-   * @return translated "Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once"
+   * @return translated "Order # {0,number,#0}: A vendor order must not have the inventory item \"{1}\" more than once"
    */
-  @DefaultMessage("Order # \"{0,number}\": A vendor order must not have the inventory item \"{1}\" more than once")
+  @DefaultMessage("Order # {0,number,#0}: A vendor order must not have the inventory item \"{1}\" more than once")
   @Key("order.duplicateInvItemVendorOrderException")
   String order_duplicateInvItemVendorOrderException(Integer arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0,number}\": End date must not be before begin date".
+   * Translated "Order # {0,number,#0}: End date must not be before begin date".
    * 
-   * @return translated "Order # \"{0,number}\": End date must not be before begin date"
+   * @return translated "Order # {0,number,#0}: End date must not be before begin date"
    */
-  @DefaultMessage("Order # \"{0,number}\": End date must not be before begin date")
+  @DefaultMessage("Order # {0,number,#0}: End date must not be before begin date")
   @Key("order.endDateAfterBeginDateException")
   String order_endDateAfterBeginDateException(Integer arg0);
 
@@ -10618,11 +10618,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_filled();
 
   /**
-   * Translated "Order # \"{0,number}\": Frequency must be greater than zero".
+   * Translated "Order # {0,number,#0}: Frequency must be greater than zero".
    * 
-   * @return translated "Order # \"{0,number}\": Frequency must be greater than zero"
+   * @return translated "Order # {0,number,#0}: Frequency must be greater than zero"
    */
-  @DefaultMessage("Order # \"{0,number}\": Frequency must be greater than zero")
+  @DefaultMessage("Order # {0,number,#0}: Frequency must be greater than zero")
   @Key("order.freqInvalidException")
   String order_freqInvalidException(Integer arg0);
 
@@ -10681,29 +10681,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_inactiveTestWarning(String arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
+   * Translated "Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  ".
    * 
-   * @return translated "Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  "
+   * @return translated "Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  "
    */
-  @DefaultMessage("Order # \"{0,number}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ")
+  @DefaultMessage("Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  ")
   @Key("order.invalidSampleTypeForTestWarning")
   String order_invalidSampleTypeForTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Order # \"{0,number}\": Inventory Item is required".
+   * Translated "Order # {0,number,#0}: Inventory Item is required".
    * 
-   * @return translated "Order # \"{0,number}\": Inventory Item is required"
+   * @return translated "Order # {0,number,#0}: Inventory Item is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Inventory Item is required")
+  @DefaultMessage("Order # {0,number,#0}: Inventory Item is required")
   @Key("order.inventoryItemRequiredException")
   String order_inventoryItemRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Inventory Quantity is required".
+   * Translated "Order # {0,number,#0}: Inventory Quantity is required".
    * 
-   * @return translated "Order # \"{0,number}\": Inventory Quantity is required"
+   * @return translated "Order # {0,number,#0}: Inventory Quantity is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Inventory Quantity is required")
+  @DefaultMessage("Order # {0,number,#0}: Inventory Quantity is required")
   @Key("order.inventoryQuantityRequiredException")
   String order_inventoryQuantityRequiredException(Integer arg0);
 
@@ -10726,47 +10726,47 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_items();
 
   /**
-   * Translated "Order # \"{0,number}\": Duplicating more than one container is not allowed".
+   * Translated "Order # {0,number,#0}: Duplicating more than one container is not allowed".
    * 
-   * @return translated "Order # \"{0,number}\": Duplicating more than one container is not allowed"
+   * @return translated "Order # {0,number,#0}: Duplicating more than one container is not allowed"
    */
-  @DefaultMessage("Order # \"{0,number}\": Duplicating more than one container is not allowed")
+  @DefaultMessage("Order # {0,number,#0}: Duplicating more than one container is not allowed")
   @Key("order.multiRowDuplicateNotAllowed")
   String order_multiRowDuplicateNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Moving up/down more than one container is not allowed".
+   * Translated "Order # {0,number,#0}: Moving up/down more than one container is not allowed".
    * 
-   * @return translated "Order # \"{0,number}\": Moving up/down more than one container is not allowed"
+   * @return translated "Order # {0,number,#0}: Moving up/down more than one container is not allowed"
    */
-  @DefaultMessage("Order # \"{0,number}\": Moving up/down more than one container is not allowed")
+  @DefaultMessage("Order # {0,number,#0}: Moving up/down more than one container is not allowed")
   @Key("order.multiRowMoveNotAllowed")
   String order_multiRowMoveNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed".
+   * Translated "Order # {0,number,#0}: Check All/Uncheck All for more than one test is not allowed".
    * 
-   * @return translated "Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed"
+   * @return translated "Order # {0,number,#0}: Check All/Uncheck All for more than one test is not allowed"
    */
-  @DefaultMessage("Order # \"{0,number}\": Check All/Uncheck All for more than one test is not allowed")
+  @DefaultMessage("Order # {0,number,#0}: Check All/Uncheck All for more than one test is not allowed")
   @Key("order.multiTestCheckNotAllowed")
   String order_multiTestCheckNotAllowed(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Only one record with the type Bill To is allowed".
+   * Translated "Order # {0,number,#0}\": Only one record with the type Bill To is allowed".
    * 
-   * @return translated "Order # \"{0,number}\": Only one record with the type Bill To is allowed"
+   * @return translated "Order # {0,number,#0}\": Only one record with the type Bill To is allowed"
    */
-  @DefaultMessage("Order # \"{0,number}\": Only one record with the type Bill To is allowed")
+  @DefaultMessage("Order # {0,number,#0}\": Only one record with the type Bill To is allowed")
   @Key("order.multipleBillToException")
   String order_multipleBillToException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Only one record with the type Report To is allowed ".
+   * Translated "Order # {0,number,#0}: Only one record with the type Report To is allowed ".
    * 
-   * @return translated "Order # \"{0,number}\": Only one record with the type Report To is allowed "
+   * @return translated "Order # {0,number,#0}: Only one record with the type Report To is allowed "
    */
-  @DefaultMessage("Order # \"{0,number}\": Only one record with the type Report To is allowed ")
+  @DefaultMessage("Order # {0,number,#0}: Only one record with the type Report To is allowed ")
   @Key("order.multipleReportToException")
   String order_multipleReportToException(Integer arg0);
 
@@ -10780,38 +10780,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_neededDays();
 
   /**
-   * Translated "Order # \"{0,number}\": Needed In Days is required".
+   * Translated "Order # {0,number,#0}: Needed In Days is required".
    * 
-   * @return translated "Order # \"{0,number}\": Needed In Days is required"
+   * @return translated "Order # {0,number,#0}: Needed In Days is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Needed In Days is required")
+  @DefaultMessage("Order # {0,number,#0}: Needed In Days is required")
   @Key("order.neededInDaysRequiredException")
   String order_neededInDaysRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' ".
+   * Translated "Order # {0,number,#0}: No container is present for Item # {1} which is assigned to ''{2}'' ".
    * 
-   * @return translated "Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' "
+   * @return translated "Order # {0,number,#0}: No container is present for Item # {1} which is assigned to ''{2}'' "
    */
-  @DefaultMessage("Order # \"{0,number}\": No container is present for Item # {1} which is assigned to ''{2}'' ")
+  @DefaultMessage("Order # {0,number,#0}: No container is present for Item # {1} which is assigned to ''{2}'' ")
   @Key("order.noContainerWithItemNumWarning")
   String order_noContainerWithItemNumWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Order # \"{0,number}\": No sample type specified for the container with Item # {1}  ".
+   * Translated "Order # {0,number,#0}: No sample type specified for the container with Item # {1}  ".
    * 
-   * @return translated "Order # \"{0,number}\": No sample type specified for the container with Item # {1}  "
+   * @return translated "Order # {0,number,#0}: No sample type specified for the container with Item # {1}  "
    */
-  @DefaultMessage("Order # \"{0,number}\": No sample type specified for the container with Item # {1}  ")
+  @DefaultMessage("Order # {0,number,#0}: No sample type specified for the container with Item # {1}  ")
   @Key("order.noSampleTypeForContainerWarning")
   String order_noSampleTypeForContainerWarning(Integer arg0,  String arg1);
 
   /**
-   * Translated "Order # \"{0,number}\": Not all dates generated with this frequency are valid".
+   * Translated "Order # {0,number,#0}: Not all dates generated with this frequency are valid".
    * 
-   * @return translated "Order # \"{0,number}\": Not all dates generated with this frequency are valid"
+   * @return translated "Order # {0,number,#0}: Not all dates generated with this frequency are valid"
    */
-  @DefaultMessage("Order # \"{0,number}\": Not all dates generated with this frequency are valid")
+  @DefaultMessage("Order # {0,number,#0}: Not all dates generated with this frequency are valid")
   @Key("order.notAllDatesValid")
   String order_notAllDatesValid(Integer arg0);
 
@@ -10825,11 +10825,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_numForms();
 
   /**
-   * Translated "Order # \"{0,number}\": # Forms is required".
+   * Translated "Order # {0,number,#0}: # Forms is required".
    * 
-   * @return translated "Order # \"{0,number}\": # Forms is required"
+   * @return translated "Order # {0,number,#0}: # Forms is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": # Forms is required")
+  @DefaultMessage("Order # {0,number,#0}: # Forms is required")
   @Key("order.numFormsRequiredException")
   String order_numFormsRequiredException(Integer arg0);
 
@@ -10924,20 +10924,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_orderTestHistory();
 
   /**
-   * Translated "Order # \"{0,number}\": Organization is required".
+   * Translated "Order # {0,number,#0}: Organization is required".
    * 
-   * @return translated "Order # \"{0,number}\": Organization is required"
+   * @return translated "Order # {0,number,#0}: Organization is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Organization is required")
+  @DefaultMessage("Order # {0,number,#0}: Organization is required")
   @Key("order.organizationRequiredException")
   String order_organizationRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Organization Type is required".
+   * Translated "Order # {0,number,#0}: Organization Type is required".
    * 
-   * @return translated "Order # \"{0,number}\": Organization Type is required"
+   * @return translated "Order # {0,number,#0}: Organization Type is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Organization Type is required")
+  @DefaultMessage("Order # {0,number,#0}: Organization Type is required")
   @Key("order.organizationTypeRequiredException")
   String order_organizationTypeRequiredException(Integer arg0);
 
@@ -10951,11 +10951,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_parentOrderNum();
 
   /**
-   * Translated "Order # \"{0,number}\": This value must not exceed {1}".
+   * Translated "Order # {0,number,#0}: This value must not exceed {1}".
    * 
-   * @return translated "Order # \"{0,number}\": This value must not exceed {1}"
+   * @return translated "Order # {0,number,#0}: This value must not exceed {1}"
    */
-  @DefaultMessage("Order # \"{0,number}\": This value must not exceed {1}")
+  @DefaultMessage("Order # {0,number,#0}: This value must not exceed {1}")
   @Key("order.qtyNotMoreThanMaxException")
   String order_qtyNotMoreThanMaxException(Integer arg0,  String arg1);
 
@@ -10978,38 +10978,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_recurError();
 
   /**
-   * Translated "Order # \"{0,number}\": Recurrence Active Begin is required".
+   * Translated "Order # {0,number,#0}: Recurrence Active Begin is required".
    * 
-   * @return translated "Order # \"{0,number}\": Recurrence Active Begin is required"
+   * @return translated "Order # {0,number,#0}: Recurrence Active Begin is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Recurrence Active Begin is required")
+  @DefaultMessage("Order # {0,number,#0}: Recurrence Active Begin is required")
   @Key("order.recurrenceActiveBeginRequiredException")
   String order_recurrenceActiveBeginRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Recurrence Active End is required".
+   * Translated "Order # {0,number,#0}: Recurrence Active End is required".
    * 
-   * @return translated "Order # \"{0,number}\": Recurrence Active End is required"
+   * @return translated "Order # {0,number,#0}: Recurrence Active End is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Recurrence Active End is required")
+  @DefaultMessage("Order # {0,number,#0}: Recurrence Active End is required")
   @Key("order.recurrenceActiveEndRequiredException")
   String order_recurrenceActiveEndRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Recurrence Frequency is required".
+   * Translated "Order # {0,number,#0}: Recurrence Frequency is required".
    * 
-   * @return translated "Order # \"{0,number}\": Recurrence Frequency is required"
+   * @return translated "Order # {0,number,#0}: Recurrence Frequency is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Recurrence Frequency is required")
+  @DefaultMessage("Order # {0,number,#0}: Recurrence Frequency is required")
   @Key("order.recurrenceFrequencyRequiredException")
   String order_recurrenceFrequencyRequiredException(Integer arg0);
 
   /**
-   * Translated "Order # \"{0,number}\": Recurrence Unit is required".
+   * Translated "Order # {0,number,#0}: Recurrence Unit is required".
    * 
-   * @return translated "Order # \"{0,number}\": Recurrence Unit is required"
+   * @return translated "Order # {0,number,#0}: Recurrence Unit is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Recurrence Unit is required")
+  @DefaultMessage("Order # {0,number,#0}: Recurrence Unit is required")
   @Key("order.recurrenceUnitRequiredException")
   String order_recurrenceUnitRequiredException(Integer arg0);
 
@@ -11059,11 +11059,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_shipFrom();
 
   /**
-   * Translated "Order # \"{0,number}\": Ship From is required".
+   * Translated "Order # {0,number,#0}: Ship From is required".
    * 
-   * @return translated "Order # \"{0,number}\": Ship From is required"
+   * @return translated "Order # {0,number,#0}: Ship From is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Ship From is required")
+  @DefaultMessage("Order # {0,number,#0}: Ship From is required")
   @Key("order.shipFromRequiredException")
   String order_shipFromRequiredException(Integer arg0);
 
@@ -11095,11 +11095,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_showDates();
 
   /**
-   * Translated "Order # \"{0,number}\": Status is required".
+   * Translated "Order # {0,number,#0} Status is required".
    * 
-   * @return translated "Order # \"{0,number}\": Status is required"
+   * @return translated "Order # {0,number,#0} Status is required"
    */
-  @DefaultMessage("Order # \"{0,number}\": Status is required")
+  @DefaultMessage("Order # {0,number,#0} Status is required")
   @Key("order.statusRequiredException")
   String order_statusRequiredException(Integer arg0);
 
@@ -13894,6 +13894,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result();
 
   /**
+   * Translated "Accession # {0,number,#0}: {1}, {2} - Analytes with these external ids were not found: ''{3}''".
+   * 
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - Analytes with these external ids were not found: ''{3}''"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Analytes with these external ids were not found: ''{3}''")
+  @Key("result.analytesNotFoundException")
+  String result_analytesNotFoundException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
    * Translated "A row group must have at least one result row".
    * 
    * @return translated "A row group must have at least one result row"
@@ -13901,15 +13910,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("A row group must have at least one result row")
   @Key("result.atleastOneResultInRowGroup")
   String result_atleastOneResultInRowGroup();
-
-  /**
-   * Translated "Cannot compute risks because the sample has a released ''cf-pregnancy, pcr'' analysis".
-   * 
-   * @return translated "Cannot compute risks because the sample has a released ''cf-pregnancy, pcr'' analysis"
-   */
-  @DefaultMessage("Cannot compute risks because the sample has a released ''cf-pregnancy, pcr'' analysis")
-  @Key("result.cantComputeRisksRelPregException")
-  String result_cantComputeRisksRelPregException();
 
   /**
    * Translated "Current Result".
@@ -13921,11 +13921,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_current();
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition")
   @Key("result.defaultValueInvalidException")
   String result_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
@@ -13939,24 +13939,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_historyException();
 
   /**
-   * Translated "Ethnicity not specified".
-   * 
-   * @return translated "Ethnicity not specified"
-   */
-  @DefaultMessage("Ethnicity not specified")
-  @Key("result.missingEthnicityException")
-  String result_missingEthnicityException();
-
-  /**
-   * Translated "Family history not specified".
-   * 
-   * @return translated "Family history not specified"
-   */
-  @DefaultMessage("Family history not specified")
-  @Key("result.missingFamilyHistoryException")
-  String result_missingFamilyHistoryException();
-
-  /**
    * Translated "Result(s) Overridden".
    * 
    * @return translated "Result(s) Overridden"
@@ -13966,29 +13948,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_overridden();
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - Sample not found for partner accession # ''{3,number}''".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}.".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - Sample not found for partner accession # ''{3,number}''"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}."
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - Sample not found for partner accession # ''{3,number}''")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}.")
   @Key("result.partSamNotFoundException")
   String result_partSamNotFoundException(Integer arg0,  String arg1,  String arg2,  Integer arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid")
   @Key("result.valueInvalidException")
   String result_valueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} is required to have a value".
+   * Translated "Accession # {0,number,#0}: {1}, {2} - {3} is required to have a value".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} is required to have a value"
+   * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} is required to have a value"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} is required to have a value")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} is required to have a value")
   @Key("result.valueRequiredException")
   String result_valueRequiredException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
@@ -14209,11 +14191,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNum();
 
   /**
-   * Translated "Accession # ''{0,number}'': Number is already entered into the system".
+   * Translated "Accession # {0,number,#0}: Number is already entered into the system".
    * 
-   * @return translated "Accession # ''{0,number}'': Number is already entered into the system"
+   * @return translated "Accession # {0,number,#0}: Number is already entered into the system"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Number is already entered into the system")
+  @DefaultMessage("Accession # {0,number,#0}: Number is already entered into the system")
   @Key("sample.accessionNumberDuplicate")
   String sample_accessionNumberDuplicate(Integer arg0);
 
@@ -14227,29 +14209,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberEditConfirm();
 
   /**
-   * Translated "Accession # ''{0,number}'': Number is not in use yet".
+   * Translated "Accession # {0,number,#0}: Number is not in use yet".
    * 
-   * @return translated "Accession # ''{0,number}'': Number is not in use yet"
+   * @return translated "Accession # {0,number,#0}: Number is not in use yet"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Number is not in use yet")
+  @DefaultMessage("Accession # {0,number,#0}: Number is not in use yet")
   @Key("sample.accessionNumberNotInUse")
   String sample_accessionNumberNotInUse(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Number is invalid".
+   * Translated "Accession # {0,number,#0}: Number is invalid".
    * 
-   * @return translated "Accession # ''{0,number}'': Number is invalid"
+   * @return translated "Accession # {0,number,#0}: Number is invalid"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Number is invalid")
+  @DefaultMessage("Accession # {0,number,#0}: Number is invalid")
   @Key("sample.accessionNumberNotValidException")
   String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'':".
+   * Translated "Accession # {0,number,#0}".
    * 
-   * @return translated "Accession # ''{0,number}'':"
+   * @return translated "Accession # {0,number,#0}"
    */
-  @DefaultMessage("Accession # ''{0,number}'':")
+  @DefaultMessage("Accession # {0,number,#0}")
   @Key("sample.accessionPrefix")
   String sample_accessionPrefix(Integer arg0);
 
@@ -14317,38 +14299,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_cantChangeDomainToQuickEntryException();
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in".
+   * Translated "Accession # {0,number,#0}: Cannot duplicate sample - One or more analyses have advanced beyond logged-in".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in"
+   * @return translated "Accession # {0,number,#0}: Cannot duplicate sample - One or more analyses have advanced beyond logged-in"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate sample - One or more analyses have advanced beyond logged-in")
   @Key("sample.cantDuplicateAnaPastLoggedInException")
   String sample_cantDuplicateAnaPastLoggedInException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot duplicate a completed or released sample".
+   * Translated "Accession # {0,number,#0}: Cannot duplicate a completed or released sample".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot duplicate a completed or released sample"
+   * @return translated "Accession # {0,number,#0}: Cannot duplicate a completed or released sample"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot duplicate a completed or released sample")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate a completed or released sample")
   @Key("sample.cantDuplicateCompRelException")
   String sample_cantDuplicateCompRelException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot duplicate sample - {1}, {2} has been reflexed by another analysis".
+   * Translated "Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot duplicate sample - {1}, {2} has been reflexed by another analysis"
+   * @return translated "Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot duplicate sample - {1}, {2} has been reflexed by another analysis")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis")
   @Key("sample.cantDuplicateReflexAnaException")
   String sample_cantDuplicateReflexAnaException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': A quick entered sample cannot be loaded if the order # is present ".
+   * Translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present ".
    * 
-   * @return translated "Accession # ''{0,number}'': A quick entered sample cannot be loaded if the order # is present "
+   * @return translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present "
    */
-  @DefaultMessage("Accession # ''{0,number}'': A quick entered sample cannot be loaded if the order # is present ")
+  @DefaultMessage("Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present ")
   @Key("sample.cantLoadQEOrderPresentException")
   String sample_cantLoadQEOrderPresentException(Integer arg0);
 
@@ -14407,38 +14389,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_collected();
 
   /**
-   * Translated "Accession # ''{0,number}'': Collected date can''t be after entered".
+   * Translated "Accession # {0,number,#0}: Collected date can''t be after entered".
    * 
-   * @return translated "Accession # ''{0,number}'': Collected date can''t be after entered"
+   * @return translated "Accession # {0,number,#0}: Collected date can''t be after entered"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Collected date can''t be after entered")
+  @DefaultMessage("Accession # {0,number,#0}: Collected date can''t be after entered")
   @Key("sample.collectedDateAfterEnteredException")
   String sample_collectedDateAfterEnteredException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Collected date can''t be after received".
+   * Translated "Accession # {0,number,#0}: Collected date can''t be after received".
    * 
-   * @return translated "Accession # ''{0,number}'': Collected date can''t be after received"
+   * @return translated "Accession # {0,number,#0}: Collected date can''t be after received"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Collected date can''t be after received")
+  @DefaultMessage("Accession # {0,number,#0}: Collected date can''t be after received")
   @Key("sample.collectedDateAfterReceivedException")
   String sample_collectedDateAfterReceivedException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Collection time can''t be specified without collection date".
+   * Translated "Accession # {0,number,#0}: Collection time can''t be specified without collection date".
    * 
-   * @return translated "Accession # ''{0,number}'': Collection time can''t be specified without collection date"
+   * @return translated "Accession # {0,number,#0}: Collection time can''t be specified without collection date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Collection time can''t be specified without collection date")
+  @DefaultMessage("Accession # {0,number,#0}: Collection time can''t be specified without collection date")
   @Key("sample.collectedTimeWithoutDateException")
   String sample_collectedTimeWithoutDateException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date".
+   * Translated "Accession # {0,number,#0}: Collected date shouldn''t be more than 180 days before entered date".
    * 
-   * @return translated "Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date"
+   * @return translated "Accession # {0,number,#0}: Collected date shouldn''t be more than 180 days before entered date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date")
+  @DefaultMessage("Accession # {0,number,#0}: Collected date shouldn''t be more than 180 days before entered date")
   @Key("sample.collectedTooOldWarning")
   String sample_collectedTooOldWarning(Integer arg0);
 
@@ -14461,11 +14443,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_domainChangedException();
 
   /**
-   * Translated "Accession # ''{0,number}'' : Specified domain is invalid".
+   * Translated "Accession # {0,number,#0} : Specified domain is invalid".
    * 
-   * @return translated "Accession # ''{0,number}'' : Specified domain is invalid"
+   * @return translated "Accession # {0,number,#0} : Specified domain is invalid"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : Specified domain is invalid")
+  @DefaultMessage("Accession # {0,number,#0} : Specified domain is invalid")
   @Key("sample.domainNotValid")
   String sample_domainNotValid(Integer arg0);
 
@@ -14479,11 +14461,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_enterAccNumBeforeOrderLoad();
 
   /**
-   * Translated "Accession # ''{0,number}'': Entered date is required".
+   * Translated "Accession # {0,number,#0}: Entered date is required".
    * 
-   * @return translated "Accession # ''{0,number}'': Entered date is required"
+   * @return translated "Accession # {0,number,#0}: Entered date is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Entered date is required")
+  @DefaultMessage("Accession # {0,number,#0}: Entered date is required")
   @Key("sample.enteredDateRequiredException")
   String sample_enteredDateRequiredException(Integer arg0);
 
@@ -14506,38 +14488,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_fromTRF();
 
   /**
-   * Translated "Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample".
+   * Translated "Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample".
    * 
-   * @return translated "Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample"
+   * @return translated "Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample"
    */
-  @DefaultMessage("Accession # ''{0,number}'': The auxiliary group ''{1}'' is inactive and wasn''t added to the sample")
+  @DefaultMessage("Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveAuxGroupWarning")
   String sample_inactiveAuxGroupWarning(Integer arg0,  String arg1);
 
   /**
-   * Translated "Accession # ''{0,number}'': The organization ''{1}'' is inactive and wasn''t added to the sample".
+   * Translated "Accession # {0,number,#0}: The organization ''{1}'' is inactive and wasn''t added to the sample".
    * 
-   * @return translated "Accession # ''{0,number}'': The organization ''{1}'' is inactive and wasn''t added to the sample"
+   * @return translated "Accession # {0,number,#0}: The organization ''{1}'' is inactive and wasn''t added to the sample"
    */
-  @DefaultMessage("Accession # ''{0,number}'': The organization ''{1}'' is inactive and wasn''t added to the sample")
+  @DefaultMessage("Accession # {0,number,#0}: The organization ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveOrgWarning")
   String sample_inactiveOrgWarning(Integer arg0,  String arg1);
 
   /**
-   * Translated "Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample".
+   * Translated "Accession # {0,number,#0}: The project ''{1}'' is inactive and wasn''t added to the sample".
    * 
-   * @return translated "Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample"
+   * @return translated "Accession # {0,number,#0}: The project ''{1}'' is inactive and wasn''t added to the sample"
    */
-  @DefaultMessage("Accession # ''{0,number}'': The project ''{1}'' is inactive and wasn''t added to the sample")
+  @DefaultMessage("Accession # {0,number,#0}: The project ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveProjectWarning")
   String sample_inactiveProjectWarning(Integer arg0,  String arg1);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} is inactive and was not added to the sample ".
+   * Translated "Accession # {0,number,#0}: {1}, {2} is inactive and was not added to the sample ".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} is inactive and was not added to the sample "
+   * @return translated "Accession # {0,number,#0}: {1}, {2} is inactive and was not added to the sample "
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} is inactive and was not added to the sample ")
+  @DefaultMessage("Accession # {0,number,#0}: {1}, {2} is inactive and was not added to the sample ")
   @Key("sample.inactiveTestWarning")
   String sample_inactiveTestWarning(Integer arg0,  String arg1,  String arg2);
 
@@ -14560,20 +14542,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_itemAnalyses();
 
   /**
-   * Translated "Accession # ''{0,number}'': The sample must have at least one sample item".
+   * Translated "Accession # {0,number,#0}: The sample must have at least one sample item".
    * 
-   * @return translated "Accession # ''{0,number}'': The sample must have at least one sample item"
+   * @return translated "Accession # {0,number,#0}: The sample must have at least one sample item"
    */
-  @DefaultMessage("Accession # ''{0,number}'': The sample must have at least one sample item")
+  @DefaultMessage("Accession # {0,number,#0}: The sample must have at least one sample item")
   @Key("sample.minOneSampleItemException")
   String sample_minOneSampleItemException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': The sample must have only one report to".
+   * Translated "Accession # {0,number,#0}: The sample must have only one report to".
    * 
-   * @return translated "Accession # ''{0,number}'': The sample must have only one report to"
+   * @return translated "Accession # {0,number,#0}: The sample must have only one report to"
    */
-  @DefaultMessage("Accession # ''{0,number}'': The sample must have only one report to")
+  @DefaultMessage("Accession # {0,number,#0}: The sample must have only one report to")
   @Key("sample.moreThanOneReportToException")
   String sample_moreThanOneReportToException(Integer arg0);
 
@@ -14614,11 +14596,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_neonatal();
 
   /**
-   * Translated "Accession # ''{0,number}'': Missing or undefined domain".
+   * Translated "Accession # {0,number,#0}: Missing or undefined domain".
    * 
-   * @return translated "Accession # ''{0,number}'': Missing or undefined domain"
+   * @return translated "Accession # {0,number,#0}: Missing or undefined domain"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Missing or undefined domain")
+  @DefaultMessage("Accession # {0,number,#0}: Missing or undefined domain")
   @Key("sample.noDomainException")
   String sample_noDomainException(Integer arg0);
 
@@ -14632,20 +14614,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_notBillable();
 
   /**
-   * Translated "Accession # ''{0,number}'': Not a Quick Entry sample".
+   * Translated "Accession # {0,number,#0}: Not a Quick Entry sample".
    * 
-   * @return translated "Accession # ''{0,number}'': Not a Quick Entry sample"
+   * @return translated "Accession # {0,number,#0}: Not a Quick Entry sample"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Not a Quick Entry sample")
+  @DefaultMessage("Accession # {0,number,#0}: Not a Quick Entry sample")
   @Key("sample.notQuickEntryException")
   String sample_notQuickEntryException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}".
+   * Translated "Accession # {0,number,#0}: {1}".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}"
+   * @return translated "Accession # {0,number,#0}: {1}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}")
+  @DefaultMessage("Accession # {0,number,#0}: {1}")
   @Key("sample.noteException")
   String sample_noteException(Integer arg0,  String arg1);
 
@@ -14659,20 +14641,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_notes();
 
   /**
-   * Translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order".
+   * Translated "Accession # {0,number,#0}: Order # {1,number,#0} must be the id of an existing Send-out order".
    * 
-   * @return translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order"
+   * @return translated "Accession # {0,number,#0}: Order # {1,number,#0} must be the id of an existing Send-out order"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order")
+  @DefaultMessage("Accession # {0,number,#0}: Order # {1,number,#0} must be the id of an existing Send-out order")
   @Key("sample.orderIdInvalidException")
   String sample_orderIdInvalidException(Integer arg0,  Integer arg1);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1} ''{2}'' is invalid and couldn''t be imported".
+   * Translated "Accession # {0,number,#0}: {1} ''{2}'' is invalid and couldn''t be imported".
    * 
-   * @return translated "Accession # ''{0,number}'': {1} ''{2}'' is invalid and couldn''t be imported"
+   * @return translated "Accession # {0,number,#0}: {1} ''{2}'' is invalid and couldn''t be imported"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1} ''{2}'' is invalid and couldn''t be imported")
+  @DefaultMessage("Accession # {0,number,#0}: {1} ''{2}'' is invalid and couldn''t be imported")
   @Key("sample.orderImportException")
   String sample_orderImportException(Integer arg0,  String arg1,  String arg2);
 
@@ -14686,11 +14668,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_organization();
 
   /**
-   * Translated "Accession # ''{0,number}'': Last name is required for a patient".
+   * Translated "Accession # {0,number,#0}: Last name is required for a patient".
    * 
-   * @return translated "Accession # ''{0,number}'': Last name is required for a patient"
+   * @return translated "Accession # {0,number,#0}: Last name is required for a patient"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Last name is required for a patient")
+  @DefaultMessage("Accession # {0,number,#0}: Last name is required for a patient")
   @Key("sample.patientLastNameRequiredException")
   String sample_patientLastNameRequiredException(Integer arg0);
 
@@ -14731,29 +14713,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_received();
 
   /**
-   * Translated "Accession # ''{0,number}'': Received date is required".
+   * Translated "Accession # {0,number,#0}: Received date is required".
    * 
-   * @return translated "Accession # ''{0,number}'': Received date is required"
+   * @return translated "Accession # {0,number,#0}: Received date is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Received date is required")
+  @DefaultMessage("Accession # {0,number,#0}: Received date is required")
   @Key("sample.receivedDateRequiredException")
   String sample_receivedDateRequiredException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date ".
+   * Translated "Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date ".
    * 
-   * @return translated "Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date "
+   * @return translated "Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date ")
+  @DefaultMessage("Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date ")
   @Key("sample.receivedTooOldWarning")
   String sample_receivedTooOldWarning(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Sample must have a report to".
+   * Translated "Accession # {0,number,#0}: Sample must have a report to".
    * 
-   * @return translated "Accession # ''{0,number}'': Sample must have a report to"
+   * @return translated "Accession # {0,number,#0}: Sample must have a report to"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Sample must have a report to")
+  @DefaultMessage("Accession # {0,number,#0}: Sample must have a report to")
   @Key("sample.reportToMissingWarning")
   String sample_reportToMissingWarning(Integer arg0);
 
@@ -14848,11 +14830,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_typeStatus();
 
   /**
-   * Translated "Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased".
+   * Translated "Accession # {0,number,#0}: You must add an internal note when sample/analysis is unreleased".
    * 
-   * @return translated "Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased"
+   * @return translated "Accession # {0,number,#0}: You must add an internal note when sample/analysis is unreleased"
    */
-  @DefaultMessage("Accession # ''{0,number}'': You must add an internal note when sample/analysis is unreleased")
+  @DefaultMessage("Accession # {0,number,#0}: You must add an internal note when sample/analysis is unreleased")
   @Key("sample.unreleaseNoNoteException")
   String sample_unreleaseNoNoteException(Integer arg0);
 
@@ -15064,11 +15046,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleItem();
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot remove Item {1,number} - One or more analyses are linked to it ".
+   * Translated "Accession # {0,number,#0}: Cannot remove Item {1,number,#0} - One or more analyses are linked to it ".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot remove Item {1,number} - One or more analyses are linked to it "
+   * @return translated "Accession # {0,number,#0}: Cannot remove Item {1,number,#0} - One or more analyses are linked to it "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot remove Item {1,number} - One or more analyses are linked to it ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot remove Item {1,number,#0} - One or more analyses are linked to it ")
   @Key("sampleItem.cantRemoveException")
   String sampleItem_cantRemoveException(Integer arg0,  Integer arg1);
 
@@ -15082,38 +15064,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleItem_containerReference();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - Container ''{2}'' is inactive and was not assigned".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Container ''{2}'' is inactive and was not assigned".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - Container ''{2}'' is inactive and was not assigned"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Container ''{2}'' is inactive and was not assigned"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Container ''{2}'' is inactive and was not assigned")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Container ''{2}'' is inactive and was not assigned")
   @Key("sampleItem.inactiveContainerWarning")
   String sampleItem_inactiveContainerWarning(Integer arg0,  Integer arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - Sample type ''{2}'' is inactive and was not assigned ".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Sample type ''{2}'' is inactive and was not assigned ".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - Sample type ''{2}'' is inactive and was not assigned "
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Sample type ''{2}'' is inactive and was not assigned "
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Sample type ''{2}'' is inactive and was not assigned ")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Sample type ''{2}'' is inactive and was not assigned ")
   @Key("sampleItem.inactiveSampleTypeWarning")
   String sampleItem_inactiveSampleTypeWarning(Integer arg0,  Integer arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - Source ''{2}'' is inactive and was not assigned".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Source ''{2}'' is inactive and was not assigned".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - Source ''{2}'' is inactive and was not assigned"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Source ''{2}'' is inactive and was not assigned"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Source ''{2}'' is inactive and was not assigned")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Source ''{2}'' is inactive and was not assigned")
   @Key("sampleItem.inactiveSourceWarning")
   String sampleItem_inactiveSourceWarning(Integer arg0,  Integer arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - Unit ''{2}'' is inactive and was not assigned".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Unit ''{2}'' is inactive and was not assigned".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - Unit ''{2}'' is inactive and was not assigned"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Unit ''{2}'' is inactive and was not assigned"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Unit ''{2}'' is inactive and was not assigned")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Unit ''{2}'' is inactive and was not assigned")
   @Key("sampleItem.inactiveUnitWarning")
   String sampleItem_inactiveUnitWarning(Integer arg0,  Integer arg1,  String arg2);
 
@@ -15145,11 +15127,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleItem_sourceOther();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - Type missing".
+   * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Type missing".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - Type missing"
+   * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Type missing"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - Type missing")
+  @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Type missing")
   @Key("sampleItem.typeMissing")
   String sampleItem_typeMissing(Integer arg0,  Integer arg1);
 
@@ -15298,11 +15280,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleNeonatal_nicu();
 
   /**
-   * Translated "Accession # ''{0,number}'': Patient birth date must not be after collection date".
+   * Translated "Accession # {0,number,#0}: Patient birth date must not be after collection date".
    * 
-   * @return translated "Accession # ''{0,number}'': Patient birth date must not be after collection date"
+   * @return translated "Accession # {0,number,#0}: Patient birth date must not be after collection date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Patient birth date must not be after collection date")
+  @DefaultMessage("Accession # {0,number,#0}: Patient birth date must not be after collection date")
   @Key("sampleNeonatal.patBirthDateAfterCollectDateException")
   String sampleNeonatal_patBirthDateAfterCollectDateException(Integer arg0);
 
@@ -15487,11 +15469,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleQAEvent();
 
   /**
-   * Translated "Accession # ''{0,number}'': Type is required for QA Event ''{1}''".
+   * Translated "Accession # {0,number,#0}: Type is required for QA Event ''{1}''".
    * 
-   * @return translated "Accession # ''{0,number}'': Type is required for QA Event ''{1}''"
+   * @return translated "Accession # {0,number,#0}: Type is required for QA Event ''{1}''"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Type is required for QA Event ''{1}''")
+  @DefaultMessage("Accession # {0,number,#0}: Type is required for QA Event ''{1}''")
   @Key("sampleQAEvent.typeRequiredException")
   String sampleQAEvent_typeRequiredException(Integer arg0,  String arg1);
 
@@ -15631,11 +15613,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleSDWIS_pointDesc();
 
   /**
-   * Translated "Accession # ''{0,number}'': PWS ID is required".
+   * Translated "Accession # {0,number,#0}: PWS ID is required".
    * 
-   * @return translated "Accession # ''{0,number}'': PWS ID is required"
+   * @return translated "Accession # {0,number,#0}: PWS ID is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': PWS ID is required")
+  @DefaultMessage("Accession # {0,number,#0}: PWS ID is required")
   @Key("sampleSDWIS.pwsIdRequiredException")
   String sampleSDWIS_pwsIdRequiredException(Integer arg0);
 
@@ -15658,11 +15640,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleSDWIS_sampleCat();
 
   /**
-   * Translated "Accession # ''{0,number}'': SDWIS Sample Category is required".
+   * Translated "Accession # {0,number,#0}: SDWIS Sample Category is required".
    * 
-   * @return translated "Accession # ''{0,number}'': SDWIS Sample Category is required"
+   * @return translated "Accession # {0,number,#0}: SDWIS Sample Category is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Category is required")
+  @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Category is required")
   @Key("sampleSDWIS.sampleCatRequiredException")
   String sampleSDWIS_sampleCatRequiredException(Integer arg0);
 
@@ -15676,11 +15658,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleSDWIS_samplePtId();
 
   /**
-   * Translated "Accession # ''{0,number}'': SDWIS Sample Pt Id is required".
+   * Translated "Accession # {0,number,#0}: SDWIS Sample Pt Id is required".
    * 
-   * @return translated "Accession # ''{0,number}'': SDWIS Sample Pt Id is required"
+   * @return translated "Accession # {0,number,#0}: SDWIS Sample Pt Id is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Pt Id is required")
+  @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Pt Id is required")
   @Key("sampleSDWIS.samplePtIdRequiredException")
   String sampleSDWIS_samplePtIdRequiredException(Integer arg0);
 
@@ -15703,11 +15685,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleSDWIS_sampleType();
 
   /**
-   * Translated "Accession # ''{0,number}'': SDWIS Sample Type is required".
+   * Translated "Accession # {0,number,#0}: SDWIS Sample Type is required".
    * 
-   * @return translated "Accession # ''{0,number}'': SDWIS Sample Type is required"
+   * @return translated "Accession # {0,number,#0}: SDWIS Sample Type is required"
    */
-  @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Type is required")
+  @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Type is required")
   @Key("sampleSDWIS.sampleTypeRequiredException")
   String sampleSDWIS_sampleTypeRequiredException(Integer arg0);
 
@@ -16027,11 +16009,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sdwisScan_noAbnormalResultsFoundException();
 
   /**
-   * Translated "Accession # ''{0,number}'': Could not create order from sample because it has no organizations".
+   * Translated "Accession # {0,number,#0}: Could not create order from sample because it has no organizations".
    * 
-   * @return translated "Accession # ''{0,number}'': Could not create order from sample because it has no organizations"
+   * @return translated "Accession # {0,number,#0}: Could not create order from sample because it has no organizations"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Could not create order from sample because it has no organizations")
+  @DefaultMessage("Accession # {0,number,#0}: Could not create order from sample because it has no organizations")
   @Key("sdwisScan.noSampleOrgsException")
   String sdwisScan_noSampleOrgsException(Integer arg0);
 
@@ -16108,29 +16090,29 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_errorsPrintingLabels();
 
   /**
-   * Translated "Accession # ''{0,number}'' : Failed to fetch test record with id ''{1,number}''".
+   * Translated "Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}".
    * 
-   * @return translated "Accession # ''{0,number}'' : Failed to fetch test record with id ''{1,number}''"
+   * @return translated "Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : Failed to fetch test record with id ''{1,number}''")
+  @DefaultMessage("Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}")
   @Key("secondaryLabel.failedToFetchTestException")
   String secondaryLabel_failedToFetchTestException(Integer arg0,  Integer arg1);
 
   /**
-   * Translated "Accession # ''{0,number}'' : {1}, {2} - No label type defined".
+   * Translated "Accession # {0,number,#0} : {1}, {2} - No label type defined".
    * 
-   * @return translated "Accession # ''{0,number}'' : {1}, {2} - No label type defined"
+   * @return translated "Accession # {0,number,#0} : {1}, {2} - No label type defined"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - No label type defined")
+  @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - No label type defined")
   @Key("secondaryLabel.labelNotDefinedException")
   String secondaryLabel_labelNotDefinedException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'' : {1}, {2} - Label quantity must be at least one".
+   * Translated "Accession # {0,number,#0} : {1}, {2} - Label quantity must be at least one".
    * 
-   * @return translated "Accession # ''{0,number}'' : {1}, {2} - Label quantity must be at least one"
+   * @return translated "Accession # {0,number,#0} : {1}, {2} - Label quantity must be at least one"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - Label quantity must be at least one")
+  @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - Label quantity must be at least one")
   @Key("secondaryLabel.labelQtyLessThanOneException")
   String secondaryLabel_labelQtyLessThanOneException(Integer arg0,  String arg1,  String arg2);
 
@@ -16144,11 +16126,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_noLabelsToPrintException();
 
   /**
-   * Translated "Accession # ''{0,number}'' : {1}, {2} - The sample does not have a patient".
+   * Translated "Accession # {0,number,#0} : {1}, {2} - The sample does not have a patient".
    * 
-   * @return translated "Accession # ''{0,number}'' : {1}, {2} - The sample does not have a patient"
+   * @return translated "Accession # {0,number,#0} : {1}, {2} - The sample does not have a patient"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - The sample does not have a patient")
+  @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - The sample does not have a patient")
   @Key("secondaryLabel.noPatientOnSampleException")
   String secondaryLabel_noPatientOnSampleException(Integer arg0,  String arg1,  String arg2);
 
@@ -16171,11 +16153,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_printerUnspecifiedException();
 
   /**
-   * Translated "A sample record with id ''{0,number}'' does not exist".
+   * Translated "A sample record with id {0,number,#0} does not exist".
    * 
-   * @return translated "A sample record with id ''{0,number}'' does not exist"
+   * @return translated "A sample record with id {0,number,#0} does not exist"
    */
-  @DefaultMessage("A sample record with id ''{0,number}'' does not exist")
+  @DefaultMessage("A sample record with id {0,number,#0} does not exist")
   @Key("secondaryLabel.sampleNotExistException")
   String secondaryLabel_sampleNotExistException(Integer arg0);
 
@@ -16189,11 +16171,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_secondaryLabel();
 
   /**
-   * Translated "Accession # ''{0,number}'' : A test record with id ''{1,number}'' does not exist".
+   * Translated "Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist".
    * 
-   * @return translated "Accession # ''{0,number}'' : A test record with id ''{1,number}'' does not exist"
+   * @return translated "Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : A test record with id ''{1,number}'' does not exist")
+  @DefaultMessage("Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist")
   @Key("secondaryLabel.testNotExistException")
   String secondaryLabel_testNotExistException(Integer arg0,  Integer arg1);
 
@@ -16207,11 +16189,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_testNotOnSampleException();
 
   /**
-   * Translated "Accession # ''{0,number}'' : {1}, {2} - Unknown label type defined".
+   * Translated "Accession # {0,number,#0} : {1}, {2} - Unknown label type defined".
    * 
-   * @return translated "Accession # ''{0,number}'' : {1}, {2} - Unknown label type defined"
+   * @return translated "Accession # {0,number,#0} : {1}, {2} - Unknown label type defined"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : {1}, {2} - Unknown label type defined")
+  @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - Unknown label type defined")
   @Key("secondaryLabel.unknownLabelTypeException")
   String secondaryLabel_unknownLabelTypeException(Integer arg0,  String arg1,  String arg2);
 
@@ -19168,11 +19150,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_builderUpdateWarning();
 
   /**
-   * Translated "The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added.".
+   * Translated "The capacity of this worksheet has been exceeded; the last {0,number,#0} items in your selection have not been added.".
    * 
-   * @return translated "The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added."
+   * @return translated "The capacity of this worksheet has been exceeded; the last {0,number,#0} items in your selection have not been added."
    */
-  @DefaultMessage("The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added.")
+  @DefaultMessage("The capacity of this worksheet has been exceeded; the last {0,number,#0} items in your selection have not been added.")
   @Key("worksheet.capacityExceeded")
   String worksheet_capacityExceeded(Integer arg0);
 
@@ -19447,11 +19429,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet_loadTemplate();
 
   /**
-   * Translated "More than one active reagent lot was found for row {0,number}".
+   * Translated "More than one active reagent lot was found for row {0,number,#0}".
    * 
-   * @return translated "More than one active reagent lot was found for row {0,number}"
+   * @return translated "More than one active reagent lot was found for row {0,number,#0}"
    */
-  @DefaultMessage("More than one active reagent lot was found for row {0,number}")
+  @DefaultMessage("More than one active reagent lot was found for row {0,number,#0}")
   @Key("worksheet.multiMatchingActiveReagent")
   String worksheet_multiMatchingActiveReagent(Integer arg0);
 

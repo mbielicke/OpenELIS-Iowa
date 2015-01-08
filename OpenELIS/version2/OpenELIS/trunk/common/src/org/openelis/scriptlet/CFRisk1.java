@@ -32,15 +32,18 @@ import java.util.logging.Level;
  * "cf (Cystic Fibrosis)" tests
  */
 public class CFRisk1 {
-    
-    private static CFRisk1 cfRisk1;
 
-    public Integer ETHN_JEWISH, ETHN_WHITE, ETHN_HISPANIC, ETHN_BLACK, ETHN_ASIAN,
+    private static CFRisk1    cfRisk1;
+
+    private CFScriptlet1Proxy proxy;
+
+    public Integer            ETHN_JEWISH, ETHN_WHITE, ETHN_HISPANIC, ETHN_BLACK, ETHN_ASIAN,
                     FAM_HIST_CARRIER, FAM_HIST_DISORDER, RELAT_PARENT, RELAT_SIBLING,
                     RELAT_DAUGHTER, RELAT_AUNT, RELAT_NIECE, RELAT_COUSIN, RELAT_8, RELAT_16,
                     RELAT_32, RELAT_64, RELAT_INDIVIDUAL, NEGATIVE, NOT_TESTED, AT_RISK, UNKNOWN;
-    
+
     private CFRisk1(CFScriptlet1Proxy proxy) {
+        this.proxy = proxy;
         proxy.log(Level.FINE, "Initializing CFRisk1", null);
         try {
             if (ETHN_JEWISH == null) {
@@ -73,18 +76,18 @@ public class CFRisk1 {
             proxy.log(Level.SEVERE, "Failed to initialize dictionary constants", e);
         }
     }
-    
+
     public static CFRisk1 getInstance(CFScriptlet1Proxy proxy) {
-        if (cfRisk1 == null)       
+        if (cfRisk1 == null)
             cfRisk1 = new CFRisk1(proxy);
-        
+
         return cfRisk1;
     }
 
     /**
      * Computes initial risk based on ethnicity, family history and relation
      */
-    public double computeInitialRisk(Integer ethnicityId, Integer famHistId,
+    public double computeCarrierInitialRisk(Integer ethnicityId, Integer famHistId,
                                             Integer relationId) {
         double ir, ir1, initRisk;
 
@@ -105,10 +108,10 @@ public class CFRisk1 {
     }
 
     /**
-     * Computes initial risk based on ethnicity, family history, result and
-     * initial risk
+     * Computes carrier final risk based on ethnicity, family history, result
+     * and initial risk
      */
-    public double computeFinalRisk(Integer ethnicityId, Integer resultId, double initRisk) {
+    public double computeCarrierFinalRisk(Integer ethnicityId, Integer resultId, double initRisk) {
         double fr, finalRisk;
 
         fr = 1000000;
@@ -162,6 +165,14 @@ public class CFRisk1 {
         }
 
         return null;
+    }
+
+    /**
+     * Converts the passed double to format it with one decimal point for both
+     * back and front-end
+     */
+    public String format(Double risk) {
+        return proxy.format(risk, "#0.0");
     }
 
     /**

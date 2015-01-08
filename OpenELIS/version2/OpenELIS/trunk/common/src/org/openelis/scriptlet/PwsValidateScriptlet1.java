@@ -38,13 +38,15 @@ import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 
 /**
- * The scriptlet for validating PWS information entered through aux data
+ * The scriptlet for validating PWS information entered through aux data. It
+ * validates whether the number_0 entered as the value of the aux data belongs
+ * to an existing PWS record and shows appropriate error messages if it's not.
  */
 public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
 
-    private Proxy               proxy;
+    private Proxy   proxy;
 
-    private Integer             auxDataId;
+    private Integer auxDataId;
 
     public PwsValidateScriptlet1(Proxy proxy, Integer auxDataId) throws Exception {
         this.proxy = proxy;
@@ -57,12 +59,12 @@ public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
     public SampleSO run(SampleSO data) {
         proxy.log(Level.FINE, "In PwsValidateScriptlet1.run");
         /*
-         * validate only if an aux data was changed
+         * manager validating the value of an aux data is the number_0 of an
+         * existing PWS record
          */
-        if ( !data.getActionBefore().contains(Action_Before.AUX_DATA))
-            return data;
+        if (data.getActionBefore().contains(Action_Before.AUX_DATA))
+            validatePWS(data);
 
-        validatePWS(data);
         return data;
     }
 
@@ -78,11 +80,12 @@ public class PwsValidateScriptlet1 implements ScriptletInt<SampleSO> {
             proxy.log(Level.FINE,
                       "Finding the aux data and aux field that was changed to trigger the scriptlet");
             /*
-             * get the changed aux data by using the uid in the SO and find out
-             * if it's managed by this scriptlet; don't do anything if it's not
+             * find out if the changed aux data is managed by this scriptlet;
+             * don't do anything if it's not; also don't validate the value if
+             * it's null
              */
             aux = (AuxDataViewDO)data.getManager().getObject(data.getUid());
-            if ( !aux.getId().equals(auxDataId))
+            if ( !auxDataId.equals(aux.getId()) || aux.getValue() == null)
                 return;
             /*
              * try to fetch a PWS record whose number0 is the aux data's value
