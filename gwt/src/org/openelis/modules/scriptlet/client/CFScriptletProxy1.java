@@ -36,11 +36,15 @@ import org.openelis.manager.SampleManager1.Load;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.scriptlet.CFScriptlet1Proxy;
 
+import com.google.gwt.i18n.client.NumberFormat;
+
 /**
  * This class is used for providing the front-end functionality for the
  * "cf (Cystic Fibrosis)" test scriptlets
  */
 public class CFScriptletProxy1 implements CFScriptlet1Proxy {
+    
+    private NumberFormat formatter;
 
     @Override
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
@@ -53,12 +57,23 @@ public class CFScriptletProxy1 implements CFScriptlet1Proxy {
     }
 
     @Override
+    public SampleManager1 fetchByAccession(Integer accessionNumber, Load... elements) throws Exception {
+        return SampleService1.get().fetchByAccession(accessionNumber, elements);
+    }
+
+    @Override
     public void log(Level level, String message, Exception e) {
         logger.log(level, message, e);
     }
 
     @Override
-    public SampleManager1 fetchByAccession(Integer accessionNumber, Load... elements) throws Exception {
-        return SampleService1.get().fetchByAccession(accessionNumber, elements);
+    public String format(Double risk, String pattern) {
+        if (risk == null)
+            return null;
+        
+        if (formatter == null)
+            formatter = NumberFormat.getFormat(pattern);
+        
+        return formatter.format(risk);
     }
 }

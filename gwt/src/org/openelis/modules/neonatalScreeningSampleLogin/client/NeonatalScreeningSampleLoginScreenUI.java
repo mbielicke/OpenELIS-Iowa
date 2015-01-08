@@ -4225,10 +4225,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * Adds the scriptlet with the passed id for the record with the passed id,
-     * but only if it's not already added
+     * Adds a new scriptlet to the list of scriptlets that are executed. It
+     * ensures that for each reference id, there is only one scriptlet in the
+     * list, since we go through all records and add scriptlets every time we
+     * receive the manager from the back-end.
      */
-    private void addScriptlet(Integer scriptletId, Integer recordId) throws Exception {
+    private void addScriptlet(Integer scriptletId, Integer referenceId) throws Exception {
         HashSet<Integer> ids;
 
         if (scriptlets == null)
@@ -4245,50 +4247,43 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             scriptlets.put(scriptletId, ids);
         }
 
-        if ( !ids.contains(recordId)) {
-            ids.add(recordId);
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, recordId));
+        if ( !ids.contains(referenceId)) {
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, referenceId));
+            ids.add(referenceId);
         }
     }
 
     /**
-     * Runs the scriptlet with the passed id for the passed operation performed
-     * on the field "changed" of the record with the passed uid.
+     * Runs all the scriptlets in the runner for the passed action performed on
+     * the field "changed" of the record with the passed uid. Also refreshes the
+     * screen based on the actions performed by the scriptlets.
      */
-    private void runScriptlets(String uid, String changed, Action_Before operation) {
+    private void runScriptlets(String uid, String changed, Action_Before action) {
         String auid, selUid;
         Object obj;
         SampleSO data;
         ResultViewDO res;
         NoteDO note;
         AnalysisQaEventViewDO aqa;
-        EnumSet<Action_Before> actionBefore;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-
-        res = null;
 
         /*
          * create the sciptlet object
          */
         data = new SampleSO();
-        actionBefore = EnumSet.noneOf(Action_Before.class);
-        if (operation != null)
-            actionBefore.add(operation);
-        if (manager.getSampleNeonatal().getId() == null && Action_Before.NEW_DOMAIN != operation)
+        if (action != null)
+            data.addActionBefore(action);
+        if (manager.getSampleNeonatal().getId() == null && Action_Before.NEW_DOMAIN != action)
             /*
              * this is either an uncommitted sample or was a quick-entry sample
              * before being loaded on the screen
              */
-            actionBefore.add(Action_Before.NEW_DOMAIN);
-        actionAfter = EnumSet.noneOf(Action_After.class);
-        data.setActionBefore(actionBefore);
-        data.setActionAfter(actionAfter);
+            data.addActionBefore(Action_Before.NEW_DOMAIN);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(manager);
         data.setCache(cache);
-        data.setChangedUids(new HashSet<String>());
 
         /*
          * run the scritplet and show the errors and the changed data
@@ -4308,6 +4303,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         evaluateEdit();
         setData();
 
+        if (data.getChangedUids() == null)
+            return;
         /*
          * go through the changed uids and fire appropriate events to refresh
          * particular parts of the screen
@@ -4331,10 +4328,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * if any sample items were changed or added then refresh the
                  * tree and sample item tabs
                  */
-                if (actionAfter.contains(Action_After.SAMPLE_ITEM_ADDED))
-                    bus.fireEventFromSource(new SampleItemAddedEvent(cuid), screen);
-                else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
-                    bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
+                if (actionAfter != null) {
+                    if (actionAfter.contains(Action_After.SAMPLE_ITEM_ADDED))
+                        bus.fireEventFromSource(new SampleItemAddedEvent(cuid), screen);
+                    else if (actionAfter.contains(Action_After.SAMPLE_ITEM_CHANGED))
+                        bus.fireEvent(new SampleItemChangeEvent(cuid, Action.SAMPLE_TYPE_CHANGED));
+                }
             } else if (obj instanceof AnalysisQaEventDO) {
                 /*
                  * if analysis qa events were changed was added and if any of
