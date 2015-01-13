@@ -289,6 +289,11 @@
 							</tr>
 							<tr>
 								<td>
+									<g:HTML HTML="{msg.sampleStatus_help_viewScreen}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
 									<w:Button ui:field="backButton" image="{res.backImage}"
 										pixelSize="20,20" css="{res.portalButton}" rightText="Back"
 										enabled="true" width="70px" height="25px" />
