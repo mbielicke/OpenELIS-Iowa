@@ -540,7 +540,11 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                fromTRF.setEnabled(true);
+                /*
+                 * disable until the new data entry attachment screen is ready
+                 * to be used
+                 */
+                fromTRF.setEnabled(false);
             }
         });
 
@@ -3129,7 +3133,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         }
 
         if ( !ids.contains(referenceId)) {
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, referenceId));
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId,
+                                                                             referenceId));
             ids.add(referenceId);
         }
     }
@@ -3155,8 +3160,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSampleEnvironmental().getId() == null &&
-            Action_Before.NEW_DOMAIN != action)
+        if (manager.getSampleEnvironmental().getId() == null && Action_Before.NEW_DOMAIN != action)
             /*
              * this is either an uncommitted sample or was a quick-entry sample
              * before being loaded on the screen
@@ -4207,7 +4211,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              */
             addTestScriptlets();
             addAuxScriptlets();
-            
+
             /*
              * show any validation errors encountered while adding the tests or
              * the pop up for selecting the prep/reflex tests for the tests
@@ -4278,12 +4282,12 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                     screen);
             bus.fireEvent(new ResultChangeEvent(uid));
             clearStatus();
-            
+
             /*
              * add scriptlets for the changed test
              */
             addTestScriptlets();
-            
+
             /*
              * show any validation errors encountered while changing the method
              * or the pop up for selecting the prep/reflex tests for the tests
