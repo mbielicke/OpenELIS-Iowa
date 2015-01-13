@@ -544,7 +544,11 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                fromTRF.setEnabled(true);
+                /*
+                 * disable until the new data entry attachment screen is ready
+                 * to be used
+                 */
+                fromTRF.setEnabled(false);
             }
         });
 
