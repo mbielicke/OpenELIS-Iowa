@@ -1533,7 +1533,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
      * method for executing a query to return a list of samples.
      */
     protected void commitQuery() {
+        String domain;
         Query query;
+        QueryData field;
         ArrayList<QueryData> fields;
 
         /*
@@ -1543,6 +1545,38 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         if (fields.size() == 0) {
             setError(Messages.get().gen_emptyQueryException());
             return;
+        }
+
+        domain = null;
+        /*
+         * if a send-out order's id matches an eorder's id then querying by
+         * send-out order id can return samples linked to the eorder and
+         * querying by paper order validator (POV) can return samples linked to
+         * the send-out order; this makes sure that only samples of the
+         * appropriate domain are returned on querying by either field
+         */
+        for (QueryData f : fields) {
+            if (SampleMeta.getOrderId().equals(f.getKey())) {
+                domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
+                                        Constants.domain().SDWIS,
+                                        Constants.domain().PRIVATEWELL);
+                break;
+            } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
+                domain = getDomainQuery(Constants.domain().CLINICAL, Constants.domain().NEONATAL);
+                break;
+            }
+        }
+        
+        /*
+         * make sure that only the samples belonging to the domain queried by
+         * are returned by the query
+         */
+        if (domain != null) {
+            field = new QueryData();
+            field.setKey(SampleMeta.getDomain());
+            field.setQuery(domain);
+            field.setType(QueryData.Type.STRING);
+            fields.add(field);
         }
 
         query = new Query();
@@ -2357,6 +2391,14 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
             }
         }
+    }
+    
+    /**
+     * Returns a string containing all passed domains, separated by the wild
+     * card character for "OR"
+     */
+    private String getDomainQuery(String... domains) {
+        return DataBaseUtil.concatWithSeparator(Arrays.asList(domains), "|");
     }
 
     /**

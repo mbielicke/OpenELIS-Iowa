@@ -424,8 +424,8 @@ public class SecondaryLabelScreenUI extends Screen {
                 }
                 /*
                  * find out if the scanned-in sample has the selected test and
-                 * linked to a non-cancelled analysis; show an error if such an
-                 * analysis is not found
+                 * also if the analysis for the test is non-cancelled; show an
+                 * error if such an analysis is not found
                  */
                 found = false;
                 test = item.getData();
