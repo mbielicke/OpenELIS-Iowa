@@ -37,7 +37,6 @@ import org.openelis.manager.TestManager;
 import org.openelis.scriptlet.SampleSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletObject.Status;
 import org.openelis.utilcommon.ResultFormatter;
@@ -168,11 +167,6 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
              * initialize the carrier object from the results of the analysis
              */
             carrier = new Carrier(sm, ana);
-        } catch (ValidationErrorsList e) {
-            data.setStatus(Status.FAILED);
-            for (Exception ex : e.getErrorList())
-                data.addException(ex);
-            return;
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
             data.addException(e);

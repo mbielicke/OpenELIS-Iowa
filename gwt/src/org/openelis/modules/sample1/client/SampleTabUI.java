@@ -114,6 +114,8 @@ public class SampleTabUI extends Screen {
 
     protected EventBus               parentBus;
 
+    protected QueryFieldUtil         queryFieldUtil;
+
     protected boolean                canEdit, isBusy, isVisible, redraw;
 
     public SampleTabUI(Screen parentScreen) {
@@ -171,17 +173,19 @@ public class SampleTabUI extends Screen {
 
                 qd = (QueryData)orderId.getQuery();
                 if (qd != null) {
+                    if (queryFieldUtil == null)
+                        queryFieldUtil = new QueryFieldUtil();
                     /*
-                     * if the query string is a valid integer then it's assumed
-                     * to be the id of a send-out order, otherwise it's assumed
-                     * to be a paper order validator
+                     * if the query string is a valid integer query like "1" or
+                     * "1..2" then it's assumed to be for send-out orders;
+                     * otherwise it's assumed to be for paper order validators
                      */
                     query = qd.getQuery();
                     try {
-                        Integer.valueOf(query);
+                        queryFieldUtil.parseInteger(query);
                         qd.setKey(SampleMeta.getOrderId());
                         qd.setType(QueryData.Type.INTEGER);
-                    } catch (NumberFormatException e) {
+                    } catch (Exception e) {
                         qd.setKey(SampleMeta.getEorderPaperOrderValidator());
                     }
                 }

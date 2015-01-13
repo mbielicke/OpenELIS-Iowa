@@ -1566,8 +1566,30 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
         fields = getQueryFields();
         /*
-         * make sure that only the samples belong to the domain queried by are
-         * returned by the query
+         * if a send-out order's id matches an eorder's id then querying by
+         * send-out order id can return samples linked to the eorder and
+         * querying by paper order validator (POV) can return samples linked to
+         * the send-out order; this makes sure that only samples of the
+         * appropriate domain are returned on querying by either field
+         */
+        if (domain == null) {
+            for (QueryData f : fields) {
+                if (SampleMeta.getOrderId().equals(f.getKey())) {
+                    domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
+                                            Constants.domain().SDWIS,
+                                            Constants.domain().PRIVATEWELL);
+                    break;
+                } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
+                    domain = getDomainQuery(Constants.domain().CLINICAL,
+                                            Constants.domain().NEONATAL);
+                    break;
+                }
+            }
+        }
+
+        /*
+         * make sure that only the samples belonging to the domain queried by
+         * are returned by the query
          */
         if (domain != null) {
             field = new QueryData();
@@ -2273,7 +2295,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         }
 
         if ( !ids.contains(referenceId)) {
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, referenceId));
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId,
+                                                                             referenceId));
             ids.add(referenceId);
         }
     }
@@ -2524,6 +2547,14 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
             }
         }
+    }
+
+    /**
+     * Returns a string containing all passed domains, separated by the wild
+     * card character for "OR"
+     */
+    private String getDomainQuery(String... domains) {
+        return DataBaseUtil.concatWithSeparator(Arrays.asList(domains), "|");
     }
 
     /**
