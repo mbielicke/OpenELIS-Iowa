@@ -1452,6 +1452,7 @@ public class WorksheetItemTabUI extends Screen {
     @UiHandler("moveDownButton")
     protected void moveRowDown(ClickEvent event) {
         int index, itemIndex;
+        String uid;
         WorksheetItemDO wiDO;
         WorksheetAnalysisViewDO waVDO;
 
@@ -1468,10 +1469,9 @@ public class WorksheetItemTabUI extends Screen {
         itemIndex = manager.item.indexOf(wiDO);
         manager.item.move(itemIndex, false);
         worksheetItemTable.setModel(getTableModel());
-        while (waVDO.getWorksheetItemId().equals(wiDO.getId())) {
+        uid = manager.getUid(waVDO);
+        while (!uid.equals((String)worksheetItemTable.getRowAt(index).getData()))
             index++;
-            waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
-        }
         worksheetItemTable.selectRowAt(index);
         //
         // Programmatically selecting the row doesn't fire selection events, so
@@ -1488,6 +1488,7 @@ public class WorksheetItemTabUI extends Screen {
     @UiHandler("moveUpButton")
     protected void moveRowUp(ClickEvent event) {
         int index, itemIndex;
+        String uid;
         WorksheetItemDO wiDO;
         WorksheetAnalysisViewDO waVDO;
 
@@ -1504,10 +1505,9 @@ public class WorksheetItemTabUI extends Screen {
         itemIndex = manager.item.indexOf(wiDO);
         manager.item.move(itemIndex, true);
         worksheetItemTable.setModel(getTableModel());
-        while (waVDO.getWorksheetItemId().equals(wiDO.getId())) {
+        uid = manager.getUid(waVDO);
+        while (!uid.equals((String)worksheetItemTable.getRowAt(index).getData()))
             index--;
-            waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(index).getData());
-        }
         worksheetItemTable.selectRowAt(index);
         //
         // Programmatically selecting the row doesn't fire selection events, so
