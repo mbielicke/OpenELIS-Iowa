@@ -84,7 +84,7 @@ public class DataViewScreen extends Screen {
     public DataViewScreen() {
         initWidget(ui.asWidget());
 
-        userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
+        userPermission = UserCache.getPermission().getModule("w_dataview");
         if (userPermission == null) {
             Window.alert(Messages.get().error_screenPerm("Data View Screen"));
             return;

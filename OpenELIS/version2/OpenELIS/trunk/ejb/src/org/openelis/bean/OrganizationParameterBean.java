@@ -144,7 +144,7 @@ public class OrganizationParameterBean {
         list = new ValidationErrorsList();
         typeId = data.getTypeId();
         value = data.getValue();
-        email = decodeEmail(value)[0];
+        email = decodeEmail(value).getEmail();
 
         if (DataBaseUtil.isEmpty(typeId))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
@@ -170,14 +170,14 @@ public class OrganizationParameterBean {
      * separates the email string from the filter data using the delimiter
      * character
      */
-    public static String[] decodeEmail(String encoded) throws Exception {
+    public EmailFilter decodeEmail(String encoded) throws Exception {
         int i;
         char character, str[];
         StringBuffer sb;
-        String[] decoded;
+        EmailFilter decoded;
 
         sb = new StringBuffer();
-        decoded = new String[3];
+        decoded = new EmailFilter();
 
         str = encoded.toCharArray();
         for (i = 0; i < encoded.length(); i++ ) {
@@ -195,15 +195,52 @@ public class OrganizationParameterBean {
                 sb.append(character);
             }
         }
-        decoded[0] = sb.toString();
+        decoded.setEmail(sb.toString());
         if (i == encoded.length())
             return decoded;
         try {
-            decoded[1] = encoded.substring(i + 1, i + 3);
-            decoded[2] = encoded.substring(i + 3);
+            decoded.setFilter(encoded.substring(i + 1, i + 3));
+            decoded.setFilterValue(encoded.substring(i + 3));
         } catch (IndexOutOfBoundsException e) {
             throw new Exception("Invalid filter string");
         }
         return decoded;
+    }
+
+    public class EmailFilter {
+        private String email, filter, filterValue;
+
+        public EmailFilter() {
+        }
+
+        public EmailFilter(String email, String filter, String filterValue) {
+            this.email = email;
+            this.filter = filter;
+            this.filterValue = filterValue;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getFilter() {
+            return filter;
+        }
+
+        public void setFilter(String filter) {
+            this.filter = filter;
+        }
+
+        public String getfilterValue() {
+            return filterValue;
+        }
+
+        public void setFilterValue(String filterValue) {
+            this.filterValue = filterValue;
+        }
     }
 }
