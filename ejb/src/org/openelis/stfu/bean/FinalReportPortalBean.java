@@ -144,8 +144,7 @@ public class FinalReportPortalBean {
      * This session list is the result of previously run query that validated
      * user's permission and access.
      */
-    @RolesAllowed({"w_final_environmental-select", "w_final_privatewell-select",
-                    "w_final_sdwis-select"})
+    @RolesAllowed("w_final_report-select")
     public ReportStatus runReportForPortal(ArrayList<QueryData> paramList) throws Exception {
         int i, indexList[];
         ReportStatus status;

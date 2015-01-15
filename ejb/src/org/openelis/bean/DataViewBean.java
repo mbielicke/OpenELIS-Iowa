@@ -236,11 +236,11 @@ public class DataViewBean {
         return new ArrayList<IdNameVO>();
     }
 
-    @RolesAllowed("w_dataview_environmental-select")
+    @RolesAllowed("w_dataview-select")
     public ArrayList<IdNameVO> fetchProjectListForPortal() throws Exception {
         String clause;
 
-        clause = userCache.getPermission().getModule("w_dataview_environmental").getClause();
+        clause = userCache.getPermission().getModule("w_dataview").getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not. We only return the
@@ -311,7 +311,7 @@ public class DataViewBean {
         return runReport(data, "w_dataview_environmental", true);
     }
 
-    @RolesAllowed("w_dataview_environmental-select")
+    @RolesAllowed("w_dataview-select")
     @TransactionTimeout(600)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public ReportStatus runReportForPortal(DataViewVO data) throws Exception {
@@ -321,7 +321,7 @@ public class DataViewBean {
         if (fields == null || fields.size() == 0)
             throw new InconsistencyException("You may not execute an empty query");
 
-        return runReport(data, "w_dataview_environmental", true);
+        return runReport(data, "w_dataview", true);
     }
 
     @TransactionTimeout(600)

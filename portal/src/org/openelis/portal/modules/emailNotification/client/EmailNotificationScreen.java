@@ -3,7 +3,6 @@ package org.openelis.portal.modules.emailNotification.client;
 import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.openelis.domain.Constants;
@@ -12,7 +11,6 @@ import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.portal.cache.CategoryCache;
 import org.openelis.portal.cache.UserCache;
-import org.openelis.portal.client.resources.Resources;
 import org.openelis.portal.messages.Messages;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.EntityLockedException;
@@ -275,13 +273,12 @@ public class EmailNotificationScreen extends Screen {
         String email, filter, filterValue, rowString;
         OrganizationParameterDO param;
         ArrayList<OrganizationParameterDO> params, commitList;
-        HashMap<Integer, ArrayList<OrganizationParameterDO>> allParams;
         HashSet<String> rows;
 
         ui.getTable().clearExceptions();
         exceptions = false;
-        allParams = new HashMap<Integer, ArrayList<OrganizationParameterDO>>();
         rows = new HashSet<String>();
+        commitList = new ArrayList<OrganizationParameterDO>();
         for (Row row : ui.getTable().getModel()) {
 
             /*
@@ -313,14 +310,21 @@ public class EmailNotificationScreen extends Screen {
                             (String)row.getCell(4) + (String)row.getCell(5);
                 if (rows.contains(rowString)) {
                     duplicateRow = true;
+                } else if (rowString.endsWith("YY")) {
+                    if (rows.contains(rowString.substring(0, rowString.length() - 2) + "YN")) {
+                        row.setCell(4, "N");
+                    } else if (rows.contains(rowString.substring(0, rowString.length() - 2) + "NY")) {
+                        row.setCell(4, "Y");
+                    }
+                    rows.add(rowString);
+                    rows.add(rowString.substring(0, rowString.length() - 2) + "NY");
+                    rows.add(rowString.substring(0, rowString.length() - 2) + "YN");
                 } else {
                     rows.add(rowString);
-                    duplicateRow = false;
                 }
             }
 
             params = row.getData();
-            commitList = new ArrayList<OrganizationParameterDO>();
             if (params == null || params.size() < 1) {
                 params = new ArrayList<OrganizationParameterDO>();
                 param = new OrganizationParameterDO();
@@ -374,13 +378,14 @@ public class EmailNotificationScreen extends Screen {
             }
             if (param != null && !duplicateRow)
                 commitList.add(param);
-            if (commitList.size() > 0) {
-                if (allParams.get(commitList.get(0).getOrganizationId()) == null) {
-                    allParams.put(commitList.get(0).getOrganizationId(), commitList);
-                } else {
-                    allParams.get(commitList.get(0).getOrganizationId()).addAll(commitList);
-                }
-            }
+            // if (commitList.size() > 0) {
+            // if (allParams.get(commitList.get(0).getOrganizationId()) == null)
+            // {
+            // allParams.put(commitList.get(0).getOrganizationId(), commitList);
+            // } else {
+            // allParams.get(commitList.get(0).getOrganizationId()).addAll(commitList);
+            // }
+            // }
         }
         if (exceptions)
             return;
@@ -388,9 +393,7 @@ public class EmailNotificationScreen extends Screen {
         /*
          * if there are no errors, commit the data
          */
-        for (Integer key : allParams.keySet()) {
-            update(allParams.get(key));
-        }
+        update(commitList);
     }
 
     /**

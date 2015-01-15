@@ -47,6 +47,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.meta.SampleViewMeta;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
@@ -101,7 +102,7 @@ public class SampleStatusPortalBean {
         if (DataBaseUtil.isEmpty(orgIds))
             return returnList;
 
-        return getSamples(fields, clause);
+        return getSamples(fields, orgIds);
     }
 
     /**
@@ -133,7 +134,7 @@ public class SampleStatusPortalBean {
         builder.constructWhere(fields);
         builder.addWhere(SampleViewMeta.getStatusId() + " != " +
                          Constants.dictionary().SAMPLE_NOT_VERIFIED);
-        builder.addWhere("(" + clause + ")");
+        builder.addWhere(SampleViewMeta.getReportToId() + clause);
 
         builder.setOrderBy(SampleViewMeta.getAccessionNumber());
         query = manager.createQuery(builder.getEJBQL());
@@ -183,6 +184,8 @@ public class SampleStatusPortalBean {
     @RolesAllowed("w_status-select")
     public ArrayList<IdNameVO> getProjectList() throws Exception {
         String clause;
+        ArrayList<Integer> orgIds;
+        HashMap<String, ArrayList<Integer>> orgMapArr;
 
         /*
          * Retrieve the sql clause that limits what the user can access. Don't
@@ -190,10 +193,20 @@ public class SampleStatusPortalBean {
          */
         clause = userCache.getPermission().getModule("w_status").getClause();
 
-        if (clause != null)
-            return project.fetchForOrganizations(clause);
+        if (clause == null)
+            return new ArrayList<IdNameVO>();
 
-        return new ArrayList<IdNameVO>();
+        /*
+         * Create an ArrayList of organization ids from the clause in a format
+         * which the QueryBuilder can understand.
+         */
+        orgMapArr = ReportUtil.parseClauseAsArrayList(clause);
+        orgIds = orgMapArr.get("organizationId");
+
+        /*
+         * Adding projects for organizations from all domains into projectList.
+         */
+        return project.fetchForSampleStatusReport(orgIds);
     }
 
     /**

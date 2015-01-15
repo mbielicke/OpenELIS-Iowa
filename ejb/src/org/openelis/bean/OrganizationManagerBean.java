@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -119,8 +120,7 @@ public class OrganizationManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(Constants.table().ORGANIZATION, man.getOrganization()
-                                                                     .getId());
+            lockBean.validateLock(Constants.table().ORGANIZATION, man.getOrganization().getId());
             man.update();
             lockBean.unlock(Constants.table().ORGANIZATION, man.getOrganization().getId());
             ut.commit();
@@ -131,10 +131,11 @@ public class OrganizationManagerBean {
 
         return man;
     }
-    
+
     public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
-        Integer orgId;
         ArrayList<OrganizationParameterDO> returnParameters;
+        ArrayList<Integer> orgIds;
+        HashSet<Integer> orgIdSet;
         ValidationErrorsList list;
 
         checkSecurityForNotify(ModuleFlags.SELECT);
@@ -157,8 +158,11 @@ public class OrganizationManagerBean {
         if (list.size() > 0)
             throw list;
 
-        orgId = parameters.get(0).getOrganizationId();
-        lockBean.lock(Constants.table().ORGANIZATION, orgId);
+        orgIdSet = new HashSet<Integer>();
+        for (OrganizationParameterDO param : parameters)
+            orgIdSet.add(param.getOrganizationId());
+        orgIds = new ArrayList<Integer>(orgIdSet);
+        lockBean.lock(Constants.table().ORGANIZATION, orgIds);
 
         returnParameters = new ArrayList<OrganizationParameterDO>();
         for (OrganizationParameterDO param : parameters) {
@@ -175,7 +179,7 @@ public class OrganizationManagerBean {
                 returnParameters.add(organizationParameterBean.add(param));
             }
         }
-        lockBean.unlock(Constants.table().ORGANIZATION, orgId);
+        lockBean.unlock(Constants.table().ORGANIZATION, orgIds);
 
         return returnParameters;
     }
