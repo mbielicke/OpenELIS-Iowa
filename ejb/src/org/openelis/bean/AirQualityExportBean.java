@@ -132,10 +132,11 @@ public class AirQualityExportBean {
 
     private static final String                      delim           = "|", escape = "\\",
                     rawDataType = "RD", precisionType = "QA", time = "00:00",
-                    assessmentType = "Duplicate", assessmentNumber = "1", to11 = "to-11",
-                    to12 = "to-12", tolualdehyde = "Tolualdehyde", md = "MD", sq = "SQ", cb = "CB",
-                    da = "DA", fb = "FB", primaryPOC = "01", secondaryPOC = "02",
-                    duplicatePOC = "03", mdlAnalyte = "MDL", mnUnitCode = "108";
+                    duplicateAssessmentType = "Duplicate", replicateAssessmentType = "Replicate",
+                    assessmentNumber = "1", to11 = "to-11", to12 = "to-12",
+                    tolualdehyde = "Tolualdehyde", md = "MD", sq = "SQ", cb = "CB", da = "DA",
+                    fb = "FB", primaryPOC = "01", secondaryPOC = "02", duplicatePOC = "03",
+                    mdlAnalyte = "MDL", mnUnitCode = "108";
 
     private String                                   ttdsDurationCode, ttdsMethodCode, ttdsMDL,
                     ttdsParameterCode, tnmocDurationCode, tnmocMethodCode, tnmocMDL,
@@ -225,7 +226,7 @@ public class AirQualityExportBean {
         HashMap<String, ArrayList<SampleManager1>> samples;
         HashMap<String, ArrayList<String>> speciationStrings, stringList;
         HashMap<String, QueryData> param;
-        HashSet<Integer> analyteIds, unitIds, testIds;
+        HashSet<Integer> analyteIds, unitIds, testIds, replicateTests;
 
         /*
          * get system variables
@@ -652,9 +653,18 @@ public class AirQualityExportBean {
          */
         for (String location : samples.keySet()) {
             for (SampleManager1 sm : samples.get(location)) {
+                replicateTests = null;
                 pressureTempString = false;
                 if (getResults(sm) != null) {
                     for (AnalysisViewDO data : getAnalyses(sm)) {
+                        /*
+                         * if an analysis with the same test ID has already been
+                         * processed, then the replicate strings have also
+                         * already been generated and the analysis can be
+                         * skipped
+                         */
+                        if (replicateTests != null && replicateTests.contains(data.getTestId()))
+                            continue;
                         if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
                             continue;
                         if (sulfateNitrateTests.contains(data.getTestId())) {
@@ -703,8 +713,10 @@ public class AirQualityExportBean {
                              * for a replicate air toxics sample
                              */
                             if (replicate) {
+                                if (replicateTests == null)
+                                    replicateTests = new HashSet<Integer>();
+                                replicateTests.add(data.getTestId());
                                 replicate = false;
-                                break;
                             }
                         } else if (metalLeadTest.equals(data.getTestId())) {
                             try {
@@ -1182,6 +1194,12 @@ public class AirQualityExportBean {
                         poc = auxData.get(AuxDataHelperBean.POC_TO15);
                     }
                 }
+
+                /*
+                 * check if there is another released analysis with the same
+                 * test on the sample. If there is, then create replicate
+                 * strings from that analysis
+                 */
                 if (testId.equals(data.getTestId()) &&
                     Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
                     analysisCount++ ;
@@ -1189,6 +1207,7 @@ public class AirQualityExportBean {
                         if (airToxicPrecisionStrings.get(key) == null)
                             airToxicPrecisionStrings.put(key, new ArrayList<String>());
 
+                        replicate = true;
                         airToxicPrecisionStrings.get(key)
                                                 .addAll(getAirToxicsPrecisionString(sm,
                                                                                     testId,
@@ -1202,7 +1221,6 @@ public class AirQualityExportBean {
                                                                                     addAll,
                                                                                     addTds,
                                                                                     data.getId()));
-                        replicate = true;
                     }
                 }
             }
@@ -1262,8 +1280,6 @@ public class AirQualityExportBean {
                             if (addTds && data.getAnalyte().contains(tolualdehyde) &&
                                 !value.contains("<"))
                                 ttds += Double.parseDouble(value);
-                            if (addAll && !value.contains("<"))
-                                tmnoc += Double.parseDouble(value);
                             value = null;
                             continue;
                         }
@@ -1421,7 +1437,7 @@ public class AirQualityExportBean {
                     if (tmnoc == 0)
                         sb.append("0").append(delim);
                     else
-                        sb.append(truncateDecimal(tmnoc, 2)).append(delim);
+                        sb.append(truncateDecimal(tmnoc, 3)).append(delim);
                 } else if (addTds) {
                     if (ttds == 0)
                         sb.append("0").append(delim);
@@ -1541,8 +1557,6 @@ public class AirQualityExportBean {
                      */
                     if (addTds && analyte.contains(tolualdehyde) && !value.contains("<"))
                         ttds += Double.parseDouble(value);
-                    if (addAll && !value.contains("<"))
-                        tmnoc += Double.parseDouble(value);
                     value = null;
                     parameter = null;
                     analyte = null;
@@ -1559,12 +1573,12 @@ public class AirQualityExportBean {
                     continue;
                 }
 
-                sb.append(precisionType)
-                  .append(delim)
-                  .append(action.substring(0, 1))
-                  .append(delim)
-                  .append(assessmentType)
-                  .append(delim)
+                sb.append(precisionType).append(delim).append(action.substring(0, 1)).append(delim);
+                if (replicate)
+                    sb.append(replicateAssessmentType);
+                else
+                    sb.append(duplicateAssessmentType);
+                sb.append(delim)
                   .append(delim)
                   .append(stateCode)
                   .append(delim)
@@ -1614,12 +1628,12 @@ public class AirQualityExportBean {
                     return precisions;
                 parameter = ttdsParameterCode;
             }
-            sb.append(precisionType)
-              .append(delim)
-              .append(action.substring(0, 1))
-              .append(delim)
-              .append(assessmentType)
-              .append(delim)
+            sb.append(precisionType).append(delim).append(action.substring(0, 1)).append(delim);
+            if (replicate)
+                sb.append(replicateAssessmentType);
+            else
+                sb.append(duplicateAssessmentType);
+            sb.append(delim)
               .append(delim)
               .append(stateCode)
               .append(delim)
