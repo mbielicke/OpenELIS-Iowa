@@ -73,6 +73,9 @@ public class ScriptletFactory {
             case "scriptlet_cf_pregnancy1":
                 script = (T)new CFPregnancyScriptlet1(new CFScriptletProxy1(), managedId);
                 break;
+            case "scriptlet_serogroup_result1":
+                script = (T)new SerogroupResultScriptlet1(new SerogroupResultScriptletProxy1(), managedId);
+                break;
         }
 
         return script;
