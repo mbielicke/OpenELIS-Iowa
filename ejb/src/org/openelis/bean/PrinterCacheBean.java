@@ -74,6 +74,8 @@ public class PrinterCacheBean {
                     tempList.add(new OptionListItem(p.getName(), p.getDescription()));
             }
         }
+        
+        log.log(Level.FINE, "Returning: "+tempList.size()+ " printers of type: "+ type);
         return tempList;
     }    
 
@@ -91,6 +93,8 @@ public class PrinterCacheBean {
         ArrayList<Printer> tempList;
         HashMap<String, Printer> tempHash;
 
+        log.log(Level.INFO, "Refreshing the list of printers");
+        
         tempList = new ArrayList<Printer>();
         tempHash = new HashMap<String, Printer>();
 
@@ -115,6 +119,7 @@ public class PrinterCacheBean {
                 printer = new Printer(name, name, type, p);
                 tempList.add(printer);
                 tempHash.put(name, printer);
+                log.log(Level.FINE, "Added printer: "+name+ " of type: "+ type);
             }
         } catch (Exception ioE) {
             log.log(Level.SEVERE, "Could not look up print services ", ioE);
