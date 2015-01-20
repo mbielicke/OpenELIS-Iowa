@@ -3369,8 +3369,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             for (Exception e : data.getExceptions())
                 errors.add(e);
             showErrors(errors);
-        } else {
-            clearErrors();
         }
 
         manager = data.getManager();

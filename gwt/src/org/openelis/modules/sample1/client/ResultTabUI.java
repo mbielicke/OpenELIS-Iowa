@@ -58,6 +58,7 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Label;
 import org.openelis.ui.widget.ModalWindow;
@@ -131,7 +132,7 @@ public class ResultTabUI extends Screen {
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
     protected static int                                MEAN_CHAR_WIDTH = 8,
-                    CHECK_BOX_NUM_CHARS = 4, DEFAULT_NUM_CHARS = 10;
+                    CHECK_BOX_NUM_CHARS = 4, DEFAULT_NUM_CHARS = 15;
 
     public ResultTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -189,7 +190,7 @@ public class ResultTabUI extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int index, c;
+                int index, c, len, tlen;
                 Integer caseFlag, rg, testId, unitId;
                 Row row;
                 ResultViewDO data;
@@ -239,6 +240,7 @@ public class ResultTabUI extends Screen {
                     caseFlag = null;
                     key = testId + ":" + rg + ":" + (unitId == null ? 0 : unitId);
                     model = dictionaryModel.get(key);
+                    len = 0;
                     if (model == null) {
                         try {
                             tm = getTestManager(testId);
@@ -255,6 +257,7 @@ public class ResultTabUI extends Screen {
                                     for (FormattedValue v : values)
                                         model.add(new Item<Integer>(v.getId(), v.getDisplay()));
                                 }
+                                len = rf.getMaxLength(rg, unitId) * MEAN_CHAR_WIDTH;
                             } else if (rf.hasOnlyAlphaLower(rg, unitId)) {
                                 caseFlag = Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER;
                             } else if (rf.hasOnlyAlphaUpper(rg, unitId)) {
@@ -279,6 +282,17 @@ public class ResultTabUI extends Screen {
                             ((TextBox)rc.getWidget()).setCase(TextBase.Case.UPPER);
                         else
                             ((TextBox)rc.getWidget()).setCase(TextBase.Case.MIXED);
+                    } else if (rc.getWidget() instanceof Dropdown) {
+                        tlen = ((Dropdown)rc.getWidget()).getWidth();
+                        /*
+                         * set the dropdown's width to the longest dictionary
+                         * entry in it, if the width is smaller than that
+                         */
+                        if (len > tlen)
+                            ((Dropdown)rc.getWidget()).setWidth(String.valueOf(len));
+
+                        logger.log(Level.FINE, "dropdown width value: " + tlen +
+                                               " dictionary width: " + len);
                     }
                 }
             }
@@ -812,8 +826,8 @@ public class ResultTabUI extends Screen {
 
         return null;
     }
-
-    private ArrayList<Row> getTableModel() {
+    
+    private ArrayList<Row> getTableModel1() {
         int i, j, maxTextLength[];
         boolean validateResults;
         String entry;
@@ -971,6 +985,230 @@ public class ResultTabUI extends Screen {
         }
         return model;
     }
+    
+    private ArrayList<Row> getTableModel() {
+        int i, maxTextLength[];
+        String entry;
+        Column col;
+        TestManager tm;
+        ResultFormatter rf;
+        ArrayList<Row> model;
+        ArrayList<Integer> dictIds;
+        HashSet<Integer> cols;
+        HashMap<Integer, HashSet<Integer>> dictMap;
+
+        model = new ArrayList<Row>();
+        table.clearExceptions();
+
+        if (analysis == null || manager.result.count(analysis) == 0)
+            return model;
+
+        resetColumns();
+
+        /*
+         * the array to keep track of the length of the longest text in each
+         * column
+         */
+        maxTextLength = new int[table.getColumnCount()];
+        maxTextLength[0] = CHECK_BOX_NUM_CHARS;
+        setMaxTextLength(maxTextLength, 1, Messages.get().gen_analyte());
+        setMaxTextLength(maxTextLength, 2, Messages.get().gen_value());
+
+        try {
+            if (canEdit && isState(ADD, UPDATE)) {                
+                tm = getTestManager(analysis.getTestId());
+                rf = tm.getFormatter();
+                addRowsForEdit(maxTextLength, rf, model);
+            } else {
+                dictIds = new ArrayList<Integer>();
+                dictMap = new HashMap<Integer, HashSet<Integer>>();
+                addRowsForDisplay(maxTextLength, dictIds, dictMap, model);
+                if (dictIds.size() > 0) {
+                    /*
+                     * For type dictionary, the displayed text is looked up from
+                     * the cache. The following is done to fetch and put the
+                     * dictionary records needed for the results, in the cache,
+                     * all at once.
+                     */
+                    DictionaryCache.getByIds(dictIds);
+
+                    /*
+                     * reset the length of the longest text in a column if it's
+                     * showing dictionary entries
+                     */
+                    for (Integer id : dictIds) {
+                        entry = DictionaryCache.getById(id).getEntry();
+                        cols = dictMap.get(id);
+                        for (int c : cols)
+                            setMaxTextLength(maxTextLength, c, entry);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        /*
+         * set the width of a column in pixels based on the longest text showing
+         * in it
+         */
+        for (i = 0; i < maxTextLength.length; i++ ) {
+            col = table.getColumnAt(i);
+            if (i != 0 && maxTextLength[i] < DEFAULT_NUM_CHARS)
+                col.setWidth(DEFAULT_NUM_CHARS * MEAN_CHAR_WIDTH);
+            else
+                col.setWidth(maxTextLength[i] * MEAN_CHAR_WIDTH);
+        }
+        return model;
+    }
+
+    private void addRowsForDisplay(int maxTextLength[], ArrayList<Integer> dictIds,
+                                   HashMap<Integer, HashSet<Integer>> dictMap, ArrayList<Row> model) {
+        int i, j;
+        Integer dictId;
+        ResultViewDO data;
+        Row row;
+        ResultCell.Value value;
+        HashSet<Integer> cols;
+
+        for (i = 0; i < manager.result.count(analysis); i++ ) {
+            /*
+             * create header row
+             */
+            addHeaderRow(i, maxTextLength, model);
+
+            /*
+             * create data row and fill the columns
+             */
+            row = new Row(table.getColumnCount());
+            for (j = 0; j < manager.result.count(analysis, i); j++ ) {
+                data = manager.result.get(analysis, i, j);
+                if (j == 0)
+                    setFirstTwoCells(row, data, maxTextLength);
+
+                /*
+                 * create the value to be set in the cell for this result
+                 */
+                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
+                    if (data.getValue() != null) {
+                        dictId = Integer.valueOf(data.getValue());
+                        dictIds.add(dictId);
+
+                        /*
+                         * keep track of which dictionary values are displayed
+                         * in which column
+                         */
+                        if (dictMap.get(dictId) == null)
+                            dictMap.put(dictId, new HashSet<Integer>());
+                        cols = dictMap.get(dictId);
+                        cols.add(j + 2);
+                    }
+                    value = new ResultCell.Value(null, data.getValue());
+                } else {
+                    value = new ResultCell.Value(data.getValue(), null);
+                    setMaxTextLength(maxTextLength, j + 2, data.getValue());
+                }
+
+                row.setCell(j + 2, value);
+            }
+            row.setData(i);
+            model.add(row);
+        }
+    }
+
+    private void addRowsForEdit(int maxTextLength[], ResultFormatter rf, ArrayList<Row> model) {
+        int i, j;
+        ResultViewDO data;
+        Row row;
+        ResultCell.Value value;
+
+        for (i = 0; i < manager.result.count(analysis); i++ ) {
+            /*
+             * create header row
+             */
+            addHeaderRow(i, maxTextLength, model);
+
+            /*
+             * create data row and fill the columns
+             */
+            row = new Row(table.getColumnCount());
+            for (j = 0; j < manager.result.count(analysis, i); j++ ) {
+                data = manager.result.get(analysis, i, j);
+                if (j == 0)
+                    setFirstTwoCells(row, data, maxTextLength);                
+
+                if (data.getValue() != null && data.getTypeId() == null) {
+                    /*
+                     * Since the type is not set, the value was either not
+                     * validated and formatted before or the validation didn't
+                     * succeed. Thus to format the value and set the type or to
+                     * show an error, validate it here.
+                     */
+                    try {
+                        ResultHelper.formatValue(data,
+                                                 data.getValue(),
+                                                 analysis.getUnitOfMeasureId(),
+                                                 rf);
+
+                    } catch (Exception e) {
+                        table.addException(row, j + 2, e);
+                    }
+                }
+
+                /*
+                 * if the result group only has dictionary entries then set the
+                 * column's width to the longest entry
+                 */
+                if (rf.hasAllDictionary(data.getResultGroup(), analysis.getUnitOfMeasureId()))
+                    maxTextLength[j + 2] = Math.max(maxTextLength[j + 2],
+                                                    rf.getMaxLength(data.getResultGroup(),
+                                                                    analysis.getUnitOfMeasureId()));
+
+                /*
+                 * create the value to be set in the cell for this result
+                 */
+                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
+                    value = new ResultCell.Value(null, data.getValue());
+                } else {
+                    value = new ResultCell.Value(data.getValue(), null);
+                    setMaxTextLength(maxTextLength, j + 2, data.getValue());
+                }
+
+                row.setCell(j + 2, value);
+            }
+            logger.log(Level.FINE, "result row: " + i);
+            row.setData(i);
+            model.add(row);
+        }
+    }
+    
+    private void addHeaderRow(int i, int[] maxTextLength, ArrayList<Row> model) {
+        int j;
+        ResultViewDO data;
+        Row row;
+        
+        if (manager.result.isHeader(analysis, i)) {
+            row = new HeaderRow(table.getColumnCount());
+            row.setCell(0, Messages.get().gen_reportable());
+            row.setCell(1, Messages.get().gen_analyte());
+            row.setCell(2, Messages.get().gen_value());
+            for (j = 1; j < manager.result.count(analysis, i); j++ ) {
+                data = manager.result.get(analysis, i, j);
+                row.setCell(j + 2, data.getAnalyte());
+                setMaxTextLength(maxTextLength, j + 2, data.getAnalyte());
+            }
+            logger.log(Level.FINE, "header row: " + i);
+            row.setData(i);
+            model.add(row);
+        }
+    }
+
+    private void setFirstTwoCells(Row row, ResultViewDO data, int maxTextLength[]) {
+        row.setCell(0, data.getIsReportable());
+        row.setCell(1, data.getAnalyte());
+        setMaxTextLength(maxTextLength, 1, data.getAnalyte());
+    }
 
     /**
      * adjusts the number of columns in the table based on the results for the
@@ -1054,9 +1292,11 @@ public class ResultTabUI extends Screen {
      * keeps track of the length of the longest string in the table column at
      * the passed index
      */
-    private void setMaxTextLength(int maxTextLength[], int index, String text) {
-        if ( !DataBaseUtil.isEmpty(text))
-            maxTextLength[index] = Math.max(text.length(), maxTextLength[index]);
+    private void setMaxTextLength(int maxTextLength[], int index, String... text) {
+        for (String s : text) {
+            if (s != null)
+                maxTextLength[index] = Math.max(s.length(), maxTextLength[index]);
+        }
     }
 
     /**
