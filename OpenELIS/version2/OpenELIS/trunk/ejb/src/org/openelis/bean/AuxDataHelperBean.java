@@ -947,6 +947,11 @@ public class AuxDataHelperBean {
         auxDataValues = new HashMap<String, String>();
         for (int i = 0; i < auxiliary.size(); i++ ) {
             data = auxiliary.get(i);
+            /*
+             * don't replace data that is already mapped with a null value
+             */
+            if (data.getValue() == null && auxDataValues.get(data.getAnalyteExternalId()) != null)
+                continue;
             if (data.getDictionary() != null) {
                 if ( !NULL_DATA_CODE.equals(data.getAnalyteExternalId())) {
                     auxDataValues.put(data.getAnalyteExternalId(), data.getDictionary());
