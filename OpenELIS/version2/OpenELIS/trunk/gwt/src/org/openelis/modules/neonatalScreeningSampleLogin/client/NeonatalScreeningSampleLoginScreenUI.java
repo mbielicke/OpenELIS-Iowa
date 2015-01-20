@@ -4299,8 +4299,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             for (Exception e : data.getExceptions())
                 errors.add(e);
             showErrors(errors);
-        } else {
-            clearErrors();
         }
 
         manager = data.getManager();

@@ -115,6 +115,7 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.scriptlet.ScriptletInt;
 import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.ui.widget.Button;
@@ -2087,6 +2088,16 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * Overridden because some widgets like Add Test or Cancel Test buttons can
+     * be enabled or disabled several times in Add or Update states, based on
+     * factors such as which node in the tree is selected
+     */
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    /**
      * Validates the screen and sets the status of validation to "Flagged" if
      * some operation needs to be completed before committing
      */
@@ -2337,8 +2348,6 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             for (Exception e : data.getExceptions())
                 errors.add(e);
             showErrors(errors);
-        } else {
-            clearErrors();
         }
 
         manager = data.getManager();

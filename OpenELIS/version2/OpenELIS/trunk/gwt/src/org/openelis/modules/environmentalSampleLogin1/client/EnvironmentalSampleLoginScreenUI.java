@@ -3181,8 +3181,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             for (Exception e : data.getExceptions())
                 errors.add(e);
             showErrors(errors);
-        } else {
-            clearErrors();
         }
 
         manager = data.getManager();
