@@ -14614,11 +14614,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_notBillable();
 
   /**
-   * Translated "Accession # {0,number,#0}: Not a Quick Entry sample".
+   * Translated "Accession # {0,number,#0}: This number has already been used for a fully logged in sample ".
    * 
-   * @return translated "Accession # {0,number,#0}: Not a Quick Entry sample"
+   * @return translated "Accession # {0,number,#0}: This number has already been used for a fully logged in sample "
    */
-  @DefaultMessage("Accession # {0,number,#0}: Not a Quick Entry sample")
+  @DefaultMessage("Accession # {0,number,#0}: This number has already been used for a fully logged in sample ")
   @Key("sample.notQuickEntryException")
   String sample_notQuickEntryException(Integer arg0);
 

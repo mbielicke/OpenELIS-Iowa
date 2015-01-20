@@ -300,6 +300,17 @@ public class ResultFormatter implements Serializable {
         return (u != null) ? u.onlyAlphaLower : false;
     }
 
+    /**
+     * Returns the length of the longest string in this dictionary group. This
+     * is used to set the width of result dropdowns.
+     */
+    public int getMaxLength(Integer group, Integer unitId) {
+        Unit u;
+
+        u = getMap(group, unitId);
+        return u.getMaxLength();
+    }
+
     /*
      * Builds a map using group and unitId
      */
@@ -725,11 +736,27 @@ public class ResultFormatter implements Serializable {
         DefaultItem               def;
         ArrayList<Item>           items;
         boolean                   onlyAlphaLower, onlyAlphaUpper, onlyDictionary;
+        int                       maxlen;
 
         public Unit() {
             onlyAlphaLower = false;
             onlyAlphaUpper = false;
             onlyDictionary = true;
+            maxlen = -1;
+        }
+
+        public int getMaxLength() {
+            DictionaryItem di;
+
+            if (onlyDictionary && maxlen == -1) {
+                maxlen = 0;
+                for (Item i : items) {
+                    di = (DictionaryItem)i;
+                    maxlen = Math.max(maxlen, di.text != null ? di.text.length() : 0);
+                }
+            }
+
+            return maxlen;
         }
     }
 }
