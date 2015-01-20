@@ -21,17 +21,19 @@
 		<![CDATA[SELECT dsm.system_name sorting_method, t.reporting_sequence, t.test_trailer_id,
      t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
      u.entry unit_name, u.id unit_id,
-     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, dt.system_name analysis_type,
-     s.name s_name, pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
+     a.id a_id, a.released_date a_released_date, a.revision a_revision, dt.system_name analysis_type, s.name s_name,
+     pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description, tos.entry type_of_sample,
+     sos.entry source_of_sample, si.source_other
 FROM
      analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam),
-     outer dictionary u, outer dictionary dt, dictionary dsm
+     outer dictionary u, outer dictionary dt, outer dictionary tos, outer dictionary sos, dictionary dsm
 WHERE
      si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
      a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
      a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
-     a.type_id = dt.id and a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = 'R' and system_name = 'analysis_released') or
-                                                                           ($P{REPORT_TYPE} = 'C' and system_name in ('analysis_completed','analysis_released'))) and
+     a.type_id = dt.id and si.type_of_sample_id = tos.id and si.source_of_sample_id = sos.id and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = 'R' and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = 'C' and system_name in ('analysis_completed','analysis_released'))) and
      t.sorting_method_id = dsm.id
 ORDER BY sorting_method,
          case when sorting_method = 'test_sequence' then reporting_sequence end,
@@ -48,12 +50,14 @@ ORDER BY sorting_method,
 	<field name="unit_id" class="java.lang.Integer"/>
 	<field name="a_id" class="java.lang.Integer"/>
 	<field name="a_released_date" class="java.sql.Timestamp"/>
-	<field name="a_started_date" class="java.sql.Timestamp"/>
 	<field name="a_revision" class="java.lang.Integer"/>
 	<field name="analysis_type" class="java.lang.String"/>
 	<field name="s_name" class="java.lang.String"/>
 	<field name="pat_reporting_description" class="java.lang.String"/>
 	<field name="pam_reporting_description" class="java.lang.String"/>
+	<field name="type_of_sample" class="java.lang.String"/>
+	<field name="source_of_sample" class="java.lang.String"/>
+	<field name="source_other" class="java.lang.String"/>
 	<variable name="RESULT_DATASOURCE" class="org.openelis.report.finalreport.ResultDataSource" resetType="Group" resetGroup="analysisGroup" calculation="System">
 		<variableExpression><![CDATA[$V{RESULT_DATASOURCE}]]></variableExpression>
 		<initialValueExpression><![CDATA[ResultDataSource.getInstance($P{SAMPLE_ID},$F{a_id}, false)]]></initialValueExpression>
@@ -82,14 +86,14 @@ ORDER BY sorting_method,
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[Units]]></text>
+				<text><![CDATA[Sample Type]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="40" y="36" width="90" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[Date Analyzed]]></text>
+				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="40" y="48" width="90" height="12"/>
@@ -130,16 +134,14 @@ ORDER BY sorting_method,
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_other} != null ? $F{source_other} : $F{source_of_sample} != null ? $F{source_of_sample} : $F{type_of_sample}]]></textFieldExpression>
 			</textField>
-			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="140" y="36" width="149" height="12">
-					<printWhenExpression><![CDATA[$V{NOTE_DATASOURCE}.hasOverride() == false]]></printWhenExpression>
-				</reportElement>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="140" y="36" width="149" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="140" y="48" width="149" height="12">
