@@ -1225,26 +1225,34 @@ public class AnalysisHelperBean {
              */
             pos = insertAt.get(i);
             insertAna = insertAnalytes.get(i);
+            /*
+             * skip the results of other analyses
+             */
+            while (j < getResults(sm).size() &&
+                   !getResults(sm).get(j).getAnalysisId().equals(ana.getId()))
+                j++ ;
 
-            while (j < getResults(sm).size() && pos != rpos) {
-                /*
-                 * skip the results of other analyses
-                 */
+            while (j < getResults(sm).size() &&
+                   getResults(sm).get(j).getAnalysisId().equals(ana.getId())) {
                 r = getResults(sm).get(j);
-                if ( !r.getAnalysisId().equals(ana.getId())) {
-                    j++ ;
-                    continue;
-                }
-
-                /*
-                 * this is the start of the next row
-                 */
                 if ("N".equals(r.getIsColumn())) {
+                    /*
+                     * this is the start of the next row
+                     */
                     rpos++ ;
                     lastrg = nextrg;
                 }
-
                 nextrg = r.getRowGroup();
+                if (pos == rpos)
+                    break;
+                /*
+                 * incrementing j here and not at the start of the loop makes
+                 * sure that it is in the correct position for adding the new
+                 * row i.e. at the start of the row that's currently there;
+                 * decrementing j after the loop won't work if the new row is to
+                 * be added after all rows because then j will need to be at the
+                 * end of the analysis' results and not one position before that
+                 */
                 j++ ;
             }
 
@@ -1258,9 +1266,6 @@ public class AnalysisHelperBean {
                                                                                                       insertAna.getAnalyteName(),
                                                                                                       ana.getTestName(),
                                                                                                       ana.getMethodName()));
-
-            if (j != getResults(sm).size())
-                j-- ;
 
             /*
              * find the row and column analytes in the test
