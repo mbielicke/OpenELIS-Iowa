@@ -166,6 +166,10 @@ public class AirQualityExportBean {
 
     private static final Logger                      log             = Logger.getLogger("openelis");
 
+    private enum MetalTestType {
+        Lead, Manganese, MnAccuracy
+    }
+
     /*
      * Returns the prompt for a single re-print
      */
@@ -1743,37 +1747,20 @@ public class AirQualityExportBean {
                                                                         pressure,
                                                                         temperature));
         }
-        if (testId.equals(metalLeadTest)) {
-            metalsStrings.get(key).add(getMetalsSampleString(sm,
-                                                             testId,
-                                                             stripsPerFilter,
-                                                             volume,
-                                                             action,
-                                                             stateCode,
-                                                             countyCode,
-                                                             siteId,
-                                                             poc,
-                                                             reportedUnit,
-                                                             date,
-                                                             nullDataCode,
-                                                             collectionFreq,
-                                                             analysisId));
-        } else if (testId.equals(metalManganeseTest)) {
-            metalsStrings.get(key).add(getMetalsSampleString(sm,
-                                                             testId,
-                                                             stripsPerFilter,
-                                                             volume,
-                                                             action,
-                                                             stateCode,
-                                                             countyCode,
-                                                             siteId,
-                                                             poc,
-                                                             reportedUnit,
-                                                             date,
-                                                             nullDataCode,
-                                                             collectionFreq,
-                                                             analysisId));
-        }
+        metalsStrings.get(key).add(getMetalsSampleString(sm,
+                                                         testId,
+                                                         stripsPerFilter,
+                                                         volume,
+                                                         action,
+                                                         stateCode,
+                                                         countyCode,
+                                                         siteId,
+                                                         poc,
+                                                         reportedUnit,
+                                                         date,
+                                                         nullDataCode,
+                                                         collectionFreq,
+                                                         analysisId));
         return metalsStrings;
     }
 
@@ -1889,7 +1876,8 @@ public class AirQualityExportBean {
                                          String countyCode, String siteId, String poc,
                                          String reportedUnit, String date, String nullDataCode,
                                          String collectionFreq, Integer analysisId) {
-        boolean lead, cbFlag;
+        boolean cbFlag;
+        MetalTestType type;
         int durationCode, methodCode;
         Double sampleMdl, filterMdl, sampleValue, sampleVolume;
         Integer spf;
@@ -1907,12 +1895,16 @@ public class AirQualityExportBean {
         fourDecimals.setMaximumFractionDigits(4);
         fourDecimals.setMinimumIntegerDigits(1);
 
-        lead = false;
+        type = null;
         cbFlag = false;
         if (testId.equals(metalLeadTest)) {
-            lead = true;
+            type = MetalTestType.Lead;
+        } else if (testId.equals(metalManganeseTest)) {
+            type = MetalTestType.Manganese;
         } else if (testId.equals(metalManganeseAccuracyTest)) {
-            lead = false;
+            type = MetalTestType.MnAccuracy;
+        } else {
+            return null;
         }
 
         value = mdl = parameter = null;
@@ -1940,7 +1932,7 @@ public class AirQualityExportBean {
              * Manganese uses a different unit code but uses the same unit, so
              * it has to be set separately
              */
-            if (lead)
+            if (type.equals(MetalTestType.Lead))
                 sb.append(reportedUnit);
             else
                 sb.append(mnUnitCode);
@@ -1956,44 +1948,49 @@ public class AirQualityExportBean {
                 sampleValue = Double.parseDouble(value);
                 sampleVolume = Double.parseDouble(volume);
                 spf = Integer.parseInt(stripsPerFilter);
+                sampleMdl = 0.0;
 
-                if (metalManganeseFilterLotBlank - filterMdl > 0)
-                    cbFlag = true;
-
-                if (lead) {
-                    sb.append(truncateDecimal( ( (sampleValue * spf) - metalLeadFilterLotBlank) /
-                                              sampleVolume, 3)).append(delim).append(delim);
-                } else if (cbFlag) {
-                    sb.append(truncateDecimal(1000 *
-                                                              ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
-                                                              sampleVolume,
-                                              2))
-                      .append(delim)
-                      .append(delim);
+                if (type.equals(MetalTestType.Lead)) {
+                    sampleMdl = filterMdl * spf / sampleVolume;
                 } else {
-                    sb.append(truncateDecimal(1000 * sampleValue * spf / sampleVolume, 2))
-                      .append(delim)
-                      .append(delim);
+                    sampleMdl = 1000 * (filterMdl / sampleVolume);
+                    if (type.equals(MetalTestType.Manganese) &&
+                        metalManganeseFilterLotBlank - sampleMdl > 0)
+                        cbFlag = true;
+                }
+
+                if (type.equals(MetalTestType.Lead)) {
+                    /*
+                     * replace the sample value with the calculated sample
+                     * result
+                     */
+                    sampleValue = ( (sampleValue * spf) - metalLeadFilterLotBlank) / sampleVolume;
+                    sb.append(truncateDecimal(sampleValue, 3)).append(delim).append(delim);
+                } else if (cbFlag) {
+                    sampleValue = 1000 * ( (sampleValue * spf) - metalManganeseFilterLotBlank) /
+                                  sampleVolume;
+                    sb.append(truncateDecimal(sampleValue, 2)).append(delim).append(delim);
+                } else {
+                    sampleValue = 1000 * sampleValue * spf / sampleVolume;
+                    sb.append(truncateDecimal(sampleValue, 2)).append(delim).append(delim);
                 }
                 sb.append(collectionFreq).append(delim).append(delim);
 
-                if (lead) {
-                    sampleMdl = filterMdl * spf / sampleVolume;
-                    if (sampleValue < filterMdl)
+                if (type.equals(MetalTestType.Lead)) {
+                    if (sampleValue < sampleMdl)
                         sb.append(md);
                     sb.append(delim);
-                    if (filterMdl < sampleValue * spf && sampleValue * spf < (10 * filterMdl))
+                    if (sampleMdl < sampleValue && sampleValue < (10 * sampleMdl))
                         sb.append(sq);
                     sb.append(delim).append(delim).append(delim).append(delim);
                 } else {
-                    sampleMdl = 1000 * (filterMdl / sampleVolume);
                     if (cbFlag)
                         sb.append(cb);
                     sb.append(delim);
-                    if (sampleValue < filterMdl)
+                    if (sampleValue < sampleMdl)
                         sb.append(md);
                     sb.append(delim);
-                    if (filterMdl < sampleValue * spf && sampleValue * spf < (10 * filterMdl))
+                    if (sampleMdl < sampleValue && sampleValue < (10 * sampleMdl))
                         sb.append(sq);
                     sb.append(delim);
                     if (sampleValue < 0 && Math.abs(sampleValue) > sampleMdl)
@@ -2009,11 +2006,11 @@ public class AirQualityExportBean {
                     sb.append(delim);
                 }
                 sb.append(delim).append(delim).append(delim).append(delim).append(delim);
-                if (lead)
+                if (type.equals(MetalTestType.Lead))
                     sb.append(fourDecimals.format(sampleMdl)).append(delim);
                 else
                     sb.append(twoDecimals.format(sampleMdl)).append(delim);
-                if ( !lead) {
+                if (type.equals(MetalTestType.Manganese)) {
                     sb.append(truncateDecimal(1000 * metalManganeseFilterLotBlank / sampleVolume, 2));
                 }
                 break;
