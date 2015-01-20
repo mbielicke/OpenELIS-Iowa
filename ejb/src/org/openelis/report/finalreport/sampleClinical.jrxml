@@ -21,7 +21,7 @@ FROM
      sample s
      join sample_clinical sc on s.id = sc.sample_id
      join patient p on sc.patient_id = p.id
-     join address pa on p.address_id = pa.id
+     left join address pa on p.address_id = pa.id
      left join dictionary g on p.gender_id = g.id
      left join provider pr on sc.provider_id = pr.id
 WHERE

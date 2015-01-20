@@ -726,14 +726,14 @@ ORDER BY
 				<text><![CDATA[Position]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="wellLabel.header" mode="Transparent" x="35" y="0" width="55" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="wellLabel.header" mode="Transparent" x="35" y="0" width="120" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Well Label]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="result.header" mode="Transparent" x="90" y="0" width="186" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
+				<reportElement key="result.header" mode="Transparent" x="155" y="0" width="121" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -766,7 +766,7 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement key="description" mode="Transparent" x="35" y="0" width="55" height="12" backcolor="#FFFFFF">
+				<reportElement key="description" mode="Transparent" x="35" y="0" width="120" height="12" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[$F{qc_lot_id} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Bottom">
