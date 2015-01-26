@@ -1627,6 +1627,78 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analyteParameter();
 
   /**
+   * Translated "Add Analyte".
+   * 
+   * @return translated "Add Analyte"
+   */
+  @DefaultMessage("Add Analyte")
+  @Key("analyteParameter.addAnalyte")
+  String analyteParameter_addAnalyte();
+
+  /**
+   * Translated "Add Parameter".
+   * 
+   * @return translated "Add Parameter"
+   */
+  @DefaultMessage("Add Parameter")
+  @Key("analyteParameter.addParameter")
+  String analyteParameter_addParameter();
+
+  /**
+   * Translated "Analyte Parameter".
+   * 
+   * @return translated "Analyte Parameter"
+   */
+  @DefaultMessage("Analyte Parameter")
+  @Key("analyteParameter.analyteParameter")
+  String analyteParameter_analyteParameter();
+
+  /**
+   * Translated "P1".
+   * 
+   * @return translated "P1"
+   */
+  @DefaultMessage("P1")
+  @Key("analyteParameter.p1")
+  String analyteParameter_p1();
+
+  /**
+   * Translated "P2".
+   * 
+   * @return translated "P2"
+   */
+  @DefaultMessage("P2")
+  @Key("analyteParameter.p2")
+  String analyteParameter_p2();
+
+  /**
+   * Translated "P3".
+   * 
+   * @return translated "P3"
+   */
+  @DefaultMessage("P3")
+  @Key("analyteParameter.p3")
+  String analyteParameter_p3();
+
+  /**
+   * Translated "Please select a sample type before selecting unit".
+   * 
+   * @return translated "Please select a sample type before selecting unit"
+   */
+  @DefaultMessage("Please select a sample type before selecting unit")
+  @Key("analyteParameter.selectSampleTypeBeforeUnit")
+  String analyteParameter_selectSampleTypeBeforeUnit();
+
+  /**
+   * Translated "Please select a type".
+   * 
+   * @return translated "Please select a type"
+   */
+  @DefaultMessage("Please select a type")
+  @Key("analyteParameter.selectType")
+  String analyteParameter_selectType();
+
+  /**
    * Translated "Define ranges for various analytical parameters.".
    * 
    * @return translated "Define ranges for various analytical parameters."
@@ -8737,15 +8809,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String label();
 
   /**
-   * Translated "Secondary Label".
-   * 
-   * @return translated "Secondary Label"
-   */
-  @DefaultMessage("Secondary Label")
-  @Key("label.secondary")
-  String label_secondary();
-
-  /**
    * Translated "Label cannot be deleted, it is being used by one or more tests".
    * 
    * @return translated "Label cannot be deleted, it is being used by one or more tests"
@@ -13748,6 +13811,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Outputing report")
   @Key("report.outputReport")
   String report_outputReport();
+
+  /**
+   * Translated "Private Well Attachment".
+   * 
+   * @return translated "Private Well Attachment"
+   */
+  @DefaultMessage("Private Well Attachment")
+  @Key("report.privateWellAttachment")
+  String report_privateWellAttachment();
 
   /**
    * Translated "Reset".
