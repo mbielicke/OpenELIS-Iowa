@@ -41,34 +41,42 @@ public class SampleSO extends ScriptletObject {
     private static final long serialVersionUID = 1L;
 
     public enum Action_Before {
-        NEW_DOMAIN, ANALYSIS, RESULT, AUX_DATA, QA, SAMPLE_ITEM, PATIENT,
-        RECOMPUTE, UPDATE, COMPLETE, RELEASE, UNRELEASE
+        NEW_DOMAIN, ANALYSIS, RESULT, AUX_DATA, QA, SAMPLE_ITEM, PATIENT, RECOMPUTE, UPDATE,
+        COMPLETE, RELEASE, UNRELEASE
     }
 
     public enum Action_After {
         SAMPLE_ITEM_ADDED, SAMPLE_ITEM_CHANGED
     }
 
-    protected EnumSet<Action_Before>                 actionBefore;
+    protected EnumSet<Action_Before>  actionBefore;
 
-    protected EnumSet<Action_After>                  actionAfter;
+    protected EnumSet<Action_After>   actionAfter;
 
-    protected SampleManager1                         manager;
+    protected SampleManager1          manager;
 
-    protected HashMap<String, Object>                cache;
-    
-    protected String                                 uid;
+    protected HashMap<String, Object> cache;
 
-    protected HashSet<String>                        changedUids;
+    protected String                  uid;
+
+    protected HashSet<String>         changedUids;
+
+    public SampleSO() {
+        super();
+        /*
+         * in some cases e.g. when a patient field is changed, action_before is
+         * not specified because it's clear from the key of the
+         * field("changed"); it's intialized here to make sure that the
+         * scriptlets checking for it don't throw exceptions 
+         */
+        actionBefore = EnumSet.noneOf(Action_Before.class);
+    }
 
     public EnumSet<Action_Before> getActionBefore() {
         return actionBefore;
     }
 
     public void addActionBefore(Action_Before action) {
-        if (actionBefore == null)
-            actionBefore = EnumSet.noneOf(Action_Before.class);
-        
         actionBefore.add(action);
     }
 
