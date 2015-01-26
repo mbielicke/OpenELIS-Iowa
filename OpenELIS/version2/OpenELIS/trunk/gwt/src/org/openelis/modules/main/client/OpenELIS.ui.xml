@@ -153,6 +153,7 @@
                   <w:MenuItem enabled="false" ui:field="finalReport" display="{msg.finalReport}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
+                  <w:MenuItem enabled="false" ui:field="privateWellAttachment" display="{msg.report_privateWellAttachment}" />
                 </w:Menu>
                 <w:Menu display="{msg.report_dataExport}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="sampleQc" display="{msg.sampleQc_sampleQc}" />

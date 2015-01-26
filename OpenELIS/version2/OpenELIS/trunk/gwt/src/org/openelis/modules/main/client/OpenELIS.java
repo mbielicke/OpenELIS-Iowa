@@ -84,7 +84,7 @@ public class OpenELIS extends Screen {
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
-                    instrumentBarcodeReport, attachment;
+                    instrumentBarcodeReport, attachment, privateWellAttachment;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -117,6 +117,7 @@ public class OpenELIS extends Screen {
     }
 
     protected void initialize() {
+        String loginName;
 
         addCommand(preference, "openelis", new Command() {
             public void execute() {
@@ -594,6 +595,21 @@ public class OpenELIS extends Screen {
                 showScreen(ATTACHMENT);
             }
         });
+
+        /*
+         * this screen is restricted to a few people from IT because it's used
+         * for creating and attaching final reports for private well samples and
+         * that will be a one-time process
+         */
+        loginName = UserCache.getPermission().getLoginName();
+        if ("mbielick".equals(loginName) || "dshirazi".equals(loginName) ||
+            "akampoow".equals(loginName)) {
+            addCommand(privateWellAttachment, "sampletracking", new Command() {
+                public void execute() {
+                    showScreen(PRIVATE_WELL_ATTACHMENT);
+                }
+            });
+        }
     }
 
     /**

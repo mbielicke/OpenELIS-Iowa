@@ -153,6 +153,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Dropdown;
+import org.openelis.ui.widget.HasExceptions;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.KeyCodes;
 import org.openelis.ui.widget.Menu;
@@ -1362,6 +1363,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
+                
+                revalidate(patientLastName);
+                revalidate(patientFirstName);
+                revalidate(patientBirthDate);
             }
         });
 
@@ -2063,6 +2068,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 nextOfKinGender.setValue(getNextOfKinGenderId());
                 nextOfKinRace.setValue(getNextOfKinRaceId());
                 nextOfKinEthnicity.setValue(getNextOfKinEthnicityId());
+                
+                revalidate(nextOfKinLastName);
+                revalidate(nextOfKinFirstName);
+                revalidate(nextOfKinBirthDate);
             }
         });
 
@@ -2080,7 +2089,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  if (event.getValue() != null)
                                      data = (ProviderDO)event.getValue().getData();
                                  setProvider(data);
-
                                  runScriptlets(null, SampleMeta.getNeonatalProviderLastName(), null);
                              }
 
@@ -4252,7 +4260,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         if ( !ids.contains(referenceId)) {
-            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId, referenceId));
+            scriptletRunner.add((ScriptletInt<SampleSO>)ScriptletFactory.get(scriptletId,
+                                                                             referenceId));
             ids.add(referenceId);
         }
     }
@@ -4688,6 +4697,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     manager.getSampleNeonatal()
                            .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
                     orderId.setValue(eorderDO.getPaperOrderValidator());
+                    //TODO also implement revalidating widgets
                     // try {
                     // setBusy(Messages.get().gen_fetching());
                     // ret = SampleService1.get().importOrder(manager, ordId);
@@ -5692,6 +5702,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             focusNextWidget(focusedWidget, true);
             focusedWidget = null;
         }
+    }
+
+    /**
+     * Clears the validation errors of the widget and validates it based on its
+     * latest data
+     */
+    private void revalidate(HasExceptions widget) {
+        widget.clearValidateExceptions();
+        widget.hasExceptions();
     }
 
     /**
