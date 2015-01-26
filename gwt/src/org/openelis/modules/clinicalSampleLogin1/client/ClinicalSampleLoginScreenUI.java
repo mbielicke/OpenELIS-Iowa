@@ -149,6 +149,7 @@ import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckMenuItem;
 import org.openelis.ui.widget.Dropdown;
+import org.openelis.ui.widget.HasExceptions;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.KeyCodes;
 import org.openelis.ui.widget.Menu;
@@ -267,7 +268,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     protected AttachmentTabUI                           attachmentTab;
 
     protected boolean                                   canEditSample, canEditPatient,
-                    isPatientLocked, isBusy, closeLoginScreen, isAttachmentScreenOpen;
+                    isPatientLocked, isBusy, closeLoginScreen, isAttachmentScreenOpen, revalidate;
 
     protected ModulePermission                          userPermission;
 
@@ -871,6 +872,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         addScreenHandler(receivedDate, SampleMeta.getReceivedDate(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(getReceivedDate());
+                if (receivedDate.isEnabled() && revalidate)
+                    revalidate(receivedDate);
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -1012,12 +1015,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientLastName.setValue(getPatientLastName());
+                                 if (revalidate)
+                                     revalidate(patientLastName);
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientLastName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged(patientLastName);
+                                 runScriptlets(null, SampleMeta.getClinicalPatientLastName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1037,12 +1043,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientFirstName.setValue(getPatientFirstName());
+                                 if (revalidate)
+                                     revalidate(patientFirstName);
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientFirstName(event.getValue());
                                  if (getPatientLastName() != null && getPatientFirstName() != null)
                                      patientQueryChanged(patientFirstName);
+                                 runScriptlets(null, SampleMeta.getClinicalPatientFirstName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1062,10 +1071,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  patientBirthDate.setValue(getPatientBirthDate());
+                                 if (revalidate)
+                                     revalidate(patientBirthDate);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
                                  setPatientBirthDate(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientBirthDate(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1091,6 +1103,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  setPatientNationalId(event.getValue());
                                  if (getPatientNationalId() != null)
                                      patientQueryChanged(patientNationalId);
+                                 runScriptlets(null, SampleMeta.getClinicalPatientNationalId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1114,6 +1127,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressMultipleUnit(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrMultipleUnit(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1138,6 +1152,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressStreetAddress(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrStreetAddress(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1162,6 +1177,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressCity(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrCity(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1185,6 +1201,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressState(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrState(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1208,6 +1225,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressZipCode(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrZipCode(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1231,6 +1249,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientGenderId(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientGenderId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1254,6 +1273,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientRaceId(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientRaceId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1277,6 +1297,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientEthnicityId(event.getValue());
+                                 runScriptlets(null, SampleMeta.getClinicalPatientEthnicityId(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1307,6 +1328,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
+
+                revalidate(patientLastName);
+                revalidate(patientFirstName);
+                revalidate(patientBirthDate);
             }
         });
 
@@ -1324,6 +1349,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  if (event.getValue() != null)
                                      data = (ProviderDO)event.getValue().getData();
                                  setProvider(data);
+                                 runScriptlets(null, SampleMeta.getClinicalProviderLastName(), null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -3280,6 +3306,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private boolean canCopyFromPrevious(int keyCode) {
         return previousManager != null && KeyCodes.KEY_F2 == keyCode;
     }
+    
+    /**
+     * Clears the validation errors of the widget and validates it based on its
+     * latest data
+     */
+    private void revalidate(HasExceptions widget) {
+        widget.clearValidateExceptions();
+        widget.hasExceptions();
+    }
 
     /**
      * Adds the scriptlets for the domain and for all the records in the manager
@@ -3763,8 +3798,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
                         manager = ret.getManager();
                         setData();
+                        revalidate = true;
                         screen.fireDataChange();
                         screen.clearStatus();
+                        revalidate = false;
 
                         /*
                          * add scriptlets for any newly added tests and aux data

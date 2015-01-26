@@ -100,4 +100,5 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.report.turnaroundStatistic.TurnaroundStatistic"/>
     <inherits name="org.openelis.modules.logging.Logging"/>
     <inherits name="org.openelis.modules.report.secondaryLabel.SecondaryLabel"/>
+    <inherits name="org.openelis.modules.report.privateWellAttachment.PrivateWellAttachment"/>
 </module>
