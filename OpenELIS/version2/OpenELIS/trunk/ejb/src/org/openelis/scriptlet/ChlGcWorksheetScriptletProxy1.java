@@ -23,29 +23,36 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.scriptlet.client;
+package org.openelis.scriptlet;
 
-import static org.openelis.modules.main.client.Logger.logger;
-
+import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.scriptlet.SerogroupResultScriptlet1Proxy;
+import org.openelis.manager.SampleManager1;
+import org.openelis.utils.EJBFactory;
 
 /**
- * This class is used for providing the front-end functionality for the 
- * serogroup result scriptlet
+ * This class is used for providing the back-end functionality for the 
+ * chl-gc worksheet scriptlet
  */
-public class SerogroupResultScriptletProxy1 implements SerogroupResultScriptlet1Proxy {
+public class ChlGcWorksheetScriptletProxy1 implements ChlGcWorksheetScriptlet1Proxy {
+    
+    private static final Logger          log = Logger.getLogger("openelis");
     
     @Override
-    public DictionaryDO getDictionaryById(Integer id) throws Exception {
-        return DictionaryCache.getById(id);
+    public DictionaryDO getDictionaryBySystemName(String systemName) throws Exception {
+        return EJBFactory.getDictionaryCache().getBySystemName(systemName);
     }
 
     @Override
+    public ArrayList<SampleManager1> fetchSampleManagersByAnalyses(ArrayList<Integer> analysisIds) throws Exception {
+        return EJBFactory.getSampleManager1().fetchByAnalyses(analysisIds, (SampleManager1.Load) null);
+    }
+    
+    @Override
     public void log(Level level, String message, Exception e) {
-        logger.log(level, message, e);
+        log.log(level, message, e);
     }
 }

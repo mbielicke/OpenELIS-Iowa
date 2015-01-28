@@ -76,6 +76,9 @@ public class ScriptletFactory {
             case "scriptlet_serogroup_result1":
                 script = (T)new SerogroupResultScriptlet1(new SerogroupResultScriptletProxy1(), managedId);
                 break;
+            case "scriptlet_chlgc_worksheet1":
+                script = (T)new ChlGcWorksheetScriptlet1(new ChlGcWorksheetScriptletProxy1());
+                break;
         }
 
         return script;

@@ -908,7 +908,7 @@ public class WorksheetItemTabUI extends Screen {
             }
             
             if (wqcVO.getErrors() != null && wqcVO.getErrors().size() > 0)
-                showErrors(wqcVO.getErrors());
+                parentScreen.showErrors(wqcVO.getErrors());
                 
             if (wqcVO.getRemovedAnalyses() != null) {
                 removedMessage = new StringBuffer();

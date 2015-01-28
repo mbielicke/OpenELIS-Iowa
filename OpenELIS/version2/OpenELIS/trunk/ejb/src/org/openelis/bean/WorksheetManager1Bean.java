@@ -81,6 +81,9 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1Accessor;
+import org.openelis.scriptlet.ScriptletFactory;
+import org.openelis.scriptlet.WorksheetSO;
+import org.openelis.scriptlet.WorksheetSO.Action_Before;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -90,6 +93,8 @@ import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.scriptlet.ScriptletInt;
+import org.openelis.ui.scriptlet.ScriptletRunner;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
 import org.openelis.utils.User;
@@ -1280,6 +1285,7 @@ public class WorksheetManager1Bean {
         HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> wqrVDOsByAnalysisId;
         Preferences prefs;
         QcLotViewDO qclVDO;
+        ScriptletRunner<WorksheetSO> sRunner;
         TestWorksheetDO twDO;
         TestWorksheetItemDO qcTemplate[], twiDO, twiDO1;
         TestWorksheetManager twMan;
@@ -1288,6 +1294,7 @@ public class WorksheetManager1Bean {
         WorksheetItemDO wiDO;
         WorksheetQcChoiceVO wqcVO;
         WorksheetReagentViewDO wrgVDO;
+        WorksheetSO wSO;
         
         errors = new ValidationErrorsList();
         prefs = null;
@@ -1328,6 +1335,29 @@ public class WorksheetManager1Bean {
             prefs = Preferences.userRoot();
         } catch (Exception anyE) {
             errors.add(anyE);
+        }
+        
+        //
+        // Run Worksheet Scriptlet
+        //
+        if (twDO.getScriptletId() != null) {
+            sRunner = new ScriptletRunner<WorksheetSO>();
+            try {
+                sRunner.add((ScriptletInt<WorksheetSO>)ScriptletFactory.get(twDO.getScriptletId(), null));
+                wSO = new WorksheetSO();
+                wSO.addActionBefore(Action_Before.TEMPLATE_LOAD);
+                wSO.setManager(wm);
+                
+                wSO = sRunner.run(wSO);
+                if (wSO.getExceptions() != null && wSO.getExceptions().size() > 0) {
+                    for (Exception e : wSO.getExceptions())
+                        errors.add(e);
+                }
+                
+                wm = wSO.getManager();
+            } catch (Exception anyE) {
+                errors.add(anyE);
+            }
         }
         
         //
