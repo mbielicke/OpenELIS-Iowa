@@ -40,14 +40,8 @@ import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultHelper;
 
 /**
- * The scriptlet for "nbs bt (Biotinidase)" test. It determines the
- * interpretation if it isn't overridden by setting override interpretation to
- * "Yes". The interpretation is initially based on the value of biotinidase. It
- * gets overridden if the sample has any qa events of type result-override or
- * warning or if it's transfused. The qa event "poor quality" is added to the
- * analysis in the first case and in the second, "transfused" or
- * "transfused unknown" is added depending upon whether the transfusion date is
- * specified.
+ * The scriptlet for tests with serogroup column analytes. It determines the
+ * result based on the value specified for serogroup.
  */
 public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
 

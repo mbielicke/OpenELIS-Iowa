@@ -479,6 +479,12 @@ public class WorksheetManager1 implements Serializable {
             }
             return 0;
         }
+
+        public void move(WorksheetAnalysisViewDO data, WorksheetItemDO toDO) {
+            localMapRemove(data);
+            data.setWorksheetItemId(toDO.getId());
+            localMapAdd(data);
+        }
         
         private void duplicate(WorksheetItemDO fromDO, WorksheetItemDO toDO) {
             int i;
