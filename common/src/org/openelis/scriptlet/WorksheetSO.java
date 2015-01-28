@@ -60,14 +60,22 @@ public class WorksheetSO extends ScriptletObject {
 
     protected HashSet<String>                        changedUids;
 
+    public WorksheetSO() {
+        super();
+        /*
+         * in some cases e.g. when a patient field is changed, action_before is
+         * not specified because it's clear from the key of the
+         * field("changed"); it's intialized here to make sure that the
+         * scriptlets checking for it don't throw exceptions 
+         */
+        actionBefore = EnumSet.noneOf(Action_Before.class);
+    }
+
     public EnumSet<Action_Before> getActionBefore() {
         return actionBefore;
     }
 
     public void addActionBefore(Action_Before action) {
-        if (actionBefore == null)
-            actionBefore = EnumSet.noneOf(Action_Before.class);
-        
         actionBefore.add(action);
     }
 
