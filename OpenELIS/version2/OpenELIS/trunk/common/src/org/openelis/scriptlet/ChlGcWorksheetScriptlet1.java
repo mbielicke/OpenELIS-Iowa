@@ -105,7 +105,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
             wiDO = wm.item.get(i);
             itemsByPosition.put(wiDO.getPosition(), wiDO);
             for (j = 0; j < wm.analysis.count(wiDO); j++) {
-                waVDO = wm.analysis.get(wiDO, i);
+                waVDO = wm.analysis.get(wiDO, j);
                 if (waVDO.getAnalysisId() != null)
                     analysisIds.add(waVDO.getAnalysisId());
             }
@@ -134,7 +134,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
         for (i = 0; i < wm.item.count(); i++) {
             wiDO = wm.item.get(i);
             for (j = 0; j < wm.analysis.count(wiDO); j++) {
-                waVDO = wm.analysis.get(wiDO, i);
+                waVDO = wm.analysis.get(wiDO, j);
                 if (waVDO.getAnalysisId() != null) {
                     siVDO = siVDOsByAnalysisId.get(waVDO.getAnalysisId());
                     if ((Constants.dictionary().ANALYSIS_INITIATED.equals(waVDO.getStatusId()) ||
