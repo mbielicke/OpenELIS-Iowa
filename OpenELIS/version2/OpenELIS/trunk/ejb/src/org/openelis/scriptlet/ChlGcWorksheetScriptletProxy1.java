@@ -48,7 +48,7 @@ public class ChlGcWorksheetScriptletProxy1 implements ChlGcWorksheetScriptlet1Pr
 
     @Override
     public ArrayList<SampleManager1> fetchSampleManagersByAnalyses(ArrayList<Integer> analysisIds) throws Exception {
-        return EJBFactory.getSampleManager1().fetchByAnalyses(analysisIds, (SampleManager1.Load) null);
+        return EJBFactory.getSampleManager1().fetchByAnalyses(analysisIds, (SampleManager1.Load[]) null);
     }
     
     @Override
