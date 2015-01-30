@@ -30,6 +30,7 @@ import static org.openelis.portal.client.Logger.remote;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ReportStatus.Status;
 import org.openelis.ui.event.StateChangeEvent;
@@ -158,24 +159,29 @@ public abstract class QuestionPopupUI extends Screen {
                                                                new AsyncCallback<ReportStatus>() {
                                                                    @Override
                                                                    public void onSuccess(ReportStatus result) {
-                                                                       if (Status.SAVED.equals(result.getStatus())) {
-                                                                           // do
-                                                                           // nothing
+                                                                       if (result != null) {
+                                                                           if (Status.SAVED.equals(result.getStatus())) {
+                                                                               // do
+                                                                               // nothing
+                                                                           } else {
+                                                                               remote().log(Level.SEVERE,
+                                                                                            DataBaseUtil.toString(result.getMessage()));
+                                                                           }
                                                                        } else {
-                                                                           remote.log(Level.SEVERE,
-                                                                                      result.getMessage());
+                                                                           remote().log(Level.SEVERE,
+                                                                                        "No status was returned");
                                                                        }
                                                                    }
 
                                                                    @Override
                                                                    public void onFailure(Throwable caught) {
-                                                                       remote.log(Level.SEVERE,
-                                                                                  caught.getMessage(),
-                                                                                  caught);
+                                                                       remote().log(Level.SEVERE,
+                                                                                    DataBaseUtil.toString(caught.getMessage()),
+                                                                                    caught);
                                                                    }
                                                                });
                     } catch (Exception e) {
-                        remote.log(Level.SEVERE, e.getMessage(), e);
+                        remote().log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
             };
