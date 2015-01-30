@@ -84,7 +84,11 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
 
     @Override
     public ReportStatus getStatus() throws Exception {
-        return (ReportStatus)session.getAttribute("FinalReport");
+        try {
+            return (ReportStatus)session.getAttribute("FinalReport");
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }

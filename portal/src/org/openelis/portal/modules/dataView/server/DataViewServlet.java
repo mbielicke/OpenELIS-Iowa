@@ -97,6 +97,10 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
 
     @Override
     public ReportStatus getStatus() throws Exception {
-        return (ReportStatus)session.getAttribute("DataViewReportStatus");
+        try {
+            return (ReportStatus)session.getAttribute("DataViewReportStatus");
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

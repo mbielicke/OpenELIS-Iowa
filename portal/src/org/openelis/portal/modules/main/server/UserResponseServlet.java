@@ -25,6 +25,7 @@
  */
 package org.openelis.portal.modules.main.server;
 
+import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.portal.modules.main.client.UserResponseServiceInt;
@@ -37,10 +38,15 @@ public class UserResponseServlet extends RemoteServlet implements UserResponseSe
 
     private static final long      serialVersionUID = 1L;
 
+    @EJB
     private UserResponsePortalBean userResponse;
 
     public ReportStatus saveResponse(String response) throws Exception {
-        return userResponse.saveReponse(response);
+        try {
+            return userResponse.saveReponse(response);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }

@@ -64,12 +64,20 @@ public class SampleStatusServlet extends RemoteServlet implements SampleStatusSe
 
     @Override
     public HashMap<Integer, ArrayList<String>> getSampleQaEvents(ArrayList<Integer> sampleIds) throws Exception {
-        return sampleStatusPortal.getSampleQaEvents(sampleIds);
+        try {
+            return sampleStatusPortal.getSampleQaEvents(sampleIds);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     @Override
     public HashMap<Integer, ArrayList<String>> getAnalysisQaEvents(ArrayList<Integer> analysisIds) throws Exception {
-        return sampleStatusPortal.getAnalysisQaEvents(analysisIds);
+        try {
+            return sampleStatusPortal.getAnalysisQaEvents(analysisIds);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }
