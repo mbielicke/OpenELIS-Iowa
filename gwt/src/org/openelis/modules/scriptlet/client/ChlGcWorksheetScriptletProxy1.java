@@ -49,7 +49,7 @@ public class ChlGcWorksheetScriptletProxy1 implements ChlGcWorksheetScriptlet1Pr
 
     @Override
     public ArrayList<SampleManager1> fetchSampleManagersByAnalyses(ArrayList<Integer> analysisIds) throws Exception {
-        return SampleService1.get().fetchByAnalyses(analysisIds, (SampleManager1.Load) null);
+        return SampleService1.get().fetchByAnalyses(analysisIds, (SampleManager1.Load[]) null);
     }
 
     @Override
