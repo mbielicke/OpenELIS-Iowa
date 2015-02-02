@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="order">
+    <xs:complexType>
+        <xs:sequence>
+	        <xs:element name="eorder" type="eorder"/>
+	        <xs:element name="eorder_body" type="eorder_body"/>
+		<xs:element name="eorder_link" type="eorder_link"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<xs:complexType name="eorder">
+    <xs:sequence>
+        <xs:element name="paper_order_validator" type="xs:string"/>
+        <xs:element name="description" type="xs:string"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="eorder_body">
+    <xs:sequence>
+        <xs:element name="sample" type="sample"/>
+        <xs:element name="patient" type="patient"/>
+        <xs:element name="related_patient" type="related_patient" minOccurs="0"/>
+        <xs:element name="organization" type="organization"/>
+        <xs:element name="provider" type="provider" minOccurs="0"/>
+        <xs:element name="test" type="test" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="sample">
+    <xs:sequence>
+<!--        <xs:element name="collection" type="xs:string" minOccurs="0"/> -->
+        <xs:element name="collection_date" type="xs:string" minOccurs="0"/>
+        <xs:element name="collection_time" type="xs:string" minOccurs="0"/>
+        <xs:element name="client_reference" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="patient">
+    <xs:sequence>
+        <xs:element name="last_name" type="xs:string"/>
+        <xs:element name="first_name" type="xs:string" minOccurs="0"/>
+        <xs:element name="maiden_name" type="xs:string" minOccurs="0"/>
+        <xs:element name="address" type="address" minOccurs="0"/>
+<!--        <xs:element name="birthdate" type="xs:string" minOccurs="0"/> -->
+        <xs:element name="birth_date" type="xs:string" minOccurs="0"/>
+        <xs:element name="birth_time" type="xs:string" minOccurs="0"/>
+        <xs:element name="gender" type="code_element" minOccurs="0"/>
+        <xs:element name="race" type="code_element" minOccurs="0"/>
+        <xs:element name="ethnicity" type="code_element" minOccurs="0"/>
+        <xs:element name="nid" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="related_patient">
+    <xs:sequence>
+        <xs:element name="type" type="code_element"/>
+        <xs:element name="patient" type="patient"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="organization">
+    <xs:sequence>
+	    <xs:element name="name" type="xs:string"/>
+	    <xs:element name="attention" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="provider">
+    <xs:sequence>
+        <xs:element name="last_name" type="xs:string"/>
+        <xs:element name="first_name" type="xs:string" minOccurs="0"/>
+        <xs:element name="npi" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="address">
+    <xs:sequence>
+        <xs:element name="multiple_unit" type="xs:string" minOccurs="0"/>
+        <xs:element name="street_address" type="xs:string" minOccurs="0"/>
+        <xs:element name="city" type="xs:string" minOccurs="0"/>
+        <xs:element name="state" type="xs:string" minOccurs="0"/>
+        <xs:element name="zip_code" type="xs:string" minOccurs="0"/>
+        <xs:element name="work_phone" type="xs:string" minOccurs="0"/>
+        <xs:element name="home_phone" type="xs:string" minOccurs="0"/>
+        <xs:element name="cell_phone" type="xs:string" minOccurs="0"/>
+        <xs:element name="fax_phone" type="xs:string" minOccurs="0"/>
+        <xs:element name="email" type="xs:string" minOccurs="0"/>
+        <xs:element name="country" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="test">
+    <xs:sequence>
+        <xs:element name="placer_order_num" type="xs:string"/>
+        <xs:element name="name" type="code_element"/>
+        <xs:element name="sample_type" type="code_element" minOccurs="0"/>
+        <xs:element name="sample_source" type="code_element" minOccurs="0"/>
+        <xs:element name="sample_source_other" type="xs:string" minOccurs="0"/>
+        <xs:element name="result" type="result" minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element name="note" type="note" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="result">
+    <xs:sequence>
+        <xs:element name="observation" type="observation" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="reference_range" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="unit" type="code_element" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="observation">
+    <xs:sequence>
+        <xs:element name="identifier" type="code_element"/>
+        <xs:element name="identifier_alt" type="code_element"/>
+        <xs:element name="value" type="code_element"/>
+        <xs:element name="value_alt" type="code_element"/>
+        <xs:element name="value_type" type="xs:string"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="note">
+    <xs:sequence>
+        <xs:element name="text" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="eorder_link">
+    <xs:sequence>
+        <xs:element name="eorder_link_item" type="eorder_link_item" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="eorder_link_item">
+    <xs:sequence>
+        <xs:element name="reference" type="xs:string"/>
+        <xs:element name="sub_id" type="xs:string"/>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="code_element">
+    <xs:sequence>
+        <xs:element name="term" type="xs:string" minOccurs="0"/>
+        <xs:element name="description" type="xs:string"/>
+        <xs:element name="coding_system" type="xs:string" default="L"/>
+    </xs:sequence>
+</xs:complexType>
+
+</xs:schema>
