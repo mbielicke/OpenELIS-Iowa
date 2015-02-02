@@ -1,0 +1,167 @@
+<!--
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+-->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:b="urn:import:org.openelis.modules.worksheetBuilder.client">
+
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="25px">
+      <t:Table ui:field="worksheetItemTable" horizontalScroll="ALWAYS"
+               verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
+        <t:Column width="50" label="{msg.worksheet_position}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="90" label="{msg.sample_accessionNum}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="110" label="{msg.gen_description}">
+          <t:AutoCompleteCell>
+            <w:AutoComplete ui:field="description" width="110px" dropWidth="200px" case="MIXED">
+              <w:popup>
+                <t:Table visibleRows="10" header="true" horizontalScroll="NEVER">
+                  <t:Column label="{msg.qc_qcName}">
+                    <t:LabelCell/>
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:AutoComplete>
+          </t:AutoCompleteCell>
+        </t:Column>
+        <t:Column width="70" label="{msg.worksheet_qcLink}">
+          <t:DropdownCell>
+            <w:Dropdown ui:field="qcLink" width="70px" field="Integer"/>
+          </t:DropdownCell>
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_test}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_method}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_unit}">
+          <t:AutoCompleteCell>
+            <w:AutoComplete ui:field="unitOfMeasureId" width="120px" case="MIXED">
+              <w:popup>
+                <t:Table visibleRows="10">
+                  <t:Column>
+                    <t:LabelCell/>
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:AutoComplete>
+          </t:AutoCompleteCell>
+        </t:Column>
+        <t:Column width="75" label="{msg.gen_status}">
+          <t:DropdownCell>
+            <w:Dropdown ui:field="analysisStatusId" width="75px" field="Integer"/>
+          </t:DropdownCell>
+        </t:Column>
+        <t:Column width="75" label="{msg.sample_collected}">
+          <t:CalendarCell>
+            <c:Calendar width="75px" begin="0" end="2"/> <!-- pattern="{msg.datePattern}" maxValue="0" -->
+          </t:CalendarCell>
+        </t:Column>
+        <t:Column width="110" label="{msg.sample_received}">
+          <t:CalendarCell>
+            <c:Calendar width="110px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+          </t:CalendarCell>
+        </t:Column>
+        <t:Column width="50" label="{msg.gen_due}">
+          <t:LabelCell/>
+        </t:Column>
+        <t:Column width="110" label="{msg.gen_expire}">
+          <t:CalendarCell>
+            <c:Calendar width="110px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+          </t:CalendarCell>
+        </t:Column>
+      </t:Table>
+    </g:layer>
+    <g:layer bottom="0px" height="25px">
+      <g:HorizontalPanel>
+        <w:Menu ui:field="addRowMenu" selfShow="true">
+          <w:display>
+            <w:Button ui:field="addRowButton" text="{msg.gen_addRow}" css="{res.button}" rightIcon="{res.icon.OptionsButtonImage}"/>
+          </w:display>
+          <w:MenuItem ui:field="insertAnalysisAbove" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertAnalysisAbove}"/>
+          <w:MenuItem ui:field="insertAnalysisThisPosition" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertAnalysisThisPosition}"/>
+          <w:MenuItem ui:field="insertAnalysisBelow" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertAnalysisBelow}"/>
+          <w:MenuItem ui:field="insertFromWorksheetAbove" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromWorksheetAbove}"/>
+          <w:MenuItem ui:field="insertFromWorksheetThisPosition" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromWorksheetThisPosition}"/>
+          <w:MenuItem ui:field="insertFromWorksheetBelow" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromWorksheetBelow}"/>
+          <w:MenuItem ui:field="insertFromQcTableAbove" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromQcTableAbove}"/>
+          <w:MenuItem ui:field="insertFromQcTableThisPosition" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromQcTableThisPosition}"/>
+          <w:MenuItem ui:field="insertFromQcTableBelow" description=""
+                      enabled="false" icon="{res.icon.addRowIcon}"
+                      display="{msg.worksheet_insertFromQcTableBelow}"/>
+        </w:Menu>
+        <w:Button ui:field="removeRowButton" leftIcon="{res.icon.removeRowIcon}"
+                  text="{msg.gen_removeRow}"/>
+        <w:Menu ui:field="loadTemplateMenu" selfShow="true">
+          <w:display>
+            <w:Button ui:field="loadTemplateButton" text="{msg.worksheet_loadTemplate}"
+                      rightIcon="{res.icon.OptionsButtonImage}"/>
+          </w:display>
+        </w:Menu>
+        <w:Menu ui:field="undoQcsMenu" selfShow="true">
+          <w:display>
+            <w:Button ui:field="undoQcsButton" text="{msg.worksheet_undoQc}" rightIcon="{res.icon.OptionsButtonImage}"/>
+          </w:display>
+          <w:MenuItem ui:field="undoAll" description="" enabled="false"
+                      icon="{res.icon.removeRowIcon}" display="{msg.worksheet_undoAll}"/>
+          <w:MenuItem ui:field="undoTemplate" description="" enabled="false"
+                      icon="{res.icon.removeRowIcon}" display="{msg.worksheet_undoTemplate}"/>
+          <w:MenuItem ui:field="undoManual" description="" enabled="false"
+                      icon="{res.icon.removeRowIcon}" display="{msg.worksheet_undoManual}"/>
+        </w:Menu>
+        <w:Button ui:field="duplicateRowButton" leftIcon="{res.icon.DuplicateRowButtonImage}"
+                  text="{msg.gen_duplicateRecord}"/>
+        <w:Button ui:field="moveUpButton" leftIcon="{res.icon.arrowUpButtonImage}"
+                  text="{msg.gen_moveUp}"/>
+        <w:Button ui:field="moveDownButton" leftIcon="{res.icon.arrowDownButtonImage}"
+                  text="{msg.gen_moveDown}"/>
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
