@@ -1,0 +1,147 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'>
+
+	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
+
+	<g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
+		<g:center>
+			<g:LayoutPanel>
+				<g:layer top="0px" height="75px">
+					<g:HTMLPanel>
+						<table class="{res.style.Form}">
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.sample_accessionNum}:" />
+								</td>
+								<td>
+									<w:TextBox ui:field="accessionNumber" width="90px"
+										field="Integer" required="true" />
+								</td>
+								<td>
+									<w:Button ui:field="getDataButton" leftIcon=""
+										text="{msg.qc_getData}" width="60px" />
+								</td>
+								<td>
+									<g:HorizontalPanel>
+										<w:Button ui:field="exportButton" leftIcon=""
+											text="{msg.report_export}" width="60px" />
+									</g:HorizontalPanel>
+								</td>
+							</tr>
+							<tr>
+								<td class="{res.style.Prompt}">
+									<ui:text from="{msg.gen_printer}:" />
+								</td>
+								<td>
+									<w:Dropdown ui:field="printer" width="139px" field="Integer" />
+								</td>
+								<td>
+									<g:HorizontalPanel>
+										<w:Button ui:field="printButton" leftIcon=""
+											text="{msg.gen_print}" width="60px" />
+									</g:HorizontalPanel>
+								</td>
+							</tr>
+						</table>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer bottom="35px" top="75px">
+					<r:Tree ui:field="tree" header="true"
+						styleName="{res.table.ScreenTableWithSides}"
+						allowMultipleSelection="true">
+						<r:Column width="300" label="{msg.sampleQc_label}" />
+						<r:Leaf key="analysis">
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="worksheet">
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="qc">
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="qcAnalyte">
+							<r:LeafColumn>
+								<t:CheckLabelCell>
+									<w:CheckLabel labelPosition="RIGHT" />
+								</t:CheckLabelCell>
+							</r:LeafColumn>
+						</r:Leaf>
+						<r:Leaf key="value">
+							<r:LeafColumn>
+								<t:LabelCell>
+									<w:Label />
+								</t:LabelCell>
+							</r:LeafColumn>
+						</r:Leaf>
+					</r:Tree>
+				</g:layer>
+				<g:layer bottom="0px" height="35px">
+					<g:LayoutPanel>
+						<g:layer bottom="0px" top="0px" width="100%" left="10px">
+							<g:HorizontalPanel>
+								<w:Button ui:field="checkAllButton" leftIcon="{uiRes.checkbox.Checked}"
+									text="{msg.gen_checkAll}" />
+								<w:Button ui:field="uncheckAllButton" leftIcon="{uiRes.checkbox.Unchecked}"
+									text="{msg.gen_uncheckAll}" />
+								<w:Button ui:field="checkAllQcsButton" leftIcon="{uiRes.checkbox.Checked}"
+									text="{msg.sampleQc_checkAllQcs}" />
+								<w:Button ui:field="uncheckAllQcsButton" leftIcon="{uiRes.checkbox.Unchecked}"
+									text="{msg.sampleQc_uncheckAllQcs}" />
+							</g:HorizontalPanel>
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:center>
+		<g:east size="300">
+			<g:LayoutPanel>
+				<g:layer bottom="0px" top="0px">
+					<t:Table ui:field="table" horizontalScroll="ALWAYS"
+						verticalScroll="ALWAYS" width="300px" header="true"
+						styleName="{res.table.ScreenTableWithSides}">
+						<t:Column width="100" label="{msg.label}" required="true">
+							<t:LabelCell>
+								<w:Label />
+							</t:LabelCell>
+						</t:Column>
+						<t:Column width="200" label="{msg.gen_value}" required="true">
+							<t:LabelCell>
+								<w:Label />
+							</t:LabelCell>
+						</t:Column>
+					</t:Table>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:east>
+	</g:SplitLayoutPanel>
+</ui:UiBinder>
