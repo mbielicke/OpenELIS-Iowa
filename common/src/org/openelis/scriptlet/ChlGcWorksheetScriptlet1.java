@@ -137,7 +137,9 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
                 waVDO = wm.analysis.get(wiDO, j);
                 if (waVDO.getAnalysisId() != null) {
                     siVDO = siVDOsByAnalysisId.get(waVDO.getAnalysisId());
-                    if ((Constants.dictionary().ANALYSIS_INITIATED.equals(waVDO.getStatusId()) ||
+                    if ((Constants.dictionary().ANALYSIS_LOGGED_IN.equals(waVDO.getStatusId()) ||
+                         Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(waVDO.getStatusId()) ||
+                         Constants.dictionary().ANALYSIS_INITIATED.equals(waVDO.getStatusId()) ||
                          Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(waVDO.getStatusId())) &&
                         (SAMPLE_TYPE_CERVIX.equals(siVDO.getTypeOfSampleId()) ||
                          SAMPLE_TYPE_VAGINAL.equals(siVDO.getTypeOfSampleId()))) {
@@ -156,7 +158,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
         lastIndex = pooledAnalyses.size() / 4 * 4;
         try {
             for (i = 0; i < lastIndex; i++) {
-                if (i % 4 == 0) {
+                if (i != 0 && i % 4 == 0) {
                     wiDO = itemsByPosition.get(++j);
                     if (wiDO == null) {
                         wiDO = wm.item.add(j);
@@ -169,7 +171,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
 
             if (lastIndex != 0)
                 j++;
-            if (i != pooledAnalyses.size()) {
+            if (i < pooledAnalyses.size()) {
                 for (; i < pooledAnalyses.size(); i++) {
                     wiDO = itemsByPosition.get(j);
                     if (wiDO == null) {
@@ -188,7 +190,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
                     wiDO = wm.item.add(j);
                     itemsByPosition.put(j, wiDO);
                 }
-                waVDO = pooledAnalyses.get(i);
+                waVDO = nonPooledAnalyses.get(i);
                 wm.analysis.move(waVDO, wiDO);
                 j++;
             }
