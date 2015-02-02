@@ -59,7 +59,7 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
 
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
         try {
-            return dataView.fetchAnalyteAndAuxField(data);
+            return dataView.fetchAnalyteAndAuxFieldForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

@@ -269,6 +269,21 @@ public class DataViewBean {
 
     @TransactionTimeout(180)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public DataViewVO fetchAnalyteAndAuxFieldForPortal(DataViewVO data) throws Exception {
+        ArrayList<QueryData> fields;
+
+        if (data == null)
+            throw new InconsistencyException("You may not execute an empty query");
+
+        fields = data.getQueryFields();
+        if (fields == null || fields.size() == 0)
+            throw new InconsistencyException("You may not execute an empty query");
+
+        return fetchAnalyteAndAuxField(data, "w_dataview");
+    }
+
+    @TransactionTimeout(180)
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
         QueryData field;

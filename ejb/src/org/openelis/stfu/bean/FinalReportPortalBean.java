@@ -69,6 +69,7 @@ public class FinalReportPortalBean {
         if (clause == null)
             return new ArrayList<SampleViewVO>();
 
+        clause = replaceClause(clause);
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleViewMeta.getId() + ", " + SampleViewMeta.getDomain() +
@@ -212,6 +213,18 @@ public class FinalReportPortalBean {
             return project.fetchForOrganizations(clause);
 
         return new ArrayList<IdNameVO>();
+    }
+
+    /**
+     * replace table and field names in the clause
+     */
+    private String replaceClause(String clause) {
+        if (clause == null)
+            return clause;
+        clause = clause.replace("_sampleOrganization", "_sampleView");
+        clause = clause.replace("_sampleProject", "_sampleView");
+        clause = clause.replace("organizationId", "reportToId");
+        return clause;
     }
 
 }
