@@ -391,6 +391,42 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     }
 
     @Override
+    public Button getSelectAllSampleFieldsButton() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Button getSelectAllOrgFieldsButton() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Button getSelectAllAnalysisFieldsButton() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Button getSelectAllPatientFieldsButton() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Button getSelectAllSdwisFieldsButton() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Button getSelectAllEnvironmentalFieldsButton() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public Button getSelectAllAnalytesButton() {
         return selectAllAnalytesButton;
     }
