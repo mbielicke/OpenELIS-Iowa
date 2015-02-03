@@ -257,9 +257,8 @@ public class DataExchangeExportBean {
      * by the list.
      */
     public ReportStatus export(ArrayList<Integer> accessions,
-                               ExchangeCriteriaManager cm, Date releaseStart,
-                               Date releaseEnd) throws Exception {
-    EOrderDO eo;
+                               ExchangeCriteriaManager cm) throws Exception {
+        EOrderDO eo;
         ReportStatus status;
         ArrayList<Integer> ids;
         ArrayList<EOrderLinkDO> eols;
@@ -305,7 +304,7 @@ public class DataExchangeExportBean {
                                       getSample(sm).getAccessionNumber());
                 }
             }
-            messageOutput(sm, cm, releaseStart, releaseEnd, eo, eols);
+            messageOutput(sm, cm, null, null, eo, eols);
         }
         messageEnd();
 
