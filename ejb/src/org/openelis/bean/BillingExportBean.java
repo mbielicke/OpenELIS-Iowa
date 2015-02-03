@@ -823,14 +823,10 @@ public class BillingExportBean {
                 if (birthDate != null)
                     sb.append(df.format(birthDate));
                 sb.append("|")
-                  .append(DataBaseUtil.toString(gender)).append("|");
-                if (multipleUnit != null && multipleUnit.length() > 0) // always fill first address line
-                    sb.append(multipleUnit).append("|")
-                      .append(DataBaseUtil.toString(streetAddress)).append("|");
-                else
-                    sb.append(DataBaseUtil.toString(streetAddress)).append("|")
-                      .append("|");
-                sb.append(DataBaseUtil.toString(city)).append("|")
+                  .append(DataBaseUtil.toString(gender)).append("|")
+                  .append(multipleUnit).append("|")
+                  .append(DataBaseUtil.toString(streetAddress)).append("|")
+                  .append(DataBaseUtil.toString(city)).append("|")
                   .append(DataBaseUtil.toString(state)).append("|")
                   .append(DataBaseUtil.toString(zipCode)).append("|")
                   .append(DataBaseUtil.toString(phone)).append("|")

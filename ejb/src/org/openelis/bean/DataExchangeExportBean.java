@@ -224,7 +224,7 @@ public class DataExchangeExportBean {
                     }
                 }
                 try {
-                    messageOutput(sm, cm, eo, eols);
+                    messageOutput(sm, cm, releaseStart, releaseEnd, eo, eols);
                 } catch (Exception e) {
                     accession = -accession;
                 }
@@ -256,8 +256,10 @@ public class DataExchangeExportBean {
      * message; it is not used to query for samples since that is already given
      * by the list.
      */
-    public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager cm) throws Exception {
-        EOrderDO eo;
+    public ReportStatus export(ArrayList<Integer> accessions,
+                               ExchangeCriteriaManager cm, Date releaseStart,
+                               Date releaseEnd) throws Exception {
+    EOrderDO eo;
         ReportStatus status;
         ArrayList<Integer> ids;
         ArrayList<EOrderLinkDO> eols;
@@ -303,7 +305,7 @@ public class DataExchangeExportBean {
                                       getSample(sm).getAccessionNumber());
                 }
             }
-            messageOutput(sm, cm, eo, eols);
+            messageOutput(sm, cm, releaseStart, releaseEnd, eo, eols);
         }
         messageEnd();
 
@@ -436,7 +438,7 @@ public class DataExchangeExportBean {
 
         try {
             messageStart();
-            messageOutput(sm, cm, eo, eols, sqc);
+            messageOutput(sm, cm, null, null, eo, eols, sqc);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to generate xml for accession number:  " +
                                   getSample(sm).getAccessionNumber(), e);
@@ -588,7 +590,8 @@ public class DataExchangeExportBean {
     /**
      * The method exports a sample using the criteria manager's information.
      */
-    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Object... optional) throws Exception {
+    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Date releaseStart, Date releaseEnd,
+                               Object... optional) throws Exception {
         Integer accession;
         URI uri;
         Document doc;
@@ -606,7 +609,7 @@ public class DataExchangeExportBean {
              * generate a simple xml and use a simple buffer in case we have an
              * error
              */
-            doc = dataExchangeXMLMapper.getXML(sm, cm, optional);
+            doc = dataExchangeXMLMapper.getXML(sm, cm, releaseStart, releaseEnd, optional);
             dom = new DOMSource(doc);
             transformer.transform(dom, new StreamResult(transformerStream));
 
