@@ -1208,6 +1208,14 @@ public class AirQualityExportBean {
                     Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
                     analysisCount++ ;
                     if (analysisCount > 1) {
+                        /*
+                         * There should never be a null data code on a replicate
+                         * sample, so there is a problem with the sample in this
+                         * case
+                         */
+                        if ( !DataBaseUtil.isEmpty(nullDataCd))
+                            return null;
+
                         if (airToxicPrecisionStrings.get(key) == null)
                             airToxicPrecisionStrings.put(key, new ArrayList<String>());
 
@@ -1230,23 +1238,27 @@ public class AirQualityExportBean {
             }
         }
 
-        if ("duplicate".equals(sm.getSampleEnvironmental().getDescription()) &&
-            DataBaseUtil.isEmpty(nullDataCd)) {
-            if (airToxicPrecisionStrings.get(key) == null)
-                airToxicPrecisionStrings.put(key, new ArrayList<String>());
+        if ("duplicate".equals(sm.getSampleEnvironmental().getDescription())) {
+            if (DataBaseUtil.isEmpty(nullDataCd)) {
+                if (airToxicPrecisionStrings.get(key) == null)
+                    airToxicPrecisionStrings.put(key, new ArrayList<String>());
 
-            airToxicPrecisionStrings.get(key).addAll(getAirToxicsPrecisionString(sm,
-                                                                                 testId,
-                                                                                 action,
-                                                                                 stateCode,
-                                                                                 countyCode,
-                                                                                 siteId,
-                                                                                 poc,
-                                                                                 reportedUnit,
-                                                                                 date,
-                                                                                 addAll,
-                                                                                 addTds,
-                                                                                 analysisId));
+                airToxicPrecisionStrings.get(key).addAll(getAirToxicsPrecisionString(sm,
+                                                                                     testId,
+                                                                                     action,
+                                                                                     stateCode,
+                                                                                     countyCode,
+                                                                                     siteId,
+                                                                                     poc,
+                                                                                     reportedUnit,
+                                                                                     date,
+                                                                                     addAll,
+                                                                                     addTds,
+                                                                                     analysisId));
+            }
+            /*
+             * Raw data strings do not need to be generated in this case
+             */
             return new HashMap<String, ArrayList<String>>();
         }
 
