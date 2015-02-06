@@ -25,7 +25,7 @@
         status="integration">
 	</info>
     <dependencies>
-      <dependency org="org.jboss.spec" name="jboss-javaee-6.0" rev="3.0.2.Final"/>
+      <dependency org="org.jboss.spec" name="jboss-javaee-7.0" rev="1.0.2.Final"/>
       <dependency org="xalan" name="xalan" rev="2.7.1"/>  
 	  <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" transitive="false"/>
     </dependencies>
