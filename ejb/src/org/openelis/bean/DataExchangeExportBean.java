@@ -277,7 +277,8 @@ public class DataExchangeExportBean {
         ids = getSamples(accessions);
         if (ids.size() == 0)
             throw new NotFoundException();
-
+        
+        log.log(Level.FINE, "Fetching"+ ids.size()+" samples");
         sms = sampleManager.fetchByIds(ids,
                                        SampleManager1.Load.ORGANIZATION,
                                        SampleManager1.Load.PROJECT,
@@ -295,6 +296,7 @@ public class DataExchangeExportBean {
             eols = null;
             if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
                 getSample(sm).getOrderId() != null) {
+                log.log(Level.FINE, "Fetching eorder with id "+ getSample(sm).getOrderId());
                 try {
                     eo = eOrder.fetchById(getSample(sm).getOrderId());
                     eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
@@ -608,6 +610,7 @@ public class DataExchangeExportBean {
              * generate a simple xml and use a simple buffer in case we have an
              * error
              */
+            log.log(Level.FINE, "Generating xml for accession number:  " + getSample(sm).getAccessionNumber());
             doc = dataExchangeXMLMapper.getXML(sm, cm, releaseStart, releaseEnd, optional);
             dom = new DOMSource(doc);
             transformer.transform(dom, new StreamResult(transformerStream));
@@ -615,6 +618,7 @@ public class DataExchangeExportBean {
             /*
              * open and copy to destination
              */
+            log.log(Level.FINE, "Sending transformed xml to the destination:  " + cm.getExchangeCriteria().getDestinationUri());
             uri = new URI(cm.getExchangeCriteria().getDestinationUri());
             if ("file".equals(uri.getScheme())) {
                 outfile = new File(uri.getPath() + File.separator + accession.toString() +
@@ -631,6 +635,7 @@ public class DataExchangeExportBean {
                 out.write(transformerStream.toByteArray());
             }
             transformerStream.reset();
+            log.log(Level.FINE, "XML sent to the destination");
         } finally {
             if (out != null)
                 out.close();

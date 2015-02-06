@@ -266,6 +266,7 @@ public class DataExchangeXMLMapperBean {
          */
         root.appendChild(toXML(doc, getSample(sm)));
 
+        log.log(Level.FINE, "Adding elements for sample, domain, etc.");
         if (getSampleEnvironmental(sm) != null) {
             root.appendChild(toXML(doc, getSampleEnvironmental(sm)));
 
@@ -343,6 +344,7 @@ public class DataExchangeXMLMapperBean {
          * to the header
          */
         if (reportTo != null) {
+            log.log(Level.FINE, "Fetching organization parameters for org id: "+reportTo.getOrganizationId());
             try {
                 orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
                 if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null ||
@@ -497,6 +499,7 @@ public class DataExchangeXMLMapperBean {
             }
         }
 
+        log.log(Level.FINE, "Fetching various referenced records e.g. tests, projects, qa events etc.");
         /*
          * lookup and output various referenced objects; order is important
          */
