@@ -931,7 +931,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(shippingNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+        addScreenHandler(shippingNotesTab, "shippingNotesTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 shippingNotesTab.onDataChange();
             }
@@ -945,7 +945,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(customerNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+        addScreenHandler(customerNotesTab, "customerNotesTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 customerNotesTab.onDataChange();
             }
@@ -959,7 +959,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(internalNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+        addScreenHandler(internalNotesTab, "internalNotesTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 internalNotesTab.onDataChange();
             }
