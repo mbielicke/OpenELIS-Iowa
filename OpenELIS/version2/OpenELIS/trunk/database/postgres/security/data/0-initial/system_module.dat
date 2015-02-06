@@ -1,0 +1,65 @@
+1|1|user|Module that allows permissions to be granted/revoked from users|Y|Y|Y|Y|\N
+2|1|application|Module that defines new applications|Y|Y|Y|Y|\N
+3|1|templates|Module that defines new default templates for application|Y|Y|Y|Y|\N
+4|2|analyte|module for access to the Analyte screen|Y|Y|Y|Y|\N
+5|2|analyteparameter|module for access to the Analyte Parameter screen|Y|Y|Y|N|\N
+6|2|auxiliary|module for access to the Auxiliary screen|Y|Y|Y|N|\N
+7|2|buildkits|module for access to the Build Kits screen|Y|Y|Y|N|\N
+8|2|cron|schedule and activate cron jobs to run on the server|Y|Y|Y|N|\N
+9|2|dictionary|module for access to the Dictionary screen|Y|Y|Y|N|\N
+10|2|exchangedataselection|module for access to the Exchange Data Selection screen|Y|Y|Y|Y|\N
+11|2|exchangevocabularymap|module for access to the Exchange Vocabulary Map screen|Y|Y|Y|N|\N
+12|2|fillorder|module for access to the Fill Order screen|Y|Y|Y|N|\N
+13|2|instrument|module for access to the Instrument screen|Y|Y|Y|Y|\N
+14|2|internalorder|module for accesss to the Internal Order screen|Y|Y|Y|N|\N
+15|2|inventoryadjustment|module for access to the Inventory Adjustment screen|Y|Y|Y|N|\N
+16|2|inventoryitem|module for access to the Inventory Item screen|Y|Y|Y|N|\N
+17|2|inventoryreceipt|module for access to the Inventory Receipt scree|Y|Y|Y|N|\N
+18|2|inventorytransfer|module for access to the Inventory Transfer screen|Y|Y|Y|Y|\N
+19|2|label|module for access to the Label screen|Y|Y|Y|Y|\N
+20|2|method|module for access to the Method screen|Y|Y|Y|N|\N
+21|2|openelis|Module for base access to OpenELIS|Y|N|N|N|\N
+22|2|openelisweb|module for access to the OpenELIS Web Project|Y|N|N|N|\N
+23|2|order|module for access to the Order screens|Y|Y|Y|N|\N
+24|2|organization|module for access to the Organization screen|Y|Y|Y|N|\N
+25|2|panel|module for access to the Panel screen|Y|Y|Y|Y|\N
+26|2|project|module for access to the Project screen|Y|Y|Y|N|\N
+27|2|provider|module for access to the Provider screen|Y|Y|Y|N|\N
+28|2|pws|module for access to the PWS Information screen|Y|N|N|N|\N
+29|2|qaevent|module for access to the QA Event screen|Y|Y|Y|N|\N
+30|2|qc|module for access to the QC screen|Y|Y|Y|N|\N
+31|2|quickentry|module for access to the Quick Entry screen|Y|N|N|N|\N
+32|2|r_final|module for access to Final Report report|Y|N|N|N|\N
+33|2|r_finalbatch|module for access to Final Report (Batch) report|Y|N|N|N|\N
+34|2|r_loginlabel|module for access to the Login Barcode Label report|Y|N|N|N|\N
+35|2|r_loginlabelrep|module for access to the Login Barcode Label Reprint report|Y|N|N|N|\N
+36|2|sample|module for access to the Sample screen|Y|Y|Y|N|\N
+37|2|samplecompleterelease|module for access to the Sample Complete and Release screen|Y|N|Y|N|\N
+38|2|sampledomainchange|module for access to domain change on the Sample Tracking screen|Y|N|N|N|\N
+39|2|sampleenvironmental|module for access to the Environmental Sample Login screen|Y|Y|Y|N|\N
+40|2|sampleprivatewell|module for access to the Private Well Sample Login screen|Y|Y|Y|N|\N
+41|2|samplesdwis|module for access to the SDWIS Sample Login screen|Y|Y|Y|N|\N
+42|2|sampletracking|module for access to the Sample Tracking screen|Y|N|Y|N|\N
+43|2|sampleunrelease|module for access to sample unrelease on the Sample Tracking screen|Y|N|N|N|\N
+44|2|section|module for access to the laboratory section screen|Y|Y|Y|Y|\N
+45|2|sendoutorder|module for accesss to the Send-out Order screen|Y|Y|Y|N|\N
+46|2|shipping|module for access to the Shiping screen|Y|Y|Y|N|\N
+47|2|standardnote|module for access to the Standard Note screen|Y|Y|Y|Y|\N
+48|2|storage|module for access to the Storage screen|Y|N|Y|Y|\N
+49|2|storagelocation|module for access to the Storage Location screen|Y|Y|Y|Y|\N
+50|2|storageunit|module for access to the Storage Unit screen|Y|Y|Y|Y|\N
+51|2|systemvariable|module for access to the SystemVariable screen|Y|Y|Y|Y|\N
+52|2|test|module for access to the Test screen|Y|Y|Y|Y|\N
+53|2|testtrailer|module for access to the Trailer for Test screen|Y|Y|Y|Y|\N
+54|2|vendororder|module for accesss to the Vendor Order screen|Y|Y|Y|N|\N
+55|2|verification|module for access to the Sample Verification screen|Y|N|N|N|\N
+56|2|w_dataview_environmental|module for access to the Web Environmental DataView Screen|Y|N|N|N|\N
+57|2|w_dataview_sdwis|module for access to the Web SDWIS DataView Screen|Y|N|N|N|\N
+58|2|w_final_environmental|module for access to the Web Environmental Final Report|Y|N|N|N|\N
+59|2|w_final_privatewell|module for access to the Web Private Well Final Report|Y|N|N|N|\N
+60|2|w_final_sdwis|module for access to the Web SDWIS Final Report|Y|N|N|N|\N
+61|2|w_notify|module for access to the Notification Preferences Screen|Y|N|N|N|\N
+62|2|w_status|module for access to the Web Sample Status Report|Y|N|N|N|\N
+63|2|worksheet|module for access to the Worksheet screens|Y|Y|Y|N|\N
+64|2|worksheetbuilder|temporary module for access to the NEW Worksheet Builder screen|Y|Y|Y|N|\N
+
