@@ -1,0 +1,778 @@
+635|1|1|\N|161|colilert18 media
+636|1|2|\N|161|colilert24 media
+633|2|1|\N|161|colilert18 media
+634|2|2|\N|161|colilert24 media
+1141|3|9|9|162|epa 353.2 water blank
+5|3|5|5|162|epa 353.2 nitrate std 5
+6|3|6|6|162|epa 353.2 nitrate std 1
+7|3|10|10|162|epa 353.2 nitrate ref std
+8|3|7|7|162|epa 353.2 nitrate std 0
+9|3|11|11|162|epa 353.2 nitrate std 40
+10|3|12|12|162|epa 353.2 nitrite std 40
+49|3|33|\N|161|epa 353.2 water blank
+19|3|15|26|162|epa 353.2 water blank
+22|3|19|51|162|epa 353.2 check std 20
+25|3|22|64|162|epa 353.2 check std 20
+28|3|23|65|162|epa 353.2 water blank
+30|3|16|28|162|epa 353.2 sample spike
+32|3|24|77|162|epa 353.2 check std 20
+36|3|20|52|162|epa 353.2 water blank
+38|3|21|54|162|epa 353.2 sample spike
+40|3|26|80|162|epa 353.2 sample spike
+41|3|13|13|162|epa 353.2 cntl spike
+1|3|1|1|162|epa 353.2 nitrate std 50
+2|3|2|2|162|epa 353.2 nitrate std 40
+3|3|3|3|162|epa 353.2 nitrate std 20
+4|3|4|4|162|epa 353.2 nitrate std 10
+1223|3|14|25|162|epa 353.2 check std 20
+1224|3|17|38|162|epa 353.2 check std 20
+1225|3|18|39|162|epa 353.2 water blank
+1226|3|25|78|162|epa 353.2 water blank
+1227|3|27|90|162|epa 353.2 check std 20
+1228|3|28|91|162|epa 353.2 water blank
+1229|3|32|\N|161|epa 353.2 check std 20
+1230|3|29|103|162|epa 353.2 check std 20
+1231|3|30|104|162|epa 353.2 water blank
+1232|3|31|106|162|epa 353.2 sample spike
+1233|3|8|8|162|epa 353.2 check std 20
+747|4|1|1|162|524.2-8260-624-oa1 ssis
+251|25|1|1|162|525.2 prep information
+740|25|3|3|162|525.2 tap water blank
+589|25|2|2|162|525.2 ofw method blank
+259|34|1|1|162|625-3510-3550-8270 bna prep
+260|35|1|1|162|625-3510-3550-8270 bna prep
+748|9|1|1|162|524.2-8260-624-oa1 ssis
+321|65|1|1|162|3510-8270 pest water prep info
+742|65|2|2|162|3510-8270 pest water meth blk
+322|66|1|1|162|3550-8270 pest solid prep info
+743|66|2|2|162|3550-8270 pest solid meth blk
+262|38|1|1|162|548.1 endothall prep info
+261|37|1|1|162|625-3510-3550-8270 bna prep
+320|62|1|1|162|oa-2 solid prep information
+705|62|2|2|162|oa-2 solid method blank
+706|62|3|3|162|oa-2 solid diesel spike
+319|63|1|1|162|oa-2 water prep information
+703|63|2|2|162|oa-2 water method blank
+704|63|3|3|162|oa-2 water diesel spike
+306|50|1|1|162|608-508-3510-8081 chi prp info
+596|50|2|2|162|608-508-3510-8081 chi meth blk
+597|50|3|3|162|608-508-3510-8081 ppp wter mid
+598|50|4|4|162|608-508-3510-8081 ppp wter low
+367|39|1|\N|161|00-02 alpha blank
+368|39|2|\N|161|00-02 alpha tap water 
+369|39|3|\N|161|00-02 th-230 lcs
+370|39|4|\N|161|00-02 th-230 ms tap
+371|39|5|\N|161|00-02 th-230 msd tap
+256|26|1|\N|161|900.0 alpha blank
+372|26|2|\N|161|900.0 th-230 lcs
+373|26|3|\N|161|900.0 th-230 ms
+374|26|4|\N|161|900.0 th-230 msd
+388|118|1|\N|161|lv pg 6 alpha air blank
+389|118|2|\N|161|lv pg 6 alpha air lcs
+390|119|1|\N|161|orise ap1 th-230 ms
+391|119|2|\N|161|orise ap1 th-230 msd
+392|119|3|\N|161|orise ap1 th-230 lcs
+393|119|4|\N|161|orise ap1 alpha blank
+375|8|1|\N|161|900.0 beta blank
+376|8|2|\N|161|900.0 cs-137 lcs
+377|8|3|\N|161|900.0 cs-137 ms
+378|8|4|\N|161|900.0 cs-137 msd
+714|90|1|\N|161|903.0 ra-226 tap water
+715|90|2|\N|161|903.0 ra-226 ms tap
+716|90|3|\N|161|903.0 ra-226 msd tap
+717|90|4|\N|161|903.0 ra-226 lcs
+718|90|5|\N|161|903.0 ra-226 blank
+386|97|1|\N|161|904.0 ra-228 tap water
+719|97|2|\N|161|904.0 ra-228 ms tap
+720|97|3|\N|161|904.0 ra-228 msd tap
+721|97|4|\N|161|904.0 ra-228 lcs
+722|97|5|\N|161|904.0 ra-228 blank
+257|28|1|1|162|552.2 haa prep information
+1199|28|7|7|162|552.2 haa sample duplicate
+603|28|2|2|162|552.2 haa method blank
+1200|28|8|8|162|552.2 haa sample duplicate
+1201|28|9|9|162|552.2 haa level 5 matrix spike
+710|28|3|3|162|552.2 haa cont cal very low
+711|28|4|4|162|552.2 haa cont cal low
+712|28|5|5|162|552.2 haa cont cal mid
+713|28|6|6|162|552.2 haa cont cal high
+1203|28|10|10|162|552.2 haa level 5 matrix spike
+1207|28|11|11|162|552.2 haa trip blank
+394|120|1|\N|161|lv pg 6 beta air lcs
+395|120|2|\N|161|lv pg 6 beta air blank
+396|121|1|\N|161|orise ap1 cs-137 ms
+397|121|2|\N|161|orise ap1 cs-137 msd
+398|121|3|\N|161|orise ap1 cs-137 lcs
+399|121|4|\N|161|orise ap1 beta blank
+400|122|1|\N|161|shl 13.24  lcs
+401|122|2|\N|161|shl 13.24  blank wipe
+402|123|1|\N|161|7500 i c  i-131 tap
+403|123|2|\N|161|7500 i c  i-131 ms
+404|123|3|\N|161|7500 i c  i-131 msd
+405|123|4|\N|161|7500 i c  i-131 lcs
+406|123|5|\N|161|7500 i c  i-131 blank
+307|56|1|1|768|7500 rn b blank 1
+308|56|2|2|768|7500 rn b lcs 1
+309|56|3|3|768|7500 rn b lcs 2
+310|56|4|4|768|7500 rn b rn gen
+311|56|5|5|768|7500 rn b lcs 3
+312|56|6|6|768|7500 rn b blank 2
+313|56|7|7|768|7500 rn b sample dup
+315|56|8|18|162|7500 rn b sample dup
+409|125|1|\N|161|905.0 sr-89 tap
+410|125|2|\N|161|905.0 sr-89 ms tap
+411|125|3|\N|161|905.0 sr-89 msd tap
+412|125|4|\N|161|905.0 sr-89 lcs
+413|125|5|\N|161|905.0 sr-89 blank
+414|125|6|\N|161|905.0 sr-90 tap
+415|125|7|\N|161|905.0 sr-90 ms
+416|125|8|\N|161|905.0 sr-90 msd
+417|125|9|\N|161|905.0 sr-90 lcs
+418|125|10|\N|161|905.0 sr-90 blank
+723|126|1|\N|161|20.2 sr-89 ms
+724|126|2|\N|161|20.2 sr-89 msd
+725|126|3|\N|161|20.2 sr-89 lcs
+726|126|4|\N|161|20.2 sr-89 blank
+727|126|5|\N|161|20.2 sr-90 ms
+728|126|6|\N|161|20.2 sr-90 msd
+729|126|7|\N|161|20.2 sr-90 lcs
+730|126|8|\N|161|20.2 sr-90 blank
+663|127|1|1|768|906.0 h-3 blank 1
+664|127|2|2|768|906.0 h-3 lcs 1
+665|127|3|3|768|906.0 h-3 tap water
+666|127|4|4|768|906.0 h-3 ms
+667|127|5|5|768|906.0 h-3 msd
+668|127|6|6|768|906.0 h-3 blank 1
+669|127|7|7|768|906.0 h-3 blank 2
+670|127|8|19|162|906.0 sample dup
+671|127|9|30|162|906.0 sample dup
+250|18|1|1|162|9215b media blank
+329|18|2|\N|161|9215b air plate
+651|18|3|\N|161|hpc media
+630|21|1|\N|161|colilert24 media
+347|12|2|2|162|7420 metals blank
+52|12|1|1|162|7420 metals blank
+631|22|1|\N|161|colilert18 media
+626|23|1|\N|161|colilert24 media
+348|89|2|2|162|7420 reagent blank
+346|89|1|1|162|7420 reagent blank
+627|24|1|\N|161|colilert18 media
+784|272|1|1|768|gfaa lead in air icv
+785|272|2|2|768|gfaa lead in air qcs
+786|272|3|3|768|gfaa lead in air blank
+787|272|4|4|768|gfaa lead in air low
+788|272|5|5|768|gfaa lead in air high
+805|272|6|\N|161|gfaa lead in air icv
+806|272|7|\N|161|gfaa lead in air blank
+1128|284|1|3|162|mercury ipc
+1129|284|2|4|162|mercury ipc
+1130|284|3|5|162|mercury ipc
+1131|284|4|2|162|mercury blank
+1132|284|5|1|162|mercury blank
+1133|284|6|6|162|mercury qcs
+1134|284|7|7|162|mercury qcs
+1135|284|8|8|162|mercury 100 ppb check
+1136|284|9|9|162|mercury blank
+1137|284|10|10|162|mercury reagent blank
+1138|284|11|11|162|mercury reagent blank
+1139|284|12|12|162|mercury dw spike
+1140|284|13|13|162|mercury dw spike
+55|13|35|\N|161|epa 353.2 nitrite std 40
+56|13|36|\N|161|epa 353.2 nitrate std 40
+57|13|37|\N|161|epa 353.2 nitrate std 5
+61|13|2|2|162|epa 353.2 nitrate std 40
+62|13|3|3|162|epa 353.2 nitrate std 20
+63|13|4|4|162|epa 353.2 nitrate std 10
+64|13|5|5|162|epa 353.2 nitrate std 5
+65|13|6|6|162|epa 353.2 nitrate std 1
+66|13|7|7|162|epa 353.2 water blank
+67|13|8|8|162|epa 353.2 nitrate ref std
+68|13|9|9|162|epa 353.2 nitrite std 40
+69|13|10|10|162|epa 353.2 nitrate std 40
+70|13|11|11|162|epa 353.2 cntl spike
+71|13|12|13|158|\N
+72|13|13|24|162|epa 353.2 sample spike
+73|13|14|27|162|epa 353.2 nitrate std 5
+74|13|15|28|162|epa 353.2 nitrate std 20
+75|13|16|29|162|epa 353.2 nitrate std 40
+76|13|17|38|158|\N
+77|13|18|45|162|epa 353.2 nitrate std 5
+78|13|19|46|162|epa 353.2 nitrate std 20
+79|13|20|47|162|epa 353.2 nitrate std 40
+80|13|21|52|162|epa 353.2 sample spike
+81|13|22|62|162|epa 353.2 nitrate std 5
+82|13|23|63|162|epa 353.2 nitrate std 20
+83|13|24|64|162|epa 353.2 nitrate std 40
+84|13|25|66|158|\N
+85|13|26|77|162|epa 353.2 sample spike
+86|13|27|80|162|epa 353.2 nitrate std 5
+87|13|28|81|162|epa 353.2 nitrate std 20
+88|13|29|82|162|epa 353.2 nitrate std 40
+89|13|30|91|158|\N
+90|13|31|98|162|epa 353.2 nitrate std 5
+91|13|32|99|162|epa 353.2 nitrate std 20
+92|13|33|100|162|epa 353.2 nitrate std 40
+93|13|34|105|162|epa 353.2 sample spike
+58|13|38|\N|161|epa 353.2 nitrate std 20
+59|13|39|\N|161|epa 353.2 nitrate std 40
+60|13|1|1|162|epa 353.2 nitrate std 50
+94|14|35|\N|161|epa 353.2 nitrite std 40
+95|14|36|\N|161|epa 353.2 nitrate std 40
+96|14|37|\N|161|epa 353.2 nitrate std 5
+97|14|38|\N|161|epa 353.2 nitrate std 20
+98|14|39|\N|161|epa 353.2 nitrate std 40
+99|14|1|1|162|epa 353.2 nitrate std 50
+100|14|2|2|162|epa 353.2 nitrate std 40
+101|14|3|3|162|epa 353.2 nitrate std 20
+105|14|7|7|162|epa 353.2 water blank
+106|14|8|8|162|epa 353.2 nitrate ref std
+107|14|9|9|162|epa 353.2 nitrite std 40
+108|14|10|10|162|epa 353.2 nitrate std 40
+109|14|11|11|162|epa 353.2 cntl spike
+110|14|12|13|158|\N
+111|14|13|24|162|epa 353.2 sample spike
+112|14|14|27|162|epa 353.2 nitrate std 5
+113|14|15|28|162|epa 353.2 nitrate std 20
+114|14|16|29|162|epa 353.2 nitrate std 40
+115|14|17|38|158|\N
+116|14|18|45|162|epa 353.2 nitrate std 5
+117|14|19|46|162|epa 353.2 nitrate std 20
+118|14|20|47|162|epa 353.2 nitrate std 40
+119|14|21|52|162|epa 353.2 sample spike
+120|14|22|62|162|epa 353.2 nitrate std 5
+121|14|23|63|162|epa 353.2 nitrate std 20
+122|14|24|64|162|epa 353.2 nitrate std 40
+123|14|25|66|158|\N
+124|14|26|77|162|epa 353.2 sample spike
+125|14|27|80|162|epa 353.2 nitrate std 5
+126|14|28|81|162|epa 353.2 nitrate std 20
+127|14|29|82|162|epa 353.2 nitrate std 40
+128|14|30|91|158|\N
+129|14|31|98|162|epa 353.2 nitrate std 5
+130|14|32|99|162|epa 353.2 nitrate std 20
+131|14|33|100|162|epa 353.2 nitrate std 40
+132|14|34|105|162|epa 353.2 sample spike
+102|14|4|4|162|epa 353.2 nitrate std 10
+103|14|5|5|162|epa 353.2 nitrate std 5
+104|14|6|6|162|epa 353.2 nitrate std 1
+1083|15|1|1|162|lac nox/nh3 10 std
+1084|15|2|2|162|lac nox/nh3 5.0 std
+1085|15|3|3|162|lac nox/nh3 2.0 std
+1086|15|4|4|162|lac nox/nh3 1.0 std
+1087|15|5|5|162|lac nox/nh3 0.5 std
+1088|15|6|6|162|lac nox/nh3 0.1 std
+1089|15|7|7|162|lac nox/nh3 0.05 std
+1090|15|8|8|162|lac nox/nh3 0.00 std
+1091|15|9|9|162|lac nox/nh3 1.0 ccv
+1092|15|10|10|162|lac nox/nh3 0.1 ccv
+1093|15|11|11|162|lac nox/nh3 0.05 ccv
+1094|15|12|12|162|lac nox/nh3 0.00 ccv
+1095|15|13|13|162|lac nox/nh3  ref
+1096|15|14|14|162|lac nox/nh3 blk spk
+1097|15|15|15|162|lac nox/nh3  no2 eff chk
+1098|15|16|16|162|lac nox/nh3  no3 eff chk
+1099|15|17|\N|161|lac nox/nh3 1.0 ccv
+1100|15|18|\N|161|lac nox/nh3 0.00 ccv
+768|265|1|1|162|lac10115011a po4o 2.0 std
+769|265|2|2|162|lac10115011a po4o 1.0 std
+770|265|3|3|162|lac10115011a po4o 0.50 std
+771|265|4|4|162|lac10115011a po4o 0.10 std
+772|265|5|5|162|lac10115011a po4o 0.05 std
+773|265|6|6|162|lac10115011a po4o 0.02 std
+774|265|7|7|162|lac10115011a po4o 0.00 std
+775|265|8|8|162|lac10115011a po4o 1.0 ccv
+776|265|9|9|162|lac10115011a po4o 0.02 ccv
+777|265|10|10|162|lac10115011a po4o 0.00 ccv
+782|265|13|\N|161|lac10115011a po4o 1.0 ccv
+783|265|14|\N|161|lac10115011a po4o 0.00 ccv
+780|265|11|11|162|lac10115011a po4o ref
+781|265|12|12|162|lac10115011a po4o blk spk
+868|290|1|1|162|cdc blood cal 0
+869|290|2|2|162|cdc blood cal 1
+870|290|3|3|162|cdc blood cal 2
+871|290|4|4|162|cdc blood cal 3
+872|290|5|5|162|cdc blood cal 4
+873|290|6|6|162|cdc blood cal 5
+874|290|7|7|162|cdc blood cal 6
+875|290|11|11|162|cdc blood low cv
+876|290|12|12|162|cdc blood mid cv
+877|290|13|13|162|cdc blood high cv
+878|290|16|27|162|cdc blood low cv
+879|290|17|28|162|cdc blood mid cv
+880|290|18|29|162|cdc blood high cv
+881|290|19|\N|161|cdc blood low cv
+882|290|20|\N|161|cdc blood mid cv
+883|290|21|\N|161|cdc blood high cv
+890|290|15|16|162|cdc blood ref
+1075|290|8|8|162|cdc blood cal 7
+1076|290|9|9|162|cdc blood blank
+1077|290|10|10|162|cdc blood blank
+1078|290|14|14|162|cdc blood max
+364|113|1|1|162|7420 reagent blank
+365|113|2|2|162|7420 reagent blank
+826|231|1|1|162|sm 2540 d blk tss
+827|231|2|2|162|sm 2540 d tss
+828|231|3|\N|161|sm 2540 d blk tss
+829|231|4|\N|161|sm 2540 d tss
+614|45|1|1|162|550 prep information
+593|58|2|2|162|608-508-3510-8081 chi meth blk
+594|58|3|3|162|608-508-3510-8081 ppp wter mid
+595|58|4|4|162|608-508-3510-8081 ppp wter low
+592|58|1|1|162|608-508-3510-8081 chi prp info
+316|59|1|1|162|3550-8081 chi prep information
+258|29|1|1|162|515.3 prep information
+731|29|3|3|162|515.3 level 1 cal std
+732|29|4|4|162|515.3 level 3 cal std
+733|29|5|5|162|515.3 level 5 cal std
+708|29|2|2|162|515.3 method blank
+734|29|6|6|162|515.3 level 6 cal std
+735|29|7|7|162|515.3 level 7 cal std
+303|47|1|1|162|608-508-3510-8081 chi prp info
+600|47|2|2|162|608-508-3510-8081 chi meth blk
+601|47|3|3|162|608-508-3510-8081 ppp wter mid
+602|47|4|4|162|608-508-3510-8081 ppp wter low
+1234|169|1|1|162|016 prep information
+1208|191|1|1|162|1664 47 mm disk
+1209|191|2|2|162|1664 90 mm disk
+1210|191|3|3|162|1664 drying cartridge
+1211|191|4|4|162|1664 hexane
+1212|191|5|5|162|1664 methanol
+1142|19|1|1|768|445.0 chloro blank
+1143|19|2|2|768|445.0 chloro std 1
+1144|19|3|3|768|445.0 chloro std 2
+1145|19|4|4|768|445.0 chloro std 3
+1146|19|5|5|768|445.0 chloro std 4
+1147|19|6|6|768|445.0 chloro std 5
+1148|19|7|7|768|445.0 chloro std 6
+1149|19|8|8|768|445.0 chloro std 7
+1150|19|9|9|768|445.0 chloro blank
+1151|19|10|10|768|445.0 chloro lrb
+1152|19|11|11|768|445.0 chloro qcs
+1153|19|12|22|162|445.0 chloro duplicate
+1154|19|13|23|162|445.0 chloro blank
+1155|19|14|24|162|445.0 chloro std 5
+1156|19|15|35|162|445.0 chloro duplicate
+1157|19|16|36|162|445.0 chloro blank
+1158|19|17|37|162|445.0 chloro std 5
+1159|19|18|48|162|445.0 chloro duplicate
+1160|19|19|49|162|445.0 chloro blank
+1161|19|20|50|162|445.0 chloro std 5
+1162|19|21|\N|161|445.0 chloro duplicate
+1163|19|22|\N|161|445.0 chloro blank
+1164|19|23|\N|161|445.0 chloro std 5
+1165|136|1|1|768|445.0 chloro blank
+1166|136|2|2|768|445.0 chloro std 1
+1167|136|3|3|768|445.0 chloro std 2
+1168|136|4|4|768|445.0 chloro std 3
+1169|136|5|5|768|445.0 chloro std 4
+1170|136|6|6|768|445.0 chloro std 5
+1171|136|7|7|768|445.0 chloro std 6
+1172|136|8|8|768|445.0 chloro std 7
+1173|136|9|9|768|445.0 chloro blank
+1174|136|10|10|768|445.0 chloro lrb
+1175|136|11|11|768|445.0 chloro qcs
+1176|136|12|22|162|445.0 chloro duplicate
+1177|136|13|23|162|445.0 chloro blank
+1178|136|14|24|162|445.0 chloro std 5
+1179|136|15|35|162|445.0 chloro duplicate
+1180|136|16|36|162|445.0 chloro blank
+1181|136|17|37|162|445.0 chloro std 5
+1182|136|18|48|162|445.0 chloro duplicate
+1183|136|19|49|162|445.0 chloro blank
+1184|136|20|50|162|445.0 chloro std 5
+1185|136|21|\N|161|445.0 chloro duplicate
+1186|136|22|\N|161|445.0 chloro blank
+1187|136|23|\N|161|445.0 chloro std 5
+422|20|1|1|768|445.0 blk
+423|20|2|2|768|445.0 std 1
+424|20|3|3|768|445.0 std 2
+425|20|4|4|768|445.0 std 3
+426|20|5|5|768|445.0 std 4
+427|20|6|6|768|445.0 std 5
+428|20|7|7|768|445.0 std 6
+429|20|8|8|768|445.0 std 7
+430|20|9|9|768|445.0 blk
+507|20|27|87|162|445.0 dup
+508|20|28|88|162|445.0 blk
+509|20|29|89|162|445 mid icp
+510|20|30|100|162|445.0 dup
+511|20|31|101|162|445.0 blk
+512|20|32|102|162|445 mid icp
+648|20|33|\N|161|445.0 dup
+649|20|34|\N|161|445.0 blk
+650|20|35|\N|161|445 mid icp
+490|20|10|10|768|445.0 lrb
+491|20|11|11|768|445.0 qcs
+492|20|12|22|162|445.0 dup
+493|20|13|23|162|445.0 blk
+494|20|14|24|162|445 mid icp
+495|20|15|35|162|445.0 dup
+496|20|16|36|162|445.0 blk
+497|20|17|37|162|445 mid icp
+498|20|18|48|162|445.0 dup
+499|20|19|49|162|445.0 blk
+500|20|20|50|162|445 mid icp
+501|20|21|61|162|445.0 dup
+502|20|22|62|162|445.0 blk
+503|20|23|63|162|445 mid icp
+504|20|24|74|162|445.0 dup
+505|20|25|75|162|445.0 blk
+506|20|26|76|162|445 mid icp
+1101|232|5|3|162|sm 2540 d blk tss
+1102|232|6|4|162|sm 2540 d tss
+1103|232|7|\N|161|sm 2540 d blk tss
+1104|232|8|\N|161|sm 2540 d tss
+830|232|1|1|162|sm 2540 c blk tds
+831|232|2|2|162|sm 2540 c tds
+832|232|3|\N|161|sm 2540 c blk tds
+833|232|4|\N|161|sm 2540 c tds
+358|96|1|1|162|200.7 reagent blank
+610|44|1|1|768|550 prep information
+611|44|2|2|768|550 method blank
+612|44|3|3|768|550 low spike
+613|44|4|4|768|550 high spike
+745|53|1|1|162|524.2-8260-624-oa1 ssis
+744|54|1|1|162|524.2-8260-624-oa1 ssis
+752|55|1|1|162|524.2-8260-624-oa1 ssis
+746|148|1|1|162|524.2-8260-624-oa1 ssis
+607|140|1|\N|161|colilert24 media
+608|140|2|\N|161|colilert18 media
+637|140|3|\N|161|sterile h2o 90ml
+623|158|1|\N|161|colilert24 media
+624|158|2|\N|161|colilert18 media
+639|164|1|\N|161|colilert24 media
+662|164|2|\N|161|colilert18 media
+334|82|1|1|162|1603 pre filter plate
+335|82|2|\N|161|1603 post filter plate
+644|82|3|\N|161|mtec media
+840|82|4|\N|161|mf membrane filters
+841|82|5|\N|161|pbs dil bottles
+336|84|1|4|162|9222d pre filter plate
+337|84|2|\N|161|9222d post filter plate
+604|84|3|1|162|mfc media
+605|84|4|2|162|pbs dil bottles
+657|84|5|3|162|mf membrane filters
+645|83|1|\N|161|na mug media
+679|189|1|\N|161|pseudalert media
+323|72|1|1|162|9215b media blank
+330|72|2|\N|161|9215b air plate
+652|72|3|\N|161|hpc media
+653|72|4|\N|161|pbs dil bottles
+324|73|1|1|162|9215b media blank
+333|73|2|\N|161|9215b air plate
+654|73|3|\N|161|hpc media
+655|73|4|\N|161|pbs dil bottles
+325|74|1|1|162|9215b media blank
+331|74|2|\N|161|9215b air plate
+656|74|3|\N|161|bap media
+326|75|1|1|162|9215b media blank
+332|75|2|\N|161|9215b air plate
+327|76|1|1|162|sm 2915b media blank
+354|92|1|1|162|9240a pre filter plate
+355|92|2|\N|161|9240a post filter plate
+659|91|2|\N|161|colilert18 media
+643|91|1|\N|161|colilert24 media
+681|190|1|\N|161|pseudalert media
+340|81|1|1|162|1600 pre filter plate
+341|81|2|\N|161|1600 post filter plate
+842|81|3|\N|161|mf membrane filters
+843|81|4|\N|161|meia media
+844|81|5|\N|161|pbs dil bottles
+658|171|1|1|768|h 019 blank
+342|87|1|1|162|9222d pre filter plate
+343|87|2|\N|161|9222d post filter plate
+344|88|1|1|162|9222d pre filter plate
+345|88|2|\N|161|9222d post filter plate
+661|165|2|\N|161|colilert18 media
+647|165|1|\N|161|colilert24 media
+615|162|1|1|162|535 prep information
+616|162|2|2|162|535 method blank
+617|162|3|3|162|535 low spike
+618|162|4|4|162|535 high spike
+619|160|1|1|162|549.2 prep information
+620|160|2|2|162|549.2 method blank
+621|160|3|3|162|549.2 low spike
+622|160|4|4|162|549.2 high spike
+919|223|7|2|162|539 calib
+920|223|8|3|162|539 calib
+921|223|9|4|162|539 calib
+922|223|10|5|162|539 calib
+923|223|11|6|162|539 calib
+924|223|12|7|162|539 calib
+925|223|13|8|162|539 blank calib
+926|223|14|\N|161|539 calib
+927|223|15|\N|161|539 calib
+928|223|16|\N|161|539 calib
+907|223|1|1|162|539 prep information
+908|223|2|9|162|539 blank
+909|223|3|10|162|539 lfb mrl
+910|223|4|11|162|539 lfb
+911|223|5|12|162|539 ms
+912|223|6|13|162|539 msd
+749|131|1|1|162|524.2-8260-624-oa1 ssis
+750|147|1|1|162|524.2-8260-624-oa1 ssis
+751|133|1|1|162|524.2-8260-624-oa1 ssis
+660|156|2|\N|161|colilert18 media
+641|156|1|\N|161|colilert24 media
+764|239|1|1|162|9215b media blank
+765|239|2|2|162|9215b air plate
+766|239|3|\N|161|hpc media
+767|239|4|\N|161|pbs dil bottles
+1249|271|6|7|162|epa 127b sample dup
+1250|271|7|9|162|epa 127b sample spk
+1244|271|1|1|162|epa 127b ref std
+1245|271|2|2|162|epa 127b blank
+1246|271|3|3|162|epa 127b control spk
+1247|271|4|4|162|epa 127b nitrite std 0.5
+1248|271|5|5|162|epa 127b nitrite std 0.5
+1251|271|8|19|162|epa 127b sample dup
+1252|271|9|21|162|epa 127b sample spk
+1253|271|10|31|162|epa 127b sample dup
+1254|271|11|33|162|epa 127b sample spk
+1255|271|12|43|162|epa 127b sample dup
+1256|271|13|45|162|epa 127b sample spk
+1257|271|14|55|162|epa 127b sample dup
+1258|271|15|57|162|epa 127b sample spk
+1259|271|16|\N|161|epa 127b nitrate std 0.2
+1260|271|17|\N|161|epa 127b nitrate std 2
+824|277|1|1|162|20.2 sr-89 lcs
+825|277|2|\N|163|100.2 filtered blank
+834|280|1|1|768|nbs tsh std a
+835|280|2|2|768|nbs tsh std a
+836|280|3|3|768|nbs tsh std b
+837|280|4|4|768|nbs tsh std b
+846|280|5|5|768|nbs tsh std c
+847|280|6|6|768|nbs tsh std c
+848|280|7|7|768|nbs tsh std d
+849|280|8|8|768|nbs tsh std d
+850|280|9|9|768|nbs tsh std e
+851|280|10|10|768|nbs tsh std e
+852|280|11|11|768|nbs tsh std f
+853|280|12|12|768|nbs tsh std f
+854|280|13|13|768|nbs tsh ctl 4
+855|280|14|14|768|nbs tsh ctl 4
+856|280|15|15|768|nbs tsh ctl 5
+857|280|16|16|768|nbs tsh ctl 5
+858|280|17|17|768|nbs tsh ctl 6
+859|280|18|18|768|nbs tsh ctl 6
+860|280|19|19|768|nbs tsh ctl 1-low
+861|280|20|20|768|nbs tsh ctl 1-low
+862|280|21|21|768|nbs tsh ctl 2-medium
+863|280|22|22|768|nbs tsh ctl 2-medium
+969|280|23|97|162|nbs tsh ctl 1-low
+970|280|24|98|162|nbs tsh ctl 1-low
+971|280|25|99|162|nbs tsh ctl 2-medium
+972|280|26|100|162|nbs tsh ctl 2-medium
+973|280|27|193|162|nbs tsh ctl 1-low
+974|280|28|194|162|nbs tsh ctl 1-low
+975|280|29|195|162|nbs tsh ctl 2-medium
+976|280|30|196|162|nbs tsh ctl 2-medium
+977|280|31|289|162|nbs tsh ctl 1-low
+978|280|32|290|162|nbs tsh ctl 1-low
+979|280|33|291|162|nbs tsh ctl 2-medium
+980|280|34|292|162|nbs tsh ctl 2-medium
+1059|303|1|1|768|nbs galt std a
+1060|303|2|2|768|nbs galt std a
+1061|303|3|3|768|nbs galt std b
+1062|303|4|4|768|nbs galt std b
+1063|303|5|5|768|nbs galt std c
+1064|303|6|6|768|nbs galt std c
+1065|303|7|7|768|nbs galt std d
+1066|303|8|8|768|nbs galt std d
+1067|303|9|9|768|nbs galt std e
+1068|303|10|10|768|nbs galt std e
+1069|303|11|11|768|nbs galt std f
+1070|303|12|12|768|nbs galt std f
+1071|303|13|13|768|nbs galt ctl normal-medium
+1072|303|14|14|768|nbs galt ctl abnormal-low
+1073|303|15|15|768|nbs galt ctl 4
+1074|303|16|16|768|nbs galt ctl 5
+981|302|1|1|768|nbs cah std a
+982|302|2|2|768|nbs cah std a
+983|302|3|3|768|nbs cah std b
+984|302|4|4|768|nbs cah std b
+985|302|5|5|768|nbs cah std c
+986|302|6|6|768|nbs cah std c
+987|302|7|7|768|nbs cah std d
+988|302|8|8|768|nbs cah std d
+989|302|9|9|768|nbs cah std e
+990|302|10|10|768|nbs cah std e
+991|302|11|11|768|nbs cah std f
+992|302|12|12|768|nbs cah std f
+993|302|13|13|768|nbs cah ctl 4
+994|302|14|14|768|nbs cah ctl 4
+995|302|15|15|768|nbs cah ctl 5
+996|302|16|16|768|nbs cah ctl 5
+997|302|17|17|768|nbs cah ctl 6
+998|302|18|18|768|nbs cah ctl 6
+999|302|19|19|768|nbs cah ctl 1-low
+1000|302|20|20|768|nbs cah ctl 1-low
+1001|302|21|21|768|nbs cah ctl 2-medium
+1002|302|22|22|768|nbs cah ctl 2-medium
+1003|302|23|23|768|nbs cah ctl 3-high
+1004|302|24|24|768|nbs cah ctl 3-high
+1005|302|25|97|162|nbs cah std a
+1006|302|26|98|162|nbs cah std a
+1007|302|27|99|162|nbs cah std b
+1008|302|28|100|162|nbs cah std b
+1009|302|29|101|162|nbs cah std c
+1010|302|30|102|162|nbs cah std c
+1011|302|31|103|162|nbs cah std d
+1012|302|32|104|162|nbs cah std d
+1013|302|33|105|162|nbs cah std e
+1014|302|34|106|162|nbs cah std e
+1015|302|35|107|162|nbs cah std f
+1016|302|36|108|162|nbs cah std f
+1017|302|37|109|162|nbs cah ctl 1-low
+1018|302|38|110|162|nbs cah ctl 1-low
+1019|302|39|111|162|nbs cah ctl 2-medium
+1020|302|40|112|162|nbs cah ctl 2-medium
+1021|302|41|113|162|nbs cah ctl 3-high
+1022|302|42|114|162|nbs cah ctl 3-high
+1023|302|43|193|162|nbs cah std a
+1024|302|44|194|162|nbs cah std a
+1025|302|45|195|162|nbs cah std b
+1026|302|46|196|162|nbs cah std b
+1027|302|47|197|162|nbs cah std c
+1028|302|48|198|162|nbs cah std c
+1029|302|49|199|162|nbs cah std d
+1030|302|50|200|162|nbs cah std d
+1031|302|51|201|162|nbs cah std e
+1032|302|52|202|162|nbs cah std e
+1033|302|53|203|162|nbs cah std f
+1034|302|54|204|162|nbs cah std f
+1035|302|55|205|162|nbs cah ctl 1-low
+1036|302|56|206|162|nbs cah ctl 1-low
+1037|302|57|207|162|nbs cah ctl 2-medium
+1038|302|58|208|162|nbs cah ctl 2-medium
+1039|302|59|209|162|nbs cah ctl 3-high
+1040|302|60|210|162|nbs cah ctl 3-high
+1041|302|61|289|162|nbs cah std a
+1042|302|62|290|162|nbs cah std a
+1043|302|63|291|162|nbs cah std b
+1044|302|64|292|162|nbs cah std b
+1045|302|65|293|162|nbs cah std c
+1046|302|66|294|162|nbs cah std c
+1047|302|67|295|162|nbs cah std d
+1048|302|68|296|162|nbs cah std d
+1049|302|69|297|162|nbs cah std e
+1050|302|70|298|162|nbs cah std e
+1051|302|71|299|162|nbs cah std f
+1052|302|72|300|162|nbs cah std f
+1053|302|73|301|162|nbs cah ctl 1-low
+1054|302|74|302|162|nbs cah ctl 1-low
+1055|302|75|303|162|nbs cah ctl 2-medium
+1056|302|76|304|162|nbs cah ctl 2-medium
+1057|302|77|305|162|nbs cah ctl 3-high
+1058|302|78|306|162|nbs cah ctl 3-high
+884|300|1|\N|163|nbs bt paba
+885|300|2|\N|163|nbs bt paba 1:10
+886|300|3|\N|163|nbs bt paba 1:20
+887|300|4|\N|163|nbs bt normal
+888|300|5|\N|163|nbs bt positive
+889|300|6|\N|163|nbs bt blank
+929|301|1|1|768|nbs irt std a
+930|301|2|2|768|nbs irt std a
+931|301|3|3|768|nbs irt std b
+932|301|4|4|768|nbs irt std b
+933|301|5|5|768|nbs irt std c
+934|301|6|6|768|nbs irt std c
+935|301|7|7|768|nbs irt std d
+936|301|8|8|768|nbs irt std d
+937|301|9|9|768|nbs irt std e
+938|301|10|10|768|nbs irt std e
+939|301|11|11|768|nbs irt std f
+940|301|12|12|768|nbs irt std f
+941|301|13|13|768|nbs irt ctl 4
+942|301|14|14|768|nbs irt ctl 4
+943|301|15|15|768|nbs irt ctl 5
+944|301|16|16|768|nbs irt ctl 5
+945|301|17|17|768|nbs irt ctl 1-low
+946|301|18|18|768|nbs irt ctl 1-low
+947|301|19|19|768|nbs irt ctl 2-medium
+948|301|20|20|768|nbs irt ctl 2-medium
+949|301|21|21|768|nbs irt ctl 3-high
+950|301|22|22|768|nbs irt ctl 3-high
+951|301|23|97|162|nbs irt ctl 1-low
+952|301|24|98|162|nbs irt ctl 1-low
+953|301|25|99|162|nbs irt ctl 2-medium
+954|301|26|100|162|nbs irt ctl 2-medium
+955|301|27|101|162|nbs irt ctl 3-high
+956|301|28|102|162|nbs irt ctl 3-high
+957|301|29|193|162|nbs irt ctl 1-low
+958|301|30|194|162|nbs irt ctl 1-low
+959|301|31|195|162|nbs irt ctl 2-medium
+960|301|32|196|162|nbs irt ctl 2-medium
+961|301|33|197|162|nbs irt ctl 3-high
+962|301|34|198|162|nbs irt ctl 3-high
+963|301|35|289|162|nbs irt ctl 1-low
+964|301|36|290|162|nbs irt ctl 1-low
+965|301|37|291|162|nbs irt ctl 2-medium
+966|301|38|292|162|nbs irt ctl 2-medium
+967|301|39|293|162|nbs irt ctl 3-high
+968|301|40|294|162|nbs irt ctl 3-high
+1105|316|1|1|162|539 prep information
+1106|316|9|9|162|539 blank
+1107|316|10|10|162|539 lfb mrl
+1108|316|11|11|162|539 lfb
+1109|316|12|12|162|539 ms
+1110|316|13|13|162|539 msd
+1111|316|2|2|162|539 calib
+1112|316|3|3|162|539 calib
+1113|316|4|4|162|539 calib
+1114|316|5|5|162|539 calib
+1115|316|6|6|162|539 calib
+1116|316|7|7|162|539 calib
+1117|316|8|8|162|539 blank calib
+1118|316|14|\N|161|539 calib
+1119|316|15|\N|161|539 calib
+1120|316|16|\N|161|539 calib
+1195|328|1|1|162|to-11a prep info
+1216|328|2|2|162|to-11a blank lab
+1217|328|3|3|162|to-11a spike low
+1218|328|4|4|162|to-11a spike
+1204|342|1|1|162|9215b media blank
+1205|342|2|\N|161|9215b air plate
+1206|342|3|\N|161|hpc media
+1220|345|1|\N|161|7500 u c uranium dup
+1221|345|2|\N|161|7500 u c uranium lcs
+1222|345|3|\N|161|7500 u c uranium blank
+1235|347|1|1|162|mumps pos amp
+1236|347|2|2|162|mumps rt amp
+1237|347|3|3|162|mumps neg amp
+1238|347|4|4|162|mumps neg ext
+1239|350|1|1|162|pertussis pos amp
+1240|350|2|2|162|pertussis neg amp
+1241|350|3|3|162|pertussis neg ext
+1263|364|1|1|162|pseudomonas aer (27853) - pos
+1264|364|2|2|162|e coli (25922) - neg
+1265|365|1|1|162|camp jejuni (33291) - pos
+1266|365|2|2|162|camp fetus (27374) - neg
+1267|366|1|1|162|strep agalactiae (12386) - pos
+1268|366|2|2|162|strep pyogenes (19615) - neg
+1269|367|1|1|162|strep agalactiae (12386) - pos
+1270|367|2|2|162|strep pyogenes (19615) - neg
+1271|367|3|3|162|camp jejuni (33291) - pos
+1272|368|1|1|162|staph aureus (25923) - pos
+1273|368|2|2|162|strep pyogenes (19615) - neg
+1274|369|1|1|768|epa 105b ref std
+1275|369|2|2|768|epa 105b blank
+1276|369|3|3|768|epa 105b control spk
+1277|369|4|5|162|epa 105b sample dup
+1278|369|5|7|162|epa 105b sample spk
+1279|369|6|17|162|epa 105b sample dup
+1280|369|7|19|162|epa 105b sample spk
+1281|369|8|29|162|epa 105b sample dup
+1282|369|9|31|162|epa 105b sample spk
+1283|369|10|41|162|epa 105b sample dup
+1284|369|11|43|162|epa 105b sample spk
+1285|369|12|53|162|epa 105b sample dup
+1286|369|13|55|162|epa 105b sample spk
+1287|369|14|\N|161|epa 105b chloride std 25
+1288|369|15|\N|161|epa 105b chloride std 100
+1290|495|1|\N|161|po 02 rc polonium dup
+1291|495|2|\N|161|po 02 rc polonium lcs
+1292|495|3|\N|161|po 02 rc blank
+1293|496|1|\N|161|u 02 rc uranium dup
+1294|496|2|\N|161|u 02 rc uranium lcs
+1295|496|3|\N|161|u 02 rc uranium blank

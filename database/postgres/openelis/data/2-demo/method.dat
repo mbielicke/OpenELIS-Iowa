@@ -1,0 +1,567 @@
+4|epa 548.1|GCMS endothall in water|EPA 548.1|Y|01/01/2000|12/31/2099
+5|colilert mpn|E.coli MPN by Quanti-Tray|SM 9223B 21st MPN|Y|04/01/2009|12/31/2099
+6|colilert mpn well|MPN Total Coliform & E.coli by Quanti-Tray|SM 9223B 21st MPN|Y|04/01/2009|12/31/2099
+7|mf e coli|E.coli by Membrane Filtration|EPA 1603|Y|04/01/2009|12/31/2099
+8|mtf mpn e coli|E.coli by Multiple Tupe Fermentation, SM 9221F|SM 9221F|Y|04/01/2009|12/31/2099
+9|petrifilm|E.coli by Petrifilm, AOAC 998.08|AOAC 998.08|Y|03/30/2009|12/29/2099
+10|mf fecal|Fecal Coliform by Membrane Filtration, SM 9222D|SM 9222D|Y|04/01/2009|12/31/2099
+11|mtf mpn fecal|MPN by Multiple Tube Fermentation for Fecal Coliform|SM21 9221E|Y|04/01/2009|12/31/2099
+12|mtf mpn tot coliform|MPN by Multiple Tube Fermentation for Total Coliform|SM 9221B|Y|04/01/2009|12/31/2099
+13|mf total coliform|Total Coliform by Membrane Filtration, SM 9222B|SM 9222B|Y|04/01/2009|12/31/2099
+14|1623|Giardia & Cryptosporidium by EPA 1623|EPA 1623|Y|04/01/2009|12/31/2099
+15|hpc red pour plate|Heterotrophic Plate Count|SM 9215B|N|04/01/2009|12/31/2099
+16|mf enterococci|Enterococci by Membrane Filtration|EPA 1600|Y|04/01/2009|12/31/2099
+17|epa 8260|GCMS volatiles in water, soil, and other matrices|EPA 8260|Y|04/27/2009|12/31/2099
+18|mf namug|E.coli by Membrane Filter using NA w/MUG, SM 9222G|SM 9222G|Y|04/01/2009|12/31/2099
+19|epa 8082 pcb|PCBs in water, soil, oil, and other matrices by GCEC|EPA 8082|Y|01/01/2009|01/01/2099
+20|epa 8081 chi|chlorinated hydrocarbons in water, soil, and other matrices|EPA 8081|Y|01/01/2009|01/01/2099
+21|gross a/b in water|gross alpha/beta in water by evaporation EPA 900.0|EPA 900.0|Y|04/01/2009|12/31/2099
+22|gross a/b soil|gross alpha/beta activity in soil by UHL 13.21|UHL SOP 13.21|Y|04/01/2009|12/31/2099
+23|Radon|Radon-222 by SM 7500-Rn B|Radon-222 by SM 7500-Rn B|N|04/30/2009|09/01/2011
+24|sm 2340 c,total hard|Titration|SM 2340 C 18th|Y|05/04/2009|12/31/2099
+25|nalco aquagraph|Calculation|Nalco Aquagraph|Y|07/29/2010|12/31/2099
+26|epa 200.7boron nondw|ICP metals|EPA 200.7|Y|05/04/2009|12/31/2099
+27|epa 6010 b|ICP metals|EPA 6010B|Y|05/04/2009|12/31/2099
+28|Bart|Bart test method for sulfate reducing bacteria|Bart Test for Sulfate Reducing Bacteria|Y|04/01/2009|12/31/2099
+29|iron bacteria|Iron Bacteria|SM 9240A|Y|04/01/2009|12/31/2099
+30|pseudo|Pseudomonas aeruginosa by SM 9213F|SM 9213F 21st|Y|04/01/2009|12/31/2099
+31|sm 4500h|sm 4500 h for field pH|SM 4500 h|Y|05/14/2009|12/31/2099
+32|sm 2130 b|Nephelometric - reportable turbidities|SM 2130 B 18th|Y|05/14/2009|12/31/2099
+33|epa 200.2 trm|TRM digestion|EPA 200.2|Y|05/14/2009|12/31/2099
+34|niosh 7300 uhl ih|ICP metals|NIOSH 7300-UHL|Y|05/14/2009|12/31/2099
+35|flow-csi|Flow for Compliance Sampling|ISCO 1989|Y|05/14/2009|12/31/2099
+36|flow-stream|Stream Flow|USGS CA8|Y|05/14/2009|12/31/2099
+37|epa 625 bna, pah|GCMS semivolatiles in waste water|EPA 625|Y|05/15/2009|12/31/2099
+38|epa 300.0 water|Ion Chromatography|EPA 300.0|N|09/27/2011|12/07/2011
+39|epa 200.8 npdes|ICPMS metals|EPA 200.8|Y|05/15/2009|12/31/2099
+40|epa 8270 bna, pah|GCMS semivolatiles in water, soil, and other matrices|EPA 8270|Y|05/19/2009|12/31/2099
+41|bna water|GC/MS Semivolatiles sep funnel extraction method for water|EPA 3510|N|05/19/2009|12/31/2009
+42|rt-pcr|Real-Time RT-PCR|Real-Time RT-PCR|Y|05/21/2009|12/31/2009
+43|ibuprofenum|Ibuprom|test health system|Y|12/11/1912|12/11/1912
+44|fernando bgbg|sss gregeg|aaa|Y|12/02/2009|12/27/2009
+45|epa 245.2mercury ndw|Cold vapor|EPA 245.2|Y|06/12/2009|12/31/2099
+46|elisa|enzyme-linked immunosorbent assay|Enzyme-Linked Immunosorbent Assay|Y|12/31/2008|12/31/2019
+357|epa 245.2 mercury dw|Cold vapor|EPA 245.2|Y|05/05/2011|12/31/2099
+48|isco|ISCO Flow Meaurement|Flow Meaurement|N|05/13/2010|12/31/2099
+49|niosh 7903|Ion Chromatography|NIOSH 7903|Y|07/29/2010|12/31/2099
+50|sm 3111 b drink|Flame AA metals|SM 3111 B 18th|Y|07/29/2010|12/31/2099
+51|epa 9041 a|Paper method|EPA 9041A|Y|07/29/2010|12/31/2099
+52|epa 6020 solid|ICPMS metals|EPA 6020|Y|07/01/2009|12/31/2099
+53|epa 8318|SW846 8318 HPLC with prior sample prep|EPA SW-846 8318|Y|01/01/2009|01/01/2099
+54|+uhcg|Urine Preganacy Test|\N|Y|08/18/2009|08/10/2010
+55|epa 531.1|EPA Method 531.1 HPLC with prior prep|EPA 531.1|Y|01/01/2009|01/01/2099
+56|spectrophotometry|spectrophotometry|spectrophotometry|Y|12/31/1999|12/31/2199
+358|epa 353.2 as n|Automated method for NO2 and NO3 as N|EPA 353.2|Y|08/23/2010|12/31/2099
+58|ria|RIA|RIA|Y|08/09/2009|08/09/2009
+59|epa 314.0|Ion chromatography|EPA 314.0|Y|11/09/2009|12/31/2099
+60|sm 2510 b|Wheatstone Bridge|SM 2510 B 18th|Y|11/09/2009|12/31/2099
+61|sm 4500 h - field|Field pH by Standard Methods 4500 H-B+|SM 4500 H-B+ 2000|Y|11/12/2009|12/31/2099
+62|sm 2550 - field|Field Temperature by Standard Methods 2550|SM 2550 B 2000|Y|11/13/2009|12/31/2099
+63|sm 4500-o g|Field Dissolved Oxygen by Standard Methods 4500-O G|SM 4500-O G|Y|11/13/2009|12/31/2099
+64|astm d 888-05 c|Field Dissolved Oxygen by ASTM D 888-05 C by Luminescence|ASTM D 888-05 C|Y|11/13/2009|12/31/2099
+65|usgs ca8|Flow Rate for Streams by USGS CA8|USGS CA8|Y|11/13/2009|12/31/2099
+66|sm 10500|Benthic Macroinvertebrate Analysis by Standard Methods 10500|SM 10500|Y|11/13/2009|12/31/2099
+67|wetzel likens 2000|Zooplankton Analysis by Wetzel and Likens 2000|Wetzel and Likens 2000|Y|11/13/2009|12/31/2099
+68|sm 10200 f|Lab Analysis of Phytoplankton by Standard Methods 10200 F|SM 10200 F|Y|11/13/2009|12/31/2099
+69|epa 3050b solid|Solids digestion|EPA 3050B|Y|01/21/2010|12/31/2099
+70|gamma on liquid|Gamma spec on liquids by EPA 901.1|EPA 901.1|Y|02/10/2010|12/31/2099
+71|teh water|Total Extractable Hydrocarbons|Iowa OA-2|Y|04/27/2010|04/10/2200
+72|serum check|\N|\N|Y|02/01/2010|02/28/2010
+73|epa 524.2|volatiles in water by GCMS|EPA 524.2|Y|02/18/2010|12/31/2099
+386|epa 903.0/904.0|combined radium 226 and 228  (calculated)|EPA 903.0/904.0|Y|09/07/2011|09/07/2011
+439|sm 10200 h|Chlorophyll Analysis by SM 10200 H|SM 10200 H|Y|11/30/2011|12/31/2099
+359|epa 200.7 boron diss|ICP metals|EPA 200.7|Y|05/04/2011|12/31/2099
+360|sm 5210b 20 day|Dissolved oxygen depletion|SM 5210 B 18th|Y|05/10/2011|12/31/2099
+361|iso 7888-1985|field specific conductance by iso 7888-1985|ISO 7888-1985|Y|04/04/2011|12/31/2099
+78|nitratos|dd|\N|Y|02/26/2010|02/28/2012
+79|epa 525.2|GCMS semivolatiles in drinking water|EPA 525.2|Y|03/03/2010|12/31/2099
+80|colilert pa sdwa am|P/A 24hr Total coliform & E.coli - morning|9223B-PA|Y|03/22/2010|12/31/2099
+81|colilert pa sdwa pm|P/A 18hr Total coliform & E.coli - afternoon|9223B-18PA|Y|03/22/2010|12/31/2099
+82|listeria sp|Listeria species|USDA MLG 8.05|Y|04/15/2010|04/15/2099
+362|pcr|Polymerase Chain Reaction|Polymerase Chain Reaction|Y|07/05/2011|12/31/2099
+84|sm 10200 g|Lab Analysis of Zooplankton by Standard Methods 10200 G|Wetzel and Likens 2000|Y|04/20/2010|12/31/2099
+86|uhl h 025|UHL-H-025 LC/MS/MS determination|SOP UHL-H-025 LC/MS/MS|Y|01/01/2007|01/01/2099
+87|epa 900.0 including|Gross Alpha in water including Uranium by evaporation|EPA 900.0|Y|04/23/2010|12/31/2099
+88|orise ap1|Gross Alpha/Beta in solid|ORISE AP1|Y|04/23/2010|12/31/2099
+89|epa 7420|Flame AA metals|EPA 7420|Y|04/23/2010|12/31/2099
+90|iowa oa-2|TEH in water, soil, and other matrices by GC-FID|Iowa OA-2|Y|04/27/2010|04/10/2200
+91|hpc spread plate|Heterotrophic Plate Count, SM 9215C|SM 9215C|Y|04/27/2010|12/31/2099
+92|epa 901.1|Gamma spectroscopy in liquids|EPA 901.1|Y|04/27/2010|12/31/2099
+93|rad sop 20.0|composite bottle to pour off, no analysis|RAD 20.0|Y|04/27/2010|12/31/2099
+94|gamma scan|gamma scan on miscellaneous matrices|EPA LV page 92|Y|04/27/2010|12/31/2099
+95|fda gamma|gamma spectroscopy on food by FDA gamma|FDA gamma|Y|04/27/2010|12/31/2099
+96|sm 2320 b|Alkalinity titration - electrometric endpoint|SM 2320 B 18th|Y|04/28/2010|12/31/2099
+97|iowa oa-2 teh water|separatory funnel prep for TEH in water by GC-FID|Iowa OA-2|Y|09/02/2010|12/31/2099
+98|epa 300.1|Ion Chromatography|EPA 300.1|Y|04/28/2010|12/31/2099
+440|sm 4500 nh3 d|Ammonia as N by ion spec. electrode|Ammonia as N|Y|12/01/2011|12/31/2099
+100|uhl h 016|SOP UHL-H-016 LC/MS/MS determination|SOP UHL-H-016 LC/MS/MS|Y|01/01/2010|01/01/2099
+101|uhl h 018 perfluorin|SOP UHL-H-018 LC/MS/MS determination|SOP UHL-H-018 LC/MS/MS|Y|01/01/2010|01/01/2099
+102|uhl h 019|SOP UHL-H-019 LC/MS/MS determination|SOP UHL-H-019 LC/MS/MS|Y|01/01/2010|01/01/2099
+103|uhl h 017|SOP UHL-H-017 LC/MS/MS determination|SOP UHL-H-017 LC/MS/MS|Y|01/01/2010|01/01/2099
+104|uhl h 026|SOP UHL-H-026 LC/MS/MS determination|SOP UHL-H-026 LC/MS/MS|Y|01/01/2010|01/01/2099
+105|uhl h 020|SOP UHL-H-020 LC/MS/MS determination|SOP UHL-H-020 LC/MS/MS|Y|01/01/2010|01/01/2099
+106|uhl h 023|SOP UHL-H-023 LC/MS/MS determination|SOP UHL-H-023 LC/MS/MS|Y|01/01/2010|01/01/2099
+107|epa 535|ESA/OXA by EPA Method 535 LC/MS/MS Determination|EPA 535|Y|01/01/2010|01/01/2099
+108|uhl h 023 dupont|SOP UHL-H-023 DUPONT List LC/MS/MS Determination|SOP UHL-H-023 LC/MS/MS|Y|01/01/2010|01/01/2099
+109|epa lv page 6|Gross alpha/beta in air|EPA LV Page 6|Y|05/10/2010|12/31/2099
+110|epa 00-02 including|Gross Alpha in water by co-precipitation including Uranium|EPA 00-02|Y|05/10/2010|12/31/2099
+111|epa 507 nch1|separtory funnel prep using nch1 spike for GCNP pesticides|EPA Method 507|N|05/20/2010|12/31/2099
+112|epa 507 nch2|separtory funnel prep using nch2 spike for GCNP pesticides|EPA Method 507|N|05/20/2010|12/31/2099
+113|epa 507 nch3|separtory funnel prep using nch3 spike for GCNP pesticides|EPA Method 507|N|05/20/2010|12/31/2099
+114|epa 507 opa|separtory funnel prep using opa spike for GCNP pesticides|EPA Method 507|N|05/20/2010|12/31/2099
+115|epa 507 opb|separtory funnel prep using opb spike for GCNP pesticides|EPA Method 507|N|05/20/2010|12/31/2099
+116|epa 3550 solid nch1|extraction using nch1 spike for GCNP pesticides|EPA 3550|N|05/20/2010|12/31/2099
+117|epa 3550 solid nch2|extraction using nch2 spike for GCNP pesticides|EPA 3550|N|05/20/2010|12/31/2099
+118|epa 3550 solid nch3|extraction using nch3 spike for GCNP pesticides|EPA 3550|N|05/20/2010|12/31/2099
+119|epa 507 np|nitrogen containing herbicides in water by GCNP|EPA Method 507|N|05/20/2010|12/31/2099
+121|sm 4500-cl g|Total Residual Chlorine byStandard Methods 4500-cl g|SM 4500-cl g|Y|07/01/2010|12/31/2099
+122|iowa oa-1|BTEX and MtBE in water, soil, and other matrices by GCMS|Iowa OA-1|Y|07/29/2010|12/31/2099
+123|epa 624|GCMS volatiles in waste water|EPA 624|Y|07/29/2010|12/31/2099
+124|aoac 973.32 dish|Flame AA or ICP|AOAC 973.32|Y|07/29/2010|12/31/2099
+125|niosh 9102 aa wipe|Flame AA metals|NIOSH 9102-AA|Y|07/29/2010|12/31/2099
+126|niosh 9102 uhl|ICP metals|NIOSH 9102-UHL|Y|07/29/2010|12/31/2099
+127|epa 7000 b soil|Flame AA|EPA 7000B soil|Y|07/29/2010|12/31/2010
+128|sm 3500 cr d|Colorimetric|SM 3500-CR D 18th|Y|07/29/2010|12/31/2099
+129|epa 7470a mercury aq|Cold vapor|EPA 7470A|Y|07/29/2010|12/31/2099
+130|epa 7471 a mercury|Cold vapor|EPA 7471A|Y|07/29/2010|12/31/2099
+131|sm 3500 ca d|Titration|SM 3500-CA D 18th|Y|07/29/2010|12/31/2099
+132|sm 4500 cn e|Colorimetric following distillation|SM 4500-CN E 18th|Y|07/29/2010|12/31/2099
+133|epa 9014|Colorimetric following distillation|EPA 9014|Y|07/29/2010|12/31/2099
+134|sm 4500 co2 b|Calculation|SM 4500-CO2 B 18th|Y|07/29/2010|12/31/2099
+135|sm 2340 b,total hard|Calculation requiring ca, mg by EPA 200.7|SM 2340 B 18th|Y|07/29/2010|12/31/2099
+136|sm 4500 h+ b ph&alk|Electrometric measurement of pH for alkalinity|SM 4500 H+ B 18th|Y|07/29/2010|12/31/2099
+137|sm 4500 s- e|Titration|SM 4500-S- E 18th|Y|07/29/2010|12/31/2099
+138|epa 9034|Titration|EPA 9034|Y|07/29/2010|12/31/2099
+139|sm 4500 si d|Colorimetric|SM 4500-SI D 18th|Y|07/29/2010|12/31/2099
+140|sm 4500 si e|Colorimetric|SM 4500-SI E 18th|Y|07/29/2010|12/31/2099
+141|sm 4500 so3 b|titration|SM 4500-SO3 B 18th|Y|07/29/2010|12/31/2099
+142|hach 8073|calculation|HACH 8073|Y|07/29/2010|12/31/2099
+143|epa to-15|GCMS volatiles in air|EPA TO-15|Y|07/30/2010|12/31/2099
+144|sm 2310 b|Acidity titration - electrometric endpoint|SM 2310 B 18th|Y|07/29/2010|12/31/2099
+145|epa 3010|Digestion of aqueous samples|EPA 3010|Y|07/29/2010|12/31/2099
+146|sm 4500 nh3 b|Distillation|\N|Y|07/29/2010|12/31/2099
+147|nf monograph 25|\N|NF Monograph 25|Y|07/29/2010|12/31/2099
+148|sm 5210b  5 day|Dissolved oxygen depletion|SM 5210 B 18th|Y|07/29/2010|12/31/2099
+149|sm 5220 d|Colorimetric|SM 5220 D 18th|Y|07/29/2010|12/31/2099
+150|epa 410.4|Colorimetric|EPA 410.4|Y|07/29/2010|12/31/2099
+151|sm 2120 c|Spectrophotometric|SM 2120 C 18th|Y|07/29/2010|12/31/2099
+152|epa 9045|Electrometric measurement|EPA 9045|Y|07/29/2010|12/31/2099
+153|sm 5310 b|Combustion|SM 5310 B 18th|Y|07/29/2010|12/31/2099
+154|sm 4500 f c nondrink|Specific ion electrode|SM 4500-F C 18th|Y|07/29/2010|12/31/2099
+155|sm 5540 c|Colorimetric|SM 5540 C 18th|Y|07/29/2010|12/31/2099
+156|lac 10-107-06-1j|Automated|LAC 10-107-06-1J|Y|07/29/2010|12/31/2010
+157|epa 350.1|Automated|EPA 350.1|Y|07/29/2010|12/31/2099
+158|niosh 6015|Automated|NIOSH 6015|Y|07/29/2010|12/31/2099
+159|epa 353.2|automated|EPA 353.2|Y|07/29/2010|12/31/2099
+160|lac 10-107-05-1a|Automated|LAC 10-107-05-1A|Y|07/29/2010|12/31/2099
+161|sm 4500 no2 b|Manual analysis for nitrite|SM 4500-NO2 B 18th|Y|07/29/2010|12/31/2099
+162|epa 160.4 volatile|Gravimetric|EPA 160.4|Y|07/29/2010|12/31/2099
+163|epa 351.2|Automated|EPA 351.2|Y|07/29/2010|12/31/2099
+164|epa 9060|Combustion|EPA 9060|Y|07/29/2010|12/31/2099
+165|sm 2540 b total|Gravimetric|SM 2540 B 18th|Y|07/29/2010|12/31/2099
+166|usgs i-3765-85suspen|gravimetric|USGS I-3765-85|Y|07/29/2010|12/31/2099
+167|sm 2540 g total|Gravimetric|SM 2540 G 18th|Y|07/29/2010|12/31/2099
+168|sm 2540 d suspended|Gravimetric|SM 2540 D 18th|Y|07/29/2010|12/31/2099
+169|lac 10-107-06-2e|Automated|LAC 10-107-06-2E|Y|07/29/2010|12/31/2099
+170|lac 10-114-27-1a|automated|LAC 10-114-27-1A|Y|07/29/2010|12/31/2099
+171|sm 2540 c dissolved|Gravimetric|SM 2540 C 18th|Y|07/29/2010|12/31/2099
+172|sm 2540 f settleable|Volumetric - Imhoff cone|SM 2540 F 18th|Y|07/29/2010|12/31/2099
+173|lac 10-115-01-1d|Automated|LAC 10-115-01-1D|Y|07/29/2010|12/31/2099
+174|lac 10-115-01-1c|Automated|LAC 10-115-01-1C|Y|07/29/2010|12/31/2099
+175|epa 365.4|Semi-automated|EPA 365.4|Y|07/29/2010|12/31/2099
+176|sm 4500 p f|Automated|SM 4500-P F 18th|Y|07/29/2010|12/31/2099
+177|lac 10-115-01-1a|Automated|LAC 10-115-01-1A|Y|07/29/2010|12/31/2099
+178|epa 365.1|Automated|EPA 365.1|Y|07/29/2010|12/31/2099
+179|sm 4500 p e|Manual|SM 4500-P E 18th|Y|07/29/2010|12/31/2099
+180|epa 420.1|Colorimetric|EPA 420.1|Y|07/29/2010|12/31/2099
+181|epa 420.4|Automated|EPA 420.4|Y|07/29/2010|12/31/2099
+182|sm 5560 c|Titration|SM 5560 C 18th|Y|07/29/2010|12/31/2099
+183|sm 4500 no3 f|Automated|SM 4500-NO3 F 18th|Y|07/29/2010|12/31/2099
+184|usgs i-4540-85|Automated|USGS I-4540-85|Y|07/29/2010|12/31/2099
+185|lac 10-107-04-1j|Automated|LAC 10-107-04-1J|Y|07/29/2010|12/31/2099
+186|epa 524.2 thm|GCMS trihalomethanes (THMs) in drinking water|EPA 524.2|Y|07/30/2010|12/31/2099
+187|epa to-12|GCMS SNMOC in air|EPA TO-12|Y|07/30/2010|12/31/2099
+188|epa 8270 nch, op|GCMS NCH and OPI pests in water, soil, foliage, and other|EPA 8270|Y|07/30/2010|12/31/2099
+189|uhl h 021|SOP UHL-H-021 LC/MS/MS determination|SOP UHL-H-021 LC/MS/MS|Y|01/01/2010|01/01/2099
+190|uhl h 018 fifra|SOP UHL-H-018 LC/MS/MS FIFRA Samples|SOP UHL-H-018 LC/MS/MS|Y|01/01/2010|01/01/2099
+191|niosh 7300 aa ih|Flame AA metals|NIOSH 7300-AA|Y|08/04/2010|12/31/2099
+192|niosh 7300 ms ih|ICPMS metals|NIOSH 7300-MS|Y|08/04/2010|12/31/2099
+193|epa 547|HPLC Post-column derivatization|EPA 547|Y|01/01/2010|01/01/2099
+194|uhl h 006|HPLC Post-column derivatization|HPLC Post-column derivatization|Y|01/01/2010|01/01/2099
+195|epa 549.2|HPLC/uv by PDA with SPE extraction|EPA 549.2|Y|01/01/2010|01/01/2099
+196|epa 3510 water bna|separtory funnel prep for BNA semivolatiles|EPA 3510 BNA|Y|08/05/2010|12/13/2099
+197|epa 3550 solid bna|sonication prep for BNA semivolatiles|EPA 3550 BNA|Y|08/05/2010|12/31/2099
+198|epa 3510 water np ms|separtory funnel prep for pesticides by GCMS|EPA 3510 NP|Y|08/05/2010|12/31/2099
+199|epa 3550 solid np ms|sonication prep for pesticides by GCMS|EPA 3550 NP|Y|08/05/2010|12/31/2099
+200|blue pour plate|Heterotropic Plate Count|SM 9215B|Y|07/01/2010|12/31/2099
+201|hpc green pour plate|Heterotropic Plate Count|SM 9215B|N|08/01/2010|12/31/2099
+202|sm 2320 b sludge|Alkalinity titration - electrometric endpoint|SM 2320 B 18th|Y|08/06/2010|12/31/2099
+203|epa200.8private lead|ICMPS metal for private lead samples|EPA 200.8|Y|08/06/2010|12/31/2099
+204|epa 7420 comp wipe|Flame AA ENVPB dust on composite wipe|EPA 7420|Y|08/06/2010|12/31/2099
+205|epa 7420 paint|Flame AA ENVPB paint sample|EPA 7420|Y|08/06/2010|12/31/2099
+206|epa 7420 soil|Flame AA ENVPB soil sample|EPA 7420|Y|08/06/2010|12/31/2099
+207|epa 7420 wipe|Flame AA ENVPB dust on wipe|EPA 7420|Y|08/06/2010|12/31/2099
+208|epa 6010b boron aque|ICP metals|EPA 6010B|Y|08/06/2010|12/31/2099
+209|sm 2130 b screen|Nephelometric - turbidity screen for metals|\N|Y|08/06/2010|12/31/2099
+210|epa 552.2 haa|GCEC halo acetic acids (HAAs) in drinking water|EPA 552.2|Y|08/06/2010|12/31/2099
+211|epa 3050b envpb|Solid digestion for ENVPB|EPA 3050B|Y|08/06/2010|12/31/2099
+212|epa 245.2 hg|Mercury digestion of water samples|EPA 245.2|Y|08/06/2010|12/31/2099
+213|epa 515.3 acid herbs|acid herbicides in water by GCEC|EPA 515.3|Y|08/06/2010|12/31/2099
+214|epa 507 opp|organo phosphate pesticides in water by GCNP|EPA Method 507|N|08/06/2010|12/31/2099
+215|epa 200.8 drink|ICPMS metals|EPA 200.8|Y|08/06/2010|12/31/2099
+216|macroscopic|\N|\N|Y|08/01/2010|08/04/2010
+217|epa 900.0/200.8|Gross Alpha excluding Uranium (calculated)|EPA 900.0/200.8|Y|08/10/2010|08/10/2099
+218|epa 00-02/200.8|Gross Alpha excluding Uranium  (calcualted)|EPA 00-02/200.8|Y|08/10/2010|08/03/2099
+219|epa 200.8 mercury dw|ICPMS metals|EPA 200.8|Y|08/17/2011|12/31/2099
+220|epa 900.0 beta|Gross Alpha/Beta in water|EPA 900.0|Y|08/10/2010|08/10/2099
+221|epa 905.0|Strontium 89 and 90 in water|EPA 905.0|Y|08/10/2010|08/10/2099
+222|sm 20.2|Strontium 89 and 90 in milk|SM 20.2|Y|08/10/2010|08/10/2099
+223|sm 7500 rn b 19th|Radon 222 in water by liquid scintillation|SM 7500 RN B 19th|Y|08/10/2010|08/10/2099
+224|sm 7500 i c 19th|Iodine in milk and water by Carbon Tetrachloride extraction|SM 7500 I C 19th|Y|08/10/2010|08/10/2099
+225|colilert pa|Presence/Absence Total coliform & E.coli|SM 9223B 21st P/A|Y|08/01/2010|12/31/2099
+226|colilert mpn sdwa am|MPN Total Coliform & E.coli by Quanti-Tray - morning|9223B-QT|Y|08/01/2010|12/31/2099
+227|colilert mpn sdwa pm|MPN Total Coliform & E.coli by Quanti-Tray - afternoon|9223B-18QT|Y|08/01/2010|12/31/2099
+228|legionella|Legionella species|SM 9260J 21st|Y|08/01/2010|12/31/2099
+229|mf-est|MF EST|MF EST|Y|08/10/2010|12/31/2099
+230|epa 445.0 filter|Chlorophyll a|EPA 445.0 Rev. 1.2|Y|08/12/2010|12/31/2099
+231|epa 445.0 rev 1.2|Chlorophyll Analysis by EPA 445.0 rev 1.2|EPA 445.0 rev 1.2|Y|08/12/2010|12/31/2099
+232|epa 445.0 substrate|Chlorophyll Analysis by EPA 445.0 rev 1.2|EPA 445.0 rev 1.2|Y|08/12/2010|12/31/2099
+233|datalogger-sonde|Field Analyses using Datalogger-Sonde|Datalogger-Sonde|Y|08/01/2010|12/31/2099
+234|epa 6010 c paint|ICP ENVPB paint sample|EPA 6010C|Y|08/13/2010|12/31/2099
+235|epa 6010 c wipe|ICP ENVPB dust on wipe|EPA 6010C|N|08/13/2010|12/31/2099
+236|epa 6010 b soil|ICP ENVPB soil sample|EPA 6010B|N|08/13/2010|12/31/2099
+237|male sp coliphage|Male Specific Coliphage - 2 step Enrichment|EPA 1601|Y|08/01/2010|12/31/2099
+238|epa 6010 c comp wipe|ICP ENVPB dust on composite wipe|EPA 6010C|Y|08/13/2010|12/31/2099
+239|niosh 9102 ms|ICPMS metals|NIOSH 9102-MS|Y|08/13/2010|12/31/2099
+240|epa 7470 a hg|Mercury digestion of liquid samples|EPA 7470A|Y|08/13/2010|12/31/2099
+241|epa 7471 a hg|Mercury digestion of solid samples|EPA 7471A|Y|08/13/2010|12/31/2099
+242|niosh procedure|Industrial Hygiene Air Analyses|National Institute of Safety and Health|Y|08/16/2010|12/31/2099
+243|niosh 1301|Industrial Hygiene Air Analyses|National Institute of Occupational Safety and Health|N|08/17/2010|12/31/2099
+244|niosh 1450 modified|Industrial Hygiene Air Analyses|NIOSH 1450 Modified|Y|04/03/2014|12/31/2099
+245|epa 906.0|Tritium in liquids by distillation|EPA 906.0|Y|08/19/2010|08/19/2099
+246|epa 903.0|Radium-226 in water by barium precipitation with radium 228|EPA 903.0|Y|08/19/2010|12/31/2099
+247|epa 903.0 only|Radium-226 in water by barium coprecipitation|EPA 903.0|N|08/19/2010|08/31/2099
+248|epa lv page 92|Gamma spectroscopy in solid matrices|EPA LV Page 92|Y|08/19/2010|08/19/2099
+249|epa 904.0|Radium-228 in water|EPA 904.0|Y|08/19/2010|08/19/2099
+250|rad sop 13.24|Sealed source wipe for leak testing|RAD 13.24|Y|08/19/2010|08/19/2099
+251|rad sop 13.17|Surface radiation contaminants by liquid scintillation|RAD 13.17|Y|08/19/2010|08/19/2099
+252|welch 1948|Secchi Disk Transparency Depth|Welch 1948|Y|08/19/2010|12/31/2099
+253|epa 7470a hg tclp|Cold vapor|EPA 7470A|Y|08/23/2010|12/31/2099
+254|sm 4500 h+ b|Electrometric titration of pH|SM 4500 H+ B 18th|Y|08/23/2010|12/31/2099
+255|sm 3500 ca d,ca hard|Titration followed by calculation for calcium hardness|SM 3500-CA D 18th|Y|08/29/2010|12/31/2099
+256|epa200.7calcium hard|Calcium hardness calculation, requires Ca by EPA 200.7|EPA 200.7|Y|08/29/2010|12/31/2099
+257|epa200.7mg hardness|Magnesium hardness calculation, requires mg by EPA 200.7|EPA 200.7|Y|08/29/2010|12/31/2099
+258|epa 508 chi|chlorinated hydrocarbon insecticides in water by GCEC|EPA 508|Y|09/02/2010|12/31/2099
+259|epa 608 chi, pcb|chlorinated hydrocarbon insecticides, pcb in water by GCEC|EPA 608|Y|09/02/2010|12/31/2099
+260|iowa oa-2 teh solid|sonicaiton prep for TEH in solids by GC-FID|Iowa OA-2|Y|09/02/2010|12/31/2099
+261|epa 3510 water pcb|separtory funnel prep for PCBs|EPA 3510 PCB|Y|09/02/2010|12/31/2099
+262|epa 3550 solid pcb|sonication prep for PCBs|EPA 3550 PCB|Y|09/02/2010|12/31/2099
+263|epa 3510 water chi|separtory funnel prep for chlorinated hydrocarbons|EPA 3510 CHI|Y|09/02/2010|12/31/2099
+264|epa 3550 solid chi|sonication prep for chlorinated hydrocarbons|EPA 3550 CHI|Y|09/02/2010|12/31/2099
+265|epa 8141 nch|nitrogen containing herbs in water, soil, and other matrices|EPA 8141|N|09/07/2010|12/31/2099
+266|epa 8141 opp|organo phosphates in water, soil, and other matrices|EPA 8141|N|09/07/2010|12/31/2099
+267|epa 3550 solid opa|extraction using opa spike for GCNP pesticides|EPA 3550|N|09/07/2010|12/31/2099
+268|epa 3550 solid opb|extraction using opb spike for GCNP pesticides|EPA 3550|N|09/07/2010|12/31/2099
+269|epa 3510 nch and opp|separtory funnel prep for nch and opp|EPA 3510|N|09/07/2010|12/31/2099
+270|epa 1311 tclp|TCLP leaching|EPA 1311|Y|09/08/2010|12/31/2099
+271|epa 3010 tclp,splp|Metals digestion for TCLP and SPLP extracts|EPA 3010|Y|09/08/2010|12/31/2099
+272|epa 1312 splp|SPLP Extraction|EPA 1312|Y|09/08/2010|12/31/2099
+273|epa821-r-02-012|Acute Whole Effluent Toxicity Test Billing Mechanism|\N|Y|09/08/2010|12/31/2099
+274|epa 9045 corr solid|Electrometric measurement, used for corrosivity test|EPA 9045|Y|09/09/2010|12/31/2099
+275|epa9040corro aqueous|Electrometric measurement, used for corrosivity test|EPA 9040|Y|09/09/2010|12/31/2099
+276|sm 4500 f b,d|Specific ion electrode, requires distillation|SM 4500-F B,D 18th|Y|09/09/2010|12/31/2099
+277|nf monograph 25 vol|\N|NF Monograph 25|Y|09/10/2010|12/31/2099
+278|rad sop 7.0 v3|Sample check-in for liquid matrices|\N|Y|09/15/2010|09/15/2099
+279|colilert lt2|E.coli MPN by Quanti-Tray Method|SM 9223B 21st MPN|Y|09/01/2010|12/31/2099
+280|soil colilert mpn|E.coli MPN by Quanti-Tray method|SM 9223B 21st MPN|Y|09/01/2010|12/31/2099
+281|aeromonas|Aeromonas analysis by membrane filtration|EPA 1605|Y|09/01/2010|12/31/2099
+282|epa 1664|oil and grease|EPA 1664|Y|09/18/2010|12/31/2099
+283|enterolert mpn|Enterococci by Enterolert method|by Enterolert MPN|Y|09/01/2010|12/31/2099
+284|ct screen|CT Screen|CDC CT Screen|Y|09/20/2010|12/31/2099
+285|sm 5910|ultraviolet absorption|SM 5910|Y|09/20/2010|12/31/2099
+286|osha id-142|silica in air|OSHA ID-142|Y|09/20/2010|12/31/2099
+287|osha id-128|oil mist - gravimetric|OSHA ID-128|Y|09/20/2010|12/31/2099
+288|niosh 5026 modified|oil mist|NIOSH 5026 Modified|Y|09/20/2010|12/31/2099
+289|epa 624 aac|GCMS volatiles in water for acrolein, acrylonitrile, ceve|EPA 624 AAC|Y|09/20/2010|12/31/2099
+290|epa 508a|pcbs in water by GCEC|EPA 508A|Y|09/20/2010|12/31/2099
+291|shl procedure|pesticides formulations and niosh/osha air procedures|Various Methods|Y|09/21/2010|12/31/2099
+292|hplc/uv|pesticides and other ingredients by HPLC/UV|Liquid Chromatography with Ultraviolet Detection|Y|09/21/2010|12/31/2099
+293|epa to-11a|\N|EPA TO-11A|Y|09/21/2010|12/31/2099
+294|epa 6020 sludge|ICPMS metals|EPA 6020|N|09/21/2010|12/31/2099
+295|epa 6020 tclp|ICPMS metals|EPA 1311/6020|Y|09/21/2010|12/31/2099
+296|epa 6020 splp|ICPMS metals|EPA 6020|Y|09/21/2010|12/31/2099
+297|uhl lead in air (pb)|Lead in air quality samples by HGAA|UHL Lead in Air|Y|09/30/2010|12/31/2099
+298|epa 6010 b tclp|ICP metals|EPA 6010B|Y|09/21/2010|12/31/2099
+299|epa 6010 b splp|ICP metals|EPA 6010B|Y|09/21/2010|12/31/2099
+300|cdc urine|ICPMS metals in urine|CDC|Y|09/30/2010|12/31/2099
+301|epa200.7ndca,mg,na,k|ICP analysis for calcium, magnesium, sodium, potassium|EPA 200.7|Y|12/02/2010|12/31/2099
+302|epa 6010 b aqueous|ICP analysis for aqueous samples|EPA 6010B|Y|12/02/2010|12/31/2099
+303|epa 200.8 lab cert|ICPMS metals|EPA 200.8|Y|09/21/2010|12/31/2099
+304|epa 200.8 nondrink|ICPMS metals|EPA 200.8|Y|09/21/2010|12/31/2099
+305|epa200.8 uranium rad|ICPMS metals|EPA 200.8|Y|09/21/2010|12/31/2099
+306|cdc|ICPMS Metals in biological samples|CDC|Y|09/21/2010|12/31/2099
+307|epa 6010 b boron|ICP metals|EPA 6010B|Y|09/21/2010|12/31/2099
+308|epa 200.7 boron dw|ICP metals|EPA 200.7|Y|09/21/2010|12/31/2099
+309|epa 200.7 drink|ICP metals|EPA 200.7|Y|09/21/2010|12/31/2099
+310|epa 200.7 nondrink|ICP metals|EPA 200.7|Y|09/21/2010|12/31/2099
+311|sm 3111 b nondrink|Flame AA metals|SM 3111 B 18th|Y|09/21/2010|12/31/2099
+312|sm 3111 b ws|Flame AA metals|SM 3111 B 18th|Y|09/21/2010|12/31/2099
+313|sm 3111 b wp|Flame AA metals|SM 3111 B 18th|Y|09/21/2010|12/31/2099
+314|ftir|Analysis of Unknowns by FTIR|Analysis of Unknowns by FTIR|Y|09/22/2010|12/31/2099
+315|epa/600/r93/116|Bulk Asbestos|Bulk Asbestos by EPA/600/R93/116|Y|09/22/2010|12/31/2099
+316|epa 600 r93 116 old|\N|\N|N|09/22/2010|12/31/2099
+317|epa 600 r93 116|bulk asbestos|EPA 600/R93/116|Y|09/22/2010|12/31/2099
+318|uhl h 021 isoxafluto|LC/MS/MS Determination - SOP UHL-H-021 isoxaflutole analytes|SOP UHL-H-021 LC/MS/MS|Y|09/01/2010|01/01/2099
+319|uhl h 021 imidazo|LC/MS/MS Determination - SOP UHL-H-021 imidazolinones|SOP UHL-H-021 LC/MS/MS|N|09/01/2010|01/01/2099
+320|uhl h 018|SOP UHL-H-018 LC/MS/MS|SOP UHL-H-018 LC/MS/MS|Y|09/01/2010|01/01/2099
+363|sm4500si e low level|Colorimetric|SM 4500-SI E 18th|Y|07/29/2010|12/31/2099
+322|mpa|Microscopic Particulate Analysis|EPA Concensus Method|Y|09/01/2010|12/31/2099
+323|uhl as spec|Arsenic speciation|UHL AS SPEC|Y|10/01/2010|12/31/2099
+324|epa 1010|Flash point of liquid waste|EPA 1010|Y|10/01/2010|12/31/2099
+325|epa 1030-uhl|Ignitability of solid wastes|EPA 1030-UHL|Y|10/01/2010|12/31/2099
+326|epa 180.1 field|EPA 180.1 for field tests|EPA 180.1|Y|10/06/2010|12/31/2099
+327|niosh 7400|asbestos fibers in air by PCM|NIOSH 7400|Y|10/08/2010|12/31/2099
+328|microscopy|Unknown identification by microscopy|Microscopy|Y|10/08/2010|12/31/2099
+329|sm 10600|Fish Analysis by Standar Methods 10600|SM 10600|Y|11/13/2009|12/31/2099
+330|epa 300.0 drink|Ion Chromatography|EPA 300.0|N|12/02/2011|12/06/2011
+331|epa 330.1|Total Residual Chlorine by EPA 330.1|EPA 330.1|Y|07/01/2010|12/31/2099
+332|epa 330.5|Total Residual Chlorine by EPA 330.5|EPA 330.5|Y|07/01/2010|12/31/2099
+333|sm 8010 f|Lab Analysis of Unionized Ammonia by Standar Method 8010 F|SM 8010 F|Y|11/13/2009|12/31/2099
+334|buchanan somers 1969|Total depth|Buchanan and Somers 1969|Y|10/14/2010|12/31/2099
+335|birge 1904|Thermocline depth|Birge 1904|Y|10/14/2010|12/31/2099
+336|epa 300.1 drink|Ion Chromatography|EPA 300.1|N|10/20/2010|12/06/2011
+337|epa 200.8 sdwa pb&cu|ICPMS metals|EPA 200.8|Y|10/20/2010|12/31/2099
+338|sm 4500 f c|Specific ion electrode|SM 4500-F C 18th|Y|10/20/2010|12/31/2099
+339|epa 353.2 as n water|Automated method for NO2|EPA 353.2|N|10/29/2010|12/14/2011
+340|aeration oxidation|\N|\N|Y|11/01/2010|11/01/2019
+364|epa 160.4 fixed|\N|EPA 160.4|Y|07/06/2011|12/31/2099
+387|waste oil analysis|rock island arsenal method waste oil analysis|Waste Oil Analysis|Y|09/21/2011|12/31/2099
+410|epa 377.1|Titration|EPA 377.1|Y|10/07/2011|12/31/2099
+365|epa 200.7|ICP Metals|EPA 200.7|Y|07/21/2011|12/31/2099
+366|epa 6010b boron splp|ICP metals|EPA 6010B|Y|07/26/2011|12/31/2099
+346|sm 4500 no3 d|Specific ion electrode|SM 4500-NO3 D 18th|Y|11/19/2010|12/31/2099
+367|agglut|Agglutination|Agglutination|Y|08/03/2011|12/31/2099
+348|epa 200.7 dissolved|ICP metals|EPA 200.7|Y|12/09/2010|12/31/2099
+349|epa 200.8 dissolved|ICPMS metals|EPA 200.8|Y|12/09/2010|12/31/2099
+350|epa 6020 aqueous|ICPMS metals|EPA 6020|Y|12/10/2010|12/31/2099
+351|epa 200.7 tin nondw|ICP metals|EPA 200.7|Y|12/21/2010|12/31/2099
+352|epa 6010 b tin|ICP metals|EPA 6010B|Y|12/21/2010|12/31/2099
+353|photometry|Photometry|Photometry|Y|01/01/2011|06/30/2011
+354|niosh 7600|Colorimetric|NIOSH 7600|Y|01/19/2011|12/31/2099
+355|epa 550|Polycyclic Aromatic Hydrocarbons low detection limits|EPA 550|Y|01/31/2011|12/31/2099
+356|epa 551.1 edb, dbcp|Ethylene dibromide and Dibromochloropropane low level|EPA 551.1|Y|01/31/2011|12/31/2099
+368|eia|Enzyme Immunosorbent Assay|Enzyme Immunosorbent Assay|Y|08/02/2011|12/31/2099
+369|pfge|Pulsed Field Gel Electrophoresis|Pulsed Field Gel Electrophoresis|Y|08/02/2011|12/31/2099
+370|bculture|Bacterial Culture|Bacterial Culture|Y|08/02/2011|12/31/2099
+371|epa200.7lithium diss|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+372|epa 200.7 lithium dw|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+373|epa200.7lithium nond|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+374|epa 6010 b lithium|ICP metal|EPA 6010B|Y|08/04/2011|12/31/2099
+375|epa 6010b tin aqueou|ICP metal|EPA 6010B|Y|08/04/2011|12/31/2099
+376|epa 200.7 tin drink|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+377|epa 200.7 tin diss|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+378|epa 200.8 uranium dw|ICPMS metals|EPA 200.8|Y|08/04/2011|12/31/2099
+379|epa200.7silicon diss|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+380|epa 200.7 silicon dw|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+381|epa 200.7silicon ndw|ICP metal|EPA 200.7|Y|08/04/2011|12/31/2099
+382|epa 6010 b silicon|ICP metal|EPA 6010B|Y|08/04/2011|12/31/2099
+383|epa 7470a hg splp|Cold vapor|EPA 7470A|Y|08/04/2011|12/31/2099
+384|epa 200.8|ICPMS metals|EPA 200.8|Y|08/09/2011|12/31/2099
+385|uhl lead in air mnms|Manganese in air quality samples|UHL Lead in Air|Y|08/11/2011|12/31/2099
+388|geomean|Geometric mean for 7 samples|Geometric mean for 7 samples|Y|01/01/2011|12/31/2099
+389|pseudalert mpn|Pseudomonas aeruginosa MPN by Pseudalert|Pseudalert MPN|Y|01/01/2011|12/31/2099
+390|green pour plate|Heterotropic Plate Count|SM 9215B|Y|01/01/2011|12/31/2099
+391|r2a pour plate|Pour plate method using R2A media|SM 9215Bn using R2A|Y|01/01/2011|12/31/2099
+392|red pour plate|Heterotrophic Plate Count|SM 9215B|Y|01/01/2011|12/31/2099
+393|yeast mold|Yeast & Mold spread plate method|MCM Chapter 116|Y|01/01/2011|12/31/2099
+394|bart|Bart test method for sulfate reducing bacteria|Bart Test|N|01/01/2011|12/31/2099
+395|bax|BAX PCR Analysis|PCR Analysis using BAX|Y|01/01/2011|12/31/2099
+396|pseudalert pa|Pseudomonas aeruginosa P/A by Pseudalert|Pseudalert P/A|Y|01/01/2011|12/31/2099
+397|epa 100.2|asbestos in water|EPA 100.2|Y|09/27/2011|12/31/2099
+398|epa 300.0|Ion Chromatography|EPA 300.0|Y|09/27/2011|12/31/2099
+399|microscopic id|Microscopic Identification|Microscopy|N|09/28/2011|12/31/2099
+400|niosh 0500|total dust/particulate in air|NIOSH 0500|Y|10/01/2011|12/31/2099
+401|niosh 0600|respirable dust/particulate in air|NIOSH 0600|Y|10/01/2011|12/31/2099
+402|sm 5550 b|Tannin in water|SM 5550 B 19th|Y|10/01/2011|12/31/2099
+403|epa 200.8uranium ndw|ICPMS metals|EPA 200.8|Y|10/04/2011|12/31/2099
+404|sm 5210b 5 seeded|Dissolved oxygen depletion|SM 5210 B 18th|Y|10/04/2011|12/31/2099
+405|sm 5210b 5 filtered|Dissolved oxygen depletion|SM 5210 B 18th|Y|10/05/2011|12/31/2099
+406|sm 5210b 5 filt&inh|Dissolved oxygen depletion|SM 5210 B 18th|Y|10/05/2011|12/31/2099
+407|sm 5210b 5 c|Dissolved oxygen depletion|SM 5210 B 18th|Y|10/05/2011|12/31/2099
+408|sm 5210b 20 c|Dissolved oxygen depletion|SM 5210 B 18th|Y|10/05/2011|12/31/2099
+409|epa 3050b envpb wipe|Wipe digestion for ENVPB|EPA 3050B|Y|10/05/2011|12/31/2099
+411|uhl lead in air pbms|Lead in air quality samples by ICPMS|UHL Lead in Air|Y|10/07/2011|12/31/2099
+412|uhl lead in air natt|NATTS Metals in air quality samples|UHL Lead in Air|Y|10/07/2011|12/31/2099
+413|epa 539 ucmr3|Hormones/Steroids in water by LCMSMS|EPA 539|Y|10/10/2011|12/31/2099
+414|epa 537|LC/MS/MS for PFOS PFOA et al.|EPA 537|Y|01/01/2011|01/01/2099
+415|uhl h 031 dupt carb|Dupont method for carbamate insecticides|SOP UHL-H-031 LC/MS/MS|Y|01/01/2011|01/01/2099
+416|uhl h 030 dupt inscd|Dupont insecticides by LC/MS/MS|SOP UHL-H-030 LC/MS/MS|Y|01/01/2011|01/01/2099
+417|uhl h 029|Fungicides by LC/MS/MS|SOP UHL-H-029 LC/MS/MS|Y|10/12/2011|12/31/2099
+418|uhl h 024|Clethodim by LC/MS/MS|SOP UHL-H-024 LC/MS/MS|Y|10/12/2011|12/31/2099
+419|uhl h 032|Quaternary amines|SOP UHL-H-032 LC/MS/MS|Y|10/12/2011|12/31/2099
+420|immunoassay|Immunoassay|Immunoassay|Y|01/01/2011|01/01/2099
+421|epa 8321|acid herbicides in solids|EPA 8321|Y|10/14/2011|12/31/2099
+422|uhl lead in air (mn)|Manganese in air quality samples by HGAA|UHL Lead in Air|Y|10/19/2011|12/31/2099
+423|jafs mda|prep for Glyphosate in solids|Extraction for Glyphosate|Y|01/01/2011|01/01/2099
+424|uhl h 018 dupont|prep of FIFRA samples by Dupont method|SOP UHL-H-018 Dupont|Y|01/01/2011|01/01/2099
+425|uhl h 018 imids|prep of FIFRA samples by Imidazolinones method|SOP UHL-H-018 Imidazolinone|Y|01/01/2011|01/01/2099
+426|uhl h 018 su|prep of FIFRA samples by Sulfonyl method|SOP UHL-H-018 Sulfonylurea|Y|01/01/2011|01/01/2099
+427|uhl h 018 mod su|prep for FIFRA samples by modified SU method|SOP UHL-H-018 Modified SU|Y|01/01/2011|01/01/2099
+428|uhl h 018 flu|prep of FIFRA samples by Flumioxazin method|SOP UHL-H-018 Flumixazin|Y|01/01/2011|01/01/2099
+429|uhl h 018 exp|prep of FIFRA samples by Experimental methods|SOP UHL-H-018 Custom|Y|01/01/2011|01/01/2099
+430|sm 5210b seeded&inh|Dissolved oxygen depletion|SM 5210 B|Y|10/26/2011|12/31/2099
+431|epa 160.3 ts-norpt|Gravimetric|EPA 160.3|Y|10/26/2011|12/31/2099
+432|epa 8260 ethanol|Ethanol by GCMS in water and solid samples|EPA 8260|Y|11/01/2011|12/31/2099
+433|epa 1625 dph|1,2-Diphenylhydrazine by GCMS in water samples|EPA 1625|Y|11/01/2011|12/31/2099
+434|epa 8260 landfill|GCMS volatiles in water for landfill monitoring|EPA 8260|Y|11/02/2011|12/31/2099
+435|epa 8260 tclp|GCMS volatiles for toxicity characteristic leaching|EPA 1311/8260|Y|11/03/2011|12/31/2099
+436|epa 8270 bna tclp|GCMS semivolatiles for toxicity characteristic leaching|EPA 1311/8270|Y|11/03/2011|12/31/2099
+437|epa 8081 chi tclp|chlorinated hydrocarbs for toxicity characteristic leaching|EPA 1311/8081|Y|11/08/2011|12/31/2099
+438|epa 8321 ahb tclp|acid herbicides for toxicity characteristic leaching|EPA 1311/8321|Y|11/08/2011|12/31/2099
+441|sm 4500 n org c|Total Kjeldahl Nitrogen Analysis|sm 4500 n org c|Y|12/01/2011|12/31/2099
+442|sm 4500 no3 e|Manual Cadmium Reduction|sm 4500  no3 e|Y|12/01/2011|12/31/2099
+443|culture|Culture identification|Culture|Y|12/05/2011|12/31/2099
+444|ifa confirmation|Immunofluorescence Antibody confirmation|IFA Confirmation|Y|12/01/2011|12/31/2099
+445|sm 4500 p b.5|\N|SM 4500 P B.5 18th|Y|12/14/2011|12/31/2099
+446|somatic coliphage|Somatic Coliphage - 2 Step Enrichment|EPA 1601|Y|12/23/2011|12/31/2099
+447|soil mf fecal|Soil Fecal Coliform by Membrane Filter SM 9222D|SM9222D|Y|12/23/2011|12/31/2011
+448|sludge mf fecal|Sludge Fecal Coliform by Membrante filter SM 9222D|SM 9222D|Y|12/23/2011|12/31/2099
+449|sludge mtf mpn e.col|Sludge E.coli by Multiple Tube Fermentation, SM 9221F|SM 9221F|Y|12/23/2011|12/31/2099
+450|us dollars|US Dollars|US Dollars|Y|01/13/2012|12/31/2099
+451|uhl h 018 direct inj|LCMSMS analysis by direct injection|SOP UHL-H-018 LC/MS/MS|Y|01/01/2012|01/01/2099
+452|niosh 1501 modified|industrial hygiene air samples|NIOSH 1501 Modified|Y|02/03/2012|12/31/2099
+453|epa 524.3 ucmr3|GCMS volatiles in water|EPA 524.3|Y|02/03/2012|12/31/2099
+454|epa 522 ucmr3 dioxan|Dioxane in water by GCMS|EPA 522|Y|02/03/2012|12/31/2099
+455|epa 7190 paint|Flame AA ENVPB paint sample|EPA 7190|Y|01/01/2012|01/01/2099
+456|sm 3111 b|Flame AA analysis|SM 3111 B 18th|Y|01/01/2012|02/28/2099
+457|epa 9095b|Paint Filter Liquids Test|EPA 9095B|Y|02/01/2012|02/01/2099
+458|epa 7760 silver|Silver by Flame AA in solid samples|EPA 7760|Y|02/01/2012|02/01/2099
+459|epa 7190 chromium|Chromium by Flame AA|EPA 7190|Y|02/01/2012|02/01/2099
+460|food aerobic plate c|Aerobic Plate Count for food and other samples|FDA BAM Chapter 3|Y|03/02/2012|01/01/2099
+461|food staphylococcus|Staphylococcus aureus for food and other samples|FDA BAM Chapter 12|Y|03/02/2012|01/01/2099
+462|food coliform mpn|Total Coliform and E.coli MPN for Food and other samples|FDA BAM Chapter 4|Y|03/02/2012|01/01/2099
+463|food enterobacteriac|Enterobacteriaceae MPN|EN-ISO 21528-1:2004|Y|03/02/2012|01/01/2099
+464|osha id-214|OSHA Industrial Hygiene Method for Ozone|OSHA ID-214|Y|01/01/2012|01/01/2099
+465|osha 42 modified|diisocyantes in air (HDI, 2,4-TDI, 2,6-TDI)|OSHA 42 modified|Y|04/13/2012|12/31/2099
+466|osha 58 modified|Industrial Hygiene LC analysis for PAHs|OSHA 58 modified|Y|04/16/2012|12/31/2099
+467|epa 200.8 silver dw|Silver in Drinking Water|EPA Method 200.8|Y|01/01/2012|04/24/2099
+468|epa 3580 swab, other|waste dilution or shake prep for pesticides|EPA 3580|Y|04/17/2012|12/31/2099
+469|cao et al. 2009|Lakeside Op. Brighteners Reference|Cao et al. 2009|Y|03/01/2012|04/17/2099
+470|osha 07 modified|industrial hygiene air samples|OSHA 07 Modified|Y|04/30/2012|12/31/2099
+471|osha 53 modified|industrial hygiene air samples|OSHA 53 Modified|Y|04/30/2012|12/31/2099
+472|osha 79 modified|industrial hygiene air samples|OSHA 79 Modified|Y|04/30/2012|12/31/2099
+473|osha 83 modified|industrial hygiene air samples|OSHA 83 Modified|Y|04/30/2012|12/31/2099
+474|osha 101 modified|industrial hygiene air samples|OSHA 101 Modified|Y|04/30/2012|12/31/2099
+475|snoeyink and jenkins|Field Total Dissolved Solids|Snoeyink and Jenkins|Y|05/03/2012|12/30/2099
+476|osha 52 modified|industrial hygiene air samples|OSHA 52 Modified|Y|05/11/2012|12/31/2099
+477|niosh 1550 modified|industrial hygiene air samples|NIOSH 1550 Modified|Y|05/11/2012|12/31/2099
+478|sm 4500 o c|Dissolved Oxygen  (DO)|sm 4500-O C 18th|Y|05/21/2012|12/31/2099
+479|niosh 1603 modified|industrial hygiene air samples|NIOSH 1603 Modified|Y|06/06/2012|12/31/2099
+480|osha 72 modified|industrial hygiene air samples|OSHA 72 Modified|Y|06/06/2012|12/31/2099
+481|osha pv2118 modified|industrial hygiene air samples|OSHA PV2118 Modified|Y|07/02/2012|12/31/2099
+482|osha 1016 modified|industrial hygiene air samples|OSHA 1016 Modified|Y|07/02/2012|12/31/2099
+483|osha 1007 modified|industrial hygiene air samples|OSHA 1007 Modified|Y|07/02/2012|12/31/2099
+484|epa 119b rev 0|Automated|EPA 119-B Rev. 0|Y|07/01/2012|07/01/2099
+485|epa 111b rev 0|Automated|EPA 111-B Rev. 0|Y|07/01/2012|07/01/2099
+486|epa 127b rev 0|Automated|EPA 353.2|Y|07/01/2012|07/01/2099
+487|uhl-h-016|SOP UHL-H-016 LC/MS/MS DETERMINATION|SOP UHL-H-016 LC/MS/MS|Y|01/01/2010|01/01/2099
+488|nf monograph 30|\N|NF Monograph 30|Y|07/01/2012|07/01/2099
+489|epa 200.8 silver dis|Dissolved Silver in Drinking Water|EPA Method 200.8|Y|01/01/2012|01/01/2099
+490|tms|Tandem Mass Spectrometry|Tandem Mass Spectrometry|Y|08/08/2012|12/31/2099
+491|ief|Isoelectric Focusing|Electrophoresis|Y|08/08/2012|12/31/2099
+492|fluorometric assay|fluorometric enzymatic assay|fluorometric enzymatic assay|Y|09/21/2012|12/31/2099
+493|enzymatic assay|qualitative enzymatic assay|Qualitative Enzymatic Assay|Y|09/21/2012|12/31/2099
+494|niosh 1300 modified|industrial hygiene air samples|NIOSH 1300 Modified|Y|09/26/2012|12/31/2099
+495|epa 539|Hormones/Steroids in Water by LC/MS/MS|EPA 539|Y|10/10/2011|12/31/2099
+496|sample processing|sample matrix preparation (grinding, etc.)|Sample Processing|Y|10/15/2012|12/31/2099
+497|niosh 1003 modified|industrial hygiene air samples|NIOSH 1003 Modified|Y|10/30/2012|12/31/2099
+498|flow|Flow Rate|Flow Rate|Y|11/02/2012|12/31/2099
+499|iowa oa-2 teh other|waste dilution or shake prep for organics|Iowa OA-2|Y|11/06/2012|12/31/2099
+500|osha 1013 modified|industrial hygiene air samples|OSHA 1013 Modified|Y|11/12/2012|12/31/2099
+501|osha 89 modified|industrial hygiene air samples|OSHA 89 Modified|Y|11/12/2012|12/31/2099
+502|epa 200.8 ucmr3|ICPMS metals|EPA 200.8|Y|12/12/2012|12/31/2099
+503|epa 537 ucmr3|Perfluorinateds by LC/MS/MS for UCMR3|EPA 537|Y|01/01/2012|01/01/2099
+504|epa 300.1 ucmr3|Ion Chromatography|EPA 300.1|Y|12/12/2012|12/31/2099
+505|epa 218.7 ucmr3 cr6|Ion Chromatography|EPA 218.7|Y|12/12/2012|12/31/2099
+506|sm 2550 - sonde|Field Temperature by Standard Methods 2550|SM 2550 B 2000 by Sonde|Y|01/28/2013|12/31/2099
+507|sm 4500 h - sonde|Field pH by Standard Methods 4500 H-B+|SM 4500 H+ B 2000 by Sonde|Y|01/28/2013|12/31/2099
+508|astm d 888-09 sonde|Field Dissolved Oxygen by ASTM D 888-09 c|ASTM D 888-09 C by Sonde|Y|01/28/2013|12/31/2099
+509|sm 4500 - o sonde|Field Dissolved Oxygen by SM 4500 - O|SM 4500 - O G 2001 by Sonde|Y|01/28/2013|12/31/2099
+510|private epa 127b|Automated|EPA 353.2|Y|01/15/2013|01/28/2099
+511|epa 127b|Automated|EPA 353.2|Y|01/15/2013|01/28/2099
+512|methodtest|awef asdf sadf sd|asdf sdf sdfs df|N|02/11/2013|02/11/2023
+513|fuzz|Belly button buzz|B Fuzz|N|03/01/2013|03/31/2013
+514|osha 47 modified|industrial hygiene air samples|OSHA 47 Modified|Y|03/14/2013|12/31/2099
+515|osha pv2060 modified|industrial hygiene air analysis|OSHA PV2060 Modified|Y|03/14/2013|01/31/2100
+516|niosh 2546 modified|industrial hygiene air analysis|NIOSH 2546 Modified|Y|03/11/2013|12/31/2099
+517|niosh 6004|Industrial hygiene air samples for sulfur dioxide|Sulfur dioxide in air|Y|03/19/2013|12/31/2099
+518|usgs i-3840-85|Iodometric titration|USGS I-3840-85|Y|04/02/2013|12/31/2099
+519|niosh 7300 tin|ICP for Tin|NIOSH 7300-UHL|Y|04/05/2013|12/31/2099
+520|niosh 9102 uhl ih|ICP Metals|NIOSH 9102-UHL|Y|05/03/2013|12/31/2099
+521|niosh 9102 ms ih|ICPMS metals|NIOSH 9102-MS|Y|05/03/2013|12/31/2099
+522|niosh 6009|Industrial hygiene air samples for mercury|NIOSH 6009|Y|05/14/2013|12/31/2099
+523|osha 16 modified|industrial hygiene air samples|OSHA 16 Modified|Y|08/09/2013|12/31/2099
+524|osha 84 modified|industrial hygiene air samples|OSHA 84 Modified|Y|08/09/2013|12/31/2099
+525|niosh 4000 modified|industrial hygiene air samples|NIOSH 4000 Modified|Y|08/09/2013|12/31/2099
+526|epa 9040|Electrometric measurement|EPA 9040|Y|08/01/2013|12/31/2099
+527|fda as spec|Arsenic speciation in food|Arsenic speciation in food|Y|09/24/2013|12/31/2099
+528|epa 3540 solid chi|soxhlet prep for chlorinated hydrocarbons|EPA 3540 CHI|Y|09/26/2013|12/31/2099
+529|purple pour plate|Heterotrophic Plate Count for food products|SM 9215B|Y|07/01/2013|12/31/2099
+530|epa 6020 mercuryfish|ICPMS metals for mercury in fish|EPA 6020|Y|11/01/2013|12/31/2099
+531|test name|test description|test report|Y|11/20/2013|12/31/2099
+532|uhl blood lead|Lead in blood using graphite furnace|UHL Blood Lead|Y|12/20/2013|12/31/2099
+533|niosh 2000 modified|industrial hygiene air samples|NIOSH 2000 Modified|Y|01/02/2014|12/31/2099
+534|osha pv2141 modified|industrial hygiene air sample|OSHA PV2141 Modified|Y|01/02/2014|12/31/2099
+535|sm 7500 u c|Isotopic Uranium Analysis by Alpha Spectrometry|Standard Methods 7500 U C|Y|01/24/2014|12/31/2999
+536|osha 186sg|OSHA Method for Acetic and Formic Acids in Air|Acetic and Formic Acids in Air|Y|02/28/2014|12/31/2099
+537|hybridization|DNA Hybridization|DNA Hybridization|Y|03/14/2014|12/31/2099
+538|liquid culture|Liquid Culture|Liquid Culture|Y|03/28/2014|12/31/2099
+539|sequencing|16s rDNA bacterial sequencing|16s rDNA Bacterial Sequencing|Y|04/02/2014|12/31/2099
+540|fluorochrome|Fluorochrome|Fluorochrome|Y|04/03/2014|12/31/2099
+541|hybrid|Nucleic Acid Hybridization|Nucleic Acid Hybridization|Y|04/03/2014|12/31/2099
+542|osha 64 modified|Industrial Hygiene Air Analyses|OSHA 64 Modified|Y|04/03/2014|12/31/2099
+543|naa|Nucleic Acid Amplification|Nucleic Acid Amplification|Y|04/10/2014|12/31/2099
+544|niosh 1301 modified|Industrial Hygiene Air Analyses|NIOSH 1301 Modified|Y|04/29/2014|12/31/2099
+545|subcontract|\N|Analysis Subcontracted|Y|04/29/2014|12/31/2099
+546|bio stain|Biological Stain|Biological Stain|Y|05/02/2014|12/31/2099
+547|biochem|Biochemical Test|Biochemical Test|Y|05/02/2014|12/31/2099
+548|catalase|Catalase|Catalase|Y|05/05/2014|12/31/2099
+549|hippurate broth|Hippurate Broth|Hippurate Broth|Y|05/05/2014|12/31/2099
+550|hippurate disk|Hippurate Disk|Hippurate Disk|Y|05/05/2014|12/31/2099
+551|indoxyl acetate|Indoxyl Acetate|Indoxyl Acetate|Y|05/05/2014|12/31/2099
+552|oxistrips|Oxistrips|Oxistrips|Y|05/05/2014|12/31/2099
+553|epa 105 b|Automated|SM 4500 Cl- E|Y|05/12/2014|05/12/2099
+554|osha id201sg|Industrial Hygiene Analysis Combustible Dust|OSHA ID-201SG|Y|05/27/2014|12/31/2099
+555|niosh 1604 modified|Industrial Hygiene Analysis|NIOSH 1604 Modified|Y|06/04/2014|12/31/2099
+556|abneut cmia|Antibody Neutralization (CMIA)|Antibody Neutralization (CMIA)|Y|06/06/2014|12/31/2099
+557|cmia|Chemiluminescent Microparticle Immunoassay|CMIA|Y|06/06/2014|12/31/2099
+558|comp fix|Complement Fixation|Complement Fixation|Y|06/06/2014|12/31/2099
+559|dfa|Direct Immunofluorescence Assay|Direct Immunofluorescence Assay|Y|06/06/2014|12/31/2099
+560|elfa|enzyme-linked fluorescence immunoassay|Enzyme-Linked Fluorescence Immunoassay|Y|06/06/2014|12/31/2099
+561|fculture|Fungal Culture|Fungal Culture|Y|06/06/2014|12/31/2099
+562|feac|Formalin/Ethyl Acetate Concentration|Formalin/Ethyl Acetate Concentration|Y|06/06/2014|12/31/2099
+563|flocculation|Flocculation|Flocculation|Y|06/06/2014|12/31/2099
+564|gfaas|Graphite Furnace Atomic Absorption Spectroscopy|Graphite Furnace AA|Y|06/06/2014|12/31/2099
+565|icp-ms|ICP Mass Spectroscopy|ICP Mass Spectroscopy|Y|06/06/2014|12/31/2099
+566|ifa|Indirect Immunofluorescent Assay|Indirect Immunofluorescent Assay|Y|06/06/2014|12/31/2099
+567|latex agglut|Latex Agglutination|Latex Agglutination|Y|06/06/2014|12/31/2099
+568|macro id|Macroscopic Identification|Macroscopic Identification|Y|06/06/2014|12/31/2099
+569|micro agglut|Microagglutination|Microagglutination|Y|06/06/2014|12/31/2099
+570|mid|Micro Immunodiffusion|Micro Immunodiffusion|Y|06/06/2014|12/31/2099
+571|misc|Miscellaneous|Miscellaneous|Y|06/06/2014|12/31/2099
+572|multispot|Multispot|Multispot|Y|06/06/2014|12/31/2099
+573|send out|Sent to Reference Lab|Sent to Reference Lab|Y|06/06/2014|12/31/2099
+574|sv|Shell Vial Assay|Shell Vial Assay|Y|06/06/2014|12/31/2099
+575|tma|Transcription-Mediated Amplification|Transcription-Mediated Amplification|Y|06/06/2014|12/31/2099
+576|tube agglut|Tube Agglutination|Tube Agglutination|Y|06/06/2014|12/31/2099
+577|vculture|Virus Isolation and Identification|Virus Isolation and Identification|Y|06/06/2014|12/31/2099
+578|vectest|Antigen Antibody Assay|Antigen Antibody Assay|Y|06/06/2014|12/31/2099
+579|western blot|Western Blot|Western Blot|Y|06/06/2014|12/31/2099
+580|fda metals|Elemental analysis of food using FDA 4.7 & T039|FDA 4.7 SHL|Y|07/01/2014|12/31/2099
+581|electrophoresis|gel electrophoresis|Gel Electrophoresis|Y|07/28/2014|12/31/2099
+582|vdrl|Venereal Disease Research Laboratory|Venereal Disease Research Laboratory|Y|08/01/2014|12/31/2099
+583|tppa|Treponema pallidum Particle Agglutination Assay|Treponema pallidum Particle Agglutination Assay|Y|08/01/2014|12/31/2099
+584|qeia|qualitative enzyme immunoassay|Qualitative Enzyme Immunoassay|Y|08/01/2014|12/31/2099
+585|hasl 300 u 02 rc|Isotopic Uranium in Biological and Environmental Materials|HASL-300 U-02-RC|Y|08/11/2014|12/31/2999
+586|hasl 300 po 02 rc|Po-210 in Water, Vegetation, Soil and Air Filters|HASL-300 Po-02-RC|Y|08/11/2014|12/31/2999
+587|industrial hygiene|general method of IH work by LC & GC|Industrial Hygiene Sample Prep|Y|09/01/2014|09/01/2099

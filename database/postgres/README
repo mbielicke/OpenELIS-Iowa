@@ -1,0 +1,79 @@
+This script is used to create and load the inital database for openelis
+and security. The openelis database contains all the information for the
+laboratory system while the security database contains permissions
+(authorization) records for system users.
+
+The following steps can be used to create develpment, test, or production
+databases depending on need. Our convention is to append "_dev" or "_test"
+after the database name for development and test; production database just
+used "openelis" or "security".
+
+The two subdirectories contain the schema and inital data load files
+for each database. The following are steps used to create each database
+(openelis_dev, openelis_test, openelis, security_dev, ...) on a LINUX
+system:
+
+1. Download and install postgres 9.1.10 or later
+
+2. Download and install pgAdminIII
+
+3. switch to postgres user
+    a. $ su - postgres
+
+4. Create users in postgres database; each will need a password and you
+   will need to enter the jboss_dev password in to JBOSS database connection
+
+    a. createuser -P -s dba                  (user will own the databases)
+    b. createuser -P -D -i -R -S jboss_dev   (user from JBOSS devlopment server)
+
+5. Create databases
+
+    a. createdb -O dba security_test 'Security test database'
+    b. createdb -O dba openelis_test 'OpenELIS test database'
+
+6. Create the tables in security database; you can use the pgAdminIII or
+   use command line psql -- following is the instructions for for psql
+
+    a. cd openelis/postgres/security
+    b. psql security_test
+    c. at 'security_test=#' type the following one at a time
+       \i tables.sql
+       \i indexes.sql
+       \i permissions.sql
+       \q
+
+    d. cd data
+    e. cd 0-initial
+    f. psql security_test
+    g. at 'security_test=#' type the following
+       \i load.sql
+       \q
+
+    h. if you want to load the user 'demo' which you will need to play with
+       the server, cd to 1-demo-user and re-do steps f-g
+
+7. Create the tables in openelis database; you can use the pgAdminIII or
+   use command line psql -- following is the instructions for for psql
+
+    a. cd openelis/postgres/openelis
+    b. psql openelis_test
+    c. at 'openelis_test=#' type the following one at a time
+       \i tables.sql
+       \i indexes.sql
+       \i permissions.sql
+       \q
+
+    d. cd data
+    e. cd 0-initial
+    f. psql openelis_test
+    g. at 'openelis_test=#' type the following
+       \i load.sql
+       \q
+
+    h. if you want to load a list of our analytes, cd to
+       1-analytes and re-do steps f-g
+
+    h. if you want to load a list of our tests, sections, etc., cd to
+       2-demo and re-do steps f-g
+
+8. At this point all your databases are created and loaded
