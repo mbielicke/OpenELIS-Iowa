@@ -31,7 +31,7 @@
       <dependency org="net.lightoze.gwt-i18n-server" name="gwt-i18n-server" rev="0.22" transitive="false"/>
       <dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.44.0"/>
       <dependency org="org.javassist" name="javassist" rev="3.18.1-GA" conf="default->master"/>
-      <dependency org="org.jboss.spec" name="jboss-javaee-6.0" rev="3.0.2.Final"/>
+      <dependency org="org.jboss.spec" name="jboss-javaee-7.0" rev="1.0.2.Final"/>
       <dependency org="org.picketbox" name="picketbox-spi-bare" rev="4.0.7.Final"/>
       <dependency org="org.jboss.ejb3" name="jboss-ejb3-ext-api" rev="2.0.0"/>
       <dependency org="xalan" name="xalan" rev="2.7.1"/> 
