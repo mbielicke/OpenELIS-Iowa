@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -231,6 +232,7 @@ public class BillingExportBean {
         HashMap<Integer, AnalysisReportFlagsDO> flagsMap;
         HashMap<Integer, ArrayList<ResultViewDO>> resultMap;
         HashMap<Integer, ArrayList<AnalysisViewDO>> testMap;
+        HashSet<Integer> override;
         
         currentDate = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, currentRunDate);
                                                
@@ -570,6 +572,16 @@ public class BillingExportBean {
                 flagsMap.put(f.getAnalysisId(), f);
 
             /*
+             * all the analysis that should not be charged
+             */
+            override = new HashSet<>();
+            if (getAnalysisQAs(sm) != null) {
+                for (AnalysisQaEventDO qa : getAnalysisQAs(sm))
+                    if ("N".equals(qa.getIsBillable()))
+                        override.add(qa.getAnalysisId());
+            }
+            
+            /*
              * bill each test
              */
             for (AnalysisViewDO a : getAnalyses(sm)) {
@@ -585,18 +597,8 @@ public class BillingExportBean {
                 /*
                  * compute price override
                  */
-                if (! billSample) {
+                if (! billSample || override.contains(a.getId()))
                     charge.billedOverride = 0.0;
-                } else {
-                    if (getAnalysisQAs(sm) != null) {
-                        for (AnalysisQaEventDO qa : getAnalysisQAs(sm)) {
-                            if ("N".equals(qa.getIsBillable())) {
-                                charge.billedOverride = 0.0;
-                                break;
-                            }
-                        }
-                    }
-                }
 
                 /*
                  * charge reportable + non-prelimnary + not-cancelled + in-combined-results
