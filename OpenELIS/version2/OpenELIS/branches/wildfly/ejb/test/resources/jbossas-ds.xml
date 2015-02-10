@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources xmlns="http://www.jboss.org/ironjacamar/schema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.jboss.org/ironjacamar/schema
+        http://docs.jboss.org/ironjacamar/schema/datasources_1_0.xsd">
+	<datasource jndi-name="java:/PGSecurityDS" pool-name="PGSecurityDS"
+		enabled="true" use-java-context="true">
+		<connection-url>jdbc:postgresql://localhost:5432/security_test</connection-url>
+		<driver>postgres-driver</driver>
+		<security>
+			<user-name>jboss_dev</user-name>
+			<password>jboss</password>
+		</security>
+		<validation>
+			<check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+		</validation>
+	</datasource>
+	<datasource jndi-name="java:/PGOpenELISDS" pool-name="PGOpenELISDS"
+		enabled="true" use-java-context="true">
+		<connection-url>jdbc:postgresql://localhost:5432/openelis_test</connection-url>
+		<driver>postgres-driver</driver>
+		<security>
+			<user-name>jboss_dev</user-name>
+			<password>jboss</password>
+		</security>
+		<validation>
+			<check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+		</validation>
+	</datasource>
+</datasources>

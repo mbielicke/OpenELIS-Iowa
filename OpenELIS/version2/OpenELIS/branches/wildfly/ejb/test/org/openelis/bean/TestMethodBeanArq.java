@@ -1,7 +1,9 @@
 package org.openelis.bean;
 
-import static org.openelis.deployment.Deployment.createBaseDeployment;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openelis.deployment.Deployments;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.entity.Method;
@@ -29,8 +32,8 @@ public class TestMethodBeanArq {
 	
 	@Deployment
 	public static WebArchive createDeployment() {
-		return createBaseDeployment()
-				.addClasses(MethodBean.class,LockBean.class,UserCacheBean.class,Method.class);
+	  return Deployments.createBase()
+		.addClasses(MethodBean.class,LockBean.class,UserCacheBean.class,Method.class);
 	}
 	
 	@Test
