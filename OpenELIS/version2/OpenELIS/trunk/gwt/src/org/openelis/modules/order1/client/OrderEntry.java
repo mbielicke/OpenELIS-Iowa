@@ -15,11 +15,11 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
 public class OrderEntry implements EntryPoint {
-    
+
     @Override
     public void onModuleLoad() {
         ScreenBus.get().addHandler(ScreenBus.INTERNAL_ORDER, new ShowScreenHandler() {
-            
+
             @Override
             public void showScreen() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -43,9 +43,9 @@ public class OrderEntry implements EntryPoint {
                 });
             }
         });
-        
+
         ScreenBus.get().addHandler(ScreenBus.VENDOR_ORDER, new ShowScreenHandler() {
-            
+
             @Override
             public void showScreen() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -67,12 +67,12 @@ public class OrderEntry implements EntryPoint {
                         Window.alert(caught.getMessage());
                     }
                 });
-                
+
             }
         });
-        
+
         ScreenBus.get().addHandler(ScreenBus.SENDOUT_ORDER, new ShowScreenHandler() {
-            
+
             @Override
             public void showScreen() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -80,7 +80,7 @@ public class OrderEntry implements EntryPoint {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(Messages.get().sendoutOrder());
-                            window.setSize("1020px", "588px");
+                            window.setSize("960px", "588px");
                             window.setContent(new SendoutOrderScreenUI(window));
                             OpenELIS.getBrowser().addWindow(window, "sendoutOrder");
                         } catch (Throwable e) {
@@ -95,10 +95,6 @@ public class OrderEntry implements EntryPoint {
                     }
                 });
             }
-
         });
-        
-        
     }
-
 }
