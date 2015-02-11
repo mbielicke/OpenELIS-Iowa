@@ -658,7 +658,7 @@ public class FinalReportScreen extends Screen {
         ui.getTable().setText(0, 2, Messages.get().sample_collectedDate());
         ui.getTable().setText(0, 3, Messages.get().finalReport_referenceInfo());
         ui.getTable().setText(0, 4, Messages.get().finalReport_select_status());
-        ui.getTable().setText(0, 5, Messages.get().finalReport_project());
+        ui.getTable().setText(0, 5, Messages.get().sample_project());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
         ui.getTable().getColumnFormatter().getElement(1).getStyle().setTextAlign(TextAlign.CENTER);
         ui.getTable().getColumnFormatter().getElement(4).getStyle().setTextAlign(TextAlign.CENTER);
@@ -718,6 +718,8 @@ public class FinalReportScreen extends Screen {
             ui.getTable().setText(j, 5, sample.getProjectName());
 
         }
+        ui.getRowCountText().setInnerText(ui.getTable().getRowCount() + " " +
+                                          Messages.get().gen_samplesFound());
         ui.setCheckBoxCSS();
     }
 

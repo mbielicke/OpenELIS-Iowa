@@ -6,6 +6,7 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -42,6 +43,9 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
 
     @UiField
     protected FlexTable                        table;
+
+    @UiField
+    protected TableCellElement                 rowCount;
 
     @UiField
     protected DeckPanel                        deck;
@@ -180,6 +184,11 @@ public class FinalReportUIImpl extends ResizeComposite implements FinalReportUI 
     @Override
     public FlexTable getTable() {
         return table;
+    }
+
+    @Override
+    public TableCellElement getRowCountText() {
+        return rowCount;
     }
 
     @Override

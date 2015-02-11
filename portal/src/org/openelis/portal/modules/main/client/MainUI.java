@@ -9,5 +9,5 @@ public interface MainUI extends IsWidget {
 	Panel main();
 	Navigation navigation();
 	FocusPanel logo();
-	
+	void popup();
 }

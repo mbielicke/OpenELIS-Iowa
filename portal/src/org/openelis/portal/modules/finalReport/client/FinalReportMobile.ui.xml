@@ -125,7 +125,7 @@
 					</tr>
 					<tr>
 						<td class="{res.style.Prompt}">
-							<ui:text from="{msg.sample_projectCode}:" />
+							<ui:text from="{msg.sample_project}:" />
 						</td>
 						<td colspan="3">
 							<w:MultiDropdown ui:field="projectCode" width="178px"
@@ -274,21 +274,29 @@
 					<tr>
 						<td>
 							<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
-								enabled="true" image="{uiRes.find}" />
+								enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 						</td>
 						<td>
 							<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-								enabled="true" image="{res.reset}" />
+								enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 						</td>
 					</tr>
 				</table>
 			</g:HTMLPanel>
 			<g:HTMLPanel>
-				<table width="728">
+				<table class="{res.style.Form}">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" rightText="{msg.gen_back}"
-								enabled="true" image="{uiRes.previousPage}" />
+							<span style="float:left;font-weight:bold;font-size:13pt;">
+								<ui:text from="{msg.main_finalReport}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:Button ui:field="backButton" image="{res.backImage}"
+								pixelSize="20,20" css="{res.portalButton}" rightText="Back"
+								enabled="true" width="70px" height="25px" />
 						</td>
 					</tr>
 					<tr>
@@ -298,14 +306,17 @@
 						</td>
 					</tr>
 					<tr>
+						<td ui:field="rowCount" />
+					</tr>
+					<tr>
 						<td>
 							<g:HorizontalPanel spacing="4">
 								<w:Button ui:field="selectAllButton" rightText="{msg.finalReport_selectAll}"
-									enabled="true" image="{uiRes.apply}" />
+									enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								<w:Button ui:field="unselectAllButton" rightText="{msg.finalReport_unselectAll}"
-									enabled="true" image="{uiRes.unapply}" />
+									enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								<w:Button ui:field="runReportButton" rightText="{msg.finalReport_run}"
-									enabled="true" image="{uiRes.report}" />
+									enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 							</g:HorizontalPanel>
 						</td>
 					</tr>

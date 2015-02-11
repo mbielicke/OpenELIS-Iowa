@@ -127,10 +127,10 @@
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.sample_projectCode}:" />
+									<ui:text from="{msg.sample_project}:" />
 								</td>
 								<td colspan="3">
-									<w:Dropdown ui:field="projectCode" width="178px"
+									<w:MultiDropdown ui:field="projectCode" width="178px"
 										field="Integer" enabled="true">
 										<w:popup>
 											<t:Table visibleRows="10" header="true">
@@ -142,7 +142,7 @@
 												</t:Column>
 											</t:Table>
 										</w:popup>
-									</w:Dropdown>
+									</w:MultiDropdown>
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.sampleStatus_help_project}"
@@ -277,11 +277,11 @@
 							<tr>
 								<td>
 									<w:Button ui:field="getSampleListButton" rightText="{msg.finalReport_getSampleList}"
-										enabled="true" image="{uiRes.find}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</td>
 								<td>
 									<w:Button ui:field="resetButton" rightText="{msg.finalReport_reset}"
-										enabled="true" image="{res.reset}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</td>
 							</tr>
 						</table>
@@ -289,11 +289,19 @@
 				</g:Dock>
 			</g:DockPanel>
 			<g:HTMLPanel>
-				<table width="728">
+				<table class="{res.style.Form}" width="100%">
 					<tr>
 						<td>
-							<w:Button ui:field="backButton" rightText="{msg.gen_back}"
-								enabled="true" image="{uiRes.previousPage}" />
+							<span style="float:left;font-weight:bold;font-size:13pt;">
+								<ui:text from="{msg.main_sampleStatus}" />
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:Button ui:field="backButton" image="{res.backImage}"
+								pixelSize="20,20" css="{res.portalButton}" rightText="Back"
+								enabled="true" width="70px" height="25px" />
 						</td>
 					</tr>
 					<tr>
@@ -301,6 +309,9 @@
 							<g:FlexTable ui:field="table"
 								styleName="{res.table.ScreenTableWithSides} {res.table.Table}" />
 						</td>
+					</tr>
+					<tr>
+						<td ui:field="sampleCount" />
 					</tr>
 				</table>
 			</g:HTMLPanel>

@@ -79,10 +79,15 @@
 				<!-- </g:tab> -->
 			</g:TabLayoutPanel>
 		</g:layer>
-		<g:layer top="0px" right="0px" height="25px" width="68px">
-			<w:Button ui:field="logout" rightText="{msg.main_logout}"
-				image="{res.logoutImage}" pixelSize="15,15" enabled="true"
-				css="{res.portalButton}" />
+		<g:layer top="0px" right="0px" height="25px" width="203px">
+			<g:HorizontalPanel spacing="2">
+				<w:Button ui:field="changePassword" rightText="{msg.main_changePassword}"
+					image="{res.changePasswordImage}" pixelSize="15,15" enabled="true"
+					css="{res.portalButton}" />
+				<w:Button ui:field="logout" rightText="{msg.main_logout}"
+					image="{res.logoutImage}" pixelSize="15,15" enabled="true"
+					css="{res.portalButton}" />
+			</g:HorizontalPanel>
 		</g:layer>
 	</g:LayoutPanel>
 </ui:UiBinder>
