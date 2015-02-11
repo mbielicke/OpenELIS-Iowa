@@ -2,18 +2,18 @@ package org.openelis.portal.messages;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Portal/src/org/openelis/portal/messages/PortalMessages.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Portal/war/WEB-INF/classes/org/openelis/portal/messages/PortalMessages.properties'.
  */
 public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   
   /**
-   * Translated "Completed".
+   * Translated "Completed Date".
    * 
-   * @return translated "Completed"
+   * @return translated "Completed Date"
    */
-  @DefaultMessage("Completed")
-  @Key("analysis.completed")
-  String analysis_completed();
+  @DefaultMessage("Completed Date")
+  @Key("analysis.completedDate")
+  String analysis_completedDate();
 
   /**
    * Translated "Method".
@@ -43,13 +43,13 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String analysis_revision();
 
   /**
-   * Translated "Started".
+   * Translated "Started Date".
    * 
-   * @return translated "Started"
+   * @return translated "Started Date"
    */
-  @DefaultMessage("Started")
-  @Key("analysis.started")
-  String analysis_started();
+  @DefaultMessage("Started Date")
+  @Key("analysis.startedDate")
+  String analysis_startedDate();
 
   /**
    * Translated "Test".
@@ -385,20 +385,20 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String emailNotification_filterValue();
 
   /**
-   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events. You can also add a filter on the Collector, Provider, or Client Reference fields of the sample, to only receive emails that match the filter.".
+   * Translated "SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both events. In the near future you will be able to add a filter on the Collector, Provider, or Client Reference fields of the sample in order to receive emails that only match the filter.".
    * 
-   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events. You can also add a filter on the Collector, Provider, or Client Reference fields of the sample, to only receive emails that match the filter."
+   * @return translated "SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both events. In the near future you will be able to add a filter on the Collector, Provider, or Client Reference fields of the sample in order to receive emails that only match the filter."
    */
-  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when the result is available. You can choose whether the notification emails are sent for either or both events. You can also add a filter on the Collector, Provider, or Client Reference fields of the sample, to only receive emails that match the filter.")
+  @DefaultMessage("SHL can send an email to specified email addresses whenever a new sample is received or when a result is available. You can choose whether the notification emails are sent for either or both events. In the near future you will be able to add a filter on the Collector, Provider, or Client Reference fields of the sample in order to receive emails that only match the filter.")
   @Key("emailNotification.help.description")
   String emailNotification_help_description();
 
   /**
-   * Translated "<span class = \"helpText\"><span class = \"helpHeader\">To Add Your Email Address </span><br/><ul> <li> Click on the \"Add Row\" button to create a new entry.</li><li>Choose the organization associated with the samples.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notification for each type of event.</li><li>Enter a valid email address in the <b>Email</b> field.</li><li>Click <b>Commit</b> to add this notification or remove the row to abort.</li></ul><br/> <span class = \"helpHeader\">To Edit an Existing Email Address </span><br/><ul> <li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter data</ul><br/><span class = \"helpHeader\">To Remove an Email Notification</span><br/><ul> <li>Click on the remove icon next to the entry you want to remove</li></ul></span>".
+   * Translated "<span class = \"helpText\"><span class = \"helpHeader\">To Add Your Email Address </span><br/><ul><li>Click on the <b>Add</b> button to add a new email address.</li><li>Select your organization from the dropdown list in the <b>Organization</b> field.</li><li>Enter your email address in the <b>Email</b> field.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notifications for each type of event.</li><li>Click <b>Save Changes</b> to complete the process.</li></ul><br/><span class = \"helpHeader\">To Edit an Existing Email Address or Filter</span><br/><ul><li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter information.</li><li>Click <b>Save Changes</b> to complete the process.</li></ul><br/><span class = \"helpHeader\">To Remove an Email Notification</span><br/><ul><li>Select the entry that you want to remove. Click <b>Remove</b>.</li></ul></span>".
    * 
-   * @return translated "<span class = \"helpText\"><span class = \"helpHeader\">To Add Your Email Address </span><br/><ul> <li> Click on the \"Add Row\" button to create a new entry.</li><li>Choose the organization associated with the samples.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notification for each type of event.</li><li>Enter a valid email address in the <b>Email</b> field.</li><li>Click <b>Commit</b> to add this notification or remove the row to abort.</li></ul><br/> <span class = \"helpHeader\">To Edit an Existing Email Address </span><br/><ul> <li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter data</ul><br/><span class = \"helpHeader\">To Remove an Email Notification</span><br/><ul> <li>Click on the remove icon next to the entry you want to remove</li></ul></span>"
+   * @return translated "<span class = \"helpText\"><span class = \"helpHeader\">To Add Your Email Address </span><br/><ul><li>Click on the <b>Add</b> button to add a new email address.</li><li>Select your organization from the dropdown list in the <b>Organization</b> field.</li><li>Enter your email address in the <b>Email</b> field.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notifications for each type of event.</li><li>Click <b>Save Changes</b> to complete the process.</li></ul><br/><span class = \"helpHeader\">To Edit an Existing Email Address or Filter</span><br/><ul><li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter information.</li><li>Click <b>Save Changes</b> to complete the process.</li></ul><br/><span class = \"helpHeader\">To Remove an Email Notification</span><br/><ul><li>Select the entry that you want to remove. Click <b>Remove</b>.</li></ul></span>"
    */
-  @DefaultMessage("<span class = \"helpText\"><span class = \"helpHeader\">To Add Your Email Address </span><br/><ul> <li> Click on the \"Add Row\" button to create a new entry.</li><li>Choose the organization associated with the samples.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notification for each type of event.</li><li>Enter a valid email address in the <b>Email</b> field.</li><li>Click <b>Commit</b> to add this notification or remove the row to abort.</li></ul><br/> <span class = \"helpHeader\">To Edit an Existing Email Address </span><br/><ul> <li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter data</ul><br/><span class = \"helpHeader\">To Remove an Email Notification</span><br/><ul> <li>Click on the remove icon next to the entry you want to remove</li></ul></span>")
+  @DefaultMessage("<span class = \"helpText\"><span class = \"helpHeader\">To Add Your Email Address </span><br/><ul><li>Click on the <b>Add</b> button to add a new email address.</li><li>Select your organization from the dropdown list in the <b>Organization</b> field.</li><li>Enter your email address in the <b>Email</b> field.</li><li>Check <b>Received</b> or <b>Released</b> or both to receive notifications for each type of event.</li><li>Click <b>Save Changes</b> to complete the process.</li></ul><br/><span class = \"helpHeader\">To Edit an Existing Email Address or Filter</span><br/><ul><li>Click on any cell in the entry you want to edit.</li><li>Type in the new email address or filter information.</li><li>Click <b>Save Changes</b> to complete the process.</li></ul><br/><span class = \"helpHeader\">To Remove an Email Notification</span><br/><ul><li>Select the entry that you want to remove. Click <b>Remove</b>.</li></ul></span>")
   @Key("emailNotification.help.screen")
   String emailNotification_help_screen();
 
@@ -655,11 +655,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_sdwisCollector();
 
   /**
-   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>To the left is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results are currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>".
+   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>To the left is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s last name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results are currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>".
    * 
-   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>To the left is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results are currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>"
+   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>To the left is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s last name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results are currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>"
    */
-  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>To the left is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results are currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>")
+  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">To View the Final Reports</span><br/><p>To the left is a list of sample results that match your search criteria and are available for you to view. To view all reports of the listed samples, click on the <b>Select All</b> button, and then the <b>Run Report</b> button.</p><p>To view specific reports, check the boxes in front of their Accession Numbers, and then click the <b>Run Report</b> button.</p><p>The PDF reports of the selected samples will pop up. You may view, save, or print your PDF reports.</p><p>The following are descriptions of each column on this screen.</p><p>Accession Number: The lab number assigned to the sample by SHL.</p><p>Collected Date: The date and time that the sample was collected. All dates and times have the format of YYYY-MM-DD HH:MM.</p><p>Reference Information:  This information can be helpful in identifying a sample. The patient''s last name is usually displayed for clinical samples. The collector''s name is usually displayed for environmental and SDWIS samples.</p><p>Status: The sample''s status is shown here. \"In Progress\" samples have at least one test that is in the process of being ran. There will be at least one test on this sample that is finished and its results are currently available on the Final Report. \"Completed\" samples have finished testing and all of their results are available on the Final Report.</p><p>Project: The name of the project that has been assigned to the sample. A project can be used to group samples with a similar purpose.</p></span>")
   @Key("finalReport.help.selection")
   String finalReport_help_selection();
 
@@ -689,15 +689,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient''s Last Name")
   @Key("finalReport.patientLast")
   String finalReport_patientLast();
-
-  /**
-   * Translated "Project".
-   * 
-   * @return translated "Project"
-   */
-  @DefaultMessage("Project")
-  @Key("finalReport.project")
-  String finalReport_project();
 
   /**
    * Translated "Reference Information".
@@ -853,6 +844,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String gen_no();
 
   /**
+   * Translated "samples have been found.".
+   * 
+   * @return translated "samples have been found."
+   */
+  @DefaultMessage("samples have been found.")
+  @Key("gen.samplesFound")
+  String gen_samplesFound();
+
+  /**
    * Translated "HH:mm".
    * 
    * @return translated "HH:mm"
@@ -887,6 +887,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("ACCOUNT INFORMATION")
   @Key("main.accountInfo")
   String main_accountInfo();
+
+  /**
+   * Translated "Change Password".
+   * 
+   * @return translated "Change Password"
+   */
+  @DefaultMessage("Change Password")
+  @Key("main.changePassword")
+  String main_changePassword();
 
   /**
    * Translated "Spreadsheet View".
@@ -1132,15 +1141,6 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String patient_race();
 
   /**
-   * Translated "Project".
-   * 
-   * @return translated "Project"
-   */
-  @DefaultMessage("Project")
-  @Key("project.project")
-  String project_project();
-
-  /**
    * Translated "PWS ID".
    * 
    * @return translated "PWS ID"
@@ -1204,11 +1204,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sample_collectionTown();
 
   /**
-   * Translated "Collector".
+   * Translated "Collector Name".
    * 
-   * @return translated "Collector"
+   * @return translated "Collector Name"
    */
-  @DefaultMessage("Collector")
+  @DefaultMessage("Collector Name")
   @Key("sample.collector")
   String sample_collector();
 
@@ -1240,13 +1240,13 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sample_phone();
 
   /**
-   * Translated "Project Code".
+   * Translated "Project".
    * 
-   * @return translated "Project Code"
+   * @return translated "Project"
    */
-  @DefaultMessage("Project Code")
-  @Key("sample.projectCode")
-  String sample_projectCode();
+  @DefaultMessage("Project")
+  @Key("sample.project")
+  String sample_project();
 
   /**
    * Translated "Received".
@@ -1256,6 +1256,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Received")
   @Key("sample.received")
   String sample_received();
+
+  /**
+   * Translated "Received Date".
+   * 
+   * @return translated "Received Date"
+   */
+  @DefaultMessage("Received Date")
+  @Key("sample.receivedDate")
+  String sample_receivedDate();
 
   /**
    * Translated "Released".
@@ -1420,11 +1429,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sampleStatus_help_released();
 
   /**
-   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">Viewing the Test Status of Your Samples</span><p>The Test Status option will display the status of each test that is being performed on your samples. The Collected Date, Received Date, Client Reference, and any QA Events will also be shown.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</p></span>".
+   * Translated "<span class=\"helpText\"><span class=\"helpHeader\">Viewing the Test Status of Your Samples</span><p>The Status of Tests option will display the status of each test that is being performed on your samples. The Collected Date, Received Date, Client Reference, and any QA Events will also be shown.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</p></span>".
    * 
-   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">Viewing the Test Status of Your Samples</span><p>The Test Status option will display the status of each test that is being performed on your samples. The Collected Date, Received Date, Client Reference, and any QA Events will also be shown.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</p></span>"
+   * @return translated "<span class=\"helpText\"><span class=\"helpHeader\">Viewing the Test Status of Your Samples</span><p>The Status of Tests option will display the status of each test that is being performed on your samples. The Collected Date, Received Date, Client Reference, and any QA Events will also be shown.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</p></span>"
    */
-  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">Viewing the Test Status of Your Samples</span><p>The Test Status option will display the status of each test that is being performed on your samples. The Collected Date, Received Date, Client Reference, and any QA Events will also be shown.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</p></span>")
+  @DefaultMessage("<span class=\"helpText\"><span class=\"helpHeader\">Viewing the Test Status of Your Samples</span><p>The Status of Tests option will display the status of each test that is being performed on your samples. The Collected Date, Received Date, Client Reference, and any QA Events will also be shown.</p><p>You only need to enter information in one field to conduct a search for your results. Examples include: <b>Collected Date</b>, <b>Accession Number</b>, <b>Collector Name</b>, or <b>Patient''s Last Name</b>.</p><p>It is recommended that you use the calendar to the right of each date field when entering a date to eliminate any formatting errors. You must click out of the calendar to enter the selected date. All dates have the format of YYYY-MM-DD. Released Date also includes the time in the format of YYYY-MM-DD HH:MM.</p><p>You may also narrow your search by entering information in multiple fields. For example, to find all of the samples that you collected and sent to the laboratory in June of 2014, enter your name (as it appeared on the collection form) in the <b>Collector Name</b> field and select (using the calendars provided) 2014-06-01 in the <b>Collected Date</b> field and 2014-06-30 in the <b>To</b> field.</p><p>The system supports wild card searches in the following fields: <b>Client Reference</b>, <b>Collector Name</b>, <b>PWS ID</b>, <b>Patient''s First Name</b>, and <b>Patient''s Last Name</b>. By using this search method you would add an * at the beginning and/or end of your search term. </p><p>For example, to see a list of patient results for a patient whose last name starts with the letters <i>schm</i>, enter <i>schm*</i> in the <b>Patient''s Last Name</b> field. Matches would include: <i>schmidt</i>, <i>schmitt</i>, <i>schmitz</i>, etc. </p><p>In another example, to see a list of results for samples with a collector name of <i>buck</i>, enter <i>*buck*</i> in the <b>Collector Name</b> field. Matches would include: <i>joseph buck</i>, <i>joe buck</i>, <i>j buck</i>, <i>buck joseph</i>, <i>buck joe</i>, <i>buck j</i>, etc.</p><p>Click the <b>Find Samples</b> button to display a list of samples that match your search criteria. The <b>Reset</b> button clears all of the search fields.</p></span>")
   @Key("sampleStatus.help.screen")
   String sampleStatus_help_screen();
 

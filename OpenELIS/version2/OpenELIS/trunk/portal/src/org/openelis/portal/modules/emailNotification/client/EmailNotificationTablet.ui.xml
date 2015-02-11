@@ -94,11 +94,11 @@
 							<td>
 								<g:HorizontalPanel spacing="4">
 									<w:Button ui:field="addButton" rightText="{msg.emailNotification_add}"
-										enabled="true" image="{uiRes.addButton}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 									<w:Button ui:field="removeButton" rightText="{msg.emailNotification_remove}"
-										enabled="true" image="{uiRes.commit}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 									<w:Button ui:field="saveButton" rightText="{msg.emailNotification_save}"
-										enabled="true" image="{uiRes.commit}" />
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</g:HorizontalPanel>
 							</td>
 						</tr>

@@ -88,12 +88,12 @@
 						<tr>
 							<td>
 								<g:HorizontalPanel spacing="4">
-									<w:Button ui:field="addButton" rightText="{msg.gen_addRow}"
-										enabled="true" image="{uiRes.addButton}" />
-									<w:Button ui:field="removeButton" rightText="{msg.btn_commit}"
-										enabled="true" image="{uiRes.commit}" />
-									<w:Button ui:field="saveButton" rightText="{msg.btn_commit}"
-										enabled="true" image="{uiRes.commit}" />
+									<w:Button ui:field="addButton" rightText="{msg.emailNotification_add}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<w:Button ui:field="removeButton" rightText="{msg.emailNotification_remove}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
+									<w:Button ui:field="saveButton" rightText="{msg.emailNotification_save}"
+										enabled="true" css="{res.portalButton}" width="100px" height="25px" />
 								</g:HorizontalPanel>
 							</td>
 						</tr>

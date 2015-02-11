@@ -41,4 +41,9 @@ public class MainMobileUIImpl extends ResizeComposite implements MainUI {
         return null;
     }
 
+    @Override
+    public void popup() {
+        QuestionPopupUI.popup("300px", "200px", 310);
+    }
+
 }

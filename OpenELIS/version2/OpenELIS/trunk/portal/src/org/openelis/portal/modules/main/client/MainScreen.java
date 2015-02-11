@@ -36,14 +36,16 @@ public class MainScreen extends Composite {
 
         window = new PortalWindow();
 
-        ui.logo().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                ui.main().clear();
-                if (messageScreen != null)
-                    ui.main().add(messageScreen);
-            }
-        });
+        if (ui.logo() != null) {
+            ui.logo().addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    ui.main().clear();
+                    if (messageScreen != null)
+                        ui.main().add(messageScreen);
+                }
+            });
+        }
 
         ui.navigation().finalReport().addClickHandler(new ClickHandler() {
             @Override
@@ -107,10 +109,22 @@ public class MainScreen extends Composite {
             }
         });
 
+        ui.navigation().changePassword().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                try {
+                    Window.open("https://www.shl.uiowa.edu/pwm", "password", null);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
         ui.navigation().logout().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                QuestionPopupUI.popup();
+                ui.popup();
             }
         });
 
@@ -138,5 +152,4 @@ public class MainScreen extends Composite {
 
         Window.open("/portal/Portal.html", "_self", null);
     }
-
 }

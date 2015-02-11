@@ -54,9 +54,12 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     protected Table                         analyteTable, auxTable;
 
     @UiField
-    protected Button                        continueButton, resetButton, selectAllAnalytesButton,
-                    unselectAllAnalytesButton, selectAllAuxButton, unselectAllAuxButton,
-                    backButton, runReportButton;
+    protected Button                        continueButton, resetButton,
+                    selectAllSampleFieldsButton, selectAllOrgFieldsButton,
+                    selectAllAnalysisFieldsButton, selectAllPatientFieldsButton,
+                    selectAllSdwisFieldsButton, selectAllEnvironmentalFieldsButton,
+                    selectAllAnalytesButton, unselectAllAnalytesButton, selectAllAuxButton,
+                    unselectAllAuxButton, backButton, runReportButton;
 
     @UiField
     protected DeckPanel                     deck;
@@ -392,40 +395,34 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
 
     @Override
     public Button getSelectAllSampleFieldsButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectAllSampleFieldsButton;
     }
 
     @Override
     public Button getSelectAllOrgFieldsButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectAllOrgFieldsButton;
     }
 
     @Override
     public Button getSelectAllAnalysisFieldsButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectAllAnalysisFieldsButton;
     }
 
     @Override
     public Button getSelectAllPatientFieldsButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectAllPatientFieldsButton;
     }
 
     @Override
     public Button getSelectAllSdwisFieldsButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectAllSdwisFieldsButton;
     }
 
     @Override
     public Button getSelectAllEnvironmentalFieldsButton() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectAllEnvironmentalFieldsButton;
     }
-    
+
     @Override
     public Button getSelectAllAnalytesButton() {
         return selectAllAnalytesButton;

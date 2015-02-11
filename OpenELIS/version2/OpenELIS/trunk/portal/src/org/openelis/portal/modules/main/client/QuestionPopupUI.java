@@ -134,18 +134,20 @@ public abstract class QuestionPopupUI extends Screen {
         cancel();
     }
 
-    public static void popup() {
+    public static void popup(String width, String height, final int leftPosition) {
         if (questionPopup == null) {
             questionPopup = new QuestionPopupUI() {
                 @Override
                 public void yes() {
-                    submit(Messages.get().gen_yes());
+                    // TODO create table and store response
+                    // submit(Messages.get().gen_yes());
                     MainScreen.logout();
                 }
 
                 @Override
                 public void no() {
-                    submit(Messages.get().gen_no());
+                    // TODO
+                    // submit(Messages.get().gen_no());
                     MainScreen.logout();
                 }
 
@@ -190,7 +192,7 @@ public abstract class QuestionPopupUI extends Screen {
         }
         if (popup == null) {
             popup = new PopupPanel();
-            popup.setSize("500px", "100px");
+            popup.setSize(width, height);
             popup.setModal(true);
             popup.setAutoHideEnabled(false);
         }
@@ -202,7 +204,7 @@ public abstract class QuestionPopupUI extends Screen {
             @Override
             public void setPosition(int offsetWidth, int offsetHeight) {
                 int width = com.google.gwt.user.client.Window.getClientWidth();
-                popup.setPopupPosition(width - 550, 50);
+                popup.setPopupPosition(width - leftPosition, 50);
             }
 
         });

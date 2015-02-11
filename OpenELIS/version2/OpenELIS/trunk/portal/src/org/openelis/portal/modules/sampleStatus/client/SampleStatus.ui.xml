@@ -96,8 +96,8 @@
 									<ui:text from="{msg.gen_to}:" />
 								</td>
 								<td>
-									<w:TextBox ui:field="accessionTo" width="107px" field="Integer"
-										enabled="true" />
+									<w:TextBox ui:field="accessionTo" width="107px"
+										field="Integer" enabled="true" />
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.finalReport_help_accession}"
@@ -119,7 +119,7 @@
 							</tr>
 							<tr>
 								<td class="{res.style.Prompt}">
-									<ui:text from="{msg.sample_projectCode}:" />
+									<ui:text from="{msg.sample_project}:" />
 								</td>
 								<td colspan="3">
 									<w:MultiDropdown ui:field="projectCode" width="239px"
@@ -303,6 +303,9 @@
 								<td>
 									<g:FlexTable ui:field="table" styleName="{res.listTable.ListTable}" />
 								</td>
+							</tr>
+							<tr>
+								<td ui:field="sampleCount" />
 							</tr>
 						</table>
 					</g:HTMLPanel>
