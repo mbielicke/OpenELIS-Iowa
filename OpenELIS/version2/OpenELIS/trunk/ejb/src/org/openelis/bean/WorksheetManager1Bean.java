@@ -802,7 +802,7 @@ public class WorksheetManager1Bean {
                                 if (Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
                                     Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()))
                                     try {
-                                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_REQUEUE);
+                                        sampleMan.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_REQUEUE);
                                     } catch (ValidationErrorsList vel) {
                                         if (vel.hasErrors())
                                             throw vel;
@@ -813,7 +813,7 @@ public class WorksheetManager1Bean {
                                     startedDate = ana.getStartedDate();
                                     if (startedDate == null || !startedDate.before(createdDate)) {
                                         try {
-                                            aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
+                                            sampleMan.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
                                         } catch (ValidationErrorsList vel) {
                                             if (vel.hasErrors())
                                                 throw vel;
@@ -826,7 +826,7 @@ public class WorksheetManager1Bean {
                                     !Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) &&
                                     !Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId())) {
                                     try {
-                                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
+                                        sampleMan.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
                                     } catch (ValidationErrorsList vel) {
                                         if (vel.hasErrors())
                                             throw vel;
@@ -835,7 +835,7 @@ public class WorksheetManager1Bean {
                                 if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
                                                              ana.getUnitOfMeasureId())) {
                                     try {
-                                        aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                                        sampleMan.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
                                     } catch (ValidationErrorsList vel) {
                                         if (vel.hasErrors())
                                             throw vel;
@@ -2276,7 +2276,7 @@ public class WorksheetManager1Bean {
                 if (DataBaseUtil.isDifferent(waVDO.getStatusId(), aVDO.getStatusId()) &&
                     sMan.analysis.canChangeStatus(aVDO.getStatusId(), waVDO.getStatusId())) {
                     try {
-                        aHelper.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
+                        sampleMan.changeAnalysisStatus(sMan, aVDO.getId(), waVDO.getStatusId());
                     } catch (ValidationErrorsList vel) {
                         if (vel.hasErrors())
                             throw vel;
@@ -2287,7 +2287,7 @@ public class WorksheetManager1Bean {
                 if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(aVDO.getStatusId()) ||
                     Constants.dictionary().ANALYSIS_INITIATED.equals(aVDO.getStatusId())) {
                     try {
-                        aHelper.changeAnalysisStatus(sMan, aVDO.getId(), Constants.dictionary().ANALYSIS_COMPLETED);
+                        sampleMan.changeAnalysisStatus(sMan, aVDO.getId(), Constants.dictionary().ANALYSIS_COMPLETED);
                         update = true;
                     } catch (Exception ignE) {
                         // if there is an error changing the status to Completed,
