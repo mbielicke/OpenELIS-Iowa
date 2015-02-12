@@ -124,7 +124,9 @@ public class MainScreen extends Composite {
         ui.navigation().logout().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ui.popup();
+                // TODO question popup on logout
+                // ui.popup();
+                logout();
             }
         });
 
