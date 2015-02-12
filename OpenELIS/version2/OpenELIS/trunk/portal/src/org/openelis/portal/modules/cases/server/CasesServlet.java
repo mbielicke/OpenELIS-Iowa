@@ -9,7 +9,7 @@ import org.openelis.stfu.bean.CaseManagerBean;
 import org.openelis.stfu.manager.CaseManager;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/cases")
+@WebServlet("/openelisweb/cases")
 public class CasesServlet extends RemoteServlet implements CasesServiceInt {
 
 	private static final long serialVersionUID = 1L;

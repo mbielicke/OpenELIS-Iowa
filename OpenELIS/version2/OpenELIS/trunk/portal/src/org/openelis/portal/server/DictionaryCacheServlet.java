@@ -33,7 +33,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.portal.cache.DictionaryCacheServiceInt;
 
-@WebServlet("/portal/dictionaryCache")
+@WebServlet("/openelisweb/dictionaryCache")
 public class DictionaryCacheServlet extends RemoteServlet implements DictionaryCacheServiceInt {
 
     private static final long serialVersionUID = 1L;

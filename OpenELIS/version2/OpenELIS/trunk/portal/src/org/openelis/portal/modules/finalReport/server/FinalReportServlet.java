@@ -39,7 +39,7 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/finalReport")
+@WebServlet("/openelisweb/finalReport")
 public class FinalReportServlet extends RemoteServlet implements FinalReportServiceInt {
 
     private static final long     serialVersionUID = 1L;
