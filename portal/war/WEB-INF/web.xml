@@ -26,7 +26,7 @@ UIRF Software License are applicable instead of those above.
 -->
 
 <web-app>
- <display-name>OpenELIS Web</display-name>
+ <display-name>OpenELIS Portal</display-name>
  <description>External facing web portal for OpenELIS</description>
 
    <security-constraint>
@@ -119,7 +119,7 @@ UIRF Software License are applicable instead of those above.
   </error-page>  
 
   <welcome-file-list>
-     <welcome-file>OpenELISWeb.html</welcome-file>
+     <welcome-file>OpenELIS.html</welcome-file>
   </welcome-file-list>
   
   <context-param>
