@@ -152,6 +152,6 @@ public class MainScreen extends Composite {
             Window.alert(e.getMessage());
         }
 
-        Window.open("/portal/Portal.html", "_self", null);
+        Window.open("/openelisweb/OpenELIS.html", "_self", null);
     }
 }
