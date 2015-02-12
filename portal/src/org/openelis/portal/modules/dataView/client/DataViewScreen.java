@@ -1706,7 +1706,7 @@ public class DataViewScreen extends Screen {
         statusPanel.setSize("450px", "125px");
         statusScreen.setSize("450px", "125px");
         statusPanel.setWidget(statusScreen);
-        statusPanel.setPopupPosition(this.getAbsoluteLeft() + 20, this.getAbsoluteTop() + 20);
+        statusPanel.setPopupPosition(this.getAbsoluteLeft() + 50, this.getAbsoluteTop() + 50);
         statusPanel.setModal(true);
         statusPanel.show();
 
@@ -1719,7 +1719,7 @@ public class DataViewScreen extends Screen {
             @Override
             public void onSuccess(ReportStatus result) {
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
-                    String url = "/portal/portal/report?file=" + result.getMessage();
+                    String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "DataView", null);
                 }
                 window.clearStatus();

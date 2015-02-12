@@ -832,7 +832,7 @@ public class FinalReportScreen extends Screen {
             public void onSuccess(ReportStatus result) {
                 window.clearStatus();
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
-                    String url = "/portal/portal/report?file=" + result.getMessage();
+                    String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "FinalReport", null);
                 }
                 window.clearStatus();
@@ -879,7 +879,7 @@ public class FinalReportScreen extends Screen {
                 statusPanel.hide();
                 statusScreen.setStatus(null);
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
-                    String url = "/portal/portal/report?file=" + result.getMessage();
+                    String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "FinalReport", null);
                 }
                 window.clearStatus();

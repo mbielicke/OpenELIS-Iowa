@@ -40,7 +40,7 @@ import org.openelis.ui.server.RemoteServlet;
  * This servlet needs to extend RemoteServiceServlet instead of RemoteServlet so that it does not update
  *last_access when checking for last_access;
  */
-@WebServlet("/portal/service")
+@WebServlet("/openelisweb/service")
 public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt {
     
     private static final long serialVersionUID = 1L;

@@ -35,7 +35,7 @@ import org.openelis.domain.CategoryCacheVO;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.portal.cache.CategoryCacheServiceInt;
 
-@WebServlet("/portal/categoryCache")
+@WebServlet("/openelisweb/categoryCache")
 public class CategoryCacheServlet extends RemoteServlet implements CategoryCacheServiceInt {
     
     private static final long serialVersionUID = 1L;
