@@ -718,8 +718,13 @@ public class FinalReportScreen extends Screen {
             ui.getTable().setText(j, 5, sample.getProjectName());
 
         }
-        ui.getRowCountText().setInnerText(ui.getTable().getRowCount() + " " +
-                                          Messages.get().gen_samplesFound());
+        /*
+         * display how many samples were returned
+         */
+        if (ui.getTable().getRowCount() > 0) {
+            ui.getRowCountText().setInnerText(ui.getTable().getRowCount() - 1 + " " +
+                                              Messages.get().gen_samplesFound());
+        }
         ui.setCheckBoxCSS();
     }
 
