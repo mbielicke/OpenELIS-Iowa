@@ -49,4 +49,17 @@ public class Deployments {
 				.addPackage("org.openelis.util");
 	}
 	
+//	public static JavaArchive jarDeploy() {
+//		return ShrinkWrap.create(JavaArchive.class)
+//				 .addPackage("org.openelis.bean")
+//				 .addPackage("org.openelis.entity")
+//				 .addPackage("org.openelis.manager")
+//				 .addPackage("org.openelis.scriptlet")
+//			     .addPackage("org.openelis.utilcommon")
+//			     .addPackage("org.openelis.gwt.common")
+//				 .addPackages(true,"org.openelis.report")
+//				 .addAsResource(Maven.resolver().resolve("net.sf.jasperreports:jasperreports:4.0.1").withTransitivity().asFile())
+//				 .addAsLibraries(Maven.resolver().resolve("org.apache.poi:poi:3.6").withTransitivity().asFile())
+//			     .addAsLibraries(Maven.resolver().resolve("net.lightoze.gwt-i18n-server:gwt-i18n-server:0.22").withoutTransitivity().asFile());
+//	}
 }

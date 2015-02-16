@@ -1,0 +1,40 @@
+package org.openelis.stfu.rules;
+
+import org.openelis.stfu.domain.RulesTest;
+import org.openelis.stfu.domain.Counter;
+
+global Counter counter;
+
+rule "remove equals"
+ruleflow-group "RemoveEquals"
+    when 
+        $r : RulesTest( getRandom() == 500)
+    then 
+        modify($r){redoRandom();}
+end
+
+rule " = 500 "
+ruleflow-group "Equals"
+	when 
+	    RulesTest( getRandom() == 500 )
+	then 
+	    counter.equals++;
+end
+
+rule " < 500"
+ruleflow-group "Less"
+	when 
+   		RulesTest( getRandom() < 500 )
+	then 
+		counter.less++;
+end
+   
+rule " > 500"
+ruleflow-group "Greater"
+	when 
+	   RulesTest( getRandom() > 500 )
+	then 
+	   counter.greater++;
+end
+   
+   
