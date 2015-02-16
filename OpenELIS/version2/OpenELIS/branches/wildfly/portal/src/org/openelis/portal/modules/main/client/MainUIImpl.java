@@ -42,4 +42,7 @@ public class MainUIImpl extends Composite implements MainUI {
         return logo;
     }
 
+    public void popup() {
+        QuestionPopupUI.popup("500px", "100px", 550);
+    }
 }

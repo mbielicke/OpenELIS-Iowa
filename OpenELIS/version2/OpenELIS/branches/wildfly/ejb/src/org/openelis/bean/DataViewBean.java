@@ -269,6 +269,21 @@ public class DataViewBean {
 
     @TransactionTimeout(180)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public DataViewVO fetchAnalyteAndAuxFieldForPortal(DataViewVO data) throws Exception {
+        ArrayList<QueryData> fields;
+
+        if (data == null)
+            throw new InconsistencyException("You may not execute an empty query");
+
+        fields = data.getQueryFields();
+        if (fields == null || fields.size() == 0)
+            throw new InconsistencyException("You may not execute an empty query");
+
+        return fetchAnalyteAndAuxField(data, "w_dataview");
+    }
+
+    @TransactionTimeout(180)
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
         QueryData field;
@@ -1940,17 +1955,17 @@ public class DataViewBean {
         if ("Y".equals(data.getRevision()))
             headers.add(Messages.get().sampleRevision());
         if ("Y".equals(data.getCollectionDate()))
-            headers.add(Messages.get().collectionDate());
+            headers.add(Messages.get().sample_collectedDate());
         if ("Y".equals(data.getReceivedDate()))
             headers.add(Messages.get().receivedDate());
         if ("Y".equals(data.getEnteredDate()))
             headers.add(Messages.get().enteredDate());
         if ("Y".equals(data.getReleasedDate()))
-            headers.add(Messages.get().releasedDate());
+            headers.add(Messages.get().sample_releasedDate());
         if ("Y".equals(data.getStatusId()))
             headers.add(Messages.get().sampleStatus());
         if ("Y".equals(data.getProjectName()))
-            headers.add(Messages.get().project());
+            headers.add(Messages.get().project_project());
         if ("Y".equals(data.getClientReferenceHeader()))
             headers.add(Messages.get().clntRef());
 
@@ -2056,7 +2071,7 @@ public class DataViewBean {
         if ("Y".equals(data.getSampleEnvironmentalLocationAddressCityHeader()))
             headers.add(Messages.get().locationCity());
         if ("Y".equals(data.getSampleEnvironmentalDescription()))
-            headers.add(Messages.get().description());
+            headers.add(Messages.get().sample_description());
 
         return headers;
     }
@@ -2106,7 +2121,7 @@ public class DataViewBean {
         if ("Y".equals(data.getSampleSDWISSampleTypeId()))
             headers.add(Messages.get().sampleSDWIS_sampleType());
         if ("Y".equals(data.getSampleSDWISSampleCategoryId()))
-            headers.add(Messages.get().sampleCat());
+            headers.add(Messages.get().sampleSDWIS_category());
         if ("Y".equals(data.getSampleSDWISSamplePointId()))
             headers.add(Messages.get().samplePtId());
         if ("Y".equals(data.getSampleSDWISLocation()))

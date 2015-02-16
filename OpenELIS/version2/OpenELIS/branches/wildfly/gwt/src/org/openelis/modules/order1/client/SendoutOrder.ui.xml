@@ -157,11 +157,14 @@
 									<ui:text from="{msg.order_shipTo}:" />
 								</td>
 								<td colspan="3">
-									<w:AutoComplete ui:field="shipTo" width="195px"
-										case="UPPER" dropWidth="450px" required="true">
+									<w:AutoComplete ui:field="shipTo" width="270px"
+										case="UPPER" dropWidth="565px" required="true">
 										<w:popup>
 											<t:Table visibleRows="10" header="true">
-												<t:Column width="180" label="{msg.gen_name}">
+												<t:Column width="250" label="{msg.gen_name}">
+													<t:LabelCell />
+												</t:Column>
+												<t:Column width="70" label="{msg.address_aptSuite}">
 													<t:LabelCell />
 												</t:Column>
 												<t:Column width="110" label="{msg.address_street}">
@@ -190,7 +193,7 @@
 									<ui:text from="{msg.order_attention}:" />
 								</td>
 								<td colspan="3">
-									<w:TextBox ui:field="organizationAttention" width="188px"
+									<w:TextBox ui:field="organizationAttention" width="270px"
 										field="String" case="UPPER" />
 								</td>
 							</tr>
@@ -207,7 +210,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="multipleUnit" maxLength="30"
-										width="188px" field="String" case="UPPER" />
+										width="270px" field="String" case="UPPER" />
 								</td>
 							</tr>
 							<tr>
@@ -215,7 +218,7 @@
 									<ui:text from="{msg.order_requestedBy}:" />
 								</td>
 								<td>
-									<w:TextBox ui:field="requestedBy" width="196px"
+									<w:TextBox ui:field="requestedBy" width="203px"
 										field="String" case="LOWER" />
 								</td>
 								<td class="{res.style.Prompt}">
@@ -223,7 +226,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="streetAddress" maxLength="30"
-										width="188px" field="String" case="UPPER" />
+										width="270px" field="String" case="UPPER" />
 								</td>
 							</tr>
 							<tr>
@@ -239,7 +242,7 @@
 								</td>
 								<td colspan="3">
 									<w:TextBox ui:field="city" case="UPPER" maxLength="30"
-										width="188px" field="String" />
+										width="270px" field="String" />
 								</td>
 							</tr>
 							<tr>

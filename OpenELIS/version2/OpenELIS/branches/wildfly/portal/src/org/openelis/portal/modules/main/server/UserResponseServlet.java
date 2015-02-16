@@ -33,7 +33,7 @@ import org.openelis.stfu.bean.UserResponsePortalBean;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/main")
+@WebServlet("/openelisweb/main")
 public class UserResponseServlet extends RemoteServlet implements UserResponseServiceInt {
 
     private static final long      serialVersionUID = 1L;

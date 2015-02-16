@@ -42,7 +42,7 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/emailNotification")
+@WebServlet("/openelisweb/emailNotification")
 public class EmailNotificationServlet extends RemoteServlet implements EmailNotificationServiceInt {
 
     private static final long         serialVersionUID = 1L;

@@ -38,7 +38,7 @@ import org.openelis.stfu.bean.SampleStatusPortalBean;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/sampleStatus")
+@WebServlet("/openelisweb/sampleStatus")
 public class SampleStatusServlet extends RemoteServlet implements SampleStatusServiceInt {
 
     private static final long      serialVersionUID = 1L;

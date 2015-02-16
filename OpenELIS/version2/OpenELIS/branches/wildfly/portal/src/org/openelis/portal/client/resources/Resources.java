@@ -29,6 +29,9 @@ public interface Resources extends UIResources {
 
     @Source("images/help.png")
     ImageResource helpImage();
+    
+    @Source("images/lock_edit.png")
+    ImageResource changePasswordImage();
 
     @Source("css/portalButton.css")
     PortalButton portalButton();

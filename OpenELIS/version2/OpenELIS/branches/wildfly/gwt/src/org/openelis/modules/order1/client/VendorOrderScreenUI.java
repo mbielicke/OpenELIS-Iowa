@@ -163,7 +163,7 @@ public class VendorOrderScreenUI extends Screen {
     protected AsyncCallbackUI<OrderManager1>       addCall, fetchForUpdateCall, updateCall,
                     fetchByIdCall, unlockCall;
 
-    protected AsyncCallbackUI<OrderReturnVO>   duplicateCall;
+    protected AsyncCallbackUI<OrderReturnVO>       duplicateCall;
 
     protected OrderManager1.Load                   elements[] = {OrderManager1.Load.ITEMS};
 
@@ -525,7 +525,7 @@ public class VendorOrderScreenUI extends Screen {
                          });
 
         addScreenHandler(externalId,
-                         OrderMeta.getOrganizationAttention(),
+                         OrderMeta.getExternalOrderNumber(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  externalId.setValue(getExternalId());

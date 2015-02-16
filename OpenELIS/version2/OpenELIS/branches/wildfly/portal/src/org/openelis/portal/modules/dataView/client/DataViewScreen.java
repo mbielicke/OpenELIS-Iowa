@@ -143,6 +143,108 @@ public class DataViewScreen extends Screen {
             }
         });
 
+        ui.getSelectAllSampleFieldsButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String yes;
+
+                yes = "Y";
+                ui.getAccession().setValue(yes, true);
+                ui.getSampleCollected().setValue(yes, true);
+                ui.getSampleReceived().setValue(yes, true);
+                ui.getSampleReleased().setValue(yes, true);
+                ui.getSampleStatus().setValue(yes, true);
+                ui.getProjectId().setValue(yes, true);
+                ui.getClientReferenceHeader().setValue(yes, true);
+                ui.getSampleType().setValue(yes, true);
+                ui.getSource().setValue(yes, true);
+            }
+        });
+
+        ui.getSelectAllOrgFieldsButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String yes;
+
+                yes = "Y";
+                ui.getOrganizationName().setValue(yes, true);
+                ui.getOrganizationApt().setValue(yes, true);
+                ui.getOrganizationAddress().setValue(yes, true);
+                ui.getOrganizationCity().setValue(yes, true);
+                ui.getOrganizationState().setValue(yes, true);
+                ui.getOrganizationZip().setValue(yes, true);
+            }
+        });
+
+        ui.getSelectAllAnalysisFieldsButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String yes;
+
+                yes = "Y";
+                ui.getAnalysisTest().setValue(yes, true);
+                ui.getAnalysisMethod().setValue(yes, true);
+                ui.getAnalysisRevision().setValue(yes, true);
+                ui.getAnalysisUnit().setValue(yes, true);
+                ui.getAnalysisStarted().setValue(yes, true);
+                ui.getAnalysisCompleted().setValue(yes, true);
+                ui.getAnalysisReleased().setValue(yes, true);
+                ui.getAnalysisQa().setValue(yes, true);
+            }
+        });
+
+        ui.getSelectAllPatientFieldsButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String yes;
+
+                yes = "Y";
+                ui.getPatientLastName().setValue(yes, true);
+                ui.getPatientFirstName().setValue(yes, true);
+                ui.getPatientBirth().setValue(yes, true);
+                ui.getPatientGender().setValue(yes, true);
+                ui.getPatientRace().setValue(yes, true);
+                ui.getPatientEthnicity().setValue(yes, true);
+            }
+        });
+
+        ui.getSelectAllSdwisFieldsButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String yes;
+
+                yes = "Y";
+                ui.getPwsIdHeader().setValue(yes, true);
+                ui.getPwsName().setValue(yes, true);
+                ui.getSdwisCollectorHeader().setValue(yes, true);
+                ui.getSdwisLocation().setValue(yes, true);
+                ui.getFacilityId().setValue(yes, true);
+                ui.getSdwisSampleType().setValue(yes, true);
+                ui.getSampleCategory().setValue(yes, true);
+                ui.getSamplePointId().setValue(yes, true);
+            }
+        });
+
+        ui.getSelectAllEnvironmentalFieldsButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String yes;
+
+                yes = "Y";
+                ui.getEnvCollectorHeader().setValue(yes, true);
+                ui.getEnvLocation().setValue(yes, true);
+                ui.getEnvLocationCity().setValue(yes, true);
+                ui.getCollectorPhone().setValue(yes, true);
+                ui.getSampleDescription().setValue(yes, true);
+            }
+        });
+
         ui.getSelectAllAnalytesButton().addClickHandler(new ClickHandler() {
 
             @Override
@@ -1604,7 +1706,7 @@ public class DataViewScreen extends Screen {
         statusPanel.setSize("450px", "125px");
         statusScreen.setSize("450px", "125px");
         statusPanel.setWidget(statusScreen);
-        statusPanel.setPopupPosition(this.getAbsoluteLeft() + 20, this.getAbsoluteTop() + 20);
+        statusPanel.setPopupPosition(this.getAbsoluteLeft() + 50, this.getAbsoluteTop() + 50);
         statusPanel.setModal(true);
         statusPanel.show();
 
@@ -1617,7 +1719,7 @@ public class DataViewScreen extends Screen {
             @Override
             public void onSuccess(ReportStatus result) {
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
-                    String url = "/portal/portal/report?file=" + result.getMessage();
+                    String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
                     Window.open(URL.encode(url), "DataView", null);
                 }
                 window.clearStatus();

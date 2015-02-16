@@ -134,6 +134,8 @@ public class SampleStatusPortalBean {
         builder.constructWhere(fields);
         builder.addWhere(SampleViewMeta.getStatusId() + " != " +
                          Constants.dictionary().SAMPLE_NOT_VERIFIED);
+        builder.addWhere(SampleViewMeta.getAnalysisStatusId() + " != " +
+                         Constants.dictionary().ANALYSIS_CANCELLED);
         builder.addWhere(SampleViewMeta.getReportToId() + clause);
 
         builder.setOrderBy(SampleViewMeta.getAccessionNumber());

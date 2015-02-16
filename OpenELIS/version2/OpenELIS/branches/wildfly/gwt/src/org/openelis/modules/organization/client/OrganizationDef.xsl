@@ -149,7 +149,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName()}" width="225" case="UPPER" max="40" tab="{meta:getAddressMultipleUnit()},{meta:getId()}" field="String"  />
+                <textbox key="{meta:getName()}" width="250" case="UPPER" max="40" tab="{meta:getAddressMultipleUnit()},{meta:getId()}" field="String"  />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'city')" />:
                 </text>
@@ -161,7 +161,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'aptSuite')" />:
                 </text>
-                <textbox key="{meta:getAddressMultipleUnit()}" width="212" case="UPPER" max="30" tab="{meta:getAddressStreetAddress()},{meta:getName()}" field="String" />
+                <textbox key="{meta:getAddressMultipleUnit()}" width="250" case="UPPER" max="30" tab="{meta:getAddressStreetAddress()},{meta:getName()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'state')" />:
                 </text>
@@ -175,7 +175,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'address')" />:
                 </text>
-                <textbox key="{meta:getAddressStreetAddress()}" width="212" case="UPPER" max="30" tab="{meta:getAddressCity()},{meta:getAddressMultipleUnit()}" field="String"  />
+                <textbox key="{meta:getAddressStreetAddress()}" width="250" case="UPPER" max="30" tab="{meta:getAddressCity()},{meta:getAddressMultipleUnit()}" field="String"  />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'country')" />:
                 </text>
@@ -187,8 +187,8 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'parentOrganization')" />:
                 </text>
-                <autoComplete key="{meta:getParentOrganizationName()}" width="241" case="UPPER" popWidth="auto" tab="{meta:getIsActive()},{meta:getAddressCountry()}" field="Integer">
-                  <col width="180" header="{resource:getString($constants,'name')}" />
+                <autoComplete key="{meta:getParentOrganizationName()}" width="250" case="UPPER" popWidth="auto" tab="{meta:getIsActive()},{meta:getAddressCountry()}" field="Integer">
+                  <col width="250" header="{resource:getString($constants,'name')}" />
                   <col width="110" header="{resource:getString($constants,'street')}" />
                   <col width="100" header="{resource:getString($constants,'city')}" />
                   <col width="20" header="{resource:getString($constants,'st')}" />

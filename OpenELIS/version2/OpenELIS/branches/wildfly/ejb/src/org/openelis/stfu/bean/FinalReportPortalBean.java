@@ -208,10 +208,23 @@ public class FinalReportPortalBean {
 
         clause = userCache.getPermission().getModule("w_final_report").getClause();
 
-        if (clause != null)
+        if (clause != null) {
+            clause = replaceClauseForProject(clause);
             return project.fetchForOrganizations(clause);
+        }
 
         return new ArrayList<IdNameVO>();
+    }
+
+    /**
+     * replace table and field names in the clause for project query
+     */
+    private String replaceClauseForProject(String clause) {
+        if (clause == null)
+            return clause;
+        clause = clause.replace("_sampleView.reportToId", "_sampleOrganization.organizationId");
+        clause = clause.replace("_sampleView.projectId", "_sampleProject.projectId");
+        return clause;
     }
 
 }

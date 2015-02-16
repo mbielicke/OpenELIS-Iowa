@@ -18,7 +18,8 @@
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
 
 	<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
 		<g:layer top="0px" bottom="25px">
@@ -27,23 +28,24 @@
 				styleName="{res.table.ScreenTableWithSides}">
 				<t:Column width="125" label="{msg.gen_type}" required="true">
 					<t:DropdownCell>
-						<w:Dropdown width="125" field="Integer"
-							ui:field="type" />
+						<w:Dropdown width="125" field="Integer" ui:field="type" />
 					</t:DropdownCell>
 				</t:Column>
 				<t:Column width="180" label="{msg.order_attention}">
 					<t:TextBoxCell>
-						<w:TextBox maxLength="30" case="UPPER"
-							field="String" />
+						<w:TextBox maxLength="30" case="UPPER" field="String" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="220" label="{msg.gen_name}" required="true">
+				<t:Column width="270" label="{msg.gen_name}" required="true">
 					<t:AutoCompleteCell>
 						<w:AutoComplete ui:field="organizationName" case="UPPER"
-							 width="130" dropWidth="450px">
+							width="130" dropWidth="565px">
 							<w:popup>
 								<t:Table visibleRows="10" header="true">
-									<t:Column width="180" label="{msg.gen_name}">
+									<t:Column width="250" label="{msg.gen_name}">
+										<t:LabelCell />
+									</t:Column>
+									<t:Column width="70" label="{msg.address_aptSuite}">
 										<t:LabelCell />
 									</t:Column>
 									<t:Column width="110" label="{msg.address_street}">

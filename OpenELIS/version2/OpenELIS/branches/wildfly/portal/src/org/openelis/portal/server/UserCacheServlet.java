@@ -36,7 +36,7 @@ import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.portal.cache.UserCacheServiceInt;
 
-@WebServlet("/portal/userCache")
+@WebServlet("/openelisweb/userCache")
 public class UserCacheServlet extends RemoteServlet implements UserCacheServiceInt {
     
     private static final long serialVersionUID = 1L;

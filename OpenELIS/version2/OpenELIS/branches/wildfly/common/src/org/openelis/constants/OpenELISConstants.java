@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -11437,6 +11437,51 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String organization();
 
   /**
+   * Translated "Cell #".
+   * 
+   * @return translated "Cell #"
+   */
+  @DefaultMessage("Cell #")
+  @Key("organization.cellNumber")
+  String organization_cellNumber();
+
+  /**
+   * Translated "Email".
+   * 
+   * @return translated "Email"
+   */
+  @DefaultMessage("Email")
+  @Key("organization.email")
+  String organization_email();
+
+  /**
+   * Translated "Fax #".
+   * 
+   * @return translated "Fax #"
+   */
+  @DefaultMessage("Fax #")
+  @Key("organization.faxNumber")
+  String organization_faxNumber();
+
+  /**
+   * Translated "Home #".
+   * 
+   * @return translated "Home #"
+   */
+  @DefaultMessage("Home #")
+  @Key("organization.homeNumber")
+  String organization_homeNumber();
+
+  /**
+   * Translated "Work #".
+   * 
+   * @return translated "Work #"
+   */
+  @DefaultMessage("Work #")
+  @Key("organization.workNumber")
+  String organization_workNumber();
+
+  /**
    * Translated "Manage submitter and partner information.".
    * 
    * @return translated "Manage submitter and partner information."
@@ -12247,6 +12292,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String preferenceDescription();
 
   /**
+   * Translated "Default Bar Code Printer".
+   * 
+   * @return translated "Default Bar Code Printer"
+   */
+  @DefaultMessage("Default Bar Code Printer")
+  @Key("preferences.defaultBarCode")
+  String preferences_defaultBarCode();
+
+  /**
+   * Translated "Default Printer".
+   * 
+   * @return translated "Default Printer"
+   */
+  @DefaultMessage("Default Printer")
+  @Key("preferences.defaultPrinter")
+  String preferences_defaultPrinter();
+
+  /**
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
@@ -12652,6 +12715,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String provider();
 
   /**
+   * Translated "External Id".
+   * 
+   * @return translated "External Id"
+   */
+  @DefaultMessage("External Id")
+  @Key("provider.externalId")
+  String provider_externalId();
+
+  /**
    * Translated "Provider (L,F)".
    * 
    * @return translated "Provider (L,F)"
@@ -12668,6 +12740,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("NPI")
   @Key("provider.npi")
   String provider_npi();
+
+  /**
+   * Translated "Provider".
+   * 
+   * @return translated "Provider"
+   */
+  @DefaultMessage("Provider")
+  @Key("provider.provider")
+  String provider_provider();
 
   /**
    * Translated "Enter health care professionals and their contact information.".
@@ -14461,6 +14542,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_collected();
 
   /**
+   * Translated "Collected Date".
+   * 
+   * @return translated "Collected Date"
+   */
+  @DefaultMessage("Collected Date")
+  @Key("sample.collectedDate")
+  String sample_collectedDate();
+
+  /**
    * Translated "Accession # {0,number,#0}: Collected date can''t be after entered".
    * 
    * @return translated "Accession # {0,number,#0}: Collected date can''t be after entered"
@@ -14504,6 +14594,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Collector")
   @Key("sample.collector")
   String sample_collector();
+
+  /**
+   * Translated "Sample Description".
+   * 
+   * @return translated "Sample Description"
+   */
+  @DefaultMessage("Sample Description")
+  @Key("sample.description")
+  String sample_description();
 
   /**
    * Translated "The domain of this sample has changed".
@@ -14801,6 +14900,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date ")
   @Key("sample.receivedTooOldWarning")
   String sample_receivedTooOldWarning(Integer arg0);
+
+  /**
+   * Translated "Sample Released Date".
+   * 
+   * @return translated "Sample Released Date"
+   */
+  @DefaultMessage("Sample Released Date")
+  @Key("sample.releasedDate")
+  String sample_releasedDate();
 
   /**
    * Translated "Accession # {0,number,#0}: Sample must have a report to".
@@ -15620,6 +15728,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Revision")
   @Key("sampleRevision")
   String sampleRevision();
+
+  /**
+   * Translated "Sample Category".
+   * 
+   * @return translated "Sample Category"
+   */
+  @DefaultMessage("Sample Category")
+  @Key("sampleSDWIS.category")
+  String sampleSDWIS_category();
 
   /**
    * Translated "SDWIS Collector".

@@ -329,7 +329,7 @@ UIRF Software License are applicable instead of those above.
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
-          <TabPanel key="sampleItemTabPanel" width="715" height="236">
+          <TabPanel key="sampleItemTabPanel" width="720" height="236">
             <tab key="tab0" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}" text="{resource:getString($constants,'sampleItem')}">
               <xsl:call-template name="SampleItemTab" />
             </tab>
