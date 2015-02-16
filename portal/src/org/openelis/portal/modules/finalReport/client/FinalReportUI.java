@@ -5,6 +5,7 @@ import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
+import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -58,6 +59,8 @@ public interface FinalReportUI extends IsWidget {
     public Button getRunReportButton();
 
     public FlexTable getTable();
+
+    public TableCellElement getRowCountText();
 
     public DeckPanel getDeck();
 

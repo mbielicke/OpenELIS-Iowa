@@ -33,7 +33,7 @@ UIRF Software License are applicable instead of those above.
    <web-resource-collection>
      <web-resource-name>HtmlAuth</web-resource-name>
      <url-pattern>*.html</url-pattern>
-     <url-pattern>/portal/*</url-pattern>
+     <url-pattern>/openelisweb/*</url-pattern>
      <http-method>GET</http-method>
      <http-method>POST</http-method>
    </web-resource-collection>
@@ -85,28 +85,28 @@ UIRF Software License are applicable instead of those above.
   
   <servlet-mapping>
     <servlet-name>FileServlet</servlet-name>
-    <url-pattern>/portal/upload</url-pattern>
+    <url-pattern>/openelisweb/upload</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>xsrf</servlet-name>
-    <url-pattern>/portal/xsrf</url-pattern>
+    <url-pattern>/openelisweb/xsrf</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <!-- we need to define this again because FF uses "/report" and GC uses "/openelis/report" -->
     <servlet-name>ReportServlet</servlet-name>
-    <url-pattern>/portal/report</url-pattern>
+    <url-pattern>/openelisweb/report</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
    <servlet-name>remoteLoggingServlet</servlet-name>
-   <url-pattern>/portal/remote_logging</url-pattern>
+   <url-pattern>/openelisweb/remote_logging</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>CalendarUIServlet</servlet-name>
-    <url-pattern>/portal/calendarui</url-pattern>
+    <url-pattern>/openelisweb/calendarui</url-pattern>
   </servlet-mapping>
   
   <session-config>
@@ -119,7 +119,7 @@ UIRF Software License are applicable instead of those above.
   </error-page>  
 
   <welcome-file-list>
-     <welcome-file>Portal.html</welcome-file>
+     <welcome-file>OpenELIS.html</welcome-file>
   </welcome-file-list>
   
   <context-param>

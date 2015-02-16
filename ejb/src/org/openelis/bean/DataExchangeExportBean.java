@@ -224,7 +224,7 @@ public class DataExchangeExportBean {
                     }
                 }
                 try {
-                    messageOutput(sm, cm, eo, eols);
+                    messageOutput(sm, cm, releaseStart, releaseEnd, eo, eols);
                 } catch (Exception e) {
                     accession = -accession;
                 }
@@ -256,7 +256,8 @@ public class DataExchangeExportBean {
      * message; it is not used to query for samples since that is already given
      * by the list.
      */
-    public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager cm) throws Exception {
+    public ReportStatus export(ArrayList<Integer> accessions,
+                               ExchangeCriteriaManager cm) throws Exception {
         EOrderDO eo;
         ReportStatus status;
         ArrayList<Integer> ids;
@@ -276,7 +277,8 @@ public class DataExchangeExportBean {
         ids = getSamples(accessions);
         if (ids.size() == 0)
             throw new NotFoundException();
-
+        
+        log.log(Level.FINE, "Fetching"+ ids.size()+" samples");
         sms = sampleManager.fetchByIds(ids,
                                        SampleManager1.Load.ORGANIZATION,
                                        SampleManager1.Load.PROJECT,
@@ -294,6 +296,7 @@ public class DataExchangeExportBean {
             eols = null;
             if ( (getSampleClinical(sm) != null || getSampleNeonatal(sm) != null) &&
                 getSample(sm).getOrderId() != null) {
+                log.log(Level.FINE, "Fetching eorder with id "+ getSample(sm).getOrderId());
                 try {
                     eo = eOrder.fetchById(getSample(sm).getOrderId());
                     eols = eOrderLink.fetchByEOrderId(getSample(sm).getOrderId());
@@ -303,7 +306,7 @@ public class DataExchangeExportBean {
                                       getSample(sm).getAccessionNumber());
                 }
             }
-            messageOutput(sm, cm, eo, eols);
+            messageOutput(sm, cm, null, null, eo, eols);
         }
         messageEnd();
 
@@ -436,7 +439,7 @@ public class DataExchangeExportBean {
 
         try {
             messageStart();
-            messageOutput(sm, cm, eo, eols, sqc);
+            messageOutput(sm, cm, null, null, eo, eols, sqc);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to generate xml for accession number:  " +
                                   getSample(sm).getAccessionNumber(), e);
@@ -588,7 +591,8 @@ public class DataExchangeExportBean {
     /**
      * The method exports a sample using the criteria manager's information.
      */
-    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Object... optional) throws Exception {
+    private void messageOutput(SampleManager1 sm, ExchangeCriteriaManager cm, Date releaseStart, Date releaseEnd,
+                               Object... optional) throws Exception {
         Integer accession;
         URI uri;
         Document doc;
@@ -606,13 +610,15 @@ public class DataExchangeExportBean {
              * generate a simple xml and use a simple buffer in case we have an
              * error
              */
-            doc = dataExchangeXMLMapper.getXML(sm, cm, optional);
+            log.log(Level.FINE, "Generating xml for accession number:  " + getSample(sm).getAccessionNumber());
+            doc = dataExchangeXMLMapper.getXML(sm, cm, releaseStart, releaseEnd, optional);
             dom = new DOMSource(doc);
             transformer.transform(dom, new StreamResult(transformerStream));
 
             /*
              * open and copy to destination
              */
+            log.log(Level.FINE, "Sending transformed xml to the destination:  " + cm.getExchangeCriteria().getDestinationUri());
             uri = new URI(cm.getExchangeCriteria().getDestinationUri());
             if ("file".equals(uri.getScheme())) {
                 outfile = new File(uri.getPath() + File.separator + accession.toString() +
@@ -629,6 +635,7 @@ public class DataExchangeExportBean {
                 out.write(transformerStream.toByteArray());
             }
             transformerStream.reset();
+            log.log(Level.FINE, "XML sent to the destination");
         } finally {
             if (out != null)
                 out.close();

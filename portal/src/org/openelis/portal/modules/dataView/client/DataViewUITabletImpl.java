@@ -54,9 +54,12 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     protected Table                         analyteTable, auxTable;
 
     @UiField
-    protected Button                        continueButton, resetButton, selectAllAnalytesButton,
-                    unselectAllAnalytesButton, selectAllAuxButton, unselectAllAuxButton,
-                    backButton, runReportButton;
+    protected Button                        continueButton, resetButton,
+                    selectAllSampleFieldsButton, selectAllOrgFieldsButton,
+                    selectAllAnalysisFieldsButton, selectAllPatientFieldsButton,
+                    selectAllSdwisFieldsButton, selectAllEnvironmentalFieldsButton,
+                    selectAllAnalytesButton, unselectAllAnalytesButton, selectAllAuxButton,
+                    unselectAllAuxButton, backButton, runReportButton;
 
     @UiField
     protected DeckPanel                     deck;
@@ -388,6 +391,36 @@ public class DataViewUITabletImpl extends ResizeComposite implements DataViewUI 
     @Override
     public Button getResetButton() {
         return resetButton;
+    }
+
+    @Override
+    public Button getSelectAllSampleFieldsButton() {
+        return selectAllSampleFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllOrgFieldsButton() {
+        return selectAllOrgFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllAnalysisFieldsButton() {
+        return selectAllAnalysisFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllPatientFieldsButton() {
+        return selectAllPatientFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllSdwisFieldsButton() {
+        return selectAllSdwisFieldsButton;
+    }
+
+    @Override
+    public Button getSelectAllEnvironmentalFieldsButton() {
+        return selectAllEnvironmentalFieldsButton;
     }
 
     @Override

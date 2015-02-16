@@ -138,6 +138,18 @@ public interface DataViewUI extends IsWidget {
 
     public Button getBackButton();
 
+    public Button getSelectAllSampleFieldsButton();
+
+    public Button getSelectAllOrgFieldsButton();
+
+    public Button getSelectAllAnalysisFieldsButton();
+
+    public Button getSelectAllPatientFieldsButton();
+
+    public Button getSelectAllSdwisFieldsButton();
+
+    public Button getSelectAllEnvironmentalFieldsButton();
+
     public Button getSelectAllAnalytesButton();
 
     public Button getUnselectAllAnalytesButton();

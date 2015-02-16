@@ -38,7 +38,7 @@ import org.openelis.portal.modules.dataView.client.DataViewServiceInt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/dataView")
+@WebServlet("/openelisweb/dataView")
 public class DataViewServlet extends RemoteServlet implements DataViewServiceInt {
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +59,7 @@ public class DataViewServlet extends RemoteServlet implements DataViewServiceInt
 
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
         try {
-            return dataView.fetchAnalyteAndAuxField(data);
+            return dataView.fetchAnalyteAndAuxFieldForPortal(data);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

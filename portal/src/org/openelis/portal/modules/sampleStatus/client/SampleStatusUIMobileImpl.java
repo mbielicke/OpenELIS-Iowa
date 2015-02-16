@@ -7,6 +7,7 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -42,6 +43,9 @@ public class SampleStatusUIMobileImpl extends ResizeComposite implements SampleS
 
     @UiField
     protected FlexTable                         table;
+
+    @UiField
+    protected TableCellElement                  sampleCount;
 
     @UiField
     protected DeckPanel                         deck;
@@ -163,6 +167,11 @@ public class SampleStatusUIMobileImpl extends ResizeComposite implements SampleS
     @Override
     public FlexTable getTable() {
         return table;
+    }
+
+    @Override
+    public TableCellElement getSampleCountText() {
+        return sampleCount;
     }
 
     @Override

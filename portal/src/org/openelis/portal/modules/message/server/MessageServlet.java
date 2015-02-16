@@ -32,7 +32,7 @@ import org.openelis.portal.modules.message.client.MessageServiceInt;
 import org.openelis.stfu.bean.MessageBean;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/portal/message")
+@WebServlet("/openelisweb/message")
 public class MessageServlet extends RemoteServlet implements MessageServiceInt {
 
     private static final long serialVersionUID = 1L;

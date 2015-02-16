@@ -583,7 +583,7 @@ public class SampleStatusScreen extends Screen {
      */
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
-        int testRow, sampleRow, qaCount;
+        int testRow, sampleRow, qaCount, sampleCount;
         Integer accNumPrev, accNum;
         String completed, inProgress, sampleData, collected;
         DateTimeFormat df, tf, dtf;
@@ -624,7 +624,7 @@ public class SampleStatusScreen extends Screen {
         };
         sb = new StringBuffer();
         accNumPrev = null;
-        testRow = qaCount = sampleRow = 0;
+        testRow = qaCount = sampleRow = sampleCount = 0;
         completed = Messages.get().sampleStatus_completed();
         inProgress = Messages.get().sampleStatus_inProgress();
 
@@ -633,6 +633,7 @@ public class SampleStatusScreen extends Screen {
             accNum = data.getAccessionNumber();
 
             if ( !accNum.equals(accNumPrev)) {
+                sampleCount++ ;
                 if (sampleRow > 0) {
                     sb.append("</ol></font>");
                     ui.getTable().setHTML(sampleRow, 6, sb.toString());
@@ -787,7 +788,7 @@ public class SampleStatusScreen extends Screen {
         ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 5, testRow - sampleRow + 1);
         ui.getTable().getFlexCellFormatter().setRowSpan(sampleRow, 6, testRow - sampleRow + 1);
         ui.getTable().getRowFormatter().setVerticalAlign(sampleRow, HasVerticalAlignment.ALIGN_TOP);
-
+        ui.getSampleCountText().setInnerText(sampleCount + " " + Messages.get().gen_samplesFound());
     }
 
     /**

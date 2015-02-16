@@ -46,6 +46,7 @@ import static org.openelis.manager.SampleManager1Accessor.getUsers;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -207,7 +208,7 @@ public class DataExchangeXMLMapperBean {
      * each segment can be used to nest the segments.
      */
 
-    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Object... optional) throws Exception {
+    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm, Date releasedStart, Date releasedEnd, Object... optional) throws Exception {
         Boolean sampleOverridden, showValue;
         Document doc;
         Element root, header, elm, elm1;
@@ -237,18 +238,14 @@ public class DataExchangeXMLMapperBean {
         root.appendChild(header);
 
         /*
-         * either export all the analyses or just the specified tests; "|" is a
-         * meta character in regular expressions and here it needs to be treated
-         * as a literal, that is why "\\|" is used to split the query string
+         * either export all the analyses or just the specified tests; 
          */
-        if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
-            for (QueryData field : cm.getExchangeCriteria().getFields()) {
-                if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
-                    testIds = field.getQuery().split("\\|");
-                    for (String id : testIds)
-                        onlyTests.add(Integer.valueOf(id));
-                    break;
-                }
+        for (QueryData field : cm.getExchangeCriteria().getFields()) {
+            if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
+                testIds = field.getQuery().split("\\|");
+                for (String id : testIds)
+                    onlyTests.add(Integer.valueOf(id));
+                break;
             }
         }
 
@@ -269,6 +266,7 @@ public class DataExchangeXMLMapperBean {
          */
         root.appendChild(toXML(doc, getSample(sm)));
 
+        log.log(Level.FINE, "Adding elements for sample, domain, etc.");
         if (getSampleEnvironmental(sm) != null) {
             root.appendChild(toXML(doc, getSampleEnvironmental(sm)));
 
@@ -346,6 +344,7 @@ public class DataExchangeXMLMapperBean {
          * to the header
          */
         if (reportTo != null) {
+            log.log(Level.FINE, "Fetching organization parameters for org id: "+reportTo.getOrganizationId());
             try {
                 orgps = organizationParameter.fetchByOrganizationId(reportTo.getOrganizationId());
                 if (ORG_PROD_EPARTNER_URL == null || ORG_TEST_EPARTNER_URL == null ||
@@ -399,11 +398,21 @@ public class DataExchangeXMLMapperBean {
         if (getAnalyses(sm) != null) {
             for (AnalysisViewDO a : getAnalyses(sm)) {
                 /*
-                 * skip cancelled and test id's that were in restricted list
+                 * skip cancelled and test id's that were not in restricted list
                  */
                 if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
                     ( !onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
                     continue;
+                /*
+                 * don't want all the analysis, just those that were released in the run
+                 * window. 
+                 */
+                if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
+                    if (!Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()) ||
+                        (releasedStart != null && a.getReleasedDate().before(releasedStart)) ||
+                        (releasedEnd != null && a.getReleasedDate().after(releasedEnd)))
+                        continue;
+                }
                 root.appendChild(toXML(doc, a));
                 analyses.put(a.getId(),
                              Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()));
@@ -490,6 +499,7 @@ public class DataExchangeXMLMapperBean {
             }
         }
 
+        log.log(Level.FINE, "Fetching various referenced records e.g. tests, projects, qa events etc.");
         /*
          * lookup and output various referenced objects; order is important
          */
