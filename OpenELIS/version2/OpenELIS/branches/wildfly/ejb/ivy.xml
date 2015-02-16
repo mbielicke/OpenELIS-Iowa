@@ -65,6 +65,9 @@
       <dependency org="org.reflections" name="reflections-maven" rev="0.9.8"/>
       
       <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="testing->default"/>
+      <dependency org="org.drools" name="drools-core" rev="6.1.0.Final"/>
+      
+      
      
     </dependencies>        
 </ivy-module>
