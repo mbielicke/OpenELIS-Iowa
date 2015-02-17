@@ -88,7 +88,7 @@
         </t:Column>
         <t:Column width="50" label="{msg.address_state}">
           <t:DropdownCell>
-            <w:Dropdown ui:field="state" width="50" field="Integer" />
+            <w:Dropdown ui:field="patientState" width="50" field="Integer" />
           </t:DropdownCell>
         </t:Column>
         <t:Column width="75" label="{msg.address_zipcode}">

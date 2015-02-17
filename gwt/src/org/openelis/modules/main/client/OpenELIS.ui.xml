@@ -38,8 +38,10 @@
               <w:Menu label="{msg.label}" ui:field="labelMenu">
                 <w:MenuItem description="" enabled="false" icon="" ui:field="sampleLoginLabelReport" display="{msg.loginBarcode}" />
                 <w:MenuItem description="" enabled="false" icon="" ui:field="sampleLoginLabelAdditionalReport" display="{msg.loginBarcodeAdd}" />
-                <w:MenuItem description="{msg.secondaryLabel_description}" enabled="false" icon="{res.icon.labelForIcon}" ui:field="secondaryLabel"
-                  display="{msg.secondaryLabel_secondaryLabel}" />
+                <w:MenuItem description="{msg.secondaryLabel_description}" enabled="false" icon="{res.icon.labelForIcon}" ui:field="secondaryLabelReport"
+                  display="{msg.secondaryLabel_secondaryLabels}" />
+                <w:MenuItem description="" enabled="false" icon="" ui:field="tubeLabelReport"
+                  display="{msg.report_tubeLabels}" />
               </w:Menu>
               <w:Menu label="{msg.sample}" ui:field="sampleMenu">
                 <w:MenuItem description="{msg.quickEntryDescription}" enabled="false" icon="{res.icon.quickEntryIcon}" ui:field="quickEntry"

@@ -1070,14 +1070,44 @@ public class ClinicalTabUI extends Screen {
     private void lookupPatient(PatientDO data, boolean dontShowIfSinglePatient) {
         if (patientLookup == null) {
             patientLookup = new PatientLookupUI() {
+                boolean nidUsedForOther;
+
                 public void select() {
-                    setPatient(patientLookup.getSelectedPatient());
+                    setPatient(selectedPatient);
                     isBusy = false;
+                    nidUsedForOther = false;
                 }
 
                 public void cancel() {
+                    /*
+                     * if the query on the popup was executed only for NID and
+                     * that NID has been used for another patient, blank the
+                     * sample's patient's NID and refresh the screen
+                     */
+                    if (queryByNId && nidUsedForOther) {
+                        setPatientNationalId(null);
+                        setPatient(manager.getSampleClinical().getPatient());
+                    }
                     setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
+                }
+
+                @Override
+                public void patientsFound() {
+                    Integer id;
+                    PatientDO data;
+
+                    /*
+                     * if the query on the popup was executed only for NID, at
+                     * most one patient will be returned; find out if that
+                     * patient is the same as the sample's patient
+                     */
+                    if (queryByNId) {
+                        data = patientTable.getRowAt(0).getData();
+                        id = manager.getSampleClinical().getPatientId();
+                        nidUsedForOther = id != null && !id.equals(data.getId());
+                    }
                 }
             };
         }
@@ -1089,13 +1119,14 @@ public class ClinicalTabUI extends Screen {
      * sets the busy flag and looks up the patients matching the data entered in
      * the patient's fields
      */
-    private void patientQueryChanged(Focusable queryWidget) {
+    private void patientQueryChanged(Focusable widget) {
         /*
-         * look up patients only if the current patient is not locked
+         * if the current patient is locked then look up patients only if the
+         * NID was changed
          */
-        if ( !isPatientLocked) {
+        if ( !isPatientLocked || widget == patientNationalId) {
             isBusy = true;
-            focusedWidget = queryWidget;
+            focusedWidget = widget;
             lookupPatient(manager.getSampleClinical().getPatient(), true);
         }
     }
@@ -1124,7 +1155,15 @@ public class ClinicalTabUI extends Screen {
      * "focusedWidget"
      */
     private void setFocusToNext() {
-        focusNextWidget(focusedWidget, true);
-        focusedWidget = null;
+        /*
+         * focusNextWidget() throws an exception if focusedWidget is null and it
+         * can be null e.g. when the user clicks the order look-up button
+         * without entering anything in order #; the check for null is here to
+         * avoid having to put it in all places where this could happen
+         */
+        if (focusedWidget != null) {
+            focusNextWidget(focusedWidget, true);
+            focusedWidget = null;
+        }
     }
 }

@@ -72,7 +72,7 @@ public class OpenELIS extends Screen {
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
                     worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
-                    secondaryLabel, storage, QC, analyteParameter, internalOrder, vendorOrder,
+                    secondaryLabelReport, storage, QC, analyteParameter, internalOrder, vendorOrder,
                     sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
@@ -84,7 +84,7 @@ public class OpenELIS extends Screen {
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
-                    instrumentBarcodeReport, attachment, privateWellAttachment;
+                    instrumentBarcodeReport, attachment, privateWellAttachment, tubeLabelReport;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -260,9 +260,9 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(secondaryLabel, "sampletracking", new Command() {
+        addCommand(secondaryLabelReport, "sampletracking", new Command() {
             public void execute() {
-                showScreen(SECONDARY_LABEL);
+                showScreen(SECONDARY_LABEL_REPORT);
             }
         });
 
@@ -593,6 +593,12 @@ public class OpenELIS extends Screen {
         addCommand(attachment, "openelis", new Command() {
             public void execute() {
                 showScreen(ATTACHMENT);
+            }
+        });
+        
+        addCommand(tubeLabelReport, "r_tubelabel", new Command() {
+            public void execute() {
+                showScreen(TUBE_LABEL_REPORT);
             }
         });
 

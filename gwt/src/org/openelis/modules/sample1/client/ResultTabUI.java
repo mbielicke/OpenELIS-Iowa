@@ -169,16 +169,9 @@ public class ResultTabUI extends Screen {
 
         table.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                Row row;
-                ResultViewDO data;
-
                 if (isState(ADD, UPDATE) && canEdit) {
-                    row = table.getRowAt(table.getSelectedRow());
-                    data = manager.result.get(analysis, (Integer)row.getData(), 0);
-
                     addResultButton.setEnabled(true);
-                    removeResultButton.setEnabled( !Constants.dictionary().TEST_ANALYTE_REQ.equals(data.getTestAnalyteTypeId()) &&
-                                                  ! (row instanceof HeaderRow));
+                    removeResultButton.setEnabled(true);
                 } else {
                     addResultButton.setEnabled(false);
                     removeResultButton.setEnabled(false);
@@ -200,6 +193,18 @@ public class ResultTabUI extends Screen {
                 ResultCell rc;
                 ResultFormatter rf;
                 ArrayList<FormattedValue> values;
+
+                /*
+                 * don't let the user edit the cell if the lookup screen for
+                 * reflex tests is being shown; this is to prevent situations
+                 * like editing this cell also bringing up the screen or the
+                 * focus getting set to some other cell or widget by pressing
+                 * the tab key
+                 */
+                if (isBusy) {
+                    event.cancel();
+                    return;
+                }
 
                 row = table.getRowAt(event.getRow());
                 index = row.getData();
@@ -290,9 +295,6 @@ public class ResultTabUI extends Screen {
                          */
                         if (len > tlen)
                             ((Dropdown)rc.getWidget()).setWidth(String.valueOf(len));
-
-                        logger.log(Level.FINE, "dropdown width value: " + tlen +
-                                               " dictionary width: " + len);
                     }
                 }
             }
@@ -450,8 +452,8 @@ public class ResultTabUI extends Screen {
                             modal.setCSS(UIResources.INSTANCE.popupWindow());
                             modal.setContent(testSelectionLookup);
 
-                            testSelectionLookup.setData(manager, tests);
                             testSelectionLookup.setWindow(modal);
+                            testSelectionLookup.setData(manager, tests);
                         }
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
@@ -474,6 +476,15 @@ public class ResultTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
+                /*
+                 * don't let focus be set to this buttons if the lookup screen
+                 * for reflex tests is being shown; this is to prevent
+                 * situations like being able to press this button using the
+                 * enter key or the focus getting set to some other widget by
+                 * pressing the tab key
+                 */
+                if (isBusy)
+                    return null;
                 return forward ? removeResultButton : table;
             }
         });
@@ -484,6 +495,15 @@ public class ResultTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
+                /*
+                 * don't let focus be set to this buttons if the lookup screen
+                 * for reflex tests is being shown; this is to prevent
+                 * situations like being able to press this button using the
+                 * enter key or the focus getting set to some other widget by
+                 * pressing the tab key
+                 */
+                if (isBusy)
+                    return null;
                 return forward ? checkAllButton : addResultButton;
             }
         });
@@ -494,6 +514,15 @@ public class ResultTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
+                /*
+                 * don't let focus be set to this buttons if the lookup screen
+                 * for reflex tests is being shown; this is to prevent
+                 * situations like being able to press this button using the
+                 * enter key or the focus getting set to some other widget by
+                 * pressing the tab key
+                 */
+                if (isBusy)
+                    return null;
                 return forward ? uncheckAllButton : removeResultButton;
             }
         });
@@ -504,16 +533,35 @@ public class ResultTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
+                /*
+                 * don't let focus be set to this buttons if the lookup screen
+                 * for reflex tests is being shown; this is to prevent
+                 * situations like being able to press this button using the
+                 * enter key or the focus getting set to some other widget by
+                 * pressing the tab key
+                 */
+                if (isBusy)
+                    return null;
                 return forward ? runScriptletsButton : checkAllButton;
             }
         });
 
         addScreenHandler(runScriptletsButton, "runScriptletsButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
+
                 runScriptletsButton.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
+                /*
+                 * don't let focus be set to this buttons if the lookup screen
+                 * for reflex tests is being shown; this is to prevent
+                 * situations like being able to press this button using the
+                 * enter key or the focus getting set to some other widget by
+                 * pressing the tab key
+                 */
+                if (isBusy)
+                    return null;
                 return forward ? table : uncheckAllButton;
             }
         });
@@ -685,7 +733,7 @@ public class ResultTabUI extends Screen {
                           perm != null &&
                           (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception e) {
-                Window.alert("canEdit:" + e.getMessage());
+                Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
@@ -720,6 +768,12 @@ public class ResultTabUI extends Screen {
         ModalWindow modal;
         Row row;
         ResultViewDO data;
+        /*
+         * don't do anything if the lookup screen for reflex tests is being
+         * shown
+         */
+        if (isBusy)
+            return;
 
         if (testAnalyteLookup == null) {
             testAnalyteLookup = new TestAnalyteLookupUI() {
@@ -757,58 +811,137 @@ public class ResultTabUI extends Screen {
     @UiHandler("removeResultButton")
     protected void removeResult(ClickEvent event) {
         int r, i, index;
+        boolean prevHeader, nextHeader, found;
+        Integer analyteId;
         Row row;
-        boolean prevHeader, nextHeader;
+        ResultViewDO data;
+        
+        /*
+         * don't do anything if the lookup screen for reflex tests is being
+         * shown
+         */
+        if (isBusy)
+            return;
 
         r = table.getSelectedRow();
-        if (r > -1 && table.getRowCount() > 0) {
-            if (r == 0) {
-                prevHeader = false;
-            } else {
-                row = table.getRowAt(r - 1);
-                prevHeader = row instanceof HeaderRow;
-            }
+        if (r == -1 || table.getRowCount() == 0)
+            return;
 
-            if (r == table.getRowCount() - 1) {
-                nextHeader = true;
-            } else {
-                row = table.getRowAt(r + 1);
-                nextHeader = row instanceof HeaderRow;
-            }
+        row = table.getRowAt(r);
+        if (row instanceof HeaderRow)
+            return;
 
-            if (prevHeader && nextHeader) {
-                parentScreen.setError(Messages.get().result_atleastOneResultInRowGroup());
-            } else {
-                /*
-                 * remove the row if the row group has more than one row
-                 */
-                table.removeRowAt(r);
+        /*
+         * if this row is between two header rows i.e. if it's the only row in
+         * its row group then don't remove it
+         */
+        if (r == 0) {
+            prevHeader = false;
+        } else {
+            row = table.getRowAt(r - 1);
+            prevHeader = row instanceof HeaderRow;
+        }
 
-                /*
-                 * The position of the result rows after the deleted row changed
-                 * in the manager. Reset the "data" of each table row to be the
-                 * new position of its corresponding result row in the manager.
-                 */
-                for (i = r; i < table.getRowCount(); i++ ) {
-                    index = table.getRowAt(i).getData();
-                    table.getRowAt(i).setData( --index);
+        if (r == table.getRowCount() - 1) {
+            nextHeader = true;
+        } else {
+            row = table.getRowAt(r + 1);
+            nextHeader = row instanceof HeaderRow;
+        }
+
+        if (prevHeader && nextHeader) {
+            parentScreen.setError(Messages.get().result_atleastOneResultInRowGroup());
+            return;
+        }
+
+        /*
+         * if this row's row analyte is required, remove it only if there's
+         * another row for that analyte
+         */
+        row = table.getRowAt(r);
+        data = manager.result.get(analysis, (Integer)row.getData(), 0);
+        if (Constants.dictionary().TEST_ANALYTE_REQ.equals(data.getTestAnalyteTypeId())) {
+            analyteId = data.getAnalyteId();
+            found = false;
+            /*
+             * go up in the row group to find the analyte
+             */
+            for (i = r - 1; i > -1; i-- ) {
+                row = table.getRowAt(i);
+                if (row instanceof HeaderRow)
+                    break;
+                data = manager.result.get(analysis, (Integer)row.getData(), 0);
+                if (analyteId.equals(data.getAnalyteId())) {
+                    found = true;
+                    break;
                 }
             }
+
+            /*
+             * if the analyte was not found, go down in the row group
+             */
+            if ( !found) {
+                for (i = r + 1; i < table.getRowCount(); i++ ) {
+                    row = table.getRowAt(i);
+                    if (row instanceof HeaderRow)
+                        break;
+                    data = manager.result.get(analysis, (Integer)row.getData(), 0);
+                    if (analyteId.equals(data.getAnalyteId())) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if ( !found) {
+                parentScreen.setError(Messages.get().result_cantRemoveReqAnalyte());
+                return;
+            }
+        }
+
+        table.removeRowAt(r);
+
+        /*
+         * The position of the result rows after the deleted row changed in the
+         * manager. Reset the "data" of each table row to be the new position of
+         * its corresponding result row in the manager.
+         */
+        for (i = r; i < table.getRowCount(); i++ ) {
+            index = table.getRowAt(i).getData();
+            table.getRowAt(i).setData( --index);
         }
     }
 
     @UiHandler("checkAllButton")
     protected void checkAll(ClickEvent event) {
+        /*
+         * don't do anything if the lookup screen for reflex tests is being
+         * shown
+         */
+        if (isBusy)
+            return;
         check("Y");
     }
 
     @UiHandler("uncheckAllButton")
     protected void uncheckAll(ClickEvent event) {
+        /*
+         * don't do anything if the lookup screen for reflex tests is being
+         * shown
+         */
+        if (isBusy)
+            return;
         check("N");
     }
 
     @UiHandler("runScriptletsButton")
     protected void runScriptlets(ClickEvent event) {
+        /*
+         * don't do anything if the lookup screen for reflex tests is being
+         * shown
+         */
+        if (isBusy)
+            return;
         parentBus.fireEventFromSource(new RunScriptletEvent(null, null, Action_Before.RECOMPUTE),
                                       screen);
     }
@@ -826,166 +959,7 @@ public class ResultTabUI extends Screen {
 
         return null;
     }
-    
-    private ArrayList<Row> getTableModel1() {
-        int i, j, maxTextLength[];
-        boolean validateResults;
-        String entry;
-        Integer dictId;
-        ResultViewDO data;
-        Column col;
-        Row row;
-        TestManager tm;
-        ResultFormatter rf;
-        ResultCell.Value value;
-        ArrayList<Row> model;
-        ArrayList<Integer> dictIds;
-        HashSet<Integer> cols;
-        HashMap<Integer, HashSet<Integer>> dictMap;
 
-        model = new ArrayList<Row>();
-        table.clearExceptions();
-
-        if (analysis == null || manager.result.count(analysis) == 0)
-            return model;
-
-        resetColumns();
-
-        /*
-         * the array to keep track of the length of the longest text in each
-         * column
-         */
-        maxTextLength = new int[table.getColumnCount()];
-        maxTextLength[0] = CHECK_BOX_NUM_CHARS;
-        setMaxTextLength(maxTextLength, 1, Messages.get().gen_analyte());
-        setMaxTextLength(maxTextLength, 2, Messages.get().gen_value());
-        for (i = 3; i < maxTextLength.length; i++ )
-            maxTextLength[i] = DEFAULT_NUM_CHARS;
-
-        dictIds = new ArrayList<Integer>();
-        dictMap = new HashMap<Integer, HashSet<Integer>>();
-
-        validateResults = canEdit && isState(ADD, UPDATE);
-        rf = null;
-
-        try {
-            if (validateResults) {
-                tm = getTestManager(analysis.getTestId());
-                rf = tm.getFormatter();
-            }
-
-            for (i = 0; i < manager.result.count(analysis); i++ ) {
-                /*
-                 * create header row
-                 */
-                if (manager.result.isHeader(analysis, i)) {
-                    row = new HeaderRow(table.getColumnCount());
-                    row.setCell(0, Messages.get().gen_reportable());
-                    row.setCell(1, Messages.get().gen_analyte());
-                    row.setCell(2, Messages.get().gen_value());
-                    for (j = 1; j < manager.result.count(analysis, i); j++ ) {
-                        data = manager.result.get(analysis, i, j);
-                        row.setCell(j + 2, data.getAnalyte());
-                        setMaxTextLength(maxTextLength, j + 2, data.getAnalyte());
-                    }
-                    row.setData(i);
-                    model.add(row);
-                }
-
-                /*
-                 * create data row and fill the columns
-                 */
-                row = new Row(table.getColumnCount());
-                for (j = 0; j < manager.result.count(analysis, i); j++ ) {
-                    data = manager.result.get(analysis, i, j);
-                    if (j == 0) {
-                        row.setCell(0, data.getIsReportable());
-                        row.setCell(1, data.getAnalyte());
-                        setMaxTextLength(maxTextLength, 1, data.getAnalyte());
-                    }
-
-                    if (validateResults && data.getValue() != null && data.getTypeId() == null) {
-                        /*
-                         * Since the type is not set, the value was either not
-                         * validated and formatted before or the validation
-                         * didn't succeed. Thus to format the value and set the
-                         * type or to show an error, validate it here.
-                         */
-                        try {
-                            ResultHelper.formatValue(data,
-                                                     data.getValue(),
-                                                     analysis.getUnitOfMeasureId(),
-                                                     rf);
-
-                        } catch (Exception e) {
-                            table.addException(row, j + 2, e);
-                        }
-                    }
-
-                    /*
-                     * create the value to be set in the cell for this result
-                     */
-                    if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
-                        if (data.getValue() != null) {
-                            dictId = Integer.valueOf(data.getValue());
-                            dictIds.add(dictId);
-
-                            /*
-                             * keep track of which dictionary values are
-                             * displayed in which column
-                             */
-                            if (dictMap.get(dictId) == null)
-                                dictMap.put(dictId, new HashSet<Integer>());
-                            cols = dictMap.get(dictId);
-                            cols.add(j + 2);
-                        }
-                        value = new ResultCell.Value(null, data.getValue());
-                    } else {
-                        value = new ResultCell.Value(data.getValue(), null);
-                        setMaxTextLength(maxTextLength, j + 2, data.getValue());
-                    }
-
-                    row.setCell(j + 2, value);
-                }
-                row.setData(i);
-                model.add(row);
-            }
-
-            if (dictIds.size() > 0) {
-                /*
-                 * For type dictionary, the displayed text is looked up from the
-                 * cache. The following is done to fetch and put the dictionary
-                 * records needed for the results, in the cache, all at once.
-                 */
-                DictionaryCache.getByIds(dictIds);
-
-                /*
-                 * reset the length of the longest text in a column if it's
-                 * showing dictionary entries
-                 */
-                for (Integer id : dictIds) {
-                    entry = DictionaryCache.getById(id).getEntry();
-                    cols = dictMap.get(id);
-                    for (int c : cols)
-                        setMaxTextLength(maxTextLength, c, entry);
-                }
-            }
-
-            /*
-             * set the width of a column in pixels based on the longest text
-             * showing in it
-             */
-            for (i = 0; i < maxTextLength.length; i++ ) {
-                col = table.getColumnAt(i);
-                col.setWidth(maxTextLength[i] * MEAN_CHAR_WIDTH);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return model;
-    }
-    
     private ArrayList<Row> getTableModel() {
         int i, maxTextLength[];
         String entry;
@@ -1015,7 +989,7 @@ public class ResultTabUI extends Screen {
         setMaxTextLength(maxTextLength, 2, Messages.get().gen_value());
 
         try {
-            if (canEdit && isState(ADD, UPDATE)) {                
+            if (canEdit && isState(ADD, UPDATE)) {
                 tm = getTestManager(analysis.getTestId());
                 rf = tm.getFormatter();
                 addRowsForEdit(maxTextLength, rf, model);
@@ -1136,7 +1110,7 @@ public class ResultTabUI extends Screen {
             for (j = 0; j < manager.result.count(analysis, i); j++ ) {
                 data = manager.result.get(analysis, i, j);
                 if (j == 0)
-                    setFirstTwoCells(row, data, maxTextLength);                
+                    setFirstTwoCells(row, data, maxTextLength);
 
                 if (data.getValue() != null && data.getTypeId() == null) {
                     /*
@@ -1177,17 +1151,16 @@ public class ResultTabUI extends Screen {
 
                 row.setCell(j + 2, value);
             }
-            logger.log(Level.FINE, "result row: " + i);
             row.setData(i);
             model.add(row);
         }
     }
-    
+
     private void addHeaderRow(int i, int[] maxTextLength, ArrayList<Row> model) {
         int j;
         ResultViewDO data;
         Row row;
-        
+
         if (manager.result.isHeader(analysis, i)) {
             row = new HeaderRow(table.getColumnCount());
             row.setCell(0, Messages.get().gen_reportable());
@@ -1198,7 +1171,6 @@ public class ResultTabUI extends Screen {
                 row.setCell(j + 2, data.getAnalyte());
                 setMaxTextLength(maxTextLength, j + 2, data.getAnalyte());
             }
-            logger.log(Level.FINE, "header row: " + i);
             row.setData(i);
             model.add(row);
         }

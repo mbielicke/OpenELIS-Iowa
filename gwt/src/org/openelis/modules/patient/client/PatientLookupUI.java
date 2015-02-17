@@ -40,6 +40,7 @@ import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
 import org.openelis.meta.PatientMeta;
 import org.openelis.modules.analysis.client.AnalysisService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -50,6 +51,7 @@ import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -66,6 +68,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -93,7 +97,7 @@ public abstract class PatientLookupUI extends Screen {
     protected Dropdown<Integer>                             gender, patientRelation;
 
     @UiField
-    protected Dropdown<String>                              state;
+    protected Dropdown<String>                              patientState;
 
     @UiField
     protected Table                                         patientTable, sampleTable,
@@ -102,12 +106,12 @@ public abstract class PatientLookupUI extends Screen {
     @UiField
     protected TextBox<String>                               lastName, firstName, nationalId;
 
-    protected PatientDO                                     selectedPatient;
+    protected PatientDO                                     queriedPatient, selectedPatient;
 
     protected PatientRelationVO                             selectedNextOfKin;
 
     protected boolean                                       selectFirstPatient,
-                    dontShowIfNoPatient;
+                    dontShowIfNoPatient, queryByNId;
 
     protected AsyncCallbackUI<ArrayList<PatientDO>>         queryCall;
 
@@ -137,8 +141,8 @@ public abstract class PatientLookupUI extends Screen {
         //
         addScreenHandler(lastName, PatientMeta.getLastName(), new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                lastName.setEnabled(isState(QUERY));
-                lastName.setQueryMode(isState(QUERY));
+                lastName.setEnabled( !queryByNId && isState(QUERY));
+                lastName.setQueryMode( !queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -148,8 +152,8 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(firstName, PatientMeta.getFirstName(), new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                firstName.setEnabled(isState(QUERY));
-                firstName.setQueryMode(isState(QUERY));
+                firstName.setEnabled( !queryByNId && isState(QUERY));
+                firstName.setQueryMode( !queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -159,8 +163,8 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(birthDate, PatientMeta.getBirthDate(), new ScreenHandler<Datetime>() {
             public void onStateChange(StateChangeEvent event) {
-                birthDate.setEnabled(isState(QUERY));
-                birthDate.setQueryMode(isState(QUERY));
+                birthDate.setEnabled( !queryByNId && isState(QUERY));
+                birthDate.setQueryMode( !queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -170,8 +174,7 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(nationalId, PatientMeta.getNationalId(), new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
-                nationalId.setEnabled(isState(QUERY));
-                nationalId.setQueryMode(isState(QUERY));
+                nationalId.setEnabled(!queryByNId && isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -181,7 +184,7 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(search, "search", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                search.setEnabled(true);
+                search.setEnabled( !queryByNId);
             }
 
             public Widget onTab(boolean forward) {
@@ -199,6 +202,18 @@ public abstract class PatientLookupUI extends Screen {
 
             public Widget onTab(boolean forward) {
                 return forward ? select : search;
+            }
+        });
+
+        patientTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            @Override
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                PatientDO data;
+
+                data = patientTable.getRowAt(0).getData();
+                if (queryByNId &&
+                    (queriedPatient.getId() != null && !queriedPatient.getId().equals(data.getId())))
+                    event.cancel();
             }
         });
 
@@ -220,7 +235,7 @@ public abstract class PatientLookupUI extends Screen {
         //
         addScreenHandler(nextOfKinTable, "nextOfKinTable", new ScreenHandler<ArrayList<Row>>() {
             public void onStateChange(StateChangeEvent event) {
-                nextOfKinTable.setEnabled(true);
+                nextOfKinTable.setEnabled( !queryByNId);
             }
         });
 
@@ -256,7 +271,7 @@ public abstract class PatientLookupUI extends Screen {
 
         addScreenHandler(select, "select", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                select.setEnabled(true);
+                select.setEnabled( !queryByNId);
             }
 
             public Widget onTab(boolean forward) {
@@ -299,7 +314,7 @@ public abstract class PatientLookupUI extends Screen {
         smodel = new ArrayList<Item<String>>();
         for (DictionaryDO resultDO : list)
             model.add(new Item<Integer>(resultDO.getId(), resultDO.getEntry()));
-        state.setModel(smodel);
+        patientState.setModel(smodel);
     }
 
     /**
@@ -312,6 +327,11 @@ public abstract class PatientLookupUI extends Screen {
      */
     public abstract void cancel();
 
+    /**
+     * overriden to respond to a query returning some results
+     */
+    public abstract void patientsFound();
+
     public void setWindow(WindowInt window) {
         super.setWindow(window);
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
@@ -321,6 +341,11 @@ public abstract class PatientLookupUI extends Screen {
                 nextOfKinTable.setModel(null);
             }
         });
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     /**
@@ -333,11 +358,25 @@ public abstract class PatientLookupUI extends Screen {
         selectedPatient = null;
         selectedNextOfKin = null;
         this.dontShowIfNoPatient = dontShowIfNoPatient;
+
+        lastName.setValue(null);
+        firstName.setValue(null);
+        birthDate.setValue(null);
+        nationalId.setValue(null);
+        queryByNId = false;
+        queriedPatient = data;
         if (data != null) {
-            lastName.setValue(data.getLastName());
-            firstName.setValue(data.getFirstName());
-            birthDate.setValue(data.getBirthDate());
-            nationalId.setValue(data.getNationalId());
+            /*
+             * allow querying by either the NID or the other fields
+             */
+            if (data.getNationalId() == null) {
+                lastName.setValue(data.getLastName());
+                firstName.setValue(data.getFirstName());
+                birthDate.setValue(data.getBirthDate());
+            } else {
+                queryByNId = true;
+                nationalId.setValue(data.getNationalId());
+            }
             /*
              * if there is a query specified then select the first patient
              * returned by the query by default
@@ -345,31 +384,15 @@ public abstract class PatientLookupUI extends Screen {
             selectFirstPatient = true;
             executeQuery();
         } else {
-            showScreen();
-            lastName.setValue(null);
-            firstName.setValue(null);
-            birthDate.setValue(null);
-            nationalId.setValue(null);
+            showScreen(null);
             /*
              * if there is no query specified then make the the user select the
              * patient
              */
             selectFirstPatient = false;
         }
-    }
 
-    /**
-     * returns the selected patient
-     */
-    public PatientDO getSelectedPatient() {
-        return selectedPatient;
-    }
-
-    /**
-     * returns the selected next of kin
-     */
-    public PatientRelationVO getSelectedNextOfKin() {
-        return selectedNextOfKin;
+        setState(QUERY);
     }
 
     /**
@@ -435,39 +458,61 @@ public abstract class PatientLookupUI extends Screen {
         if (queryCall == null) {
             queryCall = new AsyncCallbackUI<ArrayList<PatientDO>>() {
                 public void success(ArrayList<PatientDO> result) {
+                    String error;
+                    PatientDO data;
+
                     /*
                      * load the widgets with the query's results and show the
                      * screen if it isn't showing currently
                      */
                     setQueryResult(result);
-                    if (window == null)
-                        showScreen();
-                    else
-                        setDone(Messages.get().gen_queryingComplete());
-
+                    patientsFound();
+                    error = null;
                     if (selectFirstPatient) {
-                        patientTable.selectRowAt(0);
+                        /*
+                         * if the query was executed only for NID then at most
+                         * one patient will be returned; otherwise multiple
+                         * patients could be returned; show an error if the NID
+                         * has been used for a patient different from the one
+                         * used for the query; otherwise select the first row
+                         */
+                        data = patientTable.getRowAt(0).getData();
+                        if (queryByNId) {
+                            if (queriedPatient.getId() == null ||
+                                queriedPatient.getId().equals(data.getId()))
+                                patientTable.selectRowAt(0);
+                            else
+                                error = Messages.get().patientLookup_nidUsedForOtherPatient();
+                        } else {
+                            patientTable.selectRowAt(0);
+                        }
                         patientSelected();
                     }
+
+                    if (window == null)
+                        showScreen(error);
+                    else if (error != null)
+                        setError(error);
+                    else
+                        setDone(Messages.get().gen_queryingComplete());
                 }
 
                 public void notFound() {
-                    /*
-                     * no patient was found, so don't show the popup because
-                     * "dontShowIfNoPatient" is true
-                     */
                     if (dontShowIfNoPatient) {
+                        /*
+                         * don't show the popup if no patient was found
+                         */
                         cancel();
                         return;
                     }
 
                     /*
-                     * clear the widgets show the screen if it isn't showing
+                     * clear the widgets; show the screen if it isn't showing
                      * currently
                      */
                     setQueryResult(null);
                     if (window == null)
-                        showScreen();
+                        showScreen(null);
                     else
                         setDone(Messages.get().gen_noRecordsFound());
 
@@ -535,6 +580,7 @@ public abstract class PatientLookupUI extends Screen {
         else
             selectedPatient = null;
 
+        select.setEnabled(selectedPatient != null);
         showSamples();
         showNextOfKin();
     }
@@ -630,11 +676,11 @@ public abstract class PatientLookupUI extends Screen {
     }
 
     /**
-     * shows the screen in a newly created window; sets the focus to a specific
+     * Shows the screen in a newly created window; sets the focus to a specific
      * widget based on whether or not there are any patients showing in their
      * table
      */
-    private void showScreen() {
+    private void showScreen(final String error) {
         ModalWindow modal;
         ScheduledCommand cmd;
 
@@ -660,6 +706,9 @@ public abstract class PatientLookupUI extends Screen {
                      * to the button "Select"
                      */
                     patientTable.setFocus(true);
+
+                if (error != null)
+                    setError(error);
             }
         };
         Scheduler.get().scheduleDeferred(cmd);

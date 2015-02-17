@@ -479,14 +479,15 @@ public class SampleTabUI extends Screen {
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
                         row.setData(data);
                         model.add(row);
                     }
@@ -653,9 +654,9 @@ public class SampleTabUI extends Screen {
         projectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 SampleProjectViewDO data;
-
+                
                 data = manager.project.add();
-                data.setIsPermanent("N");
+                projectTable.setValueAt(event.getIndex(), 2, data.getIsPermanent());
                 removeProjectButton.setEnabled(true);
             }
         });

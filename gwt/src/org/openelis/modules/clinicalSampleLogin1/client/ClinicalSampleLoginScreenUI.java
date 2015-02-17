@@ -1103,7 +1103,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  setPatientNationalId(event.getValue());
                                  if (getPatientNationalId() != null)
                                      patientQueryChanged(patientNationalId);
-                                 runScriptlets(null, SampleMeta.getClinicalPatientNationalId(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientNationalId(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1127,7 +1129,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressMultipleUnit(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrMultipleUnit(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrMultipleUnit(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1152,7 +1156,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressStreetAddress(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrStreetAddress(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrStreetAddress(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1225,7 +1231,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressZipCode(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrZipCode(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrZipCode(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1297,7 +1305,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientEthnicityId(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientEthnicityId(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientEthnicityId(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1576,15 +1586,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -1654,15 +1665,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -2053,7 +2065,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                             setQueryResult(result);
                         }
 
-                        public void notFound() {
+                        public void patientsNotFound() {
                             setQueryResult(null);
                             setState(DEFAULT);
                             setDone(Messages.get().gen_noRecordsFound());
@@ -3306,7 +3318,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private boolean canCopyFromPrevious(int keyCode) {
         return previousManager != null && KeyCodes.KEY_F2 == keyCode;
     }
-    
+
     /**
      * Clears the validation errors of the widget and validates it based on its
      * latest data
@@ -3376,6 +3388,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         AnalysisQaEventViewDO aqa;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
+
+        /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
 
         /*
          * create the sciptlet object
@@ -4190,14 +4212,45 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void lookupPatient(PatientDO data, boolean dontShowIfNoPatient) {
         if (patientLookup == null) {
             patientLookup = new PatientLookupUI() {
+                boolean nidUsedForOther;
+
                 public void select() {
-                    setPatient(patientLookup.getSelectedPatient());
+                    setPatient(selectedPatient);
+                    setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
                 }
 
                 public void cancel() {
+                    /*
+                     * if the query on the popup was executed only for NID and
+                     * that NID has been used for another patient, blank the
+                     * sample's patient's NID and refresh the screen
+                     */
+                    if (queryByNId && nidUsedForOther) {
+                        setPatientNationalId(null);
+                        setPatient(manager.getSampleClinical().getPatient());
+                    }
                     setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
+                }
+
+                @Override
+                public void patientsFound() {
+                    Integer id;
+                    PatientDO data;
+
+                    /*
+                     * if the query on the popup was executed only for NID, at
+                     * most one patient will be returned; find out if that
+                     * patient is the same as the sample's patient
+                     */
+                    if (queryByNId) {
+                        data = patientTable.getRowAt(0).getData();
+                        id = manager.getSampleClinical().getPatientId();
+                        nidUsedForOther = id != null && !id.equals(data.getId());
+                    }
                 }
             };
         }
@@ -4224,9 +4277,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void patientQueryChanged(Focusable widget) {
         /*
-         * look up patients only if the current patient is not locked
+         * if the current patient is locked then look up patients only if the
+         * NID was changed
          */
-        if ( !isPatientLocked) {
+        if ( !isPatientLocked || widget == patientNationalId) {
             isBusy = true;
             focusedWidget = widget;
             lookupPatient(manager.getSampleClinical().getPatient(), true);
@@ -4245,19 +4299,12 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         manager.getSampleClinical().setPatientId(data.getId());
         manager.getSampleClinical().setPatient(data);
 
-        if (getPatientLastName() != null)
-            patientLastName.clearExceptions();
-
-        if (getPatientAddressStreetAddress() != null)
-            patientAddrStreetAddress.clearExceptions();
-
         runScriptlets(null, SampleMeta.getClinicalPatientId(), null);
 
         evaluateEdit();
         setData();
         setState(state);
         bus.fireEvent(new PatientChangeEvent());
-        setFocusToNext();
     }
 
     /**
@@ -4915,7 +4962,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(testSelectionLookup);
 
-        testSelectionLookup.setData(manager, ret.getTests());
         testSelectionLookup.setWindow(modal);
+        testSelectionLookup.setData(manager, ret.getTests());
     }
 }

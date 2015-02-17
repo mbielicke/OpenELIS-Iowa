@@ -181,4 +181,19 @@ public class LabelReportBean {
         f.print("^FO60,170^AE^FD"+received+" "+testName+"^FS");     // readable received date + test name  
         f.print("^PQ"+quantity+",,1,^XZ");
     }
+    
+    /*
+     * Print a tube label for blood lead
+     */
+    public void tubeLabel(PrintStream f, String tubeNumber) {
+        f.print("^XA");
+        f.print("^LH0,0");
+        f.print("^FO30,60^AE^FDData Slip Label^FS");
+        f.print("^FWB");
+        f.print("^FO550,5^AE^FDTube Label^FS");
+        f.print("^FO600,65^AE^FD"+tubeNumber+"^FS");                  //readable tube number
+        f.print("^FWN");
+        f.print("^FO30,165^BY3^BCN,90,Y,N,N^FD"+tubeNumber+"^FS");    //barcoded tube number
+        f.print("^PQ1,,1,^XZ");
+    }
 }
