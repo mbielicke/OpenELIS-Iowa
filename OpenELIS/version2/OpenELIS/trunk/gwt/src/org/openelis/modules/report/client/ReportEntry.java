@@ -468,6 +468,32 @@ public class ReportEntry implements EntryPoint {
             } 
         });
         
+        ScreenBus.get().addHandler(ScreenBus.TUBE_LABEL_REPORT, new ShowScreenHandler() {
+            
+            @Override
+            public void showScreen() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(Messages.get().report_tubeLabels());
+                            window.setSize("20px", "20px");
+                            window.setContent(new TubeLabelReportScreen(window));
+                            OpenELIS.getBrowser().addWindow(window, "tubeLabelReport");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+                
+            }
+        });
     }
 
 }

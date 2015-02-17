@@ -2160,6 +2160,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         Row selRow;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
+        
+        /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
 
         /*
          * create the sciptlet object

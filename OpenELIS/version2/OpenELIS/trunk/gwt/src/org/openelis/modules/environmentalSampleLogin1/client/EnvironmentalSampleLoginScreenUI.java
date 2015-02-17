@@ -1536,15 +1536,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -1613,15 +1614,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -3154,6 +3156,16 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
 
+        /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
+        
         /*
          * create the sciptlet object
          */

@@ -33,20 +33,23 @@
             <w:TextBox field="Integer" />
           </t:TextBoxCell>
         </t:Column>
-        <t:Column width="220" label="{msg.gen_name}" required="true">
+        <t:Column width="250" label="{msg.gen_name}" required="true">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="organization" case="UPPER" width="130"
-              dropWidth="490px"
+            <w:AutoComplete ui:field="organization" case="UPPER" width="130px"
+              dropWidth="565px"
             >
               <w:popup>
                 <t:Table visibleRows="10" header="true">
-                  <t:Column width="200" label="{msg.gen_name}">
+                  <t:Column width="250" label="{msg.gen_name}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="130" label="{msg.address_street}">
+                  <t:Column width="70" label="{msg.address_aptSuite}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="120" label="{msg.address_city}">
+                  <t:Column width="110" label="{msg.address_street}">
+                    <t:LabelCell />
+                  </t:Column>
+                  <t:Column width="100" label="{msg.address_city}">
                     <t:LabelCell />
                   </t:Column>
                   <t:Column width="20" label="{msg.address_st}">
@@ -60,7 +63,7 @@
         <t:Column width="130" label="{msg.address_aptSuite}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="130" label="{msg.address_address}">
+        <t:Column width="130" label="{msg.address_street}">
           <t:LabelCell />
         </t:Column>
         <t:Column width="110" label="{msg.address_city}">

@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -1654,6 +1654,69 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analyteParameter_analyteParameter();
 
   /**
+   * Translated "{0}: At least one of P1, P2, P3 is required".
+   * 
+   * @return translated "{0}: At least one of P1, P2, P3 is required"
+   */
+  @DefaultMessage("{0}: At least one of P1, P2, P3 is required")
+  @Key("analyteParameter.atleastOnePRequiredException")
+  String analyteParameter_atleastOnePRequiredException(String arg0);
+
+  /**
+   * Translated "{0}: Begin date must be after every previous parameter''s end date".
+   * 
+   * @return translated "{0}: Begin date must be after every previous parameter''s end date"
+   */
+  @DefaultMessage("{0}: Begin date must be after every previous parameter''s end date")
+  @Key("analyteParameter.beginDateAfterPrevEndDateException")
+  String analyteParameter_beginDateAfterPrevEndDateException(String arg0);
+
+  /**
+   * Translated "{0}: Begin date must be more than a minute ahead of every previous parameter''s begin date".
+   * 
+   * @return translated "{0}: Begin date must be more than a minute ahead of every previous parameter''s begin date"
+   */
+  @DefaultMessage("{0}: Begin date must be more than a minute ahead of every previous parameter''s begin date")
+  @Key("analyteParameter.beginDateMinuteAheadException")
+  String analyteParameter_beginDateMinuteAheadException(String arg0);
+
+  /**
+   * Translated "{0}: Begin date is required".
+   * 
+   * @return translated "{0}: Begin date is required"
+   */
+  @DefaultMessage("{0}: Begin date is required")
+  @Key("analyteParameter.beginDateRequiredException")
+  String analyteParameter_beginDateRequiredException(String arg0);
+
+  /**
+   * Translated "{0}: End date must be after begin date".
+   * 
+   * @return translated "{0}: End date must be after begin date"
+   */
+  @DefaultMessage("{0}: End date must be after begin date")
+  @Key("analyteParameter.endDateAfterBeginException")
+  String analyteParameter_endDateAfterBeginException(String arg0);
+
+  /**
+   * Translated "{0}: End date is required".
+   * 
+   * @return translated "{0}: End date is required"
+   */
+  @DefaultMessage("{0}: End date is required")
+  @Key("analyteParameter.endDateRequiredException")
+  String analyteParameter_endDateRequiredException(String arg0);
+
+  /**
+   * Translated "Name is required".
+   * 
+   * @return translated "Name is required"
+   */
+  @DefaultMessage("Name is required")
+  @Key("analyteParameter.nameRequiredException")
+  String analyteParameter_nameRequiredException();
+
+  /**
    * Translated "P1".
    * 
    * @return translated "P1"
@@ -1681,6 +1744,60 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analyteParameter_p3();
 
   /**
+   * Translated "{0} already has existing parameters".
+   * 
+   * @return translated "{0} already has existing parameters"
+   */
+  @DefaultMessage("{0} already has existing parameters")
+  @Key("analyteParameter.parametersExistException")
+  String analyteParameter_parametersExistException(String arg0);
+
+  /**
+   * Translated "{0} must have at least one parameter".
+   * 
+   * @return translated "{0} must have at least one parameter"
+   */
+  @DefaultMessage("{0} must have at least one parameter")
+  @Key("analyteParameter.recordHasNoParametersException")
+  String analyteParameter_recordHasNoParametersException(String arg0);
+
+  /**
+   * Translated "Repeated {0}: Change sample type or unit to differentiate      ".
+   * 
+   * @return translated "Repeated {0}: Change sample type or unit to differentiate      "
+   */
+  @DefaultMessage("Repeated {0}: Change sample type or unit to differentiate      ")
+  @Key("analyteParameter.repeatedComboException")
+  String analyteParameter_repeatedComboException(String arg0);
+
+  /**
+   * Translated "Select an analyte row to add a parameter".
+   * 
+   * @return translated "Select an analyte row to add a parameter"
+   */
+  @DefaultMessage("Select an analyte row to add a parameter")
+  @Key("analyteParameter.selectAnalyteToAddParam")
+  String analyteParameter_selectAnalyteToAddParam();
+
+  /**
+   * Translated "Select one or more row(s) to duplicate".
+   * 
+   * @return translated "Select one or more row(s) to duplicate"
+   */
+  @DefaultMessage("Select one or more row(s) to duplicate")
+  @Key("analyteParameter.selectOneOrMoreRowsToDup")
+  String analyteParameter_selectOneOrMoreRowsToDup();
+
+  /**
+   * Translated "Select one or more row(s) to remove".
+   * 
+   * @return translated "Select one or more row(s) to remove"
+   */
+  @DefaultMessage("Select one or more row(s) to remove")
+  @Key("analyteParameter.selectOneOrMoreRowsToRemove")
+  String analyteParameter_selectOneOrMoreRowsToRemove();
+
+  /**
    * Translated "Please select a sample type before selecting unit".
    * 
    * @return translated "Please select a sample type before selecting unit"
@@ -1697,6 +1814,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Please select a type")
   @Key("analyteParameter.selectType")
   String analyteParameter_selectType();
+
+  /**
+   * Translated "Type is required".
+   * 
+   * @return translated "Type is required"
+   */
+  @DefaultMessage("Type is required")
+  @Key("analyteParameter.typeRequiredException")
+  String analyteParameter_typeRequiredException();
 
   /**
    * Translated "Define ranges for various analytical parameters.".
@@ -6764,6 +6890,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sequence")
   @Key("gen.sequence")
   String gen_sequence();
+
+  /**
+   * Translated "Series".
+   * 
+   * @return translated "Series"
+   */
+  @DefaultMessage("Series")
+  @Key("gen.series")
+  String gen_series();
 
   /**
    * Translated "Shipping".
@@ -12013,11 +12148,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patientDescription();
 
   /**
-   * Translated "Patient Lookup ".
+   * Translated "This NID has been used for another patient".
    * 
-   * @return translated "Patient Lookup "
+   * @return translated "This NID has been used for another patient"
    */
-  @DefaultMessage("Patient Lookup ")
+  @DefaultMessage("This NID has been used for another patient")
+  @Key("patientLookup.nidUsedForOtherPatient")
+  String patientLookup_nidUsedForOtherPatient();
+
+  /**
+   * Translated "Patient Lookup".
+   * 
+   * @return translated "Patient Lookup"
+   */
+  @DefaultMessage("Patient Lookup")
   @Key("patientLookup.patientLookup")
   String patientLookup_patientLookup();
 
@@ -13921,6 +14065,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String report_runReport();
 
   /**
+   * Translated "Tube Labels ".
+   * 
+   * @return translated "Tube Labels "
+   */
+  @DefaultMessage("Tube Labels ")
+  @Key("report.tubeLabels")
+  String report_tubeLabels();
+
+  /**
    * Translated "Report Description".
    * 
    * @return translated "Report Description"
@@ -14063,6 +14216,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("A row group must have at least one result row")
   @Key("result.atleastOneResultInRowGroup")
   String result_atleastOneResultInRowGroup();
+
+  /**
+   * Translated "There must be at least one row for this analyte because it is required ".
+   * 
+   * @return translated "There must be at least one row for this analyte because it is required "
+   */
+  @DefaultMessage("There must be at least one row for this analyte because it is required ")
+  @Key("result.cantRemoveReqAnalyte")
+  String result_cantRemoveReqAnalyte();
 
   /**
    * Translated "Current Result".
@@ -14866,6 +15028,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_project();
 
   /**
+   * Translated "Provider/Organization Info".
+   * 
+   * @return translated "Provider/Organization Info"
+   */
+  @DefaultMessage("Provider/Organization Info")
+  @Key("sample.providerOrganizationInfo")
+  String sample_providerOrganizationInfo();
+
+  /**
    * Translated "Sample QA Events".
    * 
    * @return translated "Sample QA Events"
@@ -15071,15 +15242,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Fully login clinical sample and analysis related information.")
   @Key("sampleClinical.loginDescription")
   String sampleClinical_loginDescription();
-
-  /**
-   * Translated "Provider/Organization Info".
-   * 
-   * @return translated "Provider/Organization Info"
-   */
-  @DefaultMessage("Provider/Organization Info")
-  @Key("sampleClinical.providerOrganizationInfo")
-  String sampleClinical_providerOrganizationInfo();
 
   /**
    * Translated "Sample Clinical".
@@ -15584,6 +15746,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Report To")
   @Key("sampleOrganization.reportTo")
   String sampleOrganization_reportTo();
+
+  /**
+   * Translated "Additional Domain ".
+   * 
+   * @return translated "Additional Domain "
+   */
+  @DefaultMessage("Additional Domain ")
+  @Key("samplePT.additionalDomain")
+  String samplePT_additionalDomain();
+
+  /**
+   * Translated "PT Sample Login".
+   * 
+   * @return translated "PT Sample Login"
+   */
+  @DefaultMessage("PT Sample Login")
+  @Key("samplePT.login")
+  String samplePT_login();
+
+  /**
+   * Translated "Fully login proficiency testing sample and analysis related information.".
+   * 
+   * @return translated "Fully login proficiency testing sample and analysis related information."
+   */
+  @DefaultMessage("Fully login proficiency testing sample and analysis related information.")
+  @Key("samplePT.loginDescription")
+  String samplePT_loginDescription();
+
+  /**
+   * Translated "PT Info".
+   * 
+   * @return translated "PT Info"
+   */
+  @DefaultMessage("PT Info")
+  @Key("samplePT.ptInfo")
+  String samplePT_ptInfo();
 
   /**
    * Translated "Sample Prep".
@@ -16351,13 +16549,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String secondaryLabel_sampleNotExistException(Integer arg0);
 
   /**
-   * Translated "Secondary Label".
+   * Translated "Secondary Labels".
    * 
-   * @return translated "Secondary Label"
+   * @return translated "Secondary Labels"
    */
-  @DefaultMessage("Secondary Label")
-  @Key("secondaryLabel.secondaryLabel")
-  String secondaryLabel_secondaryLabel();
+  @DefaultMessage("Secondary Labels")
+  @Key("secondaryLabel.secondaryLabels")
+  String secondaryLabel_secondaryLabels();
 
   /**
    * Translated "Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist".

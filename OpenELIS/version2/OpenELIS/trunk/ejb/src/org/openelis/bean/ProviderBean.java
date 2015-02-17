@@ -182,9 +182,6 @@ public class ProviderBean {
         if (DataBaseUtil.isEmpty(providerDO.getLastName()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getLastName()));
 
-        if (DataBaseUtil.isEmpty(providerDO.getTypeId()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getTypeId()));
-
         if (list.size() > 0)
             throw list;
     }

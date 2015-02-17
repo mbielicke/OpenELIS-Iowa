@@ -493,7 +493,7 @@
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
             </g:layer>
             <g:layer top="0px" bottom="0px" right="0px" width="50%">
-              <w:TitledPanel title="{msg.sampleClinical_providerOrganizationInfo}">
+              <w:TitledPanel title="{msg.sample_providerOrganizationInfo}">
                 <g:HTMLPanel>
                   <table class="{res.style.Form}">
                     <tr>
@@ -554,18 +554,21 @@
                       </td>
                       <td colspan="3">
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="reportToName" width="265" case="UPPER"
-                            dropWidth="490px"
+                          <w:AutoComplete ui:field="reportToName" width="265px" case="UPPER"
+                            dropWidth="565px"
                           >
                             <w:popup>
                               <t:Table visibleRows="10" header="true">
-                                <t:Column width="200" label="{msg.gen_name}">
+                                <t:Column width="250" label="{msg.gen_name}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="130" label="{msg.address_street}">
+                                <t:Column width="70" label="{msg.address_aptSuite}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="120" label="{msg.address_city}">
+                                <t:Column width="110" label="{msg.address_street}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="100" label="{msg.address_city}">
                                   <t:LabelCell />
                                 </t:Column>
                                 <t:Column width="20" label="{msg.address_st}">
@@ -587,18 +590,21 @@
                       </td>
                       <td colspan="3">
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="birthHospitalName" width="265"
-                            dropWidth="490px" case="UPPER"
+                          <w:AutoComplete ui:field="birthHospitalName" width="265px"
+                            dropWidth="565px" case="UPPER"
                           >
                             <w:popup>
                               <t:Table visibleRows="10" header="true">
-                                <t:Column width="200" label="{msg.gen_name}">
+                                <t:Column width="250" label="{msg.gen_name}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="130" label="{msg.address_street}">
+                                <t:Column width="70" label="{msg.address_aptSuite}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="120" label="{msg.address_city}">
+                                <t:Column width="110" label="{msg.address_street}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="100" label="{msg.address_city}">
                                   <t:LabelCell />
                                 </t:Column>
                                 <t:Column width="20" label="{msg.address_st}">
