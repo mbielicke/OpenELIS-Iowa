@@ -2,7 +2,7 @@ package org.openelis.portal.modules.dataView.client;
 
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
-import org.openelis.ui.widget.Dropdown;
+import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
@@ -42,7 +42,7 @@ public interface DataViewUI extends IsWidget {
 
     public Calendar getPatientBirthTo();
 
-    public Dropdown<Integer> getProjectCode();
+    public MultiDropdown<Integer> getProjectCode();
 
     public CheckBox getAccession();
 
