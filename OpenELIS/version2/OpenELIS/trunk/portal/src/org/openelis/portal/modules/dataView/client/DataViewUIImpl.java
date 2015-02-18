@@ -2,7 +2,7 @@ package org.openelis.portal.modules.dataView.client;
 
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
-import org.openelis.ui.widget.Dropdown;
+import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
@@ -35,7 +35,7 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
                     patientBirthFrom, patientBirthTo;
 
     @UiField
-    protected Dropdown<Integer>             projectCode;
+    protected MultiDropdown<Integer>             projectCode;
 
     @UiField
     protected CheckBox                      accession, sampleCollected, sampleReceived,
@@ -153,7 +153,7 @@ public class DataViewUIImpl extends ResizeComposite implements DataViewUI {
     }
 
     @Override
-    public Dropdown<Integer> getProjectCode() {
+    public MultiDropdown<Integer> getProjectCode() {
         return projectCode;
     }
 
