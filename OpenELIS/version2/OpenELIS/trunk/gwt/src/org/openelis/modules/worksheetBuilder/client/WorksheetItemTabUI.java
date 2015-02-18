@@ -129,11 +129,9 @@ public class WorksheetItemTabUI extends Screen {
                                                         undoQcsMenu;
     @UiField
     protected MenuItem                                  insertAnalysisAbove, insertAnalysisThisPosition,
-                                                        insertAnalysisBelow, insertFromWorksheetAbove, 
-                                                        insertFromWorksheetThisPosition,
+                                                        insertAnalysisBelow, insertFromWorksheetAbove,
                                                         insertFromWorksheetBelow, 
                                                         insertFromQcTableAbove,
-                                                        insertFromQcTableThisPosition,
                                                         insertFromQcTableBelow, 
                                                         undoAll, undoManual, undoTemplate;
     @UiField
@@ -426,13 +424,6 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        insertFromWorksheetThisPosition.addCommand(new Command() {
-            @Override
-            public void execute() {
-                insertFromWorksheetThisPosition();
-            }
-        });
-
         insertFromWorksheetBelow.addCommand(new Command() {
             @Override
             public void execute() {
@@ -444,13 +435,6 @@ public class WorksheetItemTabUI extends Screen {
             @Override
             public void execute() {
                 insertFromQcTableAbove();
-            }
-        });
-
-        insertFromQcTableThisPosition.addCommand(new Command() {
-            @Override
-            public void execute() {
-                insertFromQcTableThisPosition();
             }
         });
 
@@ -934,11 +918,6 @@ public class WorksheetItemTabUI extends Screen {
         openWorksheetAnalysisLookup();
     }
     
-    private void insertFromWorksheetThisPosition() {
-        addRowDirection = 0;
-        openWorksheetAnalysisLookup();
-    }
-    
     private void insertFromWorksheetBelow() {
         addRowDirection = 1;
         openWorksheetAnalysisLookup();
@@ -1026,14 +1005,7 @@ public class WorksheetItemTabUI extends Screen {
                                                             if (fromWorksheetId == null)
                                                                 fromWorksheetId = waDO.getWorksheetId();
                                                             
-                                                            if (addRowDirection == 0) {
-                                                                if (manager.item.count() == index)
-                                                                    itemDO = manager.item.add(index);
-                                                                else
-                                                                    itemDO = manager.item.get(index);
-                                                            } else {
-                                                                itemDO = manager.item.add(index++);
-                                                            }
+                                                            itemDO = manager.item.add(index++);
                                                             data = manager.analysis.add(itemDO);
                                                             copyDO(waDO, data);
                                                             data.setFromOtherId(waDO.getId());
@@ -1086,11 +1058,6 @@ public class WorksheetItemTabUI extends Screen {
 
     private void insertFromQcTableAbove() {
         addRowDirection = -1;
-        openQCLookup();
-    }
-    
-    private void insertFromQcTableThisPosition() {
-        addRowDirection = 0;
         openQCLookup();
     }
     
@@ -1161,14 +1128,7 @@ public class WorksheetItemTabUI extends Screen {
                                     manualAnalysisUids = new ArrayList<String>();
 
                                 for (QcLotViewDO qcLotVDO : list) {
-                                    if (addRowDirection == 0) {
-                                        if (manager.item.count() == index)
-                                            itemDO = manager.item.add(index);
-                                        else
-                                            itemDO = manager.item.get(index);
-                                    } else {
-                                        itemDO = manager.item.add(index++);
-                                    }
+                                    itemDO = manager.item.add(index++);
                                     data = manager.analysis.add(itemDO);
                                     data.setAccessionNumber("X." + itemDO.getPosition());
                                     data.setQcLotId(qcLotVDO.getId());
@@ -1527,10 +1487,8 @@ public class WorksheetItemTabUI extends Screen {
         insertAnalysisThisPosition.setEnabled(enable);
         insertAnalysisBelow.setEnabled(enable);
         insertFromWorksheetAbove.setEnabled(enable);
-        insertFromWorksheetThisPosition.setEnabled(enable);
         insertFromWorksheetBelow.setEnabled(enable);
         insertFromQcTableAbove.setEnabled(enable);
-        insertFromQcTableThisPosition.setEnabled(enable);
         insertFromQcTableBelow.setEnabled(enable);
     }
     
