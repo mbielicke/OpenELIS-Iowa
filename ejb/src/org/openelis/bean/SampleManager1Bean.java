@@ -745,6 +745,12 @@ public class SampleManager1Bean {
                 else
                     addSampleInternalNote(sm, data);
         }
+        
+        if (el.contains(SampleManager1.Load.ATTACHMENT)) {
+            setAttachments(sm, null);
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids, Constants.table().SAMPLE))
+                addAttachment(sm, data);
+        }
 
         /*
          * build level 2, everything is based on item ids
@@ -816,7 +822,9 @@ public class SampleManager1Bean {
                               SampleManager1.Load.STORAGE,
                               SampleManager1.Load.NOTE,
                               SampleManager1.Load.ANALYSISUSER,
-                              SampleManager1.Load.RESULT);
+                              SampleManager1.Load.RESULT,
+                              SampleManager1.Load.WORKSHEET,
+                              SampleManager1.Load.ATTACHMENT);
     }
 
     /**
