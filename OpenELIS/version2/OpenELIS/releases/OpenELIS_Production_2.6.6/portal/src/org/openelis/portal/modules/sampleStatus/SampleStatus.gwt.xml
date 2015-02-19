@@ -1,0 +1,18 @@
+<module>
+
+	<replace-with
+		class="org.openelis.portal.modules.sampleStatus.client.SampleStatusUIMobileImpl">
+		<when-type-assignable
+			class="org.openelis.portal.modules.sampleStatus.client.SampleStatusUI" />
+		<when-property-is name="platform" value="phone" />
+	</replace-with>
+
+	<replace-with
+		class="org.openelis.portal.modules.sampleStatus.client.SampleStatusUITabletImpl">
+		<when-type-assignable
+			class="org.openelis.portal.modules.sampleStatus.client.SampleStatusUI" />
+		<when-property-is name="platform" value="tablet" />
+	</replace-with>
+
+
+</module>
