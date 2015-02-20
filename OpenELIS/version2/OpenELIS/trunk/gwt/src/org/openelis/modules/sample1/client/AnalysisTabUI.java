@@ -443,6 +443,20 @@ public class AnalysisTabUI extends Screen {
                                  samplePrep.setEnabled(isState(ADD, UPDATE) && canEdit);
                                  samplePrep.setQueryMode(false);
                              }
+                             
+                             public Object getQuery() {
+                                 /*
+                                  * since this field is not set in query mode,
+                                  * the value doesn't get cleared when
+                                  * StateChangeEvent is fired; it also doesn't
+                                  * get cleared if the tab is not visible,
+                                  * because DataChangeEvent is not fired in that
+                                  * case; this makes sure that the value doesn't
+                                  * get included in the query sent to the
+                                  * back-end
+                                  */
+                                 return null;
+                             }
 
                              public Widget onTab(boolean forward) {
                                  return forward ? startedDate : panel;

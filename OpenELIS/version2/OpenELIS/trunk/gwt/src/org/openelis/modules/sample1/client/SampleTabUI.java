@@ -153,7 +153,7 @@ public class SampleTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : clientReference;
+                                 return forward ? orderId : projectTable;
                              }
                          });
 
@@ -239,7 +239,20 @@ public class SampleTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  collectionTime.setEnabled(canEdit && isState(ADD, UPDATE));
-                                 collectionTime.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Object getQuery() {
+                                 /*
+                                  * since this field is not set in query mode,
+                                  * the value doesn't get cleared when
+                                  * StateChangeEvent is fired; it also doesn't
+                                  * get cleared if the tab is not visible,
+                                  * because DataChangeEvent is not fired in that
+                                  * case; this makes sure that the value doesn't
+                                  * get included in the query sent to the
+                                  * back-end
+                                  */
+                                 return null;
                              }
 
                              public Widget onTab(boolean forward) {
@@ -303,7 +316,7 @@ public class SampleTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumber : status;
+                                 return forward ? organizationTable : status;
                              }
                          });
 
@@ -378,6 +391,10 @@ public class SampleTabUI extends Screen {
                                  }
 
                                  return qds;
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? projectTable : clientReference;
                              }
                          });
 
@@ -565,6 +582,10 @@ public class SampleTabUI extends Screen {
                 }
 
                 return qds;
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? accessionNumber : organizationTable;
             }
         });
 
