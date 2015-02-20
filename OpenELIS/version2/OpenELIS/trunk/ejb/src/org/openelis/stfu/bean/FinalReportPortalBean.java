@@ -78,12 +78,15 @@ public class FinalReportPortalBean {
                           SampleViewMeta.getStatusId() + ", " +
                           SampleViewMeta.getClientReference() + ", " +
                           SampleViewMeta.getReleasedDate() + ", " + SampleViewMeta.getReportToId() +
-                          ", " + SampleViewMeta.getCollector() + ", " +
+                          ", " + SampleViewMeta.getReportTo() + "," +
+                          SampleViewMeta.getCollector() + ", " + SampleViewMeta.getLocation() +
+                          ", " + SampleViewMeta.getLocationCity() + ", " +
                           SampleViewMeta.getProjectId() + ", " + SampleViewMeta.getProject() +
                           ", " + SampleViewMeta.getPwsNumber0() + ", " +
-                          SampleViewMeta.getPatientLastName() + ", " +
-                          SampleViewMeta.getPatientFirstName() + ", " +
-                          SampleViewMeta.getPatientBirthDate());
+                          SampleViewMeta.getPwsName() + ", " + SampleViewMeta.getPatientLastName() +
+                          ", " + SampleViewMeta.getPatientFirstName() + ", " +
+                          SampleViewMeta.getPatientBirthDate() + ", " +
+                          SampleViewMeta.getProvider());
         builder.constructWhere(fields);
         builder.addWhere("(" + clause + ")");
         builder.addWhere(SampleViewMeta.getStatusId() + " !=" + Constants.dictionary().SAMPLE_ERROR);
@@ -99,35 +102,36 @@ public class FinalReportPortalBean {
 
         returnList = new ArrayList<SampleViewVO>();
         for (Object[] result : results) {
-            returnList.add(new SampleViewVO((Integer)result[0],
-                                            (String)result[1],
-                                            (Integer)result[2],
-                                            (Integer)result[3],
-                                            null,
-                                            (Date)result[4],
-                                            (Date)result[5],
-                                            (Integer)result[6],
-                                            (String)result[7],
-                                            (Date)result[8],
-                                            (Integer)result[9],
-                                            null,
-                                            (String)result[10],
-                                            null,
-                                            null,
-                                            (Integer)result[11],
-                                            (String)result[12],
-                                            (String)result[13],
-                                            null,
-                                            null,
-                                            (String)result[14],
-                                            (String)result[15],
-                                            (Date)result[16],
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null));
+            returnList.add(new SampleViewVO((Integer)result[0],// id
+                                            (String)result[1],// domain
+                                            (Integer)result[2],// accession
+                                            (Integer)result[3],// revision
+                                            null,// received
+                                            (Date)result[4],// collected date
+                                            (Date)result[5],// collected time
+                                            (Integer)result[6],// sample status
+                                            (String)result[7],// client ref
+                                            (Date)result[8],// released
+                                            (Integer)result[9],// org id
+                                            (String)result[10],// org name
+                                            (String)result[11],// collector
+                                            (String)result[12],// location
+                                            (String)result[13],// location city
+                                            (Integer)result[14],// project id
+                                            (String)result[15],// project name
+                                            (String)result[16],// number0
+                                            (String)result[17],// pws name
+                                            null,// facility id
+                                            (String)result[18],// patient last
+                                            (String)result[19],// patient first
+                                            (Date)result[20],// patient birth
+                                            (String)result[21],// provider
+                                            null,// analysis id
+                                            null,// analysis revision
+                                            null,// reportable
+                                            null,// analysis status
+                                            null,// test desc
+                                            null));// method desc
         }
         /*
          * push the retrieved list of samples into session so that the system
