@@ -81,19 +81,19 @@ import org.openelis.utils.Auditable;
     			      + " from Project p left join p.scriptlet s where p.name like :name and p.isActive = 'Y' order by p.name")})    			      
 @NamedNativeQueries({
      @NamedNativeQuery(name = "Project.FetchForSampleStatusReport",
-           query = "select p.id p_id, CAST(p.name AS varchar(20)) p_name" +
+           query = "select p.id p_id, CAST(p.name AS varchar(20)) p_name, p.description p_description" +
                    " from sample_organization so, sample_project sp, project p" +
                    " where so.sample_id = sp.sample_id and so.organization_id in (:organizationIds) and so.type_id in (select id from dictionary where system_name in ('org_report_to')) and" +
                    " sp.project_id = p.id and sp.is_permanent = 'Y'" +
                    " UNION " +
-                   "select p.id p_id, CAST(p.name AS varchar(20)) p_name" +
+                   "select p.id p_id, CAST(p.name AS varchar(20)) p_name, p.description p_description" +
                    " from sample_private_well so, sample_project sp, project p" +
                    " where so.sample_id = sp.sample_id and so.organization_id in (:organizationIds) and sp.project_id = p.id and sp.is_permanent = 'Y'"+
                    "order by p_name ",
            resultSetMapping="Project.FetchForSampleStatusReport")}) 
 @SqlResultSetMappings({    
     @SqlResultSetMapping(name="Project.FetchForSampleStatusReport",
-                         columns={@ColumnResult(name="p_id"),  @ColumnResult(name="p_name")})})
+                         columns={@ColumnResult(name="p_id"),  @ColumnResult(name="p_name"), @ColumnResult(name="p_description")})})
 @Entity
 @Table(name = "project")
 @EntityListeners({AuditUtil.class})

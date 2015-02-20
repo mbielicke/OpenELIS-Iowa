@@ -54,9 +54,9 @@ public class SampleViewMeta implements Meta, MetaMap {
                     COLLECTOR = "_sampleView.collector",
                     LOCATION = "_sampleView.location", 
                     LOCATION_CITY = "_sampleView.locationCity",
-                    PROJECT_ID = "_sampleView.projectId",
-                    PROJECT = "_sampleView.projectName", 
-                    PWS_NUMBER0 = "_sampleView.pwsNumber0",
+                    PROJECT_ID = "_sampleView.projectId", 
+                    PROJECT = "_sampleView.projectName",
+                    PWS_NUMBER0 = "_sampleView.pwsNumber0", 
                     PWS_NAME = "_sampleView.pwsName",
                     SDWIS_FACILITY_ID = "_sampleView.sdwisFacilityId",
                     PATIENT_LAST_NAME = "_sampleView.patientLastName",
@@ -64,6 +64,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                     PATIENT_BIRTH_DATE = "_sampleView.patientBirthDate",
                     PATIENT_BIRTH_DATE_FROM = "_display.patientBirthDateFrom",
                     PATIENT_BIRTH_DATE_TO = "_display.patientBirthDateTo",
+                    PROVIDER_NAME = "_sampleView.providerName",
                     ANALYSIS_ID = "_sampleView.analysisId",
                     ANALYSIS_REVISION = "_sampleView.analysisRevision",
                     ANALYSIS_IS_REPORTABLE = "_sampleView.analysisIsReportable",
@@ -105,6 +106,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                                                   PATIENT_BIRTH_DATE,
                                                   PATIENT_BIRTH_DATE_FROM,
                                                   PATIENT_BIRTH_DATE_TO,
+                                                  PROVIDER_NAME,
                                                   ANALYSIS_ID,
                                                   ANALYSIS_REVISION,
                                                   ANALYSIS_IS_REPORTABLE,
@@ -200,7 +202,7 @@ public class SampleViewMeta implements Meta, MetaMap {
     public static String getProjectId() {
         return PROJECT_ID;
     }
-    
+
     public static String getProject() {
         return PROJECT;
     }
@@ -237,6 +239,10 @@ public class SampleViewMeta implements Meta, MetaMap {
         return PATIENT_BIRTH_DATE_TO;
     }
 
+    public static String getProvider() {
+        return PROVIDER_NAME;
+    }
+
     public static String getAnalysisId() {
         return ANALYSIS_ID;
     }
@@ -244,7 +250,7 @@ public class SampleViewMeta implements Meta, MetaMap {
     public static String getAnalysisRevision() {
         return ANALYSIS_REVISION;
     }
-    
+
     public static String getAnalysisIsReportable() {
         return ANALYSIS_IS_REPORTABLE;
     }
