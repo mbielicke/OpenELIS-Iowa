@@ -826,7 +826,7 @@ public class BillingExportBean {
                     sb.append(df.format(birthDate));
                 sb.append("|")
                   .append(DataBaseUtil.toString(gender)).append("|")
-                  .append(multipleUnit).append("|")
+                  .append(DataBaseUtil.toString(multipleUnit)).append("|")
                   .append(DataBaseUtil.toString(streetAddress)).append("|")
                   .append(DataBaseUtil.toString(city)).append("|")
                   .append(DataBaseUtil.toString(state)).append("|")
