@@ -55,4 +55,6 @@
 	
 	<copy file="build/openelismvp.ear" todir="/usr/local/java/wildfly-8.2.0.Final/standalone/deployments" overwrite="true"/>
 	
+	<delete dir="deploylib"/>
+	
 </project>
