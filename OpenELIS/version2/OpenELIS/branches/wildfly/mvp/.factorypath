@@ -1,0 +1,9 @@
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/OpenELIS-UI/openelis-apt.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/tschmidt/.ivy2/cache/com.google.dagger/dagger/jars/dagger-2.0-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/tschmidt/.ivy2/cache/com.google.dagger/dagger-compiler/jars/dagger-compiler-2.0-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/tschmidt/.ivy2/cache/com.google.dagger/dagger-producers/jars/dagger-producers-2.0-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/tschmidt/.ivy2/cache/com.google.guava/guava/bundles/guava-18.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/tschmidt/.ivy2/cache/com.google.auto/auto-common/jars/auto-common-1.0-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>

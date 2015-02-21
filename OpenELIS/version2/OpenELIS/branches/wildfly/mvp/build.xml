@@ -1,0 +1,58 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="OpenELIS-MVP"  basedir=".">
+	
+	<taskdef resource="org/apache/ivy/ant/antlib.xml"
+			         uri="antlib:org.apache.ivy.ant" classpath="/usr/share/java/ivy.jar"/>
+	
+	<mkdir dir="deploylib"/>
+	
+	<ivy:configure file="ivysettings.xml"/>
+	<ivy:retrieve conf="deploy" pattern="deploylib/[artifact]-[revision].[ext]" sync="false"/>
+	
+	<delete file="build/openelismvp.war"/>
+	<war destFile="build/openelismvp.war" baseDir="war">
+		<exclude name="WEB-INF/lib/gwt-servlet.jar"/>
+    </war>
+	
+	<delete file="build/openelismvp.jar" />
+	<copy file="ejb/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />	
+	<jar jarfile="build/openelismvp.jar">
+		<fileset dir="bin">
+			<include name="org/openelis/bean/*.class" />
+			<include name="org/openelis/entity/*.class" />
+			<include name="org/openelis/utils/*.class"/>
+			<include name="ehcache.xml" />
+		</fileset>
+		<fileset dir="ejb/resources/">
+			<include name="META-INF/persistence.xml" />
+			<include name="META-INF/ehcache.xml" />
+		</fileset>
+	</jar>
+	
+	<delete file="build/openelismvp-common.jar" />
+	<jar jarfile="build/openelismvp-common.jar">
+		<fileset dir="bin">
+			<include name="org/openelis/messages/*" />
+			<include name="org/openelis/domain/*.class" />				
+			<include name="org/openelis/meta/*.class" />
+		</fileset>
+	</jar>
+		
+	<delete file="build/openelismvp.ear"/>
+	<copy file="../OpenELIS-UI/ui.jar" todir="./deploylib" overwrite="true" failonerror="false"/>
+	<copy file="war/WEB-INF/lib/gwt-servlet.jar" todir="./deploylib" overwrite="true"/>
+	<ear destfile="build/openelismvp.ear" appxml="ejb/resources/META-INF/application.xml">
+		<fileset dir="build">
+			<include name="openelismvp.jar" />
+		</fileset>
+		<fileset dir="build">
+			<include name="openelismvp.war"/>
+	    </fileset>
+		<fileset dir="build">
+		    <include name="openelismvp-common.jar"/>
+	    </fileset>
+		<zipfileset dir="deploylib" prefix="lib" includes="*.jar"/>
+	</ear>
+	
+	<copy file="build/openelismvp.ear" todir="/usr/local/java/wildfly-8.2.0.Final/standalone/deployments" overwrite="true"/>
+	
+</project>
