@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="dagger"/>
+	<classpathentry kind="src" path="javax.inject"/>
+	<classpathentry kind="src" output="bin" path="shared"/>
+	<classpathentry kind="src" output="bin" path="ejb"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=OpenELIS-MVP&amp;ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=ivysettings.xml&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/tschmidt/Downloads/dagger-2.0-20150212.192445-15-sources.jar"/>
+	<classpathentry kind="lib" path="/home/tschmidt/Downloads/javax.inject-1-sources.jar"/>
+	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/gwt-dnd-3.3.0.jar"/>
+	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/gwt-visualization-noredist.jar"/>
+	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/gwt-ajaxloader.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
