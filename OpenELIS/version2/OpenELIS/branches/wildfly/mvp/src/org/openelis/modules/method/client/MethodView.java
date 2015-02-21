@@ -41,7 +41,7 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     @Meta(MethodMeta.ACTIVE_END)
     @Queryable
     @Validate
-    @Tab({"activeEnd","activeBegin"})
+    @Tab({"name","activeBegin"})
     protected Calendar activeEnd;
 
 	@UiField
@@ -49,7 +49,7 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     @Meta(MethodMeta.NAME)
     @Queryable
     @Validate
-    @Tab({"activeEnd","activeBegin"})
+    @Tab({"description","activeEnd"})
     protected TextBox<String> name;
     
 	@UiField
@@ -57,7 +57,7 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     @Meta(MethodMeta.DESCRIPTION)
     @Queryable
     @Validate
-    @Tab({"activeEnd","activeBegin"})
+    @Tab({"reportingDescription","name"})
     protected TextBox<String> description;
     
 	@UiField
@@ -65,7 +65,7 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     @Meta(MethodMeta.REPORTING_DESCRIPTION)
     @Queryable
     @Validate
-    @Tab({"activeEnd","activeBegin"})
+    @Tab({"isActive","reportingDescription"})
     protected TextBox<String> reportingDescription;
     
 	@UiField
@@ -73,7 +73,7 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     @Meta(MethodMeta.IS_ACTIVE)
     @Queryable
     @Validate
-    @Tab({"activeEnd","activeBegin"})
+    @Tab({"activeBegin","reportingDescription"})
     protected CheckBox                 isActive;
     
 	@UiField
