@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="dagger"/>
-	<classpathentry kind="src" path="javax.inject"/>
 	<classpathentry kind="src" output="bin" path="shared"/>
 	<classpathentry kind="src" output="bin" path="ejb"/>
 	<classpathentry kind="src" path="test"/>

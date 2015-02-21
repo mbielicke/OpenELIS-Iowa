@@ -46,6 +46,9 @@
       <dependency org="org.openelis" name="ui" rev="latest.integration"/>  
       <dependency org="org.openelis" name="security" rev="latest.integration"/>
       -->
+      
+      <dependency org="org.openelis" name="security" rev="latest.integration" conf="compile->default;deploy->default"/>
+      
 	  <dependency org="com.google.dagger" name="dagger" rev="2.0-SNAPSHOT" conf="testing->default" />
 	  <dependency org="com.google.dagger" name="dagger-compiler" rev="2.0-SNAPSHOT" conf="testing->default"/>
       <!-- This is needed for jenkins -->
