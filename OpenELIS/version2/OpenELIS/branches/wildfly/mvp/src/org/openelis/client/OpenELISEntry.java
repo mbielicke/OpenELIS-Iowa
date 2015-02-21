@@ -30,7 +30,11 @@ import static org.openelis.client.Logger.*;
 import java.util.logging.Level;
 
 import org.openelis.client.resources.OpenELISResources;
+import org.openelis.di.AppDI;
+import org.openelis.di.AppModule;
+import org.openelis.di.Dagger_AppDI;
 import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.widget.Browser;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -49,6 +53,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
+	public static Browser browser;
     /**
      * This is the entry point method.
      */
@@ -64,7 +69,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         UIResources.INSTANCE.text().ensureInjected();
         UIResources.INSTANCE.dragDrop().ensureInjected();
         UIResources.INSTANCE.general().ensureInjected();
-        DebugInfo.setDebugIdPrefix("");
+        DebugInfo.setDebugIdPrefix("");        
         
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             public void onUncaughtException(Throwable e) {
@@ -84,7 +89,9 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                         try {
                             Window.enableScrolling(true);
                             RootPanel.get("load").getElement().removeFromParent();
-                            RootLayoutPanel.get().add(new org.openelis.client.OpenELIS().getView());
+                            OpenELIS op = AppDI.INSTANCE.openelis();
+                            RootLayoutPanel.get().add(op.getView());
+                            browser = ((OpenELISViewImpl)op.getView()).browser;
                             SessionTimer.start();
                         } catch (Throwable e) {
                             e.printStackTrace();
