@@ -66,7 +66,6 @@
                 <w:MenuItem description="{msg.animalSampleLoginDescription}" enabled="false" ui:field="animalSampleLogin"
                   display="{msg.animalSampleLogin}" />
                 <w:MenuItem description="{msg.ptSampleLoginDescription}" enabled="false" ui:field="ptSampleLogin" display="{msg.ptSampleLogin}" />
-                <w:MenuItem description="" enabled="false" icon="" ui:field="testSampleManager" display="Test Sample Manager" />
                 <g:HTML>
                   <hr />
                 </g:HTML>

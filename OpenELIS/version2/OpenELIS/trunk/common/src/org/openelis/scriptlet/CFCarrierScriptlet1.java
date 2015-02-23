@@ -154,8 +154,10 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
      * relation and result and whether the sample has any reject QA events
      */
     private void setRisks(SampleSO data, AnalysisViewDO ana) {
-        double inRisk, fnRisk;
+        double initRisk, finalRisk;
+        boolean isDict;
         Integer accession, ethnicityId, famHistId;
+        String value;
         SampleManager1 sm;
         TestManager tm;
         ResultFormatter rf;
@@ -219,25 +221,34 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
         }
 
         try {
-            /*
-             * compute and set the initial and final risks
-             */
             if (carrier.isValid) {
+                /*
+                 * compute and set the initial and final risks; if the computed
+                 * final risk is 0.0, the risk is set as "Unknown"; otherwise
+                 * it's the computed value
+                 */
                 proxy.log(Level.FINE, "Computing initial and final risks", null);
                 tm = (TestManager)data.getCache().get(Constants.uid().getTest(ana.getTestId()));
                 rf = tm.getFormatter();
 
-                inRisk = cfRisk1.computeCarrierInitialRisk(ethnicityId,
+                initRisk = cfRisk1.computeCarrierInitialRisk(ethnicityId,
                                                            famHistId,
                                                            getIntegerResult(carrier.relation));
-                setValue(carrier.initialRisk, cfRisk1.format(inRisk), rf, ana, data);
-                fnRisk = cfRisk1.computeCarrierFinalRisk(ethnicityId,
+                setValue(carrier.initialRisk, cfRisk1.format(initRisk), rf, false, ana, data);
+                finalRisk = cfRisk1.computeCarrierFinalRisk(ethnicityId,
                                                          getIntegerResult(carrier.cftrGene),
-                                                         inRisk);
-                setValue(carrier.finalRisk, cfRisk1.format(fnRisk), rf, ana, data);
+                                                         initRisk);
+                if (finalRisk == 0.0) {
+                    isDict = true;
+                    value = cfRisk1.UNKNOWN.toString();
+                } else {
+                    isDict = false;
+                    value = cfRisk1.format(finalRisk);
+                }
+                setValue(carrier.finalRisk, value, rf, isDict, ana, data);
             } else {
-                setValue(carrier.initialRisk, null, null, ana, data);
-                setValue(carrier.finalRisk, null, null, ana, data);
+                setValue(carrier.initialRisk, null, null, false, ana, data);
+                setValue(carrier.finalRisk, null, null, false, ana, data);
             }
         } catch (Exception e) {
             data.setStatus(Status.FAILED);
@@ -280,12 +291,20 @@ public class CFCarrierScriptlet1 implements ScriptletInt<SampleSO> {
     }
 
     /**
-     * Sets the passed value in the passed result if the value is different from
-     * the result's current value
+     * Sets the passed value in the passed result. The flag isDict means that
+     * the value is a dictionary id and a dictionary record needs to be
+     * obtained, because ResultHelper validates dictionary entries and not ids.
      */
-    private void setValue(ResultViewDO result, String value, ResultFormatter rf,
+    private void setValue(ResultViewDO result, String value, ResultFormatter rf, boolean isDict,
                           AnalysisViewDO ana, SampleSO data) throws Exception {
-        if (ResultHelper.formatValue(result, value, ana.getUnitOfMeasureId(), rf)) {
+        String val;
+
+        if (isDict)
+            val = proxy.getDictionaryById(Integer.valueOf(value)).getEntry();
+        else
+            val = value;
+
+        if (ResultHelper.formatValue(result, val, ana.getUnitOfMeasureId(), rf)) {
             data.addRerun(result.getAnalyteExternalId());
             data.addChangedUid(Constants.uid().getResult(result.getId()));
             proxy.log(Level.FINE,

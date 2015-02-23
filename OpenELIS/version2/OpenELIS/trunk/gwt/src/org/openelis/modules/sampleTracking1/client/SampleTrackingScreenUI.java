@@ -67,6 +67,7 @@ import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
+import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
@@ -191,6 +192,9 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected ClinicalTabUI                              clinicalTab;
+    
+    @UiField(provided = true)
+    protected PTTabUI                                    ptTab;
 
     @UiField(provided = true)
     protected QuickEntryTabUI                            quickEntryTab;
@@ -280,7 +284,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     ATTACHMENT_LEAF = "attachment";
 
     protected enum Tab {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM,
         ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
         ATTACHMENT, BLANK
     };
@@ -316,6 +320,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                                            "ethnicity",
                                            "state",
                                            "country",
+                                           "pt_provider",
                                            "analysis_status",
                                            "type_of_sample",
                                            "source_of_sample",
@@ -338,6 +343,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         sdwisTab = new SDWISTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
+        ptTab = new PTTabUI(this);
         quickEntryTab = new QuickEntryTabUI(this);
         sampleItemTab = new SampleItemTabUI(this);
         analysisTab = new AnalysisTabUI(this);
@@ -612,6 +618,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.neonatal(manager);
                 else if (Constants.domain().CLINICAL.equals(domain))
                     SampleHistoryUtility1.clinical(manager);
+                else if (Constants.domain().PT.equals(domain))
+                    SampleHistoryUtility1.pt(manager);
             }
         });
 
@@ -980,6 +988,31 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
          * screens
          */
         clinicalTab.setCanQuery(true);
+        
+        addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                ptTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                ptTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return ptTab.getQueryFields();
+            }
+
+            public void isValid(Validation validation) {
+                if (isState(QUERY) || (manager != null && manager.getSamplePT() != null))
+                    super.isValid(validation);
+            }
+        });
+
+        /*
+         * querying by this tab is allowed on this screen, but not on all
+         * screens
+         */
+        ptTab.setCanQuery(true);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1327,6 +1360,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                  Tab.PRIVATE_WELL,
                  Tab.SDWIS,
                  Tab.CLINICAL,
+                 Tab.PT,
                  Tab.SAMPLE_ITEM,
                  Tab.ANALYSIS,
                  Tab.AUX_DATA,
@@ -1556,6 +1590,11 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
             domain = Constants.domain().CLINICAL;
             numDomains++ ;
         }
+        
+        if (ptTab.getQueryFields().size() > 0) {
+            domain = Constants.domain().PT;
+            numDomains++ ;
+        }
 
         /*
          * querying by more than one domain is not allowed
@@ -1578,7 +1617,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 if (SampleMeta.getOrderId().equals(f.getKey())) {
                     domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
                                             Constants.domain().SDWIS,
-                                            Constants.domain().PRIVATEWELL);
+                                            Constants.domain().PRIVATEWELL,
+                                            Constants.domain().PT);
                     break;
                 } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
                     domain = getDomainQuery(Constants.domain().CLINICAL,
@@ -2161,6 +2201,7 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
         sdwisTab.setData(manager);
         neonatalTab.setData(manager);
         clinicalTab.setData(manager);
+        ptTab.setData(manager);
         quickEntryTab.setData(manager);
         sampleItemTab.setData(manager);
         analysisTab.setData(manager);
@@ -3326,6 +3367,8 @@ public class SampleTrackingScreenUI extends Screen implements CacheProvider {
                 tabs.add(Tab.NEONATAL);
             else if (Constants.domain().CLINICAL.equals(domain))
                 tabs.add(Tab.CLINICAL);
+            else if (Constants.domain().PT.equals(domain))
+                tabs.add(Tab.PT);
             else if (Constants.domain().QUICKENTRY.equals(domain))
                 tabs.add(Tab.QUICK_ENTRY);
         } else if (SAMPLE_ITEM_LEAF.equals(selection.getType())) {

@@ -39,6 +39,7 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePTDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
@@ -134,6 +135,20 @@ public class SampleHistoryUtility1 {
         hist = new IdNameVO(data.getId(), "");
         HistoryScreen.showHistory(Messages.get().history_sampleClinical(),
                                   Constants.table().SAMPLE_CLINICAL,
+                                  hist);
+    }
+    
+    /**
+     * shows the history of sample pt
+     */
+    public static void pt(SampleManager1 manager) {
+        IdNameVO hist;
+        SamplePTDO data;
+
+        data = manager.getSamplePT();
+        hist = new IdNameVO(data.getId(), "");
+        HistoryScreen.showHistory(Messages.get().history_samplePT(),
+                                  Constants.table().SAMPLE_PT,
                                   hist);
     }
 

@@ -7351,6 +7351,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String history_sampleOrganization();
 
   /**
+   * Translated "History - Sample PT".
+   * 
+   * @return translated "History - Sample PT"
+   */
+  @DefaultMessage("History - Sample PT")
+  @Key("history.samplePT")
+  String history_samplePT();
+
+  /**
    * Translated "History - Private Well".
    * 
    * @return translated "History - Private Well"
@@ -15037,6 +15046,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_providerOrganizationInfo();
 
   /**
+   * Translated "PT".
+   * 
+   * @return translated "PT"
+   */
+  @DefaultMessage("PT")
+  @Key("sample.pt")
+  String sample_pt();
+
+  /**
    * Translated "Sample QA Events".
    * 
    * @return translated "Sample QA Events"
@@ -15748,11 +15766,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleOrganization_reportTo();
 
   /**
-   * Translated "Additional Domain ".
+   * Translated "Additional Domain".
    * 
-   * @return translated "Additional Domain "
+   * @return translated "Additional Domain"
    */
-  @DefaultMessage("Additional Domain ")
+  @DefaultMessage("Additional Domain")
   @Key("samplePT.additionalDomain")
   String samplePT_additionalDomain();
 
@@ -15775,6 +15793,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String samplePT_loginDescription();
 
   /**
+   * Translated "Accession # {0,number,#0}: Provider is required".
+   * 
+   * @return translated "Accession # {0,number,#0}: Provider is required"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Provider is required")
+  @Key("samplePT.providerRequiredException")
+  String samplePT_providerRequiredException(Integer arg0);
+
+  /**
    * Translated "PT Info".
    * 
    * @return translated "PT Info"
@@ -15782,6 +15809,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("PT Info")
   @Key("samplePT.ptInfo")
   String samplePT_ptInfo();
+
+  /**
+   * Translated "Sample PT".
+   * 
+   * @return translated "Sample PT"
+   */
+  @DefaultMessage("Sample PT")
+  @Key("samplePT.samplePT")
+  String samplePT_samplePT();
+
+  /**
+   * Translated "Accession # {0,number,#0}: Series is required".
+   * 
+   * @return translated "Accession # {0,number,#0}: Series is required"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: Series is required")
+  @Key("samplePT.seriesRequiredException")
+  String samplePT_seriesRequiredException(Integer arg0);
 
   /**
    * Translated "Sample Prep".

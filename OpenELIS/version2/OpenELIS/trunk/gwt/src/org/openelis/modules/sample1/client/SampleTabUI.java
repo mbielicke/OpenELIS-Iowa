@@ -977,7 +977,8 @@ public class SampleTabUI extends Screen {
         orderId = null;
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
             Constants.domain().PRIVATEWELL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain)) {
+            Constants.domain().SDWIS.equals(domain) ||
+            Constants.domain().PT.equals(domain)) {
             orderId = DataBaseUtil.toString(manager.getSample().getOrderId());
         } else if (Constants.domain().CLINICAL.equals(domain)) {
             orderId = manager.getSampleClinical().getPaperOrderValidator();
