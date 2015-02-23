@@ -234,7 +234,6 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
             editable = canAddTest(waVDO) &&
                        !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(waVDO.getStatusId()) &&
                        !Constants.dictionary().ANALYSIS_INPREP.equals(waVDO.getStatusId()) &&
-                       !Constants.dictionary().ANALYSIS_RELEASED.equals(waVDO.getStatusId()) &&
                        !Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId());
         }
         return editable;
