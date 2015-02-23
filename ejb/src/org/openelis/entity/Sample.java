@@ -698,10 +698,15 @@ public class Sample implements Auditable, Cloneable {
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleNeonatal>      sampleNeonatal;
 
-    // sample neonatal
+    // sample clinical
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleClinical>      sampleClinical;
+    
+    // sample pt
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
+    private Collection<SamplePT>             samplePT;
 
     // eorder
     @OneToOne(fetch = FetchType.LAZY)
@@ -963,6 +968,14 @@ public class Sample implements Auditable, Cloneable {
 
     public void setSampleClinical(Collection<SampleClinical> sampleClinical) {
         this.sampleClinical = sampleClinical;
+    }
+    
+    public Collection<SamplePT> getSamplePT() {
+        return samplePT;
+    }
+
+    public void setSamplePT(Collection<SamplePT> samplePT) {
+        this.samplePT = samplePT;
     }
 
     public Collection<AuxData> getAuxData() {

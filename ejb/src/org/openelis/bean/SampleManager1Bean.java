@@ -63,6 +63,7 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePTDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
@@ -201,6 +202,9 @@ public class SampleManager1Bean {
     @EJB
     private ScriptletHelperBean          scriptletHelper;
 
+    @EJB
+    private SamplePTBean                 samplePT;
+
     private static final Logger          log = Logger.getLogger("openelis");
 
     /**
@@ -304,6 +308,11 @@ public class SampleManager1Bean {
         for (SampleClinicalViewDO data : sampleClinical.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleClinical(sm, data);
+        }
+
+        for (SamplePTDO data : samplePT.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSamplePT(sm, data);
         }
 
         /*
@@ -530,6 +539,11 @@ public class SampleManager1Bean {
             setSampleClinical(sm, data);
         }
 
+        for (SamplePTDO data : samplePT.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSamplePT(sm, data);
+        }
+
         /*
          * various lists for each sample
          */
@@ -748,7 +762,8 @@ public class SampleManager1Bean {
         
         if (el.contains(SampleManager1.Load.ATTACHMENT)) {
             setAttachments(sm, null);
-            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids, Constants.table().SAMPLE))
+            for (AttachmentItemViewDO data : attachmentItem.fetchByIds(ids,
+                                                                       Constants.table().SAMPLE))
                 addAttachment(sm, data);
         }
 
@@ -1078,6 +1093,8 @@ public class SampleManager1Bean {
                         sampleNeonatal.delete( ((SampleNeonatalViewDO)data));
                     else if (data instanceof SampleClinicalViewDO)
                         sampleClinical.delete( ((SampleClinicalViewDO)data));
+                    else if (data instanceof SamplePTDO)
+                        samplePT.delete( ((SamplePTDO)data));
                     else if (data instanceof SampleOrganizationViewDO)
                         sampleOrganization.delete( ((SampleOrganizationViewDO)data));
                     else if (data instanceof SampleProjectViewDO)
@@ -1115,7 +1132,7 @@ public class SampleManager1Bean {
                  */
                 if (getPostProcessing(sm) == PostProcessing.UNRELEASE) {
                     finalReport.runReportForESave(getSample(sm).getAccessionNumber());
-                    setPostProcessing(sm, null);
+                    setPostProcessing(sm, null);                    
                 }
                 sample.update(getSample(sm));
             }
@@ -1155,6 +1172,13 @@ public class SampleManager1Bean {
                     sampleClinical.add(getSampleClinical(sm));
                 } else {
                     sampleClinical.update(getSampleClinical(sm));
+                }
+            } else if (getSamplePT(sm) != null) {
+                if (getSamplePT(sm).getId() == null) {
+                    getSamplePT(sm).setSampleId(getSample(sm).getId());
+                    samplePT.add(getSamplePT(sm));
+                } else {
+                    samplePT.update(getSamplePT(sm));
                 }
             }
 
@@ -1562,6 +1586,7 @@ public class SampleManager1Bean {
         setSampleSDWIS(qsm, getSampleSDWIS(sm));
         setSampleNeonatal(qsm, getSampleNeonatal(sm));
         setSampleClinical(qsm, getSampleClinical(sm));
+        setSamplePT(qsm, getSamplePT(sm));
 
         return qsm;
     }
@@ -1583,7 +1608,8 @@ public class SampleManager1Bean {
 
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
             Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
-            Constants.domain().SDWIS.equals(data.getDomain()))
+            Constants.domain().SDWIS.equals(data.getDomain()) ||
+            Constants.domain().PT.equals(data.getDomain()))
             return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
         else if (Constants.domain().CLINICAL.equals(data.getDomain()) ||
                  Constants.domain().NEONATAL.equals(data.getDomain()))
@@ -1686,6 +1712,9 @@ public class SampleManager1Bean {
         } else if (getSampleClinical(sm) != null) {
             getSampleClinical(sm).setId(null);
             getSampleClinical(sm).setSampleId(null);
+        } else if (getSamplePT(sm) != null) {
+            getSamplePT(sm).setId(null);
+            getSamplePT(sm).setSampleId(null);
         }
 
         /*
@@ -2045,7 +2074,11 @@ public class SampleManager1Bean {
      * current or passed domain is Quick Entry.
      */
     public SampleManager1 changeDomain(SampleManager1 sm, String domain) throws Exception {
+        boolean hasEOrderId, hasSendoutOrderId;
+        String pov;
         SampleDO data;
+        SampleNeonatalViewDO sn;
+        SampleClinicalViewDO sc;
 
         data = getSample(sm);
         if (data.getDomain().equals(domain))
@@ -2072,34 +2105,72 @@ public class SampleManager1Bean {
             setRemoved(sm, new ArrayList<DataObject>());
 
         /*
-         * delete the existing domain
+         * delete the existing domain; also find out if the sample is linked to
+         * an eorder or send-out order
          */
+        hasEOrderId = false;
+        hasSendoutOrderId = false;
+        pov = null;
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain())) {
             if (getSampleEnvironmental(sm).getId() != null)
                 getRemoved(sm).add(getSampleEnvironmental(sm));
             setSampleEnvironmental(sm, null);
+            hasSendoutOrderId = getSample(sm).getOrderId() != null;
         } else if (Constants.domain().PRIVATEWELL.equals(data.getDomain())) {
             if (getSamplePrivateWell(sm).getId() != null)
                 getRemoved(sm).add(getSamplePrivateWell(sm));
             setSamplePrivateWell(sm, null);
+            hasSendoutOrderId = getSample(sm).getOrderId() != null;
         } else if (Constants.domain().SDWIS.equals(data.getDomain())) {
             if (getSampleSDWIS(sm).getId() != null)
                 getRemoved(sm).add(getSampleSDWIS(sm));
             setSampleSDWIS(sm, null);
+            hasSendoutOrderId = getSample(sm).getOrderId() != null;
         } else if (Constants.domain().NEONATAL.equals(data.getDomain())) {
-            if (getSampleNeonatal(sm).getId() != null)
-                getRemoved(sm).add(getSampleNeonatal(sm));
+            sn = getSampleNeonatal(sm);
+            if (sn.getId() != null)
+                getRemoved(sm).add(sn);
             setSampleNeonatal(sm, null);
+            hasEOrderId = getSample(sm).getOrderId() != null;
+            pov = sn.getPaperOrderValidator();
         } else if (Constants.domain().CLINICAL.equals(data.getDomain())) {
-            if (getSampleClinical(sm).getId() != null)
-                getRemoved(sm).add(getSampleClinical(sm));
+            sc = getSampleClinical(sm);
+            if (sc.getId() != null)
+                getRemoved(sm).add(sc);
             setSampleClinical(sm, null);
+            hasEOrderId = getSample(sm).getOrderId() != null;
+            pov = sc.getPaperOrderValidator();
+        } else if (Constants.domain().PT.equals(data.getDomain())) {
+            if (getSamplePT(sm).getId() != null)
+                getRemoved(sm).add(getSamplePT(sm));
+            setSamplePT(sm, null);
+            hasSendoutOrderId = getSample(sm).getOrderId() != null;
         }
 
         /*
          * change the domain to the passed value and set the defaults
          */
         setDomain(sm, domain);
+
+        /*
+         * if the previous domain used e-orders and the current one uses
+         * send-out orders or vice-versa, blank the order id so that it doesn't
+         * link to the wrong table; copy the paper order validator from the
+         * previous domain to the current one if they both use it
+         */
+        if (hasEOrderId) {
+            if ( (Constants.domain().ENVIRONMENTAL.equals(domain) ||
+                  Constants.domain().PRIVATEWELL.equals(domain) ||
+                  Constants.domain().SDWIS.equals(domain) || Constants.domain().PT.equals(domain)))
+                getSample(sm).setOrderId(null);
+            else if (Constants.domain().NEONATAL.equals(domain))
+                getSampleNeonatal(sm).setPaperOrderValidator(pov);
+            else if (Constants.domain().CLINICAL.equals(domain))
+                getSampleClinical(sm).setPaperOrderValidator(pov);
+        } else if (hasSendoutOrderId &&
+                   (Constants.domain().NEONATAL.equals(domain) || Constants.domain().CLINICAL.equals(domain))) {
+            getSample(sm).setOrderId(null);
+        }
 
         return sm;
     }
@@ -2475,7 +2546,7 @@ public class SampleManager1Bean {
                                           SampleMeta.getAnalysisStatusId(),
                                           action);
         }
-        
+
         sm = analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
 
         return sm;
@@ -2585,6 +2656,12 @@ public class SampleManager1Bean {
             sc.setPatient(new PatientDO());
             setSampleClinical(sm, sc);
             s.setDomain(domain);
+        } else if (Constants.domain().PT.equals(domain)) {
+            SamplePTDO sp;
+
+            sp = new SamplePTDO();
+            setSamplePT(sm, sp);
+            s.setDomain(domain);
         } else {
             throw new InconsistencyException(Messages.get()
                                                      .sample_domainNotValid(s.getAccessionNumber()));
@@ -2632,6 +2709,15 @@ public class SampleManager1Bean {
             (getSampleSDWIS(sm).getId() == null || getSampleSDWIS(sm).isChanged())) {
             try {
                 sampleSDWIS.validate(getSampleSDWIS(sm), accession);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
+
+        if (getSamplePT(sm) != null &&
+            (getSamplePT(sm).getId() == null || getSamplePT(sm).isChanged())) {
+            try {
+                samplePT.validate(getSamplePT(sm), accession);
             } catch (Exception err) {
                 DataBaseUtil.mergeException(e, err);
             }

@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.patient.Patient"/>
     <inherits name="org.openelis.modules.preferences.Preferences"/>    
-    <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
+    <inherits name="org.openelis.modules.PTSampleLogin1.PTSampleLogin1"/>
     <inherits name="org.openelis.modules.pws.PWS"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.qc.QC"/>

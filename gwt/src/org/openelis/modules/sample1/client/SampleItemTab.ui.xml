@@ -53,7 +53,7 @@
               <ui:text from="{msg.sampleItem_containerReference}:" />
             </td>
             <td>
-              <w:TextBox ui:field="containerReference" width="150px" maxLength="20" />
+              <w:TextBox ui:field="containerReference" width="268px" maxLength="40" />
             </td>
           </tr>
           <tr>

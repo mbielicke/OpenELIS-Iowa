@@ -70,7 +70,7 @@ public class OpenELIS extends Screen {
                     sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
-                    ptSampleLogin, testSampleManager, project, provider, organization,
+                    ptSampleLogin, project, provider, organization,
                     worksheetBuilder, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
                     secondaryLabelReport, storage, QC, analyteParameter, internalOrder, vendorOrder,
                     sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,

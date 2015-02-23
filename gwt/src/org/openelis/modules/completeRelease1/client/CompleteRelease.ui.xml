@@ -167,6 +167,16 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
+            <w:TabWidget text="{msg.sample_pt}" tabVisible="false" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <s:PTTabUI ui:field="ptTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
             <w:TabWidget text="{msg.sampleQuickEntry_quickEntry}" tabVisible="false" />
           </w:customHeader>
           <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
