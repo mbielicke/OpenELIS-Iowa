@@ -34,6 +34,7 @@
 			<include name="org/openelis/messages/*" />
 			<include name="org/openelis/domain/*.class" />				
 			<include name="org/openelis/meta/*.class" />
+			<include name="org/openelis/manager/*.class"/>
 		</fileset>
 	</jar>
 		

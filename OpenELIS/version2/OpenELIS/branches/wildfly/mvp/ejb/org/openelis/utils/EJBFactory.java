@@ -190,17 +190,17 @@ public class EJBFactory {
 //        return lookup("OrderRecurrenceBean");
 //    }
 //
-//    public static OrganizationContactBean getOrganizationContact() {
-//        return lookup("OrganizationContactBean");
-//    }
-//
-//    public static OrganizationBean getOrganization() {
-//        return lookup("OrganizationBean");
-//    }
-//
-//    public static OrganizationParameterBean getOrganizationParameter() {
-//        return lookup("OrganizationParameterBean");
-//    }
+    public static OrganizationContactBean getOrganizationContact() {
+        return lookup("OrganizationContactBean");
+    }
+
+    public static OrganizationBean getOrganization() {
+        return lookup("OrganizationBean");
+    }
+
+    public static OrganizationParameterBean getOrganizationParameter() {
+        return lookup("OrganizationParameterBean");
+    }
 //
 //    public static PanelItemBean getPanelItem() {
 //        return lookup("PanelItemBean");

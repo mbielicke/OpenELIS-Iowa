@@ -13,6 +13,7 @@ import org.openelis.ui.annotation.Shortcut;
 import org.openelis.ui.annotation.Tab;
 import org.openelis.ui.annotation.Validate;
 import org.openelis.ui.annotation.View;
+import org.openelis.ui.mvp.Presenter;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AtoZButtons;
 import org.openelis.ui.widget.Button;
@@ -25,8 +26,8 @@ import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.uibinder.client.UiField;
 
-@View(template="Method.ui.xml",presenter="org.openelis.modules.method.client.MethodPresenter")
-public abstract class MethodView extends org.openelis.ui.mvp.View {
+@View(template="Method.ui.xml",presenter=MethodPresenter.class)
+public class MethodView extends org.openelis.ui.mvp.View {
 
 	@UiField
     @Enable({State.ADD,State.UPDATE,State.QUERY})
@@ -132,7 +133,7 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     @UiField
     protected Table atozTable;
     
-    MethodPresenter presenter;
+    Presenter presenter;
     
     public MethodView() { 
     }
@@ -169,4 +170,10 @@ public abstract class MethodView extends org.openelis.ui.mvp.View {
     	activeBegin.setValue(data.getActiveBegin());
     	activeEnd.setValue(data.getActiveEnd());
     }
+
+	@Override
+	public void setPresenter(Presenter presenter) {
+		this.presenter = presenter;
+		
+	}
 }

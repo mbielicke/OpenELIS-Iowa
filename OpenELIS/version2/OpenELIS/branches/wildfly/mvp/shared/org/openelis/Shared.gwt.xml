@@ -3,5 +3,7 @@
   <source path="domain"/>
   <source path="meta"/>
   <source path="messages"/>
+  <source path="manager"/>
+  <source path="exception"/>
   
 </module>

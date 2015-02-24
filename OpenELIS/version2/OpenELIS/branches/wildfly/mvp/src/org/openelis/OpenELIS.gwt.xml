@@ -36,6 +36,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.Shared"/>
     <inherits name="dagger/Dagger"/>
     <inherits name="org.openelis.modules.method.Method"/>
+    <inherits name="org.openelis.modules.organization.Organization"/>
    
     
     <source path="client"/>
