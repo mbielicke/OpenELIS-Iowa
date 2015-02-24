@@ -219,14 +219,14 @@ public class BillingExportBean {
         INS ins;
         DTR charge, credit;
         boolean billSample, outputHeader, cancelled, providerOverride;
-        Integer BILLING_PO_GROUPID, BILLING_INS_GROUPID, BILLING_MISC_ID, BILLING_RUSH_ID, SECTION_ANALYTE_ID,
-                MALE_ID, FEMALE_ID, TYPE_PRELIM_ID, TYPE_DILUTION_ID; 
+        Integer BILLING_PO_GROUPID, BILLING_INS_GROUPID, SECTION_ANALYTE_ID, MALE_ID,
+                FEMALE_ID, TYPE_PRELIM_ID, TYPE_DILUTION_ID;
         Datetime currentDate;
         DictionaryDO dictDO;
         PatientDO patientDO;
         ProviderDO providerDO;
         AnalysisReportFlagsDO flags;
-        ArrayList<Integer> ids;
+        ArrayList<Integer> ids, billingTestIds;
         ArrayList<ResultViewDO> results;
         ArrayList<AnalysisViewDO> analyses;
         HashMap<Integer, AnalysisReportFlagsDO> flagsMap;
@@ -235,7 +235,8 @@ public class BillingExportBean {
         HashSet<Integer> override;
         
         currentDate = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, currentRunDate);
-                                               
+                                    
+        billingTestIds = new ArrayList<Integer>();
         try {
             BILLING_PO_GROUPID = Integer.valueOf(systemVariable.fetchByName("billing_po_auxgroup_id")
                                                                .getValue());
@@ -251,18 +252,10 @@ public class BillingExportBean {
             log.warning("System variable 'billing_ins_auxgroup_id' is not available");
         }
         try {
-            BILLING_MISC_ID = Integer.valueOf(systemVariable.fetchByName("billing_misc_test_id")
-                                                            .getValue());
+            for (String btid : systemVariable.fetchByName("billing_test_ids").getValue().split(","))
+                billingTestIds.add(Integer.valueOf(btid));
         } catch (Exception anyE) {
-            BILLING_MISC_ID = -1;
-            log.warning("System variable 'billing_misc_test_id' is not available");
-        }
-        try {
-            BILLING_RUSH_ID = Integer.valueOf(systemVariable.fetchByName("billing_rush_test_id")
-                                                            .getValue());
-        } catch (Exception anyE) {
-            log.warning("System variable 'billing_rush_test_id' is not available");
-            BILLING_RUSH_ID = -1;
+            log.warning("System variable 'billing_test_ids' is not available");
         }
         try {
             SECTION_ANALYTE_ID = analyte.fetchByExternalId("section", 1).get(0).getId();
@@ -612,8 +605,7 @@ public class BillingExportBean {
                  * contain price information and are billed regardless of QA override or analysis
                  * reportable flag
                  */
-                if (!cancelled && (a.getTestId().equals(BILLING_MISC_ID) ||
-                                   a.getTestId().equals(BILLING_RUSH_ID))) {
+                if (!cancelled && billingTestIds.contains(a.getTestId())) {
                     charge.billedOverride = 0.0;
                     charge.isValid = true;
                     if (resultMap.get(a.getId()) != null) {

@@ -1414,7 +1414,7 @@ public class WorksheetManager1Bean {
                         if (qclsByLoc != null) {
                             if (qclsByLoc.size() > 1) {
                                 uids = new ArrayList<String>();
-                                for (i = 0; i < qclsByLoc.size(); i++)
+                                for (j = 0; j < qclsByLoc.size(); j++)
                                     uids.add(wm.getUid(wrgVDO));
                                 wqcVO.addReagentChoices(qclsByLoc);
                                 wqcVO.addReagentChoiceUids(uids);
@@ -1422,7 +1422,7 @@ public class WorksheetManager1Bean {
                             qclVDO = qclsByLoc.get(0);
                         } else {
                             uids = new ArrayList<String>();
-                            for (i = 0; i < qclVDOs.size(); i++)
+                            for (j = 0; j < qclVDOs.size(); j++)
                                 uids.add(wm.getUid(wrgVDO));
                             wqcVO.addReagentChoices(qclVDOs);
                             wqcVO.addReagentChoiceUids(uids);
