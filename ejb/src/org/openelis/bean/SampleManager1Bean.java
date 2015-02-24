@@ -923,6 +923,8 @@ public class SampleManager1Bean {
         AnalysisReportFlagsDO defaultARF;
         Datetime now;
         HashMap<String, Object> cache;
+        AttachmentItemViewDO atti;
+        ArrayList<AttachmentItemViewDO> attachments;
 
         /*
          * validation needs test, aux group manager and pws DO. Build lists of
@@ -1128,11 +1130,20 @@ public class SampleManager1Bean {
             } else {
                 /*
                  * check to see if the sample or any analysis has been
-                 * unreleased. call final report e-save if they have.
+                 * unreleased. call final report e-save if they have; add the
+                 * attachment created for the final report to the manager
                  */
                 if (getPostProcessing(sm) == PostProcessing.UNRELEASE) {
-                    finalReport.runReportForESave(getSample(sm).getAccessionNumber());
-                    setPostProcessing(sm, null);                    
+                    atti = finalReport.runReportForESave(getSample(sm).getAccessionNumber());
+                    if (atti != null) {
+                        attachments = getAttachments(sm);
+                        if (attachments == null) {
+                            attachments = new ArrayList<AttachmentItemViewDO>();
+                            setAttachments(sm, attachments);
+                        }
+                        attachments.add(atti);
+                    }
+                    setPostProcessing(sm, null);
                 }
                 sample.update(getSample(sm));
             }
