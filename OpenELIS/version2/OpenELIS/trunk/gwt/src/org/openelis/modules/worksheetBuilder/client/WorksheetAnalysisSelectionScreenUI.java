@@ -231,10 +231,14 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
         
         editable = false;
         if (waVDO != null) {
-            editable = canAddTest(waVDO) &&
-                       !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(waVDO.getStatusId()) &&
-                       !Constants.dictionary().ANALYSIS_INPREP.equals(waVDO.getStatusId()) &&
-                       !Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId());
+            if (waVDO.getAnalysisId() != null) {
+                editable = canAddTest(waVDO) &&
+                           !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(waVDO.getStatusId()) &&
+                           !Constants.dictionary().ANALYSIS_INPREP.equals(waVDO.getStatusId()) &&
+                           !Constants.dictionary().ANALYSIS_CANCELLED.equals(waVDO.getStatusId());
+            } else if (waVDO.getQcLotId() != null) {
+                editable = true;
+            }
         }
         return editable;
     }
