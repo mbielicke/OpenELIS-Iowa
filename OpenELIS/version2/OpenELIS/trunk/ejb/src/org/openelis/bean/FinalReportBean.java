@@ -36,6 +36,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
@@ -334,13 +335,16 @@ public class FinalReportBean {
      * Final report for e-save. This method saves a copy of the final report as
      * attachment to the sample. The method is called before un-release of
      * analysis or sample to save a previous copy before changes are committed.
+     * The method returns a DO containing the data for the attachment and
+     * attachment item created for the final report.
      */
-    public void runReportForESave(Integer accession) throws Exception {
+    public AttachmentItemViewDO runReportForESave(Integer accession) throws Exception {
         boolean esave;
         Integer sid;
         String sname, filename;
         ReportStatus status;
         AttachmentDO att;
+        AttachmentItemDO atti;
         FinalReportVO result;
         OrganizationPrint print;
         Datetime timeStamp;
@@ -354,10 +358,10 @@ public class FinalReportBean {
             esave = Boolean.parseBoolean(systemVariable.fetchByName("final_report_esave")
                                                        .getValue());
             if ( !esave)
-                return;
+                return null;
         } catch (Exception e) {
             log.fine("No 'final_report_esave' system variable defined; will not save previous copies");
-            return;
+            return null;
         }
         /*
          * all the esave attachments need to be owned by section "system"
@@ -393,7 +397,7 @@ public class FinalReportBean {
             } else {
                 log.warning("Final report (esave) for accession number " + accession +
                             " has incorrect status,\nmissing information, or has no analysis ready to be printed");
-                return;
+                return null;
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Trying to find a sample", e);
@@ -421,10 +425,19 @@ public class FinalReportBean {
                                                                                           .toString(),
                                                                                     result.getRevision()),
                                     sid);
-        attachmentItem.add(new AttachmentItemDO(0,
-                                                result.getSampleId(),
-                                                Constants.table().SAMPLE,
-                                                att.getId()));
+        atti = attachmentItem.add(new AttachmentItemDO(0,
+                                                       result.getSampleId(),
+                                                       Constants.table().SAMPLE,
+                                                       att.getId()));
+
+        return new AttachmentItemViewDO(atti.getId(),
+                                        atti.getReferenceId(),
+                                        atti.getReferenceTableId(),
+                                        atti.getAttachmentId(),
+                                        att.getCreatedDate().getDate(),
+                                        att.getSectionId(),
+                                        att.getDescription(),
+                                        Messages.get().attachment_sampleDescription(accession));
     }
 
     /**
@@ -842,7 +855,7 @@ public class FinalReportBean {
      * is directed to either a printer or the faxing system.
      */
     public void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
-                       boolean forMailing, ReportStatus status, String printer) throws Exception {
+                      boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
         URL url;
         Path path;
