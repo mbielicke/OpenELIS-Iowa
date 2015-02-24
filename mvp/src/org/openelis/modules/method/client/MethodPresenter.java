@@ -33,12 +33,13 @@ import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import org.openelis.cache.UserCacheService;
-import org.openelis.messages.Messages;
-import org.openelis.messages.OpenELISConstants;
-import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
+import org.openelis.messages.Messages;
+import org.openelis.messages.OpenELISConstants;
 import org.openelis.meta.MethodMeta;
 //import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.ui.annotation.Handler;
@@ -52,16 +53,14 @@ import org.openelis.ui.mvp.Presenter;
 import org.openelis.ui.mvp.View;
 import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.ScreenNavigator;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.WindowInt;
-import org.openelis.ui.screen.State;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MethodPresenter extends Presenter {
@@ -75,15 +74,20 @@ public class MethodPresenter extends Presenter {
     
     private AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
     
-    private MethodViewImpl view;
+    protected MethodViewImpl view;
 
-    public MethodPresenter() throws Exception {
-        userPermission = getUserCacheService().getPermission().getModule("method");
-        if (userPermission == null)
-            throw new PermissionException(getMessages().screenPermException("Method Screen"));
-    	
-        view = new MethodViewImpl(this);
-
+    @Inject
+    public MethodPresenter() {
+    	try {
+    		userPermission = getUserCacheService().getPermission().getModule("method");
+    		if (userPermission == null)
+    			throw new PermissionException(getMessages().screenPermException("Method Screen"));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+        
+        view = new MethodViewImpl();
+        view.setPresenter(this);
         initialize();
         setState(DEFAULT);
         setData(new MethodDO());
@@ -165,37 +169,37 @@ public class MethodPresenter extends Presenter {
     	view.setData(data);
     }
     
-    @Handler(MethodViewImpl.NAME_NAME)
+    @Handler("name")
     public void nameValueChange(ValueChangeEvent<String> event) {
     	data.setName(event.getValue());
     }
     
-    @Handler(MethodViewImpl.DESCRIPTION_NAME)
+    @Handler("description")
     public void descriptionValueChange(ValueChangeEvent<String> event) {
          data.setDescription(event.getValue());
     }
 
-    @Handler(MethodViewImpl.REPORTINGDESCRIPTION_NAME)
+    @Handler("reportingDescription")
     public void reportingValueChange(ValueChangeEvent<String> event) {
          data.setReportingDescription(event.getValue());
     }
 
-    @Handler(MethodViewImpl.ISACTIVE_NAME)
+    @Handler("isActive")
     public void isActiveValueChange(ValueChangeEvent<String> event) {
          data.setIsActive(event.getValue());
     }
 
-    @Handler(MethodViewImpl.ACTIVEBEGIN_NAME)
+    @Handler("activeBegin")
     public void activeBeginValueChange(ValueChangeEvent<Datetime> event) {
          data.setActiveBegin(event.getValue());
     }
 
-    @Handler(MethodViewImpl.ACTIVEEND_NAME)
+    @Handler("activeEnd")
     public void onValueChange(ValueChangeEvent<Datetime> event) {
          data.setActiveEnd(event.getValue());
     }
     
-    @Handler(MethodViewImpl.ATOZBUTTONS_NAME)
+    @Handler("atozButtons")
     public void atozQuery(ClickEvent event) {
         Query query;
         QueryData field;
@@ -210,7 +214,7 @@ public class MethodPresenter extends Presenter {
         nav.setQuery(query);
     }
 
-    @Handler(MethodViewImpl.QUERY_NAME)
+    @Handler("query")
     protected void query(ClickEvent event) {
         setState(QUERY);
         setData(new MethodDO());
@@ -218,17 +222,17 @@ public class MethodPresenter extends Presenter {
         view.name.setFocus(true);
     }
 
-    @Handler(MethodViewImpl.NEXT_NAME)
+    @Handler("next")
     protected void next(ClickEvent event) {
         nav.next();
     }
 
-    @Handler(MethodViewImpl.PREVIOUS_NAME)
+    @Handler("previous")
     protected void previous(ClickEvent event) {
         nav.previous();
     }
 
-    @Handler(MethodViewImpl.ADD_NAME)
+    @Handler("add")
     protected void add(ClickEvent event) {
     	view.setState(ADD);
         MethodDO data = new MethodDO();
@@ -238,7 +242,7 @@ public class MethodPresenter extends Presenter {
         view.name.setFocus(true);
     }
 
-    @Handler(MethodViewImpl.UPDATE_NAME)
+    @Handler("update")
     protected void update(ClickEvent event) {
         if(fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<MethodDO>() {
@@ -260,7 +264,7 @@ public class MethodPresenter extends Presenter {
         getMethodService().fetchForUpdate(data.getId(),fetchForUpdateCall); 
     }
 
-    @Handler(MethodViewImpl.COMMIT_NAME)
+    @Handler("commit")
     protected void commit(ClickEvent event) {
         View.Validation validation;
         
@@ -319,7 +323,7 @@ public class MethodPresenter extends Presenter {
         }
     }
 
-    @Handler(MethodViewImpl.ABORT_NAME)
+    @Handler("abort")
     protected void abort(ClickEvent event) {
         view.finishEditing();
         view.clearErrors();

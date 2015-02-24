@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.openelis.client.OpenELISEntry;
 import org.openelis.client.ScreenBus;
 import org.openelis.client.event.ShowScreenHandler;
+import org.openelis.di.AppDI;
 import org.openelis.messages.Messages;
 import org.openelis.ui.widget.Browser;
 
@@ -16,10 +17,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
+import dagger.Lazy;
+
 public class MethodPoint implements ShowScreenHandler {
 	    
 		@Inject
 		ScreenBus bus; 
+		
+		@Inject
+		Lazy<Browser> lazyBrowser;
 		
 		@Inject
 		public MethodPoint() {
@@ -38,8 +44,8 @@ public class MethodPoint implements ShowScreenHandler {
 	                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
 	                    window.setName(Messages.get().method());
 	                    window.setSize("862px", "432px");
-	                    window.setContent(new MethodPresenter().getView());
-	                    OpenELISEntry.browser.addWindow(window, "method");
+	                    window.setContent(AppDI.INSTANCE.method().getView());
+	                    lazyBrowser.get().addWindow(window, "method");
 	                } catch (Throwable e) {
 	                    remote().log(Level.SEVERE, e.getMessage(), e);
 	                    Window.alert(e.getMessage());

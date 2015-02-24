@@ -20,7 +20,8 @@ public class OpenELIS extends Presenter {
 
 	@Inject
 	public OpenELIS() {
-		view = new OpenELISViewImpl(this);
+		view = new OpenELISViewImpl();
+		view.setPresenter(this);
 		initialize();
 		view.setState(State.DEFAULT);
 	}
