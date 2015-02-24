@@ -2140,6 +2140,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_viewPermException(String arg0);
 
   /**
+   * Translated "Worksheet # {0,number,#0}".
+   * 
+   * @return translated "Worksheet # {0,number,#0}"
+   */
+  @DefaultMessage("Worksheet # {0,number,#0}")
+  @Key("attachment.worksheetDescription")
+  String attachment_worksheetDescription(Integer arg0);
+
+  /**
    * Translated "Attention".
    * 
    * @return translated "Attention"
