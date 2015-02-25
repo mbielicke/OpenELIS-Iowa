@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.annotation.Enable;
+import org.openelis.ui.annotation.Impl;
 import org.openelis.ui.annotation.Meta;
 import org.openelis.ui.annotation.Queryable;
 import org.openelis.ui.annotation.Shortcut;
@@ -39,10 +40,12 @@ public class OrganizationView extends org.openelis.ui.mvp.View {
     protected AtoZButtons atozButtons;
     
 	@UiField
-    protected ContactView contactTab;
+	@Impl(ContactViewImpl.class)
+    protected ContactViewImpl contactTab;
     
 	@UiField
-    protected ParameterView parameterTab;
+	@Impl(ParameterViewImpl.class)
+    protected ParameterViewImpl parameterTab;
     
     @UiField
     protected NotesPanel notesPanel;

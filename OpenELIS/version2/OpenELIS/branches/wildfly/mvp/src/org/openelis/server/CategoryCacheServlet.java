@@ -30,29 +30,25 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.DictionaryCacheBean;
-import org.openelis.cache.DictionaryCacheServiceInt;
-import org.openelis.domain.DictionaryDO;
+import org.openelis.bean.CategoryCacheBean;
+import org.openelis.cache.CategoryCacheServiceInt;
+import org.openelis.domain.CategoryCacheVO;
 import org.openelis.ui.server.RemoteServlet;
 
-@WebServlet("/openelismvp/dictionaryCache")
-public class DictionaryCacheServlet extends RemoteServlet implements DictionaryCacheServiceInt {
-
+@WebServlet("/openelismvp/categoryCache")
+public class CategoryCacheServlet extends RemoteServlet implements CategoryCacheServiceInt {
+    
     private static final long serialVersionUID = 1L;
     
     @EJB
-    DictionaryCacheBean dictionaryCache;
+    CategoryCacheBean categoryCache;
 
-    public DictionaryDO getBySystemName(String systemName) throws Exception {
-        return dictionaryCache.getBySystemName(systemName);
+    public CategoryCacheVO getBySystemName(String systemName) throws Exception {
+        return categoryCache.getBySystemName(systemName);
     }
 
-    public DictionaryDO getById(Integer id) throws Exception {
-        return dictionaryCache.getById(id);
+    public ArrayList<CategoryCacheVO> getBySystemNames(String... systemNames) throws Exception {        
+        return categoryCache.getBySystemNames(systemNames);
     }
 
-    @Override
-    public ArrayList<DictionaryDO> getByIds(ArrayList<Integer> ids) throws Exception {
-        return dictionaryCache.getByIds(ids);
-    }
 }

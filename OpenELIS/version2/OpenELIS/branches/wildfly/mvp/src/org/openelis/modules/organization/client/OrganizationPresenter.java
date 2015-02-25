@@ -79,8 +79,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OrganizationPresenter extends Presenter {
 	
-	@Inject 
-	Browser browser;
+	//@Inject 
+	//Browser browser;
     
     protected OrganizationManager       manager;
     
@@ -210,7 +210,7 @@ public class OrganizationPresenter extends Presenter {
             }
         });
         
-        view.tabPanel.setPopoutBrowser(browser);
+        //view.tabPanel.setPopoutBrowser(browser);
         
         nav = new ScreenNavigator<IdNameVO>(view.atozTable, view.atozNext, view.atozPrev) {
             public void executeQuery(final Query query) {
