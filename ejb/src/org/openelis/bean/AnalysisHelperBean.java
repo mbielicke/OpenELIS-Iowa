@@ -177,13 +177,11 @@ public class AnalysisHelperBean {
         /*
          * find out if this user has permission to add this test
          */
-        if (ts == null || !tm.canAssignThisSection(ts)) {
+        if (!tm.canAssignThisSection(ts))
             e.add(new FormErrorWarning(Messages.get()
                                                .analysis_insufficientPrivilegesAddTestWarning(accession,
                                                                                               t.getName(),
                                                                                               t.getMethodName())));
-        }
-
         ana = new AnalysisViewDO();
         ana.setId(sm.getNextUID());
         ana.setRevision(0);
@@ -291,12 +289,11 @@ public class AnalysisHelperBean {
         if (accession == null)
             accession = 0;
 
-        if (ts == null || !tm.canAssignThisSection(ts)) {
+        if (!tm.canAssignThisSection(ts))
             e.add(new FormErrorWarning(Messages.get()
                                                .analysis_insufficientPrivilegesAddTestWarning(accession,
                                                                                               t.getName(),
-                                                                                              t.getMethodName())));
-        }
+                                                                                              t.getMethodName())));        
 
         if (ts != null) {
             ana.setSectionId(ts.getSectionId());
