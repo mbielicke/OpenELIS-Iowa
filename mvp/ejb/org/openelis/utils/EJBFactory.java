@@ -461,7 +461,7 @@ public class EJBFactory {
         InitialContext ctx;
 
         if (!bean.startsWith("java"))
-            bean = "java:global/openelis/openelis.jar/" + bean;
+            bean = "java:global/openelismvp/openelismvp.jar/" + bean;
 
         try {
             ctx = new InitialContext();

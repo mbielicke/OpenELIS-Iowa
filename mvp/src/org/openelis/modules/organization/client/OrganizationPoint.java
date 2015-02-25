@@ -35,9 +35,9 @@ public class OrganizationPoint implements ShowScreenHandler {
         GWT.runAsync(new RunAsyncCallback() {
             public void onSuccess() {
                 try {
-                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                     window.setName(Messages.get().organization());
-                    window.setSize("20px", "20px");
+                    window.setSize("600px", "450px");
                     window.setContent(AppDI.INSTANCE.organization().view);
                     OpenELISEntry.browser.addWindow(window, "organization");
                 } catch (Throwable e) {

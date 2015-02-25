@@ -10,7 +10,7 @@ import org.openelis.ui.widget.MenuItem;
 import com.google.gwt.uibinder.client.UiField;
 
 
-@org.openelis.ui.annotation.View(template="OpenELIS.ui.xml",presenter=OpenELIS.class)
+@org.openelis.ui.annotation.View(template="OpenELIS.ui.xml",presenter=OpenELISPresenter.class)
 public class OpenELISView extends View {
     
     @UiField
@@ -21,15 +21,16 @@ public class OpenELISView extends View {
     MenuItem method;
     
     @UiField
+    @Enable({State.DEFAULT,State.DISPLAY})
     MenuItem organization;
     
-    OpenELIS presenter;
+    OpenELISPresenter presenter;
     
     public OpenELISView() {
     	
     }
     
     public void setPresenter(Presenter  presenter) {
-    	this.presenter = (OpenELIS)presenter;
+    	this.presenter = (OpenELISPresenter)presenter;
     }
 }

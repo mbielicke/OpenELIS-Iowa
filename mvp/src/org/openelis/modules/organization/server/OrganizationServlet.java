@@ -50,7 +50,7 @@ import org.openelis.modules.organization.client.OrganizationServiceInt;
  * This class provides service for OrganizationManager and
  * OrganizationContactManager.
  */
-@WebServlet("/openelis/organization")
+@WebServlet("/openelismvp/organization")
 public class OrganizationServlet extends RemoteServlet implements OrganizationServiceInt {
 
     private static final long       serialVersionUID = 1L;

@@ -196,7 +196,7 @@
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
-                  <o:ContactView ui:field="contactTab" />
+                  <o:ContactViewImpl ui:field="contactTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>
@@ -207,7 +207,7 @@
               </w:customHeader>
               <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
-                  <o:ParameterView ui:field="parameterTab" />
+                  <o:ParameterViewImpl ui:field="parameterTab" />
                 </g:layer>
               </g:LayoutPanel>
             </w:tab>

@@ -7,6 +7,7 @@ import static org.openelis.ui.screen.State.DISPLAY;
 import org.openelis.domain.MethodDO;
 import org.openelis.meta.MethodMeta;
 import org.openelis.ui.annotation.Enable;
+import org.openelis.ui.annotation.Field;
 import org.openelis.ui.annotation.Meta;
 import org.openelis.ui.annotation.Queryable;
 import org.openelis.ui.annotation.Shortcut;
@@ -29,53 +30,23 @@ import com.google.gwt.uibinder.client.UiField;
 @View(template="Method.ui.xml",presenter=MethodPresenter.class)
 public class MethodView extends org.openelis.ui.mvp.View {
 
-	@UiField
-    @Enable({State.ADD,State.UPDATE,State.QUERY})
-    @Meta(MethodMeta.ACTIVE_BEGIN)
-    @Queryable
-    @Validate
-    @Tab({"activeEnd","isActive"})
+	@Field(meta=MethodMeta.ACTIVE_BEGIN,tab={"activeEnd","isActive"})
     protected Calendar activeBegin;
     
-	@UiField
-    @Enable({State.ADD,State.UPDATE,State.QUERY})
-    @Meta(MethodMeta.ACTIVE_END)
-    @Queryable
-    @Validate
-    @Tab({"name","activeBegin"})
+    @Field(meta=MethodMeta.ACTIVE_END,tab={"name","activeBegin"})
     protected Calendar activeEnd;
 
-	@UiField
-    @Enable({State.ADD,State.UPDATE,State.QUERY})
-    @Meta(MethodMeta.NAME)
-    @Queryable
-    @Validate
-    @Tab({"description","activeEnd"})
+    @Field(meta=MethodMeta.NAME,tab={"description","activeEnd"})
     protected TextBox<String> name;
     
-	@UiField
-    @Enable({State.ADD,State.UPDATE,State.QUERY})
-    @Meta(MethodMeta.DESCRIPTION)
-    @Queryable
-    @Validate
-    @Tab({"reportingDescription","name"})
+	@Field(meta=MethodMeta.DESCRIPTION,tab={"reportingDescription","name"})
     protected TextBox<String> description;
     
-	@UiField
-    @Enable({State.ADD,State.UPDATE,State.QUERY})
-    @Meta(MethodMeta.REPORTING_DESCRIPTION)
-    @Queryable
-    @Validate
-    @Tab({"isActive","reportingDescription"})
+	@Field(meta=MethodMeta.REPORTING_DESCRIPTION,tab={"isActive","reportingDescription"})
     protected TextBox<String> reportingDescription;
     
-	@UiField
-    @Enable({State.ADD,State.UPDATE,State.QUERY})
-    @Meta(MethodMeta.IS_ACTIVE)
-    @Queryable
-    @Validate
-    @Tab({"activeBegin","reportingDescription"})
-    protected CheckBox                 isActive;
+	@Field(meta=MethodMeta.IS_ACTIVE,tab={"activeBegin","reportingDescription"})
+    protected CheckBox isActive;
     
 	@UiField
     @Enable({State.DEFAULT,State.DISPLAY,State.QUERY})
