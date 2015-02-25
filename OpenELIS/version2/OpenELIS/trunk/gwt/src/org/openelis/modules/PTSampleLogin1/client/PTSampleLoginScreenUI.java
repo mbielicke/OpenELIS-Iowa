@@ -3471,8 +3471,10 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
              * otherwise the first project is modified or a new one is created
              * if no project existed
              */
-            if (data == null)
+            if (data == null) {
                 data = manager.project.add();
+                data.setIsPermanent("N");
+            }
 
             data.setProjectId(proj.getId());
             data.setProjectName(proj.getName());
