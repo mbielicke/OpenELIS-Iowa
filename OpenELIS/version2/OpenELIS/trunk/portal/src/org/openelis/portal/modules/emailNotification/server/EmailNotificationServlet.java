@@ -98,6 +98,14 @@ public class EmailNotificationServlet extends RemoteServlet implements EmailNoti
         }
     }
 
+    public ArrayList<OrganizationParameterDO> fetchParametersByOrganizationIds(ArrayList<Integer> ids) throws Exception {
+        try {
+            return organizationParameter.fetchByOrganizationIds(ids);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
             return organization.query(query.getFields(),

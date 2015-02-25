@@ -70,6 +70,20 @@ public class OrganizationParameterBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    public ArrayList<OrganizationParameterDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("OrganizationParameter.FetchByOrganizationIds");
+        query.setParameter("ids", ids);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id,
                                                                             String systemName) throws Exception {
         Query query;
