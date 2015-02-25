@@ -22,20 +22,23 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "OrganizationParameter.FetchByOrganizationId",
-                query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
-                        "p.typeId,p.value)"
-                      + " from OrganizationParameter p where p.organizationId = :id"),
-    @NamedQuery( name = "OrganizationParameter.FetchByOrgIdDictSystemName",
-                query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
-                        "p.typeId,p.value)"
-                      + " from OrganizationParameter p, Dictionary d where p.organizationId = :id and"
-                      +	" p.typeId = d.id and d.systemName = :systemName"),
-    @NamedQuery( name = "OrganizationParameter.FetchByDictionarySystemName",
-                query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
-                        "p.typeId,p.value)"
-                      + " from OrganizationParameter p, Dictionary d where p.typeId = d.id and d.systemName = :systemName")})
-
+               @NamedQuery(name = "OrganizationParameter.FetchByOrganizationId",
+                           query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId,"
+                                   + "p.typeId,p.value)"
+                                   + " from OrganizationParameter p where p.organizationId = :id"),
+               @NamedQuery(name = "OrganizationParameter.FetchByOrganizationIds",
+                           query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId,"
+                                   + "p.typeId,p.value)"
+                                   + " from OrganizationParameter p where p.organizationId in (:ids)"),
+               @NamedQuery(name = "OrganizationParameter.FetchByOrgIdDictSystemName",
+                           query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId,"
+                                   + "p.typeId,p.value)"
+                                   + " from OrganizationParameter p, Dictionary d where p.organizationId = :id and"
+                                   + " p.typeId = d.id and d.systemName = :systemName"),
+               @NamedQuery(name = "OrganizationParameter.FetchByDictionarySystemName",
+                           query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId,"
+                                   + "p.typeId,p.value)"
+                                   + " from OrganizationParameter p, Dictionary d where p.typeId = d.id and d.systemName = :systemName")})
 @Entity
 @Table(name = "organization_parameter")
 @EntityListeners({AuditUtil.class})

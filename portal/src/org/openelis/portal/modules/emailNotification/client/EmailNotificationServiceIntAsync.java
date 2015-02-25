@@ -16,6 +16,9 @@ public interface EmailNotificationServiceIntAsync {
     void fetchParametersByOrganizationId(Integer id,
                                          AsyncCallback<ArrayList<OrganizationParameterDO>> callback);
 
+    void fetchParametersByOrganizationIds(ArrayList<Integer> ids,
+                                          AsyncCallback<ArrayList<OrganizationParameterDO>> callback);
+
     void fetchParametersByDictionarySystemName(String systemName,
                                                AsyncCallback<ArrayList<OrganizationParameterDO>> callback);
 
