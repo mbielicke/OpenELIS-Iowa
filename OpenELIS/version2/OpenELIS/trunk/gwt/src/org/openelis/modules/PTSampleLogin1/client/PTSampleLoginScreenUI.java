@@ -2816,12 +2816,6 @@ public class PTSampleLoginScreenUI extends Screen implements CacheProvider {
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSamplePT().getId() == null && Action_Before.NEW_DOMAIN != action)
-            /*
-             * this is either an uncommitted sample or was a quick-entry sample
-             * before being loaded on the screen
-             */
-            data.addActionBefore(Action_Before.NEW_DOMAIN);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(manager);

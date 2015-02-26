@@ -4299,12 +4299,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSampleNeonatal().getId() == null && Action_Before.NEW_DOMAIN != action)
-            /*
-             * this is either an uncommitted sample or was a quick-entry sample
-             * before being loaded on the screen
-             */
-            data.addActionBefore(Action_Before.NEW_DOMAIN);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(manager);
@@ -4588,13 +4582,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
-                    }
-
-                    public void patientsNotFound() {
-                        /*
-                         * ignore because there's no sample with the accession
-                         * number entered by the user
-                         */
                     }
 
                     public void failure(Throwable e) {
