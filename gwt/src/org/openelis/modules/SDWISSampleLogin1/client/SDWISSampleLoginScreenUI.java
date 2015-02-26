@@ -3124,12 +3124,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSampleSDWIS().getId() == null && Action_Before.NEW_DOMAIN != action)
-            /*
-             * this is either an uncommitted sample or was a quick-entry sample
-             * before being loaded on the screen
-             */
-            data.addActionBefore(Action_Before.NEW_DOMAIN);
         actionAfter = EnumSet.noneOf(Action_After.class);
         data.setChanged(changed);
         data.setUid(uid);

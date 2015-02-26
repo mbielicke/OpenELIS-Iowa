@@ -92,7 +92,6 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
         proxy.log(Level.FINE, "Adding the default note for this domain to the sample");
 
         note = data.getManager().sampleExternalNote.getEditing();
-        note.setIsExternal("Y");
         note.setText(defaultNote.getText());
         data.addChangedUid(Constants.uid().getNote(note.getId()));
     }
