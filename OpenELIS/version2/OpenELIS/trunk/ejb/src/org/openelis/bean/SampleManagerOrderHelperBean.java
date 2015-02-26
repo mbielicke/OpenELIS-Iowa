@@ -73,8 +73,8 @@ import org.openelis.meta.PatientMeta;
 import org.openelis.meta.ProviderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -165,10 +165,10 @@ public class SampleManagerOrderHelperBean {
                                      OrderManager1.Load.SAMPLE_DATA,
                                      OrderManager1.Load.ORGANIZATION);
         if (om == null)
-            throw new FormErrorException(Messages.get().sample_orderIdInvalidException(accession,
+            throw new InconsistencyException(Messages.get().sample_orderIdInvalidException(accession,
                                                                                        orderId));        
         else if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
-            throw new FormErrorException(Messages.get().sample_orderIdInvalidException(accession,
+            throw new InconsistencyException(Messages.get().sample_orderIdInvalidException(accession,
                                                                                        orderId));
 
         data.setOrderId(orderId);
@@ -218,7 +218,12 @@ public class SampleManagerOrderHelperBean {
         if (accession == null)
             accession = 0;
 
-        eobDO = eorderBody.fetchByEOrderId(orderId);        
+        try {
+            eobDO = eorderBody.fetchByEOrderId(orderId);
+        } catch (NotFoundException ex) {
+            throw new InconsistencyException(Messages.get().eorder_noSampleDataException());
+        }
+        
         data.setOrderId(orderId);
 
         dataMap = new HashMap<String, String>();
@@ -228,7 +233,7 @@ public class SampleManagerOrderHelperBean {
         document = XMLUtil.parse(eobDO.getXml());
         eorderBodyElem = (Element) document.getDocumentElement();
         if (!eorderBodyElem.hasChildNodes())
-            throw new Exception("EOrder has no sample data");
+            throw new InconsistencyException(Messages.get().eorder_noSampleDataException());
         
         loadDataMapFromXml(eorderBodyElem, dataMap, testMap, resultMap, externalTermMap);
         

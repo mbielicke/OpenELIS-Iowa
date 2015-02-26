@@ -4696,6 +4696,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String eorder_eorderLookup();
 
   /**
+   * Translated "This order is incomplete. It has no sample information.".
+   * 
+   * @return translated "This order is incomplete. It has no sample information."
+   */
+  @DefaultMessage("This order is incomplete. It has no sample information.")
+  @Key("eorder.noSampleDataException")
+  String eorder_noSampleDataException();
+
+  /**
    * Translated "Order Number".
    * 
    * @return translated "Order Number"

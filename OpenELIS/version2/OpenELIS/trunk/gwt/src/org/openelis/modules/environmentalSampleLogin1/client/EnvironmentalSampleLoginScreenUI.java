@@ -3555,6 +3555,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
+            manager.getSample().setOrderId(null);
             orderId.setValue(null);
             return;
         }
@@ -3607,6 +3608,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                 }
 
                 public void failure(Throwable error) {
+                    manager.getSample().setOrderId(null);
+                    orderId.setValue(null);
                     Window.alert(error.getMessage());
                     logger.log(Level.SEVERE, error.getMessage(), error);
                     clearStatus();

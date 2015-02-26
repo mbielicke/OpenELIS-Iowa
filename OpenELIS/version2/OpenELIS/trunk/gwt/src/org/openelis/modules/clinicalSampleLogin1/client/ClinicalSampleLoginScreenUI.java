@@ -3781,11 +3781,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * screen with the returned manager.
      */
     private void setOrderId(String ordId) {
-        if (ordId == null || ordId.length() == 0)
+        if (DataBaseUtil.isEmpty(ordId)) {
+            manager.getSample().setOrderId(null);
+            manager.getSampleClinical().setPaperOrderValidator(null);
             return;
-
+        }
+        
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
+            manager.getSample().setOrderId(null);
+            manager.getSampleClinical().setPaperOrderValidator(null);
             orderId.setValue(null);
             return;
         }
@@ -3806,24 +3811,39 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                     eorderDO = eorderLookup.getSelectedEOrder();
                     if (eorderDO == null) {
-                        orderId.setValue(getOrderId());
+                        manager.getSample().setOrderId(null);
+                        manager.getSampleClinical().setPaperOrderValidator(null);
+                        orderId.setValue(null);
                         setFocusToNext();
+                        isBusy = false;
                         return;
                     }
 
-                    manager.getSample().setOrderId(eorderDO.getId());
-                    manager.getSampleClinical()
-                           .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
-                    orderId.setValue(eorderDO.getPaperOrderValidator());
                     try {
                         screen.setBusy(Messages.get().fetching());
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
-                        manager = ret.getManager();
-                        setData();
-                        revalidate = true;
-                        screen.fireDataChange();
+                    } catch (Exception e) {
+                        manager.getSample().setOrderId(null);
+                        manager.getSampleClinical().setPaperOrderValidator(null);
+                        orderId.setValue(null);
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
                         screen.clearStatus();
-                        revalidate = false;
+                        setFocusToNext();
+                        isBusy = false;
+                        return;
+                    }
+
+                    manager = ret.getManager();
+                    manager.getSampleClinical()
+                           .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
+                    orderId.setValue(eorderDO.getPaperOrderValidator());
+                    setData();
+                    revalidate = true;
+                    screen.fireDataChange();
+                    screen.clearStatus();
+                    revalidate = false;
+                    try {
 
                         /*
                          * add scriptlets for any newly added tests and aux data
@@ -3852,7 +3872,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
-                        screen.clearStatus();
+                        isBusy = false;
                     }
                     setFocusToNext();
                 }
