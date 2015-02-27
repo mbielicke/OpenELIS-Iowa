@@ -30,28 +30,21 @@ package org.openelis.entity;
  */
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "EOrderLink.FetchByEOrderId",
                            query = "select distinct new org.openelis.domain.EOrderLinkDO(el.id, el.eorderId, el.reference, el.subId, el.name, el.value)"
                                    + " from EOrderLink el where el.eorderId = :eorderId")})
 @Entity
 @Table(name = "eorder_link")
-@EntityListeners({AuditUtil.class})
-public class EOrderLink implements Auditable, Cloneable {
+public class EOrderLink {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,9 +65,6 @@ public class EOrderLink implements Auditable, Cloneable {
 
     @Column(name = "value")
     private String     value;
-
-    @Transient
-    private EOrderLink original;
 
     public Integer getId() {
         return id;
@@ -128,31 +118,5 @@ public class EOrderLink implements Auditable, Cloneable {
     public void setValue(String value) {
         if (DataBaseUtil.isDifferent(value, this.value))
             this.value = value;
-    }
-
-    @Override
-    public void setClone() {
-        try {
-            original = (EOrderLink)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Audit getAudit(Integer activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().EORDER_LINK);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("eorder_id", eorderId, original.eorderId)
-                 .setField("reference", reference, original.reference)
-                 .setField("sub_id", subId, original.subId)
-                 .setField("name", name, original.name);
-
-        return audit;
     }
 }

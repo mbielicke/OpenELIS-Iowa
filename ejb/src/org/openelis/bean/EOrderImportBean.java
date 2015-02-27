@@ -56,7 +56,6 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Stateless
@@ -126,7 +125,7 @@ public class EOrderImportBean {
         EOrderBodyDO eorderBodyDO, prevEOrderBodyDO;
         EOrderLinkDO eorderLinkDO;
         Element orderElem, eorderElem, eorderBodyElem, eorderLinkElem, eorderLinkItemElem,
-                orgElem, prevEOrderBodyElem, testElem;
+                prevEOrderBodyElem;
         NodeList nodes, nodes2;
         String organizationName, placerOrderNum;
 
