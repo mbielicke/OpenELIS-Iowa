@@ -309,6 +309,13 @@ public class BillingExportBean {
             ins.clear();
 
             /*
+             * Exclude PT domain samples from billing as the billing type will
+             * not be accurate for these samples
+             */
+            if (Constants.domain().PT.equals(sm.getSample().getDomain()))
+                continue;
+            
+            /*
              * header information
              */
             hdr.accession = getSample(sm).getAccessionNumber();
