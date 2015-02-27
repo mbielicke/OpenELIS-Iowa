@@ -3680,7 +3680,6 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              */
                             addTestScriptlets();
                             addAuxScriptlets();
-                            runScriptlets(null, null, Action_Before.NEW_DOMAIN);
                             setData();
                             setState(UPDATE);
                             fireDataChange();

@@ -3447,7 +3447,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                              */
                             addTestScriptlets();
                             addAuxScriptlets();
-                            runScriptlets(null, null, Action_Before.NEW_DOMAIN);
                             setData();
                             setState(UPDATE);
                             fireDataChange();
