@@ -4574,7 +4574,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              */
                             addTestScriptlets();
                             addAuxScriptlets();
-                            runScriptlets(null, null, Action_Before.NEW_DOMAIN);
                             setData();
                             setState(UPDATE);
                             fireDataChange();
