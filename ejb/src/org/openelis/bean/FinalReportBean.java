@@ -541,6 +541,12 @@ public class FinalReportBean {
         print = null;
         zero = new Integer(0);
         for (FinalReportVO result : resultList) {
+            /*
+             * Exclude PT domain samples
+             */
+            if (Constants.domain().PT.equals(result.getDomain()))
+                continue;
+            
             lockSucceeded = samLockMap.get(result.getSampleId());
             if (lockSucceeded == null) {
                 try {
