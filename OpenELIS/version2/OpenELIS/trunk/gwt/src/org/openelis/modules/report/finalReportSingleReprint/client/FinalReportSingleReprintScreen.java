@@ -710,8 +710,9 @@ public class FinalReportSingleReprintScreen extends Screen {
     
     private OrganizationParameterDO getOrganizationFax(Integer orgId) {
         OrganizationParameterManager opm;
-        OrganizationParameterDO op;
+        OrganizationParameterDO op, faxOp;
 
+        faxOp = null;
         try {
             /*
              * return the parameter of type "final report fax number" if this 
@@ -720,8 +721,12 @@ public class FinalReportSingleReprintScreen extends Screen {
             opm = OrganizationParameterManager.fetchByOrganizationId(orgId);
             for (int i = 0; i < opm.count(); i++ ) {
                 op = opm.getParameterAt(i);
-                if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId()))
-                    return op;
+                if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId())) {
+                    faxOp = op;
+                    break;
+                } else if (Constants.dictionary().ORG_GENERAL_FAX_NUMBER.equals(op.getTypeId()) && faxOp == null) {
+                    faxOp = op;
+                }
             }
         } catch (NotFoundException ignE) {
             // ignore
@@ -730,7 +735,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             Window.alert(e.getMessage());
         }
 
-        return null;
+        return faxOp;
     }
     
     class FaxVO {

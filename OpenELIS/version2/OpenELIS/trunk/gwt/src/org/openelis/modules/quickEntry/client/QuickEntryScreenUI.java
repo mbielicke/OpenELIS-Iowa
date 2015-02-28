@@ -325,6 +325,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                             }
                             sectionId.setModel(model);
                             sectionId.setValue(defaultSectionId);
+                            sectionId.setEnabled(true);
                         } catch (Exception anyE) {
                             Window.alert(Messages.get().testSectionLoadError());
                             anyE.printStackTrace();
@@ -353,6 +354,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                             }
                             sectionId.setModel(model);
                             sectionId.setValue(defaultSectionId);
+                            sectionId.setEnabled(true);
                         } catch (Exception anyE) {
                             Window.alert(Messages.get().panelSectionLoadError());
                             anyE.printStackTrace();
@@ -360,6 +362,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                     }
                 } else {
                     sectionId.setModel(model);
+                    sectionId.setEnabled(false);
                 }
             }
 
@@ -374,7 +377,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
 
         addScreenHandler(sectionId, SampleMeta.getAnalysisSectionId(), new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
-                sectionId.setEnabled(true);
+                sectionId.setEnabled(sectionId.getModel() != null);
             }            
 
             public Widget onTab(boolean forward) {
