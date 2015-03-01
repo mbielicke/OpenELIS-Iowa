@@ -142,7 +142,7 @@ public class HIVHepCExportBean {
         URL url;
 
         format = new SimpleDateFormat(Messages.get().dateTimePattern());
-        fileFormat = new SimpleDateFormat("yyyyMMddHHmm");
+        fileFormat = new SimpleDateFormat("yyyyMMdd");
 
         /*
          * push status into session so we can query it while the report is
