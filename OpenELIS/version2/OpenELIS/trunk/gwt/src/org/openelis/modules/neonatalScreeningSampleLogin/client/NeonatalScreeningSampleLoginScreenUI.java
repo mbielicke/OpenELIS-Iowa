@@ -2782,7 +2782,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                             setQueryResult(result);
                         }
 
-                        public void patientsNotFound() {
+                        public void notFound() {
                             setQueryResult(null);
                             setState(DEFAULT);
                             setDone(Messages.get().gen_noRecordsFound());
@@ -4076,7 +4076,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         setState(DISPLAY);
                     }
 
-                    public void patientsNotFound() {
+                    public void notFound() {
                         fetchById(null);
                         setDone(Messages.get().gen_noRecordsFound());
                         nav.clearSelection();

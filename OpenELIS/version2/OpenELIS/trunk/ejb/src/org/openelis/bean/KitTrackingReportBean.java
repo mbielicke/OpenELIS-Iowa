@@ -25,12 +25,14 @@
  */
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -70,16 +72,18 @@ import org.openelis.utils.User;
 public class KitTrackingReportBean {
 
     @Resource
-    private SessionContext    ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean  session;
+    private SessionCacheBean    session;
 
     @EJB
-    private SectionBean       section;
+    private SectionBean         section;
 
     @EJB
-    private CategoryCacheBean categoryCache;
+    private CategoryCacheBean   categoryCache;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for a single re-print
@@ -166,6 +170,8 @@ public class KitTrackingReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
+        OutputStream out;
+
         String dir, frDate, tDate, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName;
         /*
          * push status into session so we can query it while the report is
@@ -243,6 +249,7 @@ public class KitTrackingReportBean {
          * start the report
          */
         con = null;
+        out = null;
         try {
             status.setMessage("Initializing report");
 
@@ -270,7 +277,8 @@ public class KitTrackingReportBean {
 
             jexport = new JRXlsExporter();
             path = ReportUtil.createTempFile("kitTracking", ".xls", "upload_stream_directory");
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             jexport.exportReport();
@@ -288,7 +296,14 @@ public class KitTrackingReportBean {
                 if (con != null)
                     con.close();
             } catch (Exception e) {
-                // ignore
+                log.severe("Could not close connection for kit tracking report");
+            }
+
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for kit tracking report");
             }
         }
 

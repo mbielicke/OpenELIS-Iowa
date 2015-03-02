@@ -89,6 +89,7 @@ public class AttachmentImportBean {
             return;
         }
 
+        dirStream = null;
         try {
             /*
              * get the id of the passed section
@@ -111,6 +112,13 @@ public class AttachmentImportBean {
             log.fine("Created " + n + " attachments");
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            try {
+                if (dirStream != null)
+                    dirStream.close();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
 

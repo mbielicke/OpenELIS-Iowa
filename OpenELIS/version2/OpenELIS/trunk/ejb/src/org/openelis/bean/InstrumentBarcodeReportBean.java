@@ -25,12 +25,14 @@
  */
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -64,13 +66,15 @@ import org.openelis.utils.User;
 public class InstrumentBarcodeReportBean {
 
     @Resource
-    private SessionContext    ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean  session;
+    private SessionCacheBean    session;
 
     @EJB
-    private PrinterCacheBean printers;
+    private PrinterCacheBean    printers;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompts
@@ -82,7 +86,9 @@ public class InstrumentBarcodeReportBean {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("WORKSHEET_ID", Prompt.Type.INTEGER).setPrompt(Messages.get().instrumentBarcode_worksheetId()+":")
+            p.add(new Prompt("WORKSHEET_ID", Prompt.Type.INTEGER).setPrompt(Messages.get()
+                                                                                    .instrumentBarcode_worksheetId() +
+                                                                            ":")
                                                                  .setWidth(150)
                                                                  .setRequired(true)
                                                                  .setDefaultValue(null));
@@ -91,14 +97,17 @@ public class InstrumentBarcodeReportBean {
             barcodeType.add(0, new OptionListItem("P", "Position #"));
             barcodeType.add(1, new OptionListItem("L", "Worksheet Lookup"));
 
-            p.add(new Prompt("BARCODE_TYPE", Prompt.Type.ARRAY).setPrompt(Messages.get().instrumentBarcode_barcodeType()+":")
+            p.add(new Prompt("BARCODE_TYPE", Prompt.Type.ARRAY).setPrompt(Messages.get()
+                                                                                  .instrumentBarcode_barcodeType() +
+                                                                          ":")
                                                                .setWidth(150)
                                                                .setOptionList(barcodeType)
                                                                .setMultiSelect(false));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt(Messages.get().gen_printer()+":")
+            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt(Messages.get().gen_printer() +
+                                                                     ":")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
                                                           .setMultiSelect(false)
@@ -164,7 +173,7 @@ public class InstrumentBarcodeReportBean {
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
@@ -191,19 +200,31 @@ public class InstrumentBarcodeReportBean {
 
         return status;
     }
-    
+
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("instrumentBarcode", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close outout stream for instrument barcode report");
+            }
+        }
 
         return path;
     }

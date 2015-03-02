@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -8,6 +9,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -43,40 +45,45 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class ShippingReportBean {
 
     @EJB
-    private SessionCacheBean       session;
+    private SessionCacheBean      session;
 
     @EJB
-    private ShippingBean            shipping;
+    private ShippingBean          shipping;
 
     @EJB
-    private OrderBean               order;
+    private OrderBean             order;
+
+    @EJB
+    private OrderItemBean         orderItem;
+
+    @EJB
+    private RequestformReportBean requestFormReport;
+
+    @EJB
+    private LabelReportBean       labelReport;
+
+    @EJB
+    private DictionaryCacheBean   dictionaryCache;
+
+    @EJB
+    private PrinterCacheBean      printer;
+
+    @EJB
+    private OrganizationBean      organization;
+
+    private static final String   PRN_PREFIX = "print://";
     
-    @EJB
-    private OrderItemBean          orderItem;
-
-    @EJB
-    private RequestformReportBean  requestFormReport;
-
-    @EJB
-    private LabelReportBean        labelReport;
-
-    @EJB
-    private DictionaryCacheBean     dictionaryCache;
-
-    @EJB
-    private PrinterCacheBean        printer;
-    
-    @EJB
-    private OrganizationBean        organization;
-
-    private final static String     PRN_PREFIX = "print://";
+    private static final Logger       log = Logger.getLogger("openelis");
 
     @Resource
-    private SessionContext          ctx;
+    private SessionContext        ctx;
 
     /**
      * Returns the prompt for a single re-print
@@ -94,7 +101,7 @@ public class ShippingReportBean {
             p.add(new Prompt("MANIFEST", Prompt.Type.CHECK).setPrompt("Print Manifest:")
                                                            .setDefaultValue("Y"));
             p.add(new Prompt("SHIPPING_LABEL", Prompt.Type.CHECK).setPrompt("Print Labels:")
-                                                           .setDefaultValue("Y"));
+                                                                 .setDefaultValue("Y"));
             p.add(new Prompt("INSTRUCTION", Prompt.Type.CHECK).setPrompt("Print Instructions:")
                                                               .setDefaultValue("Y"));
             p.add(new Prompt("REQUESTFORM", Prompt.Type.CHECK).setPrompt("Print Request Form:")
@@ -126,9 +133,7 @@ public class ShippingReportBean {
         int numpkg;
         boolean printManifest, printLabel, printReqform, printInstr;
         Integer shippingId, orderId, prevOrderId, methodId;
-        String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel,
-               requestForm, instruction, dir, printstat, itemUri, uriPath, method,
-               costCenter, userName;
+        String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel, requestForm, instruction, dir, printstat, itemUri, uriPath, method, costCenter, userName;
         URL url;
         Path path;
         HashMap<String, Object> jparam;
@@ -140,10 +145,10 @@ public class ShippingReportBean {
         JRExporter jexport;
         ShippingViewDO shipData;
         ArrayList<Integer> orderIds;
-        ArrayList<OrderViewDO> orderList;        
+        ArrayList<OrderViewDO> orderList;
         ArrayList<OrderItemViewDO> itemList;
         AddressDO shipFromAddr, shipToAddr;
-        OrganizationViewDO shipFrom;   
+        OrganizationViewDO shipFrom;
         DictionaryDO labLocDict;
         OrganizationDO shipTo;
         PrintStream ps;
@@ -214,7 +219,7 @@ public class ShippingReportBean {
                 jprint = JasperFillManager.fillReport(jreport, jparam, con);
                 if (ReportUtil.isPrinter(printer))
                     path = export(jprint, null);
-                else 
+                else
                     path = export(jprint, "upload_stream_directory");
 
                 status.setPercentComplete(100);
@@ -238,49 +243,57 @@ public class ShippingReportBean {
                 //
                 // print the barcode labels
                 //
-                if (numpkg > 0) {                    
+                if (numpkg > 0) {
                     labLocDict = dictionaryCache.getById(shipData.getShippedFromId());
-                    
+
                     try {
-                        shipFrom = organization.fetchById(Integer.parseInt(labLocDict.getCode()));                        
+                        shipFrom = organization.fetchById(Integer.parseInt(labLocDict.getCode()));
                     } catch (Exception e) {
-                        throw new InconsistencyException("Illegal ship from id specified in the dictionary for location "+ labLocDict.getEntry());
+                        throw new InconsistencyException("Illegal ship from id specified in the dictionary for location " +
+                                                         labLocDict.getEntry());
                     }
-                                        
+
                     methodId = shipData.getShippedMethodId();
                     method = methodId != null ? dictionaryCache.getById(methodId).getEntry() : "";
-                    
+
                     shipFromAddr = shipFrom.getAddress();
-                    
+
                     shipTo = shipData.getShippedTo();
                     shipToAddr = shipTo.getAddress();
-                    
+
                     orderList = order.fetchByShippingId(shippingId);
                     orderIds = new ArrayList<Integer>();
                     costCenter = null;
                     /*
-                     * find the cost center from the first order that has one defined
-                     * and create a list of the order ids that may be needed later
+                     * find the cost center from the first order that has one
+                     * defined and create a list of the order ids that may be
+                     * needed later
                      */
                     for (OrderViewDO o : orderList) {
                         orderIds.add(o.getId());
                         if (o.getCostCenterId() != null && costCenter == null)
                             costCenter = dictionaryCache.getById(o.getCostCenterId()).getEntry();
                     }
-                    
+
                     path = ReportUtil.createTempFile("shippingAddresslabel", ".txt", null);
                     ps = new PrintStream(Files.newOutputStream(path));
                     for (int i = 0; i < numpkg; i++ ) {
-                        labelReport.shippingAddressLabel(ps, shipFrom.getName(), method, costCenter,
-                                                         shipFromAddr.getMultipleUnit(), "SH" + shippingIdStr,
-                                                         shipFromAddr.getStreetAddress(), shipFromAddr.getCity(),
+                        labelReport.shippingAddressLabel(ps,
+                                                         shipFrom.getName(),
+                                                         method,
+                                                         costCenter,
+                                                         shipFromAddr.getMultipleUnit(),
+                                                         "SH" + shippingIdStr,
+                                                         shipFromAddr.getStreetAddress(),
+                                                         shipFromAddr.getCity(),
                                                          shipFromAddr.getState(),
                                                          shipFromAddr.getZipCode(),
                                                          shipData.getShippedToAttention(),
-                                                         shipTo.getName(), shipToAddr.getMultipleUnit(),
+                                                         shipTo.getName(),
+                                                         shipToAddr.getMultipleUnit(),
                                                          shipToAddr.getStreetAddress(),
                                                          shipToAddr.getCity(),
-                                                         shipToAddr.getState(), 
+                                                         shipToAddr.getState(),
                                                          shipToAddr.getZipCode());
                     }
                     ps.close();
@@ -291,16 +304,16 @@ public class ShippingReportBean {
 
             if (printReqform || printInstr) {
                 uriPath = ReportUtil.getSystemVariableValue("inventory_uri_directory");
-                
+
                 if (orderIds == null) {
                     orderList = order.fetchByShippingId(shippingId);
                     orderIds = new ArrayList<Integer>();
-                    for (OrderViewDO o : orderList) 
-                        orderIds.add(o.getId());                    
+                    for (OrderViewDO o : orderList)
+                        orderIds.add(o.getId());
                 }
-                
+
                 itemList = orderItem.fetchByOrderIds(orderIds);
-                prevOrderId = null;                
+                prevOrderId = null;
                 for (OrderItemViewDO data : itemList) {
                     orderId = data.getOrderId();
                     if ( !orderId.equals(prevOrderId) && printReqform)
@@ -310,7 +323,7 @@ public class ShippingReportBean {
                         runRequestFormReport(orderId, printer);
 
                     if (printInstr) {
-                        
+
                         //
                         // print the file linked to this item if any
                         //
@@ -375,19 +388,31 @@ public class ShippingReportBean {
     private boolean printOption(String option) {
         return DataBaseUtil.trim(option) != null && "Y".equals(option);
     }
-    
+
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("shippingManifest", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("shippingManifest", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for shipping report");
+            }
+        }
 
         return path;
     }

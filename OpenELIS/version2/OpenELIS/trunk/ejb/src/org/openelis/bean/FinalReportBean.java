@@ -1021,8 +1021,8 @@ public class FinalReportBean {
             try {
                 if (out != null)
                     out.close();
-            } catch (Exception e1) {
-                log.severe("Could not close outout stream for final report");
+            } catch (Exception e) {
+                log.severe("Could not close output stream for final report");
             }
         }
         return path;

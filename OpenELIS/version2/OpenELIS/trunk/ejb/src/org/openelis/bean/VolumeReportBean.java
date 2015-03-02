@@ -1,30 +1,31 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +33,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -61,23 +63,27 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class VolumeReportBean {
 
     @Resource
-    private SessionContext    ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean session;
+    private SessionCacheBean    session;
 
     @EJB
-    private SectionBean      section;
+    private SectionBean         section;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for a single re-print
      */
-    public ArrayList<Prompt> getPrompts() throws Exception {       
+    public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<Prompt> p;
 
         try {
@@ -106,7 +112,6 @@ public class VolumeReportBean {
                                                           .setOptionList(getSections())
                                                           .setMultiSelect(true));
 
-            
             return p;
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,6 +132,7 @@ public class VolumeReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
+        OutputStream out;
         String frDate, tDate, fromDate, toDate, section, userName;
         fromDate = toDate = null;
         /*
@@ -145,7 +151,7 @@ public class VolumeReportBean {
 
         frDate = ReportUtil.getSingleParameter(param, "FROM");
         tDate = ReportUtil.getSingleParameter(param, "TO");
-        section = ReportUtil.getListParameter(param, "SECTION");        
+        section = ReportUtil.getListParameter(param, "SECTION");
 
         if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
             throw new InconsistencyException("You must specify From Date and To Date for this report");
@@ -166,6 +172,7 @@ public class VolumeReportBean {
          * start the report
          */
         con = null;
+        out = null;
         try {
             status.setMessage("Initializing report");
 
@@ -184,9 +191,10 @@ public class VolumeReportBean {
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
-           
+
             jexport = new JRXlsExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setMessage("Outputing report").setPercentComplete(20);
@@ -194,10 +202,10 @@ public class VolumeReportBean {
             jexport.exportReport();
 
             status.setPercentComplete(100);
-            
+
             status.setMessage(path.getFileName().toString())
                   .setPath(path.toString())
-                  .setStatus(ReportStatus.Status.SAVED);           
+                  .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -206,7 +214,14 @@ public class VolumeReportBean {
                 if (con != null)
                     con.close();
             } catch (Exception e) {
-                // ignore
+                log.severe("Could not close connection volume report");
+            }
+            
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for volume report");
             }
         }
 
