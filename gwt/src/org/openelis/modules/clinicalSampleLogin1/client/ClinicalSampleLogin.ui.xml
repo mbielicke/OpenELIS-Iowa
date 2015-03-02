@@ -275,7 +275,7 @@
                       </td>
                       <td>
                         <w:AutoComplete ui:field="providerLastName" width="95px"
-                          dropWidth="520px" case="UPPER"
+                          dropWidth="520px" dropHeight="400px" case="UPPER"
                         >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">

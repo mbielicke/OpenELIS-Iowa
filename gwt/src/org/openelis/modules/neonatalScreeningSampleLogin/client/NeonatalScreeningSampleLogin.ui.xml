@@ -501,7 +501,9 @@
                         <ui:text from="{msg.provider_lf}:" />
                       </td>
                       <td>
-                        <w:AutoComplete ui:field="providerLastName" width="130" case="UPPER">
+                        <w:AutoComplete ui:field="providerLastName" width="130px"
+                          dropWidth="520px" dropHeight="400px" case="UPPER"
+                        >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
                               <t:Column width="150" label="{msg.gen_lastName}">

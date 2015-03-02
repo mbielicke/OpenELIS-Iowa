@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -73,6 +75,8 @@ public class TurnaroundStatisticReportBean {
     private AnalysisQAEventBean     analysisQAEvent;
 
     private static final SampleMeta meta = new SampleMeta();
+    
+    private static final Logger       log = Logger.getLogger("openelis");
 
     public TurnAroundReportViewVO fetchForTurnaroundStatistic(ArrayList<QueryData> paramList) throws Exception {
         int i;
@@ -126,9 +130,9 @@ public class TurnaroundStatisticReportBean {
                 ("EXCLUDE_PT").equals(paramList.get(i).getKey())) {
                 paramList.remove(i);
                 if (i > 0)
-                    i--;
+                    i-- ;
             } else {
-                i++;
+                i++ ;
             }
         }
 
@@ -174,7 +178,7 @@ public class TurnaroundStatisticReportBean {
                  */
                 resultList.remove(i);
             } catch (NotFoundException exc) {
-                i++;
+                i++ ;
             }
         }
 
@@ -206,7 +210,7 @@ public class TurnaroundStatisticReportBean {
                           SampleMeta.getAnalysisAvailableDate() + "," +
                           SampleMeta.getAnalysisCompletedDate() + "," +
                           SampleMeta.getAnalysisStartedDate() + "," + SampleMeta.getId());
-//        builder.addWhere(SampleMeta.getAnalysisTestIsActive() + "=" + "'Y'");
+        // builder.addWhere(SampleMeta.getAnalysisTestIsActive() + "=" + "'Y'");
         builder.addWhere(SampleMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleMeta.getAnalysisTestMethodId() + "=" +
@@ -616,7 +620,7 @@ public class TurnaroundStatisticReportBean {
         map = new HashMap<String, ArrayList<Value>>();
         for (Value value : values) {
             key = DataBaseUtil.concatWithSeparator(value.getTest(), ", ", value.getMethod());
-            if (!map.containsKey(key)) {
+            if ( !map.containsKey(key)) {
                 valueList = new ArrayList<Value>();
                 map.put(key, valueList);
             } else {
@@ -643,11 +647,11 @@ public class TurnaroundStatisticReportBean {
         jparam.put("USER_NAME", userName);
 
         status.setMessage("Outputing report").setPercentComplete(20);
-        
+
         jprint = JasperFillManager.fillReport(jreport, jparam, ds);
         if (ReportUtil.isPrinter(printer))
             path = export(jprint, null);
-        else 
+        else
             path = export(jprint, "upload_stream_directory");
 
         status.setPercentComplete(100);
@@ -708,7 +712,7 @@ public class TurnaroundStatisticReportBean {
                          * considered in the number tested
                          */
                         if ("Y".equals(plotValue.getIsPlot())) {
-                            stat.setNumTested(++count);
+                            stat.setNumTested( ++count);
                             stat.setSum(statValue + stat.getSum());
                             min = stat.getMin();
                             stat.setMin(statValue < min ? statValue : min);
@@ -785,16 +789,29 @@ public class TurnaroundStatisticReportBean {
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("turnaroundstatisticreport", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("turnaroundstatisticreport",
+                                             ".pdf",
+                                             systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for turnaround statistics report");
+            }
+        }
         return path;
     }
-    
+
     class MyComparator implements Comparator<Value> {
         public int compare(Value v1, Value v2) {
             return (v1.getTest() + v1.getMethod()).compareTo(v2.getTest() + v2.getMethod());

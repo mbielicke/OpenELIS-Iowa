@@ -154,7 +154,7 @@
             <td colspan="3">
               <g:HorizontalPanel>
                 <w:AutoComplete ui:field="providerLastName" width="112px" dropWidth="520px"
-                  case="UPPER"
+                  dropHeight="400px" case="UPPER"
                 >
                   <w:popup>
                     <t:Table visibleRows="10" header="true">

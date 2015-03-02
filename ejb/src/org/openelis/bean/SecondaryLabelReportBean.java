@@ -258,15 +258,13 @@ public class SecondaryLabelReportBean {
             pat = getSampleNeonatal(sm).getPatient();
 
         accession = getSample(sm).getAccessionNumber();
-        if (pat == null) {
-            e.add(new InconsistencyException(Messages.get()
-                                                     .secondaryLabel_noPatientOnSampleException(accession,
-                                                                                                t.getName(),
-                                                                                                t.getMethodName())));
-            return;
-        }
+        if (pat != null)
+            patientName = DataBaseUtil.concatWithSeparator(pat.getLastName(),
+                                                           ", ",
+                                                           pat.getFirstName());
+        else
+            patientName = "";
 
-        patientName = DataBaseUtil.concatWithSeparator(pat.getLastName(), ", ", pat.getFirstName());
         received = ReportUtil.toString(getSample(sm).getReceivedDate(), Messages.get()
                                                                                 .dateTimePattern());
 

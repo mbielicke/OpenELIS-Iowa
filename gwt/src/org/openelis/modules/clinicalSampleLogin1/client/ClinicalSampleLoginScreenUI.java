@@ -2065,7 +2065,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                             setQueryResult(result);
                         }
 
-                        public void patientsNotFound() {
+                        public void notFound() {
                             setQueryResult(null);
                             setState(DEFAULT);
                             setDone(Messages.get().gen_noRecordsFound());

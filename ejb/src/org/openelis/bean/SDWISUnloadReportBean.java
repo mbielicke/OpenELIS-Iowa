@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -100,34 +101,36 @@ public class SDWISUnloadReportBean {
 
     @EJB
     AnalysisQAEventBean                        analysisQA;
-    
+
     @EJB
     AnalyteBean                                analyte;
-    
+
     @EJB
     AuxDataBean                                auxData;
-    
+
     @EJB
     DictionaryCacheBean                        dictionaryCache;
-    
+
     @EJB
     ResultBean                                 result;
-    
+
     @EJB
     SampleBean                                 sample;
-    
+
     @EJB
     SampleQAEventBean                          sampleQA;
-    
+
     @EJB
     SampleSDWISBean                            sampleSdwis;
-    
+
     @EJB
     SectionCacheBean                           sectionCache;
 
     private static HashMap<String, String>     methodCodes, contaminantIds;
 
     private ArrayList<HashMap<String, Object>> statusList;
+
+    private static final Logger                log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -238,6 +241,7 @@ public class SDWISUnloadReportBean {
         endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
+        out = null;
         try {
             temp = ReportUtil.createTempFile("sdwisUnload", ".lrr", "upload_stream_directory");
             stat = ReportUtil.createTempFile("sdwisUnloadStatus", ".pdf", null);
@@ -313,7 +317,7 @@ public class SDWISUnloadReportBean {
                     }
 
                     if (sampleOverride) {
-                        if (!Constants.dictionary().SDWIS_CATEGORY_BACTERIAL.equals(ssVDO.getSampleCategoryId())) {
+                        if ( !Constants.dictionary().SDWIS_CATEGORY_BACTERIAL.equals(ssVDO.getSampleCategoryId())) {
                             addStatusRow(ssVDO.getPwsNumber0(),
                                          sDO.getAccessionNumber(),
                                          "Warning: Sample has a Result Override QAEvent and will be Skipped!");
@@ -358,7 +362,7 @@ public class SDWISUnloadReportBean {
 
                             secVDO = sectionCache.getById(surVO.getSectionId());
                             if (secVDO != null) {
-                                if (!secVDO.getName().endsWith(location)) {
+                                if ( !secVDO.getName().endsWith(location)) {
                                     location = secVDO.getName().substring(secVDO.getName()
                                                                                 .indexOf("-"));
 
@@ -368,12 +372,12 @@ public class SDWISUnloadReportBean {
                                                    location,
                                                    sampleOverride,
                                                    sampleCounts);
-                                    if (!sampleOverride)
+                                    if ( !sampleOverride)
                                         addStatusRow(ssVDO.getPwsNumber0(),
                                                      sDO.getAccessionNumber(),
                                                      "Generated");
                                 }
-                                if (!sampleOverride)
+                                if ( !sampleOverride)
                                     writeResultRows(writer, sDO, ssVDO, surVO);
                             }
                         }
@@ -385,10 +389,25 @@ public class SDWISUnloadReportBean {
             }
 
             writeTrailerRow(writer, sampleCounts.getTotal());
+        } finally {
+            try {
+                if (writer != null)
+                    writer.close();
+            } catch (Exception e) {
+                log.severe("Could not close print writer for sdwis unload report");
+            }
+            
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for sdwis unload report");
+            }
+        }
 
-            writer.close();
-            out.close();
-
+        writer = null;
+        out = null;
+        try {
             /*
              * Print the status report
              */
@@ -405,7 +424,8 @@ public class SDWISUnloadReportBean {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, sds);
             jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(stat));
+            out = Files.newOutputStream(stat);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setPercentComplete(90);
@@ -421,9 +441,9 @@ public class SDWISUnloadReportBean {
                   .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             e.printStackTrace();
-            writer.close();
             try {
-                out.close();
+                if (out != null)
+                    out.close();
             } catch (IOException ioE) {
                 ioE.printStackTrace();
                 throw new Exception("Error finalizing output file.");
@@ -622,7 +642,7 @@ public class SDWISUnloadReportBean {
            .append(getPaddedString(totalChlorine, 5))
            // col 171-175
            .append(getPaddedString(compIndicator, 1)); // col 176
-        
+
         if (compLabNumber != null && compLabNumber.length() > 0) // col 177-196
             row.append(getPaddedString("OE" + compLabNumber, 20));
         else
@@ -730,7 +750,7 @@ public class SDWISUnloadReportBean {
         while (rowIter.hasNext()) {
             resultRow = rowIter.next();
             rVDO = resultRow.get(0);
-            if (!"Y".equals(rVDO.getIsReportable()))
+            if ( !"Y".equals(rVDO.getIsReportable()))
                 continue;
 
             if (contaminantIds.get(rVDO.getAnalyte()) == null) {
@@ -782,7 +802,7 @@ public class SDWISUnloadReportBean {
                                 rVDO.setValue(rVDO.getValue().substring(0,
                                                                         rVDO.getValue()
                                                                             .indexOf(".")));
-                            if (!rVDO.getValue().startsWith("<"))
+                            if ( !rVDO.getValue().startsWith("<"))
                                 rowData.put("count", rVDO.getValue());
                         }
                     }
@@ -834,7 +854,7 @@ public class SDWISUnloadReportBean {
             }
         }
 
-        for (i = 0; i < resultData.size(); i++) {
+        for (i = 0; i < resultData.size(); i++ ) {
             rowData = resultData.get(i);
 
             row = new StringBuilder();

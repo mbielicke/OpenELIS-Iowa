@@ -25,12 +25,14 @@
  */
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -66,13 +68,15 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class WorksheetPrintReportBean {
 
     @Resource
-    private SessionContext                     ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean                   session;
+    private SessionCacheBean    session;
 
     @EJB
-    private PrinterCacheBean                   printers;
+    private PrinterCacheBean    printers;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for a single re-print
@@ -163,9 +167,9 @@ public class WorksheetPrintReportBean {
         con = null;
         try {
             status.setMessage("Initializing report");
-            
+
             con = ReportUtil.getConnection(ctx);
-            
+
             userName = User.getName(ctx);
 
             jparam = new HashMap<String, Object>();
@@ -181,7 +185,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
-            
+
                 case "6x10":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 60);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide6x10.jasper");
@@ -190,7 +194,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
-            
+
                 case "6x12":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 72);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide6x12.jasper");
@@ -199,7 +203,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
-            
+
                 case "8x4Arbo":
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide8x4Arbo.jasper");
                     dir = ReportUtil.getResourcePath(url);
@@ -208,7 +212,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
-            
+
                 case "96H":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 96);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plate96Horizontal.jasper");
@@ -217,7 +221,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
-            
+
                 case "96V":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 96);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plate96Vertical.jasper");
@@ -226,7 +230,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
-            
+
                 case "LLS":
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/lineListSingleLine.jasper");
                     dir = ReportUtil.getResourcePath(url);
@@ -236,7 +240,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
-            
+
                 case "LLM":
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/lineListMultiLine.jasper");
                     dir = ReportUtil.getResourcePath(url);
@@ -246,7 +250,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, con);
                     break;
-                    
+
                 case "QFTG":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 36);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
@@ -255,7 +259,7 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
-            
+
                 case "WNV":
                     dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 15);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateWNV.jasper");
@@ -264,14 +268,14 @@ public class WorksheetPrintReportBean {
                     jreport = (JasperReport)JRLoader.loadObject(url);
                     jprint = JasperFillManager.fillReport(jreport, jparam, dDS);
                     break;
-            
+
                 default:
                     throw new InconsistencyException("An invalid format was specified for this report");
             }
-            
+
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
@@ -305,13 +309,24 @@ public class WorksheetPrintReportBean {
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("worksheetPrint", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("worksheetPrint", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for worksheet print report");
+            }
+        }
         return path;
     }
 }

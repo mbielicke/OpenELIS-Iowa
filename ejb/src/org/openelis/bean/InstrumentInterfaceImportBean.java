@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -209,20 +210,30 @@ public class InstrumentInterfaceImportBean {
                 name = entry.getFileName().toString();
                 errFiles.add(name.substring(0, name.length() - 4));
             }
-            stream.close();
+        } finally {
+            try {
+                if (stream != null)
+                    stream.close();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
 
+        stream = null;
+        try {
             stream = Files.newDirectoryStream(dir, "*.csv");
             for (Path entry: stream) {
                 name = entry.getFileName().toString();
                 if (!errFiles.contains(name.substring(0, name.length() - 4)))
                     files.add(entry);
             }
-            stream.close();
-        } catch (DirectoryIteratorException ex) {
-            if (stream != null)
-                stream.close();
-            // I/O error encounted during the iteration, the cause is an IOException
-            throw ex.getCause();
+        } finally {
+            try {
+                if (stream != null)
+                    stream.close();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
         return files;
     }
@@ -233,14 +244,21 @@ public class InstrumentInterfaceImportBean {
         
         fullName = file.getFileName().toString();
         name = fullName.substring(0,  fullName.length() - 4);
+        writer = null;
         try {
             writer = new PrintWriter(Files.newOutputStream(file.resolveSibling(Paths.get(name+".err"))));
             writer.println(error);
             writer.flush();
-            writer.close();
         } catch (IOException ioE) {
             log.severe("Instrument Interface Import ("+fullName+"): "+error);
             log.severe(ioE.getMessage());
+        } finally {
+            try {
+                if (writer != null)
+                    writer.close();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
     
