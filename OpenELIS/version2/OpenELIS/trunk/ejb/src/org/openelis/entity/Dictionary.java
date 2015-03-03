@@ -241,7 +241,9 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select scriptlet_id as DICTIONARY_ID from aux_field where scriptlet_id = :id "+
                           "UNION " +
-                          "select scriptlet_id as DICTIONARY_ID from test_worksheet where scriptlet_id = :id ",
+                          "select scriptlet_id as DICTIONARY_ID from test_worksheet where scriptlet_id = :id "+
+                          "UNION " +
+                          "select pt_provider_id as DICTIONARY_ID from sample_pt where pt_provider_id = :id ",
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
                               query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
