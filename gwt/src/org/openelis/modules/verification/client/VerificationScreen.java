@@ -129,7 +129,7 @@ public class VerificationScreen extends Screen {
                 }
 
                 for (i = 0; i < manager.getSampleItems().count(); i++ ) {
-                    if (manager.getSampleItems().getAnalysisAt(0).count() > 0)
+                    if (manager.getSampleItems().getAnalysisAt(i).count() > 0)
                         break;
                 }
                 if (i >= manager.getSampleItems().count()) {

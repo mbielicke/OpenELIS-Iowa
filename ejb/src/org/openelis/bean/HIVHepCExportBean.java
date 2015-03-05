@@ -61,7 +61,7 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 @Stateless
@@ -94,13 +94,13 @@ public class HIVHepCExportBean {
             p.add(new Prompt("BEGIN_RELEASED", Prompt.Type.DATETIME).setPrompt("Begin Released:")
                                                                     .setWidth(130)
                                                                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
-                                                                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+                                                                    .setDatetimeEndCode(Prompt.Datetime.SECOND)
                                                                     .setRequired(true));
 
             p.add(new Prompt("END_RELEASED", Prompt.Type.DATETIME).setPrompt("End Released:")
                                                                   .setWidth(130)
                                                                   .setDatetimeStartCode(Prompt.Datetime.YEAR)
-                                                                  .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+                                                                  .setDatetimeEndCode(Prompt.Datetime.SECOND)
                                                                   .setRequired(true));
 
             return p;
@@ -141,7 +141,7 @@ public class HIVHepCExportBean {
         String analyteIds, dir, exportDirectory;
         URL url;
 
-        format = new SimpleDateFormat(Messages.get().dateTimePattern());
+        format = new SimpleDateFormat(Messages.get().dateTimeSecondPattern());
         fileFormat = new SimpleDateFormat("yyyyMMdd");
 
         /*
@@ -162,8 +162,6 @@ public class HIVHepCExportBean {
             endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
         }
 
-//        beginReleased = format.parse("2014-01-01 00:00");
-//        endReleased = format.parse("2014-12-31 23:59");
         if (beginReleased == null || endReleased == null) {
             /*
              * take all the released specimens between yesterday at 5:01 pm to 
@@ -172,12 +170,14 @@ public class HIVHepCExportBean {
             fromDate = Calendar.getInstance();
             fromDate.set(Calendar.HOUR_OF_DAY, 17);
             fromDate.set(Calendar.MINUTE, 01);
+            fromDate.set(Calendar.SECOND, 00);
             fromDate.add(Calendar.DAY_OF_MONTH, -1);
             beginReleased = fromDate.getTime();
 
             toDate = Calendar.getInstance();
             toDate.set(Calendar.HOUR_OF_DAY, 17);
             toDate.set(Calendar.MINUTE, 00);
+            toDate.set(Calendar.SECOND, 00);
             endReleased = toDate.getTime();
         }
 
@@ -190,17 +190,17 @@ public class HIVHepCExportBean {
         }
 
         try {
-            tmp = ReportUtil.createTempFile("hivHepCExport", ".pdf", null);
-        } catch (Exception anyE) {
-            log.log(Level.SEVERE, "Could not open temp file for writing.");
-            throw new Exception("Could not open temp file for writing.");
-        }
-
-        try {
             exportDirectory = systemVariable.fetchByName("hiv_hepc_transfer_directory").getValue();
         } catch (Exception anyE) {
             log.log(Level.SEVERE, "System variable 'hiv_hepc_transfer_directory' is not available");
             throw new Exception("System variable 'hiv_hepc_transfer_directory' is not available");
+        }
+
+        try {
+            tmp = Paths.get(exportDirectory, "hivHepCExport"+fileFormat.format(new Date())+".csv");
+        } catch (Exception anyE) {
+            log.log(Level.SEVERE, "Could not open temp file for writing.");
+            throw new Exception("Could not open temp file for writing.");
         }
 
         /*
@@ -219,8 +219,8 @@ public class HIVHepCExportBean {
             dir = ReportUtil.getResourcePath(url);
 
             jparam = new HashMap<String, Object>();
-            jparam.put("FROM_DATE", ReportUtil.toString(beginReleased, "yyyy-MM-dd HH:mm"));
-            jparam.put("TO_DATE", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
+            jparam.put("FROM_DATE", ReportUtil.toString(beginReleased, Messages.get().dateTimeSecondPattern()));
+            jparam.put("TO_DATE", ReportUtil.toString(endReleased, Messages.get().dateTimeSecondPattern()));
             jparam.put("ANALYTE_IDS", analyteIds);
             jparam.put("SUBREPORT_DIR", dir);
 
@@ -228,7 +228,7 @@ public class HIVHepCExportBean {
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
-            jexport = new JRPdfExporter();
+            jexport = new JRCsvExporter();
             out = Files.newOutputStream(tmp);
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
@@ -239,7 +239,6 @@ public class HIVHepCExportBean {
 
             status.setPercentComplete(100);
 
-            Files.move(tmp, Paths.get(exportDirectory, "LC" + fileFormat.format(new Date())), StandardCopyOption.REPLACE_EXISTING);
             status.setMessage("Data exported.").setStatus(ReportStatus.Status.PRINTED);
         } catch (NotFoundException nfE) {
             log.log(Level.INFO, "No samples found for SDWIS Export");
