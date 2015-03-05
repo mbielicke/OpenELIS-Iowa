@@ -31,10 +31,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -263,9 +265,9 @@ public class UIHCFinalReportExportBean {
         }
 
         emailBody = new StringBuilder();
-        emailBody.append("The following is a list of accession #s and UIHC references reported through the FTP interface\r\n")
-                 .append("Accession#\tReference #\r\n")
-                 .append("----------\t--------------------\r\n");
+        emailBody.append("The following is a list of accession #s and UIHC references reported through the FTP interface\n")
+                 .append("Accession#\tReference #\n")
+                 .append("----------\t--------------------\n");
         
         if (sms.size() > 0) {
             for (SampleManager1 sm : sms) {
@@ -299,6 +301,10 @@ public class UIHCFinalReportExportBean {
                     srcFile = Paths.get(uploadStreamDirectory, status.getMessage());
                     destFile = Paths.get(tempDirectory, fileName+".pdf");
                     Files.move(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    Files.setPosixFilePermissions(destFile, EnumSet.of(PosixFilePermission.OWNER_READ,
+                                                                       PosixFilePermission.OWNER_WRITE,
+                                                                       PosixFilePermission.GROUP_READ,
+                                                                       PosixFilePermission.OTHERS_READ));
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, "Error generating UIHC Final Report for accession #" +
                                           sm.getSample().getAccessionNumber(), anyE);
@@ -306,18 +312,16 @@ public class UIHCFinalReportExportBean {
                 }
                 
                 emailBody.append(sm.getSample().getAccessionNumber()).append("  \t")
-                         .append(fileName).append("\r\n");
+                         .append(fileName).append("\n");
             }
         }
         
-        emailBody.append("----------\t------------------------------\r\n");
+        emailBody.append("----------\t------------------------------\n");
         
         out = null;
         try {
             out = Files.newOutputStream(Paths.get(tempDirectory, "UIHC_Email.txt"));
             out.write(emailBody.toString().getBytes());
-            out.close();
-            out = null;
         } catch (IOException ioE) {
             log.log(Level.SEVERE, "Error creating email text for UIHC Final Report Transfer", ioE);
         } finally {
@@ -386,9 +390,9 @@ public class UIHCFinalReportExportBean {
         }
 
         emailBody = new StringBuilder();
-        emailBody.append("The following is a list of accession #s and UIHC references reported through the FTP interface\r\n")
-                 .append("Accession#\tReference #\r\n")
-                 .append("----------\t--------------------\r\n");
+        emailBody.append("The following is a list of accession #s and UIHC references reported through the FTP interface\n")
+                 .append("Accession#\tReference #\n")
+                 .append("----------\t--------------------\n");
         
         if (sms.size() > 0) {
             for (SampleManager1 sm : sms) {
@@ -421,7 +425,11 @@ public class UIHCFinalReportExportBean {
                     status = finalReport.runReportForSingle(fields);
                     srcFile = Paths.get(uploadStreamDirectory, status.getMessage());
                     destFile = Paths.get(tempDirectory, fileName+".pdf");
-                    Files.copy(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    Files.move(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    Files.setPosixFilePermissions(destFile, EnumSet.of(PosixFilePermission.OWNER_READ,
+                                                                       PosixFilePermission.OWNER_WRITE,
+                                                                       PosixFilePermission.GROUP_READ,
+                                                                       PosixFilePermission.OTHERS_READ));
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, "Error generating UIHC Pathology Final Report for accession #" +
                                           sm.getSample().getAccessionNumber(), anyE);
@@ -429,11 +437,11 @@ public class UIHCFinalReportExportBean {
                 }
                 
                 emailBody.append(sm.getSample().getAccessionNumber()).append("  \t")
-                         .append(fileName).append("\r\n");
+                         .append(fileName).append("\n");
             }
         }
         
-        emailBody.append("----------\t------------------------------\r\n");
+        emailBody.append("----------\t------------------------------\n");
         
         out = null;
         try {

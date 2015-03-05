@@ -81,7 +81,7 @@ public class TubeLabelReportBean {
      * Prints the new sample login labels starting at last printed accession
      * number
      */
-    @RolesAllowed("r_loginlabel-select")
+    @RolesAllowed("r_tubelabel-select")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         int samples;
         Path path;

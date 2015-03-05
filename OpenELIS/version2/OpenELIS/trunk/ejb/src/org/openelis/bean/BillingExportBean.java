@@ -25,10 +25,23 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.SampleManager1Accessor.getAnalysisQAs;
+import static org.openelis.manager.SampleManager1Accessor.getAuxiliary;
+import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.getProjects;
+import static org.openelis.manager.SampleManager1Accessor.getResults;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleClinical;
+import static org.openelis.manager.SampleManager1Accessor.getSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.getSampleNeonatal;
+import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
+import static org.openelis.manager.SampleManager1Accessor.getSampleQAs;
+import static org.openelis.manager.SampleManager1Accessor.getSampleSDWIS;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +80,7 @@ import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -107,26 +121,18 @@ public class BillingExportBean {
     @Asynchronous
     @TransactionTimeout(600)
     public void export() throws Exception {
-        String billDir;
         Date lastRunDate, currentRunDate, now;
         SystemVariableDO lastRun;
         Calendar cal;
         Query  query;
         ArrayList<SampleManager1> sms;
         SimpleDateFormat df;
-        FileWriter out;
-        File tempFile;
+        OutputStream out;
+        Path tempFile;
 
         /*
          * System variable used by billing export
          */
-        try {
-            billDir = systemVariable.fetchByName("billing_directory").getValue();
-        } catch (Exception anyE) {
-            log.severe("System variable 'billing_directory' is not available");
-            return;
-        }
-
         df = new SimpleDateFormat(Messages.get().dateTimePattern());
         lastRun = null;
         try {
@@ -182,26 +188,30 @@ public class BillingExportBean {
         out = null;
         tempFile = null;
         try {
-            tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
-            out = new FileWriter(tempFile);
+            tempFile = ReportUtil.createTempFile("billingReport", ".txt", "billing_directory");
+            out = Files.newOutputStream(tempFile);
             outputBilling(out, currentRunDate, sms);
-            out.close();
 
             lastRun.setValue(df.format(now));
             systemVariable.update(lastRun);
         } catch (Exception e) {
-            if (out != null)
+            if (out != null) {
                 out.close();
+                out = null;
+            }
             if (tempFile != null)
-                tempFile.delete();
-
+                Files.delete(tempFile);
+            
             log.log(Level.SEVERE, "Could not generate billing report", e);
 
-            systemVariable.abortUpdate(lastRun.getId());
             //
             // we need to roll back the entire transaction
             //
+            systemVariable.abortUpdate(lastRun.getId());
             throw new DatabaseException(e);
+        } finally {
+            if (out != null)
+                out.close();
         }
     }
 
@@ -211,7 +221,7 @@ public class BillingExportBean {
      * tracks previously sent billing information and issues credit records if the
      * analysis such as # of analytes, QAevents, etc. is changed. 
      */
-    private void outputBilling(FileWriter out, Date currentRunDate,
+    private void outputBilling(OutputStream out, Date currentRunDate,
                                ArrayList<SampleManager1> sms) throws Exception {
         int i;
         HDR hdr;
@@ -672,12 +682,12 @@ public class BillingExportBean {
                 if (credit.isValid || charge.isValid) {
                     if (outputHeader) {
                         outputHeader = false;
-                        out.write(hdr.toString());
-                        out.write(pat.toString());
-                        out.write(ins.toString());
+                        out.write(hdr.toString().getBytes());
+                        out.write(pat.toString().getBytes());
+                        out.write(ins.toString().getBytes());
                     }
-                    out.write(credit.toString());
-                    out.write(charge.toString());
+                    out.write(credit.toString().getBytes());
+                    out.write(charge.toString().getBytes());
 
                     /*
                      * update
@@ -930,6 +940,8 @@ public class BillingExportBean {
                     parts = labSection.split("-");
                     if (parts.length > 1)
                         labLocation = parts[1];
+                    else
+                        labLocation = labSection;
                 }
                 sb.append("DTR").append("|")
                   .append(hdr.df0.format(hdr.messaged)).append("|")
