@@ -777,6 +777,7 @@ public class BillingExportBean {
             if (sb.substring(sb.length()-2).equals(", "))
                 sb.setLength(sb.length()-2);
             sb.append("|")
+              .append("|")
               .append(DataBaseUtil.toString(projectName).toUpperCase()).append("|")
               .append("\r\n");
             
