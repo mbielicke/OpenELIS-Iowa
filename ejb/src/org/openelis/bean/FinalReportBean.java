@@ -640,9 +640,11 @@ public class FinalReportBean {
         /*
          * update all the analyses with date printed
          */
-        timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        analysis.updatePrintedDate(anaSet, timeStamp);
-
+        if (anaSet.size() > 0) {
+            timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+            analysis.updatePrintedDate(anaSet, timeStamp);
+        }
+        
         log.fine("Printing the reports");
         print(printList, "R", true, status, printer);
 

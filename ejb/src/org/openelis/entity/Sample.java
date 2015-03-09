@@ -311,7 +311,7 @@ import org.openelis.utils.Auditable;
                                                + " CAST(p.name AS varchar(20)) ref_field4 "
                                                + "from sample s, sample_item si, outer(sample_project sp, project p), dictionary d1,"
                                                + " sample_organization so, dictionary d2, organization_parameter op, dictionary d3, outer sample_qaevent sq, dictionary d4,"
-                                               + " sample_clinical sc, outer provder pv, analysis a, outer (analysis_qaevent aq, dictionary d5) "
+                                               + " sample_clinical sc, outer provider pv, analysis a, outer (analysis_qaevent aq, dictionary d5) "
                                                + "where s.entered_date between :start_entered_date and :end_entered_date and s.id = si.sample_id and"
                                                + " s.id = sp.sample_id and sp.is_permanent = 'Y' and sp.project_id = p.id and s.status_id = d1.id and d1.system_name != 'sample_not_verified' and"
                                                + " s.id = so.sample_id and so.type_id = d2.id and d2.system_name = 'org_report_to' and so.organization_id =  op.organization_id and"
