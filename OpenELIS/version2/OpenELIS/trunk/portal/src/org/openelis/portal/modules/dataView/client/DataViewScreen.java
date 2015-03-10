@@ -676,7 +676,7 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getPatientBirthTo(),
-                         SampleWebMeta.getClinPatientBirthDateFrom(),
+                         SampleWebMeta.getClinPatientBirthDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  if (data.getSampleClinicalPatientBirthDateTo() != null)
@@ -1561,6 +1561,16 @@ public class DataViewScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
+            error = true;
+        }
+
+        try {
+            getRangeQuery(SampleWebMeta.getClinPatientBirthDateFrom(),
+                          SampleWebMeta.getClinPatientBirthDateTo(),
+                          SampleWebMeta.getClinPatientBirthDate(),
+                          fieldMap);
+        } catch (Exception e) {
+            ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
             error = true;
         }
 

@@ -536,6 +536,16 @@ public class SampleStatusScreen extends Screen {
             error = true;
         }
 
+        try {
+            getRangeQuery(SampleViewMeta.getPatientBirthDateFrom(),
+                          SampleViewMeta.getPatientBirthDateTo(),
+                          SampleViewMeta.getPatientBirthDate(),
+                          fieldMap);
+        } catch (Exception e) {
+            ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
+            error = true;
+        }
+
         /*
          * if there was an error validating the fields, do not query for samples
          */
