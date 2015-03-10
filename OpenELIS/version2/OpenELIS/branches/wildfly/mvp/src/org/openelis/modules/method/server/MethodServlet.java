@@ -71,7 +71,7 @@ public class MethodServlet extends RemoteServlet implements MethodServiceInt {
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
-            return method.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+            return method.critQuery(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

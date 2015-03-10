@@ -3,6 +3,7 @@ package org.openelis.di;
 import javax.inject.Singleton;
 
 import org.openelis.client.OpenELISPresenter;
+import org.openelis.client.ScreenBus;
 import org.openelis.modules.method.client.MethodPoint;
 import org.openelis.modules.method.client.MethodPresenter;
 import org.openelis.modules.organization.client.OrganizationPoint;
@@ -20,11 +21,7 @@ public interface AppDI {
 	
 	OrganizationPoint organizationPoint();
 	
-	OpenELISPresenter openELIS();
-	
-	MethodPresenter method();
-	
-	OrganizationPresenter organization();
-	
+	ScreenBus screenBus();
+
 
 }

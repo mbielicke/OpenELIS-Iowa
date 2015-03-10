@@ -80,7 +80,7 @@
                   <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.options}"
                     rightIcon="{res.icon.OptionsButtonImage}" />
                 </w:display>
-                <w:MenuItem ui:field="orgHistory" description="" enabled="false"
+                <w:MenuItem ui:field="history" description="" enabled="false"
                   icon="{res.icon.historyIcon}" display="{msg.methodHistory}" />
                 <w:MenuItem ui:field="orgAddressHistory" description="" enabled="false"
                   icon="{res.icon.historyIcon}" display="{msg.orgAddressHistory}" />

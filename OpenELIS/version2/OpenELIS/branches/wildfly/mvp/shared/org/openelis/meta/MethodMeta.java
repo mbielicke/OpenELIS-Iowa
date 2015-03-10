@@ -37,13 +37,13 @@ import org.openelis.ui.common.MetaMap;
 
 public class MethodMeta implements Meta, MetaMap{
 	
-	public static final String ID = "_method.id",
-                                NAME = "_method.name",
-                                DESCRIPTION	= "_method.description",
-                                REPORTING_DESCRIPTION = "_method.reportingDescription",
-                                IS_ACTIVE = "_method.isActive",
-                                ACTIVE_BEGIN = "_method.activeBegin",
-                                ACTIVE_END = "_method.activeEnd";
+	public static final String ID = "Method_.id",
+                                NAME = "Method_.name",
+                                DESCRIPTION	= "Method_.description",
+                                REPORTING_DESCRIPTION = "Method_.reportingDescription",
+                                IS_ACTIVE = "Method_.isActive",
+                                ACTIVE_BEGIN = "Method_.activeBegin",
+                                ACTIVE_END = "Method_.activeEnd";
 
 	private static HashSet<String> names;
     

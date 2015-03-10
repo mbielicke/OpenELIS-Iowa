@@ -218,8 +218,8 @@ public class Organization implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("parent_organization_id", parentOrganizationId, original.parentOrganizationId,Constants.table().ORGANIZATION)
                  .setField("name", name, original.name)
-                 .setField("is_active", isActive, original.isActive)
-                 .setField("address_id", addressId, original.addressId, Constants.table().ADDRESS);
+                 .setField("is_active", isActive, original.isActive);
+                 //.setField("address_id", addressId, original.addressId, Constants.table().ADDRESS);
 
         return audit;
     }

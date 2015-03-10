@@ -33,8 +33,6 @@ import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import org.openelis.cache.UserCacheService;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
@@ -49,21 +47,21 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.mvp.Presenter;
-import org.openelis.ui.mvp.View;
 import org.openelis.ui.screen.AsyncCallbackUI;
+import org.openelis.ui.screen.Presenter;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.screen.View;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 
-public class MethodPresenter extends Presenter {
+public class MethodPresenter extends Presenter<MethodDO> {
 
     protected MethodDO                 data;
     private ModulePermission           userPermission;
@@ -76,25 +74,23 @@ public class MethodPresenter extends Presenter {
     
     protected MethodViewImpl view;
 
-    @Inject
-    public MethodPresenter() {
-    	try {
-    		userPermission = getUserCacheService().getPermission().getModule("method");
-    		if (userPermission == null)
-    			throw new PermissionException(getMessages().screenPermException("Method Screen"));
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-        
-        view = new MethodViewImpl();
-        view.setPresenter(this);
+    public MethodPresenter(MethodViewImpl view, WindowInt window) throws Exception {
+   		userPermission = getUserCacheService().getPermission().getModule("method");
+   		if (userPermission == null)
+   			throw new PermissionException(getMessages().screenPermException("Method Screen"));
+
+        setView(view);
+        setWindow(window);
         initialize();
         setState(DEFAULT);
         setData(new MethodDO());
     }
-    
-    public Widget getView() {
-    	return view;
+
+    protected void setView(MethodViewImpl view) {
+    	this.view = view;
+    	addDataChangeHandler(view);
+    	addStateChangeHandler(view);
+    	view.setPresenter(this);
     }
 
     protected void initialize() {
