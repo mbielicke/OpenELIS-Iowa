@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -36,6 +37,16 @@ import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.messages.Messages;
@@ -44,6 +55,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.entity.Method;
+import org.openelis.entity.Method_;
 import org.openelis.meta.MethodMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -55,6 +67,7 @@ import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.util.QueryBuilderV2;
+import org.openelis.ui.util.QueryUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -135,6 +148,31 @@ public class MethodBean {
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
+    }
+    
+    @SuppressWarnings({"unchecked","rawtypes"})
+	public ArrayList<IdNameVO> critQuery(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        TypedQuery<IdNameVO> query;
+        List<IdNameVO> list;
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<IdNameVO> critQuery = builder.createQuery(IdNameVO.class);
+        Root<Method> method = critQuery.from(Method.class); 
+        
+        critQuery.select(builder.construct(IdNameVO.class, method.get(Method_.id),method.get(Method_.name)));
+		critQuery.where(new QueryUtil(builder,critQuery,method).createQuery(fields));
+        critQuery.orderBy(builder.asc(method.get(Method_.name)));
+
+        query = manager.createQuery(critQuery);
+        query.setMaxResults(first + max);
 
         list = query.getResultList();
         if (list.isEmpty())

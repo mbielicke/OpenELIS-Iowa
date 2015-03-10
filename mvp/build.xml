@@ -22,6 +22,9 @@
 			<include name="org/openelis/utils/*.class"/>
 			<include name="ehcache.xml" />
 		</fileset>
+		<fileset dir="war/WEB-INF/classes">
+		  	<include name="org/openelis/entity/*.class"/>
+		</fileset>
 		<fileset dir="ejb/resources/">
 			<include name="META-INF/persistence.xml" />
 			<include name="META-INF/ehcache.xml" />

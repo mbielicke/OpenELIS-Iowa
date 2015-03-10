@@ -36,13 +36,20 @@ import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.messages.Messages;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
+import org.openelis.entity.Organization_;
+import org.openelis.messages.Messages;
+import org.openelis.meta.AddressMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -51,7 +58,7 @@ import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.util.QueryBuilderV2;
+import org.openelis.ui.util.QueryUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -66,8 +73,6 @@ public class OrganizationBean {
     
     @EJB
     private OrganizationParameterBean    organizationParameter;
-
-    private static final OrganizationMeta meta = new OrganizationMeta();
 
     public OrganizationViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -124,22 +129,46 @@ public class OrganizationBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
+//    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+//        Query query;
+//        QueryBuilderV2 builder;
+//        List list;
+//
+//        builder = new QueryBuilderV2();
+//        builder.setMeta(meta);
+//        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + OrganizationMeta.getId() +
+//                          ", " + OrganizationMeta.getName() + ") ");
+//        builder.constructWhere(fields);
+//        builder.setOrderBy(OrganizationMeta.getName());
+//
+//        query = manager.createQuery(builder.getEJBQL());
+//        query.setMaxResults(first + max);
+//        builder.setQueryParams(query, fields);
+//
+//        list = query.getResultList();
+//        if (list.isEmpty())
+//            throw new NotFoundException();
+//        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+//        if (list == null)
+//            throw new LastPageException();
+//
+//        return (ArrayList<IdNameVO>)list;
+//    }
+    
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        Query query;
-        QueryBuilderV2 builder;
-        List list;
-
-        builder = new QueryBuilderV2();
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + OrganizationMeta.getId() +
-                          ", " + OrganizationMeta.getName() + ") ");
-        builder.constructWhere(fields);
-        builder.setOrderBy(OrganizationMeta.getName());
-
-        query = manager.createQuery(builder.getEJBQL());
+        TypedQuery<IdNameVO> query;
+        List<IdNameVO> list;
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<IdNameVO> critQuery = builder.createQuery(IdNameVO.class);
+        Root<Organization> org = critQuery.from(Organization.class);
+        
+        critQuery.select(builder.construct(IdNameVO.class,org.get(Organization_.id),org.get(Organization_.name)));
+        critQuery.where(new QueryUtil(builder,critQuery,org).createQuery(fields));
+        critQuery.orderBy(builder.asc(org.get(Organization_.name)));
+        
+        query = manager.createQuery(critQuery);
         query.setMaxResults(first + max);
-        builder.setQueryParams(query, fields);
 
         list = query.getResultList();
         if (list.isEmpty())
@@ -159,9 +188,9 @@ public class OrganizationBean {
         address.add(data.getAddress());        
         entity = new Organization();
         entity.setIsActive(data.getIsActive());
-        entity.setParentOrganizationId(data.getParentOrganizationId());
+        //entity.setParentOrganizationId(data.getParentOrganizationId());
         entity.setName(data.getName());
-        entity.setAddressId(data.getAddress().getId());
+        //entity.setAddressId(data.getAddress().getId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -192,15 +221,15 @@ public class OrganizationBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrganizationMeta.getName()));                    
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrganizationMeta.NAME));                    
 
         if (DataBaseUtil.isEmpty(data.getAddress().getStreetAddress()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getAddressStreetAddress()));
+                                             AddressMeta.STREET_ADDRESS));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getCity()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getAddressCity()));
+                                             AddressMeta.CITY));
 
         if (list.size() > 0)
             throw list;

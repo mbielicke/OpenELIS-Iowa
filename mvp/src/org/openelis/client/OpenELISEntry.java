@@ -89,9 +89,10 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                         try {
                             Window.enableScrolling(true);
                             RootPanel.get("load").getElement().removeFromParent();
-                            OpenELISPresenter op = AppDI.INSTANCE.openELIS();
-                            RootLayoutPanel.get().add(op.getView());
-                            browser = ((OpenELISViewImpl)op.getView()).browser;
+                            OpenELISViewImpl view = new OpenELISViewImpl();
+                            new OpenELISPresenter(view);
+                            RootLayoutPanel.get().add(view);
+                            browser = ((OpenELISViewImpl)view).browser;
                             SessionTimer.start();
                         } catch (Throwable e) {
                             e.printStackTrace();

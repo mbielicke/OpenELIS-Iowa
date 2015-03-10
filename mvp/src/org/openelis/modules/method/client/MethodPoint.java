@@ -44,8 +44,10 @@ public class MethodPoint implements ShowScreenHandler {
 	                    org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
 	                    window.setName(Messages.get().method());
 	                    window.setSize("862px", "432px");
-	                    window.setContent(AppDI.INSTANCE.method().getView());
-	                    lazyBrowser.get().addWindow(window, "method");
+	                    MethodViewImpl view = new MethodViewImpl();
+	                    window.setContent(view);
+	                    OpenELISEntry.browser.addWindow(window, "method");
+	                    new MethodPresenter(view,window);
 	                } catch (Throwable e) {
 	                    remote().log(Level.SEVERE, e.getMessage(), e);
 	                    Window.alert(e.getMessage());

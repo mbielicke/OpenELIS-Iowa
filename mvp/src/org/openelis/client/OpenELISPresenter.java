@@ -3,6 +3,7 @@ package org.openelis.client;
 import javax.inject.Inject;
 
 import org.openelis.client.event.ShowScreenEvent;
+import org.openelis.di.AppDI;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.mvp.Presenter;
 import org.openelis.ui.screen.State;
@@ -12,14 +13,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public class OpenELISPresenter extends Presenter {
 	
-	@Inject
-	ScreenBus screenBus;
+	ScreenBus screenBus = AppDI.INSTANCE.screenBus();
 
 	OpenELISViewImpl view;
 
-	@Inject
-	public OpenELISPresenter() {
-		this.view = new OpenELISViewImpl(); 
+	public OpenELISPresenter(OpenELISViewImpl view) {
+		this.view = view; 
 		view.setPresenter(this);
 		initialize();
 		view.setState(State.DEFAULT);

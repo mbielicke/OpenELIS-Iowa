@@ -2,7 +2,9 @@ package org.openelis.modules.organization.client;
 
 import java.util.ArrayList;
 
-import org.openelis.meta.OrganizationMeta;
+import org.openelis.manager.OrganizationManager;
+import org.openelis.meta.AddressMeta;
+import org.openelis.meta.OrganizationContactMeta;
 import org.openelis.ui.annotation.Enable;
 import org.openelis.ui.annotation.Validate;
 import org.openelis.ui.annotation.View;
@@ -12,13 +14,13 @@ import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
-import org.openelis.ui.mvp.Presenter;
+import org.openelis.ui.screen.Presenter;
 import org.openelis.ui.screen.State;
 
 import com.google.gwt.uibinder.client.UiField;
 
 @View(template="ContactTab.ui.xml",presenter=ContactPresenter.class)
-public class ContactView extends org.openelis.ui.mvp.View {
+public class ContactView extends org.openelis.ui.screen.View<OrganizationManager> {
 
     @UiField
     @Enable({State.ADD,State.UPDATE,State.QUERY})
@@ -61,43 +63,43 @@ public class ContactView extends org.openelis.ui.mvp.View {
             if (qd != null) {
                 switch (i) {
                     case 0:
-                        qd.setKey(OrganizationMeta.getContactContactTypeId());
+                        qd.setKey(OrganizationContactMeta.CONT_CONTACT_TYPE_ID);
                         break;
                     case 1:
-                        qd.setKey(OrganizationMeta.getContactName());
+                        qd.setKey(OrganizationContactMeta.CONT_NAME);
                         break;
                     case 2:
-                        qd.setKey(OrganizationMeta.getContactAddressWorkPhone());
+                        qd.setKey("organizationContact.address."+AddressMeta.WORK_PHONE);
                         break;
                     case 3:
-                        qd.setKey(OrganizationMeta.getContactAddressHomePhone());
+                        qd.setKey("organizationContact.address."+AddressMeta.HOME_PHONE);
                         break;
                     case 4:
-                        qd.setKey(OrganizationMeta.getContactAddressCellPhone());
+                        qd.setKey("organizationContact.address."+AddressMeta.CELL_PHONE);
                         break;
                     case 5:
-                        qd.setKey(OrganizationMeta.getContactAddressFaxPhone());
+                        qd.setKey("organizationContact.address."+AddressMeta.FAX_PHONE);
                         break;
                     case 6:
-                        qd.setKey(OrganizationMeta.getContactAddressEmail());
+                        qd.setKey("organizationContact.address."+AddressMeta.EMAIL);
                         break;
                     case 7:
-                        qd.setKey(OrganizationMeta.getContactAddressMultipleUnit());
+                        qd.setKey("organizationContact.address."+AddressMeta.MULTIPLE_UNIT);
                         break;
                     case 8:
-                        qd.setKey(OrganizationMeta.getContactAddressStreetAddress());
+                        qd.setKey("organizationContact.address."+AddressMeta.STREET_ADDRESS);
                         break;
                     case 9:
-                        qd.setKey(OrganizationMeta.getContactAddressCity());
+                        qd.setKey("organizationContact.address."+AddressMeta.CITY);
                         break;
                     case 10:
-                        qd.setKey(OrganizationMeta.getContactAddressState());
+                        qd.setKey("organizationContact.address."+AddressMeta.STATE);
                         break;
                     case 11:
-                        qd.setKey(OrganizationMeta.getContactAddressZipCode());
+                        qd.setKey("organizationContact.address."+AddressMeta.ZIP_CODE);
                         break;
                     case 12:
-                        qd.setKey(OrganizationMeta.getAddressCountry());
+                        qd.setKey("organizationContact.address."+AddressMeta.COUNTRY);
                         break;
                 }
                 qds.add(qd);

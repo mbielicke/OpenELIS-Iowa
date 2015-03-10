@@ -9,6 +9,7 @@ import static org.openelis.ui.screen.State.UPDATE;
 import java.util.ArrayList;
 
 import org.openelis.manager.OrganizationManager;
+import org.openelis.meta.AddressMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.annotation.Enable;
 import org.openelis.ui.annotation.Impl;
@@ -17,7 +18,7 @@ import org.openelis.ui.annotation.Queryable;
 import org.openelis.ui.annotation.Shortcut;
 import org.openelis.ui.annotation.Tab;
 import org.openelis.ui.annotation.View;
-import org.openelis.ui.mvp.Presenter;
+import org.openelis.ui.screen.Presenter;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AtoZButtons;
 import org.openelis.ui.widget.AutoComplete;
@@ -34,11 +35,8 @@ import org.openelis.ui.widget.table.Table;
 import com.google.gwt.uibinder.client.UiField;
 
 @View(template="Organization.ui.xml",presenter=OrganizationPresenter.class)
-public class OrganizationView extends org.openelis.ui.mvp.View {
-    
-	@UiField
-    protected AtoZButtons atozButtons;
-    
+public class OrganizationView extends org.openelis.ui.screen.NavigableView<OrganizationManager> {
+        
 	@UiField
 	@Impl(ContactViewImpl.class)
     protected ContactViewImpl contactTab;
@@ -50,42 +48,10 @@ public class OrganizationView extends org.openelis.ui.mvp.View {
     @UiField
     protected NotesPanel notesPanel;
 
-    @UiField
-    @Shortcut("q")
-    protected Button query; 
-    
-    @UiField 
-    @Shortcut("p")
-    @Enable(State.DISPLAY)
-    protected Button previous;
-    
-    @UiField
-    @Shortcut("n")
-    @Enable(State.DISPLAY)
-    protected Button next;
-    
-    @UiField
-    @Shortcut("a")
-    protected Button add;
-    
-    @UiField
-    @Shortcut("u")
-    protected Button update;
-    
-    @UiField
-    @Shortcut("m")
-    protected Button commit;
-    
-    @UiField
-    @Shortcut("o")
-    protected Button abort;
-    
-    @UiField
-    protected Button atozNext, atozPrev;
     
     @UiField
     @Enable(State.DISPLAY)
-    protected MenuItem orgHistory, orgAddressHistory, orgContactHistory,
+    protected MenuItem    orgAddressHistory, orgContactHistory,
                                         orgContactAddressHistory, orgParameterHistory;
 
     @UiField
@@ -160,9 +126,6 @@ public class OrganizationView extends org.openelis.ui.mvp.View {
 
     @UiField
     protected TabLayoutPanel tabPanel;
-
-    @UiField
-    protected Table atozTable;
     
     OrganizationPresenter presenter;
     
@@ -180,22 +143,7 @@ public class OrganizationView extends org.openelis.ui.mvp.View {
     }
     
     public void setState(State state) {
-    	 query.setEnabled(isState(QUERY,DEFAULT, DISPLAY).contains(state) && presenter.permissions().hasSelectPermission());
-         if (state == QUERY){ 
-             query.lock();
-             query.setPressed(true);
-         }
-         add.setEnabled(isState(ADD,DEFAULT, DISPLAY).contains(state) && presenter.permissions().hasAddPermission());
-         if (state == State.ADD) {
-             add.lock();
-             add.setPressed(true);
-         }
-         update.setEnabled(isState(UPDATE,DISPLAY).contains(state) && presenter.permissions().hasUpdatePermission());
-         if (state == State.UPDATE) {
-             update.lock();
-             update.setPressed(true);
-         }
-         atozButtons.setEnabled(isState(DEFAULT, DISPLAY).contains(state) && presenter.permissions().hasSelectPermission());
+
     }
     
     public void setCountryModel(ArrayList<Item<String>> model) {

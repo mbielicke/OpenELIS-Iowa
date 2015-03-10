@@ -59,8 +59,8 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
-import org.openelis.ui.mvp.Presenter;
-import org.openelis.ui.mvp.View.Validation;
+import org.openelis.ui.screen.Presenter;
+import org.openelis.ui.screen.View.Validation;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoCompleteValue;
@@ -68,6 +68,7 @@ import org.openelis.ui.widget.Browser;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.QueryFieldUtil;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -77,7 +78,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 //import org.openelis.s.history.client.HistoryScreen;
 
-public class OrganizationPresenter extends Presenter {
+public class OrganizationPresenter extends Presenter<OrganizationManager> {
 	
 	//@Inject 
 	//Browser browser;
@@ -98,17 +99,13 @@ public class OrganizationPresenter extends Presenter {
 
     private Tabs tab;
 
-    @Inject
-    public OrganizationPresenter() {
-    	try {
-    		userPermission = UserCache.getPermission().getModule("organization");
-    		if (userPermission == null)
-    			throw new PermissionException(Messages.get().screenPermException("Oranization Screen"));
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-        view = new OrganizationViewImpl();
-        view.setPresenter(this);
+    public OrganizationPresenter(OrganizationViewImpl view, WindowInt window) throws Exception {
+   		userPermission = UserCache.getPermission().getModule("organization");
+   		if (userPermission == null)
+   			throw new PermissionException(Messages.get().screenPermException("Oranization Screen"));
+
+   		setView(view);
+   		setWindow(window);
      
         tab = Tabs.CONTACT;
         manager = OrganizationManager.getInstance();
@@ -122,31 +119,25 @@ public class OrganizationPresenter extends Presenter {
         initialize();
         setState(DEFAULT);
         initializeDropdowns();
-        setData(manager);
+        fireDataChange(manager);
         
         logger.fine("Organization Screen Opened");
     }
     
-    public void setState(State state) {
-    	this.state = state;
-    	view.setState(state);
-    	view.contactTab.setState(state);
-    	view.parameterTab.setState(state);
-    	nav.enable((state == DEFAULT || state ==  DISPLAY) && userPermission.hasSelectPermission());
+    protected void setView(OrganizationViewImpl view) {
+    	this.view = view;
+    	addDataChangeHandler(view);
+    	addStateChangeHandler(view);
+    	view.setPresenter(this);
     }
     
-    public void setData(OrganizationManager data) {
-    	this.manager = data;
-    	view.setData(data);
-    }
-
     /**
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
 
 
-        view.orgHistory.addCommand(new Command() {
+        view.history.addCommand(new Command() {
             @Override
             public void execute() {
                 orgHistory();
@@ -350,7 +341,7 @@ public class OrganizationPresenter extends Presenter {
     	QueryData field;
 
     	field = new QueryData();
-    	field.setKey(OrganizationMeta.getName());
+    	field.setKey(OrganizationMeta.NAME);
     	field.setQuery( ((Button)event.getSource()).getAction());
     	field.setType(QueryData.Type.STRING);
 
@@ -414,7 +405,7 @@ public class OrganizationPresenter extends Presenter {
         manager = OrganizationManager.getInstance();
 
         setState(QUERY);
-        setData(manager);
+        fireDataChange(manager);
 
         //notesTab.draw();
 
@@ -438,7 +429,7 @@ public class OrganizationPresenter extends Presenter {
         manager.getOrganization().setIsActive("Y");
 
         setState(ADD);
-        setData(manager);
+        fireDataChange(manager);
 
         view.name.setFocus(true);
         //window.setDone(Messages.get().enterInformationPressCommit());
@@ -452,7 +443,7 @@ public class OrganizationPresenter extends Presenter {
             manager = manager.fetchForUpdate();
 
             setState(UPDATE);
-            setData(manager);
+            fireDataChange(manager);
             view.name.setFocus(true);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -487,7 +478,7 @@ public class OrganizationPresenter extends Presenter {
                     manager = manager.add();
 
                     setState(DISPLAY);
-                    setData(manager);
+                    fireDataChange(manager);
                     //window.setDone(Messages.get().addingComplete());
                 } catch (ValidationErrorsList e) {
                     view.showErrors(e);
@@ -502,7 +493,7 @@ public class OrganizationPresenter extends Presenter {
                     manager = manager.update();
 
                     setState(DISPLAY);
-                    setData(manager);
+                    fireDataChange(manager);
                     //window.setDone(Messages.get().updatingComplete());
                 } catch (ValidationErrorsList e) {
                     view.showErrors(e);
@@ -535,7 +526,7 @@ public class OrganizationPresenter extends Presenter {
                 try {
                     manager = manager.abortUpdate();
                     setState(DISPLAY);
-                    setData(manager);
+                    fireDataChange(manager);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     fetchById(null);
@@ -670,7 +661,7 @@ public class OrganizationPresenter extends Presenter {
                 return false;
             }
         }
-        setData(manager);
+        fireDataChange(manager);
         //window.clearStatus();
 
         return true;

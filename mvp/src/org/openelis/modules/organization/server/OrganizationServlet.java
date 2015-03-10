@@ -40,6 +40,7 @@ import org.openelis.domain.OrganizationViewDO;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;

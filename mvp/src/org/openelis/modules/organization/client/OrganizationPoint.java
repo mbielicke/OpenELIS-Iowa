@@ -38,8 +38,10 @@ public class OrganizationPoint implements ShowScreenHandler {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                     window.setName(Messages.get().organization());
                     window.setSize("600px", "450px");
-                    window.setContent(AppDI.INSTANCE.organization().view);
+                    OrganizationViewImpl view = new OrganizationViewImpl();
+                    window.setContent(view);
                     OpenELISEntry.browser.addWindow(window, "organization");
+                    new OrganizationPresenter(view,window);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());

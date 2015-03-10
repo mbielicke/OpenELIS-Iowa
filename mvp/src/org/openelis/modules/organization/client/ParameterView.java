@@ -2,12 +2,14 @@ package org.openelis.modules.organization.client;
 
 import java.util.ArrayList;
 
+import org.openelis.manager.OrganizationManager;
 import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.OrganizationParameterMeta;
 import org.openelis.ui.annotation.Enable;
 import org.openelis.ui.annotation.Validate;
 import org.openelis.ui.annotation.View;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.mvp.Presenter;
+import org.openelis.ui.screen.Presenter;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
@@ -19,7 +21,7 @@ import org.openelis.ui.widget.table.Table;
 import com.google.gwt.uibinder.client.UiField;
 
 @View(template="ParameterTab.ui.xml",presenter=ParameterPresenter.class)
-public class ParameterView extends org.openelis.ui.mvp.View {
+public class ParameterView extends org.openelis.ui.screen.View<OrganizationManager> {
 
     @UiField
     @Enable({State.ADD,State.QUERY,State.UPDATE})
@@ -52,10 +54,10 @@ public class ParameterView extends org.openelis.ui.mvp.View {
             if (qd != null) {
                 switch (i) {
                     case 0:
-                        qd.setKey(OrganizationMeta.getOrganizationParameterTypeId());
+                        qd.setKey(OrganizationParameterMeta.PARM_TYPE_ID);
                         break;
                     case 1:
-                        qd.setKey(OrganizationMeta.getOrganizationParameterValue());
+                        qd.setKey(OrganizationParameterMeta.PARM_VALUE);
                         break;
                 }
                 qds.add(qd);

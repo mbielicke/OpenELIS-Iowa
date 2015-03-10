@@ -10,7 +10,7 @@ import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.ui.annotation.Handler;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.mvp.Presenter;
+import org.openelis.ui.screen.Presenter;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.table.Row;
@@ -22,7 +22,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 
-public class ParameterPresenter extends Presenter {
+public class ParameterPresenter extends Presenter<OrganizationManager> {
     
     private OrganizationManager manager;
     

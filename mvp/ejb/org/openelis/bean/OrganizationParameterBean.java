@@ -41,6 +41,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.entity.OrganizationParameter;
 import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.OrganizationParameterMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.NotFoundException;
@@ -148,17 +149,17 @@ public class OrganizationParameterBean {
 
         if (DataBaseUtil.isEmpty(typeId))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getOrganizationParameterTypeId()));
+                                             OrganizationParameterMeta.PARM_TYPE_ID));
         if (DataBaseUtil.isEmpty(email)) {
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrganizationMeta.getOrganizationParameterValue()));
+                                             OrganizationParameterMeta.PARM_VALUE));
         } else if (Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL.equals(typeId) ||
                    Constants.dictionary().RELEASED_REPORTTO_EMAIL.equals(typeId)) {
             try {
                 EmailUtil.validateAddress(email);
             } catch (AddressException e) {
                 list.add(new FieldErrorException(Messages.get().invalidFormatEmailException(email),
-                                                 OrganizationMeta.getOrganizationParameterValue()));
+                                                 OrganizationParameterMeta.PARM_VALUE));
             }
         }
 
