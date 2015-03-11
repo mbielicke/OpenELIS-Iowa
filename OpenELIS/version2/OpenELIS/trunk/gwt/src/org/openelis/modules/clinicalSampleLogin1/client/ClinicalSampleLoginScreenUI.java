@@ -203,7 +203,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     @UiField
     protected TextBox<String>                           clientReference, orderId, patientLastName,
                     patientFirstName, patientNationalId, patientAddrMultipleUnit,
-                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode,
+                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode, patientAddrHomePhone,
                     providerFirstName, providerPhone;
 
     @UiField
@@ -1251,10 +1251,36 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientGender : patientAddrState;
+                                 return forward ? patientAddrHomePhone : patientAddrState;
                              }
                          });
+        
+        addScreenHandler(patientAddrHomePhone,
+                         SampleMeta.getClinicalPatientAddrHomePhone(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientAddrHomePhone.setValue(getPatientAddressHomePhone());
+                             }
 
+                            public void onValueChange(ValueChangeEvent<String> event) {
+                                 setPatientAddressHomePhone(event.getValue());
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrHomePhone(),
+                                               null);
+                             }
+
+                            public void onStateChange(StateChangeEvent event) {
+                                 patientAddrHomePhone.setEnabled(isState(QUERY) ||
+                                                               (canEditSample && canEditPatient && isState(ADD,
+                                                                                                           UPDATE)));
+                                 patientAddrHomePhone.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientGender : patientAddrZipCode;
+                             }
+                         });
+        
         addScreenHandler(patientGender,
                          SampleMeta.getClinicalPatientGenderId(),
                          new ScreenHandler<Integer>() {
@@ -1275,7 +1301,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientRace : patientAddrZipCode;
+                                 return forward ? patientRace : patientAddrHomePhone;
                              }
                          });
 
@@ -1342,6 +1368,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 patientAddrCity.setValue(getPatientAddressCity());
                 patientAddrState.setValue(getPatientAddressState());
                 patientAddrZipCode.setValue(getPatientAddressZipCode());
+                patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
@@ -4320,6 +4347,24 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void setPatientAddressZipCode(String zipCode) {
         manager.getSampleClinical().getPatient().getAddress().setZipCode(zipCode);
     }
+    
+    /**
+     * Returns the patient's home phone or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientAddressHomePhone() {
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getPatient() == null)
+            return null;
+        return manager.getSampleClinical().getPatient().getAddress().getHomePhone();
+    }
+
+    /**
+     * Sets the patient's zip code
+     */
+    private void setPatientAddressHomePhone(String homePhone) {
+        manager.getSampleClinical().getPatient().getAddress().setHomePhone(homePhone);
+    }
 
     /**
      * Makes the patient lookup screen find patients matching the data in the
@@ -4650,7 +4695,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             if (Constants.dictionary().ORG_REPORT_TO.equals(type))
                 setReportTo(data);
             else if (Constants.dictionary().ORG_BILL_TO.equals(type))
-                setBillTo(data);
+                setBillTo(data);            
         }
     }
 

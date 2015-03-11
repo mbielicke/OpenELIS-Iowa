@@ -89,7 +89,7 @@ public class ClinicalTabUI extends Screen {
     @UiField
     protected TextBox<String>          patientLastName, patientFirstName, patientNationalId,
                     patientAddrMultipleUnit, patientAddrStreetAddress, patientAddrCity,
-                    patientAddrZipCode, providerFirstName, providerPhone;
+                    patientAddrZipCode, patientAddrHomePhone, providerFirstName, providerPhone;
 
     @UiField
     protected Dropdown<Integer>        patientGender, patientRace, patientEthnicity;
@@ -393,7 +393,31 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientGender : patientAddrState;
+                                 return forward ? patientAddrHomePhone : patientAddrState;
+                             }
+                         });
+        
+        
+        addScreenHandler(patientAddrHomePhone,
+                         SampleMeta.getClinicalPatientAddrHomePhone(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientAddrHomePhone.setValue(getPatientAddressHomePhone());
+                             }
+
+                            public void onValueChange(ValueChangeEvent<String> event) {
+                                 setPatientAddressHomePhone(event.getValue());                                 
+                             }
+
+                            public void onStateChange(StateChangeEvent event) {
+                                 patientAddrHomePhone.setEnabled(isState(QUERY) ||
+                                                               (canEditSample && canEditPatient && isState(ADD,
+                                                                                                           UPDATE)));
+                                 patientAddrHomePhone.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientGender : patientAddrZipCode;
                              }
                          });
 
@@ -416,7 +440,7 @@ public class ClinicalTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientRace : patientAddrZipCode;
+                                 return forward ? patientRace : patientAddrHomePhone;
                              }
                          });
 
@@ -479,6 +503,7 @@ public class ClinicalTabUI extends Screen {
                 patientAddrCity.setValue(getPatientAddressCity());
                 patientAddrState.setValue(getPatientAddressState());
                 patientAddrZipCode.setValue(getPatientAddressZipCode());
+                patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
@@ -969,6 +994,23 @@ public class ClinicalTabUI extends Screen {
      */
     private void setPatientAddressZipCode(String zipCode) {
         manager.getSampleClinical().getPatient().getAddress().setZipCode(zipCode);
+    }
+    
+    /**
+     * Returns the patient's home phone or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientAddressHomePhone() {
+        if (manager == null || manager.getSampleClinical() == null)
+            return null;
+        return manager.getSampleClinical().getPatient().getAddress().getHomePhone();
+    }
+
+    /**
+     * Sets the patient's zip code
+     */
+    private void setPatientAddressHomePhone(String homePhone) {
+        manager.getSampleClinical().getPatient().getAddress().setHomePhone(homePhone);
     }
 
     /**

@@ -40,7 +40,6 @@ import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
 import org.openelis.meta.PatientMeta;
 import org.openelis.modules.analysis.client.AnalysisService;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -548,7 +547,7 @@ public abstract class PatientLookupUI extends Screen {
         if (list != null) {
             model = new ArrayList<Row>();
             for (PatientDO data : list) {
-                row = new Row(11);
+                row = new Row(12);
                 row.setCell(0, data.getId());
                 row.setCell(1, data.getLastName());
                 row.setCell(2, data.getFirstName());
@@ -560,6 +559,7 @@ public abstract class PatientLookupUI extends Screen {
                 row.setCell(8, data.getAddress().getCity());
                 row.setCell(9, data.getAddress().getState());
                 row.setCell(10, data.getAddress().getZipCode());
+                row.setCell(11, data.getAddress().getHomePhone());
                 row.setData(data);
                 model.add(row);
             }
