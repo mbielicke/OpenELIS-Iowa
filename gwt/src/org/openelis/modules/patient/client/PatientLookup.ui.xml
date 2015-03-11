@@ -94,6 +94,11 @@
         <t:Column width="75" label="{msg.address_zipcode}">
           <t:LabelCell />
         </t:Column>
+        <t:Column width="85" label="{msg.address_phone}">
+          <t:TextBoxCell>
+           <w:TextBox mask="{msg.gen_phonePattern}" />
+          </t:TextBoxCell>
+        </t:Column>
       </t:Table>
     </g:layer>
     <g:layer top="40px" height = "108px" left="50%" right="5px">
@@ -129,8 +134,8 @@
           <t:CalendarCell>
             <c:Calendar width="100px" begin="0" end="2" />
           </t:CalendarCell>
-        </t:Column>
-        <t:Column width="100" label="{msg.gen_test}" sortable="true">
+        </t:Column>        
+        <t:Column width="120" label="{msg.gen_test}" sortable="true">
           <t:LabelCell />
         </t:Column>
         <t:Column width="100" label="{msg.gen_method}" sortable="true">

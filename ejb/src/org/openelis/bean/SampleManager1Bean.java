@@ -1346,6 +1346,14 @@ public class SampleManager1Bean {
                             } else if ( !amap.containsKey(data.getId())) {
                                 tmpid = data.getId();
                                 /*
+                                 * in the front-end if an existing analysis is
+                                 * moved to an uncommitted item, the analysis'
+                                 * item id would be negative; this makes sure
+                                 * that the item gets linked correctly
+                                 */
+                                if (data.getSampleItemId() < 0)
+                                    data.setSampleItemId(imap.get(data.getSampleItemId()));
+                                /*
                                  * set the released date if this analysis is
                                  * currently being released
                                  */

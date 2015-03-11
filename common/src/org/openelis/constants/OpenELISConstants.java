@@ -12013,20 +12013,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_birthDT();
 
   /**
-   * Translated "Birth date is required for a patient ".
+   * Translated "Birth date is required for a patient".
    * 
-   * @return translated "Birth date is required for a patient "
+   * @return translated "Birth date is required for a patient"
    */
-  @DefaultMessage("Birth date is required for a patient ")
+  @DefaultMessage("Birth date is required for a patient")
   @Key("patient.birthDateRequiredException")
   String patient_birthDateRequiredException();
 
   /**
-   * Translated "City is required for a patient ".
+   * Translated "City is required for a patient".
    * 
-   * @return translated "City is required for a patient "
+   * @return translated "City is required for a patient"
    */
-  @DefaultMessage("City is required for a patient ")
+  @DefaultMessage("City is required for a patient")
   @Key("patient.cityRequiredException")
   String patient_cityRequiredException();
 
@@ -12049,11 +12049,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_ethnicity();
 
   /**
-   * Translated "First name is required for a patient ".
+   * Translated "First name is required for a patient".
    * 
-   * @return translated "First name is required for a patient "
+   * @return translated "First name is required for a patient"
    */
-  @DefaultMessage("First name is required for a patient ")
+  @DefaultMessage("First name is required for a patient")
   @Key("patient.firstNameRequiredException")
   String patient_firstNameRequiredException();
 
@@ -12067,6 +12067,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_fullWindowSearch();
 
   /**
+   * Translated "A future birth date is not allowed for a patient".
+   * 
+   * @return translated "A future birth date is not allowed for a patient"
+   */
+  @DefaultMessage("A future birth date is not allowed for a patient")
+  @Key("patient.futureBirthDateException")
+  String patient_futureBirthDateException();
+
+  /**
    * Translated "Gender".
    * 
    * @return translated "Gender"
@@ -12076,11 +12085,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String patient_gender();
 
   /**
-   * Translated "Last name is required for a patient ".
+   * Translated "Last name is required for a patient".
    * 
-   * @return translated "Last name is required for a patient "
+   * @return translated "Last name is required for a patient"
    */
-  @DefaultMessage("Last name is required for a patient ")
+  @DefaultMessage("Last name is required for a patient")
   @Key("patient.lastnameRequiredException")
   String patient_lastnameRequiredException();
 
