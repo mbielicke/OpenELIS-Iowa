@@ -208,7 +208,7 @@
                       </td>
                       <td colspan="5">
                         <w:TextBox ui:field="patientAddrStreetAddress" field="String"
-                          width="232px" case="UPPER" />
+                          width="233px" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
@@ -229,10 +229,17 @@
                     </tr>
                     <tr>
                       <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.address_phone}:" />
+                      </td>
+                      <td>
+                        <w:TextBox ui:field="patientAddrHomePhone" field="String" width="80px"
+                        maxLength="12" mask="{msg.gen_phonePattern}" />
+                      </td>
+                      <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_gender}:" />
                       </td>
                       <td>
-                        <w:Dropdown ui:field="patientGender" width="65px" dropHeight="100px"
+                        <w:Dropdown ui:field="patientGender" width="75px" dropHeight="100px"
                           field="String" />
                       </td>
                     </tr>
@@ -240,8 +247,8 @@
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_race}:" />
                       </td>
-                      <td>
-                        <w:Dropdown ui:field="patientRace" width="230px" dropWidth="235px"
+                      <td colspan="3">
+                        <w:Dropdown ui:field="patientRace" width="233px" dropWidth="235px"
                           field="String" />
                       </td>
                     </tr>
