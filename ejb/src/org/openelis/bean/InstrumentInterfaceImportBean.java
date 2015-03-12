@@ -511,11 +511,15 @@ public class InstrumentInterfaceImportBean {
                     value = data[fileColumnMap.get(Messages.get().instrumentInterface_instrumentId())];
                     if (!setInstrument && value != null && value.length() > 0) {
                         instruments = instrument.fetchActiveByName(value, 1);
-                        if (instruments.size() != 1) 
+                        if (instruments.size() != 1)  {
+                            ctx.setRollbackOnly();
                             throw new Exception(Messages.get().instrumentInterface_invalidInstrumentName(value));
+                        }
                         if (manager.getWorksheet().getInstrumentId() != null &&
-                            DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value))
+                            DataBaseUtil.isDifferent(manager.getWorksheet().getInstrumentName(), value)) {
+                            ctx.setRollbackOnly();
                             throw new Exception(Messages.get().instrumentInterface_differentInstrumentName(value, manager.getWorksheet().getInstrumentName()));
+                        }
                         if (manager.getWorksheet().getInstrumentId() == null) {
                             manager.getWorksheet().setInstrumentId(instruments.get(0).getId());
                             manager.getWorksheet().setInstrumentName(instruments.get(0).getName());
