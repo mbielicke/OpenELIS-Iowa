@@ -60,12 +60,12 @@
       <dependency org="org.wildfly.arquillian" name="wildfly-arquillian-container-remote" rev="1.0.0.Alpha4" conf="testing->default"/>
       <dependency org="org.jboss.arquillian.protocol" name="arquillian-protocol-servlet" rev="1.1.2.Final-wildfly-2" conf="testing->default"/>
       <dependency org="org.jboss.shrinkwrap.resolver" name="shrinkwrap-resolver-impl-maven" rev="2.1.1" conf="testing->default"/>
-      <dependency org="org.jboss.shrinkwrap.resolver" name="shrinkwrap-resolver-impl-maven-archive" rev="2.1.1" cond="testing->default"/>
+      <dependency org="org.jboss.shrinkwrap.resolver" name="shrinkwrap-resolver-impl-maven-archive" rev="2.1.1" conf="testing->default"/>
       <dependency org="org.openelis" name="arquillian-suite-extension" rev="1.1.3" conf="testing->default"/>
-      <dependency org="org.reflections" name="reflections-maven" rev="0.9.8"/>
+      <dependency org="org.reflections" name="reflections-maven" rev="0.9.8" conf="testing->default"/>
       
       <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="testing->default"/>
-      <dependency org="org.drools" name="drools-core" rev="6.1.0.Final"/>
+      <dependency org="org.drools" name="drools-core" rev="6.1.0.Final" conf="deploy->default;compile->default"/>
       
       
      
