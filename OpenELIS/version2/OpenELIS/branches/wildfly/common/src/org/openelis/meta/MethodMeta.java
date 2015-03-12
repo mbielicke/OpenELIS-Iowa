@@ -37,7 +37,7 @@ import org.openelis.ui.common.MetaMap;
 
 public class MethodMeta implements Meta, MetaMap{
 	
-	private static final String ID = "_method.id",
+	public static final String ID = "_method.id",
                                 NAME = "_method.name",
                                 DESCRIPTION	= "_method.description",
                                 REPORTING_DESCRIPTION = "_method.reportingDescription",
