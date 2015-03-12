@@ -61,6 +61,7 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
@@ -114,6 +115,7 @@ import org.openelis.modules.sample1.client.SampleOrganizationLookupUI;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
@@ -332,6 +334,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
+
+    protected enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA, ATTACHMENT
+    };
 
     protected static final String                       REPORT_TO_KEY = "reportTo",
                     BIRTH_HOSPITAL_KEY = "birthHospital";
@@ -1364,7 +1371,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
-                
+
                 revalidate(patientLastName);
                 revalidate(patientFirstName);
                 revalidate(patientBirthDate);
@@ -2069,7 +2076,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 nextOfKinGender.setValue(getNextOfKinGenderId());
                 nextOfKinRace.setValue(getNextOfKinRaceId());
                 nextOfKinEthnicity.setValue(getNextOfKinEthnicityId());
-                
+
                 revalidate(nextOfKinLastName);
                 revalidate(nextOfKinFirstName);
                 revalidate(nextOfKinBirthDate);
@@ -2279,15 +2286,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -2361,15 +2369,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -2842,6 +2851,44 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * handlers for the events fired by the tabs
          */
 
+        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid;
+                SampleItemViewDO item;
+                AnalysisViewDO ana;
+
+                uid = event.getUid();
+                item = null;
+                ana = null;
+                /*
+                 * if a node was selected in the tree, the uid won't be null and
+                 * the selected type will be either analysis or sample type;
+                 * otherwise, the two will be null and that would mean that the
+                 * tree got reloaded
+                 */
+                if (uid != null) {
+                    switch (event.getSelectedType()) {
+                        case ANALYSIS:
+                            ana = (AnalysisViewDO)manager.getObject(uid);
+                            break;
+                        case SAMPLE_ITEM:
+                            item = (SampleItemViewDO)manager.getObject(uid);
+                            break;
+                    }
+                }
+
+                /*
+                 * set the notification on the tab based on the node selected
+                 */
+                setTabNotification(Tabs.ANALYSIS_NOTES, item, ana);
+                setTabNotification(Tabs.SAMPLE_NOTES, item, ana);
+                setTabNotification(Tabs.STORAGE, item, ana);
+                setTabNotification(Tabs.QA_EVENTS, item, ana);
+                setTabNotification(Tabs.AUX_DATA, item, ana);
+                setTabNotification(Tabs.ATTACHMENT, item, ana);
+            }
+        });
+        
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -4281,6 +4328,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         AnalysisQaEventViewDO aqa;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
+        
+        /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
 
         /*
          * create the sciptlet object
@@ -4288,12 +4345,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSampleNeonatal().getId() == null && Action_Before.NEW_DOMAIN != action)
-            /*
-             * this is either an uncommitted sample or was a quick-entry sample
-             * before being loaded on the screen
-             */
-            data.addActionBefore(Action_Before.NEW_DOMAIN);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(manager);
@@ -4477,6 +4528,65 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
+     * Creates and sets notification, e.g. number of records, on the header of
+     * the specified tab
+     */
+    private void setTabNotification(Tabs tabs, SampleItemViewDO item, AnalysisViewDO ana) {
+        int count1, count2;
+        String label;
+
+        label = null;
+
+        if (manager != null) {
+            switch (tabs) {
+                case ANALYSIS_NOTES:
+                    count1 = 0;
+                    count2 = 0;
+                    if (ana != null) {
+                        count1 = manager.analysisExternalNote.get(ana) == null ? 0 : 1;
+                        count2 = manager.analysisInternalNote.count(ana);
+                    }
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case SAMPLE_NOTES:
+                    count1 = manager.sampleExternalNote.get() == null ? 0 : 1;
+                    count2 = manager.sampleInternalNote.count();
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case STORAGE:
+                    count1 = 0;
+                    if (item != null)
+                        count1 = manager.storage.count(item);
+                    else if (ana != null)
+                        count1 = manager.storage.count(ana);
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+                case QA_EVENTS:
+                    count1 = manager.qaEvent.count();
+                    count2 = ana != null ? manager.qaEvent.count(ana) : 0;
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case AUX_DATA:
+                    count1 = manager.auxData.count();
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+                case ATTACHMENT:
+                    count1 = manager.attachment.count();
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+            }
+        }
+
+        tabPanel.setTabNotification(tabs.ordinal(), label);
+    }
+
+    /**
      * Gets the next attachment reserved for the current user on Attachment
      * screen, if any, and adds it to the sample.
      */
@@ -4577,13 +4687,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
-                    }
-
-                    public void notFound() {
-                        /*
-                         * ignore because there's no sample with the accession
-                         * number entered by the user
-                         */
                     }
 
                     public void failure(Throwable e) {
@@ -4698,7 +4801,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     manager.getSampleNeonatal()
                            .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
                     orderId.setValue(eorderDO.getPaperOrderValidator());
-                    //TODO also implement revalidating widgets
+                    // TODO also implement revalidating widgets
                     // try {
                     // setBusy(Messages.get().gen_fetching());
                     // ret = SampleService1.get().importOrder(manager, ordId);
@@ -5640,6 +5743,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void lookupPatient(PatientDO data, boolean dontShowIfNoPatient) {
         if (patientLookup == null) {
             patientLookup = new PatientLookupUI() {
+                boolean nidUsedForOther;
+
                 public void select() {
                     boolean patChanged, nokChanged;
 
@@ -5650,7 +5755,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          * set the patient selected on the pop up as the next of
                          * kin
                          */
-                        setNextOfKin(patientLookup.getSelectedPatient(), null);
+                        setNextOfKin(selectedPatient, null);
                         nokChanged = true;
                     } else {
                         /*
@@ -5658,11 +5763,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          * and the patient relation as the next of kin, also set
                          * the relation
                          */
-                        setPatient(patientLookup.getSelectedPatient());
+                        setPatient(selectedPatient);
                         patChanged = true;
-                        if ( !isNextOfKinLocked && patientLookup.getSelectedNextOfKin() != null) {
-                            setNextOfKin(patientLookup.getSelectedNextOfKin(),
-                                         patientLookup.getSelectedNextOfKin().getRelationId());
+                        if ( !isNextOfKinLocked && selectedNextOfKin != null) {
+                            setNextOfKin(selectedNextOfKin, selectedNextOfKin.getRelationId());
                             nokChanged = true;
                         }
                     }
@@ -5676,11 +5780,39 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         screen.bus.fireEvent(new NextOfKinChangeEvent());
                     setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
                 }
 
                 public void cancel() {
+                    /*
+                     * if the query on the popup was executed only for NID and
+                     * that NID has been used for another patient, blank the
+                     * sample's next of kin's NID and refresh the screen
+                     */
+                    if (queryByNId && nidUsedForOther) {
+                        setNextOfKinNationalId(null);
+                        setPatient(manager.getSampleNeonatal().getNextOfKin());
+                    }
                     setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
+                }
+
+                @Override
+                public void patientsFound() {
+                    Integer id;
+                    PatientDO data;
+
+                    /*
+                     * if the query on the popup was executed only for NID, at
+                     * most one patient will be returned; find out if that
+                     * patient is the same as the sample's next of kin
+                     */
+                    if (queryByNId) {
+                        data = patientTable.getRowAt(0).getData();
+                        id = manager.getSampleNeonatal().getNextOfKinId();
+                        nidUsedForOther = id != null && !id.equals(data.getId());
+                    }
                 }
             };
         }
@@ -5753,14 +5885,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Sets the busy flag and the passed widget as the current one with focus;
      * looks up the patients matching the data entered in the patient's fields
      */
-    private void patientQueryChanged(Focusable queryWidget) {
+    private void patientQueryChanged(Focusable widget) {
         /*
          * look up patients only if the current patient is not locked
          */
         if ( !isPatientLocked) {
             isBusy = true;
             setSelectedAsNextOfKin = false;
-            focusedWidget = queryWidget;
+            focusedWidget = widget;
             lookupPatient(manager.getSampleNeonatal().getPatient(), true);
         }
     }
@@ -5769,14 +5901,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * Sets the busy flag and looks up the patients matching the data entered in
      * the next of kin's fields
      */
-    private void nextOfKinQueryChanged(Focusable queryWidget) {
+    private void nextOfKinQueryChanged(Focusable widget) {
         /*
-         * look up patients only if the current next of kin is not locked
+         * if the current next of kin is locked then look up patients only if
+         * the NID was changed
          */
-        if ( !isNextOfKinLocked) {
+        if ( !isNextOfKinLocked || widget == nextOfKinNationalId) {
             isBusy = true;
             setSelectedAsNextOfKin = true;
-            focusedWidget = queryWidget;
+            focusedWidget = widget;
             lookupPatient(manager.getSampleNeonatal().getNextOfKin(), true);
         }
     }

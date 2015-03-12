@@ -1,30 +1,31 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,8 +67,10 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class ToDoAnalyteReportBean {
 
     @Resource
@@ -87,9 +90,9 @@ public class ToDoAnalyteReportBean {
 
     @EJB
     private PrinterCacheBean    printers;
-    
+
     private static final Logger log = Logger.getLogger("openelis");
-    
+
     /*
      * Returns the prompt for To-Do Analyte Report
      */
@@ -144,7 +147,7 @@ public class ToDoAnalyteReportBean {
             orderBy.add(2, new OptionListItem("t_name,m_name", "Test & Method"));
             orderBy.add(3, new OptionListItem("status", "Analysis Status"));
             orderBy.add(4, new OptionListItem("t1_name,m1_name", "Prep Test & Method"));
-            
+
             p.add(new Prompt("ORDER_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
                                                            .setWidth(250)
                                                            .setOptionList(orderBy)
@@ -177,8 +180,7 @@ public class ToDoAnalyteReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String fromDate, toDate, section, test, prepTest, analysisStatus, userName,
-               orderBy, printer, printstat, dir;
+        String fromDate, toDate, section, test, prepTest, analysisStatus, userName, orderBy, printer, printstat, dir;
 
         /*
          * push status into session so we can query it while the report is
@@ -204,7 +206,8 @@ public class ToDoAnalyteReportBean {
             DataBaseUtil.isEmpty(orderBy) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify From Date, To Date, Order By, and Printer for this report");
         /*
-         * the following values are appended to the dates to make them jasper report compatible
+         * the following values are appended to the dates to make them jasper
+         * report compatible
          */
         fromDate += ":00";
         toDate += ":59";
@@ -259,7 +262,7 @@ public class ToDoAnalyteReportBean {
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
@@ -314,12 +317,12 @@ public class ToDoAnalyteReportBean {
             for (TestViewDO n : t)
                 if ("N".equals(n.getIsActive()))
                     l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
-                                                                       n.getMethodName() + " [" +
-                                                                       n.getActiveBegin() + ".." +
-                                                                       n.getActiveEnd() + "]"));
+                                                                   n.getMethodName() + " [" +
+                                                                   n.getActiveBegin() + ".." +
+                                                                   n.getActiveEnd() + "]"));
                 else
                     l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
-                                                                       n.getMethodName()));
+                                                                   n.getMethodName()));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not fetch tests", e);
         }
@@ -344,20 +347,31 @@ public class ToDoAnalyteReportBean {
 
         return l;
     }
-    
+
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("todoAnalyte", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("todoAnalyte", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for todo analyte report");
+            }
+        }
         return path;
     }
 }

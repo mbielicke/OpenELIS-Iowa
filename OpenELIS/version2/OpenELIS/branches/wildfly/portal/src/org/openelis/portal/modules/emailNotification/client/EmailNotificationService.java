@@ -53,6 +53,13 @@ public class EmailNotificationService implements EmailNotificationServiceInt,
     }
 
     @Override
+    public void fetchParametersByOrganizationIds(ArrayList<Integer> ids,
+                                                 AsyncCallback<ArrayList<OrganizationParameterDO>> callback) {
+        service.fetchParametersByOrganizationIds(ids, callback);
+
+    }
+
+    @Override
     public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.query(query, callback);
     }
@@ -87,6 +94,15 @@ public class EmailNotificationService implements EmailNotificationServiceInt,
 
         callback = new Callback<ArrayList<OrganizationParameterDO>>();
         service.fetchParametersByOrganizationId(id, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<OrganizationParameterDO> fetchParametersByOrganizationIds(ArrayList<Integer> ids) throws Exception {
+        Callback<ArrayList<OrganizationParameterDO>> callback;
+
+        callback = new Callback<ArrayList<OrganizationParameterDO>>();
+        service.fetchParametersByOrganizationIds(ids, callback);
         return callback.getResult();
     }
 

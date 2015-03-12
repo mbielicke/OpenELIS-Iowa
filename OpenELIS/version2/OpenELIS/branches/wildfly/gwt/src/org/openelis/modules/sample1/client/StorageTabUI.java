@@ -179,6 +179,8 @@ public class StorageTabUI extends Screen {
                                                c,
                                                new Exception(Messages.get()
                                                                      .storage_invalidDateRangeException()));
+                        else
+                            table.clearExceptions(r, c);
                         break;
                     case 3:
                         data.setCheckout((Datetime)val);
@@ -187,6 +189,8 @@ public class StorageTabUI extends Screen {
                                                c,
                                                new Exception(Messages.get()
                                                                      .storage_invalidDateRangeException()));
+                        else
+                            table.clearExceptions(r, c);
                         break;
                 }
             }

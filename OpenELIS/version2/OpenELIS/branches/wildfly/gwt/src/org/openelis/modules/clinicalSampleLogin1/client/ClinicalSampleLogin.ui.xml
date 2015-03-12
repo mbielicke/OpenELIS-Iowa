@@ -84,7 +84,7 @@
                 </td>
                 <td>
                   <g:HorizontalPanel>
-                    <w:TextBox ui:field="orderId" width="103px" field="String" />
+                    <w:TextBox ui:field="orderId" width="103px" case = "UPPER" field="String"/>
                     <g:AbsolutePanel>
                       <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}"
                         text="" css="{res.FormFieldButton}" />
@@ -208,7 +208,7 @@
                       </td>
                       <td colspan="5">
                         <w:TextBox ui:field="patientAddrStreetAddress" field="String"
-                          width="232px" case="UPPER" />
+                          width="233px" case="UPPER" />
                       </td>
                     </tr>
                     <tr>
@@ -229,10 +229,17 @@
                     </tr>
                     <tr>
                       <td class="{res.style.Prompt}">
+                        <ui:text from="{msg.address_phone}:" />
+                      </td>
+                      <td>
+                        <w:TextBox ui:field="patientAddrHomePhone" field="String" width="80px"
+                        maxLength="12" mask="{msg.gen_phonePattern}" />
+                      </td>
+                      <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_gender}:" />
                       </td>
                       <td>
-                        <w:Dropdown ui:field="patientGender" width="65px" dropHeight="100px"
+                        <w:Dropdown ui:field="patientGender" width="75px" dropHeight="100px"
                           field="String" />
                       </td>
                     </tr>
@@ -240,8 +247,8 @@
                       <td class="{res.style.Prompt}">
                         <ui:text from="{msg.patient_race}:" />
                       </td>
-                      <td>
-                        <w:Dropdown ui:field="patientRace" width="230px" dropWidth="235px"
+                      <td colspan="3">
+                        <w:Dropdown ui:field="patientRace" width="233px" dropWidth="235px"
                           field="String" />
                       </td>
                     </tr>
@@ -266,7 +273,7 @@
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
             </g:layer>
             <g:layer top="0px" bottom="20px" right="14px" width="40%">
-              <w:TitledPanel title="{msg.sampleClinical_providerOrganizationInfo}">
+              <w:TitledPanel title="{msg.sample_providerOrganizationInfo}">
                 <g:HTMLPanel>
                   <table class="{res.style.Form}">
                     <tr>
@@ -275,7 +282,7 @@
                       </td>
                       <td>
                         <w:AutoComplete ui:field="providerLastName" width="95px"
-                          dropWidth="520px" case="UPPER"
+                          dropWidth="520px" dropHeight="400px" case="UPPER"
                         >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
@@ -343,17 +350,20 @@
                       <td colspan="3">
                         <g:HorizontalPanel>
                           <w:AutoComplete ui:field="reportToName" width="165px" case="UPPER"
-                            dropWidth="490px"
+                            dropWidth="565px"
                           >
                             <w:popup>
                               <t:Table visibleRows="10" header="true">
-                                <t:Column width="200" label="{msg.gen_name}">
+                                <t:Column width="250" label="{msg.gen_name}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="130" label="{msg.address_street}">
+                                <t:Column width="70" label="{msg.address_aptSuite}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="120" label="{msg.address_city}">
+                                <t:Column width="110" label="{msg.address_street}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="100" label="{msg.address_city}">
                                   <t:LabelCell />
                                 </t:Column>
                                 <t:Column width="20" label="{msg.address_st}">
@@ -375,18 +385,21 @@
                       </td>
                       <td colspan="3">
                         <g:HorizontalPanel>
-                          <w:AutoComplete ui:field="billToName" width="165"
-                            dropWidth="490px" case="UPPER"
+                          <w:AutoComplete ui:field="billToName" width="165px" case="UPPER"
+                            dropWidth="565px"
                           >
                             <w:popup>
                               <t:Table visibleRows="10" header="true">
-                                <t:Column width="200" label="{msg.gen_name}">
+                                <t:Column width="250" label="{msg.gen_name}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="130" label="{msg.address_street}">
+                                <t:Column width="70" label="{msg.address_aptSuite}">
                                   <t:LabelCell />
                                 </t:Column>
-                                <t:Column width="120" label="{msg.address_city}">
+                                <t:Column width="110" label="{msg.address_street}">
+                                  <t:LabelCell />
+                                </t:Column>
+                                <t:Column width="100" label="{msg.address_city}">
                                   <t:LabelCell />
                                 </t:Column>
                                 <t:Column width="20" label="{msg.address_st}">

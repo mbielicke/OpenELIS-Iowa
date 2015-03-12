@@ -130,7 +130,7 @@
 									<ui:text from="{msg.sample_project}:" />
 								</td>
 								<td colspan="3">
-									<w:Dropdown ui:field="projectCode" width="178px"
+									<w:MultiDropdown ui:field="projectCode" width="178px"
 										field="Integer" enabled="true">
 										<w:popup>
 											<t:Table visibleRows="10" header="true">
@@ -142,7 +142,7 @@
 												</t:Column>
 											</t:Table>
 										</w:popup>
-									</w:Dropdown>
+									</w:MultiDropdown>
 								</td>
 								<td>
 									<w:Help css="{res.help}" text="{msg.dataView_help_project}"

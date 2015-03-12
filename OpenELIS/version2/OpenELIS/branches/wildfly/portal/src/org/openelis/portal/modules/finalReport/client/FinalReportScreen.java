@@ -30,7 +30,6 @@ import org.openelis.ui.widget.DateHelper;
 import org.openelis.ui.widget.Item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -39,6 +38,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -632,6 +632,7 @@ public class FinalReportScreen extends Screen {
     @SuppressWarnings("deprecation")
     private void setTableData(ArrayList<SampleViewVO> samples) {
         String completed, inProgress;
+        StringBuffer additional;
         SampleViewVO sample;
         DateHelper dh;
         CheckBox check;
@@ -657,13 +658,13 @@ public class FinalReportScreen extends Screen {
         ui.getTable().setText(0, 1, Messages.get().sample_accessionNumber());
         ui.getTable().setText(0, 2, Messages.get().sample_collectedDate());
         ui.getTable().setText(0, 3, Messages.get().finalReport_referenceInfo());
-        ui.getTable().setText(0, 4, Messages.get().finalReport_select_status());
-        ui.getTable().setText(0, 5, Messages.get().sample_project());
+        ui.getTable().setText(0, 4, Messages.get().finalReport_additionalInfo());
+        ui.getTable().setText(0, 5, Messages.get().finalReport_select_status());
+        ui.getTable().setText(0, 6, Messages.get().sample_project());
         ui.getTable().getRowFormatter().setStyleName(0, UIResources.INSTANCE.table().Header());
-        ui.getTable().getColumnFormatter().getElement(1).getStyle().setTextAlign(TextAlign.CENTER);
-        ui.getTable().getColumnFormatter().getElement(4).getStyle().setTextAlign(TextAlign.CENTER);
         ui.getTable().getElement().getStyle().setFontSize(12, Unit.PX);
 
+        additional = new StringBuffer();
         dh = new DateHelper();
         dh.setEnd(Datetime.MINUTE);
         completed = Messages.get().sampleStatus_completed();
@@ -697,12 +698,61 @@ public class FinalReportScreen extends Screen {
              * the patient's last name for clinical samples
              */
             if ( !DataBaseUtil.isDifferent(sample.getDomain(), "E") ||
-                !DataBaseUtil.isDifferent(sample.getDomain(), "S")) {
+                !DataBaseUtil.isDifferent(sample.getDomain(), "S") ||
+                !DataBaseUtil.isDifferent(sample.getDomain(), "W")) {
                 if (sample.getCollector() != null)
                     ui.getTable().setText(j, 3, "[collector] " + sample.getCollector());
             } else if ( !DataBaseUtil.isDifferent(sample.getDomain(), "C") &&
                        sample.getPatientLastName() != null) {
                 ui.getTable().setText(j, 3, "[patient] " + sample.getPatientLastName());
+            }
+
+            //@formatter:off
+            /*
+             * display the following data in the 
+             * "Additional Information" column, if available:
+             * Environmental: Location and Location City
+             * Clinical: Provider and Org Name
+             * SDWIS: Location and PWS Name, ID
+             * Private Well: Location and Location City
+             */
+            //@formatter:on
+            if ( !DataBaseUtil.isDifferent(sample.getDomain(), "E") ||
+                !DataBaseUtil.isDifferent(sample.getDomain(), "W")) {
+                if (sample.getLocation() != null) {
+                    additional.append(sample.getLocation());
+                }
+                if (sample.getLocationCity() != null) {
+                    if (additional.length() > 0)
+                        additional.append("<br/>");
+                    additional.append(sample.getLocationCity());
+                }
+                ui.getTable().setHTML(j, 4, additional.toString());
+                additional.setLength(0);
+            } else if ( !DataBaseUtil.isDifferent(sample.getDomain(), "S")) {
+                if (sample.getLocation() != null) {
+                    additional.append(sample.getLocation());
+                }
+                if (sample.getPwsNumber0() != null && sample.getPwsName() != null) {
+                    if (additional.length() > 0)
+                        additional.append("<br/>");
+                    additional.append(sample.getPwsNumber0())
+                              .append("-")
+                              .append(sample.getPwsName());
+                }
+                ui.getTable().setHTML(j, 4, additional.toString());
+                additional.setLength(0);
+            } else if ( !DataBaseUtil.isDifferent(sample.getDomain(), "C")) {
+                if (sample.getProviderName() != null) {
+                    additional.append(sample.getProviderName());
+                }
+                if (sample.getReportToName() != null) {
+                    if (additional.length() > 0)
+                        additional.append("<br/>");
+                    additional.append(sample.getReportToName());
+                }
+                ui.getTable().setHTML(j, 4, additional.toString());
+                additional.setLength(0);
             }
 
             /*
@@ -711,12 +761,15 @@ public class FinalReportScreen extends Screen {
              * "In Progress".
              */
             ui.getTable().setText(j,
-                                  4,
+                                  5,
                                   DataBaseUtil.isSame(Constants.dictionary().SAMPLE_RELEASED,
                                                       sample.getSampleStatusId()) ? completed
                                                                                  : inProgress);
-            ui.getTable().setText(j, 5, sample.getProjectName());
-
+            ui.getTable().setText(j, 6, sample.getProjectName());
+            /*
+             * align all cells to the top
+             */
+            ui.getTable().getRowFormatter().setVerticalAlign(j, HasVerticalAlignment.ALIGN_TOP);
         }
         /*
          * display how many samples were returned

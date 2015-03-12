@@ -3,6 +3,7 @@ package org.openelis.portal.modules.emailNotification.client;
 import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.openelis.domain.Constants;
@@ -166,21 +167,37 @@ public class EmailNotificationScreen extends Screen {
         String email, filter, filterValue, value[];
         OrganizationParameterDO data;
         Row row;
+        ArrayList<Integer> orgIds;
         ArrayList<Row> model;
         ArrayList<OrganizationParameterDO> params, list;
+        HashMap<Integer, ArrayList<OrganizationParameterDO>> orgMap;
 
         model = new ArrayList<Row>();
         if (organizationList == null)
             return model;
 
+        orgIds = new ArrayList<Integer>();
+        for (OrganizationViewDO org : organizationList) {
+            orgIds.add(org.getId());
+        }
         try {
-            for (OrganizationViewDO org : organizationList) {
-                try {
-                    params = EmailNotificationService.get()
-                                                     .fetchParametersByOrganizationId(org.getId());
-                } catch (NotFoundException e) {
-                    continue;
-                }
+            params = EmailNotificationService.get().fetchParametersByOrganizationIds(orgIds);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            return model;
+        }
+
+        orgMap = new HashMap<Integer, ArrayList<OrganizationParameterDO>>();
+        for (OrganizationParameterDO param : params) {
+            if (orgMap.get(param.getOrganizationId()) == null)
+                orgMap.put(param.getOrganizationId(), new ArrayList<OrganizationParameterDO>());
+            orgMap.get(param.getOrganizationId()).add(param);
+        }
+
+        params = null;
+        try {
+            for (Integer key : orgMap.keySet()) {
+                params = orgMap.get(key);
                 for (i = 0; i < params.size(); i++ ) {
                     data = params.get(i);
                     isRel = Constants.dictionary().RELEASED_REPORTTO_EMAIL.equals(data.getTypeId());
@@ -194,7 +211,7 @@ public class EmailNotificationScreen extends Screen {
                     filterValue = value[2];
 
                     row = new Row(6);
-                    row.setCell(0, org.getId());
+                    row.setCell(0, data.getOrganizationId());
                     row.setCell(1, email);
                     row.setCell(2, filter);
                     row.setCell(3, filterValue);

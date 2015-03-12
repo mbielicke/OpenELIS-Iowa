@@ -199,7 +199,7 @@ public class BuildKitsReportBean {
         /*
          * print the labels and send it to printer
          */
-        path = ReportUtil.createTempFile("loginlabel", ".txt", null);
+        path = ReportUtil.createTempFile("kitlabel", ".txt", null);
         ps = new PrintStream(Files.newOutputStream(path));
         for (i = startNum; i <= endNum; i++) {
             for (j = 0; j < numLabels; j++) {

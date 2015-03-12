@@ -153,7 +153,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'type')" />:
                 </text>
-                <dropdown key="{meta:getTypeId()}" width="80" tab="{meta:getNpi()},{meta:getMiddleName()}" field="Integer" required="true" />
+                <dropdown key="{meta:getTypeId()}" width="200" tab="{meta:getNpi()},{meta:getMiddleName()}" field="Integer" required="false" />
               </row>
               <row>
                 <text style="Prompt">

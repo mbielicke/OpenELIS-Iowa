@@ -67,6 +67,8 @@ import org.openelis.ui.widget.tree.event.BeforeNodeCloseEvent;
 import org.openelis.ui.widget.tree.event.BeforeNodeCloseHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -87,7 +89,7 @@ public abstract class TestSelectionLookupUI extends Screen {
     interface TestSelectionLookupUIBinder extends UiBinder<Widget, TestSelectionLookupUI> {
     };
 
-    private static TestSelectionLookupUIBinder uiBinder = GWT.create(TestSelectionLookupUIBinder.class);
+    private static TestSelectionLookupUIBinder uiBinder  = GWT.create(TestSelectionLookupUIBinder.class);
 
     @UiField
     protected Button                           copyToEmptyButton, copyToAllButton, okButton;
@@ -99,7 +101,10 @@ public abstract class TestSelectionLookupUI extends Screen {
     protected Dropdown<Integer>                section;
 
     protected ArrayList<SampleTestRequestVO>   tests, selectedTests;
+
     protected HashMap<Integer, SampleManager1> managersById;
+
+    protected static final String              TEST_LEAF = "test";
 
     public TestSelectionLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -112,13 +117,13 @@ public abstract class TestSelectionLookupUI extends Screen {
                 copyToEmptyButton.setEnabled(false);
             }
         });
-        
+
         addScreenHandler(copyToAllButton, "copyToAllButton", new ScreenHandler<String>() {
             public void onStateChange(StateChangeEvent event) {
                 copyToAllButton.setEnabled(false);
             }
         });
-        
+
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 tree.setRoot(getRoot());
@@ -135,7 +140,7 @@ public abstract class TestSelectionLookupUI extends Screen {
                 Node selection;
 
                 selection = tree.getNodeAt(event.getSelectedItem());
-                if (selection != null && "test".equals(selection.getType()))
+                if (selection != null && TEST_LEAF.equals(selection.getType()))
                     enable = true;
                 else
                     enable = false;
@@ -160,7 +165,7 @@ public abstract class TestSelectionLookupUI extends Screen {
                 TestData td;
 
                 node = tree.getNodeAt(event.getRow());
-                if ( !"test".equals(node.getType()) || event.getCol() == 0) {
+                if ( !TEST_LEAF.equals(node.getType()) || event.getCol() == 0) {
                     event.cancel();
                     return;
                 }
@@ -206,7 +211,7 @@ public abstract class TestSelectionLookupUI extends Screen {
                 TestData td;
 
                 node = tree.getNodeAt(event.getRow());
-                if ("test".equals(node.getType()) && event.getCol() == 1) {
+                if (TEST_LEAF.equals(node.getType()) && event.getCol() == 1) {
                     td = node.getData();
                     td.test.setSectionId((Integer)tree.getValueAt(event.getRow(), 1));
                 }
@@ -234,10 +239,13 @@ public abstract class TestSelectionLookupUI extends Screen {
     }
 
     /**
-     * refreshes the screen's view by setting the state and loading data in
-     * widgets
+     * Refreshes the screen's view by setting the state and loading data in
+     * widgets; sets the focus to the tree so that after this screen is brought
+     * up, no other screen has the focus
      */
     public void setData(ArrayList<SampleManager1> managers, ArrayList<SampleTestRequestVO> tests) {
+        ScheduledCommand cmd;
+
         this.tests = tests;
 
         if (managersById == null)
@@ -245,9 +253,20 @@ public abstract class TestSelectionLookupUI extends Screen {
         managersById.clear();
         for (SampleManager1 man : managers)
             managersById.put(man.getSample().getId(), man);
-        
+
         setState(state);
         fireDataChange();
+        /*
+         * without this scheduled command, setting focus on the tree doesn't
+         * work
+         */
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                okButton.setFocus(true);
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }
 
     /**
@@ -269,7 +288,7 @@ public abstract class TestSelectionLookupUI extends Screen {
 
     private Node getRoot() {
         int i;
-        boolean isPrep, newAnode;
+        boolean isPrep, newAnode, firstSample;
         Integer anaId, samId, resId;
         String accession;
         Node root, anode, tnode;
@@ -300,9 +319,10 @@ public abstract class TestSelectionLookupUI extends Screen {
         res = null;
 
         isPrep = false;
+        firstSample = true;
         for (SampleTestRequestVO test : tests) {
             newAnode = false;
-            if (!test.getSampleId().equals(samId)) {
+            if (firstSample || !DataBaseUtil.isSame(test.getSampleId(), samId)) {
                 manager = managersById.get(test.getSampleId());
                 samId = test.getSampleId();
                 if (manager.getSample().getAccessionNumber() != null)
@@ -310,15 +330,17 @@ public abstract class TestSelectionLookupUI extends Screen {
                 else
                     accession = Messages.get().testSelection_newAccession();
                 newAnode = true;
+                firstSample = false;
             }
-                           
-            if (!test.getAnalysisId().equals(anaId)) {
-                ana = (AnalysisViewDO)manager.getObject(Constants.uid().getAnalysis(test.getAnalysisId()));
+
+            if ( !DataBaseUtil.isSame(test.getAnalysisId(), anaId)) {
+                ana = (AnalysisViewDO)manager.getObject(Constants.uid()
+                                                                 .getAnalysis(test.getAnalysisId()));
                 anaId = test.getAnalysisId();
                 newAnode = true;
             }
-            
-            if (!test.getResultId().equals(resId)) {
+
+            if ( !DataBaseUtil.isSame(test.getResultId(), equals(resId))) {
                 res = (ResultViewDO)manager.getObject(Constants.uid().getResult(test.getResultId()));
                 resId = test.getResultId();
                 newAnode = true;
@@ -363,7 +385,7 @@ public abstract class TestSelectionLookupUI extends Screen {
                  * the node for the prep/reflex test
                  */
                 tnode = new Node(3);
-                tnode.setType("test");
+                tnode.setType(TEST_LEAF);
 
                 labels.clear();
                 labels.add(testTM.getTest().getName());
@@ -521,7 +543,7 @@ public abstract class TestSelectionLookupUI extends Screen {
 
         for (i = 0; i < tree.getRowCount(); i++ ) {
             item = tree.getNodeAt(i);
-            if ("test".equals(item.getType()) && item.getCell(1) == null) {
+            if (TEST_LEAF.equals(item.getType()) && item.getCell(1) == null) {
                 td = item.getData();
                 tsm = td.testManager.getTestSections();
                 /*
@@ -561,7 +583,7 @@ public abstract class TestSelectionLookupUI extends Screen {
 
         for (i = 0; i < tree.getRowCount(); i++ ) {
             item = tree.getNodeAt(i);
-            if ("test".equals(item.getType())) {
+            if (TEST_LEAF.equals(item.getType())) {
                 td = item.getData();
                 tsm = td.testManager.getTestSections();
                 /*

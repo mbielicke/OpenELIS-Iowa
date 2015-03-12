@@ -76,8 +76,8 @@ public class SDWISTabUI extends Screen {
     private static SDWISTabUIBinder uiBinder = GWT.create(SDWISTabUIBinder.class);
 
     @UiField
-    protected TextBox<String>       sdwisPwsNumber0, sdwisPwsName, sdwisFacilityId, sdwisSamplePointId,
-                    sdwisLocation, sdwisCollector;
+    protected TextBox<String>       sdwisPwsNumber0, sdwisPwsName, sdwisFacilityId,
+                    sdwisSamplePointId, sdwisLocation, sdwisCollector;
 
     @UiField
     protected Dropdown<Integer>     sdwisSampleTypeId, sdwisSampleCategoryId;
@@ -148,7 +148,18 @@ public class SDWISTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 sdwisPwsName.setEnabled(false);
-                sdwisPwsName.setQueryMode( (isState(QUERY) && canQuery));
+            }
+
+            public Object getQuery() {
+                /*
+                 * since this field is not set in query mode, the value doesn't
+                 * get cleared when StateChangeEvent is fired; it also doesn't
+                 * get cleared if the tab is not visible, because
+                 * DataChangeEvent is not fired in that case; this makes sure
+                 * that the value doesn't get included in the query sent to the
+                 * back-end
+                 */
+                return null;
             }
         });
 
@@ -281,25 +292,28 @@ public class SDWISTabUI extends Screen {
                 return forward ? sdwisPriority : sdwisSamplePointId;
             }
         });
-        
-        addScreenHandler(sdwisPriority, SampleMeta.getSDWISPriority(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sdwisPriority.setValue(getPriority());
-            }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setPriority(event.getValue());
-            }
+        addScreenHandler(sdwisPriority,
+                         SampleMeta.getSDWISPriority(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sdwisPriority.setValue(getPriority());
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                sdwisPriority.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                sdwisPriority.setQueryMode(isState(QUERY));
-            }
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPriority(event.getValue());
+                             }
 
-            public Widget onTab(boolean forward) {
-                return forward ? sdwisCollector : sdwisLocation;
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 sdwisPriority.setEnabled((isState(QUERY) && canQuery) ||
+                                                          (canEdit && isState(ADD, UPDATE)));
+                                 sdwisPriority.setQueryMode(isState(QUERY) && canQuery);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sdwisCollector : sdwisLocation;
+                             }
+                         });
 
         addScreenHandler(sdwisCollector,
                          SampleMeta.getSDWISCollector(),
@@ -586,7 +600,7 @@ public class SDWISTabUI extends Screen {
     private void setSamplePointId(String samplePointId) {
         manager.getSampleSDWIS().setSamplePointId(samplePointId);
     }
-    
+
     /**
      * returns the priority or null if the manager is null or if this is not an
      * sdwis sample

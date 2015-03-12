@@ -226,6 +226,14 @@ public class SampleMeta implements Meta, MetaMap {
                     CLIN_PATIENT_ADDR_FAX_PHONE = "_clinicalPatientAddress.faxPhone",
                     CLIN_PATIENT_ADDR_EMAIL = "_clinicalPatientAddress.email",
                     CLIN_PATIENT_ADDR_COUNTRY = "_clinicalPatientAddress.country",
+                    
+                    // sample pt
+                    PT_ID = "_samplePT.id",
+                    PT_SAMPLE_ID = "_samplePT.sampleId",
+                    PT_PT_PROVIDER_ID = "_samplePT.ptProviderId",
+                    PT_SERIES = "_samplePT.series",
+                    PT_DUE_DATE = "_samplePT.dueDate",
+                    PT_ADDITIONAL_DOMAIN = "_samplePT.additionalDomain",
 
                     ITEM_ID = "_sampleItem.id",
                     ITEM_SAMPLE_ID = "_sampleItem.sampleId",
@@ -554,6 +562,12 @@ public class SampleMeta implements Meta, MetaMap {
                                                   CLIN_PATIENT_ADDR_FAX_PHONE,
                                                   CLIN_PATIENT_ADDR_EMAIL,
                                                   CLIN_PATIENT_ADDR_COUNTRY,
+                                                  PT_ID,
+                                                  PT_SAMPLE_ID,
+                                                  PT_PT_PROVIDER_ID,
+                                                  PT_SERIES,
+                                                  PT_DUE_DATE,
+                                                  PT_ADDITIONAL_DOMAIN,
                                                   ITEM_ID,
                                                   ITEM_SAMPLE_ID,
                                                   ITEM_SAMPLE_ITEM_ID,
@@ -1350,6 +1364,27 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getClinPatientAddrCountry() {
         return CLIN_PATIENT_ADDR_COUNTRY;
     }
+    
+    public static String getPTSampleId() {
+        return PT_SAMPLE_ID;
+    }
+    
+    public static String getPTPTProviderId() {
+        return PT_PT_PROVIDER_ID;
+    }
+    
+    public static String getPTSeries() {
+        return PT_SERIES;
+    }
+
+    public static String getPTDueDate() {
+        return PT_DUE_DATE;
+    }
+    
+    public static String getPTAdditionalDomain() {
+        return PT_ADDITIONAL_DOMAIN;
+    }
+                    
 
     public static String getItemId() {
         return ITEM_ID;
@@ -1957,6 +1992,10 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("clinicalProvider.") > -1)
             from += " LEFT JOIN _sampleClinical.provider _clinicalProvider ";
+        
+        // sample pt
+        if (where.indexOf("samplePT.") > -1)
+            from += ", IN (_sample.samplePT) _samplePT ";
 
         if (where.indexOf("eorder.") > -1)
             from += ", IN (_sample.eorder) _eorder ";

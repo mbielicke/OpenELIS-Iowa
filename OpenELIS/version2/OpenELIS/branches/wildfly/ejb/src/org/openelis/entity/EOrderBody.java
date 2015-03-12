@@ -30,7 +30,6 @@ package org.openelis.entity;
  */
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,21 +39,15 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "EOrderBody.FetchByEOrderId",
                            query = "select new org.openelis.domain.EOrderBodyDO(eb.id, eb.eorderId, eb.xml)"
                                    + " from EOrderBody eb where eb.eorderId = :eorderId")})
 @Entity
 @Table(name = "eorder_body")
-@EntityListeners({AuditUtil.class})
-public class EOrderBody implements Auditable, Cloneable {
+public class EOrderBody {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,9 +63,6 @@ public class EOrderBody implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eorder_id", insertable = false, updatable = false)
     private EOrder     eOrder;
-
-    @Transient
-    private EOrderBody original;
 
     public Integer getId() {
         return id;
@@ -107,29 +97,5 @@ public class EOrderBody implements Auditable, Cloneable {
 
     public void seteOrder(EOrder eOrder) {
         this.eOrder = eOrder;
-    }
-
-    @Override
-    public void setClone() {
-        try {
-            original = (EOrderBody)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Audit getAudit(Integer activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().EORDER_BODY);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("eorder_id", eorderId, original.eorderId)
-                 .setField("xml", xml, original.xml);
-
-        return audit;
     }
 }

@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,6 +8,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -34,21 +36,25 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class VerificationReportBean {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean session; 
-    
+    private SessionCacheBean    session;
+
     @EJB
-    private PrinterCacheBean printers;
-    
+    private PrinterCacheBean    printers;
+
     @EJB
-    private UserCacheBean    userCache;
+    private UserCacheBean       userCache;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for a single re-print
@@ -60,11 +66,10 @@ public class VerificationReportBean {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("USER_LIST", Prompt.Type.ARRAY)
-                    .setPrompt("User ID:")
-                    .setWidth(200)
-                    .setOptionList(getUsers())
-                    .setMultiSelect(true));
+            p.add(new Prompt("USER_LIST", Prompt.Type.ARRAY).setPrompt("User ID:")
+                                                            .setWidth(200)
+                                                            .setOptionList(getUsers())
+                                                            .setMultiSelect(true));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
@@ -92,10 +97,9 @@ public class VerificationReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String /*beginEntered, endEntered,*/ userIds, userWhere, userNames, printer,
-               dir, printstat, userName, token;
+        String /* beginEntered, endEntered, */userIds, userWhere, userNames, printer, dir, printstat, userName, token;
         StringTokenizer tokenizer;
-        SystemUserVO  sysUserVO;
+        SystemUserVO sysUserVO;
 
         /*
          * push status into session so we can query it while the report is
@@ -109,17 +113,17 @@ public class VerificationReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
         userName = User.getName(ctx);
-        
-//        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
-//        if (beginEntered != null && beginEntered.length() > 0)
-//            beginEntered += ":00";
-//        endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED");
-//        if (endEntered != null && endEntered.length() > 0)
-//            endEntered += ":59";
+
+        // beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
+        // if (beginEntered != null && beginEntered.length() > 0)
+        // beginEntered += ":00";
+        // endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED");
+        // if (endEntered != null && endEntered.length() > 0)
+        // endEntered += ":59";
         userWhere = ReportUtil.getListParameter(param, "USER_LIST");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        
-        if (!DataBaseUtil.isEmpty(userWhere)) {
+
+        if ( !DataBaseUtil.isEmpty(userWhere)) {
             userNames = "";
             if (userWhere.startsWith("in (")) {
                 userIds = userWhere.substring(4, userWhere.length() - 2);
@@ -151,7 +155,7 @@ public class VerificationReportBean {
             userNames = userName;
             userWhere = " and h.system_user_id = " + userCache.getId();
         }
-        
+
         /*
          * start the report
          */
@@ -164,8 +168,8 @@ public class VerificationReportBean {
             dir = ReportUtil.getResourcePath(url);
 
             jparam = new HashMap<String, Object>();
-//            jparam.put("BEGIN_ENTERED", beginEntered);
-//            jparam.put("END_ENTERED", endEntered);
+            // jparam.put("BEGIN_ENTERED", beginEntered);
+            // jparam.put("END_ENTERED", endEntered);
             jparam.put("USER_WHERE", userWhere);
             jparam.put("USER_NAMES", userNames);
             jparam.put("USER_NAME", userName);
@@ -177,13 +181,18 @@ public class VerificationReportBean {
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
-            
+
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(path, userName, printer, 1, true, "Duplex=DuplexNoTumble");
+                printstat = ReportUtil.print(path,
+                                             userName,
+                                             printer,
+                                             1,
+                                             true,
+                                             "Duplex=DuplexNoTumble");
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 status.setMessage(path.getFileName().toString())
@@ -221,20 +230,31 @@ public class VerificationReportBean {
 
         return l;
     }
-    
+
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("verification", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("verification", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for verification report");
+            }
+        }
         return path;
     }
 }

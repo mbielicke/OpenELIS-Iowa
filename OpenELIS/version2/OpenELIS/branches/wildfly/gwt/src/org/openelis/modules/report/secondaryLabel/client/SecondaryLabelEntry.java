@@ -18,7 +18,7 @@ public class SecondaryLabelEntry implements EntryPoint, ShowScreenHandler {
 
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.SECONDARY_LABEL, this);
+        ScreenBus.get().addHandler(ScreenBus.SECONDARY_LABEL_REPORT, this);
     }
 
     @Override
@@ -27,10 +27,10 @@ public class SecondaryLabelEntry implements EntryPoint, ShowScreenHandler {
             public void onSuccess() {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
-                    window.setName(Messages.get().secondaryLabel_secondaryLabel());
+                    window.setName(Messages.get().secondaryLabel_secondaryLabels());
                     window.setSize("410px", "450px");
                     window.setContent(new SecondaryLabelScreenUI(window));
-                    OpenELIS.getBrowser().addWindow(window, "secondaryLabel");
+                    OpenELIS.getBrowser().addWindow(window, "secondaryLabels");
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());

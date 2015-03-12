@@ -28,6 +28,8 @@ package org.openelis.modules.report.finalReportSingleReprint.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -80,6 +82,7 @@ public class FinalReportSingleReprintScreen extends Screen {
     private AppButton                            runReportButton, resetButton;
     private FinalReportSingleReprintReportScreen finalReportScreen;
     private String                               VIEW_PDF_KEY = "-view-";
+    private Integer                              orgGeneralFaxNumberId;
 
     public FinalReportSingleReprintScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportSingleReprintDef.class));
@@ -87,6 +90,14 @@ public class FinalReportSingleReprintScreen extends Screen {
         setWindow(window);
 
         reset();
+        
+        try {
+            CategoryCache.getBySystemNames("parameter_type");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
@@ -389,6 +400,13 @@ public class FinalReportSingleReprintScreen extends Screen {
         }
 
         printer.setModel(model);
+
+        try {
+            orgGeneralFaxNumberId = DictionaryCache.getIdBySystemName("org_general_fax_number");
+        } catch (Exception e) {
+            window.close();
+            Window.alert("Unable to fetch dictionary id for 'org_general_fax_number'");
+        }
     }            
     
     private void runReport() {
@@ -710,8 +728,9 @@ public class FinalReportSingleReprintScreen extends Screen {
     
     private OrganizationParameterDO getOrganizationFax(Integer orgId) {
         OrganizationParameterManager opm;
-        OrganizationParameterDO op;
+        OrganizationParameterDO op, faxOp;
 
+        faxOp = null;
         try {
             /*
              * return the parameter of type "final report fax number" if this 
@@ -720,8 +739,12 @@ public class FinalReportSingleReprintScreen extends Screen {
             opm = OrganizationParameterManager.fetchByOrganizationId(orgId);
             for (int i = 0; i < opm.count(); i++ ) {
                 op = opm.getParameterAt(i);
-                if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId()))
-                    return op;
+                if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId())) {
+                    faxOp = op;
+                    break;
+                } else if (orgGeneralFaxNumberId.equals(op.getTypeId()) && faxOp == null) {
+                    faxOp = op;
+                }
             }
         } catch (NotFoundException ignE) {
             // ignore
@@ -730,7 +753,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             Window.alert(e.getMessage());
         }
 
-        return null;
+        return faxOp;
     }
     
     class FaxVO {

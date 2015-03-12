@@ -171,7 +171,7 @@ public class ProjectBean {
 
         projectList = new ArrayList<IdNameVO>();
         for (Object[] result : resultList) {
-            vo = new IdNameVO((Integer)result[0], (String)result[1]);
+            vo = new IdNameVO((Integer)result[0], (String)result[1], (String)result[2]);
             projectList.add(vo);
         }
         return projectList;

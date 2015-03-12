@@ -92,7 +92,7 @@
                   <ui:text from="{msg.address_address}:" />
                 </td>
                 <td colspan="5">
-                  <w:TextBox ui:field="patientAddrStreetAddress" field="String" width="222px"
+                  <w:TextBox ui:field="patientAddrStreetAddress" field="String" width="233px"
                     case="UPPER" />
                 </td>
               </tr>
@@ -108,16 +108,23 @@
                     <w:Dropdown ui:field="patientAddrState" field="String" width="42px" />
                     <g:HorizontalPanel width="4px" />
                     <w:TextBox ui:field="patientAddrZipCode" field="String" width="75px"
-                      case="UPPER" mask="{msg.gen_zipcodePattern}" />
+                      mask="{msg.gen_zipcodePattern}" case="UPPER" />
                   </g:HorizontalPanel>
                 </td>
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_phone}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="patientAddrHomePhone" field="String" width="80px"
+                    maxLength="12" mask="{msg.gen_phonePattern}" />
+                </td>
+                <td class="{res.style.Prompt}">
                   <ui:text from="{msg.patient_gender}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="patientGender" width="65px" dropHeight="100px"
+                  <w:Dropdown ui:field="patientGender" width="75px" dropHeight="100px"
                     field="String" />
                 </td>
               </tr>
@@ -125,8 +132,8 @@
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.patient_race}:" />
                 </td>
-                <td>
-                  <w:Dropdown ui:field="patientRace" width="230px" dropWidth="235px"
+                <td colspan="3">
+                  <w:Dropdown ui:field="patientRace" width="233px" dropWidth="235px"
                     field="String" />
                 </td>
               </tr>
@@ -154,7 +161,7 @@
             <td colspan="3">
               <g:HorizontalPanel>
                 <w:AutoComplete ui:field="providerLastName" width="112px" dropWidth="520px"
-                  case="UPPER"
+                  dropHeight="400px" case="UPPER"
                 >
                   <w:popup>
                     <t:Table visibleRows="10" header="true">

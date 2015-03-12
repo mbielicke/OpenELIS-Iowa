@@ -48,6 +48,8 @@ import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.WorksheetDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.AttachmentManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -83,6 +85,9 @@ public class AttachmentManagerBean {
 
     @EJB
     private SectionCacheBean    sectionCache;
+    
+    @EJB
+    private WorksheetBean       worksheet;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -109,12 +114,15 @@ public class AttachmentManagerBean {
     public ArrayList<AttachmentManager> fetchByIds(ArrayList<Integer> attachmentIds) throws Exception {
         AttachmentManager am;
         SampleDO s;
-        ArrayList<Integer> ids, sids;
+        WorksheetViewDO w;
+        ArrayList<Integer> ids, sids, wids;
         ArrayList<AttachmentManager> ams;
         ArrayList<AttachmentDO> attachments;
         ArrayList<SampleDO> samples;
+        ArrayList<WorksheetViewDO> worksheets;
         HashMap<Integer, AttachmentManager> map;
         HashMap<Integer, SampleDO> smap;
+        HashMap<Integer, WorksheetViewDO> wmap;
 
         /*
          * to reduce database select calls, we are going to fetch everything for
@@ -123,10 +131,10 @@ public class AttachmentManagerBean {
         ams = new ArrayList<AttachmentManager>();
 
         /*
-         * if there are no attachments, then return an empty list;
-         * AttachmentBean's fetchByIdsDescending is called instead of fetchByIds
-         * , because the current method needs to return the managers sorted in
-         * descending order as explained at the top
+         * return an empty list if there are no attachments; AttachmentBean's
+         * fetchByIdsDescending is called instead of fetchByIds, because the
+         * current method needs to return the managers sorted in descending
+         * order as explained at the top
          */
         attachments = attachment.fetchByIdsDescending(attachmentIds);
         if (attachments.size() < 1)
@@ -148,21 +156,31 @@ public class AttachmentManagerBean {
         }
 
         sids = new ArrayList<Integer>();
+        wids = new ArrayList<Integer>(); 
         for (AttachmentItemViewDO data : attachmentItem.fetchByAttachmentIds(ids)) {
             am = map.get(data.getAttachmentId());
             addItem(am, data);
             if (Constants.table().SAMPLE.equals(data.getReferenceTableId()))
                 sids.add(data.getReferenceId());
+            else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId()))
+                wids.add(data.getReferenceId());
         }
 
-        smap = new HashMap<Integer, SampleDO>();
+        /*
+         * fetch all the samples, worksheets linked to the attachments
+         */
+        smap = new HashMap<Integer, SampleDO>();        
         if (sids.size() > 0) {
-            /*
-             * fetch all the samples linked to the attachments
-             */
             samples = sample.fetchByIds(sids);
             for (SampleDO data : samples)
                 smap.put(data.getId(), data);
+        }
+        
+        wmap = new HashMap<Integer, WorksheetViewDO>();
+        if (wids.size() > 0) {
+            worksheets = worksheet.fetchByIds(wids);
+            for (WorksheetViewDO data : worksheets)
+                wmap.put(data.getId(), data);
         }
 
         /*
@@ -177,6 +195,10 @@ public class AttachmentManagerBean {
                         s = smap.get(data.getReferenceId());
                         data.setReferenceDescription(Messages.get()
                                                              .attachment_sampleDescription(s.getAccessionNumber()));
+                    } else if (Constants.table().WORKSHEET.equals(data.getReferenceTableId())) {
+                        w = wmap.get(data.getReferenceId());
+                        data.setReferenceDescription(Messages.get()
+                                                             .attachment_worksheetDescription(w.getId()));
                     }
                 }
             }
@@ -393,7 +415,8 @@ public class AttachmentManagerBean {
         try {
             Files.move(src, dst);
         } catch (Exception anyE) {
-            log.log(Level.SEVERE, "Can't move file '" + src.toString() + "' to '" + dst.toString() + "'", anyE);
+            log.log(Level.SEVERE, "Can't move file '" + src.toString() + "' to '" + dst.toString() +
+                                  "'", anyE);
             throw new DatabaseException(Messages.get().attachment_moveFileException(dst.toString()));
         }
 

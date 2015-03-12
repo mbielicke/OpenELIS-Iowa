@@ -1,11 +1,13 @@
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -23,7 +25,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
@@ -43,19 +44,21 @@ import org.openelis.utils.User;
 public class TestReportBean {
 
     @Resource
-    private SessionContext   ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean session;
+    private SessionCacheBean    session;
 
     @EJB
-    private SectionBean      section;
+    private SectionBean         section;
 
     @EJB
-    private TestBean         test;
+    private TestBean            test;
 
     @EJB
-    private PrinterCacheBean printers;
+    private PrinterCacheBean    printers;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for a single re-print
@@ -136,11 +139,11 @@ public class TestReportBean {
         if (DataBaseUtil.isEmpty(detail) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify the detail selection and printer for this report");
 
-        if (!DataBaseUtil.isEmpty(section))
+        if ( !DataBaseUtil.isEmpty(section))
             section = " and s.id " + section;
         else
             section = "";
-        if (!DataBaseUtil.isEmpty(test))
+        if ( !DataBaseUtil.isEmpty(test))
             test = " and t.id " + test;
         else
             test = "";
@@ -171,7 +174,7 @@ public class TestReportBean {
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
@@ -227,12 +230,12 @@ public class TestReportBean {
             for (TestViewDO n : t)
                 if ("N".equals(n.getIsActive()))
                     l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
-                                                                       n.getMethodName() + " [" +
-                                                                       n.getActiveBegin() + ".." +
-                                                                       n.getActiveEnd() + "]"));
+                                                                   n.getMethodName() + " [" +
+                                                                   n.getActiveBegin() + ".." +
+                                                                   n.getActiveEnd() + "]"));
                 else
                     l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
-                                                                       n.getMethodName()));
+                                                                   n.getMethodName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -246,12 +249,24 @@ public class TestReportBean {
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("test", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("test", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for test report");
+            }
+        }
 
         return path;
     }

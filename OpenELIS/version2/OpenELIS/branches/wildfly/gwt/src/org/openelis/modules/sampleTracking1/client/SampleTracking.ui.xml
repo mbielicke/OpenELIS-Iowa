@@ -131,9 +131,9 @@
                 <g:layer bottom="0px" top="0px" left="0px" right="0px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
-                      <w:Button ui:field="prevPageButton" leftIcon="{res.atozButton.PreviousPageButtonImage}"
+                      <w:Button ui:field="prevPageButton" image="{res.previousPage}" disabledImage="{res.previousPageDisabled}"
                         enabled="false" css="{res.atozButton}" />
-                      <w:Button ui:field="nextPageButton" leftIcon="{res.atozButton.NextPageButtonImage}"
+                      <w:Button ui:field="nextPageButton" image="{res.nextPage}" disabledImage="{res.nextPageDisabled}"
                         enabled="false" css="{res.atozButton}" />
                     </g:HorizontalPanel>
                   </g:HorizontalPanel>
@@ -209,6 +209,16 @@
                   <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                     <g:layer>
                       <s:ClinicalTabUI ui:field="clinicalTab" />
+                    </g:layer>
+                  </g:LayoutPanel>
+                </w:tab>
+                <w:tab>
+                  <w:customHeader>
+                    <w:TabWidget text="{msg.sample_pt}" tabVisible="false" />
+                  </w:customHeader>
+                  <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+                    <g:layer>
+                      <s:PTTabUI ui:field="ptTab" />
                     </g:layer>
                   </g:LayoutPanel>
                 </w:tab>

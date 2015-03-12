@@ -83,8 +83,9 @@ public class ScreenBus extends SimpleEventBus {
                     INSTRUMENT_BARCODE_REPORT = new ShowScreenType("Instrument Barcode Report"),
                     AIR_QUALITY_EXPORT = new ShowScreenType("Air Quality Export"),
                     ATTACHMENT = new ShowScreenType("Attachment"),
-                    SECONDARY_LABEL = new ShowScreenType("Secondary Label"),
-                    PRIVATE_WELL_ATTACHMENT = new ShowScreenType("PrivateWellAttachment");
+                    SECONDARY_LABEL_REPORT = new ShowScreenType("Secondary Labels"),
+                    PRIVATE_WELL_ATTACHMENT = new ShowScreenType("PrivateWellAttachment"),
+                    TUBE_LABEL_REPORT = new ShowScreenType("Tube Labels");
 
     public static ScreenBus get() {
         if (instance == null)

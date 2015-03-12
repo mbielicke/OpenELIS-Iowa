@@ -153,7 +153,7 @@ public class SampleTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? orderId : clientReference;
+                                 return forward ? orderId : projectTable;
                              }
                          });
 
@@ -239,7 +239,20 @@ public class SampleTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  collectionTime.setEnabled(canEdit && isState(ADD, UPDATE));
-                                 collectionTime.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Object getQuery() {
+                                 /*
+                                  * since this field is not set in query mode,
+                                  * the value doesn't get cleared when
+                                  * StateChangeEvent is fired; it also doesn't
+                                  * get cleared if the tab is not visible,
+                                  * because DataChangeEvent is not fired in that
+                                  * case; this makes sure that the value doesn't
+                                  * get included in the query sent to the
+                                  * back-end
+                                  */
+                                 return null;
                              }
 
                              public Widget onTab(boolean forward) {
@@ -303,7 +316,7 @@ public class SampleTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? accessionNumber : status;
+                                 return forward ? organizationTable : status;
                              }
                          });
 
@@ -378,6 +391,10 @@ public class SampleTabUI extends Screen {
                                  }
 
                                  return qds;
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? projectTable : clientReference;
                              }
                          });
 
@@ -479,14 +496,15 @@ public class SampleTabUI extends Screen {
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
                         row.setData(data);
                         model.add(row);
                     }
@@ -564,6 +582,10 @@ public class SampleTabUI extends Screen {
                 }
 
                 return qds;
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? accessionNumber : organizationTable;
             }
         });
 
@@ -653,9 +675,9 @@ public class SampleTabUI extends Screen {
         projectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 SampleProjectViewDO data;
-
+                
                 data = manager.project.add();
-                data.setIsPermanent("N");
+                projectTable.setValueAt(event.getIndex(), 2, data.getIsPermanent());
                 removeProjectButton.setEnabled(true);
             }
         });
@@ -955,7 +977,8 @@ public class SampleTabUI extends Screen {
         orderId = null;
         if (Constants.domain().ENVIRONMENTAL.equals(domain) ||
             Constants.domain().PRIVATEWELL.equals(domain) ||
-            Constants.domain().SDWIS.equals(domain)) {
+            Constants.domain().SDWIS.equals(domain) ||
+            Constants.domain().PT.equals(domain)) {
             orderId = DataBaseUtil.toString(manager.getSample().getOrderId());
         } else if (Constants.domain().CLINICAL.equals(domain)) {
             orderId = manager.getSampleClinical().getPaperOrderValidator();

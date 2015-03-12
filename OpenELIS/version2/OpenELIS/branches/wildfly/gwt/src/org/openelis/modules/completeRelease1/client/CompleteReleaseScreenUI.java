@@ -69,6 +69,7 @@ import org.openelis.modules.sample1.client.ClinicalTabUI;
 import org.openelis.modules.sample1.client.EnvironmentalTabUI;
 import org.openelis.modules.sample1.client.NeonatalTabUI;
 import org.openelis.modules.sample1.client.NoteChangeEvent;
+import org.openelis.modules.sample1.client.PTTabUI;
 import org.openelis.modules.sample1.client.PatientLockEvent;
 import org.openelis.modules.sample1.client.PrivateWellTabUI;
 import org.openelis.modules.sample1.client.QAEventAddedEvent;
@@ -204,6 +205,9 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected ClinicalTabUI                    clinicalTab;
+    
+    @UiField(provided = true)
+    protected PTTabUI                          ptTab;
 
     @UiField(provided = true)
     protected QuickEntryTabUI                  quickEntryTab;
@@ -283,7 +287,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.ATTACHMENT};
 
     protected enum Tabs {
-        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, QUICK_ENTRY, SAMPLE_ITEM,
+        SAMPLE, ENVIRONMENTAL, PRIVATE_WELL, SDWIS, NEONATAL, CLINICAL, PT, QUICK_ENTRY, SAMPLE_ITEM,
         ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA,
         ATTACHMENT, BLANK
     };
@@ -305,11 +309,13 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
 
         try {
             CategoryCache.getBySystemNames("sample_status",
+                                           "sample_domain",
                                            "gender",
                                            "race",
                                            "ethnicity",
                                            "state",
                                            "country",
+                                           "pt_provider",
                                            "analysis_status",
                                            "type_of_sample",
                                            "source_of_sample",
@@ -332,6 +338,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         sdwisTab = new SDWISTabUI(this);
         neonatalTab = new NeonatalTabUI(this);
         clinicalTab = new ClinicalTabUI(this);
+        ptTab = new PTTabUI(this);
         quickEntryTab = new QuickEntryTabUI(this);
         sampleItemTab = new SampleItemTabUI(this);
         analysisTab = new AnalysisTabUI(this);
@@ -586,6 +593,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                     SampleHistoryUtility1.neonatal(manager);
                 else if (Constants.domain().CLINICAL.equals(domain))
                     SampleHistoryUtility1.clinical(manager);
+                else if (Constants.domain().PT.equals(domain))
+                    SampleHistoryUtility1.pt(manager);
             }
         });
 
@@ -898,6 +907,25 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
          * querying by this tab is not allowed on this screen
          */
         clinicalTab.setCanQuery(false);
+        
+        addScreenHandler(ptTab, "ptTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                ptTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                ptTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        /*
+         * querying by this tab is not allowed on this screen
+         */
+        ptTab.setCanQuery(false);
 
         addScreenHandler(quickEntryTab, "quickEntryTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1559,7 +1587,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
             if (SampleMeta.getOrderId().equals(f.getKey())) {
                 domain = getDomainQuery(Constants.domain().ENVIRONMENTAL,
                                         Constants.domain().SDWIS,
-                                        Constants.domain().PRIVATEWELL);
+                                        Constants.domain().PRIVATEWELL,
+                                        Constants.domain().PT);
                 break;
             } else if (SampleMeta.getEorderPaperOrderValidator().equals(f.getKey())) {
                 domain = getDomainQuery(Constants.domain().CLINICAL, Constants.domain().NEONATAL);
@@ -2002,6 +2031,7 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         sdwisTab.setData(manager);
         neonatalTab.setData(manager);
         clinicalTab.setData(manager);
+        ptTab.setData(manager);
         quickEntryTab.setData(manager);
         sampleItemTab.setData(manager);
         analysisTab.setData(manager);
@@ -2160,6 +2190,16 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
         Row selRow;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
+        
+        /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
 
         /*
          * create the sciptlet object
@@ -2554,6 +2594,8 @@ public class CompleteReleaseScreenUI extends Screen implements CacheProvider {
                 domainTab = Tabs.NEONATAL;
             else if (Constants.domain().CLINICAL.equals(domain))
                 domainTab = Tabs.CLINICAL;
+            else if (Constants.domain().PT.equals(domain))
+                domainTab = Tabs.PT;
             else if (Constants.domain().QUICKENTRY.equals(domain))
                 domainTab = Tabs.QUICK_ENTRY;
 
