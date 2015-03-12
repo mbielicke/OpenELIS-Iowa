@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -283,14 +284,14 @@ public class QcChartReportBean {
             jparam.put("USER_NAME", userName);
 
             status.setMessage("Outputing report").setPercentComplete(20);
-            
+
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, ds);
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
-            
+
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
@@ -400,7 +401,7 @@ public class QcChartReportBean {
         vo = categoryCache.getBySystemName(worksheetFormat);
         list = vo.getDictionaryList();
         columns = new HashMap<String, Integer>();
-        for (i = 0; i < list.size(); i++)
+        for (i = 0; i < list.size(); i++ )
             columns.put(list.get(i).getSystemName(), i);
         map.put(worksheetFormat, columns);
     }
@@ -461,16 +462,16 @@ public class QcChartReportBean {
         numValue = qcList.size();
         sum = 0.0;
         recovery = 0.0;
-        for (i = 0; i < numValue; i++)
+        for (i = 0; i < numValue; i++ )
             sum += qcList.get(i).getPlotValue();
 
         if (QcChartReportViewVO.ReportType.SPIKE_CONC.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++) {
+            for (i = 0; i < numValue; i++ ) {
                 if (qcList.get(i).getValue2() != null)
                     recovery += Double.valueOf(qcList.get(i).getValue2());
             }
         } else if (QcChartReportViewVO.ReportType.SPIKE_PERCENT.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++)
+            for (i = 0; i < numValue; i++ )
                 recovery += qcList.get(i).getPlotValue();
         }
 
@@ -478,7 +479,7 @@ public class QcChartReportBean {
         meanRecovery = recovery / numValue;
         sqDiffSum = 0.0;
         if (numValue > 1) {
-            for (i = 0; i < numValue; i++) {
+            for (i = 0; i < numValue; i++ ) {
                 diff = qcList.get(i).getPlotValue() - mean;
                 sqDiffSum += diff * diff;
             }
@@ -494,7 +495,7 @@ public class QcChartReportBean {
             lWL = mean;
             lCL = mean;
         }
-        for (i = 0; i < numValue; i++) {
+        for (i = 0; i < numValue; i++ ) {
             value = qcList.get(i);
             value.setMean(mean);
             value.setMeanRecovery(meanRecovery);
@@ -505,20 +506,31 @@ public class QcChartReportBean {
             value.setSd(sd);
         }
     }
-    
+
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("qcreport", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("qcreport", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close outout stream for qc chart report");
+            }
+        }
         return path;
     }
 

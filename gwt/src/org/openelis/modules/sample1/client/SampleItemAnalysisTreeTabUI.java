@@ -75,8 +75,6 @@ import org.openelis.ui.widget.tree.event.NodeDeletedEvent;
 import org.openelis.ui.widget.tree.event.NodeDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -507,7 +505,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     }
 
     /**
-     * if a node is selected in the tree then returns the uid of the record that
+     * If a node is selected in the tree then returns the uid of the record that
      * it is showing, otherwise returns null
      */
     public String getSelectedUid() {
@@ -524,7 +522,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     @UiHandler("addItemButton")
     protected void addItem(ClickEvent event) {
         Node node;
-
+        
         node = new Node(2);
         node.setType(SAMPLE_ITEM_LEAF);
         node.setOpen(true);
@@ -539,7 +537,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         String uid;
         Node node;
         AnalysisViewDO ana;
-
+        
         node = tree.getNodeAt(tree.getSelectedNode());
         if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
             /*
@@ -608,7 +606,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     @UiHandler("popoutTreeButton")
     protected void popoutTree(ClickEvent event) {
         ModalWindow modal;
-
+        
         if (sampleItemPopout == null) {
             sampleItemPopout = new SampleItemPopoutLookupUI() {
                 @Override
@@ -781,15 +779,15 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         else
             parentBus.fireEvent(new SelectionEvent(SelectedType.SAMPLE_ITEM, itemUid));
     }
-    
+
     private void sampleItemAdded(String uid) {
         Node node;
         SampleItemViewDO item;
-        
+
         for (int i = 0; i < tree.getRoot().getChildCount(); i++ ) {
             /*
-             * find the node showing the sample item that was added
-             * using the uid and refresh its display
+             * find the node showing the sample item that was added using the
+             * uid and refresh its display
              */
             node = tree.getRoot().getChildAt(i);
             if (uid.equals(node.getData())) {

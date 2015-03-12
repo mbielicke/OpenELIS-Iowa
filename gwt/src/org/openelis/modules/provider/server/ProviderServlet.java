@@ -61,7 +61,7 @@ public class ProviderServlet extends RemoteServlet implements ProviderService {
     
     public ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search) throws Exception {
         try {
-            return provider.fetchByLastNameNpiExternalId(search + "%", 10);
+            return provider.fetchByLastNameNpiExternalId(search + "%", 100);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

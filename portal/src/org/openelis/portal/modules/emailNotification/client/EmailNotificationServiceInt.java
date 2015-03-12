@@ -17,6 +17,8 @@ public interface EmailNotificationServiceInt extends XsrfProtectedService {
 
     ArrayList<OrganizationParameterDO> fetchParametersByOrganizationId(Integer id) throws Exception;
 
+    ArrayList<OrganizationParameterDO> fetchParametersByOrganizationIds(ArrayList<Integer> ids) throws Exception;
+
     ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception;
 
     ArrayList<IdNameVO> query(Query query) throws Exception;

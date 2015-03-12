@@ -1,30 +1,31 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +33,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -52,7 +54,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
@@ -65,31 +66,35 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class SampleInhouseReportBean {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheBean session;
+    private SessionCacheBean    session;
 
     @EJB
-    private TestBean        test;
+    private TestBean            test;
 
     @EJB
-    private SectionCacheBean section;
+    private SectionCacheBean    section;
 
     @EJB
-    private CategoryCacheBean categoryCache;
+    private CategoryCacheBean   categoryCache;
 
     @EJB
-    private ProjectBean     project;
-    
+    private ProjectBean         project;
+
     @EJB
-    private PrinterCacheBean printers;
-    
+    private PrinterCacheBean    printers;
+
+    private static final Logger log = Logger.getLogger("openelis");
+
     /*
      * Returns the prompt for a single re-print
      */
@@ -139,7 +144,7 @@ public class SampleInhouseReportBean {
                                                           .setMultiSelect(true));
 
             p.add(new Prompt("ORGANIZATION_ID", Prompt.Type.INTEGER).setPrompt("Organization Id:")
-                                                          .setWidth(150));
+                                                                    .setWidth(150));
 
             orderBy = new ArrayList<OptionListItem>();
             orderBy.add(0, new OptionListItem("accession_number", "Accession Number"));
@@ -147,7 +152,7 @@ public class SampleInhouseReportBean {
             orderBy.add(2, new OptionListItem("received_date", "Date Received"));
             orderBy.add(3, new OptionListItem("t_name,m_name", "Test & Method"));
             orderBy.add(4, new OptionListItem("status", "Analysis Status"));
-            
+
             p.add(new Prompt("ORDER_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
                                                            .setWidth(250)
                                                            .setOptionList(orderBy)
@@ -267,7 +272,7 @@ public class SampleInhouseReportBean {
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
             if (ReportUtil.isPrinter(printer))
                 path = export(jprint, null);
-            else 
+            else
                 path = export(jprint, "upload_stream_directory");
 
             status.setPercentComplete(100);
@@ -322,12 +327,12 @@ public class SampleInhouseReportBean {
             for (TestViewDO n : t)
                 if ("N".equals(n.getIsActive()))
                     l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
-                                                                       n.getMethodName() + " [" +
-                                                                       n.getActiveBegin() + ".." +
-                                                                       n.getActiveEnd() + "]"));
+                                                                   n.getMethodName() + " [" +
+                                                                   n.getActiveBegin() + ".." +
+                                                                   n.getActiveEnd() + "]"));
                 else
                     l.add(new OptionListItem(n.getId().toString(), n.getName() + ", " +
-                                                                       n.getMethodName()));
+                                                                   n.getMethodName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -375,20 +380,31 @@ public class SampleInhouseReportBean {
 
         return l;
     }
-    
+
     /*
      * Exports the filled report to a temp file for printing or faxing.
      */
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("inhouse", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("inhouse", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for sample in-house report");
+            }
+        }
         return path;
     }
 }

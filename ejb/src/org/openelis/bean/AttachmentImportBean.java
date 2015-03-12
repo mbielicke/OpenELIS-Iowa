@@ -67,7 +67,6 @@ public class AttachmentImportBean {
      * the files to the attachment directory.
      */
     public void importAttachments(String systemVariableDirectory, String sectionName) throws Exception {
-        int n;
         String src, dst;
         Integer sectionId;
         DirectoryStream<Path> dirStream;
@@ -89,6 +88,7 @@ public class AttachmentImportBean {
             return;
         }
 
+        dirStream = null;
         try {
             /*
              * get the id of the passed section
@@ -100,17 +100,19 @@ public class AttachmentImportBean {
              * them
              */
             dirStream = Files.newDirectoryStream(Paths.get(src));
-            n = 0;
-            for (Path path : dirStream)
-                try {
-                    attachmentManager.put(dst, path.toString(), true, null, null, sectionId);
-                    n++ ;
-                } catch (Exception e) {
-                    log.log(Level.SEVERE, e.getMessage(), e);
-                }
-            log.fine("Created " + n + " attachments");
+            for (Path path : dirStream) {
+                log.fine("Importing " + path.toString() + " attachment");
+                attachmentManager.put(dst, path.toString(), true, null, null, sectionId);
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            try {
+                if (dirStream != null)
+                    dirStream.close();
+            } catch (Exception e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
 
@@ -119,7 +121,6 @@ public class AttachmentImportBean {
      * than the passed number of days ago
      */
     public void removeImportedAttachments(String days) throws Exception {
-        int n;
         String base;
         Calendar cal;
         Path src;
@@ -130,7 +131,7 @@ public class AttachmentImportBean {
          */
         cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -Integer.valueOf(days));
-        
+
         try {
             base = systemVariable.fetchByName("attachment_directory").getValue();
         } catch (Exception e) {
@@ -144,17 +145,14 @@ public class AttachmentImportBean {
              * above and delete them; also delete the files linked to them
              */
             attachments = attachment.fetchUnattachedBeforeCreatedDate(cal.getTime());
-            n = 0;
-            for (AttachmentDO data : attachments)
-                try {
-                    src = Paths.get(base, ReportUtil.getAttachmentSubdirectory(data.getId()), data.getId().toString());
-                    Files.delete(src);
-                    attachment.delete(data);
-                    n++;
-                } catch (Exception e) {
-                    log.log(Level.SEVERE, e.getMessage(), e);
-                }            
-            log.fine("Removed " + n + " attachments");
+            for (AttachmentDO data : attachments) {
+                log.fine("Deleting attachment id: "+data.getId());
+                src = Paths.get(base,
+                                ReportUtil.getAttachmentSubdirectory(data.getId()),
+                                data.getId().toString());
+                Files.delete(src);
+                attachment.delete(data);
+            }
         } catch (NotFoundException e) {
             log.fine("No unattached attachments older than " + days + " found");
         } catch (Exception e) {

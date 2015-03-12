@@ -370,7 +370,9 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
     private void setPartnerRisks(AnalysisViewDO ana, SampleSO data, PartnerCarrier partner,
                                  ResultFormatter rf) throws Exception {
         double initRisk, finalRisk;
+        boolean isDict;
         Integer partEthnicityId, partFamHistId, accession;
+        String value;
 
         accession = data.getManager().getSample().getAccessionNumber();
         /*
@@ -407,6 +409,11 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
             partner.isValid = false;
         }
         if (partner.isValid) {
+            /*
+             * compute and set the initial and final risks; if the computed
+             * final risk is 0.0, the risk is set as "Unknown"; otherwise it's
+             * the computed value
+             */
             proxy.log(Level.FINE, "Computing partner initial and final risks", null);
             initRisk = cfRisk1.computeCarrierInitialRisk(partEthnicityId,
                                                          partFamHistId,
@@ -415,7 +422,14 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
             finalRisk = cfRisk1.computeCarrierFinalRisk(partEthnicityId,
                                                         getIntegerResult(partner.result),
                                                         initRisk);
-            setValue(partner.finalRisk, cfRisk1.format(finalRisk), rf, false, ana, data);
+            if (finalRisk == 0.0) {
+                isDict = true;
+                value = cfRisk1.UNKNOWN.toString();
+            } else {
+                isDict = false;
+                value = cfRisk1.format(finalRisk);
+            }
+            setValue(partner.finalRisk, value, rf, isDict, ana, data);
         } else {
             setValue(partner.initialRisk, null, rf, false, ana, data);
             setValue(partner.finalRisk, null, rf, false, ana, data);
@@ -423,38 +437,53 @@ public class CFPregnancyScriptlet1 implements ScriptletInt<SampleSO> {
     }
 
     /**
-     * Computes and sets the pregnancy initial and final risks and result
+     * Computes and sets the pregnancy initial and final risks and result; the
+     * pregnancy initial risk is computed from the individual and partner
+     * initial risks; the pregnancy initial risk is computed from the individual
+     * and partner final risks; the pregnancy result is computed from pregnancy
+     * final risk and is only computed if both pregnancy risks are not null
      */
     private void setPregnancyRisks(AnalysisViewDO ana, SampleSO data, IndividualCarrier individual,
                                    PartnerCarrier partner, Pregnancy pregnancy, ResultFormatter rf) throws Exception {
         boolean isDict;
         Integer pregResultId;
-        Double pregRisk;
+        Double indRisk, partRisk, pregInitRisk, pregFinalRisk;
         String value, unknown;
 
         proxy.log(Level.FINE, "Computing pregnancy risks and result", null);
+        pregInitRisk = cfRisk1.computePregnancyInitialRisk(getDoubleResult(individual.initialRisk),
+                                                           getDoubleResult(partner.initialRisk));
+        setValue(pregnancy.initialRisk, cfRisk1.format(pregInitRisk), rf, false, ana, data);
+
         unknown = cfRisk1.UNKNOWN.toString();
-        pregRisk = cfRisk1.computePregnancyInitialRisk(getDoubleResult(individual.initialRisk),
-                                                       getDoubleResult(partner.initialRisk));
-        if (pregRisk == null) {
+        /*
+         * if either the individual or partner final risk is "Unknown",
+         * pregnancy final risk will be "Unknown"; otherwise the pregnancy risk
+         * will be calculated from the two risks
+         */
+        indRisk = unknown.equals(individual.finalRisk.getValue()) ? null
+                                                                 : getDoubleResult(individual.finalRisk);
+        partRisk = unknown.equals(partner.finalRisk.getValue()) ? null
+                                                               : getDoubleResult(partner.finalRisk);
+        pregFinalRisk = cfRisk1.computePregnancyFinalRisk(indRisk, partRisk);
+        if (pregFinalRisk == null) {
             isDict = true;
             value = unknown;
         } else {
             isDict = false;
-            value = cfRisk1.format(pregRisk);
-        }
-        setValue(pregnancy.initialRisk, value, rf, isDict, ana, data);
-        pregRisk = cfRisk1.computePregnancyFinalRisk(getDoubleResult(individual.finalRisk),
-                                                     getDoubleResult(partner.finalRisk));
-        if (pregRisk == null) {
-            isDict = true;
-            value = unknown;
-        } else {
-            isDict = false;
-            value = cfRisk1.format(pregRisk);
+            value = cfRisk1.format(pregFinalRisk);
         }
         setValue(pregnancy.finalRisk, value, rf, isDict, ana, data);
-        pregResultId = cfRisk1.computePregnancyResult(pregRisk);
+
+        /*
+         * the pregnancy result will be obtained only if pregnancy initial risk
+         * is not null; if the initial risk is not null, the result will depend
+         * on the final risk; 0.0 is passed because the value set in the result
+         * for final risk is "Unknown" if the computed final risk is null
+         */
+        if (pregInitRisk != null && pregFinalRisk == null)
+            pregFinalRisk = 0.0;
+        pregResultId = cfRisk1.computePregnancyResult(pregFinalRisk);
         value = pregResultId != null ? pregResultId.toString() : null;
         setValue(pregnancy.result, value, rf, value != null, ana, data);
     }

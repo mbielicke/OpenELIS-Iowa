@@ -58,6 +58,7 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
@@ -110,6 +111,7 @@ import org.openelis.modules.sample1.client.SampleOrganizationLookupUI;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
@@ -307,6 +309,11 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
+    
+    protected enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA, ATTACHMENT
+    };
 
     private static final String                         REPORT_TO_KEY = "reportTo",
                     BILL_TO_KEY = "billTo";
@@ -1438,15 +1445,16 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -1515,15 +1523,16 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -1974,6 +1983,44 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
          * handlers for the events fired by the tabs
          */
 
+        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid;
+                SampleItemViewDO item;
+                AnalysisViewDO ana;
+
+                uid = event.getUid();
+                item = null;
+                ana = null;
+                /*
+                 * if a node was selected in the tree, the uid won't be null and
+                 * the selected type will be either analysis or sample type;
+                 * otherwise, the two will be null and that would mean that the
+                 * tree got reloaded
+                 */
+                if (uid != null) {
+                    switch (event.getSelectedType()) {
+                        case ANALYSIS:
+                            ana = (AnalysisViewDO)manager.getObject(uid);
+                            break;
+                        case SAMPLE_ITEM:
+                            item = (SampleItemViewDO)manager.getObject(uid);
+                            break;
+                    }
+                }
+
+                /*
+                 * set the notification on the tab based on the node selected
+                 */
+                setTabNotification(Tabs.ANALYSIS_NOTES, item, ana);
+                setTabNotification(Tabs.SAMPLE_NOTES, item, ana);
+                setTabNotification(Tabs.STORAGE, item, ana);
+                setTabNotification(Tabs.QA_EVENTS, item, ana);
+                setTabNotification(Tabs.AUX_DATA, item, ana);
+                setTabNotification(Tabs.ATTACHMENT, item, ana);
+            }
+        });
+        
         bus.addHandler(SampleItemAddedEvent.getType(), new SampleItemAddedEvent.Handler() {
             @Override
             public void onSampleItemAdded(SampleItemAddedEvent event) {
@@ -3105,6 +3152,16 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         AnalysisQaEventViewDO aqa;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
+        
+        /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
 
         /*
          * create the sciptlet object
@@ -3112,12 +3169,6 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSampleSDWIS().getId() == null && Action_Before.NEW_DOMAIN != action)
-            /*
-             * this is either an uncommitted sample or was a quick-entry sample
-             * before being loaded on the screen
-             */
-            data.addActionBefore(Action_Before.NEW_DOMAIN);
         actionAfter = EnumSet.noneOf(Action_After.class);
         data.setChanged(changed);
         data.setUid(uid);
@@ -3299,6 +3350,65 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                     addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
             }
         }
+    }
+
+    /**
+     * Creates and sets notification, e.g. number of records, on the header of
+     * the specified tab
+     */
+    private void setTabNotification(Tabs tabs, SampleItemViewDO item, AnalysisViewDO ana) {
+        int count1, count2;
+        String label;
+
+        label = null;
+
+        if (manager != null) {
+            switch (tabs) {
+                case ANALYSIS_NOTES:
+                    count1 = 0;
+                    count2 = 0;
+                    if (ana != null) {
+                        count1 = manager.analysisExternalNote.get(ana) == null ? 0 : 1;
+                        count2 = manager.analysisInternalNote.count(ana);
+                    }
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case SAMPLE_NOTES:
+                    count1 = manager.sampleExternalNote.get() == null ? 0 : 1;
+                    count2 = manager.sampleInternalNote.count();
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case STORAGE:
+                    count1 = 0;
+                    if (item != null)
+                        count1 = manager.storage.count(item);
+                    else if (ana != null)
+                        count1 = manager.storage.count(ana);
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+                case QA_EVENTS:
+                    count1 = manager.qaEvent.count();
+                    count2 = ana != null ? manager.qaEvent.count(ana) : 0;
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case AUX_DATA:
+                    count1 = manager.auxData.count();
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+                case ATTACHMENT:
+                    count1 = manager.attachment.count();
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+            }
+        }
+
+        tabPanel.setTabNotification(tabs.ordinal(), label);
     }
 
     /**
@@ -3497,6 +3607,7 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
 
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
+            manager.getSample().setOrderId(null);
             orderId.setValue(null);
             return;
         }
@@ -3550,6 +3661,8 @@ public class SDWISSampleLoginScreenUI extends Screen implements CacheProvider {
                 }
 
                 public void failure(Throwable error) {
+                    manager.getSample().setOrderId(null);
+                    orderId.setValue(null);
                     Window.alert(error.getMessage());
                     logger.log(Level.SEVERE, error.getMessage(), error);
                     clearStatus();

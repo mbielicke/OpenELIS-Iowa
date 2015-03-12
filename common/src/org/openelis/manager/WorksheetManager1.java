@@ -537,8 +537,12 @@ public class WorksheetManager1 implements Serializable {
                  */
                 if (data.getAnalysisId() != null || data.getFromOtherId() != null)
                     continue;
-                i = data.getAccessionNumber().indexOf('.');
-                data.setAccessionNumber(data.getAccessionNumber().substring(0, i + 1) + wiDO.getPosition());
+                if (data.getAccessionNumber() != null) {
+                    i = data.getAccessionNumber().indexOf('.');
+                    data.setAccessionNumber(data.getAccessionNumber().substring(0, i + 1) + wiDO.getPosition());
+                } else {
+                    data.setAccessionNumber(wiDO.getWorksheetId() + "." + wiDO.getPosition());
+                }
             }
         }
         

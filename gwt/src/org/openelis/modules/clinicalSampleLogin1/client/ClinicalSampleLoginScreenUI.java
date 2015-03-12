@@ -59,6 +59,7 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
@@ -111,6 +112,7 @@ import org.openelis.modules.sample1.client.SampleOrganizationLookupUI;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupUI;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.scriptlet.client.ScriptletFactory;
@@ -202,7 +204,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     @UiField
     protected TextBox<String>                           clientReference, orderId, patientLastName,
                     patientFirstName, patientNationalId, patientAddrMultipleUnit,
-                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode,
+                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode, patientAddrHomePhone,
                     providerFirstName, providerPhone;
 
     @UiField
@@ -312,6 +314,11 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
+    
+    protected enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA, ATTACHMENT
+    };
 
     private static final String                         REPORT_TO_KEY = "reportTo",
                     BILL_TO_KEY = "billTo";
@@ -1104,7 +1111,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  setPatientNationalId(event.getValue());
                                  if (getPatientNationalId() != null)
                                      patientQueryChanged(patientNationalId);
-                                 runScriptlets(null, SampleMeta.getClinicalPatientNationalId(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientNationalId(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1128,7 +1137,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressMultipleUnit(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrMultipleUnit(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrMultipleUnit(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1153,7 +1164,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressStreetAddress(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrStreetAddress(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrStreetAddress(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1226,7 +1239,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressZipCode(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientAddrZipCode(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrZipCode(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1237,10 +1252,36 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientGender : patientAddrState;
+                                 return forward ? patientAddrHomePhone : patientAddrState;
                              }
                          });
+        
+        addScreenHandler(patientAddrHomePhone,
+                         SampleMeta.getClinicalPatientAddrHomePhone(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 patientAddrHomePhone.setValue(getPatientAddressHomePhone());
+                             }
 
+                            public void onValueChange(ValueChangeEvent<String> event) {
+                                 setPatientAddressHomePhone(event.getValue());
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientAddrHomePhone(),
+                                               null);
+                             }
+
+                            public void onStateChange(StateChangeEvent event) {
+                                 patientAddrHomePhone.setEnabled(isState(QUERY) ||
+                                                               (canEditSample && canEditPatient && isState(ADD,
+                                                                                                           UPDATE)));
+                                 patientAddrHomePhone.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? patientGender : patientAddrZipCode;
+                             }
+                         });
+        
         addScreenHandler(patientGender,
                          SampleMeta.getClinicalPatientGenderId(),
                          new ScreenHandler<Integer>() {
@@ -1261,7 +1302,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? patientRace : patientAddrZipCode;
+                                 return forward ? patientRace : patientAddrHomePhone;
                              }
                          });
 
@@ -1298,7 +1339,9 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
                                  setPatientEthnicityId(event.getValue());
-                                 runScriptlets(null, SampleMeta.getClinicalPatientEthnicityId(), null);
+                                 runScriptlets(null,
+                                               SampleMeta.getClinicalPatientEthnicityId(),
+                                               null);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1326,6 +1369,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 patientAddrCity.setValue(getPatientAddressCity());
                 patientAddrState.setValue(getPatientAddressState());
                 patientAddrZipCode.setValue(getPatientAddressZipCode());
+                patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                 patientGender.setValue(getPatientGenderId());
                 patientRace.setValue(getPatientRaceId());
                 patientEthnicity.setValue(getPatientEthnicityId());
@@ -1577,15 +1621,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -1655,15 +1700,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());
                         row.setData(data);
                         row.setCell(0, data.getName());
-                        row.setCell(1, data.getAddress().getStreetAddress());
-                        row.setCell(2, data.getAddress().getCity());
-                        row.setCell(3, data.getAddress().getState());
+                        row.setCell(1, data.getAddress().getMultipleUnit());
+                        row.setCell(2, data.getAddress().getStreetAddress());
+                        row.setCell(3, data.getAddress().getCity());
+                        row.setCell(4, data.getAddress().getState());
 
                         model.add(row);
                     }
@@ -2115,6 +2161,44 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
          * handlers for the events fired by the tabs
          */
 
+        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid;
+                SampleItemViewDO item;
+                AnalysisViewDO ana;
+
+                uid = event.getUid();
+                item = null;
+                ana = null;
+                /*
+                 * if a node was selected in the tree, the uid won't be null and
+                 * the selected type will be either analysis or sample type;
+                 * otherwise, the two will be null and that would mean that the
+                 * tree got reloaded
+                 */
+                if (uid != null) {
+                    switch (event.getSelectedType()) {
+                        case ANALYSIS:
+                            ana = (AnalysisViewDO)manager.getObject(uid);
+                            break;
+                        case SAMPLE_ITEM:
+                            item = (SampleItemViewDO)manager.getObject(uid);
+                            break;
+                    }
+                }
+
+                /*
+                 * set the notification on the tab based on the node selected
+                 */
+                setTabNotification(Tabs.ANALYSIS_NOTES, item, ana);
+                setTabNotification(Tabs.SAMPLE_NOTES, item, ana);
+                setTabNotification(Tabs.STORAGE, item, ana);
+                setTabNotification(Tabs.QA_EVENTS, item, ana);
+                setTabNotification(Tabs.AUX_DATA, item, ana);
+                setTabNotification(Tabs.ATTACHMENT, item, ana);
+            }
+        });
+        
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -3307,7 +3391,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private boolean canCopyFromPrevious(int keyCode) {
         return previousManager != null && KeyCodes.KEY_F2 == keyCode;
     }
-    
+
     /**
      * Clears the validation errors of the widget and validates it based on its
      * latest data
@@ -3379,17 +3463,21 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         ValidationErrorsList errors;
 
         /*
+         * scriptletRunner will be null here if this method is called by a
+         * widget losing focus but the reason for the lost focus was the user
+         * clicking Abort; this is because in abort() both the scriptlet runner
+         * and hash are set to null and that happens before the widget can lose
+         * focus
+         */
+        if (scriptletRunner == null)
+            return;
+
+        /*
          * create the sciptlet object
          */
         data = new SampleSO();
         if (action != null)
             data.addActionBefore(action);
-        if (manager.getSampleClinical().getId() == null && Action_Before.NEW_DOMAIN != action)
-            /*
-             * this is either an uncommitted sample or was a quick-entry sample
-             * before being loaded on the screen
-             */
-            data.addActionBefore(Action_Before.NEW_DOMAIN);
         data.setChanged(changed);
         data.setUid(uid);
         data.setManager(manager);
@@ -3570,6 +3658,65 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     addScriptlet(auxf.getScriptletId(), auxfids.get(auxf.getId()));
             }
         }
+    }
+
+    /**
+     * Creates and sets notification, e.g. number of records, on the header of
+     * the specified tab
+     */
+    private void setTabNotification(Tabs tabs, SampleItemViewDO item, AnalysisViewDO ana) {
+        int count1, count2;
+        String label;
+
+        label = null;
+
+        if (manager != null) {
+            switch (tabs) {
+                case ANALYSIS_NOTES:
+                    count1 = 0;
+                    count2 = 0;
+                    if (ana != null) {
+                        count1 = manager.analysisExternalNote.get(ana) == null ? 0 : 1;
+                        count2 = manager.analysisInternalNote.count(ana);
+                    }
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case SAMPLE_NOTES:
+                    count1 = manager.sampleExternalNote.get() == null ? 0 : 1;
+                    count2 = manager.sampleInternalNote.count();
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case STORAGE:
+                    count1 = 0;
+                    if (item != null)
+                        count1 = manager.storage.count(item);
+                    else if (ana != null)
+                        count1 = manager.storage.count(ana);
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+                case QA_EVENTS:
+                    count1 = manager.qaEvent.count();
+                    count2 = ana != null ? manager.qaEvent.count(ana) : 0;
+                    if (count1 > 0 || count2 > 0)
+                        label = DataBaseUtil.concatWithSeparator(count1, " - ", count2);
+                    break;
+                case AUX_DATA:
+                    count1 = manager.auxData.count();
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+                case ATTACHMENT:
+                    count1 = manager.attachment.count();
+                    if (count1 > 0)
+                        label = String.valueOf(count1);
+                    break;
+            }
+        }
+
+        tabPanel.setTabNotification(tabs.ordinal(), label);
     }
 
     /**
@@ -3760,11 +3907,16 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      * screen with the returned manager.
      */
     private void setOrderId(String ordId) {
-        if (ordId == null || ordId.length() == 0)
+        if (DataBaseUtil.isEmpty(ordId)) {
+            manager.getSample().setOrderId(null);
+            manager.getSampleClinical().setPaperOrderValidator(null);
             return;
-
+        }
+        
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
+            manager.getSample().setOrderId(null);
+            manager.getSampleClinical().setPaperOrderValidator(null);
             orderId.setValue(null);
             return;
         }
@@ -3785,24 +3937,39 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
 
                     eorderDO = eorderLookup.getSelectedEOrder();
                     if (eorderDO == null) {
-                        orderId.setValue(getOrderId());
+                        manager.getSample().setOrderId(null);
+                        manager.getSampleClinical().setPaperOrderValidator(null);
+                        orderId.setValue(null);
                         setFocusToNext();
+                        isBusy = false;
                         return;
                     }
 
-                    manager.getSample().setOrderId(eorderDO.getId());
-                    manager.getSampleClinical()
-                           .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
-                    orderId.setValue(eorderDO.getPaperOrderValidator());
                     try {
                         screen.setBusy(Messages.get().fetching());
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
-                        manager = ret.getManager();
-                        setData();
-                        revalidate = true;
-                        screen.fireDataChange();
+                    } catch (Exception e) {
+                        manager.getSample().setOrderId(null);
+                        manager.getSampleClinical().setPaperOrderValidator(null);
+                        orderId.setValue(null);
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
                         screen.clearStatus();
-                        revalidate = false;
+                        setFocusToNext();
+                        isBusy = false;
+                        return;
+                    }
+
+                    manager = ret.getManager();
+                    manager.getSampleClinical()
+                           .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
+                    orderId.setValue(eorderDO.getPaperOrderValidator());
+                    setData();
+                    revalidate = true;
+                    screen.fireDataChange();
+                    screen.clearStatus();
+                    revalidate = false;
+                    try {
 
                         /*
                          * add scriptlets for any newly added tests and aux data
@@ -3831,7 +3998,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
-                        screen.clearStatus();
+                        isBusy = false;
                     }
                     setFocusToNext();
                 }
@@ -4181,6 +4348,24 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void setPatientAddressZipCode(String zipCode) {
         manager.getSampleClinical().getPatient().getAddress().setZipCode(zipCode);
     }
+    
+    /**
+     * Returns the patient's home phone or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientAddressHomePhone() {
+        if (manager == null || manager.getSampleClinical() == null ||
+            manager.getSampleClinical().getPatient() == null)
+            return null;
+        return manager.getSampleClinical().getPatient().getAddress().getHomePhone();
+    }
+
+    /**
+     * Sets the patient's zip code
+     */
+    private void setPatientAddressHomePhone(String homePhone) {
+        manager.getSampleClinical().getPatient().getAddress().setHomePhone(homePhone);
+    }
 
     /**
      * Makes the patient lookup screen find patients matching the data in the
@@ -4191,14 +4376,45 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void lookupPatient(PatientDO data, boolean dontShowIfNoPatient) {
         if (patientLookup == null) {
             patientLookup = new PatientLookupUI() {
+                boolean nidUsedForOther;
+
                 public void select() {
-                    setPatient(patientLookup.getSelectedPatient());
+                    setPatient(selectedPatient);
+                    setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
                 }
 
                 public void cancel() {
+                    /*
+                     * if the query on the popup was executed only for NID and
+                     * that NID has been used for another patient, blank the
+                     * sample's patient's NID and refresh the screen
+                     */
+                    if (queryByNId && nidUsedForOther) {
+                        setPatientNationalId(null);
+                        setPatient(manager.getSampleClinical().getPatient());
+                    }
                     setFocusToNext();
                     isBusy = false;
+                    nidUsedForOther = false;
+                }
+
+                @Override
+                public void patientsFound() {
+                    Integer id;
+                    PatientDO data;
+
+                    /*
+                     * if the query on the popup was executed only for NID, at
+                     * most one patient will be returned; find out if that
+                     * patient is the same as the sample's patient
+                     */
+                    if (queryByNId) {
+                        data = patientTable.getRowAt(0).getData();
+                        id = manager.getSampleClinical().getPatientId();
+                        nidUsedForOther = id != null && !id.equals(data.getId());
+                    }
                 }
             };
         }
@@ -4225,9 +4441,10 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
      */
     private void patientQueryChanged(Focusable widget) {
         /*
-         * look up patients only if the current patient is not locked
+         * if the current patient is locked then look up patients only if the
+         * NID was changed
          */
-        if ( !isPatientLocked) {
+        if ( !isPatientLocked || widget == patientNationalId) {
             isBusy = true;
             focusedWidget = widget;
             lookupPatient(manager.getSampleClinical().getPatient(), true);
@@ -4246,19 +4463,12 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         manager.getSampleClinical().setPatientId(data.getId());
         manager.getSampleClinical().setPatient(data);
 
-        if (getPatientLastName() != null)
-            patientLastName.clearExceptions();
-
-        if (getPatientAddressStreetAddress() != null)
-            patientAddrStreetAddress.clearExceptions();
-
         runScriptlets(null, SampleMeta.getClinicalPatientId(), null);
 
         evaluateEdit();
         setData();
         setState(state);
         bus.fireEvent(new PatientChangeEvent());
-        setFocusToNext();
     }
 
     /**
@@ -4486,7 +4696,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             if (Constants.dictionary().ORG_REPORT_TO.equals(type))
                 setReportTo(data);
             else if (Constants.dictionary().ORG_BILL_TO.equals(type))
-                setBillTo(data);
+                setBillTo(data);            
         }
     }
 
@@ -4916,7 +5126,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(testSelectionLookup);
 
-        testSelectionLookup.setData(manager, ret.getTests());
         testSelectionLookup.setWindow(modal);
+        testSelectionLookup.setData(manager, ret.getTests());
     }
 }

@@ -497,15 +497,21 @@ public class DataViewScreen extends Screen {
 
         addScreenHandler(ui.getProjectCode(),
                          SampleWebMeta.getProjectId(),
-                         new ScreenHandler<Integer>() {
+                         new ScreenHandler<ArrayList<Integer>>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getProjectCode().setValue(data.getProjectId());
+                                 ArrayList<Integer> ids;
+
+                                 ids = null;
+                                 if (data.getProjectId() != null) {
+                                     ids = new ArrayList<Integer>();
+                                     ids.add(data.getProjectId());
+                                 }
+                                 ui.getProjectCode().setValue(ids);
                              }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                             public void onValueChange(ValueChangeEvent<ArrayList<Integer>> event) {
                                  ui.setProjectError(null);
                                  ui.getProjectCode().clearExceptions();
-                                 data.setProjectId(event.getValue());
                              }
 
                              public Widget onTab(boolean forward) {
@@ -642,10 +648,13 @@ public class DataViewScreen extends Screen {
                          SampleWebMeta.getClinPatientBirthDateFrom(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientBirthFrom()
-                                   .setValue(new Datetime(Datetime.YEAR,
-                                                          Datetime.SECOND,
-                                                          data.getSampleClinicalPatientBirthDateFrom()));
+                                 if (data.getSampleClinicalPatientBirthDateFrom() != null)
+                                     ui.getPatientBirthFrom()
+                                       .setValue(new Datetime(Datetime.YEAR,
+                                                              Datetime.SECOND,
+                                                              data.getSampleClinicalPatientBirthDateFrom()));
+                                 else
+                                     ui.getPatientBirthFrom().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -667,13 +676,16 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getPatientBirthTo(),
-                         SampleWebMeta.getClinPatientBirthDateFrom(),
+                         SampleWebMeta.getClinPatientBirthDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 ui.getPatientBirthTo()
-                                   .setValue(new Datetime(Datetime.YEAR,
-                                                          Datetime.SECOND,
-                                                          data.getSampleClinicalPatientBirthDateTo()));
+                                 if (data.getSampleClinicalPatientBirthDateTo() != null)
+                                     ui.getPatientBirthTo()
+                                       .setValue(new Datetime(Datetime.YEAR,
+                                                              Datetime.SECOND,
+                                                              data.getSampleClinicalPatientBirthDateTo()));
+                                 else
+                                     ui.getPatientBirthTo().setValue(null);
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -1549,6 +1561,16 @@ public class DataViewScreen extends Screen {
                           fieldMap);
         } catch (Exception e) {
             ui.setAccessionError(Messages.get().finalReport_error_noStartAccession());
+            error = true;
+        }
+
+        try {
+            getRangeQuery(SampleWebMeta.getClinPatientBirthDateFrom(),
+                          SampleWebMeta.getClinPatientBirthDateTo(),
+                          SampleWebMeta.getClinPatientBirthDate(),
+                          fieldMap);
+        } catch (Exception e) {
+            ui.setPatientBirthError(Messages.get().finalReport_error_noStartDate());
             error = true;
         }
 

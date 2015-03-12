@@ -62,7 +62,7 @@ import org.openelis.utils.Auditable;
                            query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
                                    + " from Provider p left join p.providerLocation pl where p.npi like :npi"),
                @NamedQuery(name = "Provider.FetchByLastNameNpiExternalId",
-                           query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
+                           query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"
                                    + " from Provider p left join p.providerLocation pl where p.lastName like :search or p.npi like :search"
                                    + " or pl.externalId like :search order by p.lastName, p.firstName, p.middleName, p.npi")})
 @Entity

@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.scriptlet.ScriptletInt;
 
@@ -89,11 +90,16 @@ public class EnvironmentalIAScriptlet1 implements ScriptletInt<SampleSO> {
     private void addDefaultNote(SampleSO data) {
         NoteViewDO note;
 
-        proxy.log(Level.FINE, "Adding the default note for this domain to the sample");
-
         note = data.getManager().sampleExternalNote.getEditing();
-        note.setIsExternal("Y");
-        note.setText(defaultNote.getText());
+        /*
+         * if the scriptlet was called to add a note to a previously
+         * quick-entered sample, the sample can have an external note; this
+         * check makes sure that note doesn't get overwritten here
+         */
+        if (DataBaseUtil.isEmpty(note.getText())) {
+            proxy.log(Level.FINE, "Adding the default note for this domain to the sample");
+            note.setText(defaultNote.getText());
+        }
         data.addChangedUid(Constants.uid().getNote(note.getId()));
     }
 

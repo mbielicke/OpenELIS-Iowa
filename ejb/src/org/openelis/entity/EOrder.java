@@ -33,7 +33,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -44,14 +43,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({
                @NamedQuery(name = "EOrder.FetchById",
@@ -68,8 +62,7 @@ import org.openelis.utils.Auditable;
                                    + " from Sample s where s.domain in ('C','N') and s.orderId = :id")})
 @Entity
 @Table(name = "eorder")
-@EntityListeners({AuditUtil.class})
-public class EOrder implements Auditable, Cloneable {
+public class EOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,9 +84,6 @@ public class EOrder implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "eorder_id", insertable = false, updatable = false)
     private Collection<EOrderLink> eOrderLink;
-
-    @Transient
-    private EOrder                 original;
 
     public Integer getId() {
         return id;
@@ -145,30 +135,5 @@ public class EOrder implements Auditable, Cloneable {
 
     public void seteOrderLink(Collection<EOrderLink> eOrderLink) {
         this.eOrderLink = eOrderLink;
-    }
-
-    @Override
-    public void setClone() {
-        try {
-            original = (EOrder)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Audit getAudit(Integer activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().EORDER);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("entered_date", enteredDate, original.enteredDate)
-                 .setField("paper_order_validator", paperOrderValidator, original.paperOrderValidator)
-                 .setField("description", description, original.description);
-
-        return audit;
     }
 }

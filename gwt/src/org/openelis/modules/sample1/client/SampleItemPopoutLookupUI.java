@@ -146,12 +146,6 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
             }
         });
 
-        addScreenHandler(moveButton, "moveButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                moveButton.setEnabled(canEdit && isState(ADD, UPDATE));
-            }
-        });
-
         addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.setModel(getTableModel());
@@ -183,7 +177,7 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
             }
         });
 
-        addScreenHandler(moveButton, "okButton", new ScreenHandler<Object>() {
+        addScreenHandler(moveButton, "moveButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 moveButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }

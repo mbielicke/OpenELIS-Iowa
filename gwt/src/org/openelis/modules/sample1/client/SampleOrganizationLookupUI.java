@@ -229,7 +229,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
                                               .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new Item<Integer>(4);
+                        row = new Item<Integer>(5);
                         data = list.get(i);
 
                         row.setKey(data.getId());

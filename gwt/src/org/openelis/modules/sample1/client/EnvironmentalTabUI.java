@@ -184,7 +184,7 @@ public class EnvironmentalTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                description.setEnabled((isState(QUERY) && canQuery) || (canEdit && isState(ADD, UPDATE)));
                 description.setQueryMode((isState(QUERY) && canQuery));
             }
             

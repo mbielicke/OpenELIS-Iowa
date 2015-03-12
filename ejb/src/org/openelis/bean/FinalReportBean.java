@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +37,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AttachmentDO;
 import org.openelis.domain.AttachmentItemDO;
+import org.openelis.domain.AttachmentItemViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
@@ -334,13 +336,16 @@ public class FinalReportBean {
      * Final report for e-save. This method saves a copy of the final report as
      * attachment to the sample. The method is called before un-release of
      * analysis or sample to save a previous copy before changes are committed.
+     * The method returns a DO containing the data for the attachment and
+     * attachment item created for the final report.
      */
-    public void runReportForESave(Integer accession) throws Exception {
+    public AttachmentItemViewDO runReportForESave(Integer accession) throws Exception {
         boolean esave;
         Integer sid;
         String sname, filename;
         ReportStatus status;
         AttachmentDO att;
+        AttachmentItemDO atti;
         FinalReportVO result;
         OrganizationPrint print;
         Datetime timeStamp;
@@ -354,10 +359,10 @@ public class FinalReportBean {
             esave = Boolean.parseBoolean(systemVariable.fetchByName("final_report_esave")
                                                        .getValue());
             if ( !esave)
-                return;
+                return null;
         } catch (Exception e) {
             log.fine("No 'final_report_esave' system variable defined; will not save previous copies");
-            return;
+            return null;
         }
         /*
          * all the esave attachments need to be owned by section "system"
@@ -393,7 +398,7 @@ public class FinalReportBean {
             } else {
                 log.warning("Final report (esave) for accession number " + accession +
                             " has incorrect status,\nmissing information, or has no analysis ready to be printed");
-                return;
+                return null;
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Trying to find a sample", e);
@@ -421,10 +426,19 @@ public class FinalReportBean {
                                                                                           .toString(),
                                                                                     result.getRevision()),
                                     sid);
-        attachmentItem.add(new AttachmentItemDO(0,
-                                                result.getSampleId(),
-                                                Constants.table().SAMPLE,
-                                                att.getId()));
+        atti = attachmentItem.add(new AttachmentItemDO(0,
+                                                       result.getSampleId(),
+                                                       Constants.table().SAMPLE,
+                                                       att.getId()));
+
+        return new AttachmentItemViewDO(atti.getId(),
+                                        atti.getReferenceId(),
+                                        atti.getReferenceTableId(),
+                                        atti.getAttachmentId(),
+                                        att.getCreatedDate().getDate(),
+                                        att.getSectionId(),
+                                        att.getDescription(),
+                                        Messages.get().attachment_sampleDescription(accession));
     }
 
     /**
@@ -527,6 +541,12 @@ public class FinalReportBean {
         print = null;
         zero = new Integer(0);
         for (FinalReportVO result : resultList) {
+            /*
+             * Exclude PT domain samples
+             */
+            if (Constants.domain().PT.equals(result.getDomain()))
+                continue;
+            
             lockSucceeded = samLockMap.get(result.getSampleId());
             if (lockSucceeded == null) {
                 try {
@@ -620,9 +640,11 @@ public class FinalReportBean {
         /*
          * update all the analyses with date printed
          */
-        timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        analysis.updatePrintedDate(anaSet, timeStamp);
-
+        if (anaSet.size() > 0) {
+            timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+            analysis.updatePrintedDate(anaSet, timeStamp);
+        }
+        
         log.fine("Printing the reports");
         print(printList, "R", true, status, printer);
 
@@ -842,7 +864,7 @@ public class FinalReportBean {
      * is directed to either a printer or the faxing system.
      */
     public void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
-                       boolean forMailing, ReportStatus status, String printer) throws Exception {
+                      boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
         URL url;
         Path path;
@@ -987,13 +1009,24 @@ public class FinalReportBean {
     private Path export(JasperPrint print, String systemVariableDirectory) throws Exception {
         Path path;
         JRExporter jexport;
+        OutputStream out;
 
-        jexport = new JRPdfExporter();
-        path = ReportUtil.createTempFile("finalreport", ".pdf", systemVariableDirectory);
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, Files.newOutputStream(path));
-        jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        jexport.exportReport();
-
+        out = null;
+        try {
+            jexport = new JRPdfExporter();
+            path = ReportUtil.createTempFile("finalreport", ".pdf", systemVariableDirectory);
+            out = Files.newOutputStream(path);
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            jexport.exportReport();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+                log.severe("Could not close output stream for final report");
+            }
+        }
         return path;
     }
 }

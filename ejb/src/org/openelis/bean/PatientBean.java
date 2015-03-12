@@ -21,6 +21,7 @@ import org.openelis.entity.Patient;
 import org.openelis.meta.PatientMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
@@ -232,6 +233,7 @@ public class PatientBean {
     }
     
     public void validate(PatientDO data) throws Exception {
+        Datetime bd, now;
         ValidationErrorsList e;
         
         e = new ValidationErrorsList();
@@ -244,9 +246,19 @@ public class PatientBean {
             e.add(new FormErrorException(Messages.get()
                                          .patient_firstNameRequiredException()));
         
-        if (data.getBirthDate() == null)
+        bd = data.getBirthDate();
+        if (data.getBirthDate() == null) {
             e.add(new FormErrorException(Messages.get()
-                                         .patient_birthDateRequiredException()));
+                                         .patient_birthDateRequiredException()));            
+        } else {
+            /*
+             * future birth dates are not allowed
+             */
+            now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
+            if (DataBaseUtil.isAfter(bd, now))
+                e.add(new FormErrorException(Messages.get()
+                                             .patient_futureBirthDateException()));
+        }
         if (e.size() > 0)
             throw e;
     }

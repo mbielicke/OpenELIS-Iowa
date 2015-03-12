@@ -47,7 +47,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleViewVO;
 import org.openelis.meta.SampleViewMeta;
-import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
@@ -145,35 +144,37 @@ public class SampleStatusPortalBean {
         resultList = DataBaseUtil.toArrayList(query.getResultList());
         returnList = new ArrayList<SampleViewVO>();
         for (Object[] result : resultList) {
-            returnList.add(new SampleViewVO((Integer)result[0],
-                                            (String)result[1],
-                                            (Integer)result[2],
-                                            null,
-                                            (Date)result[3],
-                                            (Date)result[4],
-                                            (Date)result[5],
-                                            (Integer)result[6],
-                                            (String)result[7],
-                                            null,
-                                            (Integer)result[8],
-                                            (String)result[9],
-                                            (String)result[10],
-                                            (String)result[11],
-                                            null,
-                                            null,
-                                            null,
-                                            (String)result[12],
-                                            null,
-                                            null,
-                                            (String)result[13],
-                                            (String)result[14],
-                                            null,
-                                            (Integer)result[15],
-                                            null,
-                                            null,
-                                            (Integer)result[16],
-                                            (String)result[17],
-                                            (String)result[18]));
+            returnList.add(new SampleViewVO((Integer)result[0],// id
+                                            (String)result[1],// domain
+                                            (Integer)result[2],// accession
+                                            null,// revision
+                                            (Date)result[3],// released
+                                            (Date)result[4],// collected date
+                                            (Date)result[5],// collected time
+                                            (Integer)result[6],// sample status
+                                            (String)result[7],// client ref
+                                            null,// released
+                                            (Integer)result[8],// org id
+                                            (String)result[9],// org name
+                                            (String)result[10],// collector
+                                            (String)result[11],// location
+                                            null,// location city
+                                            null,// project id
+                                            null,// project name
+                                            (String)result[12],// number0
+                                            null,// pws name
+                                            null,// facility id
+                                            (String)result[13],// patient last
+                                            (String)result[14],// patient first
+                                            null,// patient birth
+                                            null,// provider
+                                            (Integer)result[15],// analysis id
+                                            null,// analysis revision
+                                            null,// reportable
+                                            (Integer)result[16],// analysis
+                                                                // status
+                                            (String)result[17],// test desc
+                                            (String)result[18]));// method desc
         }
 
         return returnList;
