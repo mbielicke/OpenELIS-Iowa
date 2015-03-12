@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/tschmidt/luna/wildfly/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -10,6 +10,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QA Event".
    * 
    * @return translated "QA Event"
+  
    */
   @DefaultMessage("QA Event")
   @Key("QAEvent")
@@ -19,6 +20,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define quality assurance indicators that can be assigned to a sample/analysis.".
    * 
    * @return translated "Define quality assurance indicators that can be assigned to a sample/analysis."
+  
    */
   @DefaultMessage("Define quality assurance indicators that can be assigned to a sample/analysis.")
   @Key("QAEventDescription")
@@ -28,6 +30,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QAEvent Report".
    * 
    * @return translated "QAEvent Report"
+  
    */
   @DefaultMessage("QAEvent Report")
   @Key("QAEventReport")
@@ -37,6 +40,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QA Summary Report".
    * 
    * @return translated "QA Summary Report"
+  
    */
   @DefaultMessage("QA Summary Report")
   @Key("QASummaryReport")
@@ -46,6 +50,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC".
    * 
    * @return translated "QC"
+  
    */
   @DefaultMessage("QC")
   @Key("QC")
@@ -55,6 +60,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define quality control items.".
    * 
    * @return translated "Define quality control items."
+  
    */
   @DefaultMessage("Define quality control items.")
   @Key("QCDescription")
@@ -64,6 +70,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Lookup".
    * 
    * @return translated "QC Lookup"
+  
    */
   @DefaultMessage("QC Lookup")
   @Key("QCLookup")
@@ -73,6 +80,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Request Forms".
    * 
    * @return translated "Test Request Forms"
+  
    */
   @DefaultMessage("Test Request Forms")
   @Key("TRFReport")
@@ -82,6 +90,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "For".
    * 
    * @return translated "For"
+  
    */
   @DefaultMessage("For")
   @Key("_for")
@@ -91,6 +100,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Package".
    * 
    * @return translated "Package"
+  
    */
   @DefaultMessage("Package")
   @Key("_package")
@@ -100,6 +110,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Abbreviation".
    * 
    * @return translated "Abbreviation"
+  
    */
   @DefaultMessage("Abbreviation")
   @Key("abbr")
@@ -109,6 +120,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Abort".
    * 
    * @return translated "Abort"
+  
    */
   @DefaultMessage("Abort")
   @Key("abort")
@@ -118,6 +130,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A shipping record will not be created for these orders if you abort at this stage and you will not be able to create one later. Are you sure you want to abort?".
    * 
    * @return translated "A shipping record will not be created for these orders if you abort at this stage and you will not be able to create one later. Are you sure you want to abort?"
+  
    */
   @DefaultMessage("A shipping record will not be created for these orders if you abort at this stage and you will not be able to create one later. Are you sure you want to abort?")
   @Key("abortNotCreateShippingRecord")
@@ -127,6 +140,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All of your changes will be lost if you abort. Are you sure?".
    * 
    * @return translated "All of your changes will be lost if you abort. Are you sure?"
+  
    */
   @DefaultMessage("All of your changes will be lost if you abort. Are you sure?")
   @Key("abortWarning")
@@ -136,6 +150,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Acc #".
    * 
    * @return translated "Acc #"
+  
    */
   @DefaultMessage("Acc #")
   @Key("accNum")
@@ -145,6 +160,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Accession #".
    * 
    * @return translated "Accession #"
+  
    */
   @DefaultMessage("Accession #")
   @Key("accessionNum")
@@ -154,6 +170,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid Accession Number: Number is already entered into the system".
    * 
    * @return translated "Invalid Accession Number: Number is already entered into the system"
+  
    */
   @DefaultMessage("Invalid Accession Number: Number is already entered into the system")
   @Key("accessionNumberDuplicate")
@@ -163,6 +180,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Are you sure you want to change this sample''s accession number?".
    * 
    * @return translated "Are you sure you want to change this sample''s accession number?"
+  
    */
   @DefaultMessage("Are you sure you want to change this sample''s accession number?")
   @Key("accessionNumberEditConfirm")
@@ -172,6 +190,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid Accession Number: Number not in use yet".
    * 
    * @return translated "Invalid Accession Number: Number not in use yet"
+  
    */
   @DefaultMessage("Invalid Accession Number: Number not in use yet")
   @Key("accessionNumberNotInUse")
@@ -181,6 +200,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid Accession Number : Number must be greater than zero  ".
    * 
    * @return translated "Invalid Accession Number : Number must be greater than zero  "
+  
    */
   @DefaultMessage("Invalid Accession Number : Number must be greater than zero  ")
   @Key("accessionNumberNotPositiveException")
@@ -190,6 +210,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Active".
    * 
    * @return translated "Active"
+  
    */
   @DefaultMessage("Active")
   @Key("active")
@@ -199,6 +220,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Activity ".
    * 
    * @return translated "Activity "
+  
    */
   @DefaultMessage("Activity ")
   @Key("activity")
@@ -208,6 +230,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add".
    * 
    * @return translated "Add"
+  
    */
   @DefaultMessage("Add")
   @Key("add")
@@ -217,6 +240,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add aborted".
    * 
    * @return translated "Add aborted"
+  
    */
   @DefaultMessage("Add aborted")
   @Key("addAborted")
@@ -226,6 +250,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Analysis".
    * 
    * @return translated "Add Analysis"
+  
    */
   @DefaultMessage("Add Analysis")
   @Key("addAnalysis")
@@ -235,6 +260,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "+ Analyte".
    * 
    * @return translated "+ Analyte"
+  
    */
   @DefaultMessage("+ Analyte")
   @Key("addAnalyte")
@@ -244,6 +270,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Analyte After".
    * 
    * @return translated "Add Analyte After"
+  
    */
   @DefaultMessage("Add Analyte After")
   @Key("addAnalyteAfter")
@@ -253,6 +280,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Analyte Before".
    * 
    * @return translated "Add Analyte Before"
+  
    */
   @DefaultMessage("Add Analyte Before")
   @Key("addAnalyteBefore")
@@ -262,6 +290,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Before".
    * 
    * @return translated "Add Before"
+  
    */
   @DefaultMessage("Add Before")
   @Key("addBefore")
@@ -271,6 +300,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "+ Column".
    * 
    * @return translated "+ Column"
+  
    */
   @DefaultMessage("+ Column")
   @Key("addColumn")
@@ -280,6 +310,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Group".
    * 
    * @return translated "Add Group"
+  
    */
   @DefaultMessage("Add Group")
   @Key("addGroup")
@@ -289,6 +320,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Group After".
    * 
    * @return translated "Add Group After"
+  
    */
   @DefaultMessage("Add Group After")
   @Key("addGroupAfter")
@@ -298,6 +330,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Group Before".
    * 
    * @return translated "Add Group Before"
+  
    */
   @DefaultMessage("Add Group Before")
   @Key("addGroupBefore")
@@ -307,6 +340,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "+ Header".
    * 
    * @return translated "+ Header"
+  
    */
   @DefaultMessage("+ Header")
   @Key("addHeader")
@@ -316,6 +350,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Item".
    * 
    * @return translated "Add Item"
+  
    */
   @DefaultMessage("Add Item")
   @Key("addItem")
@@ -325,6 +360,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Location".
    * 
    * @return translated "Add Location"
+  
    */
   @DefaultMessage("Add Location")
   @Key("addLocation")
@@ -334,6 +370,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Note".
    * 
    * @return translated "Add Note"
+  
    */
   @DefaultMessage("Add Note")
   @Key("addNote")
@@ -343,6 +380,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add or Cancel".
    * 
    * @return translated "Add or Cancel"
+  
    */
   @DefaultMessage("Add or Cancel")
   @Key("addOrCancel")
@@ -352,6 +390,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add analyses to samples or cancel existing analyses.".
    * 
    * @return translated "Add analyses to samples or cancel existing analyses."
+  
    */
   @DefaultMessage("Add analyses to samples or cancel existing analyses.")
   @Key("addOrCancelDescription")
@@ -361,6 +400,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Row".
    * 
    * @return translated "Add Row"
+  
    */
   @DefaultMessage("Add Row")
   @Key("addRow")
@@ -370,6 +410,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "+ Row".
    * 
    * @return translated "+ Row"
+  
    */
   @DefaultMessage("+ Row")
   @Key("addRowTest")
@@ -379,6 +420,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Test".
    * 
    * @return translated "Add Test"
+  
    */
   @DefaultMessage("Add Test")
   @Key("addTest")
@@ -388,6 +430,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add To Existing".
    * 
    * @return translated "Add To Existing"
+  
    */
   @DefaultMessage("Add To Existing")
   @Key("addToExisting")
@@ -397,6 +440,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adding...".
    * 
    * @return translated "Adding..."
+  
    */
   @DefaultMessage("Adding...")
   @Key("adding")
@@ -406,6 +450,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adding...Complete".
    * 
    * @return translated "Adding...Complete"
+  
    */
   @DefaultMessage("Adding...Complete")
   @Key("addingComplete")
@@ -415,6 +460,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adding Failed. Make corrections and try again or Abort".
    * 
    * @return translated "Adding Failed. Make corrections and try again or Abort"
+  
    */
   @DefaultMessage("Adding Failed. Make corrections and try again or Abort")
   @Key("addingFailed")
@@ -424,6 +470,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Additional Info".
    * 
    * @return translated "Additional Info"
+  
    */
   @DefaultMessage("Additional Info")
   @Key("additionalInfo")
@@ -433,6 +480,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Additional Label".
    * 
    * @return translated "Additional Label"
+  
    */
   @DefaultMessage("Additional Label")
   @Key("additionalLabel")
@@ -442,6 +490,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Addr1".
    * 
    * @return translated "Addr1"
+  
    */
   @DefaultMessage("Addr1")
   @Key("addr1")
@@ -451,6 +500,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Addr2".
    * 
    * @return translated "Addr2"
+  
    */
   @DefaultMessage("Addr2")
   @Key("addr2")
@@ -460,6 +510,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Address".
    * 
    * @return translated "Address"
+  
    */
   @DefaultMessage("Address")
   @Key("address")
@@ -469,6 +520,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Address".
    * 
    * @return translated "Address"
+  
    */
   @DefaultMessage("Address")
   @Key("address.address")
@@ -478,6 +530,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Apt/Suite #".
    * 
    * @return translated "Apt/Suite #"
+  
    */
   @DefaultMessage("Apt/Suite #")
   @Key("address.aptSuite")
@@ -487,6 +540,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "City".
    * 
    * @return translated "City"
+  
    */
   @DefaultMessage("City")
   @Key("address.city")
@@ -496,6 +550,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "City, State, Zip".
    * 
    * @return translated "City, State, Zip"
+  
    */
   @DefaultMessage("City, State, Zip")
   @Key("address.cityStateZip")
@@ -505,6 +560,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Country".
    * 
    * @return translated "Country"
+  
    */
   @DefaultMessage("Country")
   @Key("address.country")
@@ -514,6 +570,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Phone #".
    * 
    * @return translated "Phone #"
+  
    */
   @DefaultMessage("Phone #")
   @Key("address.phone")
@@ -523,6 +580,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "St".
    * 
    * @return translated "St"
+  
    */
   @DefaultMessage("St")
   @Key("address.st")
@@ -532,6 +590,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State".
    * 
    * @return translated "State"
+  
    */
   @DefaultMessage("State")
   @Key("address.state")
@@ -541,6 +600,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Street".
    * 
    * @return translated "Street"
+  
    */
   @DefaultMessage("Street")
   @Key("address.street")
@@ -550,6 +610,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Zip Code".
    * 
    * @return translated "Zip Code"
+  
    */
   @DefaultMessage("Zip Code")
   @Key("address.zipcode")
@@ -559,6 +620,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adj Date".
    * 
    * @return translated "Adj Date"
+  
    */
   @DefaultMessage("Adj Date")
   @Key("adjDate")
@@ -568,6 +630,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adj Quan".
    * 
    * @return translated "Adj Quan"
+  
    */
   @DefaultMessage("Adj Quan")
   @Key("adjQuan")
@@ -577,6 +640,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adjustment #".
    * 
    * @return translated "Adjustment #"
+  
    */
   @DefaultMessage("Adjustment #")
   @Key("adjustmentNum")
@@ -586,6 +650,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Air Quality Export".
    * 
    * @return translated "Air Quality Export"
+  
    */
   @DefaultMessage("Air Quality Export")
   @Key("airQuality.airQualityExport")
@@ -595,6 +660,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must specify Action for this report".
    * 
    * @return translated "You must specify Action for this report"
+  
    */
   @DefaultMessage("You must specify Action for this report")
   @Key("airQuality.noActionException")
@@ -604,6 +670,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must specify From Date and To Date or accession number for this report".
    * 
    * @return translated "You must specify From Date and To Date or accession number for this report"
+  
    */
   @DefaultMessage("You must specify From Date and To Date or accession number for this report")
   @Key("airQuality.noDataException")
@@ -613,6 +680,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may only specify From Date and To Date or accession number for this report".
    * 
    * @return translated "You may only specify From Date and To Date or accession number for this report"
+  
    */
   @DefaultMessage("You may only specify From Date and To Date or accession number for this report")
   @Key("airQuality.tooMuchDataException")
@@ -622,6 +690,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Alias".
    * 
    * @return translated "Alias"
+  
    */
   @DefaultMessage("Alias")
   @Key("alias")
@@ -631,6 +700,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All Categories ".
    * 
    * @return translated "All Categories "
+  
    */
   @DefaultMessage("All Categories ")
   @Key("allCategories")
@@ -640,6 +710,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All items do not have locations specified".
    * 
    * @return translated "All items do not have locations specified"
+  
    */
   @DefaultMessage("All items do not have locations specified")
   @Key("allItemsDontHaveLocation")
@@ -649,6 +720,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All items must be from the same store".
    * 
    * @return translated "All items must be from the same store"
+  
    */
   @DefaultMessage("All items must be from the same store")
   @Key("allItemsSameStoreException")
@@ -658,6 +730,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "If one of the sections is set as \"Default\", then all the others must be set to blank.".
    * 
    * @return translated "If one of the sections is set as \"Default\", then all the others must be set to blank."
+  
    */
   @DefaultMessage("If one of the sections is set as \"Default\", then all the others must be set to blank.")
   @Key("allSectBlankIfDefException")
@@ -667,6 +740,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All section cannot be set to the blank option. At least one of them must be set as the default one, if the rest are set to blank.".
    * 
    * @return translated "All section cannot be set to the blank option. At least one of them must be set as the default one, if the rest are set to blank."
+  
    */
   @DefaultMessage("All section cannot be set to the blank option. At least one of them must be set as the default one, if the rest are set to blank.")
   @Key("allSectCantBeBlankException")
@@ -676,6 +750,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "If one of the sections is set as \"Match User Location\", then all the others must be set to this option.".
    * 
    * @return translated "If one of the sections is set as \"Match User Location\", then all the others must be set to this option."
+  
    */
   @DefaultMessage("If one of the sections is set as \"Match User Location\", then all the others must be set to this option.")
   @Key("allSectMatchFlagException")
@@ -685,6 +760,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All Tests".
    * 
    * @return translated "All Tests"
+  
    */
   @DefaultMessage("All Tests")
   @Key("allTests")
@@ -694,6 +770,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The \"Analyte\" and \"Type\" fields are required for each analyte".
    * 
    * @return translated "The \"Analyte\" and \"Type\" fields are required for each analyte"
+  
    */
   @DefaultMessage("The \"Analyte\" and \"Type\" fields are required for each analyte")
   @Key("anaTypeAndNameRequired")
@@ -703,6 +780,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyses".
    * 
    * @return translated "Analyses"
+  
    */
   @DefaultMessage("Analyses")
   @Key("analyses")
@@ -712,6 +790,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis".
    * 
    * @return translated "Analysis"
+  
    */
   @DefaultMessage("Analysis")
   @Key("analysis")
@@ -721,6 +800,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Action".
    * 
    * @return translated "Action"
+  
    */
   @DefaultMessage("Action")
   @Key("analysis.action")
@@ -730,6 +810,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis".
    * 
    * @return translated "Analysis"
+  
    */
   @DefaultMessage("Analysis")
   @Key("analysis.analysis")
@@ -739,6 +820,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancel Analysis?".
    * 
    * @return translated "Cancel Analysis?"
+  
    */
   @DefaultMessage("Cancel Analysis?")
   @Key("analysis.cancelCaption")
@@ -748,6 +830,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not remove a committed analysis row. However, you can change the status to ''Cancelled''. Would you like to change the status to ''Cancelled''?".
    * 
    * @return translated "You may not remove a committed analysis row. However, you can change the status to ''Cancelled''. Would you like to change the status to ''Cancelled''?"
+  
    */
   @DefaultMessage("You may not remove a committed analysis row. However, you can change the status to ''Cancelled''. Would you like to change the status to ''Cancelled''?")
   @Key("analysis.cancelMessage")
@@ -757,6 +840,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis is cancelled. You cannot add QA events.".
    * 
    * @return translated "Analysis is cancelled. You cannot add QA events."
+  
    */
   @DefaultMessage("Analysis is cancelled. You cannot add QA events.")
   @Key("analysis.cantAddQACancelled")
@@ -765,7 +849,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}")
   @Key("analysis.cantCancelPrepWithReleasedTest")
@@ -774,7 +864,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It does not exist in the system ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot cancel {1}, {2} - It does not exist in the system "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot cancel {1}, {2} - It does not exist in the system ")
   @Key("analysis.cantCancelUncommitedException")
@@ -783,7 +877,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot change the prep analysis of {1}, {2} - It is in {3} status".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Cannot change the prep analysis of {1}, {2} - It is in {3} status"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot change the prep analysis of {1}, {2} - It is in {3} status")
   @Key("analysis.cantChangePrepException")
@@ -792,7 +891,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot change the status of {1}, {2} from {3} to {4}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Cannot change the status of {1}, {2} from {3} to {4}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot change the status of {1}, {2} from {3} to {4}")
   @Key("analysis.cantChangeStatusException")
@@ -801,7 +906,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot complete {1}, {2}  ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot complete {1}, {2}  "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot complete {1}, {2}  ")
   @Key("analysis.cantCompleteException")
@@ -811,6 +920,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cannot copy blank section".
    * 
    * @return translated "Cannot copy blank section"
+  
    */
   @DefaultMessage("Cannot copy blank section")
   @Key("analysis.cantCopyBlankSect")
@@ -819,7 +929,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Sample is not verified".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Sample is not verified"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot release {1} : {2} - Sample is not verified")
   @Key("analysis.cantReleaseSampleNotVerifiedException")
@@ -828,7 +942,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot remove {1}, {2} - It exists in the system ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot remove {1}, {2} - It exists in the system "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot remove {1}, {2} - It exists in the system ")
   @Key("analysis.cantRemoveCommitedException")
@@ -837,7 +955,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately")
   @Key("analysis.cantRemoveInUpdateException")
@@ -847,6 +969,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis has been cancelled. You cannot remove QA events.".
    * 
    * @return translated "Analysis has been cancelled. You cannot remove QA events."
+  
    */
   @DefaultMessage("Analysis has been cancelled. You cannot remove QA events.")
   @Key("analysis.cantRemoveQACancelled")
@@ -856,6 +979,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis has been released. You cannot remove non-internal QA events.".
    * 
    * @return translated "Analysis has been released. You cannot remove non-internal QA events."
+  
    */
   @DefaultMessage("Analysis has been released. You cannot remove non-internal QA events.")
   @Key("analysis.cantRemoveQAReleased")
@@ -864,7 +988,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}")
   @Key("analysis.cantSetAsPrepException")
@@ -873,7 +1003,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ")
   @Key("analysis.cantUnreleaseCarrierException")
@@ -883,6 +1019,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An analysis can not be its own prep analysis".
    * 
    * @return translated "An analysis can not be its own prep analysis"
+  
    */
   @DefaultMessage("An analysis can not be its own prep analysis")
   @Key("analysis.circularReference")
@@ -891,7 +1028,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Status needs to be Completed".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot release {1} : {2} - Status needs to be Completed"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot release {1} : {2} - Status needs to be Completed")
   @Key("analysis.completeStatusRequiredToRelease")
@@ -901,6 +1042,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Completed".
    * 
    * @return translated "Completed"
+  
    */
   @DefaultMessage("Completed")
   @Key("analysis.completed")
@@ -909,7 +1051,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Completed date can''t be after released date".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Completed date can''t be after released date"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Completed date can''t be after released date")
   @Key("analysis.completedDateAfterReleasedException")
@@ -918,7 +1065,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future")
   @Key("analysis.completedDateInFutureException")
@@ -927,7 +1079,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated")
   @Key("analysis.inactiveUnitWarning")
@@ -936,7 +1094,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Insufficient privileges to add {1}, {2}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Insufficient privileges to add {1}, {2}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to add {1}, {2}")
   @Key("analysis.insufficientPrivilegesAddTestWarning")
@@ -945,7 +1107,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Insufficient privileges to cancel {1}, {2}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Insufficient privileges to cancel {1}, {2}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to cancel {1}, {2}")
   @Key("analysis.insufficientPrivilegesCancelException")
@@ -954,7 +1120,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Insufficient privileges to complete {1}, {2}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Insufficient privileges to complete {1}, {2}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to complete {1}, {2}")
   @Key("analysis.insufficientPrivilegesCompleteException")
@@ -963,7 +1133,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Insufficient privileges to initiate {1}, {2}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Insufficient privileges to initiate {1}, {2}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to initiate {1}, {2}")
   @Key("analysis.insufficientPrivilegesInitiateException")
@@ -972,7 +1146,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Insufficient privileges to release {1}, {2}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Insufficient privileges to release {1}, {2}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to release {1}, {2}")
   @Key("analysis.insufficientPrivilegesReleaseException")
@@ -981,7 +1159,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Insufficient privileges to unrelease {1}, {2}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Insufficient privileges to unrelease {1}, {2}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Insufficient privileges to unrelease {1}, {2}")
   @Key("analysis.insufficientPrivilegesUnreleaseException")
@@ -990,7 +1172,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : Cannot add analyte ''{1}'' to {2}, {3} at this position".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0} : Cannot add analyte ''{1}'' to {2}, {3} at this position"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : Cannot add analyte ''{1}'' to {2}, {3} at this position")
   @Key("analysis.invalidPositionForAnalyteException")
@@ -999,7 +1186,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot initiate {1}, {2} - It is in {3} status".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Cannot initiate {1}, {2} - It is in {3} status"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot initiate {1}, {2} - It is in {3} status")
   @Key("analysis.invalidStatusForInitiateException")
@@ -1009,6 +1201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Results may be lost".
    * 
    * @return translated "Results may be lost"
+  
    */
   @DefaultMessage("Results may be lost")
   @Key("analysis.loseResultsCaption")
@@ -1018,6 +1211,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Changing the method may cause you to lose the results you have entered.  Are you sure you want to continue?".
    * 
    * @return translated "Changing the method may cause you to lose the results you have entered.  Are you sure you want to continue?"
+  
    */
   @DefaultMessage("Changing the method may cause you to lose the results you have entered.  Are you sure you want to continue?")
   @Key("analysis.loseResultsWarning")
@@ -1026,7 +1220,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No Add permission for - {0} : {1}, {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "No Add permission for - {0} : {1}, {2}"
+  
    */
   @DefaultMessage("No Add permission for - {0} : {1}, {2}")
   @Key("analysis.noAssignPermission")
@@ -1035,7 +1233,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No cancel permission for - {0} : {1}, {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "No cancel permission for - {0} : {1}, {2}"
+  
    */
   @DefaultMessage("No cancel permission for - {0} : {1}, {2}")
   @Key("analysis.noCancelPermission")
@@ -1044,7 +1246,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No Complete permission for - {0} : {1}, {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "No Complete permission for - {0} : {1}, {2}"
+  
    */
   @DefaultMessage("No Complete permission for - {0} : {1}, {2}")
   @Key("analysis.noCompletePermission")
@@ -1053,7 +1259,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No Release permission for - {0} : {1}, {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "No Release permission for - {0} : {1}, {2}"
+  
    */
   @DefaultMessage("No Release permission for - {0} : {1}, {2}")
   @Key("analysis.noReleasePermission")
@@ -1063,6 +1273,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A QA event has been added that makes this analysis not billable".
    * 
    * @return translated "A QA event has been added that makes this analysis not billable"
+  
    */
   @DefaultMessage("A QA event has been added that makes this analysis not billable")
   @Key("analysis.notBillable")
@@ -1071,7 +1282,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - {4}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - {4}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - {4}")
   @Key("analysis.noteException")
@@ -1081,6 +1298,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Notes".
    * 
    * @return translated "Analysis Notes"
+  
    */
   @DefaultMessage("Analysis Notes")
   @Key("analysis.notes")
@@ -1089,7 +1307,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - Partner and individual accession numbers cannot be the same".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - Partner and individual accession numbers cannot be the same"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Partner and individual accession numbers cannot be the same")
   @Key("analysis.partAccCantBeSameAsIndException")
@@ -1099,6 +1321,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
+  
    */
   @DefaultMessage("Preliminary")
   @Key("analysis.preliminary")
@@ -1108,6 +1331,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Printed".
    * 
    * @return translated "Printed"
+  
    */
   @DefaultMessage("Printed")
   @Key("analysis.printed")
@@ -1117,6 +1341,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis QA Events ".
    * 
    * @return translated "Analysis QA Events "
+  
    */
   @DefaultMessage("Analysis QA Events ")
   @Key("analysis.qaEvents")
@@ -1126,6 +1351,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Released".
    * 
    * @return translated "Released"
+  
    */
   @DefaultMessage("Released")
   @Key("analysis.released")
@@ -1135,6 +1361,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Released Date".
    * 
    * @return translated "Analysis Released Date"
+  
    */
   @DefaultMessage("Analysis Released Date")
   @Key("analysis.releasedDate")
@@ -1144,6 +1371,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Revision".
    * 
    * @return translated "Revision"
+  
    */
   @DefaultMessage("Revision")
   @Key("analysis.revision")
@@ -1153,6 +1381,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Prep".
    * 
    * @return translated "Sample Prep"
+  
    */
   @DefaultMessage("Sample Prep")
   @Key("analysis.samplePrep")
@@ -1161,7 +1390,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Section Missing")
   @Key("analysis.sectionIdMissingException")
@@ -1171,6 +1405,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Started".
    * 
    * @return translated "Started"
+  
    */
   @DefaultMessage("Started")
   @Key("analysis.started")
@@ -1179,7 +1414,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be after completed".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be after completed"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be after completed")
   @Key("analysis.startedDateAfterCompletedException")
@@ -1188,7 +1428,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date is before available date".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date is before available date"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date is before available date")
   @Key("analysis.startedDateBeforeAvailableCaution")
@@ -1197,7 +1442,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be in the future".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be in the future"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Started date can''t be in the future")
   @Key("analysis.startedDateInFutureException")
@@ -1207,6 +1457,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Status".
    * 
    * @return translated "Analysis Status"
+  
    */
   @DefaultMessage("Analysis Status")
   @Key("analysis.status")
@@ -1215,7 +1466,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - One or more tests are missing")
   @Key("analysis.testIdMissingException")
@@ -1225,6 +1479,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unit of measure invalid for this sample type".
    * 
    * @return translated "Unit of measure invalid for this sample type"
+  
    */
   @DefaultMessage("Unit of measure invalid for this sample type")
   @Key("analysis.unitInvalidForSampleType")
@@ -1233,7 +1488,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure invalid for sample type".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure invalid for sample type"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure invalid for sample type")
   @Key("analysis.unitInvalidWarning")
@@ -1242,7 +1502,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure is required".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit of measure is required")
   @Key("analysis.unitRequiredException")
@@ -1251,7 +1516,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on this sample. Press 'Run Scriptlets' for latest data.".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on this sample. Press 'Run Scriptlets' for latest data."
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on this sample. Press 'Run Scriptlets' for latest data.")
   @Key("analysis.validIndCarrierNotFoundException")
@@ -1260,7 +1531,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on partner sample. Press 'Run Scriptlets' for latest data.".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on partner sample. Press 'Run Scriptlets' for latest data."
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Released {3}, {4} not found on partner sample. Press 'Run Scriptlets' for latest data.")
   @Key("analysis.validPartCarrierNotFoundException")
@@ -1270,6 +1547,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis has already been completed".
    * 
    * @return translated "Analysis has already been completed"
+  
    */
   @DefaultMessage("Analysis has already been completed")
   @Key("analysisAlreadyComplete")
@@ -1279,6 +1557,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis has already been released".
    * 
    * @return translated "Analysis has already been released"
+  
    */
   @DefaultMessage("Analysis has already been released")
   @Key("analysisAlreadyReleased")
@@ -1288,6 +1567,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis is cancelled or released; you may not edit it".
    * 
    * @return translated "Analysis is cancelled or released; you may not edit it"
+  
    */
   @DefaultMessage("Analysis is cancelled or released; you may not edit it")
   @Key("analysisCancledOrReleased")
@@ -1297,6 +1577,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An Ext Comment".
    * 
    * @return translated "An Ext Comment"
+  
    */
   @DefaultMessage("An Ext Comment")
   @Key("analysisExtrnlCmnts")
@@ -1306,6 +1587,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Fields To Search By".
    * 
    * @return translated "Analysis Fields To Search By"
+  
    */
   @DefaultMessage("Analysis Fields To Search By")
   @Key("analysisFieldSearchBy")
@@ -1315,6 +1597,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample cannot be duplicated because one or more analyses have advanced beyond logged-in ".
    * 
    * @return translated "Sample cannot be duplicated because one or more analyses have advanced beyond logged-in "
+  
    */
   @DefaultMessage("Sample cannot be duplicated because one or more analyses have advanced beyond logged-in ")
   @Key("analysisHasAdvancedStatusException")
@@ -1323,7 +1606,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Sample cannot be duplicated because ''{0}'' has been reflexed by another analysis  ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Sample cannot be duplicated because ''{0}'' has been reflexed by another analysis  "
+  
    */
   @DefaultMessage("Sample cannot be duplicated because ''{0}'' has been reflexed by another analysis  ")
   @Key("analysisHasReflexAnalysesException")
@@ -1333,6 +1618,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Id".
    * 
    * @return translated "Analysis Id"
+  
    */
   @DefaultMessage("Analysis Id")
   @Key("analysisId")
@@ -1342,6 +1628,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An Int Comments ".
    * 
    * @return translated "An Int Comments "
+  
    */
   @DefaultMessage("An Int Comments ")
   @Key("analysisIntrnlCmnts")
@@ -1351,6 +1638,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A QA event has been added that makes this analysis not billable".
    * 
    * @return translated "A QA event has been added that makes this analysis not billable"
+  
    */
   @DefaultMessage("A QA event has been added that makes this analysis not billable")
   @Key("analysisNotBillable")
@@ -1360,6 +1648,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An analysis cannot be moved to its own item".
    * 
    * @return translated "An analysis cannot be moved to its own item"
+  
    */
   @DefaultMessage("An analysis cannot be moved to its own item")
   @Key("analysisNotMovedToOwnItem")
@@ -1369,6 +1658,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Notes".
    * 
    * @return translated "Analysis Notes"
+  
    */
   @DefaultMessage("Analysis Notes")
   @Key("analysisNotes")
@@ -1378,6 +1668,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis/Prep Test & Method".
    * 
    * @return translated "Analysis/Prep Test & Method"
+  
    */
   @DefaultMessage("Analysis/Prep Test & Method")
   @Key("analysisPrepTestMethod")
@@ -1387,6 +1678,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis QA Event".
    * 
    * @return translated "Analysis QA Event"
+  
    */
   @DefaultMessage("Analysis QA Event")
   @Key("analysisQAEvent")
@@ -1395,7 +1687,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Invalid QA Event ''{4}''".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Invalid QA Event ''{4}''"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Invalid QA Event ''{4}''")
   @Key("analysisQAEvent.invalidQAException")
@@ -1404,7 +1702,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Type is required for QA Event ''{4}''".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Type is required for QA Event ''{4}''"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Type is required for QA Event ''{4}''")
   @Key("analysisQAEvent.typeRequiredException")
@@ -1414,6 +1718,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Revision".
    * 
    * @return translated "Analysis Revision"
+  
    */
   @DefaultMessage("Analysis Revision")
   @Key("analysisRevision")
@@ -1422,7 +1727,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Section Missing".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Section Missing"
+  
    */
   @DefaultMessage("{0} : {1} - Section Missing")
   @Key("analysisSectionIdMissing")
@@ -1432,6 +1740,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Status".
    * 
    * @return translated "Analysis Status"
+  
    */
   @DefaultMessage("Analysis Status")
   @Key("analysisStatus")
@@ -1440,7 +1749,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Item {0} - One or more tests are missing".
    * 
+   * @param arg0 "{0}"
    * @return translated "Item {0} - One or more tests are missing"
+  
    */
   @DefaultMessage("Item {0} - One or more tests are missing")
   @Key("analysisTestIdMissing")
@@ -1449,7 +1760,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Unit of measure Missing".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Unit of measure Missing"
+  
    */
   @DefaultMessage("{0} : {1} - Unit of measure Missing")
   @Key("analysisUnitIdMissing")
@@ -1458,7 +1772,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Unit of measure invalid for sample type".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Unit of measure invalid for sample type"
+  
    */
   @DefaultMessage("{0} : {1} - Unit of measure invalid for sample type")
   @Key("analysisUnitInvalid")
@@ -1467,7 +1784,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Unit of measure is required".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Unit of measure is required"
+  
    */
   @DefaultMessage("{0} : {1} - Unit of measure is required")
   @Key("analysisUnitRequired")
@@ -1477,6 +1797,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not remove released user information".
    * 
    * @return translated "You may not remove released user information"
+  
    */
   @DefaultMessage("You may not remove released user information")
   @Key("analysisUser.actionException")
@@ -1486,6 +1807,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not remove released user information".
    * 
    * @return translated "You may not remove released user information"
+  
    */
   @DefaultMessage("You may not remove released user information")
   @Key("analysisUserActionException")
@@ -1495,6 +1817,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte".
    * 
    * @return translated "Analyte"
+  
    */
   @DefaultMessage("Analyte")
   @Key("analyte")
@@ -1504,6 +1827,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only those analytes that aren''t added to a group can be grouped".
    * 
    * @return translated "Only those analytes that aren''t added to a group can be grouped"
+  
    */
   @DefaultMessage("Only those analytes that aren''t added to a group can be grouped")
   @Key("analyteAlreadyGrouped")
@@ -1513,6 +1837,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be deleted, one or more auxiliary fields are still linked to it".
    * 
    * @return translated "Analyte cannot be deleted, one or more auxiliary fields are still linked to it"
+  
    */
   @DefaultMessage("Analyte cannot be deleted, one or more auxiliary fields are still linked to it")
   @Key("analyteAuxFieldDeleteException")
@@ -1522,6 +1847,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be deleted, one or more analytes are still linked to it".
    * 
    * @return translated "Analyte cannot be deleted, one or more analytes are still linked to it"
+  
    */
   @DefaultMessage("Analyte cannot be deleted, one or more analytes are still linked to it")
   @Key("analyteDeleteException")
@@ -1531,6 +1857,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This analyte has been removed from the list of analytes for this test. Please choose another analyte".
    * 
    * @return translated "This analyte has been removed from the list of analytes for this test. Please choose another analyte"
+  
    */
   @DefaultMessage("This analyte has been removed from the list of analytes for this test. Please choose another analyte")
   @Key("analyteDeleted")
@@ -1540,6 +1867,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define chemical and non-chemical information for tests and auxiliary prompts.".
    * 
    * @return translated "Define chemical and non-chemical information for tests and auxiliary prompts."
+  
    */
   @DefaultMessage("Define chemical and non-chemical information for tests and auxiliary prompts.")
   @Key("analyteDescription")
@@ -1549,6 +1877,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte Group".
    * 
    * @return translated "Analyte Group"
+  
    */
   @DefaultMessage("Analyte Group")
   @Key("analyteGroup")
@@ -1558,6 +1887,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Analyte".
    * 
    * @return translated "History - Analyte"
+  
    */
   @DefaultMessage("History - Analyte")
   @Key("analyteHistory")
@@ -1566,7 +1896,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No analyte found for position {0} analyte ''{1}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "No analyte found for position {0} analyte ''{1}''"
+  
    */
   @DefaultMessage("No analyte found for position {0} analyte ''{1}''")
   @Key("analyteLookupFormException")
@@ -1576,6 +1909,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be deleted, one or more methods are still linked to it".
    * 
    * @return translated "Analyte cannot be deleted, one or more methods are still linked to it"
+  
    */
   @DefaultMessage("Analyte cannot be deleted, one or more methods are still linked to it")
   @Key("analyteMethodDeleteException")
@@ -1585,6 +1919,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The name of this analyte has been changed. Please choose another analyte or the changed name".
    * 
    * @return translated "The name of this analyte has been changed. Please choose another analyte or the changed name"
+  
    */
   @DefaultMessage("The name of this analyte has been changed. Please choose another analyte or the changed name")
   @Key("analyteNameChanged")
@@ -1594,6 +1929,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are analytes added to this test but no results. Are you sure you would like to commit?".
    * 
    * @return translated "There are analytes added to this test but no results. Are you sure you would like to commit?"
+  
    */
   @DefaultMessage("There are analytes added to this test but no results. Are you sure you would like to commit?")
   @Key("analyteNoResults")
@@ -1603,6 +1939,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only those analytes that appear at adjacent positions in the tree can be grouped with each other".
    * 
    * @return translated "Only those analytes that appear at adjacent positions in the tree can be grouped with each other"
+  
    */
   @DefaultMessage("Only those analytes that appear at adjacent positions in the tree can be grouped with each other")
   @Key("analyteNotAdjcnt")
@@ -1611,7 +1948,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Test Row {0} - Please uncheck the analyte ''{1}'' as it has been removed from the test".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Test Row {0} - Please uncheck the analyte ''{1}'' as it has been removed from the test"
+  
    */
   @DefaultMessage("Test Row {0} - Please uncheck the analyte ''{1}'' as it has been removed from the test")
   @Key("analyteNotPresentInTestException")
@@ -1621,6 +1961,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte Parameter  ".
    * 
    * @return translated "Analyte Parameter  "
+  
    */
   @DefaultMessage("Analyte Parameter  ")
   @Key("analyteParameter")
@@ -1630,6 +1971,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Analyte".
    * 
    * @return translated "Add Analyte"
+  
    */
   @DefaultMessage("Add Analyte")
   @Key("analyteParameter.addAnalyte")
@@ -1639,6 +1981,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Parameter".
    * 
    * @return translated "Add Parameter"
+  
    */
   @DefaultMessage("Add Parameter")
   @Key("analyteParameter.addParameter")
@@ -1648,6 +1991,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte Parameter".
    * 
    * @return translated "Analyte Parameter"
+  
    */
   @DefaultMessage("Analyte Parameter")
   @Key("analyteParameter.analyteParameter")
@@ -1657,6 +2001,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "P1".
    * 
    * @return translated "P1"
+  
    */
   @DefaultMessage("P1")
   @Key("analyteParameter.p1")
@@ -1666,6 +2011,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "P2".
    * 
    * @return translated "P2"
+  
    */
   @DefaultMessage("P2")
   @Key("analyteParameter.p2")
@@ -1675,6 +2021,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "P3".
    * 
    * @return translated "P3"
+  
    */
   @DefaultMessage("P3")
   @Key("analyteParameter.p3")
@@ -1684,6 +2031,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a sample type before selecting unit".
    * 
    * @return translated "Please select a sample type before selecting unit"
+  
    */
   @DefaultMessage("Please select a sample type before selecting unit")
   @Key("analyteParameter.selectSampleTypeBeforeUnit")
@@ -1693,6 +2041,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a type".
    * 
    * @return translated "Please select a type"
+  
    */
   @DefaultMessage("Please select a type")
   @Key("analyteParameter.selectType")
@@ -1702,6 +2051,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define ranges for various analytical parameters.".
    * 
    * @return translated "Define ranges for various analytical parameters."
+  
    */
   @DefaultMessage("Define ranges for various analytical parameters.")
   @Key("analyteParameterDescription")
@@ -1711,6 +2061,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be deleted, one or more QCs are still linked to it".
    * 
    * @return translated "Analyte cannot be deleted, one or more QCs are still linked to it"
+  
    */
   @DefaultMessage("Analyte cannot be deleted, one or more QCs are still linked to it")
   @Key("analyteQCDeleteException")
@@ -1720,6 +2071,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be deleted, one or more results are still linked to it".
    * 
    * @return translated "Analyte cannot be deleted, one or more results are still linked to it"
+  
    */
   @DefaultMessage("Analyte cannot be deleted, one or more results are still linked to it")
   @Key("analyteResultDeleteException")
@@ -1729,6 +2081,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be deleted, one or more tests are still linked to it".
    * 
    * @return translated "Analyte cannot be deleted, one or more tests are still linked to it"
+  
    */
   @DefaultMessage("Analyte cannot be deleted, one or more tests are still linked to it")
   @Key("analyteTestDeleteException")
@@ -1738,6 +2091,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type is required for an analyte".
    * 
    * @return translated "Type is required for an analyte"
+  
    */
   @DefaultMessage("Type is required for an analyte")
   @Key("analyteTypeRequiredException")
@@ -1747,6 +2101,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analytes".
    * 
    * @return translated "Analytes"
+  
    */
   @DefaultMessage("Analytes")
   @Key("analytes")
@@ -1756,6 +2111,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analytes & Results".
    * 
    * @return translated "Analytes & Results"
+  
    */
   @DefaultMessage("Analytes & Results")
   @Key("analytesResults")
@@ -1765,6 +2121,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analytes excluded from worksheet".
    * 
    * @return translated "Analytes excluded from worksheet"
+  
    */
   @DefaultMessage("Analytes excluded from worksheet")
   @Key("analytesWS")
@@ -1774,6 +2131,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Animal Sample".
    * 
    * @return translated "Animal Sample"
+  
    */
   @DefaultMessage("Animal Sample")
   @Key("animalSample")
@@ -1783,6 +2141,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Animal Sample Login".
    * 
    * @return translated "Animal Sample Login"
+  
    */
   @DefaultMessage("Animal Sample Login")
   @Key("animalSampleLogin")
@@ -1792,6 +2151,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login animal sample and analysis related information.".
    * 
    * @return translated "Fully login animal sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login animal sample and analysis related information.")
   @Key("animalSampleLoginDescription")
@@ -1801,6 +2161,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Application".
    * 
    * @return translated "Application"
+  
    */
   @DefaultMessage("Application")
   @Key("application")
@@ -1810,6 +2171,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Apt/Suite #".
    * 
    * @return translated "Apt/Suite #"
+  
    */
   @DefaultMessage("Apt/Suite #")
   @Key("aptSuite")
@@ -1819,6 +2181,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled ".
    * 
    * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled "
+  
    */
   @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled ")
   @Key("atLeastOnePairFilledException")
@@ -1828,6 +2191,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You cannot remove the last result row under a heading".
    * 
    * @return translated "You cannot remove the last result row under a heading"
+  
    */
   @DefaultMessage("You cannot remove the last result row under a heading")
   @Key("atLeastOneResultUnderHeading")
@@ -1837,6 +2201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please fill at least one field under Sample Selection Criteria".
    * 
    * @return translated "Please fill at least one field under Sample Selection Criteria"
+  
    */
   @DefaultMessage("Please fill at least one field under Sample Selection Criteria")
   @Key("atleastOneFieldFilledException")
@@ -1845,7 +2210,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "At least one of P1, P2, P3 is required for analyte ''{0}''".
    * 
+   * @param arg0 "{0}"
    * @return translated "At least one of P1, P2, P3 is required for analyte ''{0}''"
+  
    */
   @DefaultMessage("At least one of P1, P2, P3 is required for analyte ''{0}''")
   @Key("atleastOnePRequiredForAnalyteException")
@@ -1855,6 +2222,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At least one result group must be added before any results can be added for this test".
    * 
    * @return translated "At least one result group must be added before any results can be added for this test"
+  
    */
   @DefaultMessage("At least one result group must be added before any results can be added for this test")
   @Key("atleastOneResGrp")
@@ -1864,6 +2232,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A result group must have at least one result in it".
    * 
    * @return translated "A result group must have at least one result in it"
+  
    */
   @DefaultMessage("A result group must have at least one result in it")
   @Key("atleastOneResInResGrp")
@@ -1873,6 +2242,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A test must have at least one sample type".
    * 
    * @return translated "A test must have at least one sample type"
+  
    */
   @DefaultMessage("A test must have at least one sample type")
   @Key("atleastOneSampleTypeException")
@@ -1882,6 +2252,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A test must have at least one section added to it".
    * 
    * @return translated "A test must have at least one section added to it"
+  
    */
   @DefaultMessage("A test must have at least one section added to it")
   @Key("atleastOneSection")
@@ -1891,6 +2262,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At least two analytes must be selected to form a group".
    * 
    * @return translated "At least two analytes must be selected to form a group"
+  
    */
   @DefaultMessage("At least two analytes must be selected to form a group")
   @Key("atleastTwoAnalytes")
@@ -1900,6 +2272,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte cannot be removed as the row group has less than two analytes".
    * 
    * @return translated "Analyte cannot be removed as the row group has less than two analytes"
+  
    */
   @DefaultMessage("Analyte cannot be removed as the row group has less than two analytes")
   @Key("atleastTwoRowsInRowGroup")
@@ -1909,6 +2282,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Attach".
    * 
    * @return translated "Attach"
+  
    */
   @DefaultMessage("Attach")
   @Key("attachment.attach")
@@ -1918,6 +2292,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Attachment".
    * 
    * @return translated "Attachment"
+  
    */
   @DefaultMessage("Attachment")
   @Key("attachment.attachment")
@@ -1927,6 +2302,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Auto Select Next".
    * 
    * @return translated "Auto Select Next"
+  
    */
   @DefaultMessage("Auto Select Next")
   @Key("attachment.autoSelectNext")
@@ -1935,7 +2311,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Attachment ''{0}'': Description is required ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Attachment ''{0}'': Description is required "
+  
    */
   @DefaultMessage("Attachment ''{0}'': Description is required ")
   @Key("attachment.descRequiredException")
@@ -1945,6 +2323,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Attachment Description".
    * 
    * @return translated "Attachment Description"
+  
    */
   @DefaultMessage("Attachment Description")
   @Key("attachment.description")
@@ -1954,6 +2333,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Detach".
    * 
    * @return translated "Detach"
+  
    */
   @DefaultMessage("Detach")
   @Key("attachment.detach")
@@ -1963,6 +2343,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Display".
    * 
    * @return translated "Display"
+  
    */
   @DefaultMessage("Display")
   @Key("attachment.display")
@@ -1972,6 +2353,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "File Name".
    * 
    * @return translated "File Name"
+  
    */
   @DefaultMessage("File Name")
   @Key("attachment.fileName")
@@ -1981,6 +2363,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Path to attachment directory is missing. Please contact the system administrator.".
    * 
    * @return translated "Path to attachment directory is missing. Please contact the system administrator."
+  
    */
   @DefaultMessage("Path to attachment directory is missing. Please contact the system administrator.")
   @Key("attachment.missingPathException")
@@ -1989,7 +2372,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Can not save attachment file ''{0}''. Please contact the system administrator.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Can not save attachment file ''{0}''. Please contact the system administrator."
+  
    */
   @DefaultMessage("Can not save attachment file ''{0}''. Please contact the system administrator.")
   @Key("attachment.moveFileException")
@@ -1998,7 +2383,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Sample # {0,number,#0}".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Sample # {0,number,#0}"
+  
    */
   @DefaultMessage("Sample # {0,number,#0}")
   @Key("attachment.sampleDescription")
@@ -2007,7 +2394,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Attachment ''{0}'': You do not have permission to view the attachment".
    * 
+   * @param arg0 "{0}"
    * @return translated "Attachment ''{0}'': You do not have permission to view the attachment"
+  
    */
   @DefaultMessage("Attachment ''{0}'': You do not have permission to view the attachment")
   @Key("attachment.viewPermException")
@@ -2017,6 +2406,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Attention".
    * 
    * @return translated "Attention"
+  
    */
   @DefaultMessage("Attention")
   @Key("attention")
@@ -2026,6 +2416,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Attn".
    * 
    * @return translated "Attn"
+  
    */
   @DefaultMessage("Attn")
   @Key("attn")
@@ -2035,6 +2426,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Authentication Failure".
    * 
    * @return translated "Authentication Failure"
+  
    */
   @DefaultMessage("Authentication Failure")
   @Key("authFailure")
@@ -2044,6 +2436,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more Auto Reflex Test(s) must have a Section assigned".
    * 
    * @return translated "One or more Auto Reflex Test(s) must have a Section assigned"
+  
    */
   @DefaultMessage("One or more Auto Reflex Test(s) must have a Section assigned")
   @Key("autoReflexTestNeedsSection")
@@ -2053,6 +2446,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Auto Reorder".
    * 
    * @return translated "Auto Reorder"
+  
    */
   @DefaultMessage("Auto Reorder")
   @Key("autoReorder")
@@ -2062,6 +2456,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Aux Data".
    * 
    * @return translated "Aux Data"
+  
    */
   @DefaultMessage("Aux Data")
   @Key("aux.data")
@@ -2070,7 +2465,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition")
   @Key("aux.defaultValueInvalidException")
@@ -2079,7 +2478,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No matching active auxiliary group found for ''{0}''".
    * 
+   * @param arg0 "{0}"
    * @return translated "No matching active auxiliary group found for ''{0}''"
+  
    */
   @DefaultMessage("No matching active auxiliary group found for ''{0}''")
   @Key("aux.inactiveGroupException")
@@ -2089,6 +2490,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
+  
    */
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("aux.noSelectedRow")
@@ -2098,6 +2500,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This will remove all rows with the same group as this row.\n\nPress Ok to continue.".
    * 
    * @return translated "This will remove all rows with the same group as this row.\n\nPress Ok to continue."
+  
    */
   @DefaultMessage("This will remove all rows with the same group as this row.\n\nPress Ok to continue.")
   @Key("aux.removeMessage")
@@ -2107,6 +2510,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select an analyte before entering the value".
    * 
    * @return translated "Please select an analyte before entering the value"
+  
    */
   @DefaultMessage("Please select an analyte before entering the value")
   @Key("aux.selectAnalyteBeforeValue")
@@ -2115,7 +2519,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Aux data ''{1}'' with value ''{2}'' invalid")
   @Key("aux.valueInvalidException")
@@ -2125,6 +2533,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An auxiliary group cannot be added to a panel more than once ".
    * 
    * @return translated "An auxiliary group cannot be added to a panel more than once "
+  
    */
   @DefaultMessage("An auxiliary group cannot be added to a panel more than once ")
   @Key("auxAlreadyAddedException")
@@ -2134,6 +2543,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Aux Data".
    * 
    * @return translated "Aux Data"
+  
    */
   @DefaultMessage("Aux Data")
   @Key("auxData")
@@ -2143,6 +2553,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You can only query 1 aux data row at a time".
    * 
    * @return translated "You can only query 1 aux data row at a time"
+  
    */
   @DefaultMessage("You can only query 1 aux data row at a time")
   @Key("auxDataOneQueryException")
@@ -2152,6 +2563,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field values belonging to an auxiliary field can have the type \"Default\" only if there is one other type selected for one of them.".
    * 
    * @return translated "Field values belonging to an auxiliary field can have the type \"Default\" only if there is one other type selected for one of them."
+  
    */
   @DefaultMessage("Field values belonging to an auxiliary field can have the type \"Default\" only if there is one other type selected for one of them.")
   @Key("auxDefaultWithNoOtherTypeException")
@@ -2161,6 +2573,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type Dictionary must be unique among the field values belonging to an auxiliary field.".
    * 
    * @return translated "Values of type Dictionary must be unique among the field values belonging to an auxiliary field."
+  
    */
   @DefaultMessage("Values of type Dictionary must be unique among the field values belonging to an auxiliary field.")
   @Key("auxDictEntryNotUniqueException")
@@ -2170,6 +2583,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is already an active auxiliary field group in the system with the same name".
    * 
    * @return translated "There is already an active auxiliary field group in the system with the same name"
+  
    */
   @DefaultMessage("There is already an active auxiliary field group in the system with the same name")
   @Key("auxFieldGroupActiveException")
@@ -2179,6 +2593,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Field Group".
    * 
    * @return translated "History - Field Group"
+  
    */
   @DefaultMessage("History - Field Group")
   @Key("auxFieldGroupHistory")
@@ -2188,6 +2603,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This auxiliary field group has an overlapping begin date or end date with another auxiliary field group which has the same name as this one.".
    * 
    * @return translated "This auxiliary field group has an overlapping begin date or end date with another auxiliary field group which has the same name as this one."
+  
    */
   @DefaultMessage("This auxiliary field group has an overlapping begin date or end date with another auxiliary field group which has the same name as this one.")
   @Key("auxFieldGroupTimeOverlapException")
@@ -2197,6 +2613,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Field".
    * 
    * @return translated "History - Field"
+  
    */
   @DefaultMessage("History - Field")
   @Key("auxFieldHistory")
@@ -2206,6 +2623,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An auxiliary field must be selected before any field values can be added.".
    * 
    * @return translated "An auxiliary field must be selected before any field values can be added."
+  
    */
   @DefaultMessage("An auxiliary field must be selected before any field values can be added.")
   @Key("auxFieldSelFirst")
@@ -2215,6 +2633,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Field Value".
    * 
    * @return translated "History - Field Value"
+  
    */
   @DefaultMessage("History - Field Value")
   @Key("auxFieldValueHistory")
@@ -2224,6 +2643,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Aux Group Selection".
    * 
    * @return translated "Aux Group Selection"
+  
    */
   @DefaultMessage("Aux Group Selection")
   @Key("auxGroupSelection")
@@ -2233,6 +2653,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Aux Groups".
    * 
    * @return translated "Aux Groups"
+  
    */
   @DefaultMessage("Aux Groups")
   @Key("auxGroups")
@@ -2241,7 +2662,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The auxiliary group ''{0}'' has already been added".
    * 
+   * @param arg0 "{0}"
    * @return translated "The auxiliary group ''{0}'' has already been added"
+  
    */
   @DefaultMessage("The auxiliary group ''{0}'' has already been added")
   @Key("auxGrpAlreadyAddedException")
@@ -2251,6 +2674,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field values belonging to an auxiliary field can have only one of these types: \"Alpha Lowercase\",\"Alpha Mixedcase\" and \"Alpha Uppercase\".".
    * 
    * @return translated "Field values belonging to an auxiliary field can have only one of these types: \"Alpha Lowercase\",\"Alpha Mixedcase\" and \"Alpha Uppercase\"."
+  
    */
   @DefaultMessage("Field values belonging to an auxiliary field can have only one of these types: \"Alpha Lowercase\",\"Alpha Mixedcase\" and \"Alpha Uppercase\".")
   @Key("auxMoreThanOneAlphaTypeException")
@@ -2260,6 +2684,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field values belonging to an auxiliary field can have only one of these types: \"Date\",\"Date-Time\" and \"Time\".".
    * 
    * @return translated "Field values belonging to an auxiliary field can have only one of these types: \"Date\",\"Date-Time\" and \"Time\"."
+  
    */
   @DefaultMessage("Field values belonging to an auxiliary field can have only one of these types: \"Date\",\"Date-Time\" and \"Time\".")
   @Key("auxMoreThanOneDateTypeException")
@@ -2269,6 +2694,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field values belonging to an auxiliary field can have the type \"Default\" only once.".
    * 
    * @return translated "Field values belonging to an auxiliary field can have the type \"Default\" only once."
+  
    */
   @DefaultMessage("Field values belonging to an auxiliary field can have the type \"Default\" only once.")
   @Key("auxMoreThanOneDefaultException")
@@ -2278,6 +2704,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field values belonging to an auxiliary field must have either the same type or the type \"Default\".".
    * 
    * @return translated "Field values belonging to an auxiliary field must have either the same type or the type \"Default\"."
+  
    */
   @DefaultMessage("Field values belonging to an auxiliary field must have either the same type or the type \"Default\".")
   @Key("auxMoreThanOneTypeException")
@@ -2287,6 +2714,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This range is overlapping with ranges associated with one or more field values belonging to an auxiliary field.".
    * 
    * @return translated "This range is overlapping with ranges associated with one or more field values belonging to an auxiliary field."
+  
    */
   @DefaultMessage("This range is overlapping with ranges associated with one or more field values belonging to an auxiliary field.")
   @Key("auxNumRangeOverlapException")
@@ -2296,6 +2724,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reportable".
    * 
    * @return translated "Reportable"
+  
    */
   @DefaultMessage("Reportable")
   @Key("auxReportable")
@@ -2305,6 +2734,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Auxiliary Prompt".
    * 
    * @return translated "Auxiliary Prompt"
+  
    */
   @DefaultMessage("Auxiliary Prompt")
   @Key("auxiliaryPrompt")
@@ -2314,6 +2744,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Create supplemental information fields that can be attached to orders/samples.".
    * 
    * @return translated "Create supplemental information fields that can be attached to orders/samples."
+  
    */
   @DefaultMessage("Create supplemental information fields that can be attached to orders/samples.")
   @Key("auxiliaryPromptDescription")
@@ -2323,6 +2754,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Available".
    * 
    * @return translated "Available"
+  
    */
   @DefaultMessage("Available")
   @Key("available")
@@ -2332,6 +2764,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Available On Worksheet".
    * 
    * @return translated "Available On Worksheet"
+  
    */
   @DefaultMessage("Available On Worksheet")
   @Key("availableWS")
@@ -2341,6 +2774,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Avg".
    * 
    * @return translated "Avg"
+  
    */
   @DefaultMessage("Avg")
   @Key("average")
@@ -2350,6 +2784,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Avg Cost".
    * 
    * @return translated "Avg Cost"
+  
    */
   @DefaultMessage("Avg Cost")
   @Key("averageCost")
@@ -2359,6 +2794,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Avg Daily Use".
    * 
    * @return translated "Avg Daily Use"
+  
    */
   @DefaultMessage("Avg Daily Use")
   @Key("averageDailyUse")
@@ -2368,6 +2804,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Avg Lead Time".
    * 
    * @return translated "Avg Lead Time"
+  
    */
   @DefaultMessage("Avg Lead Time")
   @Key("averageLeadTime")
@@ -2377,6 +2814,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "% Avg. TAT Used".
    * 
    * @return translated "% Avg. TAT Used"
+  
    */
   @DefaultMessage("% Avg. TAT Used")
   @Key("avgTA")
@@ -2386,6 +2824,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Back To Search".
    * 
    * @return translated "Back To Search"
+  
    */
   @DefaultMessage("Back To Search")
   @Key("backToSearch")
@@ -2395,6 +2834,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Barcode".
    * 
    * @return translated "Barcode"
+  
    */
   @DefaultMessage("Barcode")
   @Key("barcode")
@@ -2404,6 +2844,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Bean".
    * 
    * @return translated "Bean"
+  
    */
   @DefaultMessage("Bean")
   @Key("bean")
@@ -2413,6 +2854,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Begin".
    * 
    * @return translated "Begin"
+  
    */
   @DefaultMessage("Begin")
   @Key("begin")
@@ -2422,6 +2864,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Begin Date".
    * 
    * @return translated "Begin Date"
+  
    */
   @DefaultMessage("Begin Date")
   @Key("beginDate")
@@ -2430,7 +2873,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Begin date for ''{0}'' must be after the end dates of its previous entries ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Begin date for ''{0}'' must be after the end dates of its previous entries "
+  
    */
   @DefaultMessage("Begin date for ''{0}'' must be after the end dates of its previous entries ")
   @Key("beginDateAfterPreviousEndDateException")
@@ -2440,6 +2885,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Begin date must be more than a minute ahead of the begin date of each previous entry of this analyte   ".
    * 
    * @return translated "Begin date must be more than a minute ahead of the begin date of each previous entry of this analyte   "
+  
    */
   @DefaultMessage("Begin date must be more than a minute ahead of the begin date of each previous entry of this analyte   ")
   @Key("beginDateInvalidException")
@@ -2448,7 +2894,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Begin date for ''{0}'' must be more than a minute ahead of the begin dates of its previous entries  ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Begin date for ''{0}'' must be more than a minute ahead of the begin dates of its previous entries  "
+  
    */
   @DefaultMessage("Begin date for ''{0}'' must be more than a minute ahead of the begin dates of its previous entries  ")
   @Key("beginDateInvalidWithParamException")
@@ -2457,7 +2905,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Begin date is required for analyte ''{0}'' ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Begin date is required for analyte ''{0}'' "
+  
    */
   @DefaultMessage("Begin date is required for analyte ''{0}'' ")
   @Key("beginDateRequiredForAnalyteException")
@@ -2467,6 +2917,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You are at the beginning of the query results".
    * 
    * @return translated "You are at the beginning of the query results"
+  
    */
   @DefaultMessage("You are at the beginning of the query results")
   @Key("beginningQueryException")
@@ -2476,6 +2927,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Bill To".
    * 
    * @return translated "Bill To"
+  
    */
   @DefaultMessage("Bill To")
   @Key("billTo")
@@ -2485,6 +2937,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This sample must have a bill to".
    * 
    * @return translated "This sample must have a bill to"
+  
    */
   @DefaultMessage("This sample must have a bill to")
   @Key("billToMissingWarning")
@@ -2494,6 +2947,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Billable".
    * 
    * @return translated "Billable"
+  
    */
   @DefaultMessage("Billable")
   @Key("billable")
@@ -2503,6 +2957,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Billing Report".
    * 
    * @return translated "Billing Report"
+  
    */
   @DefaultMessage("Billing Report")
   @Key("billingReport")
@@ -2512,6 +2967,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Birth".
    * 
    * @return translated "Birth"
+  
    */
   @DefaultMessage("Birth")
   @Key("birth")
@@ -2521,6 +2977,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Browse".
    * 
    * @return translated "Browse"
+  
    */
   @DefaultMessage("Browse")
   @Key("browse")
@@ -2530,6 +2987,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Build Kits".
    * 
    * @return translated "Build Kits"
+  
    */
   @DefaultMessage("Build Kits")
   @Key("buildKits")
@@ -2539,6 +2997,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Assemble components to build kits.".
    * 
    * @return translated "Assemble components to build kits."
+  
    */
   @DefaultMessage("Assemble components to build kits.")
   @Key("buildKitsDescription")
@@ -2548,6 +3007,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Bulk".
    * 
    * @return translated "Bulk"
+  
    */
   @DefaultMessage("Bulk")
   @Key("bulk")
@@ -2557,6 +3017,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "By".
    * 
    * @return translated "By"
+  
    */
   @DefaultMessage("By")
   @Key("by")
@@ -2566,6 +3027,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A sample''s domain can only be changed once during an update".
    * 
    * @return translated "A sample''s domain can only be changed once during an update"
+  
    */
   @DefaultMessage("A sample''s domain can only be changed once during an update")
   @Key("canChangeDomainOnlyOnce")
@@ -2575,6 +3037,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancel".
    * 
    * @return translated "Cancel"
+  
    */
   @DefaultMessage("Cancel")
   @Key("cancel")
@@ -2584,6 +3047,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancel Analysis?".
    * 
    * @return translated "Cancel Analysis?"
+  
    */
   @DefaultMessage("Cancel Analysis?")
   @Key("cancelAnalysisCaption")
@@ -2593,6 +3057,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not remove a committed analysis row. However, you can change the status to ''Cancelled''. Would you like to change the status to ''Cancelled''?".
    * 
    * @return translated "You may not remove a committed analysis row. However, you can change the status to ''Cancelled''. Would you like to change the status to ''Cancelled''?"
+  
    */
   @DefaultMessage("You may not remove a committed analysis row. However, you can change the status to ''Cancelled''. Would you like to change the status to ''Cancelled''?")
   @Key("cancelAnalysisMessage")
@@ -2602,6 +3067,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Canceling changes ...".
    * 
    * @return translated "Canceling changes ..."
+  
    */
   @DefaultMessage("Canceling changes ...")
   @Key("cancelChanges")
@@ -2611,6 +3077,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancel Test".
    * 
    * @return translated "Cancel Test"
+  
    */
   @DefaultMessage("Cancel Test")
   @Key("cancelTest")
@@ -2620,6 +3087,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancelled orders cannot be updated".
    * 
    * @return translated "Cancelled orders cannot be updated"
+  
    */
   @DefaultMessage("Cancelled orders cannot be updated")
   @Key("cancelledOrderCantBeUpdated")
@@ -2629,6 +3097,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not allowed to add a Bill To record".
    * 
    * @return translated "Not allowed to add a Bill To record"
+  
    */
   @DefaultMessage("Not allowed to add a Bill To record")
   @Key("cantAddBillToException")
@@ -2638,6 +3107,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adding a column is not allowed at this position".
    * 
    * @return translated "Adding a column is not allowed at this position"
+  
    */
   @DefaultMessage("Adding a column is not allowed at this position")
   @Key("cantAddColumn")
@@ -2647,6 +3117,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample and/or analysis is released. You cannot add non-internal QA events.".
    * 
    * @return translated "Sample and/or analysis is released. You cannot add non-internal QA events."
+  
    */
   @DefaultMessage("Sample and/or analysis is released. You cannot add non-internal QA events.")
   @Key("cantAddQAEvent")
@@ -2656,6 +3127,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not allowed to add a Report To record".
    * 
    * @return translated "Not allowed to add a Report To record"
+  
    */
   @DefaultMessage("Not allowed to add a Report To record")
   @Key("cantAddReportToException")
@@ -2665,6 +3137,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not allowed to add a secondary bill to record".
    * 
    * @return translated "Not allowed to add a secondary bill to record"
+  
    */
   @DefaultMessage("Not allowed to add a secondary bill to record")
   @Key("cantAddSecondReortToException")
@@ -2674,6 +3147,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add to existing is only allowed for bulk inventory items".
    * 
    * @return translated "Add to existing is only allowed for bulk inventory items"
+  
    */
   @DefaultMessage("Add to existing is only allowed for bulk inventory items")
   @Key("cantAddToExistingException")
@@ -2683,6 +3157,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The Accession Number for a Quick Entry sample cannot be changed until it has been fully logged in.".
    * 
    * @return translated "The Accession Number for a Quick Entry sample cannot be changed until it has been fully logged in."
+  
    */
   @DefaultMessage("The Accession Number for a Quick Entry sample cannot be changed until it has been fully logged in.")
   @Key("cantChangeQuickEntryAccessionNumber")
@@ -2692,6 +3167,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Groups cannot be grouped with other analytes".
    * 
    * @return translated "Groups cannot be grouped with other analytes"
+  
    */
   @DefaultMessage("Groups cannot be grouped with other analytes")
   @Key("cantGroupGroups")
@@ -2701,6 +3177,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A quick entered sample cannot be loaded if the order # is present ".
    * 
    * @return translated "A quick entered sample cannot be loaded if the order # is present "
+  
    */
   @DefaultMessage("A quick entered sample cannot be loaded if the order # is present ")
   @Key("cantLoadQEIfOrderNumPresent")
@@ -2710,6 +3187,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Removing a column is not allowed at this position".
    * 
    * @return translated "Removing a column is not allowed at this position"
+  
    */
   @DefaultMessage("Removing a column is not allowed at this position")
   @Key("cantRemoveColumn")
@@ -2719,6 +3197,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The item cannot be selected as it has been checked out".
    * 
    * @return translated "The item cannot be selected as it has been checked out"
+  
    */
   @DefaultMessage("The item cannot be selected as it has been checked out")
   @Key("cantSelectItem")
@@ -2728,6 +3207,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis has been released. You cannot edit non-internal QA events.".
    * 
    * @return translated "Analysis has been released. You cannot edit non-internal QA events."
+  
    */
   @DefaultMessage("Analysis has been released. You cannot edit non-internal QA events.")
   @Key("cantUpdateAnalysisQAEvent")
@@ -2737,6 +3217,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You can only update 1 row at a time".
    * 
    * @return translated "You can only update 1 row at a time"
+  
    */
   @DefaultMessage("You can only update 1 row at a time")
   @Key("cantUpdateMultiple")
@@ -2746,6 +3227,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Updating a released sample is not allowed".
    * 
    * @return translated "Updating a released sample is not allowed"
+  
    */
   @DefaultMessage("Updating a released sample is not allowed")
   @Key("cantUpdateReleasedException")
@@ -2755,6 +3237,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more analysis have been released. You cannot edit non-internal sample QA events.".
    * 
    * @return translated "One or more analysis have been released. You cannot edit non-internal sample QA events."
+  
    */
   @DefaultMessage("One or more analysis have been released. You cannot edit non-internal sample QA events.")
   @Key("cantUpdateSampleQAEvent")
@@ -2764,6 +3247,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The sample must be fully logged in".
    * 
    * @return translated "The sample must be fully logged in"
+  
    */
   @DefaultMessage("The sample must be fully logged in")
   @Key("cantVerifyQuickEntry")
@@ -2773,6 +3257,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Category Name".
    * 
    * @return translated "Category Name"
+  
    */
   @DefaultMessage("Category Name")
   @Key("catName")
@@ -2782,6 +3267,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Catalog #".
    * 
    * @return translated "Catalog #"
+  
    */
   @DefaultMessage("Catalog #")
   @Key("catalogNum")
@@ -2791,6 +3277,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Categories".
    * 
    * @return translated "Categories"
+  
    */
   @DefaultMessage("Categories")
   @Key("categories")
@@ -2800,6 +3287,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Category".
    * 
    * @return translated "Category"
+  
    */
   @DefaultMessage("Category")
   @Key("category")
@@ -2809,6 +3297,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Category".
    * 
    * @return translated "History - Category"
+  
    */
   @DefaultMessage("History - Category")
   @Key("categoryHistory")
@@ -2818,6 +3307,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cell #".
    * 
    * @return translated "Cell #"
+  
    */
   @DefaultMessage("Cell #")
   @Key("cellNumber")
@@ -2827,6 +3317,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change Domain".
    * 
    * @return translated "Change Domain"
+  
    */
   @DefaultMessage("Change Domain")
   @Key("changeDomain")
@@ -2836,6 +3327,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change Domain".
    * 
    * @return translated "Change Domain"
+  
    */
   @DefaultMessage("Change Domain")
   @Key("changeDomain.changeDomain")
@@ -2845,6 +3337,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change To".
    * 
    * @return translated "Change To"
+  
    */
   @DefaultMessage("Change To")
   @Key("changeDomain.changeTo")
@@ -2854,6 +3347,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change Password".
    * 
    * @return translated "Change Password"
+  
    */
   @DefaultMessage("Change Password")
   @Key("changePassword")
@@ -2863,6 +3357,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change To".
    * 
    * @return translated "Change To"
+  
    */
   @DefaultMessage("Change To")
   @Key("changeTo")
@@ -2872,6 +3367,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check All".
    * 
    * @return translated "Check All"
+  
    */
   @DefaultMessage("Check All")
   @Key("checkAll")
@@ -2881,6 +3377,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check In".
    * 
    * @return translated "Check In"
+  
    */
   @DefaultMessage("Check In")
   @Key("checkIn")
@@ -2890,6 +3387,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check Out".
    * 
    * @return translated "Check Out"
+  
    */
   @DefaultMessage("Check Out")
   @Key("checkOut")
@@ -2899,6 +3397,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check Out date must not be before Check In date.".
    * 
    * @return translated "Check Out date must not be before Check In date."
+  
    */
   @DefaultMessage("Check Out date must not be before Check In date.")
   @Key("checkinDateAfterCheckoutDateException")
@@ -2908,6 +3407,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Choose Dictionary Entry".
    * 
    * @return translated "Choose Dictionary Entry"
+  
    */
   @DefaultMessage("Choose Dictionary Entry")
   @Key("chooseDictEntry")
@@ -2917,6 +3417,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This value belongs to more than one category, please choose it by specifying the category".
    * 
    * @return translated "This value belongs to more than one category, please choose it by specifying the category"
+  
    */
   @DefaultMessage("This value belongs to more than one category, please choose it by specifying the category")
   @Key("chooseValueByCategory")
@@ -2926,6 +3427,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "City".
    * 
    * @return translated "City"
+  
    */
   @DefaultMessage("City")
   @Key("city")
@@ -2935,6 +3437,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Clinical Sample".
    * 
    * @return translated "Clinical Sample"
+  
    */
   @DefaultMessage("Clinical Sample")
   @Key("clinicalSample")
@@ -2944,6 +3447,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Clinical Sample Login".
    * 
    * @return translated "Clinical Sample Login"
+  
    */
   @DefaultMessage("Clinical Sample Login")
   @Key("clinicalSampleLogin")
@@ -2953,6 +3457,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login clinical sample and analysis related information.".
    * 
    * @return translated "Fully login clinical sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login clinical sample and analysis related information.")
   @Key("clinicalSampleLoginDescription")
@@ -2962,6 +3467,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Client Reference".
    * 
    * @return translated "Client Reference"
+  
    */
   @DefaultMessage("Client Reference")
   @Key("clntRef")
@@ -2971,6 +3477,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "3. Close the window when done.".
    * 
    * @return translated "3. Close the window when done."
+  
    */
   @DefaultMessage("3. Close the window when done.")
   @Key("closeVerifyWindow")
@@ -2980,6 +3487,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "4. Close the window when done.   ".
    * 
    * @return translated "4. Close the window when done.   "
+  
    */
   @DefaultMessage("4. Close the window when done.   ")
   @Key("closeWindow")
@@ -2989,6 +3497,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Compl-Rel".
    * 
    * @return translated "Compl-Rel"
+  
    */
   @DefaultMessage("Compl-Rel")
   @Key("cmp-rel")
@@ -2998,6 +3507,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Code".
    * 
    * @return translated "Code"
+  
    */
   @DefaultMessage("Code")
   @Key("code")
@@ -3007,6 +3517,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Col-Rdy".
    * 
    * @return translated "Col-Rdy"
+  
    */
   @DefaultMessage("Col-Rdy")
   @Key("col-rdy")
@@ -3016,6 +3527,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Col-Rec".
    * 
    * @return translated "Col-Rec"
+  
    */
   @DefaultMessage("Col-Rec")
   @Key("col-rec")
@@ -3025,6 +3537,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Col-Rel".
    * 
    * @return translated "Col-Rel"
+  
    */
   @DefaultMessage("Col-Rel")
   @Key("col-rel")
@@ -3034,6 +3547,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collapse".
    * 
    * @return translated "Collapse"
+  
    */
   @DefaultMessage("Collapse")
   @Key("collapse")
@@ -3043,6 +3557,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collected".
    * 
    * @return translated "Collected"
+  
    */
   @DefaultMessage("Collected")
   @Key("collected")
@@ -3052,6 +3567,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collected date can''t be after entered".
    * 
    * @return translated "Collected date can''t be after entered"
+  
    */
   @DefaultMessage("Collected date can''t be after entered")
   @Key("collectedDateAfterEnteredError")
@@ -3061,6 +3577,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collected date can''t be after received".
    * 
    * @return translated "Collected date can''t be after received"
+  
    */
   @DefaultMessage("Collected date can''t be after received")
   @Key("collectedDateAfterReceivedError")
@@ -3070,6 +3587,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This sample must have a collected date".
    * 
    * @return translated "This sample must have a collected date"
+  
    */
   @DefaultMessage("This sample must have a collected date")
   @Key("collectedDateMissingWarning")
@@ -3079,6 +3597,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collection time can''t be specified without collection date".
    * 
    * @return translated "Collection time can''t be specified without collection date"
+  
    */
   @DefaultMessage("Collection time can''t be specified without collection date")
   @Key("collectedTimeWithoutDateError")
@@ -3088,6 +3607,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collected date shouldn''t be more than 180 days before entered date".
    * 
    * @return translated "Collected date shouldn''t be more than 180 days before entered date"
+  
    */
   @DefaultMessage("Collected date shouldn''t be more than 180 days before entered date")
   @Key("collectedTooOldWarning")
@@ -3097,6 +3617,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collection Date".
    * 
    * @return translated "Collection Date"
+  
    */
   @DefaultMessage("Collection Date")
   @Key("collectionDate")
@@ -3106,6 +3627,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collector".
    * 
    * @return translated "Collector"
+  
    */
   @DefaultMessage("Collector")
   @Key("collector")
@@ -3115,6 +3637,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collector/Organization Info".
    * 
    * @return translated "Collector/Organization Info"
+  
    */
   @DefaultMessage("Collector/Organization Info")
   @Key("collectorOrgInfo")
@@ -3124,6 +3647,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Column".
    * 
    * @return translated "Column"
+  
    */
   @DefaultMessage("Column")
   @Key("column")
@@ -3132,7 +3656,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No analyte found for position {0} analyte ''{1}'' column ''{2}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "No analyte found for position {0} analyte ''{1}'' column ''{2}''"
+  
    */
   @DefaultMessage("No analyte found for position {0} analyte ''{1}'' column ''{2}''")
   @Key("columnAnalyteLookupFormException")
@@ -3142,6 +3670,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Column analytes must not be marked as Supplemental".
    * 
    * @return translated "Column analytes must not be marked as Supplemental"
+  
    */
   @DefaultMessage("Column analytes must not be marked as Supplemental")
   @Key("columnAnalyteSupplException")
@@ -3151,6 +3680,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Comment".
    * 
    * @return translated "Comment"
+  
    */
   @DefaultMessage("Comment")
   @Key("comment")
@@ -3160,6 +3690,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Comments".
    * 
    * @return translated "Comments"
+  
    */
   @DefaultMessage("Comments")
   @Key("comments")
@@ -3169,6 +3700,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Commit".
    * 
    * @return translated "Commit"
+  
    */
   @DefaultMessage("Commit")
   @Key("commit")
@@ -3178,6 +3710,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There were errors with 1 or more records, please fix the errors and try again".
    * 
    * @return translated "There were errors with 1 or more records, please fix the errors and try again"
+  
    */
   @DefaultMessage("There were errors with 1 or more records, please fix the errors and try again")
   @Key("commitErrors")
@@ -3187,6 +3720,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Committing ...".
    * 
    * @return translated "Committing ..."
+  
    */
   @DefaultMessage("Committing ...")
   @Key("commiting")
@@ -3196,6 +3730,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Common".
    * 
    * @return translated "Common"
+  
    */
   @DefaultMessage("Common")
   @Key("common")
@@ -3205,6 +3740,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This component does not have the same store as this kit".
    * 
    * @return translated "This component does not have the same store as this kit"
+  
    */
   @DefaultMessage("This component does not have the same store as this kit")
   @Key("compStoreNotSameAsKitStoreException")
@@ -3214,6 +3750,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Complete".
    * 
    * @return translated "Complete"
+  
    */
   @DefaultMessage("Complete")
   @Key("complete")
@@ -3222,7 +3759,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} has already been released".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0} : {1}, {2} has already been released"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : {1}, {2} has already been released")
   @Key("completeRelease.alreadyReleased")
@@ -3232,6 +3773,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You can only update 1 row at a time".
    * 
    * @return translated "You can only update 1 row at a time"
+  
    */
   @DefaultMessage("You can only update 1 row at a time")
   @Key("completeRelease.cantUpdateMultiple")
@@ -3241,6 +3783,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Complete and Release".
    * 
    * @return translated "Complete and Release"
+  
    */
   @DefaultMessage("Complete and Release")
   @Key("completeRelease.completeAndRelease")
@@ -3249,7 +3792,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You are about to complete {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "You are about to complete {0,number,#0} records.\n\nPress OK to continue or Cancel to abort."
+  
    */
   @DefaultMessage("You are about to complete {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.")
   @Key("completeRelease.completeMultipleWarning")
@@ -3259,6 +3804,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Perform final review and release of analyses.".
    * 
    * @return translated "Perform final review and release of analyses."
+  
    */
   @DefaultMessage("Perform final review and release of analyses.")
   @Key("completeRelease.description")
@@ -3267,7 +3813,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "This analysis has a status of ''{0}'', press Ok to complete or Cancel to abort.".
    * 
+   * @param arg0 "{0}"
    * @return translated "This analysis has a status of ''{0}'', press Ok to complete or Cancel to abort."
+  
    */
   @DefaultMessage("This analysis has a status of ''{0}'', press Ok to complete or Cancel to abort.")
   @Key("completeRelease.onHoldWarning")
@@ -3277,6 +3825,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query By Worksheet".
    * 
    * @return translated "Query By Worksheet"
+  
    */
   @DefaultMessage("Query By Worksheet")
   @Key("completeRelease.queryByWorksheet")
@@ -3285,7 +3834,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You are about to release {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "You are about to release {0,number,#0} records.\n\nPress OK to continue or Cancel to abort."
+  
    */
   @DefaultMessage("You are about to release {0,number,#0} records.\n\nPress OK to continue or Cancel to abort.")
   @Key("completeRelease.releaseMultipleWarning")
@@ -3295,6 +3846,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select exactly one row to unrelease".
    * 
    * @return translated "Please select exactly one row to unrelease"
+  
    */
   @DefaultMessage("Please select exactly one row to unrelease")
   @Key("completeRelease.selOneRowUnrelease")
@@ -3304,6 +3856,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unrelease Analysis".
    * 
    * @return translated "Unrelease Analysis"
+  
    */
   @DefaultMessage("Unrelease Analysis")
   @Key("completeRelease.unrelease")
@@ -3313,6 +3866,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.".
    * 
    * @return translated "You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort."
+  
    */
   @DefaultMessage("You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.")
   @Key("completeRelease.unreleaseMessage")
@@ -3321,7 +3875,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unable to set {0} : {1} to completed - result for {2} : {3} is invalid ".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Unable to set {0} : {1} to completed - result for {2} : {3} is invalid "
+  
    */
   @DefaultMessage("Unable to set {0} : {1} to completed - result for {2} : {3} is invalid ")
   @Key("completeStatusInvalidResultsException")
@@ -3330,7 +3889,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unable to set {0} : {1} to completed - result for {2} : {3} is required".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Unable to set {0} : {1} to completed - result for {2} : {3} is required"
+  
    */
   @DefaultMessage("Unable to set {0} : {1} to completed - result for {2} : {3} is required")
   @Key("completeStatusRequiredResultsException")
@@ -3339,7 +3903,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Status needs to be completed to release {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Status needs to be completed to release {0} : {1}"
+  
    */
   @DefaultMessage("Status needs to be completed to release {0} : {1}")
   @Key("completeStatusRequiredToRelease")
@@ -3349,6 +3916,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Completed".
    * 
    * @return translated "Completed"
+  
    */
   @DefaultMessage("Completed")
   @Key("completed")
@@ -3358,6 +3926,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Completed By".
    * 
    * @return translated "Completed By"
+  
    */
   @DefaultMessage("Completed By")
   @Key("completedBy")
@@ -3367,6 +3936,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Completed Date".
    * 
    * @return translated "Completed Date"
+  
    */
   @DefaultMessage("Completed Date")
   @Key("completedDate")
@@ -3375,7 +3945,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Completed date can''t be in the future".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Completed date can''t be in the future"
+  
    */
   @DefaultMessage("{0} : {1} - Completed date can''t be in the future")
   @Key("completedDateInFutureError")
@@ -3385,6 +3958,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Completed|Released".
    * 
    * @return translated "Completed|Released"
+  
    */
   @DefaultMessage("Completed|Released")
   @Key("completedOrReleased")
@@ -3394,6 +3968,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Component".
    * 
    * @return translated "Component"
+  
    */
   @DefaultMessage("Component")
   @Key("component")
@@ -3403,6 +3978,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Components".
    * 
    * @return translated "Components"
+  
    */
   @DefaultMessage("Components")
   @Key("components")
@@ -3412,6 +3988,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ctmt. Lvl. ".
    * 
    * @return translated "Ctmt. Lvl. "
+  
    */
   @DefaultMessage("Ctmt. Lvl. ")
   @Key("contLevel")
@@ -3421,6 +3998,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Contact".
    * 
    * @return translated "Contact"
+  
    */
   @DefaultMessage("Contact")
   @Key("contact")
@@ -3430,6 +4008,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Contact Name".
    * 
    * @return translated "Contact Name"
+  
    */
   @DefaultMessage("Contact Name")
   @Key("contactName")
@@ -3439,6 +4018,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Contacts for this Organization".
    * 
    * @return translated "Contacts for this Organization"
+  
    */
   @DefaultMessage("Contacts for this Organization")
   @Key("contactsForThisOrganization")
@@ -3448,6 +4028,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Container".
    * 
    * @return translated "Container"
+  
    */
   @DefaultMessage("Container")
   @Key("container")
@@ -3457,6 +4038,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Container Reference".
    * 
    * @return translated "Container Reference"
+  
    */
   @DefaultMessage("Container Reference")
   @Key("containerReference")
@@ -3466,6 +4048,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Controls/Parameters".
    * 
    * @return translated "Controls/Parameters"
+  
    */
   @DefaultMessage("Controls/Parameters")
   @Key("controlsParameters")
@@ -3475,6 +4058,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Copy".
    * 
    * @return translated "Copy"
+  
    */
   @DefaultMessage("Copy")
   @Key("copy")
@@ -3484,6 +4068,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Copy To All".
    * 
    * @return translated "Copy To All"
+  
    */
   @DefaultMessage("Copy To All")
   @Key("copyToAll")
@@ -3493,6 +4078,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Copy To Empty".
    * 
    * @return translated "Copy To Empty"
+  
    */
   @DefaultMessage("Copy To Empty")
   @Key("copyToEmpty")
@@ -3502,6 +4088,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please correct the errors indicated, then press Commit".
    * 
    * @return translated "Please correct the errors indicated, then press Commit"
+  
    */
   @DefaultMessage("Please correct the errors indicated, then press Commit")
   @Key("correctErrors")
@@ -3511,6 +4098,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please correct the errors indicated, then press Process".
    * 
    * @return translated "Please correct the errors indicated, then press Process"
+  
    */
   @DefaultMessage("Please correct the errors indicated, then press Process")
   @Key("correctErrorsProcess")
@@ -3520,6 +4108,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cost".
    * 
    * @return translated "Cost"
+  
    */
   @DefaultMessage("Cost")
   @Key("cost")
@@ -3529,6 +4118,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cost Center".
    * 
    * @return translated "Cost Center"
+  
    */
   @DefaultMessage("Cost Center")
   @Key("costCenter")
@@ -3538,6 +4128,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Country".
    * 
    * @return translated "Country"
+  
    */
   @DefaultMessage("Country")
   @Key("country")
@@ -3547,6 +4138,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "County".
    * 
    * @return translated "County"
+  
    */
   @DefaultMessage("County")
   @Key("county")
@@ -3556,6 +4148,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Created Date".
    * 
    * @return translated "Created Date"
+  
    */
   @DefaultMessage("Created Date")
   @Key("created")
@@ -3565,6 +4158,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Creation Date".
    * 
    * @return translated "Creation Date"
+  
    */
   @DefaultMessage("Creation Date")
   @Key("creationDate")
@@ -3574,6 +4168,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cron".
    * 
    * @return translated "Cron"
+  
    */
   @DefaultMessage("Cron")
   @Key("cron")
@@ -3583,6 +4178,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Schedule Cron jobs to be run on the server.".
    * 
    * @return translated "Schedule Cron jobs to be run on the server."
+  
    */
   @DefaultMessage("Schedule Cron jobs to be run on the server.")
   @Key("cronDescription")
@@ -3592,6 +4188,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Cron".
    * 
    * @return translated "History - Cron"
+  
    */
   @DefaultMessage("History - Cron")
   @Key("cronHistory")
@@ -3601,6 +4198,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cron Tab".
    * 
    * @return translated "Cron Tab"
+  
    */
   @DefaultMessage("Cron Tab")
   @Key("cronTab")
@@ -3610,6 +4208,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Current".
    * 
    * @return translated "Current"
+  
    */
   @DefaultMessage("Current")
   @Key("current")
@@ -3619,6 +4218,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Current Date/Time".
    * 
    * @return translated "Current Date/Time"
+  
    */
   @DefaultMessage("Current Date/Time")
   @Key("currentDateTime")
@@ -3628,6 +4228,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Customer".
    * 
    * @return translated "Customer"
+  
    */
   @DefaultMessage("Customer")
   @Key("customer")
@@ -3637,6 +4238,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Customer Notes".
    * 
    * @return translated "Customer Notes"
+  
    */
   @DefaultMessage("Customer Notes")
   @Key("customerNotes")
@@ -3646,6 +4248,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cut".
    * 
    * @return translated "Cut"
+  
    */
   @DefaultMessage("Cut")
   @Key("cut")
@@ -3654,7 +4257,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Data Exchange ''{0}'': Successfully sent messages".
    * 
+   * @param arg0 "{0}"
    * @return translated "Data Exchange ''{0}'': Successfully sent messages"
+  
    */
   @DefaultMessage("Data Exchange ''{0}'': Successfully sent messages")
   @Key("dataExchange.executedCriteria")
@@ -3663,7 +4268,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Data Exchange ''{0}'': Could not find the last run date ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Data Exchange ''{0}'': Could not find the last run date "
+  
    */
   @DefaultMessage("Data Exchange ''{0}'': Could not find the last run date ")
   @Key("dataExchange.lastRunFetchException")
@@ -3673,6 +4280,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Data Exchange: You must specify 1 or more accession numbers to message".
    * 
    * @return translated "Data Exchange: You must specify 1 or more accession numbers to message"
+  
    */
   @DefaultMessage("Data Exchange: You must specify 1 or more accession numbers to message")
   @Key("dataExchange.noAccessionException")
@@ -3681,7 +4289,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Data Exchange ''{0}'': Could not find criteria".
    * 
+   * @param arg0 "{0}"
    * @return translated "Data Exchange ''{0}'': Could not find criteria"
+  
    */
   @DefaultMessage("Data Exchange ''{0}'': Could not find criteria")
   @Key("dataExchange.noCriteriaFoundException")
@@ -3690,7 +4300,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Data Exchange ''{0}'': Query not specified".
    * 
+   * @param arg0 "{0}"
    * @return translated "Data Exchange ''{0}'': Query not specified"
+  
    */
   @DefaultMessage("Data Exchange ''{0}'': Query not specified")
   @Key("dataExchange.noQueryException")
@@ -3699,7 +4311,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Data Exchange ''{0}'': No samples found for messaging".
    * 
+   * @param arg0 "{0}"
    * @return translated "Data Exchange ''{0}'': No samples found for messaging"
+  
    */
   @DefaultMessage("Data Exchange ''{0}'': No samples found for messaging")
   @Key("dataExchange.noSamplesFound")
@@ -3709,6 +4323,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Data Exchange: You must specify a URI export location".
    * 
    * @return translated "Data Exchange: You must specify a URI export location"
+  
    */
   @DefaultMessage("Data Exchange: You must specify a URI export location")
   @Key("dataExchange.noUriException")
@@ -3718,6 +4333,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Data View".
    * 
    * @return translated "Data View"
+  
    */
   @DefaultMessage("Data View")
   @Key("dataView")
@@ -3727,6 +4343,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date Collected".
    * 
    * @return translated "Date Collected"
+  
    */
   @DefaultMessage("Date Collected")
   @Key("dateCollected")
@@ -3736,6 +4353,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "yyyyMMdd".
    * 
    * @return translated "yyyyMMdd"
+  
    */
   @DefaultMessage("yyyyMMdd")
   @Key("dateCompressedPattern")
@@ -3745,6 +4363,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "yyyy-MM-dd".
    * 
    * @return translated "yyyy-MM-dd"
+  
    */
   @DefaultMessage("yyyy-MM-dd")
   @Key("datePattern")
@@ -3754,6 +4373,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date Rec".
    * 
    * @return translated "Date Rec"
+  
    */
   @DefaultMessage("Date Rec")
   @Key("dateRec")
@@ -3763,6 +4383,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "yyyyMMddHHmm".
    * 
    * @return translated "yyyyMMddHHmm"
+  
    */
   @DefaultMessage("yyyyMMddHHmm")
   @Key("dateTimeCompressedPattern")
@@ -3772,6 +4393,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "yyyy-MM-dd HH:mm".
    * 
    * @return translated "yyyy-MM-dd HH:mm"
+  
    */
   @DefaultMessage("yyyy-MM-dd HH:mm")
   @Key("dateTimePattern")
@@ -3781,6 +4403,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "yyyy-MM-dd HH:mm:ss".
    * 
    * @return translated "yyyy-MM-dd HH:mm:ss"
+  
    */
   @DefaultMessage("yyyy-MM-dd HH:mm:ss")
   @Key("dateTimeSecondPattern")
@@ -3790,6 +4413,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Valid Begin and End dates, Frequency and Unit must be specified to show dates".
    * 
    * @return translated "Valid Begin and End dates, Frequency and Unit must be specified to show dates"
+  
    */
   @DefaultMessage("Valid Begin and End dates, Frequency and Unit must be specified to show dates")
   @Key("datesFreqUnitNotSpec")
@@ -3799,6 +4423,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "EEE MMM d, yyyy".
    * 
    * @return translated "EEE MMM d, yyyy"
+  
    */
   @DefaultMessage("EEE MMM d, yyyy")
   @Key("dayInYearPattern")
@@ -3808,6 +4433,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Days".
    * 
    * @return translated "Days"
+  
    */
   @DefaultMessage("Days")
   @Key("days")
@@ -3817,6 +4443,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Days in Initiated".
    * 
    * @return translated "Days in Initiated"
+  
    */
   @DefaultMessage("Days in Initiated")
   @Key("daysInInitiated")
@@ -3825,7 +4452,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Error loading default user for position {0} analysis {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Error loading default user for position {0} analysis {1}"
+  
    */
   @DefaultMessage("Error loading default user for position {0} analysis {1}")
   @Key("defaultWorksheetQcUserFormException")
@@ -3835,6 +4465,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Delete".
    * 
    * @return translated "Delete"
+  
    */
   @DefaultMessage("Delete")
   @Key("delete")
@@ -3844,6 +4475,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Delete Aborted".
    * 
    * @return translated "Delete Aborted"
+  
    */
   @DefaultMessage("Delete Aborted")
   @Key("deleteAborted")
@@ -3853,6 +4485,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Delete...Complete".
    * 
    * @return translated "Delete...Complete"
+  
    */
   @DefaultMessage("Delete...Complete")
   @Key("deleteComplete")
@@ -3862,6 +4495,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Pressing commit will delete the current record from the database".
    * 
    * @return translated "Pressing commit will delete the current record from the database"
+  
    */
   @DefaultMessage("Pressing commit will delete the current record from the database")
   @Key("deleteMessage")
@@ -3871,6 +4505,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Deleting...".
    * 
    * @return translated "Deleting..."
+  
    */
   @DefaultMessage("Deleting...")
   @Key("deleting")
@@ -3880,6 +4515,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Desc".
    * 
    * @return translated "Desc"
+  
    */
   @DefaultMessage("Desc")
   @Key("desc")
@@ -3889,6 +4525,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Description".
    * 
    * @return translated "Description"
+  
    */
   @DefaultMessage("Description")
   @Key("description")
@@ -3898,6 +4535,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Method Description".
    * 
    * @return translated "Method Description"
+  
    */
   @DefaultMessage("Method Description")
   @Key("descriptionOfTheMethod")
@@ -3907,6 +4545,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Description".
    * 
    * @return translated "Test Description"
+  
    */
   @DefaultMessage("Test Description")
   @Key("descriptionOfTheTest")
@@ -3916,6 +4555,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The destination URI must begin with either ''file://'' or ''socket://''".
    * 
    * @return translated "The destination URI must begin with either ''file://'' or ''socket://''"
+  
    */
   @DefaultMessage("The destination URI must begin with either ''file://'' or ''socket://''")
   @Key("destURIMustHaveFileOrSocketException")
@@ -3925,6 +4565,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Destination".
    * 
    * @return translated "Destination"
+  
    */
   @DefaultMessage("Destination")
   @Key("destination")
@@ -3934,6 +4575,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Destination URI".
    * 
    * @return translated "Destination URI"
+  
    */
   @DefaultMessage("Destination URI")
   @Key("destinationUri")
@@ -3943,6 +4585,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Detail:".
    * 
    * @return translated "Detail:"
+  
    */
   @DefaultMessage("Detail:")
   @Key("detail")
@@ -3952,6 +4595,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Details".
    * 
    * @return translated "Details"
+  
    */
   @DefaultMessage("Details")
   @Key("details")
@@ -3961,6 +4605,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dictionary".
    * 
    * @return translated "Dictionary"
+  
    */
   @DefaultMessage("Dictionary")
   @Key("dictionary")
@@ -3970,6 +4615,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more dictionary entries cannot be deleted, other entries are linked to them".
    * 
    * @return translated "One or more dictionary entries cannot be deleted, other entries are linked to them"
+  
    */
   @DefaultMessage("One or more dictionary entries cannot be deleted, other entries are linked to them")
   @Key("dictionaryDeleteException")
@@ -3979,6 +4625,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define values that can be used to complete information in the OpenELIS system.".
    * 
    * @return translated "Define values that can be used to complete information in the OpenELIS system."
+  
    */
   @DefaultMessage("Define values that can be used to complete information in the OpenELIS system.")
   @Key("dictionaryDescription")
@@ -3988,6 +4635,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dictionary Entry".
    * 
    * @return translated "Dictionary Entry"
+  
    */
   @DefaultMessage("Dictionary Entry")
   @Key("dictionaryEntry")
@@ -3997,6 +4645,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dictionary Entry Selection ".
    * 
    * @return translated "Dictionary Entry Selection "
+  
    */
   @DefaultMessage("Dictionary Entry Selection ")
   @Key("dictionaryEntrySelection")
@@ -4006,6 +4655,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Dictionary".
    * 
    * @return translated "History - Dictionary"
+  
    */
   @DefaultMessage("History - Dictionary")
   @Key("dictionaryHistory")
@@ -4015,6 +4665,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Discard ".
    * 
    * @return translated "Discard "
+  
    */
   @DefaultMessage("Discard ")
   @Key("discard")
@@ -4024,6 +4675,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dispensed Units".
    * 
    * @return translated "Dispensed Units"
+  
    */
   @DefaultMessage("Dispensed Units")
   @Key("dispensedUnits")
@@ -4033,6 +4685,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "''$''###,###,##0.00;(''$''###,###,##0.00)".
    * 
    * @return translated "''$''###,###,##0.00;(''$''###,###,##0.00)"
+  
    */
   @DefaultMessage("''$''###,###,##0.00;(''$''###,###,##0.00)")
   @Key("displayCurrencyFormat")
@@ -4042,6 +4695,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "###.######".
    * 
    * @return translated "###.######"
+  
    */
   @DefaultMessage("###.######")
   @Key("displayDoubleFormat")
@@ -4051,6 +4705,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Do Not Inventory".
    * 
    * @return translated "Do Not Inventory"
+  
    */
   @DefaultMessage("Do Not Inventory")
   @Key("doNotInventory")
@@ -4060,6 +4715,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Domain".
    * 
    * @return translated "Domain"
+  
    */
   @DefaultMessage("Domain")
   @Key("domain")
@@ -4069,6 +4725,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Domain Specific Field".
    * 
    * @return translated "Domain Specific Field"
+  
    */
   @DefaultMessage("Domain Specific Field")
   @Key("domainSpecField")
@@ -4078,6 +4735,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Due".
    * 
    * @return translated "Due"
+  
    */
   @DefaultMessage("Due")
   @Key("due")
@@ -4087,6 +4745,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The position subsequent to a position of type Fixed cannot be of the Duplicate type".
    * 
    * @return translated "The position subsequent to a position of type Fixed cannot be of the Duplicate type"
+  
    */
   @DefaultMessage("The position subsequent to a position of type Fixed cannot be of the Duplicate type")
   @Key("duplPosAfterFixedPosException")
@@ -4096,6 +4755,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A vendor order must not have the same inventory item more than once  ".
    * 
    * @return translated "A vendor order must not have the same inventory item more than once  "
+  
    */
   @DefaultMessage("A vendor order must not have the same inventory item more than once  ")
   @Key("duplicateInvItemVendorOrderException")
@@ -4105,6 +4765,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At the most one QC can be associated with any position".
    * 
    * @return translated "At the most one QC can be associated with any position"
+  
    */
   @DefaultMessage("At the most one QC can be associated with any position")
   @Key("duplicatePosForQCsException")
@@ -4114,6 +4775,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Duplicate".
    * 
    * @return translated "Duplicate"
+  
    */
   @DefaultMessage("Duplicate")
   @Key("duplicateRecord")
@@ -4123,6 +4785,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Duplicate the current record".
    * 
    * @return translated "Duplicate the current record"
+  
    */
   @DefaultMessage("Duplicate the current record")
   @Key("duplicateRecordDescription")
@@ -4132,6 +4795,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analytes included on a worksheet for a test must be unique".
    * 
    * @return translated "Analytes included on a worksheet for a test must be unique"
+  
    */
   @DefaultMessage("Analytes included on a worksheet for a test must be unique")
   @Key("duplicateWSAnalyteException")
@@ -4141,6 +4805,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dynamically".
    * 
    * @return translated "Dynamically"
+  
    */
   @DefaultMessage("Dynamically")
   @Key("dynamic")
@@ -4150,6 +4815,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Edit".
    * 
    * @return translated "Edit"
+  
    */
   @DefaultMessage("Edit")
   @Key("edit")
@@ -4159,6 +4825,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Edit Note".
    * 
    * @return translated "Edit Note"
+  
    */
   @DefaultMessage("Edit Note")
   @Key("editNote")
@@ -4168,6 +4835,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Changing entries from the past may cause inconsistencies in the data ".
    * 
    * @return translated "Changing entries from the past may cause inconsistencies in the data "
+  
    */
   @DefaultMessage("Changing entries from the past may cause inconsistencies in the data ")
   @Key("editPreviousWarning")
@@ -4177,6 +4845,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Save To Excel File".
    * 
    * @return translated "Save To Excel File"
+  
    */
   @DefaultMessage("Save To Excel File")
   @Key("editWorksheet")
@@ -4186,6 +4855,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "########0.00;-########0.00".
    * 
    * @return translated "########0.00;-########0.00"
+  
    */
   @DefaultMessage("########0.00;-########0.00")
   @Key("editorCurrencyFormat")
@@ -4195,6 +4865,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Effective Begin".
    * 
    * @return translated "Effective Begin"
+  
    */
   @DefaultMessage("Effective Begin")
   @Key("effectiveBegin")
@@ -4204,6 +4875,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Effective End".
    * 
    * @return translated "Effective End"
+  
    */
   @DefaultMessage("Effective End")
   @Key("effectiveEnd")
@@ -4213,6 +4885,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "8 - 10 days ago".
    * 
    * @return translated "8 - 10 days ago"
+  
    */
   @DefaultMessage("8 - 10 days ago")
   @Key("eightToTenDays")
@@ -4222,6 +4895,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "11-20 days ago".
    * 
    * @return translated "11-20 days ago"
+  
    */
   @DefaultMessage("11-20 days ago")
   @Key("elevnToTwntyDays")
@@ -4231,6 +4905,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Email".
    * 
    * @return translated "Email"
+  
    */
   @DefaultMessage("Email")
   @Key("email")
@@ -4240,6 +4915,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not execute an empty query".
    * 
    * @return translated "You may not execute an empty query"
+  
    */
   @DefaultMessage("You may not execute an empty query")
   @Key("emptyQueryException")
@@ -4249,6 +4925,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more result groups are empty; Result groups must have one or more results".
    * 
    * @return translated "One or more result groups are empty; Result groups must have one or more results"
+  
    */
   @DefaultMessage("One or more result groups are empty; Result groups must have one or more results")
   @Key("emptyResultGroupException")
@@ -4258,6 +4935,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End".
    * 
    * @return translated "End"
+  
    */
   @DefaultMessage("End")
   @Key("end")
@@ -4267,6 +4945,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End Date".
    * 
    * @return translated "End Date"
+  
    */
   @DefaultMessage("End Date")
   @Key("endDate")
@@ -4276,6 +4955,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End date must not be before begin date".
    * 
    * @return translated "End date must not be before begin date"
+  
    */
   @DefaultMessage("End date must not be before begin date")
   @Key("endDateAfterBeginDateException")
@@ -4285,6 +4965,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End date must be after today".
    * 
    * @return translated "End date must be after today"
+  
    */
   @DefaultMessage("End date must be after today")
   @Key("endDateAfterToday")
@@ -4294,6 +4975,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End date must be after begin date  ".
    * 
    * @return translated "End date must be after begin date  "
+  
    */
   @DefaultMessage("End date must be after begin date  ")
   @Key("endDateInvalidException")
@@ -4302,7 +4984,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "End date must be after begin date for analyte ''{0}''  ".
    * 
+   * @param arg0 "{0}"
    * @return translated "End date must be after begin date for analyte ''{0}''  "
+  
    */
   @DefaultMessage("End date must be after begin date for analyte ''{0}''  ")
   @Key("endDateInvalidWithParamException")
@@ -4311,7 +4995,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "End date is required for analyte ''{0}''".
    * 
+   * @param arg0 "{0}"
    * @return translated "End date is required for analyte ''{0}''"
+  
    */
   @DefaultMessage("End date is required for analyte ''{0}''")
   @Key("endDateRequiredForAnalyteException")
@@ -4321,6 +5007,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End Day".
    * 
    * @return translated "End Day"
+  
    */
   @DefaultMessage("End Day")
   @Key("endDay")
@@ -4330,6 +5017,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ending Released Date".
    * 
    * @return translated "Ending Released Date"
+  
    */
   @DefaultMessage("Ending Released Date")
   @Key("endRelDt")
@@ -4339,6 +5027,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You are at the end of your query results".
    * 
    * @return translated "You are at the end of your query results"
+  
    */
   @DefaultMessage("You are at the end of your query results")
   @Key("endingQueryException")
@@ -4348,6 +5037,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The accession number must be entered before loading an order".
    * 
    * @return translated "The accession number must be entered before loading an order"
+  
    */
   @DefaultMessage("The accession number must be entered before loading an order")
   @Key("enterAccNumBeforeOrderLoad")
@@ -4357,6 +5047,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please enter an email or press Cancel".
    * 
    * @return translated "Please enter an email or press Cancel"
+  
    */
   @DefaultMessage("Please enter an email or press Cancel")
   @Key("enterEmailOrCancel")
@@ -4366,6 +5057,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter fields to query by then press Commit".
    * 
    * @return translated "Enter fields to query by then press Commit"
+  
    */
   @DefaultMessage("Enter fields to query by then press Commit")
   @Key("enterFieldsToQuery")
@@ -4375,6 +5067,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter information in the fields, then press Commit".
    * 
    * @return translated "Enter information in the fields, then press Commit"
+  
    */
   @DefaultMessage("Enter information in the fields, then press Commit")
   @Key("enterInformationPressCommit")
@@ -4384,6 +5077,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter Search".
    * 
    * @return translated "Enter Search"
+  
    */
   @DefaultMessage("Enter Search")
   @Key("enterSearch")
@@ -4393,6 +5087,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A shipping barcode must be entered before a tracking number".
    * 
    * @return translated "A shipping barcode must be entered before a tracking number"
+  
    */
   @DefaultMessage("A shipping barcode must be entered before a tracking number")
   @Key("enterShippingBeforeTracking")
@@ -4402,6 +5097,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please enter a valid barcode ".
    * 
    * @return translated "Please enter a valid barcode "
+  
    */
   @DefaultMessage("Please enter a valid barcode ")
   @Key("enterValidBarcode")
@@ -4411,6 +5107,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Entered".
    * 
    * @return translated "Entered"
+  
    */
   @DefaultMessage("Entered")
   @Key("entered")
@@ -4420,6 +5117,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Entered Date".
    * 
    * @return translated "Entered Date"
+  
    */
   @DefaultMessage("Entered Date")
   @Key("enteredDate")
@@ -4428,7 +5126,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "This record is locked by {0} until {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "This record is locked by {0} until {1}"
+  
    */
   @DefaultMessage("This record is locked by {0} until {1}")
   @Key("entityLockException")
@@ -4438,6 +5139,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dictionary Entries".
    * 
    * @return translated "Dictionary Entries"
+  
    */
   @DefaultMessage("Dictionary Entries")
   @Key("entries")
@@ -4447,6 +5149,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Entry".
    * 
    * @return translated "Entry"
+  
    */
   @DefaultMessage("Entry")
   @Key("entry")
@@ -4456,6 +5159,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Collector".
    * 
    * @return translated "Environmental Collector"
+  
    */
   @DefaultMessage("Environmental Collector")
   @Key("env.collector")
@@ -4465,6 +5169,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Location".
    * 
    * @return translated "Environmental Location"
+  
    */
   @DefaultMessage("Environmental Location")
   @Key("env.location")
@@ -4474,6 +5179,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Info".
    * 
    * @return translated "Environmental Info"
+  
    */
   @DefaultMessage("Environmental Info")
   @Key("envInfo")
@@ -4483,6 +5189,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environment".
    * 
    * @return translated "Environment"
+  
    */
   @DefaultMessage("Environment")
   @Key("environment")
@@ -4492,6 +5199,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental".
    * 
    * @return translated "Environmental"
+  
    */
   @DefaultMessage("Environmental")
   @Key("environmental")
@@ -4501,6 +5209,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Final Report".
    * 
    * @return translated "Environmental Final Report"
+  
    */
   @DefaultMessage("Environmental Final Report")
   @Key("environmentalFinalReport")
@@ -4510,6 +5219,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Results by Analyte".
    * 
    * @return translated "Environmental Results by Analyte"
+  
    */
   @DefaultMessage("Environmental Results by Analyte")
   @Key("environmentalResultByAnalyte")
@@ -4519,6 +5229,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Sample".
    * 
    * @return translated "Environmental Sample"
+  
    */
   @DefaultMessage("Environmental Sample")
   @Key("environmentalSample")
@@ -4528,6 +5239,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Sample Login".
    * 
    * @return translated "Environmental Sample Login"
+  
    */
   @DefaultMessage("Environmental Sample Login")
   @Key("environmentalSampleLogin")
@@ -4537,6 +5249,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login environmental sample and analysis related information.".
    * 
    * @return translated "Fully login environmental sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login environmental sample and analysis related information.")
   @Key("environmentalSampleLoginDescription")
@@ -4546,6 +5259,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "EOrder cannot be deleted, one or more samples are still linked to it".
    * 
    * @return translated "EOrder cannot be deleted, one or more samples are still linked to it"
+  
    */
   @DefaultMessage("EOrder cannot be deleted, one or more samples are still linked to it")
   @Key("eorder.deleteException")
@@ -4555,6 +5269,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "EOrder Lookup".
    * 
    * @return translated "EOrder Lookup"
+  
    */
   @DefaultMessage("EOrder Lookup")
   @Key("eorder.eorderLookup")
@@ -4564,6 +5279,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Number".
    * 
    * @return translated "Order Number"
+  
    */
   @DefaultMessage("Order Number")
   @Key("eorder.orderNumber")
@@ -4572,7 +5288,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "System failure when looking up dictionary entry for mapping ''{0}''.".
    * 
+   * @param arg0 "{0}"
    * @return translated "System failure when looking up dictionary entry for mapping ''{0}''."
+  
    */
   @DefaultMessage("System failure when looking up dictionary entry for mapping ''{0}''.")
   @Key("eorderImport.dictionaryLookupFailure")
@@ -4581,7 +5299,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Dictionary entry not found for mapping ''{0}''.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Dictionary entry not found for mapping ''{0}''."
+  
    */
   @DefaultMessage("Dictionary entry not found for mapping ''{0}''.")
   @Key("eorderImport.dictionaryNotFound")
@@ -4590,7 +5310,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Error loading result formatter for test Id: {0}.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Error loading result formatter for test Id: {0}."
+  
    */
   @DefaultMessage("Error loading result formatter for test Id: {0}.")
   @Key("eorderImport.errorLoadingResultFormatter")
@@ -4599,7 +5321,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The organization ''{1} ({2})'' for code ''{0}'' is inactive.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "The organization ''{1} ({2})'' for code ''{0}'' is inactive."
+  
    */
   @DefaultMessage("The organization ''{1} ({2})'' for code ''{0}'' is inactive.")
   @Key("eorderImport.inactiveOrgWarning")
@@ -4608,7 +5334,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Invalid value ''{0}'' for test ''{1}, {2}'' analyte ''{3}'' in order.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Invalid value ''{0}'' for test ''{1}, {2}'' analyte ''{3}'' in order."
+  
    */
   @DefaultMessage("Invalid value ''{0}'' for test ''{1}, {2}'' analyte ''{3}'' in order.")
   @Key("eorderImport.invalidValue")
@@ -4617,7 +5348,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "System failure when looking up terms for the value ''{0}'' in the order field ''{1}''.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "System failure when looking up terms for the value ''{0}'' in the order field ''{1}''."
+  
    */
   @DefaultMessage("System failure when looking up terms for the value ''{0}'' in the order field ''{1}''.")
   @Key("eorderImport.localTermLookupFailure")
@@ -4626,7 +5360,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No terms were found for the value ''{0}'' in the order field ''{1}''.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "No terms were found for the value ''{0}'' in the order field ''{1}''."
+  
    */
   @DefaultMessage("No terms were found for the value ''{0}'' in the order field ''{1}''.")
   @Key("eorderImport.localTermNotFound")
@@ -4636,6 +5373,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Path to eorder import file directory is missing. Please contact the system administrator.".
    * 
    * @return translated "Path to eorder import file directory is missing. Please contact the system administrator."
+  
    */
   @DefaultMessage("Path to eorder import file directory is missing. Please contact the system administrator.")
   @Key("eorderImport.missingPath")
@@ -4645,6 +5383,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient.".
    * 
    * @return translated "Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient."
+  
    */
   @DefaultMessage("Multliple patients were found matching data in the order; please use the field search button to choose the appropriate patient.")
   @Key("eorderImport.mulitpleMatchPatients")
@@ -4653,7 +5392,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Multiple terms were found for the value ''{0}'' in the order field ''{1}''.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Multiple terms were found for the value ''{0}'' in the order field ''{1}''."
+  
    */
   @DefaultMessage("Multiple terms were found for the value ''{0}'' in the order field ''{1}''.")
   @Key("eorderImport.multipleLocalTerms")
@@ -4663,6 +5405,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Note From EOrder".
    * 
    * @return translated "Note From EOrder"
+  
    */
   @DefaultMessage("Note From EOrder")
   @Key("eorderImport.orderNoteSubject")
@@ -4672,6 +5415,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The organization name was not supplied in the order.".
    * 
    * @return translated "The organization name was not supplied in the order."
+  
    */
   @DefaultMessage("The organization name was not supplied in the order.")
   @Key("eorderImport.organizationNotSupplied")
@@ -4681,6 +5425,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "System failure when looking up existing patient records for matching against order data.".
    * 
    * @return translated "System failure when looking up existing patient records for matching against order data."
+  
    */
   @DefaultMessage("System failure when looking up existing patient records for matching against order data.")
   @Key("eorderImport.patientLookupFailure")
@@ -4689,7 +5434,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Source of Sample ''{0}'' does not match source specified in order ''{1}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Source of Sample ''{0}'' does not match source specified in order ''{1}''"
+  
    */
   @DefaultMessage("Source of Sample ''{0}'' does not match source specified in order ''{1}''")
   @Key("eorderImport.sourceOfSampleMismatch")
@@ -4698,7 +5446,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Source Other ''{0}'' does not match source other specified in order ''{1}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Source Other ''{0}'' does not match source other specified in order ''{1}''"
+  
    */
   @DefaultMessage("Source Other ''{0}'' does not match source other specified in order ''{1}''")
   @Key("eorderImport.sourceOtherMismatch")
@@ -4707,7 +5458,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unable to parse birth date ''{0}'' from eorder.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Unable to parse birth date ''{0}'' from eorder."
+  
    */
   @DefaultMessage("Unable to parse birth date ''{0}'' from eorder.")
   @Key("eorderImport.unparsableBirthDate")
@@ -4716,7 +5469,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unable to parse birth time ''{0}'' from eorder.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Unable to parse birth time ''{0}'' from eorder."
+  
    */
   @DefaultMessage("Unable to parse birth time ''{0}'' from eorder.")
   @Key("eorderImport.unparsableBirthTime")
@@ -4725,7 +5480,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unable to parse collection date ''{0}'' from eorder.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Unable to parse collection date ''{0}'' from eorder."
+  
    */
   @DefaultMessage("Unable to parse collection date ''{0}'' from eorder.")
   @Key("eorderImport.unparsableCollectionDate")
@@ -4734,7 +5491,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unable to parse collection time ''{0}'' from eorder.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Unable to parse collection time ''{0}'' from eorder."
+  
    */
   @DefaultMessage("Unable to parse collection time ''{0}'' from eorder.")
   @Key("eorderImport.unparsableCollectionTime")
@@ -4744,6 +5503,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error with sample accession #".
    * 
    * @return translated "Error with sample accession #"
+  
    */
   @DefaultMessage("Error with sample accession #")
   @Key("errorSampleAccNum")
@@ -4753,6 +5513,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more auxiliary field values associated with this auxiliary field are in error. Please click this row to make those field values and the errors visible.".
    * 
    * @return translated "One or more auxiliary field values associated with this auxiliary field are in error. Please click this row to make those field values and the errors visible."
+  
    */
   @DefaultMessage("One or more auxiliary field values associated with this auxiliary field are in error. Please click this row to make those field values and the errors visible.")
   @Key("errorsWithAuxFieldValuesException")
@@ -4762,6 +5523,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ethnicity ".
    * 
    * @return translated "Ethnicity "
+  
    */
   @DefaultMessage("Ethnicity ")
   @Key("ethnicity")
@@ -4771,6 +5533,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Exchange Criteria".
    * 
    * @return translated "History - Exchange Criteria"
+  
    */
   @DefaultMessage("History - Exchange Criteria")
   @Key("exchangeCriteriaHistory")
@@ -4780,6 +5543,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exchange Data Selection".
    * 
    * @return translated "Exchange Data Selection"
+  
    */
   @DefaultMessage("Exchange Data Selection")
   @Key("exchangeDataSelection")
@@ -4789,6 +5553,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exchange Data Selection Description".
    * 
    * @return translated "Exchange Data Selection Description"
+  
    */
   @DefaultMessage("Exchange Data Selection Description")
   @Key("exchangeDataSelectionDescription")
@@ -4798,6 +5563,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Exchange Profile".
    * 
    * @return translated "History - Exchange Profile"
+  
    */
   @DefaultMessage("History - Exchange Profile")
   @Key("exchangeProfileHistory")
@@ -4807,6 +5573,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exchange Vocabulary Map".
    * 
    * @return translated "Exchange Vocabulary Map"
+  
    */
   @DefaultMessage("Exchange Vocabulary Map")
   @Key("exchangeVocabularyMap")
@@ -4816,6 +5583,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define vocabulary mappings from local to external codes for electronic data transmission".
    * 
    * @return translated "Define vocabulary mappings from local to external codes for electronic data transmission"
+  
    */
   @DefaultMessage("Define vocabulary mappings from local to external codes for electronic data transmission")
   @Key("exchangeVocabularyMapDescription")
@@ -4825,6 +5593,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exclude PT Sample".
    * 
    * @return translated "Exclude PT Sample"
+  
    */
   @DefaultMessage("Exclude PT Sample")
   @Key("exclPTSample")
@@ -4834,6 +5603,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exclude Aux Data".
    * 
    * @return translated "Exclude Aux Data"
+  
    */
   @DefaultMessage("Exclude Aux Data")
   @Key("excludeAuxData")
@@ -4843,6 +5613,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exclude Not Reportable Analyses".
    * 
    * @return translated "Exclude Not Reportable Analyses"
+  
    */
   @DefaultMessage("Exclude Not Reportable Analyses")
   @Key("excludeNotReportableAnalyses")
@@ -4852,6 +5623,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exclude Result Override".
    * 
    * @return translated "Exclude Result Override"
+  
    */
   @DefaultMessage("Exclude Result Override")
   @Key("excludeResultOverride")
@@ -4861,6 +5633,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exclude Results".
    * 
    * @return translated "Exclude Results"
+  
    */
   @DefaultMessage("Exclude Results")
   @Key("excludeResults")
@@ -4870,6 +5643,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Execute Query".
    * 
    * @return translated "Execute Query"
+  
    */
   @DefaultMessage("Execute Query")
   @Key("executeQuery")
@@ -4879,6 +5653,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An existing sample cannot be filled from an order".
    * 
    * @return translated "An existing sample cannot be filled from an order"
+  
    */
   @DefaultMessage("An existing sample cannot be filled from an order")
   @Key("existSampleCantFillFromOrder")
@@ -4888,6 +5663,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exit".
    * 
    * @return translated "Exit"
+  
    */
   @DefaultMessage("Exit")
   @Key("exit")
@@ -4897,6 +5673,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "% Exp Completion".
    * 
    * @return translated "% Exp Completion"
+  
    */
   @DefaultMessage("% Exp Completion")
   @Key("expCompletion")
@@ -4906,6 +5683,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exp Date".
    * 
    * @return translated "Exp Date"
+  
    */
   @DefaultMessage("Exp Date")
   @Key("expDate")
@@ -4915,6 +5693,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expand".
    * 
    * @return translated "Expand"
+  
    */
   @DefaultMessage("Expand")
   @Key("expand")
@@ -4924,6 +5703,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expected Value".
    * 
    * @return translated "Expected Value"
+  
    */
   @DefaultMessage("Expected Value")
   @Key("expectedValue")
@@ -4933,6 +5713,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expiration Date".
    * 
    * @return translated "Expiration Date"
+  
    */
   @DefaultMessage("Expiration Date")
   @Key("expirationDate")
@@ -4942,6 +5723,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expire date must not be the same as or before usable date".
    * 
    * @return translated "Expire date must not be the same as or before usable date"
+  
    */
   @DefaultMessage("Expire date must not be the same as or before usable date")
   @Key("expireBeforeUsableException")
@@ -4951,6 +5733,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expire Date".
    * 
    * @return translated "Expire Date"
+  
    */
   @DefaultMessage("Expire Date")
   @Key("expireDate")
@@ -4960,6 +5743,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Your Lock on this record has expired; Please abort and try again".
    * 
    * @return translated "Your Lock on this record has expired; Please abort and try again"
+  
    */
   @DefaultMessage("Your Lock on this record has expired; Please abort and try again")
   @Key("expiredLockException")
@@ -4969,6 +5753,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Export To Location".
    * 
    * @return translated "Export To Location"
+  
    */
   @DefaultMessage("Export To Location")
   @Key("exportToLocation")
@@ -4978,6 +5763,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Export To Excel".
    * 
    * @return translated "Export To Excel"
+  
    */
   @DefaultMessage("Export To Excel")
   @Key("exportToXl")
@@ -4987,6 +5773,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add To Exst".
    * 
    * @return translated "Add To Exst"
+  
    */
   @DefaultMessage("Add To Exst")
   @Key("ext")
@@ -4996,6 +5783,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ext Order #".
    * 
    * @return translated "Ext Order #"
+  
    */
   @DefaultMessage("Ext Order #")
   @Key("extOrderNum")
@@ -5005,6 +5793,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ext QC".
    * 
    * @return translated "Ext QC"
+  
    */
   @DefaultMessage("Ext QC")
   @Key("extQC")
@@ -5014,6 +5803,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ext Reference".
    * 
    * @return translated "Ext Reference"
+  
    */
   @DefaultMessage("Ext Reference")
   @Key("extReference")
@@ -5023,6 +5813,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External".
    * 
    * @return translated "External"
+  
    */
   @DefaultMessage("External")
   @Key("external")
@@ -5032,6 +5823,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External Coding System".
    * 
    * @return translated "External Coding System"
+  
    */
   @DefaultMessage("External Coding System")
   @Key("externalCodingSystem")
@@ -5041,6 +5833,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External Description".
    * 
    * @return translated "External Description"
+  
    */
   @DefaultMessage("External Description")
   @Key("externalDescription")
@@ -5050,6 +5843,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External Id".
    * 
    * @return translated "External Id"
+  
    */
   @DefaultMessage("External Id")
   @Key("externalId")
@@ -5059,6 +5853,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External Term".
    * 
    * @return translated "External Term"
+  
    */
   @DefaultMessage("External Term")
   @Key("externalTerm")
@@ -5068,6 +5863,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - External Term".
    * 
    * @return translated "History - External Term"
+  
    */
   @DefaultMessage("History - External Term")
   @Key("externalTermHistory")
@@ -5077,6 +5873,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ext Cmts".
    * 
    * @return translated "Ext Cmts"
+  
    */
   @DefaultMessage("Ext Cmts")
   @Key("extrnlCmnts")
@@ -5086,6 +5883,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Facility".
    * 
    * @return translated "Facility"
+  
    */
   @DefaultMessage("Facility")
   @Key("facility")
@@ -5095,6 +5893,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Facility Id".
    * 
    * @return translated "Facility Id"
+  
    */
   @DefaultMessage("Facility Id")
   @Key("facilityId")
@@ -5104,6 +5903,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "FAILED RUN".
    * 
    * @return translated "FAILED RUN"
+  
    */
   @DefaultMessage("FAILED RUN")
   @Key("failedRunSubject")
@@ -5113,6 +5913,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Failed to lookup dictionary entry by system name = ".
    * 
    * @return translated "Failed to lookup dictionary entry by system name = "
+  
    */
   @DefaultMessage("Failed to lookup dictionary entry by system name = ")
   @Key("failedToLookupDictforSysName")
@@ -5122,6 +5923,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fast Sample Login".
    * 
    * @return translated "Fast Sample Login"
+  
    */
   @DefaultMessage("Fast Sample Login")
   @Key("fastSampleLogin")
@@ -5131,6 +5933,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fast sample login description".
    * 
    * @return translated "Fast sample login description"
+  
    */
   @DefaultMessage("Fast sample login description")
   @Key("fastSampleLoginDescription")
@@ -5140,6 +5943,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Favorites".
    * 
    * @return translated "Favorites"
+  
    */
   @DefaultMessage("Favorites")
   @Key("favorites")
@@ -5149,6 +5953,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Favorites Menu".
    * 
    * @return translated "Favorites Menu"
+  
    */
   @DefaultMessage("Favorites Menu")
   @Key("favoritesMenu")
@@ -5158,6 +5963,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Show or hide the left favorite menu.".
    * 
    * @return translated "Show or hide the left favorite menu."
+  
    */
   @DefaultMessage("Show or hide the left favorite menu.")
   @Key("favoritesMenuDescription")
@@ -5167,6 +5973,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fax".
    * 
    * @return translated "Fax"
+  
    */
   @DefaultMessage("Fax")
   @Key("fax")
@@ -5176,6 +5983,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fax #".
    * 
    * @return translated "Fax #"
+  
    */
   @DefaultMessage("Fax #")
   @Key("faxNumber")
@@ -5185,6 +5993,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error: Could not retrieve the record.".
    * 
    * @return translated "Error: Could not retrieve the record."
+  
    */
   @DefaultMessage("Error: Could not retrieve the record.")
   @Key("fetchFailed")
@@ -5194,6 +6003,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fetching ...".
    * 
    * @return translated "Fetching ..."
+  
    */
   @DefaultMessage("Fetching ...")
   @Key("fetching")
@@ -5203,6 +6013,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date is too far in the future".
    * 
    * @return translated "Date is too far in the future"
+  
    */
   @DefaultMessage("Date is too far in the future")
   @Key("fieldFutureException")
@@ -5212,6 +6023,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field exceeded maximum value".
    * 
    * @return translated "Field exceeded maximum value"
+  
    */
   @DefaultMessage("Field exceeded maximum value")
   @Key("fieldMaxException")
@@ -5221,6 +6033,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field exceeded maximum length".
    * 
    * @return translated "Field exceeded maximum length"
+  
    */
   @DefaultMessage("Field exceeded maximum length")
   @Key("fieldMaxLengthException")
@@ -5230,6 +6043,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field is below minimum value".
    * 
    * @return translated "Field is below minimum value"
+  
    */
   @DefaultMessage("Field is below minimum value")
   @Key("fieldMinException")
@@ -5239,6 +6053,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field is below minimum length".
    * 
    * @return translated "Field is below minimum length"
+  
    */
   @DefaultMessage("Field is below minimum length")
   @Key("fieldMinLengthException")
@@ -5248,6 +6063,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field must be numeric".
    * 
    * @return translated "Field must be numeric"
+  
    */
   @DefaultMessage("Field must be numeric")
   @Key("fieldNumericException")
@@ -5257,6 +6073,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field Office #".
    * 
    * @return translated "Field Office #"
+  
    */
   @DefaultMessage("Field Office #")
   @Key("fieldOfficeNum")
@@ -5266,6 +6083,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date is too far in the past".
    * 
    * @return translated "Date is too far in the past"
+  
    */
   @DefaultMessage("Date is too far in the past")
   @Key("fieldPastException")
@@ -5275,6 +6093,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Field is required".
    * 
    * @return translated "Field is required"
+  
    */
   @DefaultMessage("Field is required")
   @Key("fieldRequiredException")
@@ -5284,6 +6103,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A record with this value already exists. Please enter a unique value for this field".
    * 
    * @return translated "A record with this value already exists. Please enter a unique value for this field"
+  
    */
   @DefaultMessage("A record with this value already exists. Please enter a unique value for this field")
   @Key("fieldUniqueException")
@@ -5293,6 +6113,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please enter a unique value for this field.".
    * 
    * @return translated "Please enter a unique value for this field."
+  
    */
   @DefaultMessage("Please enter a unique value for this field.")
   @Key("fieldUniqueOnlyException")
@@ -5302,6 +6123,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Specified file name is not valid; please report this error to your sysadmin".
    * 
    * @return translated "Specified file name is not valid; please report this error to your sysadmin"
+  
    */
   @DefaultMessage("Specified file name is not valid; please report this error to your sysadmin")
   @Key("fileNameNotValidException")
@@ -5311,6 +6133,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fill Order".
    * 
    * @return translated "Fill Order"
+  
    */
   @DefaultMessage("Fill Order")
   @Key("fillOrder")
@@ -5320,6 +6143,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage and package internal and send-out orders for processing.".
    * 
    * @return translated "Manage and package internal and send-out orders for processing."
+  
    */
   @DefaultMessage("Manage and package internal and send-out orders for processing.")
   @Key("fillOrderDescription")
@@ -5329,6 +6153,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The order items in this row have changed, are you sure you want to unselect?".
    * 
    * @return translated "The order items in this row have changed, are you sure you want to unselect?"
+  
    */
   @DefaultMessage("The order items in this row have changed, are you sure you want to unselect?")
   @Key("fillOrderItemsChangedConfirm")
@@ -5338,6 +6163,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You need to check at least one order before committing.".
    * 
    * @return translated "You need to check at least one order before committing."
+  
    */
   @DefaultMessage("You need to check at least one order before committing.")
   @Key("fillOrderNoneChecked")
@@ -5347,6 +6173,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only pending orders can be processed.".
    * 
    * @return translated "Only pending orders can be processed."
+  
    */
   @DefaultMessage("Only pending orders can be processed.")
   @Key("fillOrderOnlyPendingRowsCanBeChecked")
@@ -5356,6 +6183,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not enough in the qty fields to fill this order".
    * 
    * @return translated "Not enough in the qty fields to fill this order"
+  
    */
   @DefaultMessage("Not enough in the qty fields to fill this order")
   @Key("fillOrderQtyException")
@@ -5365,6 +6193,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Filled".
    * 
    * @return translated "Filled"
+  
    */
   @DefaultMessage("Filled")
   @Key("filled")
@@ -5374,6 +6203,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Final Report".
    * 
    * @return translated "Final Report"
+  
    */
   @DefaultMessage("Final Report")
   @Key("finalReport")
@@ -5383,6 +6213,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Final Report (Batch)".
    * 
    * @return translated "Final Report (Batch)"
+  
    */
   @DefaultMessage("Final Report (Batch)")
   @Key("finalReportBatch")
@@ -5392,6 +6223,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Final Report (Batch Reprint)".
    * 
    * @return translated "Final Report (Batch Reprint)"
+  
    */
   @DefaultMessage("Final Report (Batch Reprint)")
   @Key("finalReportBatchReprint")
@@ -5401,6 +6233,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Final Report Single/Reprint".
    * 
    * @return translated "Final Report Single/Reprint"
+  
    */
   @DefaultMessage("Final Report Single/Reprint")
   @Key("finalReportSingleReprint")
@@ -5409,7 +6242,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "FinalReport {0} R {1,number,#0}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "FinalReport {0} R {1,number,#0}"
+  
    */
   @DefaultMessage("FinalReport {0} R {1,number,#0}")
   @Key("finalreport.attachmentEsaveDescription")
@@ -5418,7 +6254,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "finalreport{0}r{1,number,#0}-{2}.pdf".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
    * @return translated "finalreport{0}r{1,number,#0}-{2}.pdf"
+  
    */
   @DefaultMessage("finalreport{0}r{1,number,#0}-{2}.pdf")
   @Key("finalreport.attachmentEsaveFileName")
@@ -5428,6 +6268,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Preview Final Report".
    * 
    * @return translated "Preview Final Report"
+  
    */
   @DefaultMessage("Preview Final Report")
   @Key("finalreport.preview")
@@ -5437,6 +6278,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "View Final Report".
    * 
    * @return translated "View Final Report"
+  
    */
   @DefaultMessage("View Final Report")
   @Key("finalreport.view")
@@ -5446,6 +6288,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Find".
    * 
    * @return translated "Find"
+  
    */
   @DefaultMessage("Find")
   @Key("find")
@@ -5455,6 +6298,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "FIPS".
    * 
    * @return translated "FIPS"
+  
    */
   @DefaultMessage("FIPS")
   @Key("fips")
@@ -5464,6 +6308,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "First Name".
    * 
    * @return translated "First Name"
+  
    */
   @DefaultMessage("First Name")
   @Key("firstName")
@@ -5473,6 +6318,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Position must be specified if type is Fixed or Duplicate".
    * 
    * @return translated "Position must be specified if type is Fixed or Duplicate"
+  
    */
   @DefaultMessage("Position must be specified if type is Fixed or Duplicate")
   @Key("fixedDuplicatePosException")
@@ -5482,6 +6328,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Flag".
    * 
    * @return translated "Flag"
+  
    */
   @DefaultMessage("Flag")
   @Key("flag")
@@ -5491,6 +6338,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Flags".
    * 
    * @return translated "Flags"
+  
    */
   @DefaultMessage("Flags")
   @Key("flags")
@@ -5500,6 +6348,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "4 - 7 days ago".
    * 
    * @return translated "4 - 7 days ago"
+  
    */
   @DefaultMessage("4 - 7 days ago")
   @Key("fourToSevenDays")
@@ -5509,6 +6358,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Frequency must be greater than zero".
    * 
    * @return translated "Frequency must be greater than zero"
+  
    */
   @DefaultMessage("Frequency must be greater than zero")
   @Key("freqInvalidException")
@@ -5518,6 +6368,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Frequency".
    * 
    * @return translated "Frequency"
+  
    */
   @DefaultMessage("Frequency")
   @Key("frequency")
@@ -5527,6 +6378,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From".
    * 
    * @return translated "From"
+  
    */
   @DefaultMessage("From")
   @Key("from")
@@ -5536,6 +6388,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State Hygienic Laboratory".
    * 
    * @return translated "State Hygienic Laboratory"
+  
    */
   @DefaultMessage("State Hygienic Laboratory")
   @Key("fromCompany")
@@ -5545,6 +6398,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Exp Date".
    * 
    * @return translated "From Exp Date"
+  
    */
   @DefaultMessage("From Exp Date")
   @Key("fromExpDate")
@@ -5554,6 +6408,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Item".
    * 
    * @return translated "From Item"
+  
    */
   @DefaultMessage("From Item")
   @Key("fromItem")
@@ -5563,6 +6418,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Loc".
    * 
    * @return translated "From Loc"
+  
    */
   @DefaultMessage("From Loc")
   @Key("fromLoc")
@@ -5572,6 +6428,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Lot #".
    * 
    * @return translated "From Lot #"
+  
    */
   @DefaultMessage("From Lot #")
   @Key("fromLotNum")
@@ -5581,6 +6438,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Sample".
    * 
    * @return translated "From Sample"
+  
    */
   @DefaultMessage("From Sample")
   @Key("fromSample")
@@ -5590,6 +6448,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Full Detail".
    * 
    * @return translated "Full Detail"
+  
    */
   @DefaultMessage("Full Detail")
   @Key("fullDetail")
@@ -5599,6 +6458,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Full Login".
    * 
    * @return translated "Full Login"
+  
    */
   @DefaultMessage("Full Login")
   @Key("fullLogin")
@@ -5608,6 +6468,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter sample with all supporting information.".
    * 
    * @return translated "Enter sample with all supporting information."
+  
    */
   @DefaultMessage("Enter sample with all supporting information.")
   @Key("fullLoginDescription")
@@ -5617,6 +6478,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Abort".
    * 
    * @return translated "Abort"
+  
    */
   @DefaultMessage("Abort")
   @Key("gen.abort")
@@ -5626,6 +6488,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Active".
    * 
    * @return translated "Active"
+  
    */
   @DefaultMessage("Active")
   @Key("gen.active")
@@ -5635,6 +6498,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add".
    * 
    * @return translated "Add"
+  
    */
   @DefaultMessage("Add")
   @Key("gen.add")
@@ -5644,6 +6508,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add aborted".
    * 
    * @return translated "Add aborted"
+  
    */
   @DefaultMessage("Add aborted")
   @Key("gen.addAborted")
@@ -5653,6 +6518,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Note".
    * 
    * @return translated "Add Note"
+  
    */
   @DefaultMessage("Add Note")
   @Key("gen.addNote")
@@ -5662,6 +6528,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Row".
    * 
    * @return translated "Add Row"
+  
    */
   @DefaultMessage("Add Row")
   @Key("gen.addRow")
@@ -5671,6 +6538,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Add Test".
    * 
    * @return translated "Add Test"
+  
    */
   @DefaultMessage("Add Test")
   @Key("gen.addTest")
@@ -5680,6 +6548,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adding...".
    * 
    * @return translated "Adding..."
+  
    */
   @DefaultMessage("Adding...")
   @Key("gen.adding")
@@ -5689,6 +6558,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Adding...Complete".
    * 
    * @return translated "Adding...Complete"
+  
    */
   @DefaultMessage("Adding...Complete")
   @Key("gen.addingComplete")
@@ -5698,6 +6568,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
    * 
    * @return translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  
    */
   @DefaultMessage("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
   @Key("gen.alphabet")
@@ -5707,6 +6578,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte".
    * 
    * @return translated "Analyte"
+  
    */
   @DefaultMessage("Analyte")
   @Key("gen.analyte")
@@ -5716,6 +6588,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analytes".
    * 
    * @return translated "Analytes"
+  
    */
   @DefaultMessage("Analytes")
   @Key("gen.analytes")
@@ -5725,6 +6598,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Barcode".
    * 
    * @return translated "Barcode"
+  
    */
   @DefaultMessage("Barcode")
   @Key("gen.barcode")
@@ -5734,6 +6608,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Begin Date".
    * 
    * @return translated "Begin Date"
+  
    */
   @DefaultMessage("Begin Date")
   @Key("gen.beginDate")
@@ -5743,6 +6618,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Billable".
    * 
    * @return translated "Billable"
+  
    */
   @DefaultMessage("Billable")
   @Key("gen.billable")
@@ -5752,6 +6628,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancel".
    * 
    * @return translated "Cancel"
+  
    */
   @DefaultMessage("Cancel")
   @Key("gen.cancel")
@@ -5761,6 +6638,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Canceling changes ...".
    * 
    * @return translated "Canceling changes ..."
+  
    */
   @DefaultMessage("Canceling changes ...")
   @Key("gen.cancelChanges")
@@ -5770,6 +6648,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancel Test".
    * 
    * @return translated "Cancel Test"
+  
    */
   @DefaultMessage("Cancel Test")
   @Key("gen.cancelTest")
@@ -5779,6 +6658,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check All".
    * 
    * @return translated "Check All"
+  
    */
   @DefaultMessage("Check All")
   @Key("gen.checkAll")
@@ -5788,6 +6668,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check In".
    * 
    * @return translated "Check In"
+  
    */
   @DefaultMessage("Check In")
   @Key("gen.checkIn")
@@ -5797,6 +6678,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check Out".
    * 
    * @return translated "Check Out"
+  
    */
   @DefaultMessage("Check Out")
   @Key("gen.checkOut")
@@ -5806,6 +6688,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Click for more records".
    * 
    * @return translated "Click for more records"
+  
    */
   @DefaultMessage("Click for more records")
   @Key("gen.clickForMore")
@@ -5815,6 +6698,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collapse".
    * 
    * @return translated "Collapse"
+  
    */
   @DefaultMessage("Collapse")
   @Key("gen.collapse")
@@ -5824,6 +6708,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Standard Comment Library".
    * 
    * @return translated "Standard Comment Library"
+  
    */
   @DefaultMessage("Standard Comment Library")
   @Key("gen.commentLibrary")
@@ -5833,6 +6718,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Commit".
    * 
    * @return translated "Commit"
+  
    */
   @DefaultMessage("Commit")
   @Key("gen.commit")
@@ -5842,6 +6728,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Complete".
    * 
    * @return translated "Complete"
+  
    */
   @DefaultMessage("Complete")
   @Key("gen.complete")
@@ -5851,6 +6738,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Container".
    * 
    * @return translated "Container"
+  
    */
   @DefaultMessage("Container")
   @Key("gen.container")
@@ -5860,6 +6748,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please correct the errors indicated, then press Commit".
    * 
    * @return translated "Please correct the errors indicated, then press Commit"
+  
    */
   @DefaultMessage("Please correct the errors indicated, then press Commit")
   @Key("gen.correctErrors")
@@ -5869,6 +6758,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cost".
    * 
    * @return translated "Cost"
+  
    */
   @DefaultMessage("Cost")
   @Key("gen.cost")
@@ -5878,6 +6768,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Created".
    * 
    * @return translated "Created"
+  
    */
   @DefaultMessage("Created")
   @Key("gen.created")
@@ -5887,6 +6778,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date Rec".
    * 
    * @return translated "Date Rec"
+  
    */
   @DefaultMessage("Date Rec")
   @Key("gen.dateRec")
@@ -5896,6 +6788,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Desc".
    * 
    * @return translated "Desc"
+  
    */
   @DefaultMessage("Desc")
   @Key("gen.desc")
@@ -5905,6 +6798,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Description".
    * 
    * @return translated "Description"
+  
    */
   @DefaultMessage("Description")
   @Key("gen.description")
@@ -5914,6 +6808,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Details".
    * 
    * @return translated "Details"
+  
    */
   @DefaultMessage("Details")
   @Key("gen.details")
@@ -5923,6 +6818,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dispensed Units".
    * 
    * @return translated "Dispensed Units"
+  
    */
   @DefaultMessage("Dispensed Units")
   @Key("gen.dispensedUnits")
@@ -5932,6 +6828,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Due".
    * 
    * @return translated "Due"
+  
    */
   @DefaultMessage("Due")
   @Key("gen.due")
@@ -5941,6 +6838,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Duplicate".
    * 
    * @return translated "Duplicate"
+  
    */
   @DefaultMessage("Duplicate")
   @Key("gen.duplicateRecord")
@@ -5950,6 +6848,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Edit Note".
    * 
    * @return translated "Edit Note"
+  
    */
   @DefaultMessage("Edit Note")
   @Key("gen.editNote")
@@ -5959,6 +6858,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not execute an empty query".
    * 
    * @return translated "You may not execute an empty query"
+  
    */
   @DefaultMessage("You may not execute an empty query")
   @Key("gen.emptyQueryException")
@@ -5968,6 +6868,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "End Date".
    * 
    * @return translated "End Date"
+  
    */
   @DefaultMessage("End Date")
   @Key("gen.endDate")
@@ -5977,6 +6878,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter fields to query by then press Commit".
    * 
    * @return translated "Enter fields to query by then press Commit"
+  
    */
   @DefaultMessage("Enter fields to query by then press Commit")
   @Key("gen.enterFieldsToQuery")
@@ -5986,6 +6888,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter information in the fields, then press Commit".
    * 
    * @return translated "Enter information in the fields, then press Commit"
+  
    */
   @DefaultMessage("Enter information in the fields, then press Commit")
   @Key("gen.enterInformationPressCommit")
@@ -5995,6 +6898,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Entered Date".
    * 
    * @return translated "Entered Date"
+  
    */
   @DefaultMessage("Entered Date")
   @Key("gen.enteredDate")
@@ -6004,6 +6908,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Entry".
    * 
    * @return translated "Entry"
+  
    */
   @DefaultMessage("Entry")
   @Key("gen.entry")
@@ -6013,6 +6918,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exp Date".
    * 
    * @return translated "Exp Date"
+  
    */
   @DefaultMessage("Exp Date")
   @Key("gen.expDate")
@@ -6022,6 +6928,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expand".
    * 
    * @return translated "Expand"
+  
    */
   @DefaultMessage("Expand")
   @Key("gen.expand")
@@ -6031,6 +6938,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expire".
    * 
    * @return translated "Expire"
+  
    */
   @DefaultMessage("Expire")
   @Key("gen.expire")
@@ -6040,6 +6948,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ext Reference".
    * 
    * @return translated "Ext Reference"
+  
    */
   @DefaultMessage("Ext Reference")
   @Key("gen.extReference")
@@ -6049,6 +6958,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External".
    * 
    * @return translated "External"
+  
    */
   @DefaultMessage("External")
   @Key("gen.external")
@@ -6058,6 +6968,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Failed".
    * 
    * @return translated "Failed"
+  
    */
   @DefaultMessage("Failed")
   @Key("gen.failed")
@@ -6067,6 +6978,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error: Could not retrieve the record.".
    * 
    * @return translated "Error: Could not retrieve the record."
+  
    */
   @DefaultMessage("Error: Could not retrieve the record.")
   @Key("gen.fetchFailed")
@@ -6076,6 +6988,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fetching ...".
    * 
    * @return translated "Fetching ..."
+  
    */
   @DefaultMessage("Fetching ...")
   @Key("gen.fetching")
@@ -6085,6 +6998,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "First".
    * 
    * @return translated "First"
+  
    */
   @DefaultMessage("First")
   @Key("gen.first")
@@ -6094,6 +7008,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "First Name".
    * 
    * @return translated "First Name"
+  
    */
   @DefaultMessage("First Name")
   @Key("gen.firstName")
@@ -6103,6 +7018,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Frequency".
    * 
    * @return translated "Frequency"
+  
    */
   @DefaultMessage("Frequency")
   @Key("gen.frequency")
@@ -6112,6 +7028,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Generating Report...".
    * 
    * @return translated "Generating Report..."
+  
    */
   @DefaultMessage("Generating Report...")
   @Key("gen.generatingReport")
@@ -6121,6 +7038,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Group".
    * 
    * @return translated "Group"
+  
    */
   @DefaultMessage("Group")
   @Key("gen.group")
@@ -6130,6 +7048,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History".
    * 
    * @return translated "History"
+  
    */
   @DefaultMessage("History")
   @Key("gen.history")
@@ -6139,6 +7058,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Id".
    * 
    * @return translated "Id"
+  
    */
   @DefaultMessage("Id")
   @Key("gen.id")
@@ -6148,6 +7068,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Initializing...".
    * 
    * @return translated "Initializing..."
+  
    */
   @DefaultMessage("Initializing...")
   @Key("gen.initializing")
@@ -6157,6 +7078,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Internal".
    * 
    * @return translated "Internal"
+  
    */
   @DefaultMessage("Internal")
   @Key("gen.internal")
@@ -6166,6 +7088,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Value is invalid".
    * 
    * @return translated "Value is invalid"
+  
    */
   @DefaultMessage("Value is invalid")
   @Key("gen.invalidValueException")
@@ -6175,6 +7098,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory Item".
    * 
    * @return translated "Inventory Item"
+  
    */
   @DefaultMessage("Inventory Item")
   @Key("gen.inventoryItem")
@@ -6184,6 +7108,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Item".
    * 
    * @return translated "Item"
+  
    */
   @DefaultMessage("Item")
   @Key("gen.item")
@@ -6193,6 +7118,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Last".
    * 
    * @return translated "Last"
+  
    */
   @DefaultMessage("Last")
   @Key("gen.last")
@@ -6202,6 +7128,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Last Name".
    * 
    * @return translated "Last Name"
+  
    */
   @DefaultMessage("Last Name")
   @Key("gen.lastName")
@@ -6211,6 +7138,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Done".
    * 
    * @return translated "Done"
+  
    */
   @DefaultMessage("Done")
   @Key("gen.loadCompleteMessage")
@@ -6220,6 +7148,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location".
    * 
    * @return translated "Location"
+  
    */
   @DefaultMessage("Location")
   @Key("gen.location")
@@ -6229,6 +7158,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Locking record for Update...".
    * 
    * @return translated "Locking record for Update..."
+  
    */
   @DefaultMessage("Locking record for Update...")
   @Key("gen.lockForUpdate")
@@ -6238,6 +7168,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot #".
    * 
    * @return translated "Lot #"
+  
    */
   @DefaultMessage("Lot #")
   @Key("gen.lotNum")
@@ -6247,6 +7178,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Method".
    * 
    * @return translated "Method"
+  
    */
   @DefaultMessage("Method")
   @Key("gen.method")
@@ -6256,6 +7188,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Middle".
    * 
    * @return translated "Middle"
+  
    */
   @DefaultMessage("Middle")
   @Key("gen.middle")
@@ -6265,6 +7198,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Middle Name".
    * 
    * @return translated "Middle Name"
+  
    */
   @DefaultMessage("Middle Name")
   @Key("gen.middleName")
@@ -6274,6 +7208,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Path to upload directory is missing. Please contact the system administrator.".
    * 
    * @return translated "Path to upload directory is missing. Please contact the system administrator."
+  
    */
   @DefaultMessage("Path to upload directory is missing. Please contact the system administrator.")
   @Key("gen.missingUploadPathException")
@@ -6283,6 +7218,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Move".
    * 
    * @return translated "Move"
+  
    */
   @DefaultMessage("Move")
   @Key("gen.move")
@@ -6292,6 +7228,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Move Down".
    * 
    * @return translated "Move Down"
+  
    */
   @DefaultMessage("Move Down")
   @Key("gen.moveDown")
@@ -6301,6 +7238,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "<<".
    * 
    * @return translated "<<"
+  
    */
   @DefaultMessage("<<")
   @Key("gen.moveLeft")
@@ -6310,6 +7248,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Move Up".
    * 
    * @return translated "Move Up"
+  
    */
   @DefaultMessage("Move Up")
   @Key("gen.moveUp")
@@ -6319,6 +7258,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must Commit or Abort changes first".
    * 
    * @return translated "You must Commit or Abort changes first"
+  
    */
   @DefaultMessage("You must Commit or Abort changes first")
   @Key("gen.mustCommitOrAbort")
@@ -6328,6 +7268,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Name".
    * 
    * @return translated "Name"
+  
    */
   @DefaultMessage("Name")
   @Key("gen.name")
@@ -6337,6 +7278,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "999-99-9999".
    * 
    * @return translated "999-99-9999"
+  
    */
   @DefaultMessage("999-99-9999")
   @Key("gen.nationalIdPattern")
@@ -6346,6 +7288,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Next".
    * 
    * @return translated "Next"
+  
    */
   @DefaultMessage("Next")
   @Key("gen.next")
@@ -6355,6 +7298,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No".
    * 
    * @return translated "No"
+  
    */
   @DefaultMessage("No")
   @Key("gen.no")
@@ -6364,6 +7308,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No more records in this direction".
    * 
    * @return translated "No more records in this direction"
+  
    */
   @DefaultMessage("No more records in this direction")
   @Key("gen.noMoreRecordInDir")
@@ -6373,6 +7318,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No records found".
    * 
    * @return translated "No records found"
+  
    */
   @DefaultMessage("No records found")
   @Key("gen.noRecordsFound")
@@ -6382,6 +7328,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not Reportable".
    * 
    * @return translated "Not Reportable"
+  
    */
   @DefaultMessage("Not Reportable")
   @Key("gen.notReportable")
@@ -6391,6 +7338,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Note".
    * 
    * @return translated "Note"
+  
    */
   @DefaultMessage("Note")
   @Key("gen.note")
@@ -6400,6 +7348,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Note Editor".
    * 
    * @return translated "Note Editor"
+  
    */
   @DefaultMessage("Note Editor")
   @Key("gen.noteEditor")
@@ -6408,7 +7357,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Considering {0} cases.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Considering {0} cases."
+  
    */
   @DefaultMessage("Considering {0} cases.")
   @Key("gen.numberCases")
@@ -6418,6 +7369,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "OK".
    * 
    * @return translated "OK"
+  
    */
   @DefaultMessage("OK")
   @Key("gen.ok")
@@ -6427,6 +7379,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Options".
    * 
    * @return translated "Options"
+  
    */
   @DefaultMessage("Options")
   @Key("gen.options")
@@ -6436,6 +7389,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Request Form".
    * 
    * @return translated "Order Request Form"
+  
    */
   @DefaultMessage("Order Request Form")
   @Key("gen.orderRequestForm")
@@ -6444,7 +7398,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Samples from {0} are to be held or refused".
    * 
+   * @param arg0 "{0}"
    * @return translated "Samples from {0} are to be held or refused"
+  
    */
   @DefaultMessage("Samples from {0} are to be held or refused")
   @Key("gen.orgMarkedAsHoldRefuseSample")
@@ -6454,6 +7410,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organization".
    * 
    * @return translated "Organization"
+  
    */
   @DefaultMessage("Organization")
   @Key("gen.organization")
@@ -6463,6 +7420,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Panel".
    * 
    * @return translated "Panel"
+  
    */
   @DefaultMessage("Panel")
   @Key("gen.panel")
@@ -6472,6 +7430,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent".
    * 
    * @return translated "Parent"
+  
    */
   @DefaultMessage("Parent")
   @Key("gen.parent")
@@ -6481,6 +7440,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "999/999-9999".
    * 
    * @return translated "999/999-9999"
+  
    */
   @DefaultMessage("999/999-9999")
   @Key("gen.phonePattern")
@@ -6490,6 +7450,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "999/999-9999.9999".
    * 
    * @return translated "999/999-9999.9999"
+  
    */
   @DefaultMessage("999/999-9999.9999")
   @Key("gen.phoneWithExtensionPattern")
@@ -6499,6 +7460,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Pop-out".
    * 
    * @return translated "Pop-out"
+  
    */
   @DefaultMessage("Pop-out")
   @Key("gen.popout")
@@ -6508,6 +7470,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Previous".
    * 
    * @return translated "Previous"
+  
    */
   @DefaultMessage("Previous")
   @Key("gen.previous")
@@ -6517,6 +7480,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Print".
    * 
    * @return translated "Print"
+  
    */
   @DefaultMessage("Print")
   @Key("gen.print")
@@ -6526,6 +7490,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Printer".
    * 
    * @return translated "Printer"
+  
    */
   @DefaultMessage("Printer")
   @Key("gen.printer")
@@ -6535,6 +7500,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Priority".
    * 
    * @return translated "Priority"
+  
    */
   @DefaultMessage("Priority")
   @Key("gen.priority")
@@ -6544,6 +7510,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Are you sure you want to change this?".
    * 
    * @return translated "Are you sure you want to change this?"
+  
    */
   @DefaultMessage("Are you sure you want to change this?")
   @Key("gen.qaEventEditConfirm")
@@ -6553,6 +7520,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Qty".
    * 
    * @return translated "Qty"
+  
    */
   @DefaultMessage("Qty")
   @Key("gen.qty")
@@ -6562,6 +7530,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity".
    * 
    * @return translated "Quantity"
+  
    */
   @DefaultMessage("Quantity")
   @Key("gen.quantity")
@@ -6571,6 +7540,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query".
    * 
    * @return translated "Query"
+  
    */
   @DefaultMessage("Query")
   @Key("gen.query")
@@ -6580,6 +7550,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query aborted".
    * 
    * @return translated "Query aborted"
+  
    */
   @DefaultMessage("Query aborted")
   @Key("gen.queryAborted")
@@ -6589,6 +7560,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query failed".
    * 
    * @return translated "Query failed"
+  
    */
   @DefaultMessage("Query failed")
   @Key("gen.queryFailed")
@@ -6598,6 +7570,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Querying....".
    * 
    * @return translated "Querying...."
+  
    */
   @DefaultMessage("Querying....")
   @Key("gen.querying")
@@ -6607,6 +7580,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Querying....Complete".
    * 
    * @return translated "Querying....Complete"
+  
    */
   @DefaultMessage("Querying....Complete")
   @Key("gen.queryingComplete")
@@ -6616,6 +7590,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received By".
    * 
    * @return translated "Received By"
+  
    */
   @DefaultMessage("Received By")
   @Key("gen.receivedBy")
@@ -6625,6 +7600,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received Date".
    * 
    * @return translated "Received Date"
+  
    */
   @DefaultMessage("Received Date")
   @Key("gen.receivedDate")
@@ -6634,6 +7610,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Refresh".
    * 
    * @return translated "Refresh"
+  
    */
   @DefaultMessage("Refresh")
   @Key("gen.refresh")
@@ -6643,6 +7620,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Release".
    * 
    * @return translated "Release"
+  
    */
   @DefaultMessage("Release")
   @Key("gen.release")
@@ -6652,6 +7630,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Remove".
    * 
    * @return translated "Remove"
+  
    */
   @DefaultMessage("Remove")
   @Key("gen.remove")
@@ -6661,6 +7640,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Remove Row".
    * 
    * @return translated "Remove Row"
+  
    */
   @DefaultMessage("Remove Row")
   @Key("gen.removeRow")
@@ -6670,6 +7650,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Repeat".
    * 
    * @return translated "Repeat"
+  
    */
   @DefaultMessage("Repeat")
   @Key("gen.repeat")
@@ -6679,6 +7660,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reportable".
    * 
    * @return translated "Reportable"
+  
    */
   @DefaultMessage("Reportable")
   @Key("gen.reportable")
@@ -6688,6 +7670,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Type".
    * 
    * @return translated "Sample Type"
+  
    */
   @DefaultMessage("Sample Type")
   @Key("gen.sampleType")
@@ -6697,6 +7680,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Saving...".
    * 
    * @return translated "Saving..."
+  
    */
   @DefaultMessage("Saving...")
   @Key("gen.saving")
@@ -6706,6 +7690,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Saving...Complete".
    * 
    * @return translated "Saving...Complete"
+  
    */
   @DefaultMessage("Saving...Complete")
   @Key("gen.savingComplete")
@@ -6714,7 +7699,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You do not have permission to access {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "You do not have permission to access {0}"
+  
    */
   @DefaultMessage("You do not have permission to access {0}")
   @Key("gen.screenPermException")
@@ -6724,6 +7711,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Search".
    * 
    * @return translated "Search"
+  
    */
   @DefaultMessage("Search")
   @Key("gen.search")
@@ -6733,6 +7721,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Section".
    * 
    * @return translated "Section"
+  
    */
   @DefaultMessage("Section")
   @Key("gen.section")
@@ -6742,6 +7731,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select".
    * 
    * @return translated "Select"
+  
    */
   @DefaultMessage("Select")
   @Key("gen.select")
@@ -6751,6 +7741,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select All".
    * 
    * @return translated "Select All"
+  
    */
   @DefaultMessage("Select All")
   @Key("gen.selectAll")
@@ -6760,6 +7751,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sequence".
    * 
    * @return translated "Sequence"
+  
    */
   @DefaultMessage("Sequence")
   @Key("gen.sequence")
@@ -6769,6 +7761,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping".
    * 
    * @return translated "Shipping"
+  
    */
   @DefaultMessage("Shipping")
   @Key("gen.shipping")
@@ -6778,6 +7771,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Similar".
    * 
    * @return translated "Similar"
+  
    */
   @DefaultMessage("Similar")
   @Key("gen.similar")
@@ -6787,6 +7781,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status".
    * 
    * @return translated "Status"
+  
    */
   @DefaultMessage("Status")
   @Key("gen.status")
@@ -6796,6 +7791,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Unit".
    * 
    * @return translated "Storage Unit"
+  
    */
   @DefaultMessage("Storage Unit")
   @Key("gen.storageUnit")
@@ -6805,6 +7801,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Store".
    * 
    * @return translated "Store"
+  
    */
   @DefaultMessage("Store")
   @Key("gen.store")
@@ -6814,6 +7811,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test".
    * 
    * @return translated "Test"
+  
    */
   @DefaultMessage("Test")
   @Key("gen.test")
@@ -6823,6 +7821,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time".
    * 
    * @return translated "Time"
+  
    */
   @DefaultMessage("Time")
   @Key("gen.time")
@@ -6832,6 +7831,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type".
    * 
    * @return translated "Type"
+  
    */
   @DefaultMessage("Type")
   @Key("gen.type")
@@ -6841,6 +7841,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Uncheck All".
    * 
    * @return translated "Uncheck All"
+  
    */
   @DefaultMessage("Uncheck All")
   @Key("gen.uncheckAll")
@@ -6850,6 +7851,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unit".
    * 
    * @return translated "Unit"
+  
    */
   @DefaultMessage("Unit")
   @Key("gen.unit")
@@ -6859,6 +7861,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unselect All".
    * 
    * @return translated "Unselect All"
+  
    */
   @DefaultMessage("Unselect All")
   @Key("gen.unselectAll")
@@ -6868,6 +7871,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update".
    * 
    * @return translated "Update"
+  
    */
   @DefaultMessage("Update")
   @Key("gen.update")
@@ -6877,6 +7881,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update aborted".
    * 
    * @return translated "Update aborted"
+  
    */
   @DefaultMessage("Update aborted")
   @Key("gen.updateAborted")
@@ -6886,6 +7891,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Updating...".
    * 
    * @return translated "Updating..."
+  
    */
   @DefaultMessage("Updating...")
   @Key("gen.updating")
@@ -6895,6 +7901,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Updating...Complete".
    * 
    * @return translated "Updating...Complete"
+  
    */
   @DefaultMessage("Updating...Complete")
   @Key("gen.updatingComplete")
@@ -6904,6 +7911,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "User".
    * 
    * @return translated "User"
+  
    */
   @DefaultMessage("User")
   @Key("gen.user")
@@ -6913,6 +7921,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Username".
    * 
    * @return translated "Username"
+  
    */
   @DefaultMessage("Username")
   @Key("gen.username")
@@ -6922,6 +7931,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Value".
    * 
    * @return translated "Value"
+  
    */
   @DefaultMessage("Value")
   @Key("gen.value")
@@ -6931,6 +7941,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Press Ok to commit anyway or cancel to fix these warnings.".
    * 
    * @return translated "Press Ok to commit anyway or cancel to fix these warnings."
+  
    */
   @DefaultMessage("Press Ok to commit anyway or cancel to fix these warnings.")
   @Key("gen.warningDialogLastLine")
@@ -6940,6 +7951,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are warnings on the screen:".
    * 
    * @return translated "There are warnings on the screen:"
+  
    */
   @DefaultMessage("There are warnings on the screen:")
   @Key("gen.warningDialogLine1")
@@ -6949,6 +7961,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet".
    * 
    * @return translated "Worksheet"
+  
    */
   @DefaultMessage("Worksheet")
   @Key("gen.worksheet")
@@ -6958,6 +7971,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Yes".
    * 
    * @return translated "Yes"
+  
    */
   @DefaultMessage("Yes")
   @Key("gen.yes")
@@ -6967,6 +7981,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "99999-9999".
    * 
    * @return translated "99999-9999"
+  
    */
   @DefaultMessage("99999-9999")
   @Key("gen.zipcodePattern")
@@ -6976,6 +7991,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Generating report....".
    * 
    * @return translated "Generating report...."
+  
    */
   @DefaultMessage("Generating report....")
   @Key("genReportMessage")
@@ -6985,6 +8001,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Gender".
    * 
    * @return translated "Gender"
+  
    */
   @DefaultMessage("Gender")
   @Key("gender")
@@ -6994,6 +8011,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Generating Report...".
    * 
    * @return translated "Generating Report..."
+  
    */
   @DefaultMessage("Generating Report...")
   @Key("generatingReport")
@@ -7003,6 +8021,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Get Data".
    * 
    * @return translated "Get Data"
+  
    */
   @DefaultMessage("Get Data")
   @Key("getData")
@@ -7012,6 +8031,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Getting report parameters".
    * 
    * @return translated "Getting report parameters"
+  
    */
   @DefaultMessage("Getting report parameters")
   @Key("gettingReportParam")
@@ -7021,6 +8041,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Group".
    * 
    * @return translated "Group"
+  
    */
   @DefaultMessage("Group")
   @Key("group")
@@ -7030,6 +8051,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Group Analytes".
    * 
    * @return translated "Group Analytes"
+  
    */
   @DefaultMessage("Group Analytes")
   @Key("groupAnalytes")
@@ -7039,6 +8061,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Group Name".
    * 
    * @return translated "Group Name"
+  
    */
   @DefaultMessage("Group Name")
   @Key("groupName")
@@ -7048,6 +8071,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rslt. Grp.".
    * 
    * @return translated "Rslt. Grp."
+  
    */
   @DefaultMessage("Rslt. Grp.")
   @Key("groupNum")
@@ -7057,6 +8081,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Hzrd. Lvl.".
    * 
    * @return translated "Hzrd. Lvl."
+  
    */
   @DefaultMessage("Hzrd. Lvl.")
   @Key("hazardLavel")
@@ -7066,6 +8091,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Hazardous".
    * 
    * @return translated "Hazardous"
+  
    */
   @DefaultMessage("Hazardous")
   @Key("hazardous")
@@ -7075,6 +8101,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Header".
    * 
    * @return translated "Header"
+  
    */
   @DefaultMessage("Header")
   @Key("header")
@@ -7084,6 +8111,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A header cannot be added in the middle of an analyte group".
    * 
    * @return translated "A header cannot be added in the middle of an analyte group"
+  
    */
   @DefaultMessage("A header cannot be added in the middle of an analyte group")
   @Key("headerCantBeAddedInsideGroup")
@@ -7093,6 +8121,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Headers and analyte rows cannot be selected together".
    * 
    * @return translated "Headers and analyte rows cannot be selected together"
+  
    */
   @DefaultMessage("Headers and analyte rows cannot be selected together")
   @Key("headerCantSelWithAnalytes")
@@ -7102,6 +8131,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History".
    * 
    * @return translated "History"
+  
    */
   @DefaultMessage("History")
   @Key("history")
@@ -7111,6 +8141,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Analysis".
    * 
    * @return translated "History - Analysis"
+  
    */
   @DefaultMessage("History - Analysis")
   @Key("history.analysis")
@@ -7120,6 +8151,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Analysis QA Event".
    * 
    * @return translated "History - Analysis QA Event"
+  
    */
   @DefaultMessage("History - Analysis QA Event")
   @Key("history.analysisQA")
@@ -7129,6 +8161,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Aux Data".
    * 
    * @return translated "History - Aux Data"
+  
    */
   @DefaultMessage("History - Aux Data")
   @Key("history.auxData")
@@ -7138,6 +8171,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Current Result".
    * 
    * @return translated "History - Current Result"
+  
    */
   @DefaultMessage("History - Current Result")
   @Key("history.currentResult")
@@ -7147,6 +8181,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Next Of Kin".
    * 
    * @return translated "History - Next Of Kin"
+  
    */
   @DefaultMessage("History - Next Of Kin")
   @Key("history.nextOfKin")
@@ -7156,6 +8191,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Patient".
    * 
    * @return translated "History - Patient"
+  
    */
   @DefaultMessage("History - Patient")
   @Key("history.patient")
@@ -7165,6 +8201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample".
    * 
    * @return translated "History - Sample"
+  
    */
   @DefaultMessage("History - Sample")
   @Key("history.sample")
@@ -7174,6 +8211,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Clinical".
    * 
    * @return translated "History - Sample Clinical"
+  
    */
   @DefaultMessage("History - Sample Clinical")
   @Key("history.sampleClinical")
@@ -7183,6 +8221,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Environmental".
    * 
    * @return translated "History - Sample Environmental"
+  
    */
   @DefaultMessage("History - Sample Environmental")
   @Key("history.sampleEnvironmental")
@@ -7192,6 +8231,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Item".
    * 
    * @return translated "History - Sample Item"
+  
    */
   @DefaultMessage("History - Sample Item")
   @Key("history.sampleItem")
@@ -7201,6 +8241,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Neonatal".
    * 
    * @return translated "History - Sample Neonatal"
+  
    */
   @DefaultMessage("History - Sample Neonatal")
   @Key("history.sampleNeonatal")
@@ -7210,6 +8251,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Organization".
    * 
    * @return translated "History - Sample Organization"
+  
    */
   @DefaultMessage("History - Sample Organization")
   @Key("history.sampleOrganization")
@@ -7219,6 +8261,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Private Well".
    * 
    * @return translated "History - Private Well"
+  
    */
   @DefaultMessage("History - Private Well")
   @Key("history.samplePrivateWell")
@@ -7228,6 +8271,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Project".
    * 
    * @return translated "History - Sample Project"
+  
    */
   @DefaultMessage("History - Sample Project")
   @Key("history.sampleProject")
@@ -7237,6 +8281,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample QA Event".
    * 
    * @return translated "History - Sample QA Event"
+  
    */
   @DefaultMessage("History - Sample QA Event")
   @Key("history.sampleQA")
@@ -7246,6 +8291,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample SDWIS".
    * 
    * @return translated "History - Sample SDWIS"
+  
    */
   @DefaultMessage("History - Sample SDWIS")
   @Key("history.sampleSDWIS")
@@ -7255,6 +8301,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Storage".
    * 
    * @return translated "History - Storage"
+  
    */
   @DefaultMessage("History - Storage")
   @Key("history.storage")
@@ -7264,6 +8311,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Analysis".
    * 
    * @return translated "History - Analysis"
+  
    */
   @DefaultMessage("History - Analysis")
   @Key("historyAnalysis")
@@ -7273,6 +8321,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Analysis QA Event".
    * 
    * @return translated "History - Analysis QA Event"
+  
    */
   @DefaultMessage("History - Analysis QA Event")
   @Key("historyAnalysisQA")
@@ -7282,6 +8331,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Aux Data".
    * 
    * @return translated "History - Aux Data"
+  
    */
   @DefaultMessage("History - Aux Data")
   @Key("historyAuxData")
@@ -7291,6 +8341,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Current Result".
    * 
    * @return translated "History - Current Result"
+  
    */
   @DefaultMessage("History - Current Result")
   @Key("historyCurrentResult")
@@ -7300,6 +8351,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "View the history of the record".
    * 
    * @return translated "View the history of the record"
+  
    */
   @DefaultMessage("View the history of the record")
   @Key("historyDescription")
@@ -7309,6 +8361,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample".
    * 
    * @return translated "History - Sample"
+  
    */
   @DefaultMessage("History - Sample")
   @Key("historySample")
@@ -7318,6 +8371,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Environmental".
    * 
    * @return translated "History - Sample Environmental"
+  
    */
   @DefaultMessage("History - Sample Environmental")
   @Key("historySampleEnvironmental")
@@ -7327,6 +8381,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Item".
    * 
    * @return translated "History - Sample Item"
+  
    */
   @DefaultMessage("History - Sample Item")
   @Key("historySampleItem")
@@ -7336,6 +8391,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Organization".
    * 
    * @return translated "History - Sample Organization"
+  
    */
   @DefaultMessage("History - Sample Organization")
   @Key("historySampleOrganization")
@@ -7345,6 +8401,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Private Well".
    * 
    * @return translated "History - Private Well"
+  
    */
   @DefaultMessage("History - Private Well")
   @Key("historySamplePrivateWell")
@@ -7354,6 +8411,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Project".
    * 
    * @return translated "History - Sample Project"
+  
    */
   @DefaultMessage("History - Sample Project")
   @Key("historySampleProject")
@@ -7363,6 +8421,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample QA Event".
    * 
    * @return translated "History - Sample QA Event"
+  
    */
   @DefaultMessage("History - Sample QA Event")
   @Key("historySampleQA")
@@ -7372,6 +8431,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample SDWIS".
    * 
    * @return translated "History - Sample SDWIS"
+  
    */
   @DefaultMessage("History - Sample SDWIS")
   @Key("historySampleSDWIS")
@@ -7381,6 +8441,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Specific".
    * 
    * @return translated "History - Sample Specific"
+  
    */
   @DefaultMessage("History - Sample Specific")
   @Key("historySampleSpec")
@@ -7390,6 +8451,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Storage".
    * 
    * @return translated "History - Storage"
+  
    */
   @DefaultMessage("History - Storage")
   @Key("historyStorage")
@@ -7399,6 +8461,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Hold/Refuse Organizations".
    * 
    * @return translated "Hold/Refuse Organizations"
+  
    */
   @DefaultMessage("Hold/Refuse Organizations")
   @Key("holdRefuseOrganization")
@@ -7408,6 +8471,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "% Holding Used".
    * 
    * @return translated "% Holding Used"
+  
    */
   @DefaultMessage("% Holding Used")
   @Key("holding")
@@ -7417,6 +8481,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Home #".
    * 
    * @return translated "Home #"
+  
    */
   @DefaultMessage("Home #")
   @Key("homeNumber")
@@ -7426,6 +8491,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "hours".
    * 
    * @return translated "hours"
+  
    */
   @DefaultMessage("hours")
   @Key("hours")
@@ -7435,6 +8501,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Id".
    * 
    * @return translated "Id"
+  
    */
   @DefaultMessage("Id")
   @Key("id")
@@ -7444,6 +8511,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Identification".
    * 
    * @return translated "Identification"
+  
    */
   @DefaultMessage("Identification")
   @Key("identification")
@@ -7453,6 +8521,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Date-Time\" must be of the format [yyyy-MM-dd HH:mm]".
    * 
    * @return translated "Values of type \"Date-Time\" must be of the format [yyyy-MM-dd HH:mm]"
+  
    */
   @DefaultMessage("Values of type \"Date-Time\" must be of the format [yyyy-MM-dd HH:mm]")
   @Key("illegalDateTimeValueException")
@@ -7462,6 +8531,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Date\" must be of the format [yyyy-MM-dd]".
    * 
    * @return translated "Values of type \"Date\" must be of the format [yyyy-MM-dd]"
+  
    */
   @DefaultMessage("Values of type \"Date\" must be of the format [yyyy-MM-dd]")
   @Key("illegalDateValueException")
@@ -7471,6 +8541,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The default value for this record is invalid, please fix this on the Auxiliary prompt screen".
    * 
    * @return translated "The default value for this record is invalid, please fix this on the Auxiliary prompt screen"
+  
    */
   @DefaultMessage("The default value for this record is invalid, please fix this on the Auxiliary prompt screen")
   @Key("illegalDefaultValueException")
@@ -7479,7 +8550,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The default value ''{0}'' for auxiliary field ''{1}'' is invalid, please fix this on the Auxiliary prompt screen".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "The default value ''{0}'' for auxiliary field ''{1}'' is invalid, please fix this on the Auxiliary prompt screen"
+  
    */
   @DefaultMessage("The default value ''{0}'' for auxiliary field ''{1}'' is invalid, please fix this on the Auxiliary prompt screen")
   @Key("illegalDefaultValueForAuxFieldException")
@@ -7489,6 +8563,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This value does not exist in the system.".
    * 
    * @return translated "This value does not exist in the system."
+  
    */
   @DefaultMessage("This value does not exist in the system.")
   @Key("illegalDictEntryException")
@@ -7498,6 +8573,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Numeric\" must be of the format [min,max]".
    * 
    * @return translated "Values of type \"Numeric\" must be of the format [min,max]"
+  
    */
   @DefaultMessage("Values of type \"Numeric\" must be of the format [min,max]")
   @Key("illegalNumericFormatException")
@@ -7507,6 +8583,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "For values of type \"Numeric\", Min must be less than Max".
    * 
    * @return translated "For values of type \"Numeric\", Min must be less than Max"
+  
    */
   @DefaultMessage("For values of type \"Numeric\", Min must be less than Max")
   @Key("illegalNumericRangeException")
@@ -7515,7 +8592,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Value is invalid (must be >={0} and < {1}) ".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Value is invalid (must be >={0} and < {1}) "
+  
    */
   @DefaultMessage("Value is invalid (must be >={0} and < {1}) ")
   @Key("illegalNumericValueException")
@@ -7525,6 +8605,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Result value is invalid".
    * 
    * @return translated "Result value is invalid"
+  
    */
   @DefaultMessage("Result value is invalid")
   @Key("illegalResultValueException")
@@ -7533,7 +8614,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Result value ''{0}'' is invalid for position {1} analyte ''{2}'' column ''{3}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Result value ''{0}'' is invalid for position {1} analyte ''{2}'' column ''{3}''"
+  
    */
   @DefaultMessage("Result value ''{0}'' is invalid for position {1} analyte ''{2}'' column ''{3}''")
   @Key("illegalResultValueFormException")
@@ -7543,6 +8629,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Time\" must be of the format [HH:mm]".
    * 
    * @return translated "Values of type \"Time\" must be of the format [HH:mm]"
+  
    */
   @DefaultMessage("Values of type \"Time\" must be of the format [HH:mm]")
   @Key("illegalTimeValueException")
@@ -7552,6 +8639,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Titer\" must be of the format [min:max] where min and max must be greater than zero".
    * 
    * @return translated "Values of type \"Titer\" must be of the format [min:max] where min and max must be greater than zero"
+  
    */
   @DefaultMessage("Values of type \"Titer\" must be of the format [min:max] where min and max must be greater than zero")
   @Key("illegalTiterFormatException")
@@ -7561,6 +8649,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "For values of type \"Titer\", Min must be less than or equal to Max".
    * 
    * @return translated "For values of type \"Titer\", Min must be less than or equal to Max"
+  
    */
   @DefaultMessage("For values of type \"Titer\", Min must be less than or equal to Max")
   @Key("illegalTiterRangeException")
@@ -7569,7 +8658,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "This unit of measure doesn''t belong to the list of units of measure associated with this test. \n Invalid unit is: {0}   ".
    * 
+   * @param arg0 "{0}"
    * @return translated "This unit of measure doesn''t belong to the list of units of measure associated with this test. \n Invalid unit is: {0}   "
+  
    */
   @DefaultMessage("This unit of measure doesn''t belong to the list of units of measure associated with this test. \n Invalid unit is: {0}   ")
   @Key("illegalUnitOfMeasureException")
@@ -7579,6 +8670,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This number must be the Id of an existing worksheet.".
    * 
    * @return translated "This number must be the Id of an existing worksheet."
+  
    */
   @DefaultMessage("This number must be the Id of an existing worksheet.")
   @Key("illegalWorksheetIdException")
@@ -7587,7 +8679,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Invalid user for position {0} analysis {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Invalid user for position {0} analysis {1}"
+  
    */
   @DefaultMessage("Invalid user for position {0} analysis {1}")
   @Key("illegalWorksheetUserFormException")
@@ -7597,6 +8692,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Import Analytes ".
    * 
    * @return translated "Import Analytes "
+  
    */
   @DefaultMessage("Import Analytes ")
   @Key("importAnalytes")
@@ -7606,6 +8702,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Imported the report to organization data, not the report to auxiliary data".
    * 
    * @return translated "Imported the report to organization data, not the report to auxiliary data"
+  
    */
   @DefaultMessage("Imported the report to organization data, not the report to auxiliary data")
   @Key("importOrderReportToException")
@@ -7615,6 +8712,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "In Progress".
    * 
    * @return translated "In Progress"
+  
    */
   @DefaultMessage("In Progress")
   @Key("inProgress")
@@ -7623,7 +8721,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The unit ''{0}'' is inactive and was not assigned to ''{1}, {2}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "The unit ''{0}'' is inactive and was not assigned to ''{1}, {2}''"
+  
    */
   @DefaultMessage("The unit ''{0}'' is inactive and was not assigned to ''{1}, {2}''")
   @Key("inactiveAnalysisUnitWarning")
@@ -7632,7 +8734,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The auxiliary group ''{0}'' is inactive and was not added to the sample ".
    * 
+   * @param arg0 "{0}"
    * @return translated "The auxiliary group ''{0}'' is inactive and was not added to the sample "
+  
    */
   @DefaultMessage("The auxiliary group ''{0}'' is inactive and was not added to the sample ")
   @Key("inactiveAuxGroupWarning")
@@ -7641,7 +8745,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The container ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "The container ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
+  
    */
   @DefaultMessage("The container ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveContainerWarning")
@@ -7650,7 +8757,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The entry {0} under category {1} has been deactivate".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "The entry {0} under category {1} has been deactivate"
+  
    */
   @DefaultMessage("The entry {0} under category {1} has been deactivate")
   @Key("inactiveDictionaryException")
@@ -7659,7 +8769,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The organization ''{0}'' is inactive and was not added to the sample ".
    * 
+   * @param arg0 "{0}"
    * @return translated "The organization ''{0}'' is inactive and was not added to the sample "
+  
    */
   @DefaultMessage("The organization ''{0}'' is inactive and was not added to the sample ")
   @Key("inactiveOrgWarning")
@@ -7668,7 +8780,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The project ''{0}'' is inactive and was not added to the sample ".
    * 
+   * @param arg0 "{0}"
    * @return translated "The project ''{0}'' is inactive and was not added to the sample "
+  
    */
   @DefaultMessage("The project ''{0}'' is inactive and was not added to the sample ")
   @Key("inactiveProjectWarning")
@@ -7677,7 +8791,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The unit ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "The unit ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
+  
    */
   @DefaultMessage("The unit ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveSampleItemUnitWarning")
@@ -7686,7 +8803,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The sample type ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "The sample type ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
+  
    */
   @DefaultMessage("The sample type ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveSampleTypeWarning")
@@ -7695,7 +8815,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The source ''{0}'' is inactive and was not assigned to Item # {1,number,#0}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "The source ''{0}'' is inactive and was not assigned to Item # {1,number,#0}"
+  
    */
   @DefaultMessage("The source ''{0}'' is inactive and was not assigned to Item # {1,number,#0}")
   @Key("inactiveSourceWarning")
@@ -7704,7 +8827,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "''{0}, {1}'' cannot be imported because there is no matching active test".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "''{0}, {1}'' cannot be imported because there is no matching active test"
+  
    */
   @DefaultMessage("''{0}, {1}'' cannot be imported because there is no matching active test")
   @Key("inactiveTestOnOrderException")
@@ -7713,7 +8839,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "''{0}, {1}'' is inactive and was not added to the sample ".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "''{0}, {1}'' is inactive and was not added to the sample "
+  
    */
   @DefaultMessage("''{0}, {1}'' is inactive and was not added to the sample ")
   @Key("inactiveTestWarning")
@@ -7723,6 +8852,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Include".
    * 
    * @return translated "Include"
+  
    */
   @DefaultMessage("Include")
   @Key("include")
@@ -7732,6 +8862,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Include All Analyses".
    * 
    * @return translated "Include All Analyses"
+  
    */
   @DefaultMessage("Include All Analyses")
   @Key("includeAllAnalyses")
@@ -7741,6 +8872,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Init-Compl".
    * 
    * @return translated "Init-Compl"
+  
    */
   @DefaultMessage("Init-Compl")
   @Key("ini-cmp")
@@ -7750,6 +8882,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Init-Rel".
    * 
    * @return translated "Init-Rel"
+  
    */
   @DefaultMessage("Init-Rel")
   @Key("ini-rel")
@@ -7759,6 +8892,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Initiated".
    * 
    * @return translated "Initiated"
+  
    */
   @DefaultMessage("Initiated")
   @Key("initiated")
@@ -7768,6 +8902,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Above".
    * 
    * @return translated "Analysis Above"
+  
    */
   @DefaultMessage("Analysis Above")
   @Key("insertAnalysisAbove")
@@ -7777,6 +8912,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Below".
    * 
    * @return translated "Analysis Below"
+  
    */
   @DefaultMessage("Analysis Below")
   @Key("insertAnalysisBelow")
@@ -7786,6 +8922,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Insert From Worksheet".
    * 
    * @return translated "Insert From Worksheet"
+  
    */
   @DefaultMessage("Insert From Worksheet")
   @Key("insertAnalysisWorksheet")
@@ -7795,6 +8932,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From QC Table Above".
    * 
    * @return translated "From QC Table Above"
+  
    */
   @DefaultMessage("From QC Table Above")
   @Key("insertFromQcTableAbove")
@@ -7804,6 +8942,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From QC Table Below".
    * 
    * @return translated "From QC Table Below"
+  
    */
   @DefaultMessage("From QC Table Below")
   @Key("insertFromQcTableBelow")
@@ -7813,6 +8952,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Another Worksheet Above".
    * 
    * @return translated "From Another Worksheet Above"
+  
    */
   @DefaultMessage("From Another Worksheet Above")
   @Key("insertFromWorksheetAbove")
@@ -7822,6 +8962,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Another Worksheet Below".
    * 
    * @return translated "From Another Worksheet Below"
+  
    */
   @DefaultMessage("From Another Worksheet Below")
   @Key("insertFromWorksheetBelow")
@@ -7831,6 +8972,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Insert QC From Lookup".
    * 
    * @return translated "Insert QC From Lookup"
+  
    */
   @DefaultMessage("Insert QC From Lookup")
   @Key("insertQCLookup")
@@ -7840,6 +8982,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Instrument".
    * 
    * @return translated "Instrument"
+  
    */
   @DefaultMessage("Instrument")
   @Key("instrument")
@@ -7849,6 +8992,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Barcode Type".
    * 
    * @return translated "Barcode Type"
+  
    */
   @DefaultMessage("Barcode Type")
   @Key("instrumentBarcode.barcodeType")
@@ -7858,6 +9002,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Instrument Barcode Report".
    * 
    * @return translated "Instrument Barcode Report"
+  
    */
   @DefaultMessage("Instrument Barcode Report")
   @Key("instrumentBarcode.instrumentBarcodeReport")
@@ -7867,6 +9012,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Id".
    * 
    * @return translated "Worksheet Id"
+  
    */
   @DefaultMessage("Worksheet Id")
   @Key("instrumentBarcode.worksheetId")
@@ -7876,6 +9022,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define instruments that can be used in the laboratory.".
    * 
    * @return translated "Define instruments that can be used in the laboratory."
+  
    */
   @DefaultMessage("Define instruments that can be used in the laboratory.")
   @Key("instrumentDescription")
@@ -7885,6 +9032,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Instrument".
    * 
    * @return translated "History - Instrument"
+  
    */
   @DefaultMessage("History - Instrument")
   @Key("instrumentHistory")
@@ -7894,6 +9042,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Accession".
    * 
    * @return translated "Accession"
+  
    */
   @DefaultMessage("Accession")
   @Key("instrumentInterface.accessionNumber")
@@ -7903,6 +9052,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyst".
    * 
    * @return translated "Analyst"
+  
    */
   @DefaultMessage("Analyst")
   @Key("instrumentInterface.analyst")
@@ -7911,7 +9061,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''."
+  
    */
   @DefaultMessage("Instrument name ''{0}'' in import file is different from the one already assigned to the worksheet ''{1}''.")
   @Key("instrumentInterface.differentInstrumentName")
@@ -7921,6 +9074,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Injection".
    * 
    * @return translated "Injection"
+  
    */
   @DefaultMessage("Injection")
   @Key("instrumentInterface.injectionDateTime")
@@ -7930,6 +9084,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Instrument ID".
    * 
    * @return translated "Instrument ID"
+  
    */
   @DefaultMessage("Instrument ID")
   @Key("instrumentInterface.instrumentId")
@@ -7939,6 +9094,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid file name for instrument import file.".
    * 
    * @return translated "Invalid file name for instrument import file."
+  
    */
   @DefaultMessage("Invalid file name for instrument import file.")
   @Key("instrumentInterface.invalidFileName")
@@ -7947,7 +9103,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Invalid instrument name ''{0}''".
    * 
+   * @param arg0 "{0}"
    * @return translated "Invalid instrument name ''{0}''"
+  
    */
   @DefaultMessage("Invalid instrument name ''{0}''")
   @Key("instrumentInterface.invalidInstrumentName")
@@ -7957,6 +9115,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Path to instrument file directory is missing. Please contact the system administrator.".
    * 
    * @return translated "Path to instrument file directory is missing. Please contact the system administrator."
+  
    */
   @DefaultMessage("Path to instrument file directory is missing. Please contact the system administrator.")
   @Key("instrumentInterface.missingPath")
@@ -7965,7 +9124,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Missing required column ''{0}''.".
    * 
+   * @param arg0 "{0}"
    * @return translated "Missing required column ''{0}''."
+  
    */
   @DefaultMessage("Missing required column ''{0}''.")
   @Key("instrumentInterface.missingRequiredColumn")
@@ -7974,7 +9135,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Worksheet #{0,number,#0} has no analyses at position #{1,number,#0}.".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Worksheet #{0,number,#0} has no analyses at position #{1,number,#0}."
+  
    */
   @DefaultMessage("Worksheet #{0,number,#0} has no analyses at position #{1,number,#0}.")
   @Key("instrumentInterface.worksheetHasNoAnalysesAtPosition")
@@ -7983,7 +9147,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Worksheet #{0,number,#0} has no items.".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Worksheet #{0,number,#0} has no items."
+  
    */
   @DefaultMessage("Worksheet #{0,number,#0} has no items.")
   @Key("instrumentInterface.worksheetHasNoItems")
@@ -7992,7 +9158,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Worksheet #{0,number,#0} not found for instrument import file.".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Worksheet #{0,number,#0} not found for instrument import file."
+  
    */
   @DefaultMessage("Worksheet #{0,number,#0} not found for instrument import file.")
   @Key("instrumentInterface.worksheetNotFound")
@@ -8001,7 +9169,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Worksheet #{0,number,#0} it not in ''Working'' status.".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Worksheet #{0,number,#0} it not in ''Working'' status."
+  
    */
   @DefaultMessage("Worksheet #{0,number,#0} it not in ''Working'' status.")
   @Key("instrumentInterface.worksheetWrongStatus")
@@ -8011,6 +9181,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Instrument Log".
    * 
    * @return translated "History - Instrument Log"
+  
    */
   @DefaultMessage("History - Instrument Log")
   @Key("instrumentLogHistory")
@@ -8020,6 +9191,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define instruments used for testing.".
    * 
    * @return translated "Define instruments used for testing."
+  
    */
   @DefaultMessage("Define instruments used for testing.")
   @Key("instrumentMainDescription")
@@ -8029,6 +9201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Instrument Name".
    * 
    * @return translated "Instrument Name"
+  
    */
   @DefaultMessage("Instrument Name")
   @Key("instrumentName")
@@ -8038,6 +9211,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is already an instrument in the system with the same name and serial number.".
    * 
    * @return translated "There is already an instrument in the system with the same name and serial number."
+  
    */
   @DefaultMessage("There is already an instrument in the system with the same name and serial number.")
   @Key("instrumentUniqueException")
@@ -8046,7 +9220,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to add - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to add - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to add - {0} : {1}")
   @Key("insufficientPrivilegesAddTest")
@@ -8055,7 +9232,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to add - {0} : {1} for {2} section".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Insufficient privileges to add - {0} : {1} for {2} section"
+  
    */
   @DefaultMessage("Insufficient privileges to add - {0} : {1} for {2} section")
   @Key("insufficientPrivilegesAddTestForSection")
@@ -8064,7 +9245,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to cancel - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to cancel - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to cancel - {0} : {1}")
   @Key("insufficientPrivilegesCancelAnalysis")
@@ -8073,7 +9257,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to complete - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to complete - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to complete - {0} : {1}")
   @Key("insufficientPrivilegesCompleteAnalysis")
@@ -8082,7 +9269,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to initiate - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to initiate - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to initiate - {0} : {1}")
   @Key("insufficientPrivilegesInitiateAnalysis")
@@ -8091,7 +9281,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to release - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to release - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to release - {0} : {1}")
   @Key("insufficientPrivilegesReleaseAnalysis")
@@ -8100,7 +9293,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to un-initiate - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to un-initiate - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to un-initiate - {0} : {1}")
   @Key("insufficientPrivilegesUnInitiateAnalysis")
@@ -8109,7 +9305,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Insufficient privileges to unrelease - {0} : {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Insufficient privileges to unrelease - {0} : {1}"
+  
    */
   @DefaultMessage("Insufficient privileges to unrelease - {0} : {1}")
   @Key("insufficientPrivilegesUnreleaseAnalysis")
@@ -8119,6 +9318,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Internal".
    * 
    * @return translated "Internal"
+  
    */
   @DefaultMessage("Internal")
   @Key("internal")
@@ -8128,6 +9328,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Internal Order".
    * 
    * @return translated "Internal Order"
+  
    */
   @DefaultMessage("Internal Order")
   @Key("internalOrder")
@@ -8137,6 +9338,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order items from in-house store.".
    * 
    * @return translated "Order items from in-house store."
+  
    */
   @DefaultMessage("Order items from in-house store.")
   @Key("internalOrderDescription")
@@ -8146,6 +9348,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This interval is overlapping with intervals associated with one or more log entries. ".
    * 
    * @return translated "This interval is overlapping with intervals associated with one or more log entries. "
+  
    */
   @DefaultMessage("This interval is overlapping with intervals associated with one or more log entries. ")
   @Key("intervalOverlapException")
@@ -8155,6 +9358,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Int Cmts".
    * 
    * @return translated "Int Cmts"
+  
    */
   @DefaultMessage("Int Cmts")
   @Key("intrnlCmnts")
@@ -8164,6 +9368,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Component".
    * 
    * @return translated "History - Component"
+  
    */
   @DefaultMessage("History - Component")
   @Key("invComponentHistory")
@@ -8173,6 +9378,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Inventory Item".
    * 
    * @return translated "History - Inventory Item"
+  
    */
   @DefaultMessage("History - Inventory Item")
   @Key("invItemHistory")
@@ -8182,6 +9388,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Location/Quantity".
    * 
    * @return translated "History - Location/Quantity"
+  
    */
   @DefaultMessage("History - Location/Quantity")
   @Key("invLocationHistory")
@@ -8190,7 +9397,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Status cannot be changed to {0} for position {1} analysis {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Status cannot be changed to {0} for position {1} analysis {2}"
+  
    */
   @DefaultMessage("Status cannot be changed to {0} for position {1} analysis {2}")
   @Key("invalidAnalysisStatusChange")
@@ -8200,6 +9411,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not able to find EJB with the entered lookup path".
    * 
    * @return translated "Not able to find EJB with the entered lookup path"
+  
    */
   @DefaultMessage("Not able to find EJB with the entered lookup path")
   @Key("invalidBeanPath")
@@ -8209,6 +9421,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cost needs to be greater than 0".
    * 
    * @return translated "Cost needs to be greater than 0"
+  
    */
   @DefaultMessage("Cost needs to be greater than 0")
   @Key("invalidCostException")
@@ -8218,6 +9431,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid Cron Tab expression has been entered".
    * 
    * @return translated "Invalid Cron Tab expression has been entered"
+  
    */
   @DefaultMessage("Invalid Cron Tab expression has been entered")
   @Key("invalidCronTab")
@@ -8227,6 +9441,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid Date format entered.".
    * 
    * @return translated "Invalid Date format entered."
+  
    */
   @DefaultMessage("Invalid Date format entered.")
   @Key("invalidDateFormat")
@@ -8236,6 +9451,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Value entered is not a valid double.".
    * 
    * @return translated "Value entered is not a valid double."
+  
    */
   @DefaultMessage("Value entered is not a valid double.")
   @Key("invalidDouble")
@@ -8244,7 +9460,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} is an invalid entry, please try again".
    * 
+   * @param arg0 "{0}"
    * @return translated "{0} is an invalid entry, please try again"
+  
    */
   @DefaultMessage("{0} is an invalid entry, please try again")
   @Key("invalidEntryException")
@@ -8253,7 +9471,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Invalid format for email address: {0} ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Invalid format for email address: {0} "
+  
    */
   @DefaultMessage("Invalid format for email address: {0} ")
   @Key("invalidFormatEmailException")
@@ -8263,6 +9483,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity needs to be at least 0".
    * 
    * @return translated "Quantity needs to be at least 0"
+  
    */
   @DefaultMessage("Quantity needs to be at least 0")
   @Key("invalidItemQuantityException")
@@ -8272,6 +9493,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity needs to be at least 1".
    * 
    * @return translated "Quantity needs to be at least 1"
+  
    */
   @DefaultMessage("Quantity needs to be at least 1")
   @Key("invalidLocationQuantityException")
@@ -8281,6 +9503,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No valid method with this signature found".
    * 
    * @return translated "No valid method with this signature found"
+  
    */
   @DefaultMessage("No valid method with this signature found")
   @Key("invalidMethod")
@@ -8290,6 +9513,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Number of packages needs to be at least 1".
    * 
    * @return translated "Number of packages needs to be at least 1"
+  
    */
   @DefaultMessage("Number of packages needs to be at least 1")
   @Key("invalidNumPackagesException")
@@ -8299,6 +9523,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Number of parameters does match for method entered  ".
    * 
    * @return translated "Number of parameters does match for method entered  "
+  
    */
   @DefaultMessage("Number of parameters does match for method entered  ")
   @Key("invalidNumParams")
@@ -8308,6 +9533,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Pws ID is invalid".
    * 
    * @return translated "Pws ID is invalid"
+  
    */
   @DefaultMessage("Pws ID is invalid")
   @Key("invalidPwsException")
@@ -8317,6 +9543,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Input is not a valid query.".
    * 
    * @return translated "Input is not a valid query."
+  
    */
   @DefaultMessage("Input is not a valid query.")
   @Key("invalidQueryFormat")
@@ -8326,6 +9553,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid result group.".
    * 
    * @return translated "Invalid result group."
+  
    */
   @DefaultMessage("Invalid result group.")
   @Key("invalidResultGroupException")
@@ -8334,7 +9562,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The sample type for the container with Item # {0} is invalid for ''{1}''  ".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "The sample type for the container with Item # {0} is invalid for ''{1}''  "
+  
    */
   @DefaultMessage("The sample type for the container with Item # {0} is invalid for ''{1}''  ")
   @Key("invalidSampleTypeForTestWarning")
@@ -8344,6 +9575,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
+  
    */
   @DefaultMessage("Invalid value for selected type")
   @Key("invalidValueException")
@@ -8353,6 +9585,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Store value needs to be entered before you can add an inventory item".
    * 
    * @return translated "Store value needs to be entered before you can add an inventory item"
+  
    */
   @DefaultMessage("Store value needs to be entered before you can add an inventory item")
   @Key("inventoryAdjItemAutoException")
@@ -8362,6 +9595,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Store value needs to be entered before you can add an inventory location".
    * 
    * @return translated "Store value needs to be entered before you can add an inventory location"
+  
    */
   @DefaultMessage("Store value needs to be entered before you can add an inventory location")
   @Key("inventoryAdjLocAutoException")
@@ -8371,6 +9605,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory Adjustment".
    * 
    * @return translated "Inventory Adjustment"
+  
    */
   @DefaultMessage("Inventory Adjustment")
   @Key("inventoryAdjustment")
@@ -8380,6 +9615,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage inventory discrepancies.".
    * 
    * @return translated "Manage inventory discrepancies."
+  
    */
   @DefaultMessage("Manage inventory discrepancies.")
   @Key("inventoryAdjustmentDescription")
@@ -8389,6 +9625,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Adjustment".
    * 
    * @return translated "History - Adjustment"
+  
    */
   @DefaultMessage("History - Adjustment")
   @Key("inventoryAdjustmentHistory")
@@ -8398,6 +9635,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Location Adjustment".
    * 
    * @return translated "History - Location Adjustment"
+  
    */
   @DefaultMessage("History - Location Adjustment")
   @Key("inventoryAdjustmentLocationHistory")
@@ -8407,6 +9645,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Component needs to come from same store as inventory item".
    * 
    * @return translated "Component needs to come from same store as inventory item"
+  
    */
   @DefaultMessage("Component needs to come from same store as inventory item")
   @Key("inventoryComponentStoreException")
@@ -8416,6 +9655,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory Item".
    * 
    * @return translated "Inventory Item"
+  
    */
   @DefaultMessage("Inventory Item")
   @Key("inventoryItem")
@@ -8425,6 +9665,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define the list of inventory items used in the laboratory such as reagents, bottles, etc.".
    * 
    * @return translated "Define the list of inventory items used in the laboratory such as reagents, bottles, etc."
+  
    */
   @DefaultMessage("Define the list of inventory items used in the laboratory such as reagents, bottles, etc.")
   @Key("inventoryItemDescription")
@@ -8434,6 +9675,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A record with this name and store already exists. Please enter a unique value for this field".
    * 
    * @return translated "A record with this name and store already exists. Please enter a unique value for this field"
+  
    */
   @DefaultMessage("A record with this name and store already exists. Please enter a unique value for this field")
   @Key("inventoryItemNameUniqueException")
@@ -8443,6 +9685,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please specify a store before adding components".
    * 
    * @return translated "Please specify a store before adding components"
+  
    */
   @DefaultMessage("Please specify a store before adding components")
   @Key("inventoryNoStoreException")
@@ -8452,6 +9695,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory/Order".
    * 
    * @return translated "Inventory/Order"
+  
    */
   @DefaultMessage("Inventory/Order")
   @Key("inventoryOrder")
@@ -8461,6 +9705,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory Receipt".
    * 
    * @return translated "Inventory Receipt"
+  
    */
   @DefaultMessage("Inventory Receipt")
   @Key("inventoryReceipt")
@@ -8470,6 +9715,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage items coming into inventory from external sources.".
    * 
    * @return translated "Manage items coming into inventory from external sources."
+  
    */
   @DefaultMessage("Manage items coming into inventory from external sources.")
   @Key("inventoryReceiptDescription")
@@ -8479,6 +9725,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order # is invalid".
    * 
    * @return translated "Order # is invalid"
+  
    */
   @DefaultMessage("Order # is invalid")
   @Key("inventoryReceiptInvalidOrderIdException")
@@ -8488,6 +9735,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory Transfer".
    * 
    * @return translated "Inventory Transfer"
+  
    */
   @DefaultMessage("Inventory Transfer")
   @Key("inventoryTransfer")
@@ -8497,6 +9745,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage the transfer of inventory items within stores and locations.".
    * 
    * @return translated "Manage the transfer of inventory items within stores and locations."
+  
    */
   @DefaultMessage("Manage the transfer of inventory items within stores and locations.")
   @Key("inventoryTransferDescription")
@@ -8506,6 +9755,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "FROM inventory item needs to be filled out before the TO inventory item".
    * 
    * @return translated "FROM inventory item needs to be filled out before the TO inventory item"
+  
    */
   @DefaultMessage("FROM inventory item needs to be filled out before the TO inventory item")
   @Key("inventoryTransferFromItemException")
@@ -8515,6 +9765,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is not enough quantity on hand in the from location to fulfill this transfer".
    * 
    * @return translated "There is not enough quantity on hand in the from location to fulfill this transfer"
+  
    */
   @DefaultMessage("There is not enough quantity on hand in the from location to fulfill this transfer")
   @Key("inventoryTransferQtyException")
@@ -8524,6 +9775,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Item".
    * 
    * @return translated "Item"
+  
    */
   @DefaultMessage("Item")
   @Key("item")
@@ -8533,6 +9785,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items/Analyses".
    * 
    * @return translated "Items/Analyses"
+  
    */
   @DefaultMessage("Items/Analyses")
   @Key("itemAnalyses")
@@ -8542,6 +9795,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An inventory item cannot be flagged as both Bulk and Lot # Required".
    * 
    * @return translated "An inventory item cannot be flagged as both Bulk and Lot # Required"
+  
    */
   @DefaultMessage("An inventory item cannot be flagged as both Bulk and Lot # Required")
   @Key("itemCantBeBulkAndLotReqException")
@@ -8551,6 +9805,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An inventory item cannot be flagged as both Bulk and Serial # Required".
    * 
    * @return translated "An inventory item cannot be flagged as both Bulk and Serial # Required"
+  
    */
   @DefaultMessage("An inventory item cannot be flagged as both Bulk and Serial # Required")
   @Key("itemCantBeBulkAndSerialReqException")
@@ -8560,6 +9815,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This item does not have any locations specified".
    * 
    * @return translated "This item does not have any locations specified"
+  
    */
   @DefaultMessage("This item does not have any locations specified")
   @Key("itemDoesntHaveLocation")
@@ -8569,6 +9825,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This location must not be an existing one".
    * 
    * @return translated "This location must not be an existing one"
+  
    */
   @DefaultMessage("This location must not be an existing one")
   @Key("itemExistAtLocationException")
@@ -8578,6 +9835,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items flagged as Do Not Inventory cannot be filled".
    * 
    * @return translated "Items flagged as Do Not Inventory cannot be filled"
+  
    */
   @DefaultMessage("Items flagged as Do Not Inventory cannot be filled")
   @Key("itemFlagDontInvCantBeFilled")
@@ -8587,6 +9845,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Inventory items flagged as \"Do Not Inventory\" cannot be transferred".
    * 
    * @return translated "Inventory items flagged as \"Do Not Inventory\" cannot be transferred"
+  
    */
   @DefaultMessage("Inventory items flagged as \"Do Not Inventory\" cannot be transferred")
   @Key("itemFlaggedDontInventoryException")
@@ -8596,6 +9855,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Item Information".
    * 
    * @return translated "Item Information"
+  
    */
   @DefaultMessage("Item Information")
   @Key("itemInformation")
@@ -8605,6 +9865,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This location is not an existing one ".
    * 
    * @return translated "This location is not an existing one "
+  
    */
   @DefaultMessage("This location is not an existing one ")
   @Key("itemNotExistAtLocationException")
@@ -8614,6 +9875,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Item #".
    * 
    * @return translated "Item #"
+  
    */
   @DefaultMessage("Item #")
   @Key("itemNum")
@@ -8622,7 +9884,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Test Row {0} - Item # must not be negative".
    * 
+   * @param arg0 "{0}"
    * @return translated "Test Row {0} - Item # must not be negative"
+  
    */
   @DefaultMessage("Test Row {0} - Item # must not be negative")
   @Key("itemNumCantBeNegativeException")
@@ -8631,7 +9895,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Test Row {0} - Item # is required".
    * 
+   * @param arg0 "{0}"
    * @return translated "Test Row {0} - Item # is required"
+  
    */
   @DefaultMessage("Test Row {0} - Item # is required")
   @Key("itemNumRequiredException")
@@ -8641,6 +9907,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This item is serialized, you can only create one at a time".
    * 
    * @return translated "This item is serialized, you can only create one at a time"
+  
    */
   @DefaultMessage("This item is serialized, you can only create one at a time")
   @Key("itemSerializedException")
@@ -8650,6 +9917,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items".
    * 
    * @return translated "Items"
+  
    */
   @DefaultMessage("Items")
   @Key("items")
@@ -8659,6 +9927,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Items and Analyses".
    * 
    * @return translated "Sample Items and Analyses"
+  
    */
   @DefaultMessage("Sample Items and Analyses")
   @Key("itemsAndAnalyses")
@@ -8668,6 +9937,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Some items cannot be moved as they are already stored at the destination location".
    * 
    * @return translated "Some items cannot be moved as they are already stored at the destination location"
+  
    */
   @DefaultMessage("Some items cannot be moved as they are already stored at the destination location")
   @Key("itemsCantBeMoved")
@@ -8677,6 +9947,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items Ordered".
    * 
    * @return translated "Items Ordered"
+  
    */
   @DefaultMessage("Items Ordered")
   @Key("itemsOrdered")
@@ -8686,6 +9957,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items Shipped".
    * 
    * @return translated "Items Shipped"
+  
    */
   @DefaultMessage("Items Shipped")
   @Key("itemsShipped")
@@ -8695,6 +9967,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Kit".
    * 
    * @return translated "Kit"
+  
    */
   @DefaultMessage("Kit")
   @Key("kit")
@@ -8704,6 +9977,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All components of a kit must be from the same store as the kit".
    * 
    * @return translated "All components of a kit must be from the same store as the kit"
+  
    */
   @DefaultMessage("All components of a kit must be from the same store as the kit")
   @Key("kitAndComponentSameStoreException")
@@ -8713,6 +9987,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A kit must have at least one component".
    * 
    * @return translated "A kit must have at least one component"
+  
    */
   @DefaultMessage("A kit must have at least one component")
   @Key("kitAtleastOneComponentException")
@@ -8722,6 +9997,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Kit Component Name".
    * 
    * @return translated "Kit Component Name"
+  
    */
   @DefaultMessage("Kit Component Name")
   @Key("kitComponentName")
@@ -8731,6 +10007,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ending Sent Date".
    * 
    * @return translated "Ending Sent Date"
+  
    */
   @DefaultMessage("Ending Sent Date")
   @Key("kitTracking.endSentDate")
@@ -8740,6 +10017,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Kit Tracking Report".
    * 
    * @return translated "Kit Tracking Report"
+  
    */
   @DefaultMessage("Kit Tracking Report")
   @Key("kitTracking.kitTrackingReport")
@@ -8749,6 +10027,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sort By".
    * 
    * @return translated "Sort By"
+  
    */
   @DefaultMessage("Sort By")
   @Key("kitTracking.sortBy")
@@ -8758,6 +10037,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Starting Ordered Date".
    * 
    * @return translated "Starting Ordered Date"
+  
    */
   @DefaultMessage("Starting Ordered Date")
   @Key("kitTracking.startOrderDate")
@@ -8767,6 +10047,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "LCL".
    * 
    * @return translated "LCL"
+  
    */
   @DefaultMessage("LCL")
   @Key("lCL")
@@ -8776,6 +10057,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "LWL".
    * 
    * @return translated "LWL"
+  
    */
   @DefaultMessage("LWL")
   @Key("lWL")
@@ -8785,6 +10067,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Laboratory Section".
    * 
    * @return translated "Laboratory Section"
+  
    */
   @DefaultMessage("Laboratory Section")
   @Key("labSection")
@@ -8794,6 +10077,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define laboratory sections that perform related tasks.".
    * 
    * @return translated "Define laboratory sections that perform related tasks."
+  
    */
   @DefaultMessage("Define laboratory sections that perform related tasks.")
   @Key("labSectionDescription")
@@ -8803,6 +10087,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Label".
    * 
    * @return translated "Label"
+  
    */
   @DefaultMessage("Label")
   @Key("label")
@@ -8812,6 +10097,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Label cannot be deleted, it is being used by one or more tests".
    * 
    * @return translated "Label cannot be deleted, it is being used by one or more tests"
+  
    */
   @DefaultMessage("Label cannot be deleted, it is being used by one or more tests")
   @Key("labelDeleteException")
@@ -8821,6 +10107,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define formats for additional analysis labels.".
    * 
    * @return translated "Define formats for additional analysis labels."
+  
    */
   @DefaultMessage("Define formats for additional analysis labels.")
   @Key("labelDescription")
@@ -8830,6 +10117,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Label For".
    * 
    * @return translated "Label For"
+  
    */
   @DefaultMessage("Label For")
   @Key("labelFor")
@@ -8839,6 +10127,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Print additional labels for analyses and aliquots.".
    * 
    * @return translated "Print additional labels for analyses and aliquots."
+  
    */
   @DefaultMessage("Print additional labels for analyses and aliquots.")
   @Key("labelForDescription")
@@ -8848,6 +10137,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Label".
    * 
    * @return translated "History - Label"
+  
    */
   @DefaultMessage("History - Label")
   @Key("labelHistory")
@@ -8857,6 +10147,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Labor".
    * 
    * @return translated "Labor"
+  
    */
   @DefaultMessage("Labor")
   @Key("labor")
@@ -8866,6 +10157,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Last Name".
    * 
    * @return translated "Last Name"
+  
    */
   @DefaultMessage("Last Name")
   @Key("lastName")
@@ -8875,6 +10167,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You have reached the last page of your query results".
    * 
    * @return translated "You have reached the last page of your query results"
+  
    */
   @DefaultMessage("You have reached the last page of your query results")
   @Key("lastPageException")
@@ -8884,6 +10177,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Last Run".
    * 
    * @return translated "Last Run"
+  
    */
   @DefaultMessage("Last Run")
   @Key("lastRun")
@@ -8893,6 +10187,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Done".
    * 
    * @return translated "Done"
+  
    */
   @DefaultMessage("Done")
   @Key("loadCompleteMessage")
@@ -8902,6 +10197,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Load From Date ".
    * 
    * @return translated "Load From Date "
+  
    */
   @DefaultMessage("Load From Date ")
   @Key("loadFromDate")
@@ -8911,6 +10207,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Load From Excel File".
    * 
    * @return translated "Load From Excel File"
+  
    */
   @DefaultMessage("Load From Excel File")
   @Key("loadFromEditFile")
@@ -8920,6 +10217,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Load From Instrument File".
    * 
    * @return translated "Load From Instrument File"
+  
    */
   @DefaultMessage("Load From Instrument File")
   @Key("loadFromInstrumentFile")
@@ -8929,6 +10227,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Load QC Template".
    * 
    * @return translated "Load QC Template"
+  
    */
   @DefaultMessage("Load QC Template")
   @Key("loadTemplate")
@@ -8938,6 +10237,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Loading...".
    * 
    * @return translated "Loading..."
+  
    */
   @DefaultMessage("Loading...")
   @Key("loadingMessage")
@@ -8947,6 +10247,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Local Term".
    * 
    * @return translated "Local Term"
+  
    */
   @DefaultMessage("Local Term")
   @Key("localTerm")
@@ -8956,6 +10257,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Local Term".
    * 
    * @return translated "History - Local Term"
+  
    */
   @DefaultMessage("History - Local Term")
   @Key("localTermHistory")
@@ -8965,6 +10267,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location".
    * 
    * @return translated "Location"
+  
    */
   @DefaultMessage("Location")
   @Key("location")
@@ -8974,6 +10277,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location Address".
    * 
    * @return translated "Location Address"
+  
    */
   @DefaultMessage("Location Address")
   @Key("locationAddress")
@@ -8983,6 +10287,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location Apt/Suite #".
    * 
    * @return translated "Location Apt/Suite #"
+  
    */
   @DefaultMessage("Location Apt/Suite #")
   @Key("locationAptSuite")
@@ -8992,6 +10297,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location City".
    * 
    * @return translated "Location City"
+  
    */
   @DefaultMessage("Location City")
   @Key("locationCity")
@@ -9001,6 +10307,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Loc #".
    * 
    * @return translated "Loc #"
+  
    */
   @DefaultMessage("Loc #")
   @Key("locationNum")
@@ -9010,6 +10317,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location/Quantity".
    * 
    * @return translated "Location/Quantity"
+  
    */
   @DefaultMessage("Location/Quantity")
   @Key("locationQuantity")
@@ -9019,6 +10327,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location is required for this row".
    * 
    * @return translated "Location is required for this row"
+  
    */
   @DefaultMessage("Location is required for this row")
   @Key("locationRequiredForRowException")
@@ -9028,6 +10337,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location State".
    * 
    * @return translated "Location State"
+  
    */
   @DefaultMessage("Location State")
   @Key("locationState")
@@ -9037,6 +10347,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Location Zip Code".
    * 
    * @return translated "Location Zip Code"
+  
    */
   @DefaultMessage("Location Zip Code")
   @Key("locationZipCode")
@@ -9046,6 +10357,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Locations".
    * 
    * @return translated "Locations"
+  
    */
   @DefaultMessage("Locations")
   @Key("locations")
@@ -9055,6 +10367,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Locking record for Update...".
    * 
    * @return translated "Locking record for Update..."
+  
    */
   @DefaultMessage("Locking record for Update...")
   @Key("lockForUpdate")
@@ -9064,6 +10377,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Log".
    * 
    * @return translated "Log"
+  
    */
   @DefaultMessage("Log")
   @Key("log")
@@ -9073,6 +10387,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Logged In".
    * 
    * @return translated "Logged In"
+  
    */
   @DefaultMessage("Logged In")
   @Key("loggedIn")
@@ -9082,6 +10397,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Login".
    * 
    * @return translated "Login"
+  
    */
   @DefaultMessage("Login")
   @Key("login")
@@ -9091,6 +10407,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Additional Login Barcode Labels".
    * 
    * @return translated "Additional Login Barcode Labels"
+  
    */
   @DefaultMessage("Additional Login Barcode Labels")
   @Key("loginAdditionalLabelReport")
@@ -9100,6 +10417,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Login Barcode Labels".
    * 
    * @return translated "Login Barcode Labels"
+  
    */
   @DefaultMessage("Login Barcode Labels")
   @Key("loginBarcode")
@@ -9109,6 +10427,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Additional Login Barcode Labels".
    * 
    * @return translated "Additional Login Barcode Labels"
+  
    */
   @DefaultMessage("Additional Login Barcode Labels")
   @Key("loginBarcodeAdd")
@@ -9118,6 +10437,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Login Label".
    * 
    * @return translated "Login Label"
+  
    */
   @DefaultMessage("Login Label")
   @Key("loginLabel")
@@ -9127,6 +10447,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Login Barcode Labels".
    * 
    * @return translated "Login Barcode Labels"
+  
    */
   @DefaultMessage("Login Barcode Labels")
   @Key("loginLabelReport")
@@ -9136,6 +10457,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Logout".
    * 
    * @return translated "Logout"
+  
    */
   @DefaultMessage("Logout")
   @Key("logout")
@@ -9145,6 +10467,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Exit the application.".
    * 
    * @return translated "Exit the application."
+  
    */
   @DefaultMessage("Exit the application.")
   @Key("logoutDescription")
@@ -9154,6 +10477,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Logs".
    * 
    * @return translated "Logs"
+  
    */
   @DefaultMessage("Logs")
   @Key("logs")
@@ -9163,6 +10487,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lookup Item".
    * 
    * @return translated "Lookup Item"
+  
    */
   @DefaultMessage("Lookup Item")
   @Key("lookupItem")
@@ -9172,6 +10497,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Results may be lost".
    * 
    * @return translated "Results may be lost"
+  
    */
   @DefaultMessage("Results may be lost")
   @Key("loseResultsCaption")
@@ -9181,6 +10507,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Changing the test/method may cause you to lose the results you have entered.  Are you sure you want to continue?".
    * 
    * @return translated "Changing the test/method may cause you to lose the results you have entered.  Are you sure you want to continue?"
+  
    */
   @DefaultMessage("Changing the test/method may cause you to lose the results you have entered.  Are you sure you want to continue?")
   @Key("loseResultsWarning")
@@ -9190,6 +10517,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot Information".
    * 
    * @return translated "Lot Information"
+  
    */
   @DefaultMessage("Lot Information")
   @Key("lotInformation")
@@ -9199,6 +10527,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot No.".
    * 
    * @return translated "Lot No."
+  
    */
   @DefaultMessage("Lot No.")
   @Key("lotNum")
@@ -9208,6 +10537,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot # is required for item".
    * 
    * @return translated "Lot # is required for item"
+  
    */
   @DefaultMessage("Lot # is required for item")
   @Key("lotNumRequiredForOrderItemException")
@@ -9217,6 +10547,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot number is required for this row".
    * 
    * @return translated "Lot number is required for this row"
+  
    */
   @DefaultMessage("Lot number is required for this row")
   @Key("lotNumRequiredForRowException")
@@ -9226,6 +10557,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot Number ".
    * 
    * @return translated "Lot Number "
+  
    */
   @DefaultMessage("Lot Number ")
   @Key("lotNumber")
@@ -9235,6 +10567,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot # Required".
    * 
    * @return translated "Lot # Required"
+  
    */
   @DefaultMessage("Lot # Required")
   @Key("maintainLot")
@@ -9244,6 +10577,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Maintenance".
    * 
    * @return translated "Maintenance"
+  
    */
   @DefaultMessage("Maintenance")
   @Key("maintenance")
@@ -9253,6 +10587,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage Multiple Samples".
    * 
    * @return translated "Manage Multiple Samples"
+  
    */
   @DefaultMessage("Manage Multiple Samples")
   @Key("manageMultipleSamples")
@@ -9262,6 +10597,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manufacturing".
    * 
    * @return translated "Manufacturing"
+  
    */
   @DefaultMessage("Manufacturing")
   @Key("manufacturing")
@@ -9271,6 +10607,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Max Order Level".
    * 
    * @return translated "Max Order Level"
+  
    */
   @DefaultMessage("Max Order Level")
   @Key("maxOrderLevel")
@@ -9280,6 +10617,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Max".
    * 
    * @return translated "Max"
+  
    */
   @DefaultMessage("Max")
   @Key("maximum")
@@ -9289,6 +10627,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Mean".
    * 
    * @return translated "Mean"
+  
    */
   @DefaultMessage("Mean")
   @Key("mean")
@@ -9298,6 +10637,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Med".
    * 
    * @return translated "Med"
+  
    */
   @DefaultMessage("Med")
   @Key("median")
@@ -9307,6 +10647,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State Hygienic Laboratory University of Iowa Test Results".
    * 
    * @return translated "State Hygienic Laboratory University of Iowa Test Results"
+  
    */
   @DefaultMessage("State Hygienic Laboratory University of Iowa Test Results")
   @Key("messageOnTopOfSpreadsheet")
@@ -9316,6 +10657,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Method".
    * 
    * @return translated "Method"
+  
    */
   @DefaultMessage("Method")
   @Key("method")
@@ -9325,6 +10667,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is already an active method in the system with the same name".
    * 
    * @return translated "There is already an active method in the system with the same name"
+  
    */
   @DefaultMessage("There is already an active method in the system with the same name")
   @Key("methodActiveException")
@@ -9334,6 +10677,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This method has been assigned to an active test, thus it can''''t be deactivated ".
    * 
    * @return translated "This method has been assigned to an active test, thus it can''''t be deactivated "
+  
    */
   @DefaultMessage("This method has been assigned to an active test, thus it can''''t be deactivated ")
   @Key("methodAssignedToActiveTestException")
@@ -9343,6 +10687,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define methods by which tests are performed.".
    * 
    * @return translated "Define methods by which tests are performed."
+  
    */
   @DefaultMessage("Define methods by which tests are performed.")
   @Key("methodDescription")
@@ -9352,6 +10697,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Method".
    * 
    * @return translated "History - Method"
+  
    */
   @DefaultMessage("History - Method")
   @Key("methodHistory")
@@ -9361,6 +10707,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This method has an overlapping begin or end date with another method with the same name".
    * 
    * @return translated "This method has an overlapping begin or end date with another method with the same name"
+  
    */
   @DefaultMessage("This method has an overlapping begin or end date with another method with the same name")
   @Key("methodTimeOverlapException")
@@ -9370,6 +10717,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Middle Name".
    * 
    * @return translated "Middle Name"
+  
    */
   @DefaultMessage("Middle Name")
   @Key("middleName")
@@ -9378,7 +10726,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Item {0} - At least one analysis is required".
    * 
+   * @param arg0 "{0}"
    * @return translated "Item {0} - At least one analysis is required"
+  
    */
   @DefaultMessage("Item {0} - At least one analysis is required")
   @Key("minOneAnalysisException")
@@ -9388,6 +10738,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At least one sample item is required".
    * 
    * @return translated "At least one sample item is required"
+  
    */
   @DefaultMessage("At least one sample item is required")
   @Key("minOneSampleItemException")
@@ -9397,6 +10748,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Min Order Level".
    * 
    * @return translated "Min Order Level"
+  
    */
   @DefaultMessage("Min Order Level")
   @Key("minOrderLevel")
@@ -9406,6 +10758,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Min".
    * 
    * @return translated "Min"
+  
    */
   @DefaultMessage("Min")
   @Key("minimum")
@@ -9415,6 +10768,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Missing file name or content type parameter; please report this error to your sysadmin".
    * 
    * @return translated "Missing file name or content type parameter; please report this error to your sysadmin"
+  
    */
   @DefaultMessage("Missing file name or content type parameter; please report this error to your sysadmin")
   @Key("missingFileContentTypeException")
@@ -9424,6 +10778,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At least one location is missing in the items ordered tree".
    * 
    * @return translated "At least one location is missing in the items ordered tree"
+  
    */
   @DefaultMessage("At least one location is missing in the items ordered tree")
   @Key("missingLocException")
@@ -9433,6 +10788,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At least one quantity is missing in the items ordered tree".
    * 
    * @return translated "At least one quantity is missing in the items ordered tree"
+  
    */
   @DefaultMessage("At least one quantity is missing in the items ordered tree")
   @Key("missingQuantityException")
@@ -9442,6 +10798,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Model #".
    * 
    * @return translated "Model #"
+  
    */
   @DefaultMessage("Model #")
   @Key("modelNumber")
@@ -9450,7 +10807,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You do not have {0} permission in {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "You do not have {0} permission in {1}"
+  
    */
   @DefaultMessage("You do not have {0} permission in {1}")
   @Key("modulePermException")
@@ -9460,6 +10820,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Monitor".
    * 
    * @return translated "Monitor"
+  
    */
   @DefaultMessage("Monitor")
   @Key("monitor")
@@ -9469,6 +10830,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Month".
    * 
    * @return translated "Month"
+  
    */
   @DefaultMessage("Month")
   @Key("month")
@@ -9478,6 +10840,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "At the most one log entry can have its end date unspecified.".
    * 
    * @return translated "At the most one log entry can have its end date unspecified."
+  
    */
   @DefaultMessage("At the most one log entry can have its end date unspecified.")
   @Key("moreThanOneEndDateAbsentException")
@@ -9487,6 +10850,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "More than one prep tests cannot be marked as not optional".
    * 
    * @return translated "More than one prep tests cannot be marked as not optional"
+  
    */
   @DefaultMessage("More than one prep tests cannot be marked as not optional")
   @Key("moreThanOnePrepTestOptionalException")
@@ -9496,6 +10860,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "> 3 days ago".
    * 
    * @return translated "> 3 days ago"
+  
    */
   @DefaultMessage("> 3 days ago")
   @Key("moreThanThreeDays")
@@ -9505,6 +10870,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "> 30 days ago".
    * 
    * @return translated "> 30 days ago"
+  
    */
   @DefaultMessage("> 30 days ago")
   @Key("moreThanThrtyDays")
@@ -9514,6 +10880,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "> 10 days ago".
    * 
    * @return translated "> 10 days ago"
+  
    */
   @DefaultMessage("> 10 days ago")
   @Key("moreThenTenDays")
@@ -9523,6 +10890,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Most Recent QCs".
    * 
    * @return translated "Most Recent QCs"
+  
    */
   @DefaultMessage("Most Recent QCs")
   @Key("mostRecentQc")
@@ -9532,6 +10900,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Move".
    * 
    * @return translated "Move"
+  
    */
   @DefaultMessage("Move")
   @Key("move")
@@ -9541,6 +10910,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Move Down".
    * 
    * @return translated "Move Down"
+  
    */
   @DefaultMessage("Move Down")
   @Key("moveDown")
@@ -9550,6 +10920,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "<<".
    * 
    * @return translated "<<"
+  
    */
   @DefaultMessage("<<")
   @Key("moveLeft")
@@ -9559,6 +10930,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Move Up".
    * 
    * @return translated "Move Up"
+  
    */
   @DefaultMessage("Move Up")
   @Key("moveUp")
@@ -9567,7 +10939,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "More than one active QC Lot was found matching ''{0}'' at row {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "More than one active QC Lot was found matching ''{0}'' at row {1}"
+  
    */
   @DefaultMessage("More than one active QC Lot was found matching ''{0}'' at row {1}")
   @Key("multiMatchingActiveQc")
@@ -9577,6 +10952,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Multiple rows selected. Currently edited column: ".
    * 
    * @return translated "Multiple rows selected. Currently edited column: "
+  
    */
   @DefaultMessage("Multiple rows selected. Currently edited column: ")
   @Key("multiSelRowEditCol")
@@ -9586,6 +10962,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only one record with the type Bill To is allowed".
    * 
    * @return translated "Only one record with the type Bill To is allowed"
+  
    */
   @DefaultMessage("Only one record with the type Bill To is allowed")
   @Key("multipleBillToException")
@@ -9595,6 +10972,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A sample can have only one new internal note".
    * 
    * @return translated "A sample can have only one new internal note"
+  
    */
   @DefaultMessage("A sample can have only one new internal note")
   @Key("multipleInternalNoteException")
@@ -9604,6 +10982,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only one record with the type Report To is allowed ".
    * 
    * @return translated "Only one record with the type Report To is allowed "
+  
    */
   @DefaultMessage("Only one record with the type Report To is allowed ")
   @Key("multipleReportToException")
@@ -9613,6 +10992,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The selected analyses are from multiple tests, only the first QC template will be loaded.".
    * 
    * @return translated "The selected analyses are from multiple tests, only the first QC template will be loaded."
+  
    */
   @DefaultMessage("The selected analyses are from multiple tests, only the first QC template will be loaded.")
   @Key("multipleTestsOnWorksheet")
@@ -9622,6 +11002,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must Commit or Abort changes first".
    * 
    * @return translated "You must Commit or Abort changes first"
+  
    */
   @DefaultMessage("You must Commit or Abort changes first")
   @Key("mustCommitOrAbort")
@@ -9631,6 +11012,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The sample must have at least one analysis assigned.".
    * 
    * @return translated "The sample must have at least one analysis assigned."
+  
    */
   @DefaultMessage("The sample must have at least one analysis assigned.")
   @Key("mustHaveAnalysesToVerify")
@@ -9640,6 +11022,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The default printer and default barcode printer must be specified to process orders  ".
    * 
    * @return translated "The default printer and default barcode printer must be specified to process orders  "
+  
    */
   @DefaultMessage("The default printer and default barcode printer must be specified to process orders  ")
   @Key("mustSpecifyDefPrinters")
@@ -9649,6 +11032,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Name".
    * 
    * @return translated "Name"
+  
    */
   @DefaultMessage("Name")
   @Key("name")
@@ -9658,6 +11042,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Name/Date & Time".
    * 
    * @return translated "Name/Date & Time"
+  
    */
   @DefaultMessage("Name/Date & Time")
   @Key("nameDateAndTime")
@@ -9667,6 +11052,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Name List".
    * 
    * @return translated "Name List"
+  
    */
   @DefaultMessage("Name List")
   @Key("nameList")
@@ -9676,6 +11062,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Name & Method ".
    * 
    * @return translated "Name & Method "
+  
    */
   @DefaultMessage("Name & Method ")
   @Key("nameMethod")
@@ -9685,6 +11072,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Needed In Days".
    * 
    * @return translated "Needed In Days"
+  
    */
   @DefaultMessage("Needed In Days")
   @Key("neededDays")
@@ -9694,6 +11082,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Days".
    * 
    * @return translated "# Days"
+  
    */
   @DefaultMessage("# Days")
   @Key("neededNumDays")
@@ -9703,6 +11092,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Neonatal Screening Sample Login".
    * 
    * @return translated "Neonatal Screening Sample Login"
+  
    */
   @DefaultMessage("Neonatal Screening Sample Login")
   @Key("neonatalScreeningSampleLogin")
@@ -9712,6 +11102,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login neonatal sample and analysis related information.".
    * 
    * @return translated "Fully login neonatal sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login neonatal sample and analysis related information.")
   @Key("neonatalScreeningSampleLoginDescription")
@@ -9721,6 +11112,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There was a problem creating a new accession number, please try again".
    * 
    * @return translated "There was a problem creating a new accession number, please try again"
+  
    */
   @DefaultMessage("There was a problem creating a new accession number, please try again")
   @Key("newAccessionNumError")
@@ -9730,6 +11122,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "New Note".
    * 
    * @return translated "New Note"
+  
    */
   @DefaultMessage("New Note")
   @Key("newNote")
@@ -9739,6 +11132,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Newborn Screening Sample".
    * 
    * @return translated "Newborn Screening Sample"
+  
    */
   @DefaultMessage("Newborn Screening Sample")
   @Key("newbornScreeningSample")
@@ -9748,6 +11142,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Next".
    * 
    * @return translated "Next"
+  
    */
   @DefaultMessage("Next")
   @Key("next")
@@ -9757,6 +11152,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No".
    * 
    * @return translated "No"
+  
    */
   @DefaultMessage("No")
   @Key("no")
@@ -9766,6 +11162,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is no active auxiliary group in the system with this name".
    * 
    * @return translated "There is no active auxiliary group in the system with this name"
+  
    */
   @DefaultMessage("There is no active auxiliary group in the system with this name")
   @Key("noActiveAuxGrpException")
@@ -9775,6 +11172,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There were no active tests found for the panel".
    * 
    * @return translated "There were no active tests found for the panel"
+  
    */
   @DefaultMessage("There were no active tests found for the panel")
   @Key("noActiveTestFoundForPanelException")
@@ -9784,6 +11182,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are no active tests in the system with this name and method".
    * 
    * @return translated "There are no active tests in the system with this name and method"
+  
    */
   @DefaultMessage("There are no active tests in the system with this name and method")
   @Key("noActiveTestsException")
@@ -9793,6 +11192,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No Analytes Found For Selected Row".
    * 
    * @return translated "No Analytes Found For Selected Row"
+  
    */
   @DefaultMessage("No Analytes Found For Selected Row")
   @Key("noAnalytesFoundForRow")
@@ -9802,6 +11202,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You do not have assign permission for this test".
    * 
    * @return translated "You do not have assign permission for this test"
+  
    */
   @DefaultMessage("You do not have assign permission for this test")
   @Key("noAssignTestPermission")
@@ -9810,7 +11211,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Cannot cancel prep analysis ''{0}, {1}'' with released analytical analysis ''{2}, {3}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Cannot cancel prep analysis ''{0}, {1}'' with released analytical analysis ''{2}, {3}''"
+  
    */
   @DefaultMessage("Cannot cancel prep analysis ''{0}, {1}'' with released analytical analysis ''{2}, {3}''")
   @Key("noCancelPrepWithReleasedTest")
@@ -9820,6 +11226,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You do not have complete permission for this test".
    * 
    * @return translated "You do not have complete permission for this test"
+  
    */
   @DefaultMessage("You do not have complete permission for this test")
   @Key("noCompleteTestPermission")
@@ -9828,7 +11235,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No container is present for Item # {0} which is assigned to ''{1}'' ".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "No container is present for Item # {0} which is assigned to ''{1}'' "
+  
    */
   @DefaultMessage("No container is present for Item # {0} which is assigned to ''{1}'' ")
   @Key("noContainerWithItemNumWarning")
@@ -9838,6 +11248,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Missing or undefined sample domain ".
    * 
    * @return translated "Missing or undefined sample domain "
+  
    */
   @DefaultMessage("Missing or undefined sample domain ")
   @Key("noDomainException")
@@ -9847,6 +11258,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are no items to process  ".
    * 
    * @return translated "There are no items to process  "
+  
    */
   @DefaultMessage("There are no items to process  ")
   @Key("noItemsToProcess")
@@ -9856,6 +11268,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a location for this row".
    * 
    * @return translated "Please select a location for this row"
+  
    */
   @DefaultMessage("Please select a location for this row")
   @Key("noLocationSelectedForRowException")
@@ -9864,7 +11277,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No active QC matching ''{0}'' at position {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "No active QC matching ''{0}'' at position {1}"
+  
    */
   @DefaultMessage("No active QC matching ''{0}'' at position {1}")
   @Key("noMatchingActiveQc")
@@ -9874,6 +11290,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No more records in this direction".
    * 
    * @return translated "No more records in this direction"
+  
    */
   @DefaultMessage("No more records in this direction")
   @Key("noMoreRecordInDir")
@@ -9883,6 +11300,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Released or cancelled analyses cannot be moved".
    * 
    * @return translated "Released or cancelled analyses cannot be moved"
+  
    */
   @DefaultMessage("Released or cancelled analyses cannot be moved")
   @Key("noMoveReleasedCancelledAnalyses")
@@ -9892,6 +11310,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select one or more orders for processing".
    * 
    * @return translated "Please select one or more orders for processing"
+  
    */
   @DefaultMessage("Please select one or more orders for processing")
   @Key("noOrdersSelectForProcess")
@@ -9901,6 +11320,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You don''t have the permission to add emails for any organization. Please contact the system administrator".
    * 
    * @return translated "You don''t have the permission to add emails for any organization. Please contact the system administrator"
+  
    */
   @DefaultMessage("You don''t have the permission to add emails for any organization. Please contact the system administrator")
   @Key("noPermToAddEmailException")
@@ -9910,6 +11330,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No records found".
    * 
    * @return translated "No records found"
+  
    */
   @DefaultMessage("No records found")
   @Key("noRecordsFound")
@@ -9919,6 +11340,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select atleast one data point, then press Plot Data".
    * 
    * @return translated "Please select atleast one data point, then press Plot Data"
+  
    */
   @DefaultMessage("Please select atleast one data point, then press Plot Data")
   @Key("noSampleSelectedError")
@@ -9927,7 +11349,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No sample type specified for the container with Item # {0}  ".
    * 
+   * @param arg0 "{0}"
    * @return translated "No sample type specified for the container with Item # {0}  "
+  
    */
   @DefaultMessage("No sample type specified for the container with Item # {0}  ")
   @Key("noSampleTypeForContainerWarning")
@@ -9937,6 +11361,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No samples have been found. Please change your search criteria and try again.".
    * 
    * @return translated "No samples have been found. Please change your search criteria and try again."
+  
    */
   @DefaultMessage("No samples have been found. Please change your search criteria and try again.")
   @Key("noSamplesFoundChangeSearch")
@@ -9946,6 +11371,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test has no sections assigned to it".
    * 
    * @return translated "Test has no sections assigned to it"
+  
    */
   @DefaultMessage("Test has no sections assigned to it")
   @Key("noSectionsForTest")
@@ -9955,6 +11381,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You need to ship at least 1 item.".
    * 
    * @return translated "You need to ship at least 1 item."
+  
    */
   @DefaultMessage("You need to ship at least 1 item.")
   @Key("noShippingItemsException")
@@ -9964,6 +11391,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A panel must have at least one test or auxiliary group added to it  ".
    * 
    * @return translated "A panel must have at least one test or auxiliary group added to it  "
+  
    */
   @DefaultMessage("A panel must have at least one test or auxiliary group added to it  ")
   @Key("noTestAssignedToPanelException")
@@ -9973,6 +11401,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please specify at least one test in the query since all analyses are not to be included".
    * 
    * @return translated "Please specify at least one test in the query since all analyses are not to be included"
+  
    */
   @DefaultMessage("Please specify at least one test in the query since all analyses are not to be included")
   @Key("noTestForNotIncludeAllAnalysesException")
@@ -9982,6 +11411,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# to Retrieve".
    * 
    * @return translated "# to Retrieve"
+  
    */
   @DefaultMessage("# to Retrieve")
   @Key("noToRetrieve")
@@ -9991,6 +11421,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please enter atleast one query field and then click ''Find Samples''".
    * 
    * @return translated "Please enter atleast one query field and then click ''Find Samples''"
+  
    */
   @DefaultMessage("Please enter atleast one query field and then click ''Find Samples''")
   @Key("nofieldSelectedError")
@@ -10000,6 +11431,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not all dates generated with this frequency are valid".
    * 
    * @return translated "Not all dates generated with this frequency are valid"
+  
    */
   @DefaultMessage("Not all dates generated with this frequency are valid")
   @Key("notAllDatesValid")
@@ -10009,6 +11441,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not enough quantity on hand at this location, please adjust".
    * 
    * @return translated "Not enough quantity on hand at this location, please adjust"
+  
    */
   @DefaultMessage("Not enough quantity on hand at this location, please adjust")
   @Key("notEnoughQuantityOnHand")
@@ -10018,6 +11451,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not For Sale".
    * 
    * @return translated "Not For Sale"
+  
    */
   @DefaultMessage("Not For Sale")
   @Key("notForSale")
@@ -10027,6 +11461,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cannot lookup the sample requested because the screen is busy".
    * 
    * @return translated "Cannot lookup the sample requested because the screen is busy"
+  
    */
   @DefaultMessage("Cannot lookup the sample requested because the screen is busy")
   @Key("notProperState")
@@ -10036,6 +11471,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Not sufficient quantity at location".
    * 
    * @return translated "Not sufficient quantity at location"
+  
    */
   @DefaultMessage("Not sufficient quantity at location")
   @Key("notSuffcientQtyAtLocException")
@@ -10045,6 +11481,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Note".
    * 
    * @return translated "Note"
+  
    */
   @DefaultMessage("Note")
   @Key("note")
@@ -10054,6 +11491,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Internal note subject/text cannot be empty".
    * 
    * @return translated "Internal note subject/text cannot be empty"
+  
    */
   @DefaultMessage("Internal note subject/text cannot be empty")
   @Key("note.internalEmptyException")
@@ -10063,6 +11501,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Notes".
    * 
    * @return translated "Notes"
+  
    */
   @DefaultMessage("Notes")
   @Key("note.notes")
@@ -10072,6 +11511,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Note Editor".
    * 
    * @return translated "Note Editor"
+  
    */
   @DefaultMessage("Note Editor")
   @Key("noteEditor")
@@ -10081,6 +11521,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Notes".
    * 
    * @return translated "Notes"
+  
    */
   @DefaultMessage("Notes")
   @Key("notes")
@@ -10090,6 +11531,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Email Notification".
    * 
    * @return translated "Email Notification"
+  
    */
   @DefaultMessage("Email Notification")
   @Key("notificationPreference")
@@ -10099,6 +11541,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "NPI".
    * 
    * @return translated "NPI"
+  
    */
   @DefaultMessage("NPI")
   @Key("npi")
@@ -10108,6 +11551,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No. of Analyses".
    * 
    * @return translated "No. of Analyses"
+  
    */
   @DefaultMessage("No. of Analyses")
   @Key("numAnalyses")
@@ -10117,6 +11561,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Days Left".
    * 
    * @return translated "Days Left"
+  
    */
   @DefaultMessage("Days Left")
   @Key("numDaysLeft")
@@ -10126,6 +11571,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Forms".
    * 
    * @return translated "# Forms"
+  
    */
   @DefaultMessage("# Forms")
   @Key("numForms")
@@ -10135,6 +11581,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# instances".
    * 
    * @return translated "# instances"
+  
    */
   @DefaultMessage("# instances")
   @Key("numInstances")
@@ -10144,6 +11591,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# of Packages".
    * 
    * @return translated "# of Packages"
+  
    */
   @DefaultMessage("# of Packages")
   @Key("numPackages")
@@ -10153,6 +11601,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Rec".
    * 
    * @return translated "# Rec"
+  
    */
   @DefaultMessage("# Rec")
   @Key("numRec")
@@ -10162,6 +11611,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Rec cannot be less than zero ".
    * 
    * @return translated "# Rec cannot be less than zero "
+  
    */
   @DefaultMessage("# Rec cannot be less than zero ")
   @Key("numRecNotLessThanZeroException")
@@ -10171,6 +11621,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Rec is required for received items ".
    * 
    * @return translated "# Rec is required for received items "
+  
    */
   @DefaultMessage("# Rec is required for received items ")
   @Key("numRecReqForReceivedItemsException")
@@ -10180,6 +11631,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Req".
    * 
    * @return translated "# Req"
+  
    */
   @DefaultMessage("# Req")
   @Key("numReq")
@@ -10189,6 +11641,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Req cannot be less than # Rec ".
    * 
    * @return translated "# Req cannot be less than # Rec "
+  
    */
   @DefaultMessage("# Req cannot be less than # Rec ")
   @Key("numReqLessThanNumRecException")
@@ -10198,6 +11651,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Requested".
    * 
    * @return translated "# Requested"
+  
    */
   @DefaultMessage("# Requested")
   @Key("numRequested")
@@ -10207,6 +11661,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transfer inventory in or lower the number of kits requested".
    * 
    * @return translated "Transfer inventory in or lower the number of kits requested"
+  
    */
   @DefaultMessage("Transfer inventory in or lower the number of kits requested")
   @Key("numRequestedIsToHigh")
@@ -10216,6 +11671,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Requested must be more than zero".
    * 
    * @return translated "# Requested must be more than zero"
+  
    */
   @DefaultMessage("# Requested must be more than zero")
   @Key("numRequestedMoreThanZeroException")
@@ -10225,6 +11681,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Sample".
    * 
    * @return translated "# Sample"
+  
    */
   @DefaultMessage("# Sample")
   @Key("numSample")
@@ -10234,6 +11691,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No. of Samples".
    * 
    * @return translated "No. of Samples"
+  
    */
   @DefaultMessage("No. of Samples")
   @Key("numSamples")
@@ -10243,6 +11701,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "samples have been found.".
    * 
    * @return translated "samples have been found."
+  
    */
   @DefaultMessage("samples have been found.")
   @Key("numSamplesFound")
@@ -10252,6 +11711,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Tested".
    * 
    * @return translated "# Tested"
+  
    */
   @DefaultMessage("# Tested")
   @Key("numTested")
@@ -10261,6 +11721,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# To Make".
    * 
    * @return translated "# To Make"
+  
    */
   @DefaultMessage("# To Make")
   @Key("numToMake")
@@ -10270,6 +11731,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Format".
    * 
    * @return translated "Format"
+  
    */
   @DefaultMessage("Format")
   @Key("numberFormat")
@@ -10279,6 +11741,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "OK".
    * 
    * @return translated "OK"
+  
    */
   @DefaultMessage("OK")
   @Key("ok")
@@ -10288,6 +11751,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are still records in the table. Commit these records?".
    * 
    * @return translated "There are still records in the table. Commit these records?"
+  
    */
   @DefaultMessage("There are still records in the table. Commit these records?")
   @Key("onCloseConfirmBody")
@@ -10297,6 +11761,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Uncommited Records".
    * 
    * @return translated "Uncommited Records"
+  
    */
   @DefaultMessage("Uncommited Records")
   @Key("onCloseConfirmTitle")
@@ -10306,6 +11771,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "On Hand".
    * 
    * @return translated "On Hand"
+  
    */
   @DefaultMessage("On Hand")
   @Key("onHand")
@@ -10315,6 +11781,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This analysis has a status of ''On Hold,'' press Ok to complete or Cancel to abort.".
    * 
    * @return translated "This analysis has a status of ''On Hold,'' press Ok to complete or Cancel to abort."
+  
    */
   @DefaultMessage("This analysis has a status of ''On Hold,'' press Ok to complete or Cancel to abort.")
   @Key("onHoldWarning")
@@ -10324,6 +11791,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or More items are linked to this row. Please unlink them before removing this row.".
    * 
    * @return translated "One or More items are linked to this row. Please unlink them before removing this row."
+  
    */
   @DefaultMessage("One or More items are linked to this row. Please unlink them before removing this row.")
   @Key("oneOrMoreQcLinkOnRemove")
@@ -10332,7 +11800,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - One or more result values invalid".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - One or more result values invalid"
+  
    */
   @DefaultMessage("{0} : {1} - One or more result values invalid")
   @Key("oneOrMoreResultValuesInvalid")
@@ -10342,6 +11813,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only one row can be selected for removal".
    * 
    * @return translated "Only one row can be selected for removal"
+  
    */
   @DefaultMessage("Only one row can be selected for removal")
   @Key("oneRowsSelForRemoval")
@@ -10351,6 +11823,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please commit your worksheet before attempting another load".
    * 
    * @return translated "Please commit your worksheet before attempting another load"
+  
    */
   @DefaultMessage("Please commit your worksheet before attempting another load")
   @Key("oneWorksheetLoadPerCommit")
@@ -10360,6 +11833,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There can be only one active external term per profile".
    * 
    * @return translated "There can be only one active external term per profile"
+  
    */
   @DefaultMessage("There can be only one active external term per profile")
   @Key("onlyOneActiveExtTermPerProfileException")
@@ -10369,6 +11843,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only one type must be selected for querying".
    * 
    * @return translated "Only one type must be selected for querying"
+  
    */
   @DefaultMessage("Only one type must be selected for querying")
   @Key("onlyOneTypeSelectionForQueryException")
@@ -10378,6 +11853,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only pending or back-ordered orders can be selected to be processed".
    * 
    * @return translated "Only pending or back-ordered orders can be selected to be processed"
+  
    */
   @DefaultMessage("Only pending or back-ordered orders can be selected to be processed")
   @Key("onlyPendingBackOrderedProcessed")
@@ -10387,6 +11863,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only orders with no items can be processed through this option ".
    * 
    * @return translated "Only orders with no items can be processed through this option "
+  
    */
   @DefaultMessage("Only orders with no items can be processed through this option ")
   @Key("onlyProcessOrdersWithNoItems")
@@ -10396,6 +11873,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only pending orders can be processed through this option ".
    * 
    * @return translated "Only pending orders can be processed through this option "
+  
    */
   @DefaultMessage("Only pending orders can be processed through this option ")
   @Key("onlyProcessPendingOrders")
@@ -10405,6 +11883,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Open Query".
    * 
    * @return translated "Open Query"
+  
    */
   @DefaultMessage("Open Query")
   @Key("openQuery")
@@ -10414,6 +11893,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Operation".
    * 
    * @return translated "Operation"
+  
    */
   @DefaultMessage("Operation")
   @Key("operation")
@@ -10423,6 +11903,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lower case text".
    * 
    * @return translated "Lower case text"
+  
    */
   @DefaultMessage("Lower case text")
   @Key("optionALPHA_LOWER")
@@ -10432,6 +11913,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Mixed case text".
    * 
    * @return translated "Mixed case text"
+  
    */
   @DefaultMessage("Mixed case text")
   @Key("optionALPHA_MIXED")
@@ -10441,6 +11923,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Upper case text".
    * 
    * @return translated "Upper case text"
+  
    */
   @DefaultMessage("Upper case text")
   @Key("optionALPHA_UPPER")
@@ -10450,6 +11933,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date in ''yyyy-mm-dd'' format".
    * 
    * @return translated "Date in ''yyyy-mm-dd'' format"
+  
    */
   @DefaultMessage("Date in ''yyyy-mm-dd'' format")
   @Key("optionDATE")
@@ -10459,6 +11943,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Date and time in ''yyyy-mm-dd hh:mm'' format".
    * 
    * @return translated "Date and time in ''yyyy-mm-dd hh:mm'' format"
+  
    */
   @DefaultMessage("Date and time in ''yyyy-mm-dd hh:mm'' format")
   @Key("optionDATE_TIME")
@@ -10468,6 +11953,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Dictionary entry '{0}' ".
    * 
    * @return translated "Dictionary entry '{0}' "
+  
    */
   @DefaultMessage("Dictionary entry '{0}' ")
   @Key("optionDICTIONARY")
@@ -10477,6 +11963,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Numeric Range in between '{0}'".
    * 
    * @return translated "Numeric Range in between '{0}'"
+  
    */
   @DefaultMessage("Numeric Range in between '{0}'")
   @Key("optionNUMERIC")
@@ -10486,6 +11973,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time in ''hh:mm'' format".
    * 
    * @return translated "Time in ''hh:mm'' format"
+  
    */
   @DefaultMessage("Time in ''hh:mm'' format")
   @Key("optionTIME")
@@ -10495,6 +11983,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Titer range in between '{0}'".
    * 
    * @return translated "Titer range in between '{0}'"
+  
    */
   @DefaultMessage("Titer range in between '{0}'")
   @Key("optionTITER")
@@ -10504,6 +11993,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Optional".
    * 
    * @return translated "Optional"
+  
    */
   @DefaultMessage("Optional")
   @Key("optional")
@@ -10513,6 +12003,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Options".
    * 
    * @return translated "Options"
+  
    */
   @DefaultMessage("Options")
   @Key("options")
@@ -10522,6 +12013,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "OR".
    * 
    * @return translated "OR"
+  
    */
   @DefaultMessage("OR")
   @Key("or")
@@ -10531,6 +12023,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ord #".
    * 
    * @return translated "Ord #"
+  
    */
   @DefaultMessage("Ord #")
   @Key("ordNum")
@@ -10540,6 +12033,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order".
    * 
    * @return translated "Order"
+  
    */
   @DefaultMessage("Order")
   @Key("order")
@@ -10549,6 +12043,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All of your changes will be lost if you abort. Are you sure?".
    * 
    * @return translated "All of your changes will be lost if you abort. Are you sure?"
+  
    */
   @DefaultMessage("All of your changes will be lost if you abort. Are you sure?")
   @Key("order.abortWarning")
@@ -10558,6 +12053,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Attention".
    * 
    * @return translated "Attention"
+  
    */
   @DefaultMessage("Attention")
   @Key("order.attention")
@@ -10567,6 +12063,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "by".
    * 
    * @return translated "by"
+  
    */
   @DefaultMessage("by")
   @Key("order.by")
@@ -10576,6 +12073,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cancelled orders cannot be updated".
    * 
    * @return translated "Cancelled orders cannot be updated"
+  
    */
   @DefaultMessage("Cancelled orders cannot be updated")
   @Key("order.cancelledOrderCantBeUpdated")
@@ -10585,6 +12083,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Catalog #".
    * 
    * @return translated "Catalog #"
+  
    */
   @DefaultMessage("Catalog #")
   @Key("order.catalogNum")
@@ -10593,7 +12092,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Container Item Sequence is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Container Item Sequence is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Container Item Sequence is required")
   @Key("order.containerItemSequenceRequiredException")
@@ -10602,7 +12103,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Container is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Container is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Container is required")
   @Key("order.containerRequiredException")
@@ -10612,6 +12115,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cost Center".
    * 
    * @return translated "Cost Center"
+  
    */
   @DefaultMessage("Cost Center")
   @Key("order.costCenter")
@@ -10620,7 +12124,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Cost Center is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Cost Center is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Cost Center is required")
   @Key("order.costCenterRequiredException")
@@ -10630,6 +12136,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Customer".
    * 
    * @return translated "Customer"
+  
    */
   @DefaultMessage("Customer")
   @Key("order.customer")
@@ -10639,6 +12146,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Valid Begin and End dates, Frequency and Unit must be specified to show dates".
    * 
    * @return translated "Valid Begin and End dates, Frequency and Unit must be specified to show dates"
+  
    */
   @DefaultMessage("Valid Begin and End dates, Frequency and Unit must be specified to show dates")
   @Key("order.datesFreqUnitNotSpec")
@@ -10647,7 +12155,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: A vendor order must not have the inventory item \"{1}\" more than once".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Order # {0,number,#0}: A vendor order must not have the inventory item \"{1}\" more than once"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: A vendor order must not have the inventory item \"{1}\" more than once")
   @Key("order.duplicateInvItemVendorOrderException")
@@ -10656,7 +12167,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: End date must not be before begin date".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: End date must not be before begin date"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: End date must not be before begin date")
   @Key("order.endDateAfterBeginDateException")
@@ -10666,6 +12179,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ext Order #".
    * 
    * @return translated "Ext Order #"
+  
    */
   @DefaultMessage("Ext Order #")
   @Key("order.extOrderNum")
@@ -10675,6 +12189,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Filled".
    * 
    * @return translated "Filled"
+  
    */
   @DefaultMessage("Filled")
   @Key("order.filled")
@@ -10683,7 +12198,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Frequency must be greater than zero".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Frequency must be greater than zero"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Frequency must be greater than zero")
   @Key("order.freqInvalidException")
@@ -10692,7 +12209,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The auxiliary group {0} is inactive and was not duplicated".
    * 
+   * @param arg0 "{0}"
    * @return translated "The auxiliary group {0} is inactive and was not duplicated"
+  
    */
   @DefaultMessage("The auxiliary group {0} is inactive and was not duplicated")
   @Key("order.inactiveAuxGroupWarning")
@@ -10701,7 +12220,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The container {0} is inactive and should be changed".
    * 
+   * @param arg0 "{0}"
    * @return translated "The container {0} is inactive and should be changed"
+  
    */
   @DefaultMessage("The container {0} is inactive and should be changed")
   @Key("order.inactiveContainerWarning")
@@ -10710,7 +12231,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The inventory item {0} is inactive and was not duplicated".
    * 
+   * @param arg0 "{0}"
    * @return translated "The inventory item {0} is inactive and was not duplicated"
+  
    */
   @DefaultMessage("The inventory item {0} is inactive and was not duplicated")
   @Key("order.inactiveItemWarning")
@@ -10719,7 +12242,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The organization {0} is inactive and was not duplicated".
    * 
+   * @param arg0 "{0}"
    * @return translated "The organization {0} is inactive and was not duplicated"
+  
    */
   @DefaultMessage("The organization {0} is inactive and was not duplicated")
   @Key("order.inactiveOrganizationWarning")
@@ -10728,7 +12253,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The sample type {0} is inactive and was not duplicated".
    * 
+   * @param arg0 "{0}"
    * @return translated "The sample type {0} is inactive and was not duplicated"
+  
    */
   @DefaultMessage("The sample type {0} is inactive and was not duplicated")
   @Key("order.inactiveSampleTypeWarning")
@@ -10737,7 +12264,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The test {0}, {1} is inactive and was not duplicated".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "The test {0}, {1} is inactive and was not duplicated"
+  
    */
   @DefaultMessage("The test {0}, {1} is inactive and was not duplicated")
   @Key("order.inactiveTestWarning")
@@ -10746,7 +12276,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  "
+  
    */
   @DefaultMessage("Order # {0,number,#0}: The sample type for the container with Item # {1} is invalid for ''{2}''  ")
   @Key("order.invalidSampleTypeForTestWarning")
@@ -10755,7 +12289,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Inventory Item is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Inventory Item is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Inventory Item is required")
   @Key("order.inventoryItemRequiredException")
@@ -10764,7 +12300,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Inventory Quantity is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Inventory Quantity is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Inventory Quantity is required")
   @Key("order.inventoryQuantityRequiredException")
@@ -10774,6 +12312,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Item #".
    * 
    * @return translated "Item #"
+  
    */
   @DefaultMessage("Item #")
   @Key("order.itemNum")
@@ -10783,6 +12322,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items".
    * 
    * @return translated "Items"
+  
    */
   @DefaultMessage("Items")
   @Key("order.items")
@@ -10791,7 +12331,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Duplicating more than one container is not allowed".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Duplicating more than one container is not allowed"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Duplicating more than one container is not allowed")
   @Key("order.multiRowDuplicateNotAllowed")
@@ -10800,7 +12342,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Moving up/down more than one container is not allowed".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Moving up/down more than one container is not allowed"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Moving up/down more than one container is not allowed")
   @Key("order.multiRowMoveNotAllowed")
@@ -10809,7 +12353,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Check All/Uncheck All for more than one test is not allowed".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Check All/Uncheck All for more than one test is not allowed"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Check All/Uncheck All for more than one test is not allowed")
   @Key("order.multiTestCheckNotAllowed")
@@ -10818,7 +12364,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}\": Only one record with the type Bill To is allowed".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}\": Only one record with the type Bill To is allowed"
+  
    */
   @DefaultMessage("Order # {0,number,#0}\": Only one record with the type Bill To is allowed")
   @Key("order.multipleBillToException")
@@ -10827,7 +12375,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Only one record with the type Report To is allowed ".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Only one record with the type Report To is allowed "
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Only one record with the type Report To is allowed ")
   @Key("order.multipleReportToException")
@@ -10837,6 +12387,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Needed In Days".
    * 
    * @return translated "Needed In Days"
+  
    */
   @DefaultMessage("Needed In Days")
   @Key("order.neededDays")
@@ -10845,7 +12396,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Needed In Days is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Needed In Days is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Needed In Days is required")
   @Key("order.neededInDaysRequiredException")
@@ -10854,7 +12407,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: No container is present for Item # {1} which is assigned to ''{2}'' ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Order # {0,number,#0}: No container is present for Item # {1} which is assigned to ''{2}'' "
+  
    */
   @DefaultMessage("Order # {0,number,#0}: No container is present for Item # {1} which is assigned to ''{2}'' ")
   @Key("order.noContainerWithItemNumWarning")
@@ -10863,7 +12420,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: No sample type specified for the container with Item # {1}  ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Order # {0,number,#0}: No sample type specified for the container with Item # {1}  "
+  
    */
   @DefaultMessage("Order # {0,number,#0}: No sample type specified for the container with Item # {1}  ")
   @Key("order.noSampleTypeForContainerWarning")
@@ -10872,7 +12432,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Not all dates generated with this frequency are valid".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Not all dates generated with this frequency are valid"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Not all dates generated with this frequency are valid")
   @Key("order.notAllDatesValid")
@@ -10882,6 +12444,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "# Forms".
    * 
    * @return translated "# Forms"
+  
    */
   @DefaultMessage("# Forms")
   @Key("order.numForms")
@@ -10890,7 +12453,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: # Forms is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: # Forms is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: # Forms is required")
   @Key("order.numFormsRequiredException")
@@ -10900,6 +12465,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order".
    * 
    * @return translated "Order"
+  
    */
   @DefaultMessage("Order")
   @Key("order.order")
@@ -10909,6 +12475,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Container".
    * 
    * @return translated "History - Container"
+  
    */
   @DefaultMessage("History - Container")
   @Key("order.orderContainerHistory")
@@ -10918,6 +12485,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Date".
    * 
    * @return translated "Order Date"
+  
    */
   @DefaultMessage("Order Date")
   @Key("order.orderDate")
@@ -10927,6 +12495,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Order".
    * 
    * @return translated "History - Order"
+  
    */
   @DefaultMessage("History - Order")
   @Key("order.orderHistory")
@@ -10936,6 +12505,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Item".
    * 
    * @return translated "History - Item"
+  
    */
   @DefaultMessage("History - Item")
   @Key("order.orderItemHistory")
@@ -10945,6 +12515,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order #".
    * 
    * @return translated "Order #"
+  
    */
   @DefaultMessage("Order #")
   @Key("order.orderNum")
@@ -10954,6 +12525,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Organization".
    * 
    * @return translated "History - Organization"
+  
    */
   @DefaultMessage("History - Organization")
   @Key("order.orderOrganizationHistory")
@@ -10963,6 +12535,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Will Recur On".
    * 
    * @return translated "Order Will Recur On"
+  
    */
   @DefaultMessage("Order Will Recur On")
   @Key("order.orderRecurOn")
@@ -10972,6 +12545,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping Notes".
    * 
    * @return translated "Shipping Notes"
+  
    */
   @DefaultMessage("Shipping Notes")
   @Key("order.orderShippingNotes")
@@ -10981,6 +12555,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Test".
    * 
    * @return translated "History - Test"
+  
    */
   @DefaultMessage("History - Test")
   @Key("order.orderTestHistory")
@@ -10989,7 +12564,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Organization is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Organization is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Organization is required")
   @Key("order.organizationRequiredException")
@@ -10998,7 +12575,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Organization Type is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Organization Type is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Organization Type is required")
   @Key("order.organizationTypeRequiredException")
@@ -11008,6 +12587,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Order #".
    * 
    * @return translated "Parent Order #"
+  
    */
   @DefaultMessage("Parent Order #")
   @Key("order.parentOrderNum")
@@ -11016,7 +12596,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: This value must not exceed {1}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Order # {0,number,#0}: This value must not exceed {1}"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: This value must not exceed {1}")
   @Key("order.qtyNotMoreThanMaxException")
@@ -11026,6 +12609,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Recur".
    * 
    * @return translated "Recur"
+  
    */
   @DefaultMessage("Recur")
   @Key("order.recur")
@@ -11035,6 +12619,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Errors ocurred while recuring the order".
    * 
    * @return translated "Errors ocurred while recuring the order"
+  
    */
   @DefaultMessage("Errors ocurred while recuring the order")
   @Key("order.recurError")
@@ -11043,7 +12628,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Recurrence Active Begin is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Recurrence Active Begin is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Recurrence Active Begin is required")
   @Key("order.recurrenceActiveBeginRequiredException")
@@ -11052,7 +12639,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Recurrence Active End is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Recurrence Active End is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Recurrence Active End is required")
   @Key("order.recurrenceActiveEndRequiredException")
@@ -11061,7 +12650,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Recurrence Frequency is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Recurrence Frequency is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Recurrence Frequency is required")
   @Key("order.recurrenceFrequencyRequiredException")
@@ -11070,7 +12661,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Recurrence Unit is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Recurrence Unit is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Recurrence Unit is required")
   @Key("order.recurrenceUnitRequiredException")
@@ -11080,6 +12673,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Remove Test".
    * 
    * @return translated "Remove Test"
+  
    */
   @DefaultMessage("Remove Test")
   @Key("order.removeTest")
@@ -11089,6 +12683,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Requested By".
    * 
    * @return translated "Requested By"
+  
    */
   @DefaultMessage("Requested By")
   @Key("order.requestedBy")
@@ -11098,6 +12693,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Send-out Order".
    * 
    * @return translated "Send-out Order"
+  
    */
   @DefaultMessage("Send-out Order")
   @Key("order.sendoutOrder")
@@ -11107,6 +12703,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order items and supplies to be sent to external users.".
    * 
    * @return translated "Order items and supplies to be sent to external users."
+  
    */
   @DefaultMessage("Order items and supplies to be sent to external users.")
   @Key("order.sendoutOrderDescription")
@@ -11116,6 +12713,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ship From".
    * 
    * @return translated "Ship From"
+  
    */
   @DefaultMessage("Ship From")
   @Key("order.shipFrom")
@@ -11124,7 +12722,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0}: Ship From is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0}: Ship From is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0}: Ship From is required")
   @Key("order.shipFromRequiredException")
@@ -11134,6 +12734,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ship To".
    * 
    * @return translated "Ship To"
+  
    */
   @DefaultMessage("Ship To")
   @Key("order.shipTo")
@@ -11143,6 +12744,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping Information".
    * 
    * @return translated "Shipping Information"
+  
    */
   @DefaultMessage("Shipping Information")
   @Key("order.shippingInfo")
@@ -11152,6 +12754,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Show Upcoming Dates".
    * 
    * @return translated "Show Upcoming Dates"
+  
    */
   @DefaultMessage("Show Upcoming Dates")
   @Key("order.showDates")
@@ -11160,7 +12763,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Order # {0,number,#0} Status is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Order # {0,number,#0} Status is required"
+  
    */
   @DefaultMessage("Order # {0,number,#0} Status is required")
   @Key("order.statusRequiredException")
@@ -11170,6 +12775,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test by Method, Description".
    * 
    * @return translated "Test by Method, Description"
+  
    */
   @DefaultMessage("Test by Method, Description")
   @Key("order.testByMethodDescription")
@@ -11179,6 +12785,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unit Cost".
    * 
    * @return translated "Unit Cost"
+  
    */
   @DefaultMessage("Unit Cost")
   @Key("order.unitCost")
@@ -11188,6 +12795,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Vendor".
    * 
    * @return translated "Vendor"
+  
    */
   @DefaultMessage("Vendor")
   @Key("order.vendor")
@@ -11196,7 +12804,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} couldn''t be found ".
    * 
+   * @param arg0 "{0}"
    * @return translated "{0} couldn''t be found "
+  
    */
   @DefaultMessage("{0} couldn''t be found ")
   @Key("orderAuxDataNotFoundError")
@@ -11206,6 +12816,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Container".
    * 
    * @return translated "History - Container"
+  
    */
   @DefaultMessage("History - Container")
   @Key("orderContainerHistory")
@@ -11215,6 +12826,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Date".
    * 
    * @return translated "Order Date"
+  
    */
   @DefaultMessage("Order Date")
   @Key("orderDate")
@@ -11224,6 +12836,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Place and fill orders for inventory items.".
    * 
    * @return translated "Place and fill orders for inventory items."
+  
    */
   @DefaultMessage("Place and fill orders for inventory items.")
   @Key("orderDescription")
@@ -11233,6 +12846,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Order".
    * 
    * @return translated "History - Order"
+  
    */
   @DefaultMessage("History - Order")
   @Key("orderHistory")
@@ -11242,6 +12856,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order # must be the id of an existing Send-out order".
    * 
    * @return translated "Order # must be the id of an existing Send-out order"
+  
    */
   @DefaultMessage("Order # must be the id of an existing Send-out order")
   @Key("orderIdInvalidException")
@@ -11250,7 +12865,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} ''{1}'' is invalid and couldn''t be imported".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} ''{1}'' is invalid and couldn''t be imported"
+  
    */
   @DefaultMessage("{0} ''{1}'' is invalid and couldn''t be imported")
   @Key("orderImportError")
@@ -11260,6 +12878,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Item".
    * 
    * @return translated "History - Item"
+  
    */
   @DefaultMessage("History - Item")
   @Key("orderItemHistory")
@@ -11269,6 +12888,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Note From Order".
    * 
    * @return translated "Note From Order"
+  
    */
   @DefaultMessage("Note From Order")
   @Key("orderNoteSubject")
@@ -11278,6 +12898,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order #".
    * 
    * @return translated "Order #"
+  
    */
   @DefaultMessage("Order #")
   @Key("orderNum")
@@ -11287,6 +12908,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Organization".
    * 
    * @return translated "History - Organization"
+  
    */
   @DefaultMessage("History - Organization")
   @Key("orderOrganizationHistory")
@@ -11296,6 +12918,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Will Recur On".
    * 
    * @return translated "Order Will Recur On"
+  
    */
   @DefaultMessage("Order Will Recur On")
   @Key("orderRecurOn")
@@ -11305,6 +12928,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Recurrence".
    * 
    * @return translated "Order Recurrence"
+  
    */
   @DefaultMessage("Order Recurrence")
   @Key("orderRecurrence")
@@ -11314,6 +12938,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order Request Form".
    * 
    * @return translated "Order Request Form"
+  
    */
   @DefaultMessage("Order Request Form")
   @Key("orderRequestForm")
@@ -11323,6 +12948,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping Notes".
    * 
    * @return translated "Shipping Notes"
+  
    */
   @DefaultMessage("Shipping Notes")
   @Key("orderShippingNotes")
@@ -11332,6 +12958,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This order is not pending; you cannot update it ".
    * 
    * @return translated "This order is not pending; you cannot update it "
+  
    */
   @DefaultMessage("This order is not pending; you cannot update it ")
   @Key("orderStatusNotPendingForUpdate")
@@ -11341,6 +12968,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This order is neither pending nor recurring; you cannot update it ".
    * 
    * @return translated "This order is neither pending nor recurring; you cannot update it "
+  
    */
   @DefaultMessage("This order is neither pending nor recurring; you cannot update it ")
   @Key("orderStatusNotPendingOrRecurForUpdate")
@@ -11350,6 +12978,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Test".
    * 
    * @return translated "History - Test"
+  
    */
   @DefaultMessage("History - Test")
   @Key("orderTestHistory")
@@ -11359,6 +12988,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Organization Address ".
    * 
    * @return translated "History - Organization Address "
+  
    */
   @DefaultMessage("History - Organization Address ")
   @Key("orgAddressHistory")
@@ -11368,6 +12998,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Contact Address".
    * 
    * @return translated "History - Contact Address"
+  
    */
   @DefaultMessage("History - Contact Address")
   @Key("orgContactAddressHistory")
@@ -11377,6 +13008,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Contact".
    * 
    * @return translated "History - Contact"
+  
    */
   @DefaultMessage("History - Contact")
   @Key("orgContactHistory")
@@ -11386,6 +13018,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Organization".
    * 
    * @return translated "History - Organization"
+  
    */
   @DefaultMessage("History - Organization")
   @Key("orgHistory")
@@ -11395,6 +13028,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Org Id".
    * 
    * @return translated "Org Id"
+  
    */
   @DefaultMessage("Org Id")
   @Key("orgId")
@@ -11403,7 +13037,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Samples from {0} are to be held or refused   ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Samples from {0} are to be held or refused   "
+  
    */
   @DefaultMessage("Samples from {0} are to be held or refused   ")
   @Key("orgMarkedAsHoldRefuseSample")
@@ -11413,6 +13049,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An organization must be specified for a section flagged as \"External\"".
    * 
    * @return translated "An organization must be specified for a section flagged as \"External\""
+  
    */
   @DefaultMessage("An organization must be specified for a section flagged as \"External\"")
   @Key("orgNotSpecForExtSectionException")
@@ -11422,6 +13059,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Parameter".
    * 
    * @return translated "History - Parameter"
+  
    */
   @DefaultMessage("History - Parameter")
   @Key("orgParameterHistory")
@@ -11431,6 +13069,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organization".
    * 
    * @return translated "Organization"
+  
    */
   @DefaultMessage("Organization")
   @Key("organization")
@@ -11440,6 +13079,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cell #".
    * 
    * @return translated "Cell #"
+  
    */
   @DefaultMessage("Cell #")
   @Key("organization.cellNumber")
@@ -11449,6 +13089,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Email".
    * 
    * @return translated "Email"
+  
    */
   @DefaultMessage("Email")
   @Key("organization.email")
@@ -11458,6 +13099,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fax #".
    * 
    * @return translated "Fax #"
+  
    */
   @DefaultMessage("Fax #")
   @Key("organization.faxNumber")
@@ -11467,6 +13109,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Home #".
    * 
    * @return translated "Home #"
+  
    */
   @DefaultMessage("Home #")
   @Key("organization.homeNumber")
@@ -11476,6 +13119,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Work #".
    * 
    * @return translated "Work #"
+  
    */
   @DefaultMessage("Work #")
   @Key("organization.workNumber")
@@ -11485,6 +13129,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage submitter and partner information.".
    * 
    * @return translated "Manage submitter and partner information."
+  
    */
   @DefaultMessage("Manage submitter and partner information.")
   @Key("organizationDescription")
@@ -11494,6 +13139,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organization Info".
    * 
    * @return translated "Organization Info"
+  
    */
   @DefaultMessage("Organization Info")
   @Key("organizationInfo")
@@ -11503,6 +13149,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organization Name".
    * 
    * @return translated "Organization Name"
+  
    */
   @DefaultMessage("Organization Name")
   @Key("organizationName")
@@ -11512,6 +13159,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organization #".
    * 
    * @return translated "Organization #"
+  
    */
   @DefaultMessage("Organization #")
   @Key("organizationNum")
@@ -11521,6 +13169,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organizations".
    * 
    * @return translated "Organizations"
+  
    */
   @DefaultMessage("Organizations")
   @Key("organizationRef")
@@ -11530,6 +13179,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "ClientReleasedReport".
    * 
    * @return translated "ClientReleasedReport"
+  
    */
   @DefaultMessage("ClientReleasedReport")
   @Key("organizationRelRef")
@@ -11539,6 +13189,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organizations".
    * 
    * @return translated "Organizations"
+  
    */
   @DefaultMessage("Organizations")
   @Key("organizations")
@@ -11548,6 +13199,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Other".
    * 
    * @return translated "Other"
+  
    */
   @DefaultMessage("Other")
   @Key("other")
@@ -11557,6 +13209,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Other analytes from the same analyte group were also removed".
    * 
    * @return translated "Other analytes from the same analyte group were also removed"
+  
    */
   @DefaultMessage("Other analytes from the same analyte group were also removed")
   @Key("otherAnalytesRemoved")
@@ -11566,6 +13219,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Override ".
    * 
    * @return translated "Override "
+  
    */
   @DefaultMessage("Override ")
   @Key("override")
@@ -11575,6 +13229,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Owner".
    * 
    * @return translated "Owner"
+  
    */
   @DefaultMessage("Owner")
   @Key("owner")
@@ -11584,6 +13239,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "P1".
    * 
    * @return translated "P1"
+  
    */
   @DefaultMessage("P1")
   @Key("p1")
@@ -11593,6 +13249,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "P2".
    * 
    * @return translated "P2"
+  
    */
   @DefaultMessage("P2")
   @Key("p2")
@@ -11602,6 +13259,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "P3   ".
    * 
    * @return translated "P3   "
+  
    */
   @DefaultMessage("P3   ")
   @Key("p3")
@@ -11611,6 +13269,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Panel".
    * 
    * @return translated "Panel"
+  
    */
   @DefaultMessage("Panel")
   @Key("panel")
@@ -11620,6 +13279,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define a grouping of tests that are often assigned to a sample.".
    * 
    * @return translated "Define a grouping of tests that are often assigned to a sample."
+  
    */
   @DefaultMessage("Define a grouping of tests that are often assigned to a sample.")
   @Key("panelDescription")
@@ -11629,6 +13289,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Panel".
    * 
    * @return translated "History - Panel"
+  
    */
   @DefaultMessage("History - Panel")
   @Key("panelHistory")
@@ -11638,6 +13299,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Panel Item".
    * 
    * @return translated "Panel Item"
+  
    */
   @DefaultMessage("Panel Item")
   @Key("panelItem")
@@ -11647,6 +13309,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Panel Item".
    * 
    * @return translated "History - Panel Item"
+  
    */
   @DefaultMessage("History - Panel Item")
   @Key("panelItemHistory")
@@ -11656,6 +13319,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error loading sections for selected panel".
    * 
    * @return translated "Error loading sections for selected panel"
+  
    */
   @DefaultMessage("Error loading sections for selected panel")
   @Key("panelSectionLoadError")
@@ -11665,6 +13329,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Panel Selection".
    * 
    * @return translated "Panel Selection"
+  
    */
   @DefaultMessage("Panel Selection")
   @Key("panelSelection")
@@ -11674,6 +13339,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parameter".
    * 
    * @return translated "Parameter"
+  
    */
   @DefaultMessage("Parameter")
   @Key("parameter")
@@ -11683,6 +13349,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parameters ".
    * 
    * @return translated "Parameters "
+  
    */
   @DefaultMessage("Parameters ")
   @Key("parameters")
@@ -11692,6 +13359,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent".
    * 
    * @return translated "Parent"
+  
    */
   @DefaultMessage("Parent")
   @Key("parent")
@@ -11701,6 +13369,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Analyte".
    * 
    * @return translated "Parent Analyte"
+  
    */
   @DefaultMessage("Parent Analyte")
   @Key("parentAnalyte")
@@ -11710,6 +13379,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Item".
    * 
    * @return translated "Parent Item"
+  
    */
   @DefaultMessage("Parent Item")
   @Key("parentItem")
@@ -11719,6 +13389,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Location".
    * 
    * @return translated "Parent Location"
+  
    */
   @DefaultMessage("Parent Location")
   @Key("parentLocation")
@@ -11728,6 +13399,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An inventory item cannot be flagged as Lot # Required if its parent inventory item is not".
    * 
    * @return translated "An inventory item cannot be flagged as Lot # Required if its parent inventory item is not"
+  
    */
   @DefaultMessage("An inventory item cannot be flagged as Lot # Required if its parent inventory item is not")
   @Key("parentNotFlaggedLotReqException")
@@ -11737,6 +13409,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This is the id of the order that was recurred to create this order".
    * 
    * @return translated "This is the id of the order that was recurred to create this order"
+  
    */
   @DefaultMessage("This is the id of the order that was recurred to create this order")
   @Key("parentOrderDescription")
@@ -11746,6 +13419,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Order #".
    * 
    * @return translated "Parent Order #"
+  
    */
   @DefaultMessage("Parent Order #")
   @Key("parentOrderNum")
@@ -11755,6 +13429,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Org".
    * 
    * @return translated "Parent Org"
+  
    */
   @DefaultMessage("Parent Org")
   @Key("parentOrganization")
@@ -11764,6 +13439,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Ratio".
    * 
    * @return translated "Parent Ratio"
+  
    */
   @DefaultMessage("Parent Ratio")
   @Key("parentRatio")
@@ -11773,6 +13449,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent ratio must be greater than zero".
    * 
    * @return translated "Parent ratio must be greater than zero"
+  
    */
   @DefaultMessage("Parent ratio must be greater than zero")
   @Key("parentRatioMoreThanZeroException")
@@ -11782,6 +13459,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent ratio is required if a parent inventory item is specified".
    * 
    * @return translated "Parent ratio is required if a parent inventory item is specified"
+  
    */
   @DefaultMessage("Parent ratio is required if a parent inventory item is specified")
   @Key("parentRatioReqIfParentItemSpecException")
@@ -11791,6 +13469,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Section".
    * 
    * @return translated "Parent Section"
+  
    */
   @DefaultMessage("Parent Section")
   @Key("parentSection")
@@ -11800,6 +13479,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Parent Storage".
    * 
    * @return translated "Parent Storage"
+  
    */
   @DefaultMessage("Parent Storage")
   @Key("parentStorage")
@@ -11809,6 +13489,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Password:".
    * 
    * @return translated "Password:"
+  
    */
   @DefaultMessage("Password:")
   @Key("password")
@@ -11818,6 +13499,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Paste".
    * 
    * @return translated "Paste"
+  
    */
   @DefaultMessage("Paste")
   @Key("paste")
@@ -11827,6 +13509,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Patient".
    * 
    * @return translated "Patient"
+  
    */
   @DefaultMessage("Patient")
   @Key("patient")
@@ -11836,6 +13519,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Birth".
    * 
    * @return translated "Birth"
+  
    */
   @DefaultMessage("Birth")
   @Key("patient.birth")
@@ -11845,6 +13529,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Birth (D,T)".
    * 
    * @return translated "Birth (D,T)"
+  
    */
   @DefaultMessage("Birth (D,T)")
   @Key("patient.birthDT")
@@ -11854,6 +13539,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Birth date is required for a patient ".
    * 
    * @return translated "Birth date is required for a patient "
+  
    */
   @DefaultMessage("Birth date is required for a patient ")
   @Key("patient.birthDateRequiredException")
@@ -11863,6 +13549,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "City is required for a patient ".
    * 
    * @return translated "City is required for a patient "
+  
    */
   @DefaultMessage("City is required for a patient ")
   @Key("patient.cityRequiredException")
@@ -11872,6 +13559,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Edit".
    * 
    * @return translated "Edit"
+  
    */
   @DefaultMessage("Edit")
   @Key("patient.edit")
@@ -11881,6 +13569,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ethnicity".
    * 
    * @return translated "Ethnicity"
+  
    */
   @DefaultMessage("Ethnicity")
   @Key("patient.ethnicity")
@@ -11890,6 +13579,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "First name is required for a patient ".
    * 
    * @return translated "First name is required for a patient "
+  
    */
   @DefaultMessage("First name is required for a patient ")
   @Key("patient.firstNameRequiredException")
@@ -11899,6 +13589,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Full Window Search".
    * 
    * @return translated "Full Window Search"
+  
    */
   @DefaultMessage("Full Window Search")
   @Key("patient.fullWindowSearch")
@@ -11908,6 +13599,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Gender".
    * 
    * @return translated "Gender"
+  
    */
   @DefaultMessage("Gender")
   @Key("patient.gender")
@@ -11917,6 +13609,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Last name is required for a patient ".
    * 
    * @return translated "Last name is required for a patient "
+  
    */
   @DefaultMessage("Last name is required for a patient ")
   @Key("patient.lastnameRequiredException")
@@ -11926,6 +13619,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Maiden".
    * 
    * @return translated "Maiden"
+  
    */
   @DefaultMessage("Maiden")
   @Key("patient.maiden")
@@ -11935,6 +13629,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "NID".
    * 
    * @return translated "NID"
+  
    */
   @DefaultMessage("NID")
   @Key("patient.nationalId")
@@ -11944,6 +13639,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Next Of Kin".
    * 
    * @return translated "Next Of Kin"
+  
    */
   @DefaultMessage("Next Of Kin")
   @Key("patient.nextOfKin")
@@ -11953,6 +13649,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Patient".
    * 
    * @return translated "Patient"
+  
    */
   @DefaultMessage("Patient")
   @Key("patient.patient")
@@ -11962,6 +13659,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Race".
    * 
    * @return translated "Race"
+  
    */
   @DefaultMessage("Race")
   @Key("patient.race")
@@ -11971,6 +13669,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Relation".
    * 
    * @return translated "Relation"
+  
    */
   @DefaultMessage("Relation")
   @Key("patient.relation")
@@ -11980,6 +13679,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Search By Fields".
    * 
    * @return translated "Search By Fields"
+  
    */
   @DefaultMessage("Search By Fields")
   @Key("patient.searchByFields")
@@ -11989,6 +13689,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Street Address is required for a patient ".
    * 
    * @return translated "Street Address is required for a patient "
+  
    */
   @DefaultMessage("Street Address is required for a patient ")
   @Key("patient.streetAddressRequiredException")
@@ -11998,6 +13699,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unlink".
    * 
    * @return translated "Unlink"
+  
    */
   @DefaultMessage("Unlink")
   @Key("patient.unlink")
@@ -12007,6 +13709,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Patient description".
    * 
    * @return translated "Patient description"
+  
    */
   @DefaultMessage("Patient description")
   @Key("patientDescription")
@@ -12016,6 +13719,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Patient Lookup ".
    * 
    * @return translated "Patient Lookup "
+  
    */
   @DefaultMessage("Patient Lookup ")
   @Key("patientLookup.patientLookup")
@@ -12025,6 +13729,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Period ".
    * 
    * @return translated "Period "
+  
    */
   @DefaultMessage("Period ")
   @Key("period")
@@ -12034,6 +13739,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Person".
    * 
    * @return translated "Person"
+  
    */
   @DefaultMessage("Person")
   @Key("person")
@@ -12043,6 +13749,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Person description".
    * 
    * @return translated "Person description"
+  
    */
   @DefaultMessage("Person description")
   @Key("personDescription")
@@ -12052,6 +13759,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Phone #".
    * 
    * @return translated "Phone #"
+  
    */
   @DefaultMessage("Phone #")
   @Key("phone")
@@ -12061,6 +13769,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Phone/Email".
    * 
    * @return translated "Phone/Email"
+  
    */
   @DefaultMessage("Phone/Email")
   @Key("phoneEmail")
@@ -12070,6 +13779,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "999/999-9999".
    * 
    * @return translated "999/999-9999"
+  
    */
   @DefaultMessage("999/999-9999")
   @Key("phonePattern")
@@ -12079,6 +13789,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "999/999-9999.9999".
    * 
    * @return translated "999/999-9999.9999"
+  
    */
   @DefaultMessage("999/999-9999.9999")
   @Key("phoneWithExtensionPattern")
@@ -12088,6 +13799,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Phys #".
    * 
    * @return translated "Phys #"
+  
    */
   @DefaultMessage("Phys #")
   @Key("physCount")
@@ -12097,6 +13809,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Phys # must not be equal to On Hand".
    * 
    * @return translated "Phys # must not be equal to On Hand"
+  
    */
   @DefaultMessage("Phys # must not be equal to On Hand")
   @Key("physCountNotEqualToOnHandException")
@@ -12106,6 +13819,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a type     ".
    * 
    * @return translated "Please select a type     "
+  
    */
   @DefaultMessage("Please select a type     ")
   @Key("pleaseSelectType")
@@ -12115,6 +13829,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot".
    * 
    * @return translated "Plot"
+  
    */
   @DefaultMessage("Plot")
   @Key("plot")
@@ -12124,6 +13839,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot Data".
    * 
    * @return translated "Plot Data"
+  
    */
   @DefaultMessage("Plot Data")
   @Key("plotData")
@@ -12133,6 +13849,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot Date".
    * 
    * @return translated "Plot Date"
+  
    */
   @DefaultMessage("Plot Date")
   @Key("plotDate")
@@ -12142,6 +13859,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot Interval".
    * 
    * @return translated "Plot Interval"
+  
    */
   @DefaultMessage("Plot Interval")
   @Key("plotInterval")
@@ -12151,6 +13869,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot Using".
    * 
    * @return translated "Plot Using"
+  
    */
   @DefaultMessage("Plot Using")
   @Key("plotUsing")
@@ -12160,6 +13879,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot Value".
    * 
    * @return translated "Plot Value"
+  
    */
   @DefaultMessage("Plot Value")
   @Key("plotValue")
@@ -12169,6 +13889,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a category".
    * 
    * @return translated "Please select a category"
+  
    */
   @DefaultMessage("Please select a category")
   @Key("plsSelCat")
@@ -12178,6 +13899,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a store".
    * 
    * @return translated "Please select a store"
+  
    */
   @DefaultMessage("Please select a store")
   @Key("plsSelStore")
@@ -12187,6 +13909,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Point Desc".
    * 
    * @return translated "Point Desc"
+  
    */
   @DefaultMessage("Point Desc")
   @Key("pointDesc")
@@ -12196,6 +13919,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Pop-out".
    * 
    * @return translated "Pop-out"
+  
    */
   @DefaultMessage("Pop-out")
   @Key("popout")
@@ -12205,6 +13929,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Population".
    * 
    * @return translated "Population"
+  
    */
   @DefaultMessage("Population")
   @Key("population")
@@ -12214,6 +13939,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The value for position must not exceed the subset capacity".
    * 
    * @return translated "The value for position must not exceed the subset capacity"
+  
    */
   @DefaultMessage("The value for position must not exceed the subset capacity")
   @Key("posExcSubsetCapacityException")
@@ -12223,6 +13949,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The value for position must not exceed the total capacity".
    * 
    * @return translated "The value for position must not exceed the total capacity"
+  
    */
   @DefaultMessage("The value for position must not exceed the total capacity")
   @Key("posExcTotalCapacityException")
@@ -12232,6 +13959,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Position must be greater than zero".
    * 
    * @return translated "Position must be greater than zero"
+  
    */
   @DefaultMessage("Position must be greater than zero")
   @Key("posMoreThanZeroException")
@@ -12241,6 +13969,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type must not be Duplicate if position is 1".
    * 
    * @return translated "Type must not be Duplicate if position is 1"
+  
    */
   @DefaultMessage("Type must not be Duplicate if position is 1")
   @Key("posOneDuplicateException")
@@ -12250,6 +13979,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Position must not be specifed if type is not Fixed or Duplicate".
    * 
    * @return translated "Position must not be specifed if type is not Fixed or Duplicate"
+  
    */
   @DefaultMessage("Position must not be specifed if type is not Fixed or Duplicate")
   @Key("posSpecifiedException")
@@ -12259,6 +13989,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Position".
    * 
    * @return translated "Position"
+  
    */
   @DefaultMessage("Position")
   @Key("position")
@@ -12268,6 +13999,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Positive Test Count".
    * 
    * @return translated "Positive Test Count"
+  
    */
   @DefaultMessage("Positive Test Count")
   @Key("positiveTestCount")
@@ -12277,6 +14009,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Preference".
    * 
    * @return translated "Preference"
+  
    */
   @DefaultMessage("Preference")
   @Key("preference")
@@ -12286,6 +14019,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change your default settings including your current geographical location.".
    * 
    * @return translated "Change your default settings including your current geographical location."
+  
    */
   @DefaultMessage("Change your default settings including your current geographical location.")
   @Key("preferenceDescription")
@@ -12295,6 +14029,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Default Bar Code Printer".
    * 
    * @return translated "Default Bar Code Printer"
+  
    */
   @DefaultMessage("Default Bar Code Printer")
   @Key("preferences.defaultBarCode")
@@ -12304,6 +14039,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Default Printer".
    * 
    * @return translated "Default Printer"
+  
    */
   @DefaultMessage("Default Printer")
   @Key("preferences.defaultPrinter")
@@ -12313,6 +14049,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
+  
    */
   @DefaultMessage("Preliminary")
   @Key("preliminary")
@@ -12322,6 +14059,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prep Test & Reflex Test".
    * 
    * @return translated "Prep Test & Reflex Test"
+  
    */
   @DefaultMessage("Prep Test & Reflex Test")
   @Key("prepAndReflex")
@@ -12331,6 +14069,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prep Test".
    * 
    * @return translated "Prep Test"
+  
    */
   @DefaultMessage("Prep Test")
   @Key("prepTest")
@@ -12340,6 +14079,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Failed to remove test after the Prep Test Popup was cancelled".
    * 
    * @return translated "Failed to remove test after the Prep Test Popup was cancelled"
+  
    */
   @DefaultMessage("Failed to remove test after the Prep Test Popup was cancelled")
   @Key("prepTestCancelledCleanupException")
@@ -12349,6 +14089,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prep Test & Method".
    * 
    * @return translated "Prep Test & Method"
+  
    */
   @DefaultMessage("Prep Test & Method")
   @Key("prepTestMethod")
@@ -12357,7 +14098,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Prep Test {0} must have a Section assigned".
    * 
+   * @param arg0 "{0}"
    * @return translated "Prep Test {0} must have a Section assigned"
+  
    */
   @DefaultMessage("Prep Test {0} must have a Section assigned")
   @Key("prepTestNeedsSection")
@@ -12367,6 +14110,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prep Test Selection".
    * 
    * @return translated "Prep Test Selection"
+  
    */
   @DefaultMessage("Prep Test Selection")
   @Key("prepTestPicker")
@@ -12376,6 +14120,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must choose the appropriate prep test(s) before your analysis(es) may be added".
    * 
    * @return translated "You must choose the appropriate prep test(s) before your analysis(es) may be added"
+  
    */
   @DefaultMessage("You must choose the appropriate prep test(s) before your analysis(es) may be added")
   @Key("prepTestRequiredException")
@@ -12384,7 +14129,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Prep Test must be chosen for {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "Prep Test must be chosen for {0}"
+  
    */
   @DefaultMessage("Prep Test must be chosen for {0}")
   @Key("prepTestRequiredForTestException")
@@ -12394,6 +14141,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared By".
    * 
    * @return translated "Prepared By"
+  
    */
   @DefaultMessage("Prepared By")
   @Key("preparedBy")
@@ -12403,6 +14151,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared Date".
    * 
    * @return translated "Prepared Date"
+  
    */
   @DefaultMessage("Prepared Date")
   @Key("preparedDate")
@@ -12412,6 +14161,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared Unit".
    * 
    * @return translated "Prepared Unit"
+  
    */
   @DefaultMessage("Prepared Unit")
   @Key("preparedUnit")
@@ -12421,6 +14171,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared Volume".
    * 
    * @return translated "Prepared Volume"
+  
    */
   @DefaultMessage("Prepared Volume")
   @Key("preparedVolume")
@@ -12430,6 +14181,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Preview Final Report".
    * 
    * @return translated "Preview Final Report"
+  
    */
   @DefaultMessage("Preview Final Report")
   @Key("previewFinalReport")
@@ -12439,6 +14191,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Previous".
    * 
    * @return translated "Previous"
+  
    */
   @DefaultMessage("Previous")
   @Key("previous")
@@ -12448,6 +14201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Print".
    * 
    * @return translated "Print"
+  
    */
   @DefaultMessage("Print")
   @Key("print")
@@ -12457,6 +14211,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Print Labels".
    * 
    * @return translated "Print Labels"
+  
    */
   @DefaultMessage("Print Labels")
   @Key("printLabels")
@@ -12466,6 +14221,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Printed".
    * 
    * @return translated "Printed"
+  
    */
   @DefaultMessage("Printed")
   @Key("printed")
@@ -12475,6 +14231,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Printed Date".
    * 
    * @return translated "Printed Date"
+  
    */
   @DefaultMessage("Printed Date")
   @Key("printedDate")
@@ -12484,6 +14241,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Printer".
    * 
    * @return translated "Printer"
+  
    */
   @DefaultMessage("Printer")
   @Key("printer")
@@ -12493,6 +14251,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Printer Type".
    * 
    * @return translated "Printer Type"
+  
    */
   @DefaultMessage("Printer Type")
   @Key("printerType")
@@ -12502,6 +14261,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Priority".
    * 
    * @return translated "Priority"
+  
    */
   @DefaultMessage("Priority")
   @Key("priority")
@@ -12511,6 +14271,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Priority Profile".
    * 
    * @return translated "Priority Profile"
+  
    */
   @DefaultMessage("Priority Profile")
   @Key("priorityProfile")
@@ -12520,6 +14281,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well".
    * 
    * @return translated "Private Well"
+  
    */
   @DefaultMessage("Private Well")
   @Key("privateWell")
@@ -12529,6 +14291,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well Final Report".
    * 
    * @return translated "Private Well Final Report"
+  
    */
   @DefaultMessage("Private Well Final Report")
   @Key("privateWellFinalReport")
@@ -12538,6 +14301,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well Info".
    * 
    * @return translated "Private Well Info"
+  
    */
   @DefaultMessage("Private Well Info")
   @Key("privateWellInfo")
@@ -12547,6 +14311,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well Water Sample".
    * 
    * @return translated "Private Well Water Sample"
+  
    */
   @DefaultMessage("Private Well Water Sample")
   @Key("privateWellWaterSample")
@@ -12556,6 +14321,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well Water Sample Login".
    * 
    * @return translated "Private Well Water Sample Login"
+  
    */
   @DefaultMessage("Private Well Water Sample Login")
   @Key("privateWellWaterSampleLogin")
@@ -12565,6 +14331,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login private well water sample and analysis related information.".
    * 
    * @return translated "Fully login private well water sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login private well water sample and analysis related information.")
   @Key("privateWellWaterSampleLoginDescription")
@@ -12574,6 +14341,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Process".
    * 
    * @return translated "Process"
+  
    */
   @DefaultMessage("Process")
   @Key("process")
@@ -12583,6 +14351,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Process Shipping".
    * 
    * @return translated "Process Shipping"
+  
    */
   @DefaultMessage("Process Shipping")
   @Key("processShipping")
@@ -12592,6 +14361,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Processed By".
    * 
    * @return translated "Processed By"
+  
    */
   @DefaultMessage("Processed By")
   @Key("processedBy")
@@ -12601,6 +14371,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Processed Date".
    * 
    * @return translated "Processed Date"
+  
    */
   @DefaultMessage("Processed Date")
   @Key("processedDate")
@@ -12610,6 +14381,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Product URI".
    * 
    * @return translated "Product URI"
+  
    */
   @DefaultMessage("Product URI")
   @Key("productURI")
@@ -12619,6 +14391,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Profile".
    * 
    * @return translated "Profile"
+  
    */
   @DefaultMessage("Profile")
   @Key("profile")
@@ -12628,6 +14401,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Profile Version".
    * 
    * @return translated "Profile Version"
+  
    */
   @DefaultMessage("Profile Version")
   @Key("profileVersion")
@@ -12637,6 +14411,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Project".
    * 
    * @return translated "Project"
+  
    */
   @DefaultMessage("Project")
   @Key("project")
@@ -12646,6 +14421,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Project".
    * 
    * @return translated "Project"
+  
    */
   @DefaultMessage("Project")
   @Key("project.project")
@@ -12655,6 +14431,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is already an active project in the system with the same name ".
    * 
    * @return translated "There is already an active project in the system with the same name "
+  
    */
   @DefaultMessage("There is already an active project in the system with the same name ")
   @Key("projectActiveException")
@@ -12664,6 +14441,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Create and manage projects that can be associated with samples.".
    * 
    * @return translated "Create and manage projects that can be associated with samples."
+  
    */
   @DefaultMessage("Create and manage projects that can be associated with samples.")
   @Key("projectDescription")
@@ -12673,6 +14451,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Project".
    * 
    * @return translated "History - Project"
+  
    */
   @DefaultMessage("History - Project")
   @Key("projectHistory")
@@ -12682,6 +14461,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Project Parameter".
    * 
    * @return translated "History - Project Parameter"
+  
    */
   @DefaultMessage("History - Project Parameter")
   @Key("projectParameterHistory")
@@ -12691,6 +14471,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This project has an overlapping begin date or end date with another project which has the same name as this.".
    * 
    * @return translated "This project has an overlapping begin date or end date with another project which has the same name as this."
+  
    */
   @DefaultMessage("This project has an overlapping begin date or end date with another project which has the same name as this.")
   @Key("projectTimeOverlapException")
@@ -12700,6 +14481,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Provider/Organization Info".
    * 
    * @return translated "Provider/Organization Info"
+  
    */
   @DefaultMessage("Provider/Organization Info")
   @Key("provOrgInfo")
@@ -12709,6 +14491,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Provider".
    * 
    * @return translated "Provider"
+  
    */
   @DefaultMessage("Provider")
   @Key("provider")
@@ -12718,6 +14501,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "External Id".
    * 
    * @return translated "External Id"
+  
    */
   @DefaultMessage("External Id")
   @Key("provider.externalId")
@@ -12727,6 +14511,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Provider (L,F)".
    * 
    * @return translated "Provider (L,F)"
+  
    */
   @DefaultMessage("Provider (L,F)")
   @Key("provider.lf")
@@ -12736,6 +14521,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "NPI".
    * 
    * @return translated "NPI"
+  
    */
   @DefaultMessage("NPI")
   @Key("provider.npi")
@@ -12745,6 +14531,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Provider".
    * 
    * @return translated "Provider"
+  
    */
   @DefaultMessage("Provider")
   @Key("provider.provider")
@@ -12754,6 +14541,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Enter health care professionals and their contact information.".
    * 
    * @return translated "Enter health care professionals and their contact information."
+  
    */
   @DefaultMessage("Enter health care professionals and their contact information.")
   @Key("providerDescription")
@@ -12763,6 +14551,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Provider".
    * 
    * @return translated "History - Provider"
+  
    */
   @DefaultMessage("History - Provider")
   @Key("providerHistory")
@@ -12772,6 +14561,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Provider Location".
    * 
    * @return translated "History - Provider Location"
+  
    */
   @DefaultMessage("History - Provider Location")
   @Key("providerLocationHistory")
@@ -12781,6 +14571,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Providers".
    * 
    * @return translated "Providers"
+  
    */
   @DefaultMessage("Providers")
   @Key("providers")
@@ -12790,6 +14581,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PT Sample".
    * 
    * @return translated "PT Sample"
+  
    */
   @DefaultMessage("PT Sample")
   @Key("ptSample")
@@ -12799,6 +14591,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PT Sample Login".
    * 
    * @return translated "PT Sample Login"
+  
    */
   @DefaultMessage("PT Sample Login")
   @Key("ptSampleLogin")
@@ -12808,6 +14601,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login proficiency testing sample and analysis related information.".
    * 
    * @return translated "Fully login proficiency testing sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login proficiency testing sample and analysis related information.")
   @Key("ptSampleLoginDescription")
@@ -12817,6 +14611,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Patient Info".
    * 
    * @return translated "Patient Info"
+  
    */
   @DefaultMessage("Patient Info")
   @Key("ptntInfo")
@@ -12826,6 +14621,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PWS ID".
    * 
    * @return translated "PWS ID"
+  
    */
   @DefaultMessage("PWS ID")
   @Key("pws.id")
@@ -12835,6 +14631,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PWS ID".
    * 
    * @return translated "PWS ID"
+  
    */
   @DefaultMessage("PWS ID")
   @Key("pwsId")
@@ -12844,6 +14641,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Pws ID is required".
    * 
    * @return translated "Pws ID is required"
+  
    */
   @DefaultMessage("Pws ID is required")
   @Key("pwsIdRequiredException")
@@ -12853,6 +14651,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PWS Information".
    * 
    * @return translated "PWS Information"
+  
    */
   @DefaultMessage("PWS Information")
   @Key("pwsInformation")
@@ -12862,6 +14661,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Public Water Supply Information used for SDWIS samples.".
    * 
    * @return translated "Public Water Supply Information used for SDWIS samples."
+  
    */
   @DefaultMessage("Public Water Supply Information used for SDWIS samples.")
   @Key("pwsInformationDescription")
@@ -12871,6 +14671,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PWS Name".
    * 
    * @return translated "PWS Name"
+  
    */
   @DefaultMessage("PWS Name")
   @Key("pwsName")
@@ -12880,6 +14681,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Violation".
    * 
    * @return translated "Violation"
+  
    */
   @DefaultMessage("Violation")
   @Key("pwsViolation")
@@ -12889,6 +14691,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Violation Date".
    * 
    * @return translated "Violation Date"
+  
    */
   @DefaultMessage("Violation Date")
   @Key("pwsViolationDate")
@@ -12898,6 +14701,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample ID".
    * 
    * @return translated "Sample ID"
+  
    */
   @DefaultMessage("Sample ID")
   @Key("pwsViolationSampleId")
@@ -12907,6 +14711,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QA Events".
    * 
    * @return translated "QA Events"
+  
    */
   @DefaultMessage("QA Events")
   @Key("qaEvent.qaEvents")
@@ -12916,6 +14721,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Are you sure you want to change this?".
    * 
    * @return translated "Are you sure you want to change this?"
+  
    */
   @DefaultMessage("Are you sure you want to change this?")
   @Key("qaEventEditConfirm")
@@ -12925,6 +14731,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QA Event Selection".
    * 
    * @return translated "QA Event Selection"
+  
    */
   @DefaultMessage("QA Event Selection")
   @Key("qaEventSelection")
@@ -12934,6 +14741,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QA Events".
    * 
    * @return translated "QA Events"
+  
    */
   @DefaultMessage("QA Events")
   @Key("qaEvents")
@@ -12943,6 +14751,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QA Events for Sample & Test".
    * 
    * @return translated "QA Events for Sample & Test"
+  
    */
   @DefaultMessage("QA Events for Sample & Test")
   @Key("qaLookUp")
@@ -12952,6 +14761,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - QA Event".
    * 
    * @return translated "History - QA Event"
+  
    */
   @DefaultMessage("History - QA Event")
   @Key("qaeventHistory")
@@ -12961,6 +14771,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The combination of the names of the Qa Event and Test must be unique ".
    * 
    * @return translated "The combination of the names of the Qa Event and Test must be unique "
+  
    */
   @DefaultMessage("The combination of the names of the Qa Event and Test must be unique ")
   @Key("qaeventTestComboUnique")
@@ -12970,6 +14781,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Expire Date".
    * 
    * @return translated "Expire Date"
+  
    */
   @DefaultMessage("Expire Date")
   @Key("qc.expireDate")
@@ -12979,6 +14791,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Get Data".
    * 
    * @return translated "Get Data"
+  
    */
   @DefaultMessage("Get Data")
   @Key("qc.getData")
@@ -12988,6 +14801,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
+  
    */
   @DefaultMessage("Invalid value for selected type")
   @Key("qc.invalidValueException")
@@ -12997,6 +14811,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lot Number ".
    * 
    * @return translated "Lot Number "
+  
    */
   @DefaultMessage("Lot Number ")
   @Key("qc.lotNumber")
@@ -13006,6 +14821,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
+  
    */
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("qc.noSelectedRow")
@@ -13015,6 +14831,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared By".
    * 
    * @return translated "Prepared By"
+  
    */
   @DefaultMessage("Prepared By")
   @Key("qc.preparedBy")
@@ -13024,6 +14841,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared Date".
    * 
    * @return translated "Prepared Date"
+  
    */
   @DefaultMessage("Prepared Date")
   @Key("qc.preparedDate")
@@ -13033,6 +14851,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared Unit".
    * 
    * @return translated "Prepared Unit"
+  
    */
   @DefaultMessage("Prepared Unit")
   @Key("qc.preparedUnit")
@@ -13042,6 +14861,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prepared Volume".
    * 
    * @return translated "Prepared Volume"
+  
    */
   @DefaultMessage("Prepared Volume")
   @Key("qc.preparedVolume")
@@ -13051,6 +14871,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Analyte".
    * 
    * @return translated "QC Analyte"
+  
    */
   @DefaultMessage("QC Analyte")
   @Key("qc.qcAnalyte")
@@ -13060,6 +14881,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Lookup".
    * 
    * @return translated "QC Lookup"
+  
    */
   @DefaultMessage("QC Lookup")
   @Key("qc.qcLookup")
@@ -13069,6 +14891,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Name".
    * 
    * @return translated "QC Name"
+  
    */
   @DefaultMessage("QC Name")
   @Key("qc.qcName")
@@ -13078,6 +14901,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Usable Date".
    * 
    * @return translated "Usable Date"
+  
    */
   @DefaultMessage("Usable Date")
   @Key("qc.usableDate")
@@ -13087,6 +14911,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - QC Analyte".
    * 
    * @return translated "History - QC Analyte"
+  
    */
   @DefaultMessage("History - QC Analyte")
   @Key("qcAnalyteHistory")
@@ -13096,6 +14921,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Chart".
    * 
    * @return translated "QC Chart"
+  
    */
   @DefaultMessage("QC Chart")
   @Key("qcChart")
@@ -13105,6 +14931,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Report".
    * 
    * @return translated "QC Report"
+  
    */
   @DefaultMessage("QC Report")
   @Key("qcChartReport")
@@ -13114,6 +14941,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - QC".
    * 
    * @return translated "History - QC"
+  
    */
   @DefaultMessage("History - QC")
   @Key("qcHistory")
@@ -13123,6 +14951,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Items".
    * 
    * @return translated "QC Items"
+  
    */
   @DefaultMessage("QC Items")
   @Key("qcItems")
@@ -13132,6 +14961,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Link".
    * 
    * @return translated "QC Link"
+  
    */
   @DefaultMessage("QC Link")
   @Key("qcLink")
@@ -13141,6 +14971,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more lots cannot be deleted, other entries are linked to them".
    * 
    * @return translated "One or more lots cannot be deleted, other entries are linked to them"
+  
    */
   @DefaultMessage("One or more lots cannot be deleted, other entries are linked to them")
   @Key("qcLotDeleteException")
@@ -13150,6 +14981,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - QC Lot".
    * 
    * @return translated "History - QC Lot"
+  
    */
   @DefaultMessage("History - QC Lot")
   @Key("qcLotHistory")
@@ -13159,6 +14991,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Name".
    * 
    * @return translated "QC Name"
+  
    */
   @DefaultMessage("QC Name")
   @Key("qcName")
@@ -13168,6 +15001,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Qty".
    * 
    * @return translated "Qty"
+  
    */
   @DefaultMessage("Qty")
   @Key("qty")
@@ -13177,6 +15011,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The quantity can be set as zero, but the item cannot be removed".
    * 
    * @return translated "The quantity can be set as zero, but the item cannot be removed"
+  
    */
   @DefaultMessage("The quantity can be set as zero, but the item cannot be removed")
   @Key("qtyAdjustedItemNotRemoved")
@@ -13186,6 +15021,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity more than quantity on hand".
    * 
    * @return translated "Quantity more than quantity on hand"
+  
    */
   @DefaultMessage("Quantity more than quantity on hand")
   @Key("qtyMoreThanQtyOnhandException")
@@ -13195,6 +15031,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity more than quantity ordered".
    * 
    * @return translated "Quantity more than quantity ordered"
+  
    */
   @DefaultMessage("Quantity more than quantity ordered")
   @Key("qtyMoreThanQtyOrderedException")
@@ -13203,7 +15040,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "This value must not exceed {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "This value must not exceed {0}"
+  
    */
   @DefaultMessage("This value must not exceed {0}")
   @Key("qtyNotMoreThanMaxException")
@@ -13213,6 +15052,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Qty On Hand".
    * 
    * @return translated "Qty On Hand"
+  
    */
   @DefaultMessage("Qty On Hand")
   @Key("qtyOnHand")
@@ -13222,6 +15062,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity on hand cannot be less than quantity received ".
    * 
    * @return translated "Quantity on hand cannot be less than quantity received "
+  
    */
   @DefaultMessage("Quantity on hand cannot be less than quantity received ")
   @Key("qtyOnHandLessThanQtyRecException")
@@ -13231,6 +15072,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity on hand is not sufficient for # Requested".
    * 
    * @return translated "Quantity on hand is not sufficient for # Requested"
+  
    */
   @DefaultMessage("Quantity on hand is not sufficient for # Requested")
   @Key("qtyOnHandNotSufficientException")
@@ -13240,6 +15082,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity received must be more than zero ".
    * 
    * @return translated "Quantity received must be more than zero "
+  
    */
   @DefaultMessage("Quantity received must be more than zero ")
   @Key("qtyRecMoreThanZeroException")
@@ -13249,6 +15092,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid quantity, please check parent ratio".
    * 
    * @return translated "Invalid quantity, please check parent ratio"
+  
    */
   @DefaultMessage("Invalid quantity, please check parent ratio")
   @Key("qtyToParentRatioInvalid")
@@ -13258,6 +15102,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quant Limit".
    * 
    * @return translated "Quant Limit"
+  
    */
   @DefaultMessage("Quant Limit")
   @Key("quantLimit")
@@ -13267,6 +15112,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity".
    * 
    * @return translated "Quantity"
+  
    */
   @DefaultMessage("Quantity")
   @Key("quantity")
@@ -13276,6 +15122,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quantity On-hand".
    * 
    * @return translated "Quantity On-hand"
+  
    */
   @DefaultMessage("Quantity On-hand")
   @Key("quantityOnHand")
@@ -13285,6 +15132,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Qty Requested".
    * 
    * @return translated "Qty Requested"
+  
    */
   @DefaultMessage("Qty Requested")
   @Key("quantityRequested")
@@ -13294,6 +15142,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query".
    * 
    * @return translated "Query"
+  
    */
   @DefaultMessage("Query")
   @Key("query")
@@ -13303,6 +15152,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query aborted".
    * 
    * @return translated "Query aborted"
+  
    */
   @DefaultMessage("Query aborted")
   @Key("queryAborted")
@@ -13312,6 +15162,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please query for only one domain at a time.".
    * 
    * @return translated "Please query for only one domain at a time."
+  
    */
   @DefaultMessage("Please query for only one domain at a time.")
   @Key("queryDomainException")
@@ -13321,6 +15172,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A query must be executed before updating records".
    * 
    * @return translated "A query must be executed before updating records"
+  
    */
   @DefaultMessage("A query must be executed before updating records")
   @Key("queryExeBeforeUpdate")
@@ -13330,6 +15182,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Your query timed out, please try again.".
    * 
    * @return translated "Your query timed out, please try again."
+  
    */
   @DefaultMessage("Your query timed out, please try again.")
   @Key("queryExpiredException")
@@ -13339,6 +15192,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query failed".
    * 
    * @return translated "Query failed"
+  
    */
   @DefaultMessage("Query failed")
   @Key("queryFailed")
@@ -13348,6 +15202,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Query Results".
    * 
    * @return translated "Query Results"
+  
    */
   @DefaultMessage("Query Results")
   @Key("queryResults")
@@ -13357,6 +15212,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Querying....".
    * 
    * @return translated "Querying...."
+  
    */
   @DefaultMessage("Querying....")
   @Key("querying")
@@ -13366,6 +15222,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Querying...Complete".
    * 
    * @return translated "Querying...Complete"
+  
    */
   @DefaultMessage("Querying...Complete")
   @Key("queryingComplete")
@@ -13375,6 +15232,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There were errors with your commit".
    * 
    * @return translated "There were errors with your commit"
+  
    */
   @DefaultMessage("There were errors with your commit")
   @Key("quickCommitError")
@@ -13384,6 +15242,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quick Entry".
    * 
    * @return translated "Quick Entry"
+  
    */
   @DefaultMessage("Quick Entry")
   @Key("quickEntry")
@@ -13393,6 +15252,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quickly login samples with minimal information to allow testing to begin.".
    * 
    * @return translated "Quickly login samples with minimal information to allow testing to begin."
+  
    */
   @DefaultMessage("Quickly login samples with minimal information to allow testing to begin.")
   @Key("quickEntryDescription")
@@ -13402,6 +15262,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A Quick Entry sample exists for the specified accession number".
    * 
    * @return translated "A Quick Entry sample exists for the specified accession number"
+  
    */
   @DefaultMessage("A Quick Entry sample exists for the specified accession number")
   @Key("quickEntryNumberExists")
@@ -13411,6 +15272,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Race".
    * 
    * @return translated "Race"
+  
    */
   @DefaultMessage("Race")
   @Key("race")
@@ -13420,6 +15282,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Range Type".
    * 
    * @return translated "Range Type"
+  
    */
   @DefaultMessage("Range Type")
   @Key("rangeType")
@@ -13429,6 +15292,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Recompute".
    * 
    * @return translated "Recompute"
+  
    */
   @DefaultMessage("Recompute")
   @Key("reCompute")
@@ -13438,6 +15302,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reason".
    * 
    * @return translated "Reason"
+  
    */
   @DefaultMessage("Reason")
   @Key("reason")
@@ -13447,6 +15312,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rec-Compl".
    * 
    * @return translated "Rec-Compl"
+  
    */
   @DefaultMessage("Rec-Compl")
   @Key("rec-cmp")
@@ -13456,6 +15322,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rec-Rdy".
    * 
    * @return translated "Rec-Rdy"
+  
    */
   @DefaultMessage("Rec-Rdy")
   @Key("rec-rdy")
@@ -13465,6 +15332,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rec-Rel".
    * 
    * @return translated "Rec-Rel"
+  
    */
   @DefaultMessage("Rec-Rel")
   @Key("rec-rel")
@@ -13474,6 +15342,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Receipt ".
    * 
    * @return translated "Receipt "
+  
    */
   @DefaultMessage("Receipt ")
   @Key("receipt")
@@ -13483,6 +15352,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received".
    * 
    * @return translated "Received"
+  
    */
   @DefaultMessage("Received")
   @Key("received")
@@ -13492,6 +15362,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received By must have a value".
    * 
    * @return translated "Received By must have a value"
+  
    */
   @DefaultMessage("Received By must have a value")
   @Key("receivedByNoValueException")
@@ -13501,6 +15372,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received Date".
    * 
    * @return translated "Received Date"
+  
    */
   @DefaultMessage("Received Date")
   @Key("receivedDate")
@@ -13510,6 +15382,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received date must have a value".
    * 
    * @return translated "Received date must have a value"
+  
    */
   @DefaultMessage("Received date must have a value")
   @Key("receivedDateNoValueException")
@@ -13518,7 +15391,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Received date is NOT today.  Is ''{0}'' the correct date to use?".
    * 
+   * @param arg0 "{0}"
    * @return translated "Received date is NOT today.  Is ''{0}'' the correct date to use?"
+  
    */
   @DefaultMessage("Received date is NOT today.  Is ''{0}'' the correct date to use?")
   @Key("receivedDateNotTodayExceptionBody")
@@ -13528,6 +15403,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received date is not today".
    * 
    * @return translated "Received date is not today"
+  
    */
   @DefaultMessage("Received date is not today")
   @Key("receivedDateNotTodayExceptionTitle")
@@ -13537,6 +15413,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received date required".
    * 
    * @return translated "Received date required"
+  
    */
   @DefaultMessage("Received date required")
   @Key("receivedDateRequiredException")
@@ -13546,6 +15423,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received date shouldn''t be more than 180 days before entered date".
    * 
    * @return translated "Received date shouldn''t be more than 180 days before entered date"
+  
    */
   @DefaultMessage("Received date shouldn''t be more than 180 days before entered date")
   @Key("receivedTooOldWarning")
@@ -13555,6 +15433,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This record must have at least one active analyte   ".
    * 
    * @return translated "This record must have at least one active analyte   "
+  
    */
   @DefaultMessage("This record must have at least one active analyte   ")
   @Key("recordHasNoActiveAnalytesException")
@@ -13564,6 +15443,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This record must have at least one analyte".
    * 
    * @return translated "This record must have at least one analyte"
+  
    */
   @DefaultMessage("This record must have at least one analyte")
   @Key("recordHasNoAnalytesException")
@@ -13573,6 +15453,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This record is not available at this time for you to add/edit/remove. Please try at another time. (Locked)".
    * 
    * @return translated "This record is not available at this time for you to add/edit/remove. Please try at another time. (Locked)"
+  
    */
   @DefaultMessage("This record is not available at this time for you to add/edit/remove. Please try at another time. (Locked)")
   @Key("recordNotAvailableLockException")
@@ -13582,6 +15463,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Recur".
    * 
    * @return translated "Recur"
+  
    */
   @DefaultMessage("Recur")
   @Key("recur")
@@ -13591,6 +15473,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Recurred Orders".
    * 
    * @return translated "Recurred Orders"
+  
    */
   @DefaultMessage("Recurred Orders")
   @Key("recurredOrders")
@@ -13600,6 +15483,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reference".
    * 
    * @return translated "Reference"
+  
    */
   @DefaultMessage("Reference")
   @Key("reference")
@@ -13609,6 +15493,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reference To".
    * 
    * @return translated "Reference To"
+  
    */
   @DefaultMessage("Reference To")
   @Key("referenceTo")
@@ -13618,6 +15503,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reflex Test & Method".
    * 
    * @return translated "Reflex Test & Method"
+  
    */
   @DefaultMessage("Reflex Test & Method")
   @Key("reflexTestMethod")
@@ -13626,7 +15512,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Reflex Test {0} must have a Section assigned".
    * 
+   * @param arg0 "{0}"
    * @return translated "Reflex Test {0} must have a Section assigned"
+  
    */
   @DefaultMessage("Reflex Test {0} must have a Section assigned")
   @Key("reflexTestNeedsSection")
@@ -13636,6 +15524,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reflex Test Selection".
    * 
    * @return translated "Reflex Test Selection"
+  
    */
   @DefaultMessage("Reflex Test Selection")
   @Key("reflexTestPicker")
@@ -13645,6 +15534,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reflex Test".
    * 
    * @return translated "Reflex Test"
+  
    */
   @DefaultMessage("Reflex Test")
   @Key("reflexiveTest")
@@ -13654,6 +15544,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Refresh".
    * 
    * @return translated "Refresh"
+  
    */
   @DefaultMessage("Refresh")
   @Key("refresh")
@@ -13663,6 +15554,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Related Entry".
    * 
    * @return translated "Related Entry"
+  
    */
   @DefaultMessage("Related Entry")
   @Key("relEntry")
@@ -13672,6 +15564,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Related Worksheet #".
    * 
    * @return translated "Related Worksheet #"
+  
    */
   @DefaultMessage("Related Worksheet #")
   @Key("relatedWorksheetNumber")
@@ -13681,6 +15574,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Release".
    * 
    * @return translated "Release"
+  
    */
   @DefaultMessage("Release")
   @Key("release")
@@ -13689,7 +15583,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You''re about to release {0} records.\n\nPress Ok to continue or Cancel to abort.".
    * 
+   * @param arg0 "{0}"
    * @return translated "You''re about to release {0} records.\n\nPress Ok to continue or Cancel to abort."
+  
    */
   @DefaultMessage("You''re about to release {0} records.\n\nPress Ok to continue or Cancel to abort.")
   @Key("releaseMultipleWarning")
@@ -13699,6 +15595,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Released".
    * 
    * @return translated "Released"
+  
    */
   @DefaultMessage("Released")
   @Key("released")
@@ -13708,6 +15605,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Released By".
    * 
    * @return translated "Released By"
+  
    */
   @DefaultMessage("Released By")
   @Key("releasedBy")
@@ -13717,6 +15615,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Released Date".
    * 
    * @return translated "Released Date"
+  
    */
   @DefaultMessage("Released Date")
   @Key("releasedDate")
@@ -13726,6 +15625,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reload".
    * 
    * @return translated "Reload"
+  
    */
   @DefaultMessage("Reload")
   @Key("reload")
@@ -13735,6 +15635,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "- Analyte".
    * 
    * @return translated "- Analyte"
+  
    */
   @DefaultMessage("- Analyte")
   @Key("removeAnalyte")
@@ -13744,6 +15645,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This will remove all rows with the same group as this row.\n\nPress Ok to continue.".
    * 
    * @return translated "This will remove all rows with the same group as this row.\n\nPress Ok to continue."
+  
    */
   @DefaultMessage("This will remove all rows with the same group as this row.\n\nPress Ok to continue.")
   @Key("removeAuxMessage")
@@ -13753,6 +15655,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "- Column".
    * 
    * @return translated "- Column"
+  
    */
   @DefaultMessage("- Column")
   @Key("removeColumn")
@@ -13762,6 +15665,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please remove the empty rows from the table for Report To".
    * 
    * @return translated "Please remove the empty rows from the table for Report To"
+  
    */
   @DefaultMessage("Please remove the empty rows from the table for Report To")
   @Key("removeEmptyReportToRows")
@@ -13771,6 +15675,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "- Header".
    * 
    * @return translated "- Header"
+  
    */
   @DefaultMessage("- Header")
   @Key("removeHeader")
@@ -13780,6 +15685,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Remove Row".
    * 
    * @return translated "Remove Row"
+  
    */
   @DefaultMessage("Remove Row")
   @Key("removeRow")
@@ -13789,6 +15695,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "- Row".
    * 
    * @return translated "- Row"
+  
    */
   @DefaultMessage("- Row")
   @Key("removeRowTest")
@@ -13798,6 +15705,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reorder Level".
    * 
    * @return translated "Reorder Level"
+  
    */
   @DefaultMessage("Reorder Level")
   @Key("reorderLevel")
@@ -13807,6 +15715,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Repeat".
    * 
    * @return translated "Repeat"
+  
    */
   @DefaultMessage("Repeat")
   @Key("repeat")
@@ -13816,6 +15725,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This value is required and it must be at least 1".
    * 
    * @return translated "This value is required and it must be at least 1"
+  
    */
   @DefaultMessage("This value is required and it must be at least 1")
   @Key("repeatNullForAnalyteException")
@@ -13825,6 +15735,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "3. Repeat the above process for every shipping record.".
    * 
    * @return translated "3. Repeat the above process for every shipping record."
+  
    */
   @DefaultMessage("3. Repeat the above process for every shipping record.")
   @Key("repeatProcess")
@@ -13834,6 +15745,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "2. Repeat the above process for every sample record.".
    * 
    * @return translated "2. Repeat the above process for every sample record."
+  
    */
   @DefaultMessage("2. Repeat the above process for every sample record.")
   @Key("repeatVerifyProcess")
@@ -13843,6 +15755,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Replace the current list of samples with the one generated on this date? ".
    * 
    * @return translated "Replace the current list of samples with the one generated on this date? "
+  
    */
   @DefaultMessage("Replace the current list of samples with the one generated on this date? ")
   @Key("replaceCurrentSampleList")
@@ -13852,6 +15765,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report".
    * 
    * @return translated "Report"
+  
    */
   @DefaultMessage("Report")
   @Key("report")
@@ -13861,6 +15775,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Data Export".
    * 
    * @return translated "Data Export"
+  
    */
   @DefaultMessage("Data Export")
   @Key("report.dataExport")
@@ -13870,6 +15785,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Export".
    * 
    * @return translated "Export"
+  
    */
   @DefaultMessage("Export")
   @Key("report.export")
@@ -13879,6 +15795,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Generating Data View...".
    * 
    * @return translated "Generating Data View..."
+  
    */
   @DefaultMessage("Generating Data View...")
   @Key("report.genDataView")
@@ -13888,6 +15805,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Outputing report".
    * 
    * @return translated "Outputing report"
+  
    */
   @DefaultMessage("Outputing report")
   @Key("report.outputReport")
@@ -13897,6 +15815,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well Attachment".
    * 
    * @return translated "Private Well Attachment"
+  
    */
   @DefaultMessage("Private Well Attachment")
   @Key("report.privateWellAttachment")
@@ -13906,6 +15825,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reset".
    * 
    * @return translated "Reset"
+  
    */
   @DefaultMessage("Reset")
   @Key("report.reset")
@@ -13915,6 +15835,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Run Report".
    * 
    * @return translated "Run Report"
+  
    */
   @DefaultMessage("Run Report")
   @Key("report.runReport")
@@ -13924,6 +15845,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report Description".
    * 
    * @return translated "Report Description"
+  
    */
   @DefaultMessage("Report Description")
   @Key("reportDescription")
@@ -13933,6 +15855,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report To".
    * 
    * @return translated "Report To"
+  
    */
   @DefaultMessage("Report To")
   @Key("reportTo")
@@ -13942,6 +15865,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report/Bill To".
    * 
    * @return translated "Report/Bill To"
+  
    */
   @DefaultMessage("Report/Bill To")
   @Key("reportToBillTo")
@@ -13951,6 +15875,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This sample must have a report to".
    * 
    * @return translated "This sample must have a report to"
+  
    */
   @DefaultMessage("This sample must have a report to")
   @Key("reportToMissingWarning")
@@ -13960,6 +15885,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reportable".
    * 
    * @return translated "Reportable"
+  
    */
   @DefaultMessage("Reportable")
   @Key("reportable")
@@ -13969,6 +15895,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reporting".
    * 
    * @return translated "Reporting"
+  
    */
   @DefaultMessage("Reporting")
   @Key("reporting")
@@ -13978,6 +15905,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report Method".
    * 
    * @return translated "Report Method"
+  
    */
   @DefaultMessage("Report Method")
   @Key("reportingMethod")
@@ -13987,6 +15915,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report Sequence".
    * 
    * @return translated "Report Sequence"
+  
    */
   @DefaultMessage("Report Sequence")
   @Key("reportingSequence")
@@ -13996,6 +15925,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Requested By".
    * 
    * @return translated "Requested By"
+  
    */
   @DefaultMessage("Requested By")
   @Key("requestedBy")
@@ -14005,6 +15935,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Required".
    * 
    * @return translated "Required"
+  
    */
   @DefaultMessage("Required")
   @Key("required")
@@ -14014,6 +15945,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please fill either From and To Dates or Number of Instances field.".
    * 
    * @return translated "Please fill either From and To Dates or Number of Instances field."
+  
    */
   @DefaultMessage("Please fill either From and To Dates or Number of Instances field.")
   @Key("requiredEitherFields")
@@ -14023,6 +15955,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Result is required".
    * 
    * @return translated "Result is required"
+  
    */
   @DefaultMessage("Result is required")
   @Key("requiredResultException")
@@ -14032,6 +15965,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reset".
    * 
    * @return translated "Reset"
+  
    */
   @DefaultMessage("Reset")
   @Key("reset")
@@ -14041,6 +15975,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Result".
    * 
    * @return translated "Result"
+  
    */
   @DefaultMessage("Result")
   @Key("result")
@@ -14049,7 +15984,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - Analytes with these external ids were not found: ''{3}''".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - Analytes with these external ids were not found: ''{3}''"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Analytes with these external ids were not found: ''{3}''")
   @Key("result.analytesNotFoundException")
@@ -14059,6 +15999,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A row group must have at least one result row".
    * 
    * @return translated "A row group must have at least one result row"
+  
    */
   @DefaultMessage("A row group must have at least one result row")
   @Key("result.atleastOneResultInRowGroup")
@@ -14068,6 +16009,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Current Result".
    * 
    * @return translated "Current Result"
+  
    */
   @DefaultMessage("Current Result")
   @Key("result.current")
@@ -14076,7 +16018,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition")
   @Key("result.defaultValueInvalidException")
@@ -14086,6 +16034,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An analysis needs to be selected to view current result history".
    * 
    * @return translated "An analysis needs to be selected to view current result history"
+  
    */
   @DefaultMessage("An analysis needs to be selected to view current result history")
   @Key("result.historyException")
@@ -14095,6 +16044,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Result(s) Overridden".
    * 
    * @return translated "Result(s) Overridden"
+  
    */
   @DefaultMessage("Result(s) Overridden")
   @Key("result.overridden")
@@ -14103,7 +16053,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}.".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3,number,#0}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}."
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - Sample not found for accession # {3,number,#0}.")
   @Key("result.partSamNotFoundException")
@@ -14112,7 +16067,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
+   * @param arg4 "{4}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid")
   @Key("result.valueInvalidException")
@@ -14121,7 +16082,12 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - {3} is required to have a value".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
+   * @param arg3 "{3}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} is required to have a value"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} - {3} is required to have a value")
   @Key("result.valueRequiredException")
@@ -14131,6 +16097,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Results of type \"Default\" must not be selected for reflex tests".
    * 
    * @return translated "Results of type \"Default\" must not be selected for reflex tests"
+  
    */
   @DefaultMessage("Results of type \"Default\" must not be selected for reflex tests")
   @Key("resultDefaultReflexTestException")
@@ -14140,6 +16107,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This result has been removed from the list of results for this analyte. Please choose another result".
    * 
    * @return translated "This result has been removed from the list of results for this analyte. Please choose another result"
+  
    */
   @DefaultMessage("This result has been removed from the list of results for this analyte. Please choose another result")
   @Key("resultDeleted")
@@ -14149,6 +16117,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This result does not belong to the result group that has been selected for the analyte in this row ".
    * 
    * @return translated "This result does not belong to the result group that has been selected for the analyte in this row "
+  
    */
   @DefaultMessage("This result does not belong to the result group that has been selected for the analyte in this row ")
   @Key("resultDoesntBelongToAnalyteException")
@@ -14158,6 +16127,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Result Fields To Search By".
    * 
    * @return translated "Result Fields To Search By"
+  
    */
   @DefaultMessage("Result Fields To Search By")
   @Key("resultFieldSearchBy")
@@ -14167,6 +16137,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more result groups are empty and will be removed on commit.\n Are you sure you would like to commit?".
    * 
    * @return translated "One or more result groups are empty and will be removed on commit.\n Are you sure you would like to commit?"
+  
    */
   @DefaultMessage("One or more result groups are empty and will be removed on commit.\n Are you sure you would like to commit?")
   @Key("resultGroupsEmpty")
@@ -14176,6 +16147,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more analytes don''t have any result group selected for them. Are you sure you would like to commit?".
    * 
    * @return translated "One or more analytes don''t have any result group selected for them. Are you sure you would like to commit?"
+  
    */
   @DefaultMessage("One or more analytes don''t have any result group selected for them. Are you sure you would like to commit?")
   @Key("resultGrpNotSelForAll")
@@ -14185,6 +16157,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An analysis needs to be selected to view current result history".
    * 
    * @return translated "An analysis needs to be selected to view current result history"
+  
    */
   @DefaultMessage("An analysis needs to be selected to view current result history")
   @Key("resultHistoryException")
@@ -14194,6 +16167,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are results added to this test but no analytes. Are you sure you would like to commit?".
    * 
    * @return translated "There are results added to this test but no analytes. Are you sure you would like to commit?"
+  
    */
   @DefaultMessage("There are results added to this test but no analytes. Are you sure you would like to commit?")
   @Key("resultNoAnalytes")
@@ -14203,6 +16177,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The value of this result has been changed. Please choose another result or the changed value".
    * 
    * @return translated "The value of this result has been changed. Please choose another result or the changed value"
+  
    */
   @DefaultMessage("The value of this result has been changed. Please choose another result or the changed value")
   @Key("resultValueChanged")
@@ -14212,6 +16187,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Result(s) Overridden".
    * 
    * @return translated "Result(s) Overridden"
+  
    */
   @DefaultMessage("Result(s) Overridden")
   @Key("resultsOverridden")
@@ -14221,6 +16197,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Retrieving Samples".
    * 
    * @return translated "Retrieving Samples"
+  
    */
   @DefaultMessage("Retrieving Samples")
   @Key("retrSamples")
@@ -14230,6 +16207,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rev".
    * 
    * @return translated "Rev"
+  
    */
   @DefaultMessage("Rev")
   @Key("rev")
@@ -14239,6 +16217,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Complete and Release".
    * 
    * @return translated "Complete and Release"
+  
    */
   @DefaultMessage("Complete and Release")
   @Key("reviewAndRelease")
@@ -14248,6 +16227,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Perform final review and release of analyses.".
    * 
    * @return translated "Perform final review and release of analyses."
+  
    */
   @DefaultMessage("Perform final review and release of analyses.")
   @Key("reviewAndReleaseDescription")
@@ -14257,6 +16237,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Revision".
    * 
    * @return translated "Revision"
+  
    */
   @DefaultMessage("Revision")
   @Key("revision")
@@ -14266,6 +16247,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Revision Method".
    * 
    * @return translated "Revision Method"
+  
    */
   @DefaultMessage("Revision Method")
   @Key("revisionMethod")
@@ -14275,6 +16257,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rich Text Editor".
    * 
    * @return translated "Rich Text Editor"
+  
    */
   @DefaultMessage("Rich Text Editor")
   @Key("richTextEditor")
@@ -14284,6 +16267,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Rdng. Method".
    * 
    * @return translated "Rdng. Method"
+  
    */
   @DefaultMessage("Rdng. Method")
   @Key("roundingMethod")
@@ -14292,7 +16276,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0} - {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Accession # {0} - {1}"
+  
    */
   @DefaultMessage("Accession # {0} - {1}")
   @Key("rowError")
@@ -14302,6 +16289,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Run".
    * 
    * @return translated "Run"
+  
    */
   @DefaultMessage("Run")
   @Key("run")
@@ -14311,6 +16299,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Run Report".
    * 
    * @return translated "Run Report"
+  
    */
   @DefaultMessage("Run Report")
   @Key("runReport")
@@ -14320,6 +16309,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Only orders with the same shipping destination, status and type can be combined together".
    * 
    * @return translated "Only orders with the same shipping destination, status and type can be combined together"
+  
    */
   @DefaultMessage("Only orders with the same shipping destination, status and type can be combined together")
   @Key("sameShipToStatusTypeOrderCombined")
@@ -14329,6 +16319,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample".
    * 
    * @return translated "Sample"
+  
    */
   @DefaultMessage("Sample")
   @Key("sample")
@@ -14338,6 +16329,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Accession #".
    * 
    * @return translated "Accession #"
+  
    */
   @DefaultMessage("Accession #")
   @Key("sample.accessionNum")
@@ -14346,7 +16338,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Number is already entered into the system".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Number is already entered into the system"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Number is already entered into the system")
   @Key("sample.accessionNumberDuplicate")
@@ -14356,6 +16350,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Are you sure you want to change this sample''s accession number?".
    * 
    * @return translated "Are you sure you want to change this sample''s accession number?"
+  
    */
   @DefaultMessage("Are you sure you want to change this sample''s accession number?")
   @Key("sample.accessionNumberEditConfirm")
@@ -14364,7 +16359,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Number is not in use yet".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Number is not in use yet"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Number is not in use yet")
   @Key("sample.accessionNumberNotInUse")
@@ -14373,7 +16370,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Number is invalid".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Number is invalid"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Number is invalid")
   @Key("sample.accessionNumberNotValidException")
@@ -14382,7 +16381,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}")
   @Key("sample.accessionPrefix")
@@ -14392,6 +16393,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample is released. You cannot add an analysis.".
    * 
    * @return translated "Sample is released. You cannot add an analysis."
+  
    */
   @DefaultMessage("Sample is released. You cannot add an analysis.")
   @Key("sample.cantAddAnalysis")
@@ -14401,6 +16403,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Accession # '{0}': Not allowed to add organization of this type to record".
    * 
    * @return translated "Accession # '{0}': Not allowed to add organization of this type to record"
+  
    */
   @DefaultMessage("Accession # '{0}': Not allowed to add organization of this type to record")
   @Key("sample.cantAddOrgTypeToDomainException")
@@ -14410,6 +16413,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample and/or analysis is released. You cannot add non-internal QA events.".
    * 
    * @return translated "Sample and/or analysis is released. You cannot add non-internal QA events."
+  
    */
   @DefaultMessage("Sample and/or analysis is released. You cannot add non-internal QA events.")
   @Key("sample.cantAddQA")
@@ -14419,6 +16423,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The domain cannot be changed because the sample does not exist in the system".
    * 
    * @return translated "The domain cannot be changed because the sample does not exist in the system"
+  
    */
   @DefaultMessage("The domain cannot be changed because the sample does not exist in the system")
   @Key("sample.cantChangeDomainNewSampleException")
@@ -14428,6 +16433,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The domain of a quick-entered sample cannot be changed through this option".
    * 
    * @return translated "The domain of a quick-entered sample cannot be changed through this option"
+  
    */
   @DefaultMessage("The domain of a quick-entered sample cannot be changed through this option")
   @Key("sample.cantChangeDomainQuickEntryException")
@@ -14437,6 +16443,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The domain of a released sample cannot be changed".
    * 
    * @return translated "The domain of a released sample cannot be changed"
+  
    */
   @DefaultMessage("The domain of a released sample cannot be changed")
   @Key("sample.cantChangeDomainReleasedSampleException")
@@ -14446,6 +16453,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The domain cannot be changed to Quick Entry".
    * 
    * @return translated "The domain cannot be changed to Quick Entry"
+  
    */
   @DefaultMessage("The domain cannot be changed to Quick Entry")
   @Key("sample.cantChangeDomainToQuickEntryException")
@@ -14454,7 +16462,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot duplicate sample - One or more analyses have advanced beyond logged-in".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Cannot duplicate sample - One or more analyses have advanced beyond logged-in"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate sample - One or more analyses have advanced beyond logged-in")
   @Key("sample.cantDuplicateAnaPastLoggedInException")
@@ -14463,7 +16473,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot duplicate a completed or released sample".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Cannot duplicate a completed or released sample"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate a completed or released sample")
   @Key("sample.cantDuplicateCompRelException")
@@ -14472,7 +16484,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis")
   @Key("sample.cantDuplicateReflexAnaException")
@@ -14481,7 +16497,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present ".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present ")
   @Key("sample.cantLoadQEOrderPresentException")
@@ -14491,6 +16509,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more analysis have been released. You cannot remove non-internal sample QA events.".
    * 
    * @return translated "One or more analysis have been released. You cannot remove non-internal sample QA events."
+  
    */
   @DefaultMessage("One or more analysis have been released. You cannot remove non-internal sample QA events.")
   @Key("sample.cantRemoveQA")
@@ -14499,7 +16518,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The non-billable QA Event ''{0}'' was made billable because sample and/or analysis is released. ".
    * 
+   * @param arg0 "{0}"
    * @return translated "The non-billable QA Event ''{0}'' was made billable because sample and/or analysis is released. "
+  
    */
   @DefaultMessage("The non-billable QA Event ''{0}'' was made billable because sample and/or analysis is released. ")
   @Key("sample.changedToBillable")
@@ -14509,6 +16530,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please choose a test or panel".
    * 
    * @return translated "Please choose a test or panel"
+  
    */
   @DefaultMessage("Please choose a test or panel")
   @Key("sample.chooseTestOrPanel")
@@ -14518,6 +16540,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Clinical".
    * 
    * @return translated "Clinical"
+  
    */
   @DefaultMessage("Clinical")
   @Key("sample.clinical")
@@ -14527,6 +16550,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Client Reference".
    * 
    * @return translated "Client Reference"
+  
    */
   @DefaultMessage("Client Reference")
   @Key("sample.clntRef")
@@ -14536,6 +16560,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collected".
    * 
    * @return translated "Collected"
+  
    */
   @DefaultMessage("Collected")
   @Key("sample.collected")
@@ -14545,6 +16570,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collected Date".
    * 
    * @return translated "Collected Date"
+  
    */
   @DefaultMessage("Collected Date")
   @Key("sample.collectedDate")
@@ -14553,7 +16579,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Collected date can''t be after entered".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Collected date can''t be after entered"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Collected date can''t be after entered")
   @Key("sample.collectedDateAfterEnteredException")
@@ -14562,7 +16590,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Collected date can''t be after received".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Collected date can''t be after received"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Collected date can''t be after received")
   @Key("sample.collectedDateAfterReceivedException")
@@ -14571,7 +16601,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Collection time can''t be specified without collection date".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Collection time can''t be specified without collection date"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Collection time can''t be specified without collection date")
   @Key("sample.collectedTimeWithoutDateException")
@@ -14580,7 +16612,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Collected date shouldn''t be more than 180 days before entered date".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Collected date shouldn''t be more than 180 days before entered date"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Collected date shouldn''t be more than 180 days before entered date")
   @Key("sample.collectedTooOldWarning")
@@ -14590,6 +16624,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collector".
    * 
    * @return translated "Collector"
+  
    */
   @DefaultMessage("Collector")
   @Key("sample.collector")
@@ -14599,6 +16634,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Description".
    * 
    * @return translated "Sample Description"
+  
    */
   @DefaultMessage("Sample Description")
   @Key("sample.description")
@@ -14608,6 +16644,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The domain of this sample has changed".
    * 
    * @return translated "The domain of this sample has changed"
+  
    */
   @DefaultMessage("The domain of this sample has changed")
   @Key("sample.domainChangedException")
@@ -14616,7 +16653,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : Specified domain is invalid".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0} : Specified domain is invalid"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : Specified domain is invalid")
   @Key("sample.domainNotValid")
@@ -14626,6 +16665,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The accession number must be entered before loading an order".
    * 
    * @return translated "The accession number must be entered before loading an order"
+  
    */
   @DefaultMessage("The accession number must be entered before loading an order")
   @Key("sample.enterAccNumBeforeOrderLoad")
@@ -14634,7 +16674,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Entered date is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Entered date is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Entered date is required")
   @Key("sample.enteredDateRequiredException")
@@ -14644,6 +16686,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental".
    * 
    * @return translated "Environmental"
+  
    */
   @DefaultMessage("Environmental")
   @Key("sample.environmental")
@@ -14653,6 +16696,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From TRF".
    * 
    * @return translated "From TRF"
+  
    */
   @DefaultMessage("From TRF")
   @Key("sample.fromTRF")
@@ -14661,7 +16705,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: The auxiliary group ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveAuxGroupWarning")
@@ -14670,7 +16717,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: The organization ''{1}'' is inactive and wasn''t added to the sample".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Accession # {0,number,#0}: The organization ''{1}'' is inactive and wasn''t added to the sample"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: The organization ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveOrgWarning")
@@ -14679,7 +16729,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: The project ''{1}'' is inactive and wasn''t added to the sample".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Accession # {0,number,#0}: The project ''{1}'' is inactive and wasn''t added to the sample"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: The project ''{1}'' is inactive and wasn''t added to the sample")
   @Key("sample.inactiveProjectWarning")
@@ -14688,7 +16741,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}, {2} is inactive and was not added to the sample ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: {1}, {2} is inactive and was not added to the sample "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}, {2} is inactive and was not added to the sample ")
   @Key("sample.inactiveTestWarning")
@@ -14697,7 +16754,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} is an invalid entry, please try again".
    * 
+   * @param arg0 "{0}"
    * @return translated "{0} is an invalid entry, please try again"
+  
    */
   @DefaultMessage("{0} is an invalid entry, please try again")
   @Key("sample.invalidEntryException")
@@ -14707,6 +16766,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Items/Analyses".
    * 
    * @return translated "Items/Analyses"
+  
    */
   @DefaultMessage("Items/Analyses")
   @Key("sample.itemAnalyses")
@@ -14715,7 +16775,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: The sample must have at least one sample item".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: The sample must have at least one sample item"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: The sample must have at least one sample item")
   @Key("sample.minOneSampleItemException")
@@ -14724,7 +16786,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: The sample must have only one report to".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: The sample must have only one report to"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: The sample must have only one report to")
   @Key("sample.moreThanOneReportToException")
@@ -14733,7 +16797,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # ''{0}'': Only one record with the type Bill To is allowed".
    * 
+   * @param arg0 "{0}"
    * @return translated "Accession # ''{0}'': Only one record with the type Bill To is allowed"
+  
    */
   @DefaultMessage("Accession # ''{0}'': Only one record with the type Bill To is allowed")
   @Key("sample.multipleBillToException")
@@ -14742,7 +16808,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # ''{0}'': Only one record with the type Birth Hospital is allowed".
    * 
+   * @param arg0 "{0}"
    * @return translated "Accession # ''{0}'': Only one record with the type Birth Hospital is allowed"
+  
    */
   @DefaultMessage("Accession # ''{0}'': Only one record with the type Birth Hospital is allowed")
   @Key("sample.multipleBirthHospException")
@@ -14751,7 +16819,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # ''{0}'': Only one record with the type Report To is allowed ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Accession # ''{0}'': Only one record with the type Report To is allowed "
+  
    */
   @DefaultMessage("Accession # ''{0}'': Only one record with the type Report To is allowed ")
   @Key("sample.multipleReportToException")
@@ -14761,6 +16831,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Neonatal".
    * 
    * @return translated "Neonatal"
+  
    */
   @DefaultMessage("Neonatal")
   @Key("sample.neonatal")
@@ -14769,7 +16840,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Missing or undefined domain".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Missing or undefined domain"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Missing or undefined domain")
   @Key("sample.noDomainException")
@@ -14779,6 +16852,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A QA event has been added that makes this sample and all its analyses not billable".
    * 
    * @return translated "A QA event has been added that makes this sample and all its analyses not billable"
+  
    */
   @DefaultMessage("A QA event has been added that makes this sample and all its analyses not billable")
   @Key("sample.notBillable")
@@ -14787,7 +16861,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: This number has already been used for a fully logged in sample ".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: This number has already been used for a fully logged in sample "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: This number has already been used for a fully logged in sample ")
   @Key("sample.notQuickEntryException")
@@ -14796,7 +16872,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Accession # {0,number,#0}: {1}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1}")
   @Key("sample.noteException")
@@ -14806,6 +16885,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Notes".
    * 
    * @return translated "Sample Notes"
+  
    */
   @DefaultMessage("Sample Notes")
   @Key("sample.notes")
@@ -14814,7 +16894,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Order # {1,number,#0} must be the id of an existing Send-out order".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Accession # {0,number,#0}: Order # {1,number,#0} must be the id of an existing Send-out order"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Order # {1,number,#0} must be the id of an existing Send-out order")
   @Key("sample.orderIdInvalidException")
@@ -14823,7 +16906,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: {1} ''{2}'' is invalid and couldn''t be imported".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: {1} ''{2}'' is invalid and couldn''t be imported"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: {1} ''{2}'' is invalid and couldn''t be imported")
   @Key("sample.orderImportException")
@@ -14833,6 +16920,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Organization".
    * 
    * @return translated "Sample Organization"
+  
    */
   @DefaultMessage("Sample Organization")
   @Key("sample.organization")
@@ -14841,7 +16929,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Last name is required for a patient".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Last name is required for a patient"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Last name is required for a patient")
   @Key("sample.patientLastNameRequiredException")
@@ -14851,6 +16941,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Private Well".
    * 
    * @return translated "Private Well"
+  
    */
   @DefaultMessage("Private Well")
   @Key("sample.privateWell")
@@ -14860,6 +16951,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Project".
    * 
    * @return translated "Sample Project"
+  
    */
   @DefaultMessage("Sample Project")
   @Key("sample.project")
@@ -14869,6 +16961,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample QA Events".
    * 
    * @return translated "Sample QA Events"
+  
    */
   @DefaultMessage("Sample QA Events")
   @Key("sample.qaEvents")
@@ -14878,6 +16971,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Received".
    * 
    * @return translated "Received"
+  
    */
   @DefaultMessage("Received")
   @Key("sample.received")
@@ -14886,7 +16980,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Received date is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Received date is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Received date is required")
   @Key("sample.receivedDateRequiredException")
@@ -14895,7 +16991,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date ".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Received date shouldn''t be more than 180 days before entered date ")
   @Key("sample.receivedTooOldWarning")
@@ -14905,6 +17003,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Released Date".
    * 
    * @return translated "Sample Released Date"
+  
    */
   @DefaultMessage("Sample Released Date")
   @Key("sample.releasedDate")
@@ -14913,7 +17012,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Sample must have a report to".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Sample must have a report to"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Sample must have a report to")
   @Key("sample.reportToMissingWarning")
@@ -14923,6 +17024,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample".
    * 
    * @return translated "Sample"
+  
    */
   @DefaultMessage("Sample")
   @Key("sample.sample")
@@ -14932,6 +17034,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An item must be selected to add an analysis".
    * 
    * @return translated "An item must be selected to add an analysis"
+  
    */
   @DefaultMessage("An item must be selected to add an analysis")
   @Key("sample.sampleItemSelectedToAddAnalysis")
@@ -14941,6 +17044,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample type is required before adding test".
    * 
    * @return translated "Sample type is required before adding test"
+  
    */
   @DefaultMessage("Sample type is required before adding test")
   @Key("sample.sampleItemTypeRequired")
@@ -14950,6 +17054,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS".
    * 
    * @return translated "SDWIS"
+  
    */
   @DefaultMessage("SDWIS")
   @Key("sample.sdwis")
@@ -14959,6 +17064,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Specific".
    * 
    * @return translated "Sample Specific"
+  
    */
   @DefaultMessage("Sample Specific")
   @Key("sample.specific")
@@ -14968,6 +17074,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Status".
    * 
    * @return translated "Sample Status"
+  
    */
   @DefaultMessage("Sample Status")
   @Key("sample.status")
@@ -14977,6 +17084,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Lookup".
    * 
    * @return translated "Test Lookup"
+  
    */
   @DefaultMessage("Test Lookup")
   @Key("sample.testLookup")
@@ -14986,6 +17094,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Tracking".
    * 
    * @return translated "Tracking"
+  
    */
   @DefaultMessage("Tracking")
   @Key("sample.tracking")
@@ -14995,6 +17104,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Type".
    * 
    * @return translated "Sample Type"
+  
    */
   @DefaultMessage("Sample Type")
   @Key("sample.type")
@@ -15004,6 +17114,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type/Status".
    * 
    * @return translated "Type/Status"
+  
    */
   @DefaultMessage("Type/Status")
   @Key("sample.typeStatus")
@@ -15012,7 +17123,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: You must add an internal note when sample/analysis is unreleased".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: You must add an internal note when sample/analysis is unreleased"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: You must add an internal note when sample/analysis is unreleased")
   @Key("sample.unreleaseNoNoteException")
@@ -15021,7 +17134,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Status needs to be ''{0}'' to unrelease".
    * 
+   * @param arg0 "{0}"
    * @return translated "Status needs to be ''{0}'' to unrelease"
+  
    */
   @DefaultMessage("Status needs to be ''{0}'' to unrelease")
   @Key("sample.wrongStatusUnrelease")
@@ -15031,6 +17146,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Cat".
    * 
    * @return translated "Sample Cat"
+  
    */
   @DefaultMessage("Sample Cat")
   @Key("sampleCat")
@@ -15040,6 +17156,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Category is required".
    * 
    * @return translated "Sample Category is required"
+  
    */
   @DefaultMessage("Sample Category is required")
   @Key("sampleCatRequiredException")
@@ -15049,6 +17166,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Clinical Info".
    * 
    * @return translated "Clinical Info"
+  
    */
   @DefaultMessage("Clinical Info")
   @Key("sampleClinical.clinicalInfo")
@@ -15058,6 +17176,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Clinical Sample Login".
    * 
    * @return translated "Clinical Sample Login"
+  
    */
   @DefaultMessage("Clinical Sample Login")
   @Key("sampleClinical.login")
@@ -15067,6 +17186,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login clinical sample and analysis related information.".
    * 
    * @return translated "Fully login clinical sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login clinical sample and analysis related information.")
   @Key("sampleClinical.loginDescription")
@@ -15076,6 +17196,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Provider/Organization Info".
    * 
    * @return translated "Provider/Organization Info"
+  
    */
   @DefaultMessage("Provider/Organization Info")
   @Key("sampleClinical.providerOrganizationInfo")
@@ -15085,6 +17206,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Clinical".
    * 
    * @return translated "Sample Clinical"
+  
    */
   @DefaultMessage("Sample Clinical")
   @Key("sampleClinical.sampleClinical")
@@ -15094,6 +17216,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Since there are containers already present in the sample, the \ntests and sample types may not get assigned as defined in the order.\nWould you still like to load the order?".
    * 
    * @return translated "Since there are containers already present in the sample, the \ntests and sample types may not get assigned as defined in the order.\nWould you still like to load the order?"
+  
    */
   @DefaultMessage("Since there are containers already present in the sample, the \ntests and sample types may not get assigned as defined in the order.\nWould you still like to load the order?")
   @Key("sampleContainsItems")
@@ -15103,6 +17226,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Data Export".
    * 
    * @return translated "Sample Data Export"
+  
    */
   @DefaultMessage("Sample Data Export")
   @Key("sampleDataExport")
@@ -15112,6 +17236,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The domain of this sample has changed".
    * 
    * @return translated "The domain of this sample has changed"
+  
    */
   @DefaultMessage("The domain of this sample has changed")
   @Key("sampleDomainChangedException")
@@ -15121,6 +17246,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Info".
    * 
    * @return translated "Environmental Info"
+  
    */
   @DefaultMessage("Environmental Info")
   @Key("sampleEnvironmental.envInfo")
@@ -15130,6 +17256,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Hazardous".
    * 
    * @return translated "Hazardous"
+  
    */
   @DefaultMessage("Hazardous")
   @Key("sampleEnvironmental.hazardous")
@@ -15139,6 +17266,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Environmental Sample Login".
    * 
    * @return translated "Environmental Sample Login"
+  
    */
   @DefaultMessage("Environmental Sample Login")
   @Key("sampleEnvironmental.login")
@@ -15148,6 +17276,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login environmental sample and analysis related information.".
    * 
    * @return translated "Fully login environmental sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login environmental sample and analysis related information.")
   @Key("sampleEnvironmental.loginDescription")
@@ -15157,6 +17286,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Organization Info".
    * 
    * @return translated "Organization Info"
+  
    */
   @DefaultMessage("Organization Info")
   @Key("sampleEnvironmental.organizationInfo")
@@ -15166,6 +17296,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Environmental".
    * 
    * @return translated "Sample Environmental"
+  
    */
   @DefaultMessage("Sample Environmental")
   @Key("sampleEnvironmental.sampleEnvironmental")
@@ -15175,6 +17306,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Smp Ext Comment".
    * 
    * @return translated "Smp Ext Comment"
+  
    */
   @DefaultMessage("Smp Ext Comment")
   @Key("sampleExtrnlCmnts")
@@ -15184,6 +17316,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Fields To Search By".
    * 
    * @return translated "Sample Fields To Search By"
+  
    */
   @DefaultMessage("Sample Fields To Search By")
   @Key("sampleFieldSearchBy")
@@ -15193,6 +17326,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Samples In-House Report".
    * 
    * @return translated "Samples In-House Report"
+  
    */
   @DefaultMessage("Samples In-House Report")
   @Key("sampleInhouseReport")
@@ -15202,6 +17336,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status of Samples Received".
    * 
    * @return translated "Status of Samples Received"
+  
    */
   @DefaultMessage("Status of Samples Received")
   @Key("sampleInhouseStatusReport")
@@ -15211,6 +17346,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Smp Int Comments ".
    * 
    * @return translated "Smp Int Comments "
+  
    */
   @DefaultMessage("Smp Int Comments ")
   @Key("sampleIntrnlCmnts")
@@ -15220,6 +17356,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Item".
    * 
    * @return translated "Sample Item"
+  
    */
   @DefaultMessage("Sample Item")
   @Key("sampleItem")
@@ -15228,7 +17365,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Cannot remove Item {1,number,#0} - One or more analyses are linked to it ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Accession # {0,number,#0}: Cannot remove Item {1,number,#0} - One or more analyses are linked to it "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Cannot remove Item {1,number,#0} - One or more analyses are linked to it ")
   @Key("sampleItem.cantRemoveException")
@@ -15238,6 +17378,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Container Reference".
    * 
    * @return translated "Container Reference"
+  
    */
   @DefaultMessage("Container Reference")
   @Key("sampleItem.containerReference")
@@ -15246,7 +17387,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Container ''{2}'' is inactive and was not assigned".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Container ''{2}'' is inactive and was not assigned"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Container ''{2}'' is inactive and was not assigned")
   @Key("sampleItem.inactiveContainerWarning")
@@ -15255,7 +17400,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Sample type ''{2}'' is inactive and was not assigned ".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Sample type ''{2}'' is inactive and was not assigned "
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Sample type ''{2}'' is inactive and was not assigned ")
   @Key("sampleItem.inactiveSampleTypeWarning")
@@ -15264,7 +17413,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Source ''{2}'' is inactive and was not assigned".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Source ''{2}'' is inactive and was not assigned"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Source ''{2}'' is inactive and was not assigned")
   @Key("sampleItem.inactiveSourceWarning")
@@ -15273,7 +17426,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Unit ''{2}'' is inactive and was not assigned".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Unit ''{2}'' is inactive and was not assigned"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Unit ''{2}'' is inactive and was not assigned")
   @Key("sampleItem.inactiveUnitWarning")
@@ -15283,6 +17440,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Item".
    * 
    * @return translated "Sample Item"
+  
    */
   @DefaultMessage("Sample Item")
   @Key("sampleItem.sampleItem")
@@ -15292,6 +17450,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Source".
    * 
    * @return translated "Source"
+  
    */
   @DefaultMessage("Source")
   @Key("sampleItem.source")
@@ -15301,6 +17460,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Source Other".
    * 
    * @return translated "Source Other"
+  
    */
   @DefaultMessage("Source Other")
   @Key("sampleItem.sourceOther")
@@ -15309,7 +17469,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - Type missing".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Accession # {0,number,#0}: Item {1,number,#0} - Type missing"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number,#0} - Type missing")
   @Key("sampleItem.typeMissing")
@@ -15319,6 +17482,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An item must be selected to add an analysis if there are more than one item present".
    * 
    * @return translated "An item must be selected to add an analysis if there are more than one item present"
+  
    */
   @DefaultMessage("An item must be selected to add an analysis if there are more than one item present")
   @Key("sampleItemSelectedToAddAnalysis")
@@ -15327,7 +17491,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Item {0} - Type missing".
    * 
+   * @param arg0 "{0}"
    * @return translated "Item {0} - Type missing"
+  
    */
   @DefaultMessage("Item {0} - Type missing")
   @Key("sampleItemTypeMissing")
@@ -15337,6 +17503,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample type is required before selecting test".
    * 
    * @return translated "Sample type is required before selecting test"
+  
    */
   @DefaultMessage("Sample type is required before selecting test")
   @Key("sampleItemTypeRequired")
@@ -15346,6 +17513,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Location".
    * 
    * @return translated "Sample Location"
+  
    */
   @DefaultMessage("Sample Location")
   @Key("sampleLocation")
@@ -15355,6 +17523,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Login".
    * 
    * @return translated "Sample Login"
+  
    */
   @DefaultMessage("Sample Login")
   @Key("sampleLogin")
@@ -15364,6 +17533,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample login description".
    * 
    * @return translated "Sample login description"
+  
    */
   @DefaultMessage("Sample login description")
   @Key("sampleLoginDescription")
@@ -15373,6 +17543,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Management".
    * 
    * @return translated "Sample Management"
+  
    */
   @DefaultMessage("Sample Management")
   @Key("sampleManagement")
@@ -15382,6 +17553,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Description...".
    * 
    * @return translated "Description..."
+  
    */
   @DefaultMessage("Description...")
   @Key("sampleManagementDescription")
@@ -15391,6 +17563,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Birth Order".
    * 
    * @return translated "Birth Order"
+  
    */
   @DefaultMessage("Birth Order")
   @Key("sampleNeonatal.birthOrder")
@@ -15400,6 +17573,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collect Age".
    * 
    * @return translated "Collect Age"
+  
    */
   @DefaultMessage("Collect Age")
   @Key("sampleNeonatal.collectAge")
@@ -15409,6 +17583,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collect Valid".
    * 
    * @return translated "Collect Valid"
+  
    */
   @DefaultMessage("Collect Valid")
   @Key("sampleNeonatal.collectValid")
@@ -15418,6 +17593,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Feeding".
    * 
    * @return translated "Feeding"
+  
    */
   @DefaultMessage("Feeding")
   @Key("sampleNeonatal.feeding")
@@ -15427,6 +17603,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Gest Age".
    * 
    * @return translated "Gest Age"
+  
    */
   @DefaultMessage("Gest Age")
   @Key("sampleNeonatal.gestAge")
@@ -15436,6 +17613,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Neonatal Screening Sample Login".
    * 
    * @return translated "Neonatal Screening Sample Login"
+  
    */
   @DefaultMessage("Neonatal Screening Sample Login")
   @Key("sampleNeonatal.login")
@@ -15445,6 +17623,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login neonatal sample and analysis related information.".
    * 
    * @return translated "Fully login neonatal sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login neonatal sample and analysis related information.")
   @Key("sampleNeonatal.loginDescription")
@@ -15454,6 +17633,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "NICU".
    * 
    * @return translated "NICU"
+  
    */
   @DefaultMessage("NICU")
   @Key("sampleNeonatal.nicu")
@@ -15462,7 +17642,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Patient birth date must not be after collection date".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Patient birth date must not be after collection date"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Patient birth date must not be after collection date")
   @Key("sampleNeonatal.patBirthDateAfterCollectDateException")
@@ -15472,6 +17654,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Neonatal".
    * 
    * @return translated "Sample Neonatal"
+  
    */
   @DefaultMessage("Sample Neonatal")
   @Key("sampleNeonatal.sampleNeonatal")
@@ -15481,6 +17664,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Trans Age".
    * 
    * @return translated "Trans Age"
+  
    */
   @DefaultMessage("Trans Age")
   @Key("sampleNeonatal.transAge")
@@ -15490,6 +17674,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Trans Date".
    * 
    * @return translated "Trans Date"
+  
    */
   @DefaultMessage("Trans Date")
   @Key("sampleNeonatal.transDate")
@@ -15499,6 +17684,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transfused".
    * 
    * @return translated "Transfused"
+  
    */
   @DefaultMessage("Transfused")
   @Key("sampleNeonatal.transfused")
@@ -15508,6 +17694,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Weight".
    * 
    * @return translated "Weight"
+  
    */
   @DefaultMessage("Weight")
   @Key("sampleNeonatal.weight")
@@ -15517,6 +17704,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A QA event has been added that makes this sample and all its analyses not billable".
    * 
    * @return translated "A QA event has been added that makes this sample and all its analyses not billable"
+  
    */
   @DefaultMessage("A QA event has been added that makes this sample and all its analyses not billable")
   @Key("sampleNotBillable")
@@ -15525,7 +17713,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession #{0} must be verified before {1} : {2} can be released.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession #{0} must be verified before {1} : {2} can be released."
+  
    */
   @DefaultMessage("Accession #{0} must be verified before {1} : {2} can be released.")
   @Key("sampleNotVerifiedForAnalysisRelease")
@@ -15535,6 +17727,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Notes".
    * 
    * @return translated "Sample Notes"
+  
    */
   @DefaultMessage("Sample Notes")
   @Key("sampleNotes")
@@ -15544,6 +17737,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Organization".
    * 
    * @return translated "Sample Organization"
+  
    */
   @DefaultMessage("Sample Organization")
   @Key("sampleOrganization")
@@ -15553,6 +17747,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Bill To".
    * 
    * @return translated "Bill To"
+  
    */
   @DefaultMessage("Bill To")
   @Key("sampleOrganization.billTo")
@@ -15562,6 +17757,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Birth Hospital".
    * 
    * @return translated "Birth Hospital"
+  
    */
   @DefaultMessage("Birth Hospital")
   @Key("sampleOrganization.birthHospital")
@@ -15571,6 +17767,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Querying for more than one type of organization is not allowed".
    * 
    * @return translated "Querying for more than one type of organization is not allowed"
+  
    */
   @DefaultMessage("Querying for more than one type of organization is not allowed")
   @Key("sampleOrganization.cantQueryByMultipleTypeException")
@@ -15580,6 +17777,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Report To".
    * 
    * @return translated "Report To"
+  
    */
   @DefaultMessage("Report To")
   @Key("sampleOrganization.reportTo")
@@ -15589,6 +17787,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Prep".
    * 
    * @return translated "Sample Prep"
+  
    */
   @DefaultMessage("Sample Prep")
   @Key("samplePrep")
@@ -15598,6 +17797,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample prep can''t point to itself".
    * 
    * @return translated "Sample prep can''t point to itself"
+  
    */
   @DefaultMessage("Sample prep can''t point to itself")
   @Key("samplePrepSampleException")
@@ -15607,6 +17807,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Project".
    * 
    * @return translated "Sample Project"
+  
    */
   @DefaultMessage("Sample Project")
   @Key("sampleProject")
@@ -15616,6 +17817,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Is Perm".
    * 
    * @return translated "Is Perm"
+  
    */
   @DefaultMessage("Is Perm")
   @Key("sampleProject.isPerm")
@@ -15625,6 +17827,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Pt Id".
    * 
    * @return translated "Sample Pt Id"
+  
    */
   @DefaultMessage("Sample Pt Id")
   @Key("samplePtId")
@@ -15634,6 +17837,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Pt Id is required".
    * 
    * @return translated "Sample Pt Id is required"
+  
    */
   @DefaultMessage("Sample Pt Id is required")
   @Key("samplePtIdRequiredException")
@@ -15643,6 +17847,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample QA Events ".
    * 
    * @return translated "Sample QA Events "
+  
    */
   @DefaultMessage("Sample QA Events ")
   @Key("sampleQAEvent")
@@ -15651,7 +17856,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Type is required for QA Event ''{1}''".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
    * @return translated "Accession # {0,number,#0}: Type is required for QA Event ''{1}''"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Type is required for QA Event ''{1}''")
   @Key("sampleQAEvent.typeRequiredException")
@@ -15661,6 +17869,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Position".
    * 
    * @return translated "Analysis Position"
+  
    */
   @DefaultMessage("Analysis Position")
   @Key("sampleQc.analysisPosition")
@@ -15670,6 +17879,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check All QCs".
    * 
    * @return translated "Check All QCs"
+  
    */
   @DefaultMessage("Check All QCs")
   @Key("sampleQc.checkAllQcs")
@@ -15679,6 +17889,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis/Worksheet/QC/QC Analyte".
    * 
    * @return translated "Analysis/Worksheet/QC/QC Analyte"
+  
    */
   @DefaultMessage("Analysis/Worksheet/QC/QC Analyte")
   @Key("sampleQc.label")
@@ -15688,6 +17899,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample QC".
    * 
    * @return translated "Sample QC"
+  
    */
   @DefaultMessage("Sample QC")
   @Key("sampleQc.sampleQc")
@@ -15697,6 +17909,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Uncheck All QCs".
    * 
    * @return translated "Uncheck All QCs"
+  
    */
   @DefaultMessage("Uncheck All QCs")
   @Key("sampleQc.uncheckAllQcs")
@@ -15706,6 +17919,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Qty".
    * 
    * @return translated "Sample Qty"
+  
    */
   @DefaultMessage("Sample Qty")
   @Key("sampleQty")
@@ -15715,6 +17929,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Quick Entry".
    * 
    * @return translated "Quick Entry"
+  
    */
   @DefaultMessage("Quick Entry")
   @Key("sampleQuickEntry.quickEntry")
@@ -15724,6 +17939,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Revision".
    * 
    * @return translated "Sample Revision"
+  
    */
   @DefaultMessage("Sample Revision")
   @Key("sampleRevision")
@@ -15733,6 +17949,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Category".
    * 
    * @return translated "Sample Category"
+  
    */
   @DefaultMessage("Sample Category")
   @Key("sampleSDWIS.category")
@@ -15742,6 +17959,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Collector".
    * 
    * @return translated "SDWIS Collector"
+  
    */
   @DefaultMessage("SDWIS Collector")
   @Key("sampleSDWIS.collector")
@@ -15751,6 +17969,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Collector/Organization Info".
    * 
    * @return translated "Collector/Organization Info"
+  
    */
   @DefaultMessage("Collector/Organization Info")
   @Key("sampleSDWIS.collectorOrgInfo")
@@ -15760,6 +17979,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Facility Id".
    * 
    * @return translated "Facility Id"
+  
    */
   @DefaultMessage("Facility Id")
   @Key("sampleSDWIS.facilityId")
@@ -15769,6 +17989,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Location".
    * 
    * @return translated "SDWIS Location"
+  
    */
   @DefaultMessage("SDWIS Location")
   @Key("sampleSDWIS.location")
@@ -15778,6 +17999,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Sample Login".
    * 
    * @return translated "SDWIS Sample Login"
+  
    */
   @DefaultMessage("SDWIS Sample Login")
   @Key("sampleSDWIS.login")
@@ -15787,6 +18009,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login safe drinking water sample and analysis related information.".
    * 
    * @return translated "Fully login safe drinking water sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login safe drinking water sample and analysis related information.")
   @Key("sampleSDWIS.loginDescription")
@@ -15796,6 +18019,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Point Desc".
    * 
    * @return translated "Point Desc"
+  
    */
   @DefaultMessage("Point Desc")
   @Key("sampleSDWIS.pointDesc")
@@ -15804,7 +18028,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: PWS ID is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: PWS ID is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: PWS ID is required")
   @Key("sampleSDWIS.pwsIdRequiredException")
@@ -15814,6 +18040,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "PWS Name".
    * 
    * @return translated "PWS Name"
+  
    */
   @DefaultMessage("PWS Name")
   @Key("sampleSDWIS.pwsName")
@@ -15823,6 +18050,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Cat".
    * 
    * @return translated "Sample Cat"
+  
    */
   @DefaultMessage("Sample Cat")
   @Key("sampleSDWIS.sampleCat")
@@ -15831,7 +18059,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: SDWIS Sample Category is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: SDWIS Sample Category is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Category is required")
   @Key("sampleSDWIS.sampleCatRequiredException")
@@ -15841,6 +18071,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Pt Id".
    * 
    * @return translated "Sample Pt Id"
+  
    */
   @DefaultMessage("Sample Pt Id")
   @Key("sampleSDWIS.samplePtId")
@@ -15849,7 +18080,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: SDWIS Sample Pt Id is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: SDWIS Sample Pt Id is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Pt Id is required")
   @Key("sampleSDWIS.samplePtIdRequiredException")
@@ -15859,6 +18092,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample SDWIS".
    * 
    * @return translated "Sample SDWIS"
+  
    */
   @DefaultMessage("Sample SDWIS")
   @Key("sampleSDWIS.sampleSDWIS")
@@ -15868,6 +18102,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Sample Type".
    * 
    * @return translated "SDWIS Sample Type"
+  
    */
   @DefaultMessage("SDWIS Sample Type")
   @Key("sampleSDWIS.sampleType")
@@ -15876,7 +18111,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: SDWIS Sample Type is required".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: SDWIS Sample Type is required"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: SDWIS Sample Type is required")
   @Key("sampleSDWIS.sampleTypeRequiredException")
@@ -15886,6 +18123,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Info".
    * 
    * @return translated "SDWIS Info"
+  
    */
   @DefaultMessage("SDWIS Info")
   @Key("sampleSDWIS.sdwisInfo")
@@ -15895,6 +18133,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State Lab #".
    * 
    * @return translated "State Lab #"
+  
    */
   @DefaultMessage("State Lab #")
   @Key("sampleSDWIS.stateLabNo")
@@ -15904,6 +18143,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Selection Criteria".
    * 
    * @return translated "Sample Selection Criteria"
+  
    */
   @DefaultMessage("Sample Selection Criteria")
   @Key("sampleSelectionCriteria")
@@ -15913,6 +18153,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Status".
    * 
    * @return translated "Sample Status"
+  
    */
   @DefaultMessage("Sample Status")
   @Key("sampleStatus")
@@ -15922,6 +18163,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A sample''s domain can only be changed once during an update ".
    * 
    * @return translated "A sample''s domain can only be changed once during an update "
+  
    */
   @DefaultMessage("A sample''s domain can only be changed once during an update ")
   @Key("sampleTracking.canChangeDomainOnlyOnce")
@@ -15931,6 +18173,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Change Domain".
    * 
    * @return translated "Change Domain"
+  
    */
   @DefaultMessage("Change Domain")
   @Key("sampleTracking.changeDomain")
@@ -15940,6 +18183,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lookup and manage general sample information.".
    * 
    * @return translated "Lookup and manage general sample information."
+  
    */
   @DefaultMessage("Lookup and manage general sample information.")
   @Key("sampleTracking.description")
@@ -15949,6 +18193,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Cannot lookup the sample requested because the screen is busy".
    * 
    * @return translated "Cannot lookup the sample requested because the screen is busy"
+  
    */
   @DefaultMessage("Cannot lookup the sample requested because the screen is busy")
   @Key("sampleTracking.notProperState")
@@ -15958,6 +18203,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please query for only one domain at a time.".
    * 
    * @return translated "Please query for only one domain at a time."
+  
    */
   @DefaultMessage("Please query for only one domain at a time.")
   @Key("sampleTracking.queryDomainException")
@@ -15967,6 +18213,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Tracking".
    * 
    * @return translated "Tracking"
+  
    */
   @DefaultMessage("Tracking")
   @Key("sampleTracking.tracking")
@@ -15976,6 +18223,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type/Status".
    * 
    * @return translated "Type/Status"
+  
    */
   @DefaultMessage("Type/Status")
   @Key("sampleTracking.typeStatus")
@@ -15985,6 +18233,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unrelease Sample".
    * 
    * @return translated "Unrelease Sample"
+  
    */
   @DefaultMessage("Unrelease Sample")
   @Key("sampleTracking.unrelease")
@@ -15994,6 +18243,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort.".
    * 
    * @return translated "Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort."
+  
    */
   @DefaultMessage("Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort.")
   @Key("sampleTracking.unreleaseMessage")
@@ -16003,6 +18253,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Type".
    * 
    * @return translated "Sample Type"
+  
    */
   @DefaultMessage("Sample Type")
   @Key("sampleType")
@@ -16012,6 +18263,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Type Barcode".
    * 
    * @return translated "Sample Type Barcode"
+  
    */
   @DefaultMessage("Sample Type Barcode")
   @Key("sampleTypeBarcode")
@@ -16020,7 +18272,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Sample type invalid".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Sample type invalid"
+  
    */
   @DefaultMessage("{0} : {1} - Sample type invalid")
   @Key("sampleTypeInvalid")
@@ -16030,6 +18285,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sample Type is required".
    * 
    * @return translated "Sample Type is required"
+  
    */
   @DefaultMessage("Sample Type is required")
   @Key("sampleTypeRequiredException")
@@ -16039,6 +18295,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Save".
    * 
    * @return translated "Save"
+  
    */
   @DefaultMessage("Save")
   @Key("save")
@@ -16048,6 +18305,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Save Query".
    * 
    * @return translated "Save Query"
+  
    */
   @DefaultMessage("Save Query")
   @Key("saveQuery")
@@ -16057,6 +18315,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Saving...".
    * 
    * @return translated "Saving..."
+  
    */
   @DefaultMessage("Saving...")
   @Key("saving")
@@ -16066,6 +18325,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Saving...Complete".
    * 
    * @return translated "Saving...Complete"
+  
    */
   @DefaultMessage("Saving...Complete")
   @Key("savingComplete")
@@ -16075,6 +18335,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "1. Scan in the barcode for the sample accession number to be verified.".
    * 
    * @return translated "1. Scan in the barcode for the sample accession number to be verified."
+  
    */
   @DefaultMessage("1. Scan in the barcode for the sample accession number to be verified.")
   @Key("scanSampleAccessionBarcode")
@@ -16084,6 +18345,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "1. Scan in the barcode for the shipping record.".
    * 
    * @return translated "1. Scan in the barcode for the shipping record."
+  
    */
   @DefaultMessage("1. Scan in the barcode for the shipping record.")
   @Key("scanShippingBarcode")
@@ -16093,6 +18355,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "2. Scan in one or more tracking numbers associated with that record.".
    * 
    * @return translated "2. Scan in one or more tracking numbers associated with that record."
+  
    */
   @DefaultMessage("2. Scan in one or more tracking numbers associated with that record.")
   @Key("scanTrackingBarcode")
@@ -16101,7 +18364,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You do not have permission to access {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "You do not have permission to access {0}"
+  
    */
   @DefaultMessage("You do not have permission to access {0}")
   @Key("screenPermException")
@@ -16111,6 +18376,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Scriptlet".
    * 
    * @return translated "Scriptlet"
+  
    */
   @DefaultMessage("Scriptlet")
   @Key("scriptlet")
@@ -16120,6 +18386,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define action scripts that can be assigned to different processes.".
    * 
    * @return translated "Define action scripts that can be assigned to different processes."
+  
    */
   @DefaultMessage("Define action scripts that can be assigned to different processes.")
   @Key("scriptletDescription")
@@ -16129,6 +18396,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "1 SD".
    * 
    * @return translated "1 SD"
+  
    */
   @DefaultMessage("1 SD")
   @Key("sd")
@@ -16138,6 +18406,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS".
    * 
    * @return translated "SDWIS"
+  
    */
   @DefaultMessage("SDWIS")
   @Key("sdwis")
@@ -16147,6 +18416,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Final Report".
    * 
    * @return translated "SDWIS Final Report"
+  
    */
   @DefaultMessage("SDWIS Final Report")
   @Key("sdwisFinalReport")
@@ -16156,6 +18426,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Info".
    * 
    * @return translated "SDWIS Info"
+  
    */
   @DefaultMessage("SDWIS Info")
   @Key("sdwisInfo")
@@ -16165,6 +18436,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Sample".
    * 
    * @return translated "SDWIS Sample"
+  
    */
   @DefaultMessage("SDWIS Sample")
   @Key("sdwisSample")
@@ -16174,6 +18446,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Sample Login".
    * 
    * @return translated "SDWIS Sample Login"
+  
    */
   @DefaultMessage("SDWIS Sample Login")
   @Key("sdwisSampleLogin")
@@ -16183,6 +18456,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Fully login safe drinking water sample and analysis related information.".
    * 
    * @return translated "Fully login safe drinking water sample and analysis related information."
+  
    */
   @DefaultMessage("Fully login safe drinking water sample and analysis related information.")
   @Key("sdwisSampleLoginDescription")
@@ -16192,6 +18466,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No abnormal test results were found".
    * 
    * @return translated "No abnormal test results were found"
+  
    */
   @DefaultMessage("No abnormal test results were found")
   @Key("sdwisScan.noAbnormalResultsFoundException")
@@ -16200,7 +18475,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0}: Could not create order from sample because it has no organizations".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "Accession # {0,number,#0}: Could not create order from sample because it has no organizations"
+  
    */
   @DefaultMessage("Accession # {0,number,#0}: Could not create order from sample because it has no organizations")
   @Key("sdwisScan.noSampleOrgsException")
@@ -16209,7 +18486,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No valid monitor was found for violation: {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "No valid monitor was found for violation: {0}"
+  
    */
   @DefaultMessage("No valid monitor was found for violation: {0}")
   @Key("sdwisScan.noValidMonitorWarning")
@@ -16219,6 +18498,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "SDWIS Unload".
    * 
    * @return translated "SDWIS Unload"
+  
    */
   @DefaultMessage("SDWIS Unload")
   @Key("sdwisUnloadReport")
@@ -16228,6 +18508,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Search".
    * 
    * @return translated "Search"
+  
    */
   @DefaultMessage("Search")
   @Key("search")
@@ -16237,6 +18518,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Second Entry".
    * 
    * @return translated "Second Entry"
+  
    */
   @DefaultMessage("Second Entry")
   @Key("secondEntry")
@@ -16246,6 +18528,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Re-enter sample information to validate initial entry.".
    * 
    * @return translated "Re-enter sample information to validate initial entry."
+  
    */
   @DefaultMessage("Re-enter sample information to validate initial entry.")
   @Key("secondEntryDescription")
@@ -16255,6 +18538,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please correct the errors indicated, then press Print".
    * 
    * @return translated "Please correct the errors indicated, then press Print"
+  
    */
   @DefaultMessage("Please correct the errors indicated, then press Print")
   @Key("secondaryLabel.correctErrorsPrint")
@@ -16264,6 +18548,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Print additional labels for analyses.".
    * 
    * @return translated "Print additional labels for analyses."
+  
    */
   @DefaultMessage("Print additional labels for analyses.")
   @Key("secondaryLabel.description")
@@ -16273,6 +18558,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Some errors occurred while printing labels".
    * 
    * @return translated "Some errors occurred while printing labels"
+  
    */
   @DefaultMessage("Some errors occurred while printing labels")
   @Key("secondaryLabel.errorsPrintingLabels")
@@ -16281,7 +18567,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : Failed to fetch test record with id {1,number,#0}")
   @Key("secondaryLabel.failedToFetchTestException")
@@ -16290,7 +18579,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} - No label type defined".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0} : {1}, {2} - No label type defined"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - No label type defined")
   @Key("secondaryLabel.labelNotDefinedException")
@@ -16299,7 +18592,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} - Label quantity must be at least one".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0} : {1}, {2} - Label quantity must be at least one"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - Label quantity must be at least one")
   @Key("secondaryLabel.labelQtyLessThanOneException")
@@ -16309,6 +18606,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are no labels to print".
    * 
    * @return translated "There are no labels to print"
+  
    */
   @DefaultMessage("There are no labels to print")
   @Key("secondaryLabel.noLabelsToPrintException")
@@ -16317,7 +18615,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} - The sample does not have a patient".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0} : {1}, {2} - The sample does not have a patient"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - The sample does not have a patient")
   @Key("secondaryLabel.noPatientOnSampleException")
@@ -16327,6 +18629,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a test".
    * 
    * @return translated "Please select a test"
+  
    */
   @DefaultMessage("Please select a test")
   @Key("secondaryLabel.pleaseSelectTest")
@@ -16336,6 +18639,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must specify a printer for this report".
    * 
    * @return translated "You must specify a printer for this report"
+  
    */
   @DefaultMessage("You must specify a printer for this report")
   @Key("secondaryLabel.printerUnspecifiedException")
@@ -16344,7 +18648,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "A sample record with id {0,number,#0} does not exist".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "A sample record with id {0,number,#0} does not exist"
+  
    */
   @DefaultMessage("A sample record with id {0,number,#0} does not exist")
   @Key("secondaryLabel.sampleNotExistException")
@@ -16354,6 +18660,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Secondary Label".
    * 
    * @return translated "Secondary Label"
+  
    */
   @DefaultMessage("Secondary Label")
   @Key("secondaryLabel.secondaryLabel")
@@ -16362,7 +18669,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1,number,#0}"
    * @return translated "Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : A test record with id {1,number,#0} does not exist")
   @Key("secondaryLabel.testNotExistException")
@@ -16372,6 +18682,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The test is either not on the sample or is cancelled".
    * 
    * @return translated "The test is either not on the sample or is cancelled"
+  
    */
   @DefaultMessage("The test is either not on the sample or is cancelled")
   @Key("secondaryLabel.testNotOnSampleException")
@@ -16380,7 +18691,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession # {0,number,#0} : {1}, {2} - Unknown label type defined".
    * 
+   * @param arg0 "{0,number,#0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession # {0,number,#0} : {1}, {2} - Unknown label type defined"
+  
    */
   @DefaultMessage("Accession # {0,number,#0} : {1}, {2} - Unknown label type defined")
   @Key("secondaryLabel.unknownLabelTypeException")
@@ -16390,6 +18705,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A section cannot be made its own parent section".
    * 
    * @return translated "A section cannot be made its own parent section"
+  
    */
   @DefaultMessage("A section cannot be made its own parent section")
   @Key("sectItsOwnParentException")
@@ -16399,6 +18715,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Section".
    * 
    * @return translated "Section"
+  
    */
   @DefaultMessage("Section")
   @Key("section")
@@ -16408,6 +18725,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Section".
    * 
    * @return translated "History - Section"
+  
    */
   @DefaultMessage("History - Section")
   @Key("sectionHistory")
@@ -16417,6 +18735,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Section Name:".
    * 
    * @return translated "Section Name:"
+  
    */
   @DefaultMessage("Section Name:")
   @Key("sectionName")
@@ -16426,6 +18745,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Parameter".
    * 
    * @return translated "History - Parameter"
+  
    */
   @DefaultMessage("History - Parameter")
   @Key("sectionParameterHistory")
@@ -16434,7 +18754,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You do not have permission to {0} for section {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "You do not have permission to {0} for section {1}"
+  
    */
   @DefaultMessage("You do not have permission to {0} for section {1}")
   @Key("sectionPermException")
@@ -16444,6 +18767,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sections".
    * 
    * @return translated "Sections"
+  
    */
   @DefaultMessage("Sections")
   @Key("sections")
@@ -16453,6 +18777,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To select this value please select its analyte".
    * 
    * @return translated "To select this value please select its analyte"
+  
    */
   @DefaultMessage("To select this value please select its analyte")
   @Key("selAnaToSelVal")
@@ -16462,6 +18787,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select at least one common or domain field".
    * 
    * @return translated "Please select at least one common or domain field"
+  
    */
   @DefaultMessage("Please select at least one common or domain field")
   @Key("selAtleastOneField")
@@ -16471,6 +18797,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select fields from only one domain".
    * 
    * @return translated "Please select fields from only one domain"
+  
    */
   @DefaultMessage("Please select fields from only one domain")
   @Key("selFieldsOneDomain")
@@ -16480,6 +18807,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a ''From Item''".
    * 
    * @return translated "Please select a ''From Item''"
+  
    */
   @DefaultMessage("Please select a ''From Item''")
   @Key("selFromItem")
@@ -16489,6 +18817,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select exactly one row to unrelease".
    * 
    * @return translated "Please select exactly one row to unrelease"
+  
    */
   @DefaultMessage("Please select exactly one row to unrelease")
   @Key("selOneRowUnrelease")
@@ -16498,6 +18827,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select one or more rows to transfer".
    * 
    * @return translated "Please select one or more rows to transfer"
+  
    */
   @DefaultMessage("Please select one or more rows to transfer")
   @Key("selRowsToTransfer")
@@ -16507,6 +18837,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a ''To Item''".
    * 
    * @return translated "Please select a ''To Item''"
+  
    */
   @DefaultMessage("Please select a ''To Item''")
   @Key("selToItem")
@@ -16516,6 +18847,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select".
    * 
    * @return translated "Select"
+  
    */
   @DefaultMessage("Select")
   @Key("select")
@@ -16525,6 +18857,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select All".
    * 
    * @return translated "Select All"
+  
    */
   @DefaultMessage("Select All")
   @Key("selectAll")
@@ -16534,6 +18867,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a valid analyte before selecting a result.".
    * 
    * @return translated "Please select a valid analyte before selecting a result."
+  
    */
   @DefaultMessage("Please select a valid analyte before selecting a result.")
   @Key("selectAnaBeforeRes")
@@ -16543,6 +18877,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Analysis Fields For Output".
    * 
    * @return translated "Select Analysis Fields For Output"
+  
    */
   @DefaultMessage("Select Analysis Fields For Output")
   @Key("selectAnalysisField")
@@ -16552,6 +18887,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Category".
    * 
    * @return translated "Select Category"
+  
    */
   @DefaultMessage("Select Category")
   @Key("selectCategory")
@@ -16561,6 +18897,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Environmental Fields For Output".
    * 
    * @return translated "Select Environmental Fields For Output"
+  
    */
   @DefaultMessage("Select Environmental Fields For Output")
   @Key("selectEnvironmentalField")
@@ -16570,6 +18907,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select an item".
    * 
    * @return translated "Please select an item"
+  
    */
   @DefaultMessage("Please select an item")
   @Key("selectItem")
@@ -16579,6 +18917,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select at least one test analyte or aux data".
    * 
    * @return translated "Please select at least one test analyte or aux data"
+  
    */
   @DefaultMessage("Please select at least one test analyte or aux data")
   @Key("selectOneAnaOrAux")
@@ -16588,6 +18927,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select one or more analyses".
    * 
    * @return translated "Please select one or more analyses"
+  
    */
   @DefaultMessage("Please select one or more analyses")
   @Key("selectOneOrMoreAnalyses")
@@ -16597,6 +18937,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Organization Fields For Output".
    * 
    * @return translated "Select Organization Fields For Output"
+  
    */
   @DefaultMessage("Select Organization Fields For Output")
   @Key("selectOrganizationField")
@@ -16606,6 +18947,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Private Well Fields For Output".
    * 
    * @return translated "Select Private Well Fields For Output"
+  
    */
   @DefaultMessage("Select Private Well Fields For Output")
   @Key("selectPrivateWellField")
@@ -16615,6 +18957,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select a record to update first".
    * 
    * @return translated "Please select a record to update first"
+  
    */
   @DefaultMessage("Please select a record to update first")
   @Key("selectRecordToUpdate")
@@ -16624,6 +18967,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Sample Fields For Output".
    * 
    * @return translated "Select Sample Fields For Output"
+  
    */
   @DefaultMessage("Select Sample Fields For Output")
   @Key("selectSampleField")
@@ -16633,6 +18977,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select Sample Item Fields For Output".
    * 
    * @return translated "Select Sample Item Fields For Output"
+  
    */
   @DefaultMessage("Select Sample Item Fields For Output")
   @Key("selectSampleItemField")
@@ -16642,6 +18987,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Select SDWIS Fields For Output  ".
    * 
    * @return translated "Select SDWIS Fields For Output  "
+  
    */
   @DefaultMessage("Select SDWIS Fields For Output  ")
   @Key("selectSdwisField")
@@ -16651,6 +18997,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Send-out".
    * 
    * @return translated "Send-out"
+  
    */
   @DefaultMessage("Send-out")
   @Key("sendOut")
@@ -16660,6 +19007,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Send-out Order".
    * 
    * @return translated "Send-out Order"
+  
    */
   @DefaultMessage("Send-out Order")
   @Key("sendoutOrder")
@@ -16669,6 +19017,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order items and supplies to be sent to external users.".
    * 
    * @return translated "Order items and supplies to be sent to external users."
+  
    */
   @DefaultMessage("Order items and supplies to be sent to external users.")
   @Key("sendoutOrderDescription")
@@ -16678,6 +19027,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sequence".
    * 
    * @return translated "Sequence"
+  
    */
   @DefaultMessage("Sequence")
   @Key("sequence")
@@ -16687,6 +19037,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Serial #".
    * 
    * @return translated "Serial #"
+  
    */
   @DefaultMessage("Serial #")
   @Key("serialNum")
@@ -16696,6 +19047,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Serial #".
    * 
    * @return translated "Serial #"
+  
    */
   @DefaultMessage("Serial #")
   @Key("serialNumber")
@@ -16705,6 +19057,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Serial # Required".
    * 
    * @return translated "Serial # Required"
+  
    */
   @DefaultMessage("Serial # Required")
   @Key("serialRequired")
@@ -16714,6 +19067,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Series".
    * 
    * @return translated "Series"
+  
    */
   @DefaultMessage("Series")
   @Key("series")
@@ -16723,6 +19077,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ship From".
    * 
    * @return translated "Ship From"
+  
    */
   @DefaultMessage("Ship From")
   @Key("shipFrom")
@@ -16732,6 +19087,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipped from and shipped to need to match on all rows selected".
    * 
    * @return translated "Shipped from and shipped to need to match on all rows selected"
+  
    */
   @DefaultMessage("Shipped from and shipped to need to match on all rows selected")
   @Key("shipFromshipToInvalidException")
@@ -16741,6 +19097,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ship To".
    * 
    * @return translated "Ship To"
+  
    */
   @DefaultMessage("Ship To")
   @Key("shipTo")
@@ -16750,6 +19107,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ship To Address".
    * 
    * @return translated "Ship To Address"
+  
    */
   @DefaultMessage("Ship To Address")
   @Key("shipToAddress")
@@ -16759,6 +19117,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ship To/Requested By".
    * 
    * @return translated "Ship To/Requested By"
+  
    */
   @DefaultMessage("Ship To/Requested By")
   @Key("shipToRequestedBy")
@@ -16768,6 +19127,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipped Date".
    * 
    * @return translated "Shipped Date"
+  
    */
   @DefaultMessage("Shipped Date")
   @Key("shippedDate")
@@ -16777,6 +19137,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipped From".
    * 
    * @return translated "Shipped From"
+  
    */
   @DefaultMessage("Shipped From")
   @Key("shippedFrom")
@@ -16786,6 +19147,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipped Method".
    * 
    * @return translated "Shipped Method"
+  
    */
   @DefaultMessage("Shipped Method")
   @Key("shippedMethod")
@@ -16795,6 +19157,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipped To".
    * 
    * @return translated "Shipped To"
+  
    */
   @DefaultMessage("Shipped To")
   @Key("shippedTo")
@@ -16804,6 +19167,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping".
    * 
    * @return translated "Shipping"
+  
    */
   @DefaultMessage("Shipping")
   @Key("shipping")
@@ -16813,6 +19177,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "View, manage, and complete the shipping process.".
    * 
    * @return translated "View, manage, and complete the shipping process."
+  
    */
   @DefaultMessage("View, manage, and complete the shipping process.")
   @Key("shippingDescription")
@@ -16822,6 +19187,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Shipping".
    * 
    * @return translated "History - Shipping"
+  
    */
   @DefaultMessage("History - Shipping")
   @Key("shippingHistory")
@@ -16831,6 +19197,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping Information".
    * 
    * @return translated "Shipping Information"
+  
    */
   @DefaultMessage("Shipping Information")
   @Key("shippingInfo")
@@ -16840,6 +19207,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Item".
    * 
    * @return translated "History - Item"
+  
    */
   @DefaultMessage("History - Item")
   @Key("shippingItemHistory")
@@ -16849,6 +19217,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping Notes".
    * 
    * @return translated "Shipping Notes"
+  
    */
   @DefaultMessage("Shipping Notes")
   @Key("shippingNotes")
@@ -16858,6 +19227,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Shipping Report".
    * 
    * @return translated "Shipping Report"
+  
    */
   @DefaultMessage("Shipping Report")
   @Key("shippingReport")
@@ -16867,6 +19237,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No changes were made because the shipment was aborted.".
    * 
    * @return translated "No changes were made because the shipment was aborted."
+  
    */
   @DefaultMessage("No changes were made because the shipment was aborted.")
   @Key("shippingScreenAbort")
@@ -16876,6 +19247,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This record has been already processed. Are you sure you want to upate it?".
    * 
    * @return translated "This record has been already processed. Are you sure you want to upate it?"
+  
    */
   @DefaultMessage("This record has been already processed. Are you sure you want to upate it?")
   @Key("shippingStatusProcessed")
@@ -16885,6 +19257,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This record has been marked as shipped. Are you sure you want to upate it?".
    * 
    * @return translated "This record has been marked as shipped. Are you sure you want to upate it?"
+  
    */
   @DefaultMessage("This record has been marked as shipped. Are you sure you want to upate it?")
   @Key("shippingStatusShipped")
@@ -16894,6 +19267,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Tracking".
    * 
    * @return translated "History - Tracking"
+  
    */
   @DefaultMessage("History - Tracking")
   @Key("shippingTrackingHistory")
@@ -16903,6 +19277,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Show Analysis".
    * 
    * @return translated "Show Analysis"
+  
    */
   @DefaultMessage("Show Analysis")
   @Key("showAnalysis")
@@ -16912,6 +19287,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Show Dates".
    * 
    * @return translated "Show Dates"
+  
    */
   @DefaultMessage("Show Dates")
   @Key("showDates")
@@ -16921,6 +19297,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Show Manifest".
    * 
    * @return translated "Show Manifest"
+  
    */
   @DefaultMessage("Show Manifest")
   @Key("showManifest")
@@ -16930,6 +19307,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Show my section(s) only".
    * 
    * @return translated "Show my section(s) only"
+  
    */
   @DefaultMessage("Show my section(s) only")
   @Key("showMySectOnly")
@@ -16939,6 +19317,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "S.D.".
    * 
    * @return translated "S.D."
+  
    */
   @DefaultMessage("S.D.")
   @Key("significantDigits")
@@ -16948,6 +19327,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sign In".
    * 
    * @return translated "Sign In"
+  
    */
   @DefaultMessage("Sign In")
   @Key("signin")
@@ -16957,6 +19337,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Similar".
    * 
    * @return translated "Similar"
+  
    */
   @DefaultMessage("Similar")
   @Key("similar")
@@ -16966,6 +19347,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Singular".
    * 
    * @return translated "Singular"
+  
    */
   @DefaultMessage("Singular")
   @Key("singular")
@@ -16975,6 +19357,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "6-10 days ago".
    * 
    * @return translated "6-10 days ago"
+  
    */
   @DefaultMessage("6-10 days ago")
   @Key("sixToTenDays")
@@ -16984,6 +19367,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A destination URI beginning with ''socket://'' must be of the format ''socket://hostname:port''".
    * 
    * @return translated "A destination URI beginning with ''socket://'' must be of the format ''socket://hostname:port''"
+  
    */
   @DefaultMessage("A destination URI beginning with ''socket://'' must be of the format ''socket://hostname:port''")
   @Key("socketURIMustHaveHostAndPortException")
@@ -16993,6 +19377,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sort Order".
    * 
    * @return translated "Sort Order"
+  
    */
   @DefaultMessage("Sort Order")
   @Key("sortOrder")
@@ -17002,6 +19387,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sort Method".
    * 
    * @return translated "Sort Method"
+  
    */
   @DefaultMessage("Sort Method")
   @Key("sortingMethod")
@@ -17011,6 +19397,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Source".
    * 
    * @return translated "Source"
+  
    */
   @DefaultMessage("Source")
   @Key("source")
@@ -17020,6 +19407,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Source Other".
    * 
    * @return translated "Source Other"
+  
    */
   @DefaultMessage("Source Other")
   @Key("sourceOther")
@@ -17029,6 +19417,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please specify the Destination URI".
    * 
    * @return translated "Please specify the Destination URI"
+  
    */
   @DefaultMessage("Please specify the Destination URI")
   @Key("specifyDestURI")
@@ -17038,6 +19427,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "St".
    * 
    * @return translated "St"
+  
    */
   @DefaultMessage("St")
   @Key("st")
@@ -17047,6 +19437,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Starting Released Date".
    * 
    * @return translated "Starting Released Date"
+  
    */
   @DefaultMessage("Starting Released Date")
   @Key("stRelDt")
@@ -17056,6 +19447,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Standard Note".
    * 
    * @return translated "Standard Note"
+  
    */
   @DefaultMessage("Standard Note")
   @Key("standardNote")
@@ -17065,6 +19457,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Create commonly used notes for convenient entry.".
    * 
    * @return translated "Create commonly used notes for convenient entry."
+  
    */
   @DefaultMessage("Create commonly used notes for convenient entry.")
   @Key("standardNoteDescription")
@@ -17074,6 +19467,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Standard Note".
    * 
    * @return translated "History - Standard Note"
+  
    */
   @DefaultMessage("History - Standard Note")
   @Key("standardNoteHistory")
@@ -17083,6 +19477,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Standard Note Selection".
    * 
    * @return translated "Standard Note Selection"
+  
    */
   @DefaultMessage("Standard Note Selection")
   @Key("standardNoteSelection")
@@ -17092,6 +19487,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Start Day".
    * 
    * @return translated "Start Day"
+  
    */
   @DefaultMessage("Start Day")
   @Key("startDay")
@@ -17101,6 +19497,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Started".
    * 
    * @return translated "Started"
+  
    */
   @DefaultMessage("Started")
   @Key("started")
@@ -17110,6 +19507,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Started Date".
    * 
    * @return translated "Started Date"
+  
    */
   @DefaultMessage("Started Date")
   @Key("startedDate")
@@ -17118,7 +19516,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Started date can''t be after completed".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Started date can''t be after completed"
+  
    */
   @DefaultMessage("{0} : {1} - Started date can''t be after completed")
   @Key("startedDateAfterCompletedError")
@@ -17127,7 +19528,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Started date is before available date".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Started date is before available date"
+  
    */
   @DefaultMessage("{0} : {1} - Started date is before available date")
   @Key("startedDateBeforeAvailableCaution")
@@ -17136,7 +19540,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "{0} : {1} - Started date can''t be in the future".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "{0} : {1} - Started date can''t be in the future"
+  
    */
   @DefaultMessage("{0} : {1} - Started date can''t be in the future")
   @Key("startedDateInFutureError")
@@ -17146,6 +19553,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Stat Type".
    * 
    * @return translated "Stat Type"
+  
    */
   @DefaultMessage("Stat Type")
   @Key("statType")
@@ -17155,6 +19563,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State".
    * 
    * @return translated "State"
+  
    */
   @DefaultMessage("State")
   @Key("state")
@@ -17164,6 +19573,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State ID".
    * 
    * @return translated "State ID"
+  
    */
   @DefaultMessage("State ID")
   @Key("stateId")
@@ -17173,6 +19583,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State Lab #".
    * 
    * @return translated "State Lab #"
+  
    */
   @DefaultMessage("State Lab #")
   @Key("stateLabNo")
@@ -17182,6 +19593,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State Lab Number is required".
    * 
    * @return translated "State Lab Number is required"
+  
    */
   @DefaultMessage("State Lab Number is required")
   @Key("stateLabNumRequiredException")
@@ -17191,6 +19603,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "State Type".
    * 
    * @return translated "State Type"
+  
    */
   @DefaultMessage("State Type")
   @Key("stateType")
@@ -17200,6 +19613,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Plot Statistic".
    * 
    * @return translated "Plot Statistic"
+  
    */
   @DefaultMessage("Plot Statistic")
   @Key("statistic")
@@ -17209,6 +19623,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status".
    * 
    * @return translated "Status"
+  
    */
   @DefaultMessage("Status")
   @Key("status")
@@ -17218,6 +19633,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status must be either \"Processed\" or \"Shipped\" to process shipping".
    * 
    * @return translated "Status must be either \"Processed\" or \"Shipped\" to process shipping"
+  
    */
   @DefaultMessage("Status must be either \"Processed\" or \"Shipped\" to process shipping")
   @Key("statusProcessedShipped")
@@ -17227,6 +19643,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage".
    * 
    * @return translated "Storage"
+  
    */
   @DefaultMessage("Storage")
   @Key("storage")
@@ -17236,6 +19653,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Check out date must not be before check in date".
    * 
    * @return translated "Check out date must not be before check in date"
+  
    */
   @DefaultMessage("Check out date must not be before check in date")
   @Key("storage.invalidDateRangeException")
@@ -17245,6 +19663,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage".
    * 
    * @return translated "Storage"
+  
    */
   @DefaultMessage("Storage")
   @Key("storage.storage")
@@ -17254,6 +19673,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manage and track stored items in the laboratory by location.".
    * 
    * @return translated "Manage and track stored items in the laboratory by location."
+  
    */
   @DefaultMessage("Manage and track stored items in the laboratory by location.")
   @Key("storageDescription")
@@ -17263,6 +19683,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage location cannot be deleted, one or more storage locations are still linked to it".
    * 
    * @return translated "Storage location cannot be deleted, one or more storage locations are still linked to it"
+  
    */
   @DefaultMessage("Storage location cannot be deleted, one or more storage locations are still linked to it")
   @Key("storageLocDeleteException")
@@ -17272,6 +19693,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage location is required ".
    * 
    * @return translated "Storage location is required "
+  
    */
   @DefaultMessage("Storage location is required ")
   @Key("storageLocReqForItemException")
@@ -17281,6 +19703,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Location".
    * 
    * @return translated "Storage Location"
+  
    */
   @DefaultMessage("Storage Location")
   @Key("storageLocation")
@@ -17290,6 +19713,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more storage locations cannot be deleted, other records are still linked to them".
    * 
    * @return translated "One or more storage locations cannot be deleted, other records are still linked to them"
+  
    */
   @DefaultMessage("One or more storage locations cannot be deleted, other records are still linked to them")
   @Key("storageLocationDeleteException")
@@ -17299,6 +19723,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define places that can be used in the laboratory. (eg., Virology Freezer #1)".
    * 
    * @return translated "Define places that can be used in the laboratory. (eg., Virology Freezer #1)"
+  
    */
   @DefaultMessage("Define places that can be used in the laboratory. (eg., Virology Freezer #1)")
   @Key("storageLocationDescription")
@@ -17308,6 +19733,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Storage Location".
    * 
    * @return translated "History - Storage Location"
+  
    */
   @DefaultMessage("History - Storage Location")
   @Key("storageLocationHistory")
@@ -17317,6 +19743,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage location cannot be deleted, one or more inventory locations are still linked to it".
    * 
    * @return translated "Storage location cannot be deleted, one or more inventory locations are still linked to it"
+  
    */
   @DefaultMessage("Storage location cannot be deleted, one or more inventory locations are still linked to it")
   @Key("storageLocationInventoryLocationDeleteException")
@@ -17326,6 +19753,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Location/Item".
    * 
    * @return translated "Storage Location/Item"
+  
    */
   @DefaultMessage("Storage Location/Item")
   @Key("storageLocationItem")
@@ -17335,6 +19763,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Location Name".
    * 
    * @return translated "Storage Location Name"
+  
    */
   @DefaultMessage("Storage Location Name")
   @Key("storageLocationName")
@@ -17344,6 +19773,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Location Selection".
    * 
    * @return translated "Storage Location Selection"
+  
    */
   @DefaultMessage("Storage Location Selection")
   @Key("storageLocationSelection")
@@ -17353,6 +19783,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage location cannot be deleted, one or more storage records are still linked to it".
    * 
    * @return translated "Storage location cannot be deleted, one or more storage records are still linked to it"
+  
    */
   @DefaultMessage("Storage location cannot be deleted, one or more storage records are still linked to it")
   @Key("storageLocationStorageDeleteException")
@@ -17362,6 +19793,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage needs to be checked out before another row is added".
    * 
    * @return translated "Storage needs to be checked out before another row is added"
+  
    */
   @DefaultMessage("Storage needs to be checked out before another row is added")
   @Key("storageNotCheckedOutException")
@@ -17371,6 +19803,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Sub Unit".
    * 
    * @return translated "Storage Sub Unit"
+  
    */
   @DefaultMessage("Storage Sub Unit")
   @Key("storageSubUnit")
@@ -17380,6 +19813,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Unit".
    * 
    * @return translated "Storage Unit"
+  
    */
   @DefaultMessage("Storage Unit")
   @Key("storageUnit")
@@ -17389,6 +19823,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage unit cannot be deleted, one or more storage locations are still linked to it".
    * 
    * @return translated "Storage unit cannot be deleted, one or more storage locations are still linked to it"
+  
    */
   @DefaultMessage("Storage unit cannot be deleted, one or more storage locations are still linked to it")
   @Key("storageUnitDeleteException")
@@ -17398,6 +19833,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define elements of storage that can be used in storage locations. (eg., -70 degree freezer)".
    * 
    * @return translated "Define elements of storage that can be used in storage locations. (eg., -70 degree freezer)"
+  
    */
   @DefaultMessage("Define elements of storage that can be used in storage locations. (eg., -70 degree freezer)")
   @Key("storageUnitDescription")
@@ -17407,6 +19843,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Storage Unit".
    * 
    * @return translated "History - Storage Unit"
+  
    */
   @DefaultMessage("History - Storage Unit")
   @Key("storageUnitHistory")
@@ -17416,6 +19853,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Storage Units".
    * 
    * @return translated "Storage Units"
+  
    */
   @DefaultMessage("Storage Units")
   @Key("storageUnits")
@@ -17425,6 +19863,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Store".
    * 
    * @return translated "Store"
+  
    */
   @DefaultMessage("Store")
   @Key("store")
@@ -17434,6 +19873,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Street".
    * 
    * @return translated "Street"
+  
    */
   @DefaultMessage("Street")
   @Key("street")
@@ -17443,6 +19883,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sub-Assembly".
    * 
    * @return translated "Sub-Assembly"
+  
    */
   @DefaultMessage("Sub-Assembly")
   @Key("subAssembly")
@@ -17452,6 +19893,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sub Location".
    * 
    * @return translated "History - Sub Location"
+  
    */
   @DefaultMessage("History - Sub Location")
   @Key("subLocationHistory")
@@ -17461,6 +19903,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Subject".
    * 
    * @return translated "Subject"
+  
    */
   @DefaultMessage("Subject")
   @Key("subject")
@@ -17470,6 +19913,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Subset Capacity".
    * 
    * @return translated "Subset Capacity"
+  
    */
   @DefaultMessage("Subset Capacity")
   @Key("subsetCapacity")
@@ -17479,6 +19923,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Subset Capacity must be greater than zero".
    * 
    * @return translated "Subset Capacity must be greater than zero"
+  
    */
   @DefaultMessage("Subset Capacity must be greater than zero")
   @Key("subsetCapacityMoreThanZeroException")
@@ -17488,6 +19933,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Suggestions".
    * 
    * @return translated "Suggestions"
+  
    */
   @DefaultMessage("Suggestions")
   @Key("suggestions")
@@ -17497,6 +19943,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sum of quantities less than quantity ordered".
    * 
    * @return translated "Sum of quantities less than quantity ordered"
+  
    */
   @DefaultMessage("Sum of quantities less than quantity ordered")
   @Key("sumOfQtyLessThanQtyOrderedException")
@@ -17506,6 +19953,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Sum of quantities exceeds quantity ordered".
    * 
    * @return translated "Sum of quantities exceeds quantity ordered"
+  
    */
   @DefaultMessage("Sum of quantities exceeds quantity ordered")
   @Key("sumOfQtyMoreThanQtyOrderedException")
@@ -17515,6 +19963,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Summary".
    * 
    * @return translated "Summary"
+  
    */
   @DefaultMessage("Summary")
   @Key("summary")
@@ -17524,6 +19973,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "System".
    * 
    * @return translated "System"
+  
    */
   @DefaultMessage("System")
   @Key("system")
@@ -17533,6 +19983,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "System Name".
    * 
    * @return translated "System Name"
+  
    */
   @DefaultMessage("System Name")
   @Key("systemName")
@@ -17542,6 +19993,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "System Variable".
    * 
    * @return translated "System Variable"
+  
    */
   @DefaultMessage("System Variable")
   @Key("systemVariable")
@@ -17550,7 +20002,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Missing/invalid system variable ''{0}''".
    * 
+   * @param arg0 "{0}"
    * @return translated "Missing/invalid system variable ''{0}''"
+  
    */
   @DefaultMessage("Missing/invalid system variable ''{0}''")
   @Key("systemVariable.missingInvalidSystemVariable")
@@ -17560,6 +20014,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define system properties used by OpenELIS administrators.".
    * 
    * @return translated "Define system properties used by OpenELIS administrators."
+  
    */
   @DefaultMessage("Define system properties used by OpenELIS administrators.")
   @Key("systemVariableDescription")
@@ -17569,6 +20024,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - SystemVariable".
    * 
    * @return translated "History - SystemVariable"
+  
    */
   @DefaultMessage("History - SystemVariable")
   @Key("systemVariableHistory")
@@ -17578,6 +20034,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Table Options".
    * 
    * @return translated "Table Options"
+  
    */
   @DefaultMessage("Table Options")
   @Key("tableOptions")
@@ -17587,6 +20044,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test".
    * 
    * @return translated "Test"
+  
    */
   @DefaultMessage("Test")
   @Key("test")
@@ -17595,7 +20053,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No matching active test found for ''{0}, {1}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "No matching active test found for ''{0}, {1}''"
+  
    */
   @DefaultMessage("No matching active test found for ''{0}, {1}''")
   @Key("test.inactiveTestException")
@@ -17605,6 +20066,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Invalid value for selected type".
    * 
    * @return translated "Invalid value for selected type"
+  
    */
   @DefaultMessage("Invalid value for selected type")
   @Key("test.invalidValue")
@@ -17614,6 +20076,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Name".
    * 
    * @return translated "Test Name"
+  
    */
   @DefaultMessage("Test Name")
   @Key("test.name")
@@ -17623,6 +20086,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
+  
    */
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("test.noSelectedRow")
@@ -17632,6 +20096,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prep Test".
    * 
    * @return translated "Prep Test"
+  
    */
   @DefaultMessage("Prep Test")
   @Key("test.prepTest")
@@ -17641,6 +20106,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Results".
    * 
    * @return translated "Test Results"
+  
    */
   @DefaultMessage("Test Results")
   @Key("test.results")
@@ -17650,6 +20116,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is already an active test in the system with the same name and method".
    * 
    * @return translated "There is already an active test in the system with the same name and method"
+  
    */
   @DefaultMessage("There is already an active test in the system with the same name and method")
   @Key("testActiveException")
@@ -17659,6 +20126,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This test has already been added to the panel. Add it anyway?".
    * 
    * @return translated "This test has already been added to the panel. Add it anyway?"
+  
    */
   @DefaultMessage("This test has already been added to the panel. Add it anyway?")
   @Key("testAlreadyAdded")
@@ -17668,6 +20136,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analyte".
    * 
    * @return translated "Analyte"
+  
    */
   @DefaultMessage("Analyte")
   @Key("testAnalyte")
@@ -17677,6 +20146,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Filter by Test Analyte and Aux Data".
    * 
    * @return translated "Filter by Test Analyte and Aux Data"
+  
    */
   @DefaultMessage("Filter by Test Analyte and Aux Data")
   @Key("testAnalyteAuxDataFilter")
@@ -17686,6 +20156,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The test analyte linked to this result record has been deleted".
    * 
    * @return translated "The test analyte linked to this result record has been deleted"
+  
    */
   @DefaultMessage("The test analyte linked to this result record has been deleted")
   @Key("testAnalyteDefinitionChanged")
@@ -17695,6 +20166,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Analyte".
    * 
    * @return translated "Test Analyte"
+  
    */
   @DefaultMessage("Test Analyte")
   @Key("testAnalyteHeading")
@@ -17704,6 +20176,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Analyte ".
    * 
    * @return translated "History - Analyte "
+  
    */
   @DefaultMessage("History - Analyte ")
   @Key("testAnalyteHistory")
@@ -17713,6 +20186,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Analyte Selection".
    * 
    * @return translated "Test Analyte Selection"
+  
    */
   @DefaultMessage("Test Analyte Selection")
   @Key("testAnalyteSelection")
@@ -17722,6 +20196,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Include".
    * 
    * @return translated "Include"
+  
    */
   @DefaultMessage("Include")
   @Key("testAnalyteSelection.include")
@@ -17731,6 +20206,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Analyte Selection".
    * 
    * @return translated "Test Analyte Selection"
+  
    */
   @DefaultMessage("Test Analyte Selection")
   @Key("testAnalyteSelection.testAnalyteSelection")
@@ -17740,6 +20216,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Count by Facility".
    * 
    * @return translated "Test Count by Facility"
+  
    */
   @DefaultMessage("Test Count by Facility")
   @Key("testCountByFacility")
@@ -17749,6 +20226,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Date-Time\" must be unique in the same result group".
    * 
    * @return translated "Values of type \"Date-Time\" must be unique in the same result group"
+  
    */
   @DefaultMessage("Values of type \"Date-Time\" must be unique in the same result group")
   @Key("testDateTimeValueNotUniqueException")
@@ -17758,6 +20236,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Date\" must be unique in the same result group".
    * 
    * @return translated "Values of type \"Date\" must be unique in the same result group"
+  
    */
   @DefaultMessage("Values of type \"Date\" must be unique in the same result group")
   @Key("testDateValueNotUniqueException")
@@ -17766,7 +20245,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Group {0} cannot have \"Default\" as the only type for a unit".
    * 
+   * @param arg0 "{0}"
    * @return translated "Group {0} cannot have \"Default\" as the only type for a unit"
+  
    */
   @DefaultMessage("Group {0} cannot have \"Default\" as the only type for a unit")
   @Key("testDefaultWithNoOtherTypeException")
@@ -17776,6 +20257,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define tests for use in laboratory.".
    * 
    * @return translated "Define tests for use in laboratory."
+  
    */
   @DefaultMessage("Define tests for use in laboratory.")
   @Key("testDescription")
@@ -17785,6 +20267,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Details ".
    * 
    * @return translated "Test Details "
+  
    */
   @DefaultMessage("Test Details ")
   @Key("testDetails")
@@ -17793,7 +20276,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Group {0} must have unique \"Dictionary\" values".
    * 
+   * @param arg0 "{0}"
    * @return translated "Group {0} must have unique \"Dictionary\" values"
+  
    */
   @DefaultMessage("Group {0} must have unique \"Dictionary\" values")
   @Key("testDictEntryNotUniqueException")
@@ -17803,6 +20288,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Format".
    * 
    * @return translated "Format"
+  
    */
   @DefaultMessage("Format")
   @Key("testFormat")
@@ -17812,6 +20298,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Test".
    * 
    * @return translated "History - Test"
+  
    */
   @DefaultMessage("History - Test")
   @Key("testHistory")
@@ -17821,6 +20308,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There is already an inactive test in the system with the same name and method".
    * 
    * @return translated "There is already an inactive test in the system with the same name and method"
+  
    */
   @DefaultMessage("There is already an inactive test in the system with the same name and method")
   @Key("testInactiveException")
@@ -17830,6 +20318,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test & Method".
    * 
    * @return translated "Test & Method"
+  
    */
   @DefaultMessage("Test & Method")
   @Key("testMethod")
@@ -17839,6 +20328,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test, Method, Description".
    * 
    * @return translated "Test, Method, Description"
+  
    */
   @DefaultMessage("Test, Method, Description")
   @Key("testMethodDescription")
@@ -17848,6 +20338,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test, Method, Sample Type must have a value ".
    * 
    * @return translated "Test, Method, Sample Type must have a value "
+  
    */
   @DefaultMessage("Test, Method, Sample Type must have a value ")
   @Key("testMethodNoValueException")
@@ -17857,6 +20348,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test, Method, Sample Type".
    * 
    * @return translated "Test, Method, Sample Type"
+  
    */
   @DefaultMessage("Test, Method, Sample Type")
   @Key("testMethodSampleType")
@@ -17865,7 +20357,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The Test ''{0}'' is not valid for Sample Type ''{1}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "The Test ''{0}'' is not valid for Sample Type ''{1}''"
+  
    */
   @DefaultMessage("The Test ''{0}'' is not valid for Sample Type ''{1}''")
   @Key("testMethodSampleTypeMismatch")
@@ -17874,7 +20369,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Group {0} cannot have more than one \"Alpha\" type".
    * 
+   * @param arg0 "{0}"
    * @return translated "Group {0} cannot have more than one \"Alpha\" type"
+  
    */
   @DefaultMessage("Group {0} cannot have more than one \"Alpha\" type")
   @Key("testMoreThanOneAlphaTypeException")
@@ -17884,6 +20381,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A result group can have only one of the following types: \"Date\",\"Date-Time\" and \"Time\"".
    * 
    * @return translated "A result group can have only one of the following types: \"Date\",\"Date-Time\" and \"Time\""
+  
    */
   @DefaultMessage("A result group can have only one of the following types: \"Date\",\"Date-Time\" and \"Time\"")
   @Key("testMoreThanOneDateTypeException")
@@ -17892,7 +20390,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Group {0} cannot have more than one \"Default\" value for a unit ".
    * 
+   * @param arg0 "{0}"
    * @return translated "Group {0} cannot have more than one \"Default\" value for a unit "
+  
    */
   @DefaultMessage("Group {0} cannot have more than one \"Default\" value for a unit ")
   @Key("testMoreThanOneDefaultForUnitException")
@@ -17902,6 +20402,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Name:".
    * 
    * @return translated "Test Name:"
+  
    */
   @DefaultMessage("Test Name:")
   @Key("testName")
@@ -17910,7 +20411,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Test Row {0} - Test name is required".
    * 
+   * @param arg0 "{0}"
    * @return translated "Test Row {0} - Test name is required"
+  
    */
   @DefaultMessage("Test Row {0} - Test name is required")
   @Key("testNameRequiredException")
@@ -17920,6 +20423,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This numeric range is overlapping with numeric ranges associated with one or more results in this result group that have the same unit as this one".
    * 
    * @return translated "This numeric range is overlapping with numeric ranges associated with one or more results in this result group that have the same unit as this one"
+  
    */
   @DefaultMessage("This numeric range is overlapping with numeric ranges associated with one or more results in this result group that have the same unit as this one")
   @Key("testNumRangeOverlapException")
@@ -17929,6 +20433,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Prep".
    * 
    * @return translated "History - Prep"
+  
    */
   @DefaultMessage("History - Prep")
   @Key("testPrepHistory")
@@ -17938,6 +20443,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Reflex".
    * 
    * @return translated "History - Reflex"
+  
    */
   @DefaultMessage("History - Reflex")
   @Key("testReflexHistory")
@@ -17947,6 +20453,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Report".
    * 
    * @return translated "Test Report"
+  
    */
   @DefaultMessage("Test Report")
   @Key("testReport")
@@ -17956,6 +20463,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reportable".
    * 
    * @return translated "Reportable"
+  
    */
   @DefaultMessage("Reportable")
   @Key("testReportable")
@@ -17965,6 +20473,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Result Flags".
    * 
    * @return translated "Test Result Flags"
+  
    */
   @DefaultMessage("Test Result Flags")
   @Key("testResultFlags")
@@ -17974,6 +20483,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Result".
    * 
    * @return translated "History - Result"
+  
    */
   @DefaultMessage("History - Result")
   @Key("testResultHistory")
@@ -17983,6 +20493,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Results".
    * 
    * @return translated "Test Results"
+  
    */
   @DefaultMessage("Test Results")
   @Key("testResults")
@@ -17992,6 +20503,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Sample Type".
    * 
    * @return translated "History - Sample Type"
+  
    */
   @DefaultMessage("History - Sample Type")
   @Key("testSampleTypeHistory")
@@ -18001,6 +20513,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Section".
    * 
    * @return translated "Test Section"
+  
    */
   @DefaultMessage("Test Section")
   @Key("testSection")
@@ -18010,6 +20523,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Section".
    * 
    * @return translated "History - Section"
+  
    */
   @DefaultMessage("History - Section")
   @Key("testSectionHistory")
@@ -18019,6 +20533,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error loading sections for selected test".
    * 
    * @return translated "Error loading sections for selected test"
+  
    */
   @DefaultMessage("Error loading sections for selected test")
   @Key("testSectionLoadError")
@@ -18028,6 +20543,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test Section must have a value ".
    * 
    * @return translated "Test Section must have a value "
+  
    */
   @DefaultMessage("Test Section must have a value ")
   @Key("testSectionNoValueException")
@@ -18037,6 +20553,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis/Prep Test & Method".
    * 
    * @return translated "Analysis/Prep Test & Method"
+  
    */
   @DefaultMessage("Analysis/Prep Test & Method")
   @Key("testSelection.analysisPrepTestMethod")
@@ -18046,6 +20563,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis/Reflex Test & Method".
    * 
    * @return translated "Analysis/Reflex Test & Method"
+  
    */
   @DefaultMessage("Analysis/Reflex Test & Method")
   @Key("testSelection.analysisReflexTestMethod")
@@ -18055,6 +20573,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or more Auto Reflex Test(s) must have a Section assigned".
    * 
    * @return translated "One or more Auto Reflex Test(s) must have a Section assigned"
+  
    */
   @DefaultMessage("One or more Auto Reflex Test(s) must have a Section assigned")
   @Key("testSelection.autoReflexTestNeedsSection")
@@ -18064,6 +20583,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Copy To All".
    * 
    * @return translated "Copy To All"
+  
    */
   @DefaultMessage("Copy To All")
   @Key("testSelection.copyToAll")
@@ -18073,6 +20593,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Copy To Empty".
    * 
    * @return translated "Copy To Empty"
+  
    */
   @DefaultMessage("Copy To Empty")
   @Key("testSelection.copyToEmpty")
@@ -18082,6 +20603,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "NEW".
    * 
    * @return translated "NEW"
+  
    */
   @DefaultMessage("NEW")
   @Key("testSelection.newAccession")
@@ -18091,6 +20613,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Failed to remove test after the Prep Test Popup was cancelled".
    * 
    * @return translated "Failed to remove test after the Prep Test Popup was cancelled"
+  
    */
   @DefaultMessage("Failed to remove test after the Prep Test Popup was cancelled")
   @Key("testSelection.prepTestCancelledCleanupException")
@@ -18099,7 +20622,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Prep Test ''{0}, {1}'' must have a Section assigned".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Prep Test ''{0}, {1}'' must have a Section assigned"
+  
    */
   @DefaultMessage("Prep Test ''{0}, {1}'' must have a Section assigned")
   @Key("testSelection.prepTestNeedsSection")
@@ -18109,6 +20635,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must choose the appropriate prep test(s) before your analysis(es) may be added".
    * 
    * @return translated "You must choose the appropriate prep test(s) before your analysis(es) may be added"
+  
    */
   @DefaultMessage("You must choose the appropriate prep test(s) before your analysis(es) may be added")
   @Key("testSelection.prepTestRequiredException")
@@ -18117,7 +20644,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Prep Test must be chosen for ''{0}, {1}''".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Prep Test must be chosen for ''{0}, {1}''"
+  
    */
   @DefaultMessage("Prep Test must be chosen for ''{0}, {1}''")
   @Key("testSelection.prepTestRequiredForTestException")
@@ -18127,6 +20657,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Prep Test Selection".
    * 
    * @return translated "Prep Test Selection"
+  
    */
   @DefaultMessage("Prep Test Selection")
   @Key("testSelection.prepTestSelection")
@@ -18135,7 +20666,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Reflex Test ''{0}, {1}'' must have a Section assigned".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Reflex Test ''{0}, {1}'' must have a Section assigned"
+  
    */
   @DefaultMessage("Reflex Test ''{0}, {1}'' must have a Section assigned")
   @Key("testSelection.reflexTestNeedsSection")
@@ -18145,6 +20679,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reflex Test Selection".
    * 
    * @return translated "Reflex Test Selection"
+  
    */
   @DefaultMessage("Reflex Test Selection")
   @Key("testSelection.reflexTestSelection")
@@ -18154,6 +20689,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This test has an overlapping begin date or end date with another test which has the same name and method as this one".
    * 
    * @return translated "This test has an overlapping begin date or end date with another test which has the same name and method as this one"
+  
    */
   @DefaultMessage("This test has an overlapping begin date or end date with another test which has the same name and method as this one")
   @Key("testTimeOverlapException")
@@ -18163,6 +20699,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Values of type \"Time\" must be unique in the same result group".
    * 
    * @return translated "Values of type \"Time\" must be unique in the same result group"
+  
    */
   @DefaultMessage("Values of type \"Time\" must be unique in the same result group")
   @Key("testTimeValueNotUniqueException")
@@ -18172,6 +20709,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This titer range is overlapping with titer ranges associated with one or more results in this result group that have the same unit as this one".
    * 
    * @return translated "This titer range is overlapping with titer ranges associated with one or more results in this result group that have the same unit as this one"
+  
    */
   @DefaultMessage("This titer range is overlapping with titer ranges associated with one or more results in this result group that have the same unit as this one")
   @Key("testTiterRangeOverlapException")
@@ -18181,6 +20719,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Trailer".
    * 
    * @return translated "Trailer"
+  
    */
   @DefaultMessage("Trailer")
   @Key("testTrailer")
@@ -18190,6 +20729,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Test trailer cannot be deleted, one or more tests are still linked to it".
    * 
    * @return translated "Test trailer cannot be deleted, one or more tests are still linked to it"
+  
    */
   @DefaultMessage("Test trailer cannot be deleted, one or more tests are still linked to it")
   @Key("testTrailerDeleteException")
@@ -18199,6 +20739,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Test Trailer".
    * 
    * @return translated "History - Test Trailer"
+  
    */
   @DefaultMessage("History - Test Trailer")
   @Key("testTrailerHistory")
@@ -18208,6 +20749,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This test is being used as a prep test for another test, hence it cannot be deactivated".
    * 
    * @return translated "This test is being used as a prep test for another test, hence it cannot be deactivated"
+  
    */
   @DefaultMessage("This test is being used as a prep test for another test, hence it cannot be deactivated")
   @Key("testUsedAsPrepTestException")
@@ -18217,6 +20759,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This test is being used as a reflexive test for another test, hence it cannot be deactivated".
    * 
    * @return translated "This test is being used as a reflexive test for another test, hence it cannot be deactivated"
+  
    */
   @DefaultMessage("This test is being used as a reflexive test for another test, hence it cannot be deactivated")
   @Key("testUsedAsReflexTestException")
@@ -18226,6 +20769,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Worksheet Analyte".
    * 
    * @return translated "History - Worksheet Analyte"
+  
    */
   @DefaultMessage("History - Worksheet Analyte")
   @Key("testWorksheetAnalyteHistory")
@@ -18235,6 +20779,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Worksheet".
    * 
    * @return translated "History - Worksheet"
+  
    */
   @DefaultMessage("History - Worksheet")
   @Key("testWorksheetHistory")
@@ -18244,6 +20789,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Worksheet Item".
    * 
    * @return translated "History - Worksheet Item"
+  
    */
   @DefaultMessage("History - Worksheet Item")
   @Key("testWorksheetItemHistory")
@@ -18253,6 +20799,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Tests and Containers".
    * 
    * @return translated "Tests and Containers"
+  
    */
   @DefaultMessage("Tests and Containers")
   @Key("testsAndContainers")
@@ -18262,6 +20809,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Text".
    * 
    * @return translated "Text"
+  
    */
   @DefaultMessage("Text")
   @Key("text")
@@ -18271,6 +20819,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "3 days ago".
    * 
    * @return translated "3 days ago"
+  
    */
   @DefaultMessage("3 days ago")
   @Key("threeDays")
@@ -18280,6 +20829,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time".
    * 
    * @return translated "Time"
+  
    */
   @DefaultMessage("Time")
   @Key("time")
@@ -18289,6 +20839,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Holding hours".
    * 
    * @return translated "Holding hours"
+  
    */
   @DefaultMessage("Holding hours")
   @Key("timeHolding")
@@ -18298,6 +20849,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "99:99".
    * 
    * @return translated "99:99"
+  
    */
   @DefaultMessage("99:99")
   @Key("timeMask")
@@ -18307,6 +20859,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "HH:mm".
    * 
    * @return translated "HH:mm"
+  
    */
   @DefaultMessage("HH:mm")
   @Key("timePattern")
@@ -18316,6 +20869,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time Since Analyses Completed".
    * 
    * @return translated "Time Since Analyses Completed"
+  
    */
   @DefaultMessage("Time Since Analyses Completed")
   @Key("timeSinceAnalysesCompleted")
@@ -18325,6 +20879,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time Since Analyses Initiated".
    * 
    * @return translated "Time Since Analyses Initiated"
+  
    */
   @DefaultMessage("Time Since Analyses Initiated")
   @Key("timeSinceAnalysesInitiated")
@@ -18334,6 +20889,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time Since Analyses Logged-In".
    * 
    * @return translated "Time Since Analyses Logged-In"
+  
    */
   @DefaultMessage("Time Since Analyses Logged-In")
   @Key("timeSinceAnalysesLoggedIn")
@@ -18343,6 +20899,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Time Since Samples Received".
    * 
    * @return translated "Time Since Samples Received"
+  
    */
   @DefaultMessage("Time Since Samples Received")
   @Key("timeSinceSamplesReceived")
@@ -18352,6 +20909,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transit days".
    * 
    * @return translated "Transit days"
+  
    */
   @DefaultMessage("Transit days")
   @Key("timeTransit")
@@ -18361,6 +20919,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Extend Time".
    * 
    * @return translated "Extend Time"
+  
    */
   @DefaultMessage("Extend Time")
   @Key("timeoutExtendTime")
@@ -18370,6 +20929,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Timeout Warning".
    * 
    * @return translated "Timeout Warning"
+  
    */
   @DefaultMessage("Timeout Warning")
   @Key("timeoutHeader")
@@ -18379,6 +20939,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Logout".
    * 
    * @return translated "Logout"
+  
    */
   @DefaultMessage("Logout")
   @Key("timeoutLogout")
@@ -18388,6 +20949,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Your session is about to expire, do you want to\nlogout or extend your session".
    * 
    * @return translated "Your session is about to expire, do you want to\nlogout or extend your session"
+  
    */
   @DefaultMessage("Your session is about to expire, do you want to\nlogout or extend your session")
   @Key("timeoutWarning")
@@ -18397,6 +20959,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To".
    * 
    * @return translated "To"
+  
    */
   @DefaultMessage("To")
   @Key("to")
@@ -18406,6 +20969,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To Be Verified".
    * 
    * @return translated "To Be Verified"
+  
    */
   @DefaultMessage("To Be Verified")
   @Key("toBeVerified")
@@ -18415,6 +20979,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To Company".
    * 
    * @return translated "To Company"
+  
    */
   @DefaultMessage("To Company")
   @Key("toCompany")
@@ -18424,6 +20989,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To-Do".
    * 
    * @return translated "To-Do"
+  
    */
   @DefaultMessage("To-Do")
   @Key("toDo")
@@ -18433,6 +20999,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To-Do Analyte Report".
    * 
    * @return translated "To-Do Analyte Report"
+  
    */
   @DefaultMessage("To-Do Analyte Report")
   @Key("toDoAnalyteReport")
@@ -18442,6 +21009,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "View your teams workload.".
    * 
    * @return translated "View your teams workload."
+  
    */
   @DefaultMessage("View your teams workload.")
   @Key("toDoDescription")
@@ -18451,6 +21019,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To Item".
    * 
    * @return translated "To Item"
+  
    */
   @DefaultMessage("To Item")
   @Key("toItem")
@@ -18460,6 +21029,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To Loc".
    * 
    * @return translated "To Loc"
+  
    */
   @DefaultMessage("To Loc")
   @Key("toLoc")
@@ -18469,6 +21039,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "To Name".
    * 
    * @return translated "To Name"
+  
    */
   @DefaultMessage("To Name")
   @Key("toName")
@@ -18478,6 +21049,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Today".
    * 
    * @return translated "Today"
+  
    */
   @DefaultMessage("Today")
   @Key("today")
@@ -18487,6 +21059,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Total".
    * 
    * @return translated "Total"
+  
    */
   @DefaultMessage("Total")
   @Key("total")
@@ -18496,6 +21069,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Total Capacity".
    * 
    * @return translated "Total Capacity"
+  
    */
   @DefaultMessage("Total Capacity")
   @Key("totalCapacity")
@@ -18505,6 +21079,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Total Capacity must be greater than zero".
    * 
    * @return translated "Total Capacity must be greater than zero"
+  
    */
   @DefaultMessage("Total Capacity must be greater than zero")
   @Key("totalCapacityMoreThanZeroException")
@@ -18514,6 +21089,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Total Capacity must be a non-zero multiple of Subset Capacity ".
    * 
    * @return translated "Total Capacity must be a non-zero multiple of Subset Capacity "
+  
    */
   @DefaultMessage("Total Capacity must be a non-zero multiple of Subset Capacity ")
   @Key("totalCapacityMultipleException")
@@ -18523,6 +21099,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Total needed can''t be more than quantity on hand. Transfer inventory in or lower number requested".
    * 
    * @return translated "Total needed can''t be more than quantity on hand. Transfer inventory in or lower number requested"
+  
    */
   @DefaultMessage("Total needed can''t be more than quantity on hand. Transfer inventory in or lower number requested")
   @Key("totalIsGreaterThanOnHandException")
@@ -18531,7 +21108,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Total {0} taken from {1} exceeds quantity on hand at the location ".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Total {0} taken from {1} exceeds quantity on hand at the location "
+  
    */
   @DefaultMessage("Total {0} taken from {1} exceeds quantity on hand at the location ")
   @Key("totalItemsMoreThanQtyOnHandException")
@@ -18541,6 +21121,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Tracking".
    * 
    * @return translated "Tracking"
+  
    */
   @DefaultMessage("Tracking")
   @Key("tracking")
@@ -18550,6 +21131,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Lookup and manage general sample information.".
    * 
    * @return translated "Lookup and manage general sample information."
+  
    */
   @DefaultMessage("Lookup and manage general sample information.")
   @Key("trackingDescription")
@@ -18559,6 +21141,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Tracking #''s".
    * 
    * @return translated "Tracking #''s"
+  
    */
   @DefaultMessage("Tracking #''s")
   @Key("trackingNums")
@@ -18568,6 +21151,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Trailer for Test".
    * 
    * @return translated "Trailer for Test"
+  
    */
   @DefaultMessage("Trailer for Test")
   @Key("trailerForTest")
@@ -18577,6 +21161,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Define a standard paragraph for the final report that can be associated with tests.".
    * 
    * @return translated "Define a standard paragraph for the final report that can be associated with tests."
+  
    */
   @DefaultMessage("Define a standard paragraph for the final report that can be associated with tests.")
   @Key("trailerForTestDescription")
@@ -18586,6 +21171,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transfer".
    * 
    * @return translated "Transfer"
+  
    */
   @DefaultMessage("Transfer")
   @Key("transfer")
@@ -18595,6 +21181,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transfer Inventory".
    * 
    * @return translated "Transfer Inventory"
+  
    */
   @DefaultMessage("Transfer Inventory")
   @Key("transferInventory")
@@ -18604,6 +21191,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transferring is not allowed because the parent item has not been set for".
    * 
    * @return translated "Transferring is not allowed because the parent item has not been set for"
+  
    */
   @DefaultMessage("Transferring is not allowed because the parent item has not been set for")
   @Key("transferNotAllowed")
@@ -18613,6 +21201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Trend".
    * 
    * @return translated "Trend"
+  
    */
   @DefaultMessage("Trend")
   @Key("trendable")
@@ -18622,6 +21211,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reserve".
    * 
    * @return translated "Reserve"
+  
    */
   @DefaultMessage("Reserve")
   @Key("trfAttachment.reserve")
@@ -18631,6 +21221,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "TRF Attachment".
    * 
    * @return translated "TRF Attachment"
+  
    */
   @DefaultMessage("TRF Attachment")
   @Key("trfAttachment.trfAttachment")
@@ -18640,6 +21231,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Tube #".
    * 
    * @return translated "Tube #"
+  
    */
   @DefaultMessage("Tube #")
   @Key("tubeNum")
@@ -18649,6 +21241,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Turn Around".
    * 
    * @return translated "Turn Around"
+  
    */
   @DefaultMessage("Turn Around")
   @Key("turnAround")
@@ -18658,6 +21251,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Average days".
    * 
    * @return translated "Average days"
+  
    */
   @DefaultMessage("Average days")
   @Key("turnAroundAverage")
@@ -18667,6 +21261,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Max. days".
    * 
    * @return translated "Max. days"
+  
    */
   @DefaultMessage("Max. days")
   @Key("turnAroundMax")
@@ -18676,6 +21271,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Turnaround Statistics Report".
    * 
    * @return translated "Turnaround Statistics Report"
+  
    */
   @DefaultMessage("Turnaround Statistics Report")
   @Key("turnAroundStatistic")
@@ -18685,6 +21281,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Turnaround Statistics Report".
    * 
    * @return translated "Turnaround Statistics Report"
+  
    */
   @DefaultMessage("Turnaround Statistics Report")
   @Key("turnAroundStatisticReport")
@@ -18694,6 +21291,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Warning days".
    * 
    * @return translated "Warning days"
+  
    */
   @DefaultMessage("Warning days")
   @Key("turnAroundWarn")
@@ -18703,6 +21301,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Turnaround".
    * 
    * @return translated "Turnaround"
+  
    */
   @DefaultMessage("Turnaround")
   @Key("turnaround")
@@ -18712,6 +21311,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "21-30 days ago".
    * 
    * @return translated "21-30 days ago"
+  
    */
   @DefaultMessage("21-30 days ago")
   @Key("twntyOneToThrtyDays")
@@ -18721,6 +21321,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "2 days ago".
    * 
    * @return translated "2 days ago"
+  
    */
   @DefaultMessage("2 days ago")
   @Key("twoDays")
@@ -18730,6 +21331,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "2-5 days ago".
    * 
    * @return translated "2-5 days ago"
+  
    */
   @DefaultMessage("2-5 days ago")
   @Key("twoToFiveDays")
@@ -18739,6 +21341,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type".
    * 
    * @return translated "Type"
+  
    */
   @DefaultMessage("Type")
   @Key("type")
@@ -18748,6 +21351,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type/Analyses".
    * 
    * @return translated "Type/Analyses"
+  
    */
   @DefaultMessage("Type/Analyses")
   @Key("typeAnalyses")
@@ -18757,6 +21361,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Type/Status".
    * 
    * @return translated "Type/Status"
+  
    */
   @DefaultMessage("Type/Status")
   @Key("typeStatus")
@@ -18766,6 +21371,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "UCL".
    * 
    * @return translated "UCL"
+  
    */
   @DefaultMessage("UCL")
   @Key("uCL")
@@ -18775,6 +21381,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "UWL".
    * 
    * @return translated "UWL"
+  
    */
   @DefaultMessage("UWL")
   @Key("uWL")
@@ -18784,6 +21391,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Uncheck All".
    * 
    * @return translated "Uncheck All"
+  
    */
   @DefaultMessage("Uncheck All")
   @Key("uncheckAll")
@@ -18793,6 +21401,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Undo QCs".
    * 
    * @return translated "Undo QCs"
+  
    */
   @DefaultMessage("Undo QCs")
   @Key("undoQc")
@@ -18802,6 +21411,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Ungroup Analytes".
    * 
    * @return translated "Ungroup Analytes"
+  
    */
   @DefaultMessage("Ungroup Analytes")
   @Key("ungroupAnalytes")
@@ -18811,6 +21421,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unit".
    * 
    * @return translated "Unit"
+  
    */
   @DefaultMessage("Unit")
   @Key("unit")
@@ -18820,6 +21431,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unit Cost".
    * 
    * @return translated "Unit Cost"
+  
    */
   @DefaultMessage("Unit Cost")
   @Key("unitCost")
@@ -18829,6 +21441,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unit of Measure ".
    * 
    * @return translated "Unit of Measure "
+  
    */
   @DefaultMessage("Unit of Measure ")
   @Key("unitOfMeasure")
@@ -18838,6 +21451,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You need a unit of measure on this analysis before entering this result".
    * 
    * @return translated "You need a unit of measure on this analysis before entering this result"
+  
    */
   @DefaultMessage("You need a unit of measure on this analysis before entering this result")
   @Key("unitOfMeasureException")
@@ -18847,6 +21461,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unrelease Analysis".
    * 
    * @return translated "Unrelease Analysis"
+  
    */
   @DefaultMessage("Unrelease Analysis")
   @Key("unreleaseAnalysisCaption")
@@ -18856,6 +21471,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.".
    * 
    * @return translated "You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort."
+  
    */
   @DefaultMessage("You must add an internal note when sample/analysis is unreleased. \n\nPress Ok to continue or Cancel to abort.")
   @Key("unreleaseAnalysisMessage")
@@ -18865,6 +21481,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not unrelease more than one analysis at a time.".
    * 
    * @return translated "You may not unrelease more than one analysis at a time."
+  
    */
   @DefaultMessage("You may not unrelease more than one analysis at a time.")
   @Key("unreleaseMultipleException")
@@ -18874,6 +21491,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must add an internal note when sample/analysis is unreleased".
    * 
    * @return translated "You must add an internal note when sample/analysis is unreleased"
+  
    */
   @DefaultMessage("You must add an internal note when sample/analysis is unreleased")
   @Key("unreleaseNoNoteException")
@@ -18883,6 +21501,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unrelease Sample".
    * 
    * @return translated "Unrelease Sample"
+  
    */
   @DefaultMessage("Unrelease Sample")
   @Key("unreleaseSampleCaption")
@@ -18892,6 +21511,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort. ".
    * 
    * @return translated "Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort. "
+  
    */
   @DefaultMessage("Unreleasing a sample will reset the release date and increment the revision number. \n\nPress Ok to continue or Cancel to abort. ")
   @Key("unreleaseSampleMessage")
@@ -18901,6 +21521,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unselect".
    * 
    * @return translated "Unselect"
+  
    */
   @DefaultMessage("Unselect")
   @Key("unselect")
@@ -18910,6 +21531,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Unselect All".
    * 
    * @return translated "Unselect All"
+  
    */
   @DefaultMessage("Unselect All")
   @Key("unselectAll")
@@ -18919,6 +21541,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "UPC".
    * 
    * @return translated "UPC"
+  
    */
   @DefaultMessage("UPC")
   @Key("upc")
@@ -18928,6 +21551,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update".
    * 
    * @return translated "Update"
+  
    */
   @DefaultMessage("Update")
   @Key("update")
@@ -18937,6 +21561,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update aborted".
    * 
    * @return translated "Update aborted"
+  
    */
   @DefaultMessage("Update aborted")
   @Key("updateAborted")
@@ -18946,6 +21571,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update Failed. Make corrections and try again or Abort.".
    * 
    * @return translated "Update Failed. Make corrections and try again or Abort."
+  
    */
   @DefaultMessage("Update Failed. Make corrections and try again or Abort.")
   @Key("updateFailed")
@@ -18955,6 +21581,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update fields, then press commit".
    * 
    * @return translated "Update fields, then press commit"
+  
    */
   @DefaultMessage("Update fields, then press commit")
   @Key("updateFields")
@@ -18964,6 +21591,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Update fields then, press Commit".
    * 
    * @return translated "Update fields then, press Commit"
+  
    */
   @DefaultMessage("Update fields then, press Commit")
   @Key("updateFieldsPressCommit")
@@ -18973,6 +21601,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Updating...".
    * 
    * @return translated "Updating..."
+  
    */
   @DefaultMessage("Updating...")
   @Key("updating")
@@ -18982,6 +21611,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Updating...Complete".
    * 
    * @return translated "Updating...Complete"
+  
    */
   @DefaultMessage("Updating...Complete")
   @Key("updatingComplete")
@@ -18991,6 +21621,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Usable date must not be before prepared date".
    * 
    * @return translated "Usable date must not be before prepared date"
+  
    */
   @DefaultMessage("Usable date must not be before prepared date")
   @Key("usableBeforePrepException")
@@ -19000,6 +21631,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Usable Date".
    * 
    * @return translated "Usable Date"
+  
    */
   @DefaultMessage("Usable Date")
   @Key("usableDate")
@@ -19009,6 +21641,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Use Date Range".
    * 
    * @return translated "Use Date Range"
+  
    */
   @DefaultMessage("Use Date Range")
   @Key("useDateRange")
@@ -19018,6 +21651,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "User".
    * 
    * @return translated "User"
+  
    */
   @DefaultMessage("User")
   @Key("user")
@@ -19027,6 +21661,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "User Name".
    * 
    * @return translated "User Name"
+  
    */
   @DefaultMessage("User Name")
   @Key("userName")
@@ -19036,6 +21671,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "User/Value".
    * 
    * @return translated "User/Value"
+  
    */
   @DefaultMessage("User/Value")
   @Key("userValue")
@@ -19045,6 +21681,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Username:".
    * 
    * @return translated "Username:"
+  
    */
   @DefaultMessage("Username:")
   @Key("username")
@@ -19054,6 +21691,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Value1".
    * 
    * @return translated "Value1"
+  
    */
   @DefaultMessage("Value1")
   @Key("v1")
@@ -19063,6 +21701,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Value2".
    * 
    * @return translated "Value2"
+  
    */
   @DefaultMessage("Value2")
   @Key("v2")
@@ -19072,6 +21711,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Validating Delete ...".
    * 
    * @return translated "Validating Delete ..."
+  
    */
   @DefaultMessage("Validating Delete ...")
   @Key("validatingDelete")
@@ -19081,6 +21721,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Value".
    * 
    * @return translated "Value"
+  
    */
   @DefaultMessage("Value")
   @Key("value")
@@ -19090,6 +21731,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "A value must not be specified for this type".
    * 
    * @return translated "A value must not be specified for this type"
+  
    */
   @DefaultMessage("A value must not be specified for this type")
   @Key("valuePresentForTypeException")
@@ -19099,6 +21741,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Vendor".
    * 
    * @return translated "Vendor"
+  
    */
   @DefaultMessage("Vendor")
   @Key("vendor")
@@ -19108,6 +21751,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Vendor Address".
    * 
    * @return translated "Vendor Address"
+  
    */
   @DefaultMessage("Vendor Address")
   @Key("vendorAddress")
@@ -19117,6 +21761,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Vendor Order".
    * 
    * @return translated "Vendor Order"
+  
    */
   @DefaultMessage("Vendor Order")
   @Key("vendorOrder")
@@ -19126,6 +21771,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Order items from external vendors.".
    * 
    * @return translated "Order items from external vendors."
+  
    */
   @DefaultMessage("Order items from external vendors.")
   @Key("vendorOrderDescription")
@@ -19135,6 +21781,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Verify Sample Data Entry".
    * 
    * @return translated "Verify Sample Data Entry"
+  
    */
   @DefaultMessage("Verify Sample Data Entry")
   @Key("verification")
@@ -19144,6 +21791,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The sample must be fully logged in".
    * 
    * @return translated "The sample must be fully logged in"
+  
    */
   @DefaultMessage("The sample must be fully logged in")
   @Key("verification.cantVerifyQuickEntry")
@@ -19153,6 +21801,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "3. Close the window when done.".
    * 
    * @return translated "3. Close the window when done."
+  
    */
   @DefaultMessage("3. Close the window when done.")
   @Key("verification.closeVerifyWindow")
@@ -19162,6 +21811,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The sample must have at least one analysis assigned.".
    * 
    * @return translated "The sample must have at least one analysis assigned."
+  
    */
   @DefaultMessage("The sample must have at least one analysis assigned.")
   @Key("verification.mustHaveAnalysesToVerify")
@@ -19171,6 +21821,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "2. Repeat the above process for every sample record.".
    * 
    * @return translated "2. Repeat the above process for every sample record."
+  
    */
   @DefaultMessage("2. Repeat the above process for every sample record.")
   @Key("verification.repeatVerifyProcess")
@@ -19180,6 +21831,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "1. Scan in the barcode for the sample accession number to be verified.".
    * 
    * @return translated "1. Scan in the barcode for the sample accession number to be verified."
+  
    */
   @DefaultMessage("1. Scan in the barcode for the sample accession number to be verified.")
   @Key("verification.scanSampleAccessionBarcode")
@@ -19189,6 +21841,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Verify Sample Data Entry".
    * 
    * @return translated "Verify Sample Data Entry"
+  
    */
   @DefaultMessage("Verify Sample Data Entry")
   @Key("verification.verification")
@@ -19198,6 +21851,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The status of the sample record must be \"Not Verified\"".
    * 
    * @return translated "The status of the sample record must be \"Not Verified\""
+  
    */
   @DefaultMessage("The status of the sample record must be \"Not Verified\"")
   @Key("verification.wrongStatusForVerifying")
@@ -19207,6 +21861,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Verification Report".
    * 
    * @return translated "Verification Report"
+  
    */
   @DefaultMessage("Verification Report")
   @Key("verificationReport")
@@ -19216,6 +21871,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Version".
    * 
    * @return translated "Version"
+  
    */
   @DefaultMessage("Version")
   @Key("version")
@@ -19225,6 +21881,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "View Final Report".
    * 
    * @return translated "View Final Report"
+  
    */
   @DefaultMessage("View Final Report")
   @Key("viewFinalReport")
@@ -19234,6 +21891,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "View in PDF".
    * 
    * @return translated "View in PDF"
+  
    */
   @DefaultMessage("View in PDF")
   @Key("viewInPDF")
@@ -19243,6 +21901,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Volume Report".
    * 
    * @return translated "Volume Report"
+  
    */
   @DefaultMessage("Volume Report")
   @Key("volumeReport")
@@ -19252,6 +21911,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Press Ok to commit anyway or cancel to fix these warnings.".
    * 
    * @return translated "Press Ok to commit anyway or cancel to fix these warnings."
+  
    */
   @DefaultMessage("Press Ok to commit anyway or cancel to fix these warnings.")
   @Key("warningDialogLastLine")
@@ -19261,6 +21921,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There are warnings on the screen:".
    * 
    * @return translated "There are warnings on the screen:"
+  
    */
   @DefaultMessage("There are warnings on the screen:")
   @Key("warningDialogLine1")
@@ -19270,6 +21931,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Water Type".
    * 
    * @return translated "Water Type"
+  
    */
   @DefaultMessage("Water Type")
   @Key("waterType")
@@ -19279,6 +21941,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Please select at least one sample, then press Run Report".
    * 
    * @return translated "Please select at least one sample, then press Run Report"
+  
    */
   @DefaultMessage("Please select at least one sample, then press Run Report")
   @Key("web.noSampleSelected")
@@ -19288,6 +21951,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Well/Collector Info".
    * 
    * @return translated "Well/Collector Info"
+  
    */
   @DefaultMessage("Well/Collector Info")
   @Key("wellCollectorInfo")
@@ -19297,6 +21961,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Well Num".
    * 
    * @return translated "Well Num"
+  
    */
   @DefaultMessage("Well Num")
   @Key("wellNum")
@@ -19306,6 +21971,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Work #".
    * 
    * @return translated "Work #"
+  
    */
   @DefaultMessage("Work #")
   @Key("workNumber")
@@ -19315,6 +21981,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet".
    * 
    * @return translated "Worksheet"
+  
    */
   @DefaultMessage("Worksheet")
   @Key("worksheet")
@@ -19324,6 +21991,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet is at capacity; cannot add more rows".
    * 
    * @return translated "Worksheet is at capacity; cannot add more rows"
+  
    */
   @DefaultMessage("Worksheet is at capacity; cannot add more rows")
   @Key("worksheet.atCapacity")
@@ -19333,6 +22001,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.".
    * 
    * @return translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed."
+  
    */
   @DefaultMessage("Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.")
   @Key("worksheet.builderUpdateWarning")
@@ -19341,7 +22010,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The capacity of this worksheet has been exceeded; the last {0,number,#0} items in your selection have not been added.".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "The capacity of this worksheet has been exceeded; the last {0,number,#0} items in your selection have not been added."
+  
    */
   @DefaultMessage("The capacity of this worksheet has been exceeded; the last {0,number,#0} items in your selection have not been added.")
   @Key("worksheet.capacityExceeded")
@@ -19351,6 +22022,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reagents were loaded, please view the Reagent/Media tab to see issues that arose from this load.".
    * 
    * @return translated "Reagents were loaded, please view the Reagent/Media tab to see issues that arose from this load."
+  
    */
   @DefaultMessage("Reagents were loaded, please view the Reagent/Media tab to see issues that arose from this load.")
   @Key("worksheet.checkReagentTab")
@@ -19360,6 +22032,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".
    * 
    * @return translated "You must choose a format for this worksheet before adding analyses from another worksheet."
+  
    */
   @DefaultMessage("You must choose a format for this worksheet before adding analyses from another worksheet.")
   @Key("worksheet.chooseFormatBeforeAddFromOther")
@@ -19368,7 +22041,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "You must have complete permissions for the ''{0}'' section to {1} this row.".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "You must have complete permissions for the ''{0}'' section to {1} this row."
+  
    */
   @DefaultMessage("You must have complete permissions for the ''{0}'' section to {1} this row.")
   @Key("worksheet.completePermissionRequiredForOperation")
@@ -19378,6 +22054,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Created Date".
    * 
    * @return translated "Created Date"
+  
    */
   @DefaultMessage("Created Date")
   @Key("worksheet.createdDate")
@@ -19387,6 +22064,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error fetching worksheet display directory system variable".
    * 
    * @return translated "Error fetching worksheet display directory system variable"
+  
    */
   @DefaultMessage("Error fetching worksheet display directory system variable")
   @Key("worksheet.displayDirectoryLookupException")
@@ -19396,6 +22074,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Edit Multiple".
    * 
    * @return translated "Edit Multiple"
+  
    */
   @DefaultMessage("Edit Multiple")
   @Key("worksheet.editMultiple")
@@ -19404,7 +22083,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Error changing analysis status for position {0} analysis {1}: {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Error changing analysis status for position {0} analysis {1}: {2}"
+  
    */
   @DefaultMessage("Error changing analysis status for position {0} analysis {1}: {2}")
   @Key("worksheet.errorChangingAnalysisStatus")
@@ -19413,7 +22096,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Error changing analysis unit for position {0} analysis {1}: {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Error changing analysis unit for position {0} analysis {1}: {2}"
+  
    */
   @DefaultMessage("Error changing analysis unit for position {0} analysis {1}: {2}")
   @Key("worksheet.errorChangingAnalysisUnit")
@@ -19422,7 +22109,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Error loading additional analytes for position {0} analysis {1}: {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Error loading additional analytes for position {0} analysis {1}: {2}"
+  
    */
   @DefaultMessage("Error loading additional analytes for position {0} analysis {1}: {2}")
   @Key("worksheet.errorLoadingAdditionalAnalytes")
@@ -19431,7 +22122,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Error loading result formatter for {0}: {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Error loading result formatter for {0}: {1}"
+  
    */
   @DefaultMessage("Error loading result formatter for {0}: {1}")
   @Key("worksheet.errorLoadingResultFormatter")
@@ -19440,7 +22134,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Position {0} analysis {1}: {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Position {0} analysis {1}: {2}"
+  
    */
   @DefaultMessage("Position {0} analysis {1}: {2}")
   @Key("worksheet.errorPrefix")
@@ -19450,6 +22148,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Export to Excel".
    * 
    * @return translated "Export to Excel"
+  
    */
   @DefaultMessage("Export to Excel")
   @Key("worksheet.exportToExcel")
@@ -19459,6 +22158,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet was exported to".
    * 
    * @return translated "Worksheet was exported to"
+  
    */
   @DefaultMessage("Worksheet was exported to")
   @Key("worksheet.exportedToExcelFile")
@@ -19468,6 +22168,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Format".
    * 
    * @return translated "Format"
+  
    */
   @DefaultMessage("Format")
   @Key("worksheet.format")
@@ -19477,6 +22178,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "If Empty".
    * 
    * @return translated "If Empty"
+  
    */
   @DefaultMessage("If Empty")
   @Key("worksheet.ifEmpty")
@@ -19485,7 +22187,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Invalid user ''{0}'' for position {1} analysis {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Invalid user ''{0}'' for position {1} analysis {2}"
+  
    */
   @DefaultMessage("Invalid user ''{0}'' for position {1} analysis {2}")
   @Key("worksheet.illegalWorksheetUserFormException")
@@ -19495,6 +22201,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Import From Excel".
    * 
    * @return translated "Import From Excel"
+  
    */
   @DefaultMessage("Import From Excel")
   @Key("worksheet.importFromExcel")
@@ -19504,6 +22211,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Above".
    * 
    * @return translated "Analysis Above"
+  
    */
   @DefaultMessage("Analysis Above")
   @Key("worksheet.insertAnalysisAbove")
@@ -19513,6 +22221,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis Below".
    * 
    * @return translated "Analysis Below"
+  
    */
   @DefaultMessage("Analysis Below")
   @Key("worksheet.insertAnalysisBelow")
@@ -19522,6 +22231,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Analysis This Position (Pooling)".
    * 
    * @return translated "Analysis This Position (Pooling)"
+  
    */
   @DefaultMessage("Analysis This Position (Pooling)")
   @Key("worksheet.insertAnalysisThisPosition")
@@ -19531,6 +22241,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From QC Table Above".
    * 
    * @return translated "From QC Table Above"
+  
    */
   @DefaultMessage("From QC Table Above")
   @Key("worksheet.insertFromQcTableAbove")
@@ -19540,6 +22251,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From QC Table Below".
    * 
    * @return translated "From QC Table Below"
+  
    */
   @DefaultMessage("From QC Table Below")
   @Key("worksheet.insertFromQcTableBelow")
@@ -19549,6 +22261,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From QC Table This Position (Pooling)".
    * 
    * @return translated "From QC Table This Position (Pooling)"
+  
    */
   @DefaultMessage("From QC Table This Position (Pooling)")
   @Key("worksheet.insertFromQcTableThisPosition")
@@ -19558,6 +22271,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Another Worksheet Above".
    * 
    * @return translated "From Another Worksheet Above"
+  
    */
   @DefaultMessage("From Another Worksheet Above")
   @Key("worksheet.insertFromWorksheetAbove")
@@ -19567,6 +22281,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Another Worksheet Below".
    * 
    * @return translated "From Another Worksheet Below"
+  
    */
   @DefaultMessage("From Another Worksheet Below")
   @Key("worksheet.insertFromWorksheetBelow")
@@ -19576,6 +22291,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "From Another Worksheet This Position (Pooling)".
    * 
    * @return translated "From Another Worksheet This Position (Pooling)"
+  
    */
   @DefaultMessage("From Another Worksheet This Position (Pooling)")
   @Key("worksheet.insertFromWorksheetThisPosition")
@@ -19585,6 +22301,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Instrument Name".
    * 
    * @return translated "Instrument Name"
+  
    */
   @DefaultMessage("Instrument Name")
   @Key("worksheet.instrumentName")
@@ -19593,7 +22310,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Invalid override user(s) specified: {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "Invalid override user(s) specified: {0}"
+  
    */
   @DefaultMessage("Invalid override user(s) specified: {0}")
   @Key("worksheet.invalidUsersException")
@@ -19603,6 +22322,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The following Analyses have not been added because of permission, status, or QA Event".
    * 
    * @return translated "The following Analyses have not been added because of permission, status, or QA Event"
+  
    */
   @DefaultMessage("The following Analyses have not been added because of permission, status, or QA Event")
   @Key("worksheet.itemsNotAdded")
@@ -19612,6 +22332,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Load QC Template".
    * 
    * @return translated "Load QC Template"
+  
    */
   @DefaultMessage("Load QC Template")
   @Key("worksheet.loadTemplate")
@@ -19620,7 +22341,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "More than one active reagent lot was found for row {0,number,#0}".
    * 
+   * @param arg0 "{0,number,#0}"
    * @return translated "More than one active reagent lot was found for row {0,number,#0}"
+  
    */
   @DefaultMessage("More than one active reagent lot was found for row {0,number,#0}")
   @Key("worksheet.multiMatchingActiveReagent")
@@ -19630,6 +22353,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "No Analytes Found For Selected Row".
    * 
    * @return translated "No Analytes Found For Selected Row"
+  
    */
   @DefaultMessage("No Analytes Found For Selected Row")
   @Key("worksheet.noAnalytesFoundForRow")
@@ -19639,6 +22363,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or More items are linked to this row. Please unlink them before removing this row.".
    * 
    * @return translated "One or More items are linked to this row. Please unlink them before removing this row."
+  
    */
   @DefaultMessage("One or More items are linked to this row. Please unlink them before removing this row.")
   @Key("worksheet.oneOrMoreQcLinkOnRemove")
@@ -19648,6 +22373,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "User(s)".
    * 
    * @return translated "User(s)"
+  
    */
   @DefaultMessage("User(s)")
   @Key("worksheet.overrideUsers")
@@ -19657,6 +22383,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error validating override user(s)".
    * 
    * @return translated "Error validating override user(s)"
+  
    */
   @DefaultMessage("Error validating override user(s)")
   @Key("worksheet.overrideUsersValidationException")
@@ -19666,6 +22393,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Overrides".
    * 
    * @return translated "Overrides"
+  
    */
   @DefaultMessage("Overrides")
   @Key("worksheet.overrides")
@@ -19675,6 +22403,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Position".
    * 
    * @return translated "Position"
+  
    */
   @DefaultMessage("Position")
   @Key("worksheet.position")
@@ -19684,6 +22413,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "QC Link".
    * 
    * @return translated "QC Link"
+  
    */
   @DefaultMessage("QC Link")
   @Key("worksheet.qcLink")
@@ -19693,6 +22423,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Reagents/Media".
    * 
    * @return translated "Reagents/Media"
+  
    */
   @DefaultMessage("Reagents/Media")
   @Key("worksheet.reagentsMedia")
@@ -19702,6 +22433,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Related Worksheet #".
    * 
    * @return translated "Related Worksheet #"
+  
    */
   @DefaultMessage("Related Worksheet #")
   @Key("worksheet.relatedWorksheetNumber")
@@ -19711,6 +22443,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Transfer Results".
    * 
    * @return translated "Transfer Results"
+  
    */
   @DefaultMessage("Transfer Results")
   @Key("worksheet.transferResults")
@@ -19720,6 +22453,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "All".
    * 
    * @return translated "All"
+  
    */
   @DefaultMessage("All")
   @Key("worksheet.undoAll")
@@ -19729,6 +22463,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Manual".
    * 
    * @return translated "Manual"
+  
    */
   @DefaultMessage("Manual")
   @Key("worksheet.undoManual")
@@ -19738,6 +22473,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Undo QCs".
    * 
    * @return translated "Undo QCs"
+  
    */
   @DefaultMessage("Undo QCs")
   @Key("worksheet.undoQc")
@@ -19747,6 +22483,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Template".
    * 
    * @return translated "Template"
+  
    */
   @DefaultMessage("Template")
   @Key("worksheet.undoTemplate")
@@ -19755,7 +22492,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unparseable completed date for position {0} analysis {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Unparseable completed date for position {0} analysis {1}"
+  
    */
   @DefaultMessage("Unparseable completed date for position {0} analysis {1}")
   @Key("worksheet.unparseableCompletedDate")
@@ -19764,7 +22504,10 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Unparseable started date for position {0} analysis {1}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
    * @return translated "Unparseable started date for position {0} analysis {1}"
+  
    */
   @DefaultMessage("Unparseable started date for position {0} analysis {1}")
   @Key("worksheet.unparseableStartedDate")
@@ -19773,7 +22516,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No Analyses Found For Worksheet Id: {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "No Analyses Found For Worksheet Id: {0}"
+  
    */
   @DefaultMessage("No Analyses Found For Worksheet Id: {0}")
   @Key("worksheet.worksheetAnalysesNotFound")
@@ -19783,6 +22528,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Row Selection".
    * 
    * @return translated "Worksheet Row Selection"
+  
    */
   @DefaultMessage("Worksheet Row Selection")
   @Key("worksheet.worksheetAnalysisSelection")
@@ -19792,6 +22538,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Analysis Selection".
    * 
    * @return translated "Worksheet Analysis Selection"
+  
    */
   @DefaultMessage("Worksheet Analysis Selection")
   @Key("worksheet.worksheetBuilderLookup")
@@ -19801,6 +22548,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Worksheet".
    * 
    * @return translated "History - Worksheet"
+  
    */
   @DefaultMessage("History - Worksheet")
   @Key("worksheet.worksheetHistory")
@@ -19810,6 +22558,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Lookup".
    * 
    * @return translated "Worksheet Lookup"
+  
    */
   @DefaultMessage("Worksheet Lookup")
   @Key("worksheet.worksheetLookup")
@@ -19819,6 +22568,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet #".
    * 
    * @return translated "Worksheet #"
+  
    */
   @DefaultMessage("Worksheet #")
   @Key("worksheet.worksheetNumber")
@@ -19827,7 +22577,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "The following rows are in a status that does not allow edit: {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "The following rows are in a status that does not allow edit: {0}"
+  
    */
   @DefaultMessage("The following rows are in a status that does not allow edit: {0}")
   @Key("worksheet.wrongStatusNoEditRows")
@@ -19836,7 +22588,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "No Analyses Found For Worksheet Id: {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "No Analyses Found For Worksheet Id: {0}"
+  
    */
   @DefaultMessage("No Analyses Found For Worksheet Id: {0}")
   @Key("worksheetAnalysesNotFound")
@@ -19846,6 +22600,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "One or More items are directly/circularly linked to themself.".
    * 
    * @return translated "One or More items are directly/circularly linked to themself."
+  
    */
   @DefaultMessage("One or More items are directly/circularly linked to themself.")
   @Key("worksheetAnalysisLinkError")
@@ -19855,6 +22610,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Row Selection".
    * 
    * @return translated "Worksheet Row Selection"
+  
    */
   @DefaultMessage("Worksheet Row Selection")
   @Key("worksheetAnalysisSelection")
@@ -19864,6 +22620,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Builder".
    * 
    * @return translated "Worksheet Builder"
+  
    */
   @DefaultMessage("Worksheet Builder")
   @Key("worksheetBuilder")
@@ -19873,6 +22630,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Create a list of analyses for batch/run processing.".
    * 
    * @return translated "Create a list of analyses for batch/run processing."
+  
    */
   @DefaultMessage("Create a list of analyses for batch/run processing.")
   @Key("worksheetBuilderDescription")
@@ -19882,6 +22640,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Analysis Selection".
    * 
    * @return translated "Worksheet Analysis Selection"
+  
    */
   @DefaultMessage("Worksheet Analysis Selection")
   @Key("worksheetBuilderLookup")
@@ -19891,6 +22650,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".
    * 
    * @return translated "You must choose a format for this worksheet before adding analyses from another worksheet."
+  
    */
   @DefaultMessage("You must choose a format for this worksheet before adding analyses from another worksheet.")
   @Key("worksheetChooseFormatBeforeAddFromOther")
@@ -19900,6 +22660,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Completion".
    * 
    * @return translated "Worksheet Completion"
+  
    */
   @DefaultMessage("Worksheet Completion")
   @Key("worksheetCompletion")
@@ -19909,6 +22670,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Process the worksheet by entering results, completing, and reviewing analyses.".
    * 
    * @return translated "Process the worksheet by entering results, completing, and reviewing analyses."
+  
    */
   @DefaultMessage("Process the worksheet by entering results, completing, and reviewing analyses.")
   @Key("worksheetCompletionDescription")
@@ -19918,6 +22680,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet edit via Excel file cancelled".
    * 
    * @return translated "Worksheet edit via Excel file cancelled"
+  
    */
   @DefaultMessage("Worksheet edit via Excel file cancelled")
   @Key("worksheetCompletionEditCancelled")
@@ -19927,6 +22690,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet will be saved for editing to".
    * 
    * @return translated "Worksheet will be saved for editing to"
+  
    */
   @DefaultMessage("Worksheet will be saved for editing to")
   @Key("worksheetCompletionEditConfirm")
@@ -19936,6 +22700,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Creation".
    * 
    * @return translated "Worksheet Creation"
+  
    */
   @DefaultMessage("Worksheet Creation")
   @Key("worksheetCreation")
@@ -19945,6 +22710,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Create a list of analyses for batch/run processing.".
    * 
    * @return translated "Create a list of analyses for batch/run processing."
+  
    */
   @DefaultMessage("Create a list of analyses for batch/run processing.")
   @Key("worksheetCreationDescription")
@@ -19954,6 +22720,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Creation Lookup".
    * 
    * @return translated "Worksheet Creation Lookup"
+  
    */
   @DefaultMessage("Worksheet Creation Lookup")
   @Key("worksheetCreationLookup")
@@ -19963,6 +22730,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheets cannot be changed once they have been saved.\nAre you sure you would like to save this worksheet?".
    * 
    * @return translated "Worksheets cannot be changed once they have been saved.\nAre you sure you would like to save this worksheet?"
+  
    */
   @DefaultMessage("Worksheets cannot be changed once they have been saved.\nAre you sure you would like to save this worksheet?")
   @Key("worksheetCreationSaveConfirm")
@@ -19972,6 +22740,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error fetching worksheet display directory system variable".
    * 
    * @return translated "Error fetching worksheet display directory system variable"
+  
    */
   @DefaultMessage("Error fetching worksheet display directory system variable")
   @Key("worksheetDisplayDirectoryLookupException")
@@ -19981,6 +22750,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This worksheet has not been saved.\nAre you sure you would like to exit without saving?".
    * 
    * @return translated "This worksheet has not been saved.\nAre you sure you would like to exit without saving?"
+  
    */
   @DefaultMessage("This worksheet has not been saved.\nAre you sure you would like to exit without saving?")
   @Key("worksheetExitConfirm")
@@ -19990,6 +22760,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "An Excel file for this worksheet already exists, please delete it before trying to export".
    * 
    * @return translated "An Excel file for this worksheet already exists, please delete it before trying to export"
+  
    */
   @DefaultMessage("An Excel file for this worksheet already exists, please delete it before trying to export")
   @Key("worksheetFileExists")
@@ -19999,6 +22770,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet File Upload".
    * 
    * @return translated "Worksheet File Upload"
+  
    */
   @DefaultMessage("Worksheet File Upload")
   @Key("worksheetFileUpload")
@@ -20008,6 +22780,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Format".
    * 
    * @return translated "Format"
+  
    */
   @DefaultMessage("Format")
   @Key("worksheetFormat")
@@ -20017,6 +22790,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error loading column name/index mappings (from).\nResults will be copied by index.".
    * 
    * @return translated "Error loading column name/index mappings (from).\nResults will be copied by index."
+  
    */
   @DefaultMessage("Error loading column name/index mappings (from).\nResults will be copied by index.")
   @Key("worksheetFromColumnMappingLoadError")
@@ -20026,6 +22800,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "History - Worksheet".
    * 
    * @return translated "History - Worksheet"
+  
    */
   @DefaultMessage("History - Worksheet")
   @Key("worksheetHistory")
@@ -20035,6 +22810,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet is full, cannot add more Analyses".
    * 
    * @return translated "Worksheet is full, cannot add more Analyses"
+  
    */
   @DefaultMessage("Worksheet is full, cannot add more Analyses")
   @Key("worksheetIsFull")
@@ -20044,6 +22820,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The following Analyses have not been added because their worksheet format does not match".
    * 
    * @return translated "The following Analyses have not been added because their worksheet format does not match"
+  
    */
   @DefaultMessage("The following Analyses have not been added because their worksheet format does not match")
   @Key("worksheetItemsFormatConflict")
@@ -20053,6 +22830,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The following Analyses have not been added because of permission, status, or QA Event".
    * 
    * @return translated "The following Analyses have not been added because of permission, status, or QA Event"
+  
    */
   @DefaultMessage("The following Analyses have not been added because of permission, status, or QA Event")
   @Key("worksheetItemsNotAdded")
@@ -20062,6 +22840,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Layout".
    * 
    * @return translated "Worksheet Layout"
+  
    */
   @DefaultMessage("Worksheet Layout")
   @Key("worksheetLayout")
@@ -20071,6 +22850,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet Lookup".
    * 
    * @return translated "Worksheet Lookup"
+  
    */
   @DefaultMessage("Worksheet Lookup")
   @Key("worksheetLookup")
@@ -20079,7 +22859,9 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "More than one active QC Lot was found for position {0}".
    * 
+   * @param arg0 "{0}"
    * @return translated "More than one active QC Lot was found for position {0}"
+  
    */
   @DefaultMessage("More than one active QC Lot was found for position {0}")
   @Key("worksheetMultiMatchingActiveQc")
@@ -20089,6 +22871,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "You may not save an empty worksheet".
    * 
    * @return translated "You may not save an empty worksheet"
+  
    */
   @DefaultMessage("You may not save an empty worksheet")
   @Key("worksheetNotSaveEmpty")
@@ -20098,6 +22881,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Worksheet #".
    * 
    * @return translated "Worksheet #"
+  
    */
   @DefaultMessage("Worksheet #")
   @Key("worksheetNumber")
@@ -20107,6 +22891,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error fetching worksheet output directory system variable".
    * 
    * @return translated "Error fetching worksheet output directory system variable"
+  
    */
   @DefaultMessage("Error fetching worksheet output directory system variable")
   @Key("worksheetOutputDirectoryLookupException")
@@ -20116,6 +22901,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This is a Duplicate QC item.\nAre you sure you would like to remove it?".
    * 
    * @return translated "This is a Duplicate QC item.\nAre you sure you would like to remove it?"
+  
    */
   @DefaultMessage("This is a Duplicate QC item.\nAre you sure you would like to remove it?")
   @Key("worksheetRemoveDuplicateQCConfirm")
@@ -20125,6 +22911,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This QC item is a ''Last Of'' and may be removed from multiple rows.\nAre you sure you would like to remove it?".
    * 
    * @return translated "This QC item is a ''Last Of'' and may be removed from multiple rows.\nAre you sure you would like to remove it?"
+  
    */
   @DefaultMessage("This QC item is a ''Last Of'' and may be removed from multiple rows.\nAre you sure you would like to remove it?")
   @Key("worksheetRemoveLastOfQCConfirm")
@@ -20134,6 +22921,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "This is a QC item.\nAre you sure you would like to remove it?".
    * 
    * @return translated "This is a QC item.\nAre you sure you would like to remove it?"
+  
    */
   @DefaultMessage("This is a QC item.\nAre you sure you would like to remove it?")
   @Key("worksheetRemoveQCConfirm")
@@ -20142,7 +22930,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   /**
    * Translated "Accession #{0} is locked by {1} until {2}".
    * 
+   * @param arg0 "{0}"
+   * @param arg1 "{1}"
+   * @param arg2 "{2}"
    * @return translated "Accession #{0} is locked by {1} until {2}"
+  
    */
   @DefaultMessage("Accession #{0} is locked by {1} until {2}")
   @Key("worksheetSampleLockException")
@@ -20152,6 +22944,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error fetching worksheet template directory system variable".
    * 
    * @return translated "Error fetching worksheet template directory system variable"
+  
    */
   @DefaultMessage("Error fetching worksheet template directory system variable")
   @Key("worksheetTemplateDirectoryLookupException")
@@ -20161,6 +22954,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The following analyses were removed due to a capacity overflow on the loaded template.\nIf you are updating this worksheet, the worksheet data for those analyses will be lost.".
    * 
    * @return translated "The following analyses were removed due to a capacity overflow on the loaded template.\nIf you are updating this worksheet, the worksheet data for those analyses will be lost."
+  
    */
   @DefaultMessage("The following analyses were removed due to a capacity overflow on the loaded template.\nIf you are updating this worksheet, the worksheet data for those analyses will be lost.")
   @Key("worksheetTemplateRemovedAnalyses")
@@ -20170,6 +22964,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Error loading column name/index mappings (to).\nResults will be copied by index.".
    * 
    * @return translated "Error loading column name/index mappings (to).\nResults will be copied by index."
+  
    */
   @DefaultMessage("Error loading column name/index mappings (to).\nResults will be copied by index.")
   @Key("worksheetToColumnMappingLoadError")
@@ -20179,6 +22974,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Username".
    * 
    * @return translated "Username"
+  
    */
   @DefaultMessage("Username")
   @Key("worksheetUser")
@@ -20188,6 +22984,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The selected analyses are from multiple tests, please select analyses that belong to only one test.".
    * 
    * @return translated "The selected analyses are from multiple tests, please select analyses that belong to only one test."
+  
    */
   @DefaultMessage("The selected analyses are from multiple tests, please select analyses that belong to only one test.")
   @Key("worksheet_oneTestForEditMultiple")
@@ -20197,6 +22994,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The selected analyses use multiple units, please select analyses that use only one unit.".
    * 
    * @return translated "The selected analyses use multiple units, please select analyses that use only one unit."
+  
    */
   @DefaultMessage("The selected analyses use multiple units, please select analyses that use only one unit.")
   @Key("worksheet_oneUnitForEditMultiple")
@@ -20206,6 +23004,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Some analyses were not checked for transfer due to a duplicate being present.".
    * 
    * @return translated "Some analyses were not checked for transfer due to a duplicate being present."
+  
    */
   @DefaultMessage("Some analyses were not checked for transfer due to a duplicate being present.")
   @Key("worksheet_uncheckedDuplicateAnalyses")
@@ -20215,6 +23014,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The status of the shipping record must be either \"Processed\" or \"Shipped\"".
    * 
    * @return translated "The status of the shipping record must be either \"Processed\" or \"Shipped\""
+  
    */
   @DefaultMessage("The status of the shipping record must be either \"Processed\" or \"Shipped\"")
   @Key("wrongStatusForProcessing")
@@ -20224,6 +23024,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "The status of the sample record must be \"Not Verified\"".
    * 
    * @return translated "The status of the sample record must be \"Not Verified\""
+  
    */
   @DefaultMessage("The status of the sample record must be \"Not Verified\"")
   @Key("wrongStatusForVerifying")
@@ -20233,6 +23034,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status needs to be ''Initiated'' , ''On Hold'' or ''Logged-In'' to complete".
    * 
    * @return translated "Status needs to be ''Initiated'' , ''On Hold'' or ''Logged-In'' to complete"
+  
    */
   @DefaultMessage("Status needs to be ''Initiated'' , ''On Hold'' or ''Logged-In'' to complete")
   @Key("wrongStatusNoComplete")
@@ -20242,6 +23044,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status must not be ''Released'', ''Cancelled'' or ''In-Prep'' to initiate".
    * 
    * @return translated "Status must not be ''Released'', ''Cancelled'' or ''In-Prep'' to initiate"
+  
    */
   @DefaultMessage("Status must not be ''Released'', ''Cancelled'' or ''In-Prep'' to initiate")
   @Key("wrongStatusNoInitiate")
@@ -20251,6 +23054,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Status needs to be ''Released'' to unrelease".
    * 
    * @return translated "Status needs to be ''Released'' to unrelease"
+  
    */
   @DefaultMessage("Status needs to be ''Released'' to unrelease")
   @Key("wrongStatusUnrelease")
@@ -20260,6 +23064,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Yes".
    * 
    * @return translated "Yes"
+  
    */
   @DefaultMessage("Yes")
   @Key("yes")
@@ -20269,6 +23074,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Yesterday".
    * 
    * @return translated "Yesterday"
+  
    */
   @DefaultMessage("Yesterday")
   @Key("yesterday")
@@ -20278,6 +23084,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "There needs to be at least one order item in your order".
    * 
    * @return translated "There needs to be at least one order item in your order"
+  
    */
   @DefaultMessage("There needs to be at least one order item in your order")
   @Key("zeroOrderItemsException")
@@ -20287,6 +23094,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "Zip Code".
    * 
    * @return translated "Zip Code"
+  
    */
   @DefaultMessage("Zip Code")
   @Key("zipcode")
@@ -20296,6 +23104,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
    * Translated "99999-9999".
    * 
    * @return translated "99999-9999"
+  
    */
   @DefaultMessage("99999-9999")
   @Key("zipcodePattern")
