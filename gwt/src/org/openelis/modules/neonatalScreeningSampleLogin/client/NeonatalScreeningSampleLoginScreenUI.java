@@ -87,6 +87,7 @@ import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.patient.client.PatientService;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider.client.ProviderServiceImpl;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
 import org.openelis.modules.sample1.client.AddTestEvent;
 import org.openelis.modules.sample1.client.AnalysisChangeEvent;
@@ -2124,7 +2125,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 setBusy();
                 try {
-                    list = ProviderService.get()
+                    list = ProviderServiceImpl.INSTANCE
                                           .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {

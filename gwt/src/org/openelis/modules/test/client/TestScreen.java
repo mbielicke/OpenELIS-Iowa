@@ -95,6 +95,7 @@ import org.openelis.meta.TestMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.label.client.LabelService;
 import org.openelis.modules.method.client.MethodService;
+import org.openelis.modules.method.client.MethodServiceImpl;
 import org.openelis.modules.testTrailer.client.TestTrailerService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
@@ -488,7 +489,7 @@ public class TestScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = MethodService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = MethodServiceImpl.INSTANCE.fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (MethodDO data : list)

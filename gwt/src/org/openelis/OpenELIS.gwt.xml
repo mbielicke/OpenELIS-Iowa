@@ -42,10 +42,12 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.logging.Logging"/>
     <inherits name="org.openelis.ELISCommon"/>   
+    <inherits name="dagger.Dagger"/>
       
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>
+    <source path="di"/>
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class="org.openelis.modules.main.client.OpenELISEntry"/>

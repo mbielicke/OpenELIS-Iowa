@@ -32,7 +32,8 @@ UIRF Software License are applicable instead of those above.
 <module rename-to="openelis">
 
     <inherits name="org.openelis.OpenELIS"/>
-    <inherits name="org.openelis.modules.Modules"/>
+    <inherits name="org.openelis.Cache"/>
+    <inherits name="org.openelis.modules.method.Method"/>
     
     <inherits name="com.google.gwt.user.Debug"/>
     

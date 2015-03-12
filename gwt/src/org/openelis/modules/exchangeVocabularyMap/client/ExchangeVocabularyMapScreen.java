@@ -80,6 +80,7 @@ import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
+import org.openelis.modules.method.client.MethodServiceImpl;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
@@ -1096,7 +1097,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
              * query
              */
             search = search.replaceAll(DATE_RANGE_PATTERN, "");
-            list = MethodService.get().fetchByName(search);
+            list = MethodServiceImpl.INSTANCE.fetchByName(search);
             sb = new StringBuilder();
             for (MethodDO data : list) {
                 row = new TableDataRow(1);

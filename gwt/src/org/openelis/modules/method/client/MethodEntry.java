@@ -5,6 +5,7 @@ import static org.openelis.modules.main.client.Logger.remote;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
+import org.openelis.di.Screens;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.main.client.ScreenBus;
 import org.openelis.modules.main.client.event.ShowScreenHandler;
@@ -29,7 +30,9 @@ public class MethodEntry implements EntryPoint, ShowScreenHandler {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                     window.setName(Messages.get().method());
                     window.setSize("862px", "432px");
-                    window.setContent(new MethodScreenUI(window));
+                    MethodViewImpl view = new MethodViewImpl();
+                    window.setContent(view);
+                	Screens.INSTANCE.method().present(view, window);;
                     OpenELIS.getBrowser().addWindow(window, "method");
                 } catch (Throwable e) {
                     remote().log(Level.SEVERE, e.getMessage(), e);

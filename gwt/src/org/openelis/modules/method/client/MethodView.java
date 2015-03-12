@@ -5,15 +5,17 @@ import org.openelis.domain.MethodDO;
 import org.openelis.meta.MethodMeta;
 import org.openelis.ui.annotation.Field;
 import org.openelis.ui.annotation.View;
+import org.openelis.ui.screen.NavigableViewWithHistory;
 import org.openelis.ui.screen.Presenter;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 
 import com.google.gwt.uibinder.client.UiField;
 
-@View(template="Method.ui.xml",presenter=MethodScreenUI.class)
-public class MethodView extends NavigableView {
+@View(template="Method.ui.xml",presenter=MethodPresenter.class)
+public class MethodView extends NavigableViewWithHistory<MethodDO> {
 	
 	@UiField
 	@Field(meta=MethodMeta.ACTIVE_BEGIN,tab={"activeEnd","isActive"})
@@ -24,7 +26,7 @@ public class MethodView extends NavigableView {
     protected Calendar activeEnd;
 
 	@UiField
-    @Field(meta=MethodMeta.NAME,tab={"description","activeEnd"})
+    @Field(meta=MethodMeta.NAME,tab={"description","activeEnd"},focus={State.ADD,State.UPDATE,State.QUERY})
     protected TextBox<String> name;
     
 	@UiField
@@ -49,7 +51,7 @@ public class MethodView extends NavigableView {
     }
 
 	@Override
-	public void setPresenter(Presenter presenter) {
+	public void setPresenter(Presenter<MethodDO> presenter) {
 		this.presenter = presenter;
 	}
 }

@@ -38,10 +38,10 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
-import org.openelis.modules.provider.client.ProviderServiceInt;
+import org.openelis.modules.provider.client.ProviderService;
 
 @WebServlet("/openelis/provider")
-public class ProviderServlet extends RemoteServlet implements ProviderServiceInt {
+public class ProviderServlet extends RemoteServlet implements ProviderService {
 
     private static final long serialVersionUID = 1L;
     

@@ -21,7 +21,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.codeserver.CodeServer"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-src src org.openelis.Development"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-src src -src .apt_generated org.openelis.Development"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="OpenELIS-GWT"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx5256m&#10;-DIMPORT=../OpenELIS-Lib/src/org/openelis/gwt/public/Forms&#10;-DOPENELIS=src"/>
 </launchConfiguration>
