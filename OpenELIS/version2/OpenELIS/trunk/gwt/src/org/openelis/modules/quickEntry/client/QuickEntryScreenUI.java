@@ -1048,7 +1048,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                         row.setCell(2, aVDO.getTestName());
                         row.setCell(3, aVDO.getMethodName());
                         row.setCell(4, siVDO.getTypeOfSample());
-                        row.setCell(5, sDO.getClientReference());
+                        row.setCell(5, siVDO.getContainerReference());
                         row.setData(aVDO);
                         model.add(row);
                         count++;
