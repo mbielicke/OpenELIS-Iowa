@@ -40,6 +40,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.patient.client.PatientLookupUI;
 import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider.client.ProviderServiceImpl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
@@ -521,7 +522,7 @@ public class ClinicalTabUI extends Screen {
 
                 parentScreen.setBusy();
                 try {
-                    list = ProviderService.get()
+                    list = ProviderServiceImpl.INSTANCE
                                           .fetchByLastNameNpiExternalId(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {

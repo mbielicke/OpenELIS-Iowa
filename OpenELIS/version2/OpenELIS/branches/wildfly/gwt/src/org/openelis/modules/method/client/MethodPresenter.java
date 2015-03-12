@@ -33,8 +33,9 @@ import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import org.openelis.cache.UserCacheService;
-import org.openelis.constants.Messages;
 import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
@@ -64,42 +65,56 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
-public class MethodScreenUI extends Presenter {
+public class MethodPresenter extends Presenter<MethodDO> {
 
-    protected MethodDO                 data;
-    private ModulePermission           userPermission;
+    protected MethodDO                   data;
+    protected ModulePermission           userPermission;
 
-    private ScreenNavigator<IdNameVO>  nav;
+    protected ScreenNavigator<IdNameVO>  nav;
     
-    private AsyncCallbackUI<MethodDO>  fetchForUpdateCall,addCall,updateCall, abortCall, fetchCall;
+    protected AsyncCallbackUI<MethodDO>  fetchForUpdateCall,addCall,updateCall, abortCall, fetchCall;
     
-    private AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
+    protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
     
-    MethodViewImpl view;
-
-    public MethodScreenUI(WindowInt window) throws Exception {
+    protected MethodViewImpl view;
+    
+    @Inject
+    MethodServiceImpl service;
+    
+    @Inject
+    UserCacheService userCache;
+    
+    @Inject
+    OpenELISConstants messages;
+    
+    @Inject
+    public MethodPresenter() {
+    	super();
+    }
+    
+    public void present(MethodViewImpl view, WindowInt window) throws Exception {
+   		userPermission = userCache.getPermission().getModule("method");
+   		if (userPermission == null)
+   			throw new PermissionException(messages.screenPermException("Method Screen"));
+            
         setWindow(window);
-                
-        view = new MethodViewImpl(); 
-        view.setPresenter(this);
-        addStateChangeHandler(view);
-        addDataChangeHandler(view);
-        initWidget(view);
-        
-        ensureDebugId("method");
-        
-        userPermission = getUserCacheService().getPermission().getModule("method");
-        if (userPermission == null)
-            throw new PermissionException(getMessages().screenPermException("Method Screen"));
+        setView(view);
 
         initialize();
         setState(DEFAULT);
         fireDataChange(new MethodDO());
     }
+    
+    protected void setView(MethodViewImpl view) {
+        this.view = view;
+        view.setPresenter(this);
+        addStateChangeHandler(view);
+        addDataChangeHandler(view);
+        view.ensureDebugId("method");
+    }
 
     protected void initialize() {
         view.history.addCommand(new Command() {
-
             @Override
             public void execute() {
                 history();
@@ -111,7 +126,7 @@ public class MethodScreenUI extends Presenter {
         //
         nav = new ScreenNavigator<IdNameVO>(view.atozTable, view.atozNext, view.atozPrev) {
             public void executeQuery(final Query query) {
-                setBusy(getMessages().querying());
+                setBusy(messages.querying());
 
                 query.setRowsPerPage(16);
                 
@@ -129,19 +144,19 @@ public class MethodScreenUI extends Presenter {
                         }
                     
                         public void notFound() {
-                            setDone(getMessages().noRecordsFound());
+                            setDone(messages.noRecordsFound());
                             setQueryResult(null);
                             setState(DEFAULT);
                         }
                      
                         public void lastPage() {
                             setQueryResult(null);
-                            setError(getMessages().noMoreRecordInDir());
+                            setError(messages.noMoreRecordInDir());
                         }
                     };
                 }
                 
-                getMethodService().query(query,queryCall);
+                service.query(query,queryCall);
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -176,7 +191,7 @@ public class MethodScreenUI extends Presenter {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    setError(getMessages().mustCommitOrAbort());
+                    setError(messages.mustCommitOrAbort());
                 }
             }
         });
@@ -233,8 +248,7 @@ public class MethodScreenUI extends Presenter {
         setState(QUERY);
         fireDataChange(new MethodDO());
 
-        view.name.setFocus(true);
-        setDone(getMessages().enterFieldsToQuery());
+        setDone(messages.enterFieldsToQuery());
     }
 
     @Handler("next")
@@ -249,17 +263,17 @@ public class MethodScreenUI extends Presenter {
 
     @Handler("add")
     protected void add(ClickEvent event) {
+    	data = new MethodDO();
         data.setIsActive("Y");
         setState(ADD);
-        fireDataChange(new MethodDO());
+        fireDataChange(data);
 
-        view.name.setFocus(true);
-        setDone(getMessages().enterInformationPressCommit());
+        setDone(messages.enterInformationPressCommit());
     }
 
     @Handler("update")
     protected void update(ClickEvent event) {
-        setBusy(getMessages().lockForUpdate());
+        setBusy(messages.lockForUpdate());
 
         if(fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<MethodDO>() {
@@ -267,7 +281,6 @@ public class MethodScreenUI extends Presenter {
                     data = result;
                     setState(UPDATE);
                     fireDataChange(result);
-                    view.name.setFocus(true);
                 }
         
                 public void failure(Throwable e) {
@@ -280,7 +293,7 @@ public class MethodScreenUI extends Presenter {
             };
         }
         
-        getMethodService().fetchForUpdate(data.getId(),fetchForUpdateCall); 
+        service.fetchForUpdate(data.getId(),fetchForUpdateCall); 
     }
 
     @Handler("commit")
@@ -292,7 +305,7 @@ public class MethodScreenUI extends Presenter {
         validation = view.validate();
 
         if (validation.getStatus() != Validation.Status.VALID) {
-            window.setError(getMessages().correctErrors());
+            window.setError(messages.correctErrors());
             return;
         }
 
@@ -305,14 +318,14 @@ public class MethodScreenUI extends Presenter {
                 nav.setQuery(query);
                 break;
             case ADD:
-                setBusy(getMessages().adding());
+                setBusy(messages.adding());
                 if(addCall == null) {
                     addCall = new AsyncCallbackUI<MethodDO>() {
                         public void success(MethodDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange(result);
-                            setDone(getMessages().addingComplete());
+                            setDone(messages.addingComplete());
                         }
                         public void validationErrors(ValidationErrorsList e) {
                             view.showErrors(e);
@@ -323,17 +336,17 @@ public class MethodScreenUI extends Presenter {
                         }
                     };
                 }
-                getMethodService().add(data, addCall);
+                service.add(data, addCall);
                 break;
             case UPDATE:
-                setBusy(getMessages().updating());
+                setBusy(messages.updating());
                 if(updateCall == null) {
                     updateCall = new AsyncCallbackUI<MethodDO>() {
                         public void success(MethodDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange(result);
-                            setDone(getMessages().updatingComplete());
+                            setDone(messages.updatingComplete());
                         }
                 
                         public void validationErrors(ValidationErrorsList e) {
@@ -346,7 +359,7 @@ public class MethodScreenUI extends Presenter {
                         }
                     };
                 }
-                getMethodService().update(data, updateCall);
+                service.update(data, updateCall);
             default :
                 clearStatus();
         }
@@ -356,16 +369,16 @@ public class MethodScreenUI extends Presenter {
     protected void abort(ClickEvent event) {
         view.finishEditing();
         view.clearErrors();
-        setBusy(getMessages().cancelChanges());
+        setBusy(messages.cancelChanges());
 
         switch (state) {
             case QUERY:
                 fetchById(null);
-                setDone(getMessages().queryAborted());
+                setDone(messages.queryAborted());
                 break;
             case ADD:
                 fetchById(null);
-                setDone(getMessages().addAborted());
+                setDone(messages.addAborted());
                 break;
             case UPDATE:
                 if(abortCall == null) {
@@ -382,11 +395,11 @@ public class MethodScreenUI extends Presenter {
                         }
                     
                         public void finish() {
-                            setDone(getMessages().updateAborted());
+                            setDone(messages.updateAborted());
                         }
                     };
                 }
-                getMethodService().abortUpdate(data.getId(),abortCall);
+                service.abortUpdate(data.getId(),abortCall);
                 break;
             default:
                 clearStatus();
@@ -397,7 +410,7 @@ public class MethodScreenUI extends Presenter {
         IdNameVO hist;
 
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(getMessages().methodHistory(), Constants.table().METHOD, hist);
+        HistoryScreen.showHistory(messages.methodHistory(), Constants.table().METHOD, hist);
     }
 
     protected void fetchById(Integer id) {
@@ -406,7 +419,7 @@ public class MethodScreenUI extends Presenter {
             setState(DEFAULT);
             fireDataChange(new MethodDO());
         } else {
-            setBusy(getMessages().fetching());
+            setBusy(messages.fetching());
             if(fetchCall == null) {
                 fetchCall = new AsyncCallbackUI<MethodDO>() {
                     public void success(MethodDO result) {
@@ -416,14 +429,14 @@ public class MethodScreenUI extends Presenter {
             
                     public void notFound() {
                         fetchById(null);
-                        setDone(getMessages().noRecordsFound());
+                        setDone(messages.noRecordsFound());
                         nav.clearSelection();
                     }
                 
                     public void failure(Throwable e) {
                         fetchById(null);
                         e.printStackTrace();
-                        Window.alert(getMessages().fetchFailed() + e.getMessage());
+                        Window.alert(messages.fetchFailed() + e.getMessage());
                         nav.clearSelection();
                     }
                 
@@ -433,21 +446,8 @@ public class MethodScreenUI extends Presenter {
                     }
                 };
             }
-            getMethodService().fetchById(id, fetchCall);
+            service.fetchById(id, fetchCall);
         }
-
-    }
-
-    protected MethodService getMethodService() {
-        return MethodService.get();
-    }
-    
-    protected UserCacheService getUserCacheService() {
-        return UserCacheService.get();
-    }
-    
-    protected OpenELISConstants getMessages() {
-        return Messages.get();
     }
     
 	public ModulePermission permissions() {

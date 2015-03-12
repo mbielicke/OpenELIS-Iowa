@@ -1,6 +1,6 @@
 package org.openelis.manager;
 
-import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider.client.ProviderServiceImpl;
 
 public class ProviderLocationManagerProxy {
     
@@ -8,7 +8,7 @@ public class ProviderLocationManagerProxy {
     }
 
     public ProviderLocationManager fetchByProviderId(Integer orgId) throws Exception {
-        return ProviderService.get().fetchLocationByProviderId(orgId);
+        return ProviderServiceImpl.INSTANCE.fetchLocationByProviderId(orgId);
     }
 
     public ProviderLocationManager add(ProviderLocationManager man) throws Exception {

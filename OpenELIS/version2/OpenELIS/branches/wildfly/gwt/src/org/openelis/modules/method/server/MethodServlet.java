@@ -35,10 +35,10 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.modules.method.client.MethodServiceInt;
+import org.openelis.modules.method.client.MethodService;
 
 @WebServlet("/openelis/method")
-public class MethodServlet extends RemoteServlet implements MethodServiceInt {
+public class MethodServlet extends RemoteServlet implements MethodService {
 
     private static final long serialVersionUID = 1L;
     

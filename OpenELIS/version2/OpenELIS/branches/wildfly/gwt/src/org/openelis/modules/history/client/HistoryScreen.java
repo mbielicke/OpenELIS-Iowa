@@ -287,7 +287,7 @@ public class HistoryScreen extends Screen {
 
         try {
             window.setBusy(Messages.get().fetching());
-            list = HistoryService.get().fetchByReferenceIdAndTable(query);
+            list = HistoryService.INSTANCE.fetchByReferenceIdAndTable(query);
             window.setDone(Messages.get().loadCompleteMessage());
         } catch (Exception e) {
             window.clearStatus();

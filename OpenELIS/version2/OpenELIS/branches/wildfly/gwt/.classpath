@@ -9,12 +9,14 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-EJB"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/openelis/modules/method/client/MethodServiceIntAsync.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/tschmidt/Downloads/dagger-2.0-20150212.192445-15-sources.jar"/>
+	<classpathentry kind="lib" path="/home/tschmidt/Downloads/javax.inject-1-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

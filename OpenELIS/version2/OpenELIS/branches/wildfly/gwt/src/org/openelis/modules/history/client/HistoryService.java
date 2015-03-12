@@ -11,18 +11,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
 
-public class HistoryService implements HistoryServiceInt, HistoryServiceIntAsync {
+public enum HistoryService implements HistoryServiceInt, HistoryServiceIntAsync {
     
-    static HistoryService instance;
+    INSTANCE;
     
     HistoryServiceIntAsync service;
-    
-    public static HistoryService get() {
-        if (instance == null)
-            instance = new HistoryService();
-        
-        return instance;
-    }
     
     private HistoryService() {
         service = (HistoryServiceIntAsync)GWT.create(HistoryServiceInt.class);

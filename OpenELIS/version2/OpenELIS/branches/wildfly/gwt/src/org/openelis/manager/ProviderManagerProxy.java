@@ -1,6 +1,7 @@
 package org.openelis.manager;
 
 import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider.client.ProviderServiceImpl;
 
 public class ProviderManagerProxy {
 
@@ -8,31 +9,31 @@ public class ProviderManagerProxy {
     }
 
     public ProviderManager fetchById(Integer id) throws Exception {
-        return ProviderService.get().fetchById(id);
+        return ProviderServiceImpl.INSTANCE.fetchById(id);
     }
 
     public ProviderManager fetchWithLocations(Integer id) throws Exception {
-        return ProviderService.get().fetchWithLocations(id);
+        return ProviderServiceImpl.INSTANCE.fetchWithLocations(id);
     }
 
     public ProviderManager fetchWithNotes(Integer id) throws Exception {
-        return ProviderService.get().fetchWithNotes(id);
+        return ProviderServiceImpl.INSTANCE.fetchWithNotes(id);
     }
 
     public ProviderManager add(ProviderManager man) throws Exception {
-        return ProviderService.get().add(man);
+        return ProviderServiceImpl.INSTANCE.add(man);
     }
 
     public ProviderManager update(ProviderManager man) throws Exception {
-        return ProviderService.get().update(man);
+        return ProviderServiceImpl.INSTANCE.update(man);
     }
 
     public ProviderManager fetchForUpdate(Integer id) throws Exception {
-        return ProviderService.get().fetchForUpdate(id);
+        return ProviderServiceImpl.INSTANCE.fetchForUpdate(id);
     }
 
     public ProviderManager abortUpdate(Integer id) throws Exception {
-        return ProviderService.get().abortUpdate(id);
+        return ProviderServiceImpl.INSTANCE.abortUpdate(id);
     }
 
     public void validate(ProviderManager man) throws Exception {

@@ -2,6 +2,8 @@ package org.openelis.cache;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.services.TokenService;
@@ -24,7 +26,8 @@ public class UserCacheService implements UserCacheServiceInt, UserCacheServiceIn
         return instance;
     }
     
-    private UserCacheService() {
+    @Inject
+    public UserCacheService() {
         service = (UserCacheServiceIntAsync)GWT.create(UserCacheServiceInt.class);
         ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }

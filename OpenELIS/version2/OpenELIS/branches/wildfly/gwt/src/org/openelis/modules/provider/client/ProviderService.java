@@ -4,172 +4,39 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.services.TokenService;
-import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
+import org.openelis.ui.annotation.Service;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.HasRpcToken;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
-public class ProviderService implements ProviderServiceInt, ProviderServiceIntAsync {
+@Service
+@RemoteServiceRelativePath("provider")
+public interface ProviderService extends XsrfProtectedService {
+
+    ProviderManager fetchById(Integer id) throws Exception;
     
-    static ProviderService instance;
-    
-    ProviderServiceIntAsync service;
-    
-    public static ProviderService get() {
-        if(instance == null)
-            instance = new ProviderService();
-        
-        return instance;
-    }
-    
-    private ProviderService() {
-        service = (ProviderServiceIntAsync)GWT.create(ProviderServiceInt.class);
-        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
-    }
-    
-    @Override
-    public ProviderManager fetchById(Integer id) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.fetchById(id, callback);
-        return callback.getResult();
-    }
+    ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search) throws Exception;
 
-    @Override
-    public void fetchById(Integer id, AsyncCallback<ProviderManager> callback) {
-        service.fetchById(id, callback);    
-    }
+    ProviderManager fetchWithLocations(Integer id) throws Exception;
 
-    @Override
-    public void fetchByLastNameNpiExternalId(String search, AsyncCallback<ArrayList<ProviderDO>> callback) {
-        service.fetchByLastNameNpiExternalId(search, callback);    
-    }
+    ProviderManager fetchWithNotes(Integer id) throws Exception;
 
-    @Override
-    public ArrayList<ProviderDO> fetchByLastNameNpiExternalId(String search) throws Exception {
-        Callback<ArrayList<ProviderDO>> callback;
-        
-        callback = new Callback<ArrayList<ProviderDO>>();
-        service.fetchByLastNameNpiExternalId(search, callback);
-        return callback.getResult();
-    }
+    ArrayList<IdFirstLastNameVO> query(Query query) throws Exception;
 
-    @Override
-    public ProviderManager fetchWithLocations(Integer id) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.fetchWithLocations(id, callback);
-        return callback.getResult();
-    }
+    ProviderManager add(ProviderManager man) throws Exception;
 
-    @Override
-    public void fetchWithNotes(Integer id, AsyncCallback<ProviderManager> callback) {
-        service.fetchWithNotes(id, callback);
-    }
+    ProviderManager update(ProviderManager man) throws Exception;
 
-    @Override
-    public ProviderManager fetchWithNotes(Integer id) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.fetchWithNotes(id, callback);
-        return callback.getResult();
-    }
+    ProviderManager fetchForUpdate(Integer id) throws Exception;
 
-    @Override
-    public void fetchWithLocations(Integer id, AsyncCallback<ProviderManager> callback) {
-        service.fetchWithLocations(id, callback);
-    }
+    ProviderManager abortUpdate(Integer id) throws Exception;
 
-    @Override
-    public ArrayList<IdFirstLastNameVO> query(Query query) throws Exception {
-        Callback<ArrayList<IdFirstLastNameVO>> callback;
-        
-        callback = new Callback<ArrayList<IdFirstLastNameVO>>();
-        service.query(query, callback);
-        return callback.getResult();
-    }
-    
-    @Override
-    public void query(Query query, AsyncCallback<ArrayList<IdFirstLastNameVO>> callback) {
-        service.query(query, callback);
-    }
+    //
+    // support for ProviderContactManager and ProviderParameterManager
+    //
+    ProviderLocationManager fetchLocationByProviderId(Integer id) throws Exception;
 
-    @Override
-    public ProviderManager add(ProviderManager man) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.add(man, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public void add(ProviderManager man, AsyncCallback<ProviderManager> callback) {
-        service.add(man, callback);
-    }
-
-    @Override
-    public ProviderManager update(ProviderManager man) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.update(man, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public void update(ProviderManager man, AsyncCallback<ProviderManager> callback) {
-        service.update(man, callback);
-    }
-
-    @Override
-    public void fetchForUpdate(Integer id, AsyncCallback<ProviderManager> callback) {
-        service.fetchForUpdate(id, callback);
-    }
-
-    @Override
-    public ProviderManager fetchForUpdate(Integer id) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.fetchForUpdate(id, callback);
-        return callback.getResult();
-    }
-    
-    @Override
-    public ProviderManager abortUpdate(Integer id) throws Exception {
-        Callback<ProviderManager> callback;
-        
-        callback = new Callback<ProviderManager>();
-        service.abortUpdate(id, callback);
-        return callback.getResult();
-    }
-    
-    @Override
-    public void abortUpdate(Integer id, AsyncCallback<ProviderManager> callback) {
-        service.abortUpdate(id, callback);
-    }
-
-    @Override
-    public void fetchLocationByProviderId(Integer id,
-                                          AsyncCallback<ProviderLocationManager> callback) {
-        service.fetchLocationByProviderId(id, callback);
-    }
-
-    @Override
-    public ProviderLocationManager fetchLocationByProviderId(Integer id) throws Exception {
-        Callback<ProviderLocationManager> callback;
-        
-        callback = new Callback<ProviderLocationManager>();
-        service.fetchLocationByProviderId(id, callback);
-        return callback.getResult();
-    }
 }
