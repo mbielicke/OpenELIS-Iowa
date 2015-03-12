@@ -26,15 +26,10 @@
 package org.openelis.report.worksheetPrint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.openelis.bean.WorksheetAnalysisBean;
-import org.openelis.bean.WorksheetBean;
-import org.openelis.bean.WorksheetItemBean;
 import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.EJBFactory;
