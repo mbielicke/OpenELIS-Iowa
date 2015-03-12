@@ -69,7 +69,6 @@ public class History {
     @Column(name = "system_user_id")
     private Integer systemUserId;
 
-    @Lob
     @Column(name = "changes")
     private String  changes;
 
