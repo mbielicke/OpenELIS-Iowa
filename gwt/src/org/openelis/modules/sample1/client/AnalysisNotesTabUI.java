@@ -219,7 +219,7 @@ public class AnalysisNotesTabUI extends Screen {
                 }
             }
         });
-        
+
         parentBus.addHandler(NoteChangeEvent.getType(), new NoteChangeEvent.Handler() {
             @Override
             public void onNoteChange(NoteChangeEvent event) {
@@ -344,19 +344,27 @@ public class AnalysisNotesTabUI extends Screen {
                 public void ok() {
                     /*
                      * isExternal is not used for this check because its value
-                     * doesn't change in this inner class after the object is
-                     * created, even though different values for it may get
-                     * passed to showNoteLookup on subsequent calls
+                     * doesn't change in this inner class after the lookup is
+                     * created, even though subsequent calls to showNoteLookup
+                     * may have different values passed to it
                      */
                     if (editNoteLookup.getHasSubject()) {
-                        displayedIntNote = manager.analysisInternalNote.getEditing(analysis);
-                        setNoteFields(displayedIntNote,
-                                      editNoteLookup.getSubject(),
-                                      editNoteLookup.getText());
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
+                            manager.analysisInternalNote.removeEditing(analysis);
+                        } else {
+                            displayedIntNote = manager.analysisInternalNote.getEditing(analysis);
+                            setNoteFields(displayedIntNote,
+                                          editNoteLookup.getSubject(),
+                                          editNoteLookup.getText());
+                        }
                         drawInternalNotes();
                     } else {
-                        displayedExtNote = manager.analysisExternalNote.getEditing(analysis);
-                        setNoteFields(displayedExtNote, null, editNoteLookup.getText());
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
+                            manager.analysisExternalNote.removeEditing(analysis);
+                        } else {
+                            displayedExtNote = manager.analysisExternalNote.getEditing(analysis);
+                            setNoteFields(displayedExtNote, null, editNoteLookup.getText());
+                        }
                         drawExternalNote();
                     }
                 }
