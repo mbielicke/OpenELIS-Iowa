@@ -49,7 +49,7 @@
 							field="String"/>
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="92" label="{msg.gen_expDate}">
+				<t:Column width="78" label="{msg.gen_expDate}">
 					<t:TextBoxCell>
 						<w:TextBox
 							field="String"/>
