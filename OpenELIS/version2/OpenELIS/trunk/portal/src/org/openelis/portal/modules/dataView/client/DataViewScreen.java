@@ -1742,7 +1742,7 @@ public class DataViewScreen extends Screen {
             public void onSuccess(ReportStatus result) {
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
-                    Window.open(URL.encode(url), "DataView", null);
+                    Window.open(URL.encode(url), "DataView", "resizable=yes");
                 }
                 window.clearStatus();
                 statusPanel.hide();

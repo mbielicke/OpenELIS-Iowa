@@ -891,7 +891,7 @@ public class FinalReportScreen extends Screen {
                 window.clearStatus();
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
-                    Window.open(URL.encode(url), "FinalReport", null);
+                    Window.open(URL.encode(url), "FinalReport", "resizable=yes");
                 }
                 window.clearStatus();
             }
@@ -938,7 +938,7 @@ public class FinalReportScreen extends Screen {
                 statusScreen.setStatus(null);
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
-                    Window.open(URL.encode(url), "FinalReport", null);
+                    Window.open(URL.encode(url), "FinalReport", "resizable=yes");
                 }
                 window.clearStatus();
             }
