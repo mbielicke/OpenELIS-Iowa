@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -43,14 +42,13 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteParameterDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
-import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.entity.AnalyteParameter;
 import org.openelis.meta.AnalyteParameterMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -67,69 +65,42 @@ public class AnalyteParameterBean {
     @EJB
     private LockBean                          lock;
 
-    @EJB
-    private TestAnalyteBean                   testAnalyte;
-
-    @EJB
-    private QcAnalyteBean                     qcAnalyte;
-
     private static final AnalyteParameterMeta meta = new AnalyteParameterMeta();
 
-    public ArrayList<AnalyteParameterViewDO> fetchActiveByReferenceIdReferenceTableId(Integer referenceId,
-                                                                                      Integer referenceTableId) throws Exception {
-        List list;
+    public ArrayList<AnalyteParameterViewDO> fetchByReferenceIdReferenceTableId(Integer referenceId,
+                                                                                Integer referenceTableId) throws Exception {
+        Query query;
 
-        list = null;
+        query = manager.createNamedQuery("AnalyteParameter.FetchByRefIdRefTableId");
+        query.setParameter("referenceId", referenceId);
+        query.setParameter("referenceTableId", referenceTableId);
 
-        if (Constants.table().TEST.equals(referenceTableId))
-            list = fetchByTestId(referenceId);
-        else if (Constants.table().QC.equals(referenceTableId))
-            list = fetchByQcId(referenceId);
-        else if (Constants.table().PROVIDER.equals(referenceTableId))
-            list = fetchByProviderId(referenceId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<AnalyteParameterViewDO> fetchByReferenceIdReferenceTableId(Integer referenceId,
+                                                                                Integer referenceTableId, int max) throws Exception {
+        Query query;
 
-        if (list == null || list.isEmpty())
-            throw new NotFoundException();
+        query = manager.createNamedQuery("AnalyteParameter.FetchByRefIdRefTableId");
+        query.setParameter("referenceId", referenceId);
+        query.setParameter("referenceTableId", referenceTableId);
+        query.setMaxResults(max);
 
-        return DataBaseUtil.toArrayList(list);
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<AnalyteParameterViewDO> fetchByAnalyteIdReferenceIdReferenceTableId(Integer analyteId,
                                                                                          Integer refId,
                                                                                          Integer refTableId) throws Exception {
         Query query;
-        List list;
 
         query = manager.createNamedQuery("AnalyteParameter.FetchByAnaIdRefIdRefTableId");
         query.setParameter("analyteId", analyteId);
         query.setParameter("referenceId", refId);
         query.setParameter("referenceTableId", refTableId);
 
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
-    }
-
-    public AnalyteParameterViewDO fetchActiveByAnalyteIdReferenceIdReferenceTableId(Integer analyteId,
-                                                                                    Integer refId,
-                                                                                    Integer refTableId) throws Exception {
-        Query query;
-        AnalyteParameterViewDO data;
-
-        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByAnaIdRefIdRefTableId");
-        query.setParameter("analyteId", analyteId);
-        query.setParameter("referenceId", refId);
-        query.setParameter("referenceTableId", refTableId);
-        try {
-            data = (AnalyteParameterViewDO)query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-        return data;
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public AnalyteParameterViewDO fetchById(Integer id) throws Exception {
@@ -193,7 +164,6 @@ public class AnalyteParameterBean {
                                                      int first, int max) throws Exception {
         QueryBuilderV2 builder;
         Integer refTableId;
-        QueryData refName;
         List results;
 
         builder = new QueryBuilderV2();
@@ -201,54 +171,21 @@ public class AnalyteParameterBean {
 
         refTableId = null;
         results = null;
-        refName = null;
         for (QueryData field : fields) {
             if (AnalyteParameterMeta.getReferenceTableId().equals(field.getKey()))
                 refTableId = Integer.parseInt(field.getQuery());
-            else if (AnalyteParameterMeta.getReferenceName().equals(field.getKey()))
-                refName = field;
         }
-        /*
-         * The field that shows the name of the test, qc etc. on the screen has
-         * the key AnalyteParameterMeta.getReferenceName() because it can't be
-         * named "test.name" or "qc.name" as it can represent different
-         * reference tables at different times. Thus when a query contains that
-         * field, we have to replace its key with the right field for the
-         * reference table e.g "test.name" because otherwise, the query that
-         * gets built below doesn't contain the name of the reference table in
-         * the "from" clause.
-         */
-        if (Constants.table().TEST.equals(refTableId)) {
-            if (refName != null) {
-                refName.setKey(AnalyteParameterMeta.getTestName());
-            } else {
-                refName = new QueryData();
-                refName.setKey(AnalyteParameterMeta.getTestName());
-                refName.setQuery("*");
-                refName.setType(QueryData.Type.STRING);
-                fields.add(refName);
-            }
+
+        if (Constants.table().TEST.equals(refTableId))
             results = testQuery(fields, builder, first, max);
-        } else if (Constants.table().QC.equals(refTableId)) {
-            if (refName != null) {
-                refName.setKey(AnalyteParameterMeta.getQcName());
-            } else {
-                refName = new QueryData();
-                refName.setKey(AnalyteParameterMeta.getQcName());
-                refName.setQuery("*");
-                refName.setType(QueryData.Type.STRING);
-                fields.add(refName);
-            }
+        else if (Constants.table().QC.equals(refTableId))
             results = qcQuery(fields, builder, first, max);
-        } else if (Constants.table().PROVIDER.equals(refTableId)) {
-            results = providerQuery(fields, builder, first, max);
-        }
+        else if (Constants.table().PROVIDER.equals(refTableId))
+            results = providerQuery(fields, builder, first, max);        
 
         if (results.isEmpty())
             throw new NotFoundException();
-        results = (ArrayList<ReferenceIdTableIdNameVO>)DataBaseUtil.subList(results,
-                                                                            first,
-                                                                            max);
+        results = (ArrayList<ReferenceIdTableIdNameVO>)DataBaseUtil.subList(results, first, max);
         if (results == null)
             throw new LastPageException();
 
@@ -258,11 +195,6 @@ public class AnalyteParameterBean {
     public AnalyteParameterDO add(AnalyteParameterDO data) throws Exception {
         AnalyteParameter entity;
 
-        if (data.getActiveBegin() == null ||
-            data.getActiveEnd() == null ||
-            (data.getP1() == null && data.getP2() == null && data.getP3() == null))
-            return data;
-
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = new AnalyteParameter();
@@ -270,7 +202,7 @@ public class AnalyteParameterBean {
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeOfSampleId(data.getTypeOfSampleId());
-        entity.setIsActive(data.getIsActive());
+        entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         entity.setActiveBegin(data.getActiveBegin());
         entity.setActiveEnd(data.getActiveEnd());
         entity.setP1(data.getP1());
@@ -296,7 +228,7 @@ public class AnalyteParameterBean {
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeOfSampleId(data.getTypeOfSampleId());
-        entity.setIsActive(data.getIsActive());
+        entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         entity.setActiveBegin(data.getActiveBegin());
         entity.setActiveEnd(data.getActiveEnd());
         entity.setP1(data.getP1());
@@ -315,7 +247,51 @@ public class AnalyteParameterBean {
         lock.unlock(Constants.table().ANALYTE_PARAMETER, id);
         return fetchById(id);
     }
+    
+    public void delete(AnalyteParameterViewDO data) throws Exception {
+        AnalyteParameter entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(AnalyteParameter.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+    }
+    
+    /**
+     * Used by the new manager
+     */
+    public void validate(AnalyteParameterViewDO data, String combo) throws Exception {
+        ValidationErrorsList e;
+        boolean validateED;
 
+        e = new ValidationErrorsList();
+        validateED = true;
+
+        if (data.getActiveBegin() == null) {
+            e.add(new FormErrorException(Messages.get()
+                                                       .analyteParameter_beginDateRequiredException(combo)));
+            validateED = false;
+        }
+        if (data.getActiveEnd() == null) {
+            e.add(new FormErrorException(Messages.get()
+                                                       .analyteParameter_endDateRequiredException(combo)));
+            validateED = false;
+        }
+        if (data.getP1() == null && data.getP2() == null && data.getP3() == null)
+            e.add(new FormErrorException(Messages.get()
+                                                       .analyteParameter_atleastOnePRequiredException(combo)));
+
+        if (validateED && (data.getActiveBegin().compareTo(data.getActiveEnd()) >= 0))
+            e.add(new FormErrorException(Messages.get()
+                                                       .analyteParameter_endDateAfterBeginException(combo)));
+
+        if (e.size() > 0)
+            throw e;
+    }
+
+    /**
+     * Used by the old manager
+     */
     public void validate(AnalyteParameterViewDO data) throws Exception {
         ValidationErrorsList errors;
         boolean validateED;
@@ -324,25 +300,32 @@ public class AnalyteParameterBean {
         validateED = true;
 
         if (data.getActiveBegin() == null) {
-            errors.add(new FieldErrorException(Messages.get().beginDateRequiredForAnalyteException(data.getAnalyteName()), ""));
+            errors.add(new FieldErrorException(Messages.get()
+                                                       .beginDateRequiredForAnalyteException(data.getAnalyteName()),
+                                               ""));
             validateED = false;
         }
         if (data.getActiveEnd() == null) {
-            errors.add(new FieldErrorException(Messages.get().endDateRequiredForAnalyteException(data.getAnalyteName()), ""));
+            errors.add(new FieldErrorException(Messages.get()
+                                                       .endDateRequiredForAnalyteException(data.getAnalyteName()),
+                                               ""));
             validateED = false;
         }
         if (data.getP1() == null && data.getP2() == null && data.getP3() == null)
-            errors.add(new FieldErrorException(Messages.get().atleastOnePRequiredForAnalyteException(data.getAnalyteName()), ""));
+            errors.add(new FieldErrorException(Messages.get()
+                                                       .atleastOnePRequiredForAnalyteException(data.getAnalyteName()),
+                                               ""));
 
         if (validateED && (data.getActiveBegin().compareTo(data.getActiveEnd()) >= 0))
-            errors.add(new FieldErrorException(Messages.get().endDateInvalidWithParamException(data.getAnalyteName()), ""));
+            errors.add(new FieldErrorException(Messages.get()
+                                                       .endDateInvalidWithParamException(data.getAnalyteName()),
+                                               ""));
 
         if (errors.size() > 0)
             throw errors;
     }
 
-    private List testQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                           int first, int max) throws Exception {
+    private List testQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first, int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -363,8 +346,7 @@ public class AnalyteParameterBean {
         return query.getResultList();
     }
 
-    private List qcQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first,
-                         int max) throws Exception {
+    private List qcQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first, int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -384,138 +366,9 @@ public class AnalyteParameterBean {
         return query.getResultList();
     }
 
-    private List providerQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                               int first, int max) {
+    private List providerQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first,
+                               int max) {
         // TODO Auto-generated method stub
         return new ArrayList();
-    }
-
-    private ArrayList<AnalyteParameterViewDO> fetchByTestId(Integer testId) throws Exception {
-        Query query;
-        ArrayList<ArrayList<TestAnalyteViewDO>> grid;
-        Object taList[];
-        List<AnalyteParameterViewDO> list;
-        AnalyteParameterViewDO data;
-        HashMap<Integer, TestAnalyteViewDO> taMap;
-
-        try {
-            grid = testAnalyte.fetchByTestId(testId);
-        } catch (NotFoundException ex) {
-            return new ArrayList<AnalyteParameterViewDO>();
-        }
-
-        /*
-         * the HashMap created below is used to make sure that all the test
-         * analytes for this test get added in the form of a
-         * AnalyeParameterViewDO to the list returned by this method even if
-         * they are not present in the table analyte_parameter for this test
-         */
-        taMap = new HashMap<Integer, TestAnalyteViewDO>();
-        for (ArrayList<TestAnalyteViewDO> row : grid) {
-            for (TestAnalyteViewDO ta : row) {
-                if ("N".equals(ta.getIsColumn())) {
-                    taMap.put(ta.getAnalyteId(), ta);
-                    break;
-                }
-            }
-        }
-
-        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByRefIdRefTableId");
-        query.setParameter("referenceId", testId);
-        query.setParameter("referenceTableId", Constants.table().TEST);
-        list = query.getResultList();
-
-        /*
-         * if an analyte was found in the results returned by the previous query
-         * then we remove the entry pertaining to it from the HashMap so that
-         * after the loop below ends, only those analytes that are not active
-         * but are present in test_analyte are in the HashMap
-         */
-        for (AnalyteParameterViewDO temp : list) {
-            if (taMap.get(temp.getAnalyteId()) != null)
-                taMap.remove(temp.getAnalyteId());
-        }
-
-        if (taMap.size() > 0) {
-            taList = taMap.values().toArray();
-            //
-            // we add any additional analytes to the list returned by this
-            // method
-            //
-            for (Object o : taList) {
-                data = new AnalyteParameterViewDO();
-                data.setReferenceId(testId);
-                data.setReferenceTableId(Constants.table().TEST);
-                data.setAnalyteId( ((TestAnalyteViewDO)o).getAnalyteId());
-                data.setAnalyteName( ((TestAnalyteViewDO)o).getAnalyteName());
-                data.setIsActive("N");
-                list.add(data);
-            }
-        }
-        return DataBaseUtil.toArrayList(list);
-    }
-
-    private ArrayList<AnalyteParameterViewDO> fetchByQcId(Integer qcId) throws Exception {
-        Query query;
-        ArrayList<QcAnalyteViewDO> anaList;
-        List<AnalyteParameterViewDO> list;
-        Object taList[];
-        AnalyteParameterViewDO data;
-        HashMap<Integer, QcAnalyteViewDO> qcaMap;
-
-        try {
-            anaList = qcAnalyte.fetchByQcId(qcId);
-        } catch (NotFoundException ex) {
-            return new ArrayList<AnalyteParameterViewDO>();
-        }
-
-        qcaMap = new HashMap<Integer, QcAnalyteViewDO>();
-        /*
-         * the HashMap created below is used to make sure that all the test
-         * analytes for this test get added in the form of a
-         * AnalyeParameterViewDO to the list returned by this method even if
-         * they are not present in the table analyte_parameter for this qc
-         */
-        for (QcAnalyteViewDO qca : anaList)
-            qcaMap.put(qca.getAnalyteId(), qca);
-
-        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByRefIdRefTableId");
-        query.setParameter("referenceId", qcId);
-        query.setParameter("referenceTableId", Constants.table().QC);
-        list = query.getResultList();
-
-        /*
-         * if an analyte was found in the results returned by the previous query
-         * then we remove the entry pertaining to it from the HashMap so that
-         * after the loop below ends, only those analytes that are not active
-         * but are present in qc_analyte are in the HashMap
-         */
-        for (AnalyteParameterViewDO temp : list) {
-            if (qcaMap.get(temp.getAnalyteId()) != null)
-                qcaMap.remove(temp.getAnalyteId());
-        }
-
-        if (qcaMap.size() > 0) {
-            taList = qcaMap.values().toArray();
-            //
-            // we add any additional analytes to the list returned by this
-            // method
-            //
-            for (Object o : taList) {
-                data = new AnalyteParameterViewDO();
-                data.setReferenceId(qcId);
-                data.setReferenceTableId(Constants.table().QC);
-                data.setAnalyteId( ((QcAnalyteViewDO)o).getAnalyteId());
-                data.setAnalyteName( ((QcAnalyteViewDO)o).getAnalyteName());
-                data.setIsActive("N");
-                list.add(data);
-            }
-        }
-        return DataBaseUtil.toArrayList(list);
-    }
-
-    private ArrayList<AnalyteParameterViewDO> fetchByProviderId(Integer referenceId) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

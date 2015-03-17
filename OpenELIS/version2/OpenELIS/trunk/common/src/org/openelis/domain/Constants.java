@@ -333,6 +333,10 @@ public class Constants implements Serializable {
         public String get(AttachmentItemDO data) {
             return getAttachmentItem(data.getId());
         }
+        
+        public String get(AnalyteParameterDO data) {
+            return getAnalyteParameter(data.getId());
+        }
 
         /**
          * Returns the UID for a given key.
@@ -391,6 +395,10 @@ public class Constants implements Serializable {
 
         private String getAttachmentItem(Integer id) {
             return Constants.table().ATTACHMENT_ITEM + ":" + id;
+        }
+                        
+        public String getAnalyteParameter(Integer id) {
+            return Constants.table().ANALYTE_PARAMETER + ":" + id;
         }
     }
 }

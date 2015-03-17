@@ -442,7 +442,7 @@ public class AnalyteParameterScreen extends Screen {
                     if (data.getId() != null)
                         event.cancel();
                 } else if (state == State.UPDATE) {
-                    if (data.getId() != null && "N".equals(data.getIsActive()) && !warningShown) {
+                    if (data.getId() != null && !warningShown) {
                         Window.alert(Messages.get().editPreviousWarning());
                         warningShown = true;
                     }
@@ -499,8 +499,7 @@ public class AnalyteParameterScreen extends Screen {
                                                                                  .endDateInvalidException()));
                             return;
                         }
-                        if (changeActive(data))
-                            parameterTree.setCell(r, 0, data.getIsActive());
+
                         if (data.getActiveBegin() == null)
                             return;
                         if (prevData != null) {
@@ -514,7 +513,6 @@ public class AnalyteParameterScreen extends Screen {
                                 prevData.getActiveEnd().getDate().setTime(data.getActiveBegin().getDate().getTime() - 60000);
                                 prevItem.cells.get(4).setValue(prevData.getActiveEnd());
                             }
-                            prevData.setIsActive("N");
                             prevItem.cells.get(0).setValue("N");
                             parameterTree.refreshRow(prevItem);
                         }
@@ -545,16 +543,7 @@ public class AnalyteParameterScreen extends Screen {
                     case 7:
                         data.setP3((Double)val);
                         break;
-                }
-                
-                if (changeActive(data)) {
-                    parameterTree.setCell(r, 0, data.getIsActive());
-                    if (prevData != null) {
-                        prevData.setIsActive("N");
-                        prevItem.cells.get(0).setValue("N");
-                        parameterTree.refreshRow(prevItem);
-                    }
-                }
+                }               
             }
         });
 
@@ -940,7 +929,6 @@ public class AnalyteParameterScreen extends Screen {
                 data.setReferenceName(manager.getReferenceName());
                 data.setAnalyteId(ta.getAnalyteId());
                 data.setAnalyteName(ta.getAnalyteName());
-                data.setIsActive("N");
                 manager.addParamater(data);
             }
         }
@@ -970,7 +958,6 @@ public class AnalyteParameterScreen extends Screen {
             data.setReferenceName(manager.getReferenceName());
             data.setAnalyteId(qca.getAnalyteId());
             data.setAnalyteName(qca.getAnalyteName());
-            data.setIsActive("N");
             manager.addParamater(data);
         }
     }
@@ -1015,7 +1002,7 @@ public class AnalyteParameterScreen extends Screen {
 
         item = new TreeDataItem(8);
         item.leafType = leaftype;
-        item.cells.get(0).setValue(data.getIsActive());
+        item.cells.get(0).setValue("N");
         item.cells.get(1).setValue(data.getAnalyteName());
         item.cells.get(2).setValue(data.getTypeOfSampleId());
         item.cells.get(3).setValue(data.getActiveBegin());
@@ -1026,24 +1013,6 @@ public class AnalyteParameterScreen extends Screen {
         item.data = data;
 
         return item;
-    }
-
-    private boolean changeActive(AnalyteParameterViewDO data) {
-        boolean active;
-
-        if (data.getId() != null)
-            return false;
-        active = (data.getActiveBegin() != null && data.getActiveEnd() != null && (data.getP1() != null ||
-                                                                                   data.getP2() != null || data.getP3() != null));
-        if (active && "N".equals(data.getIsActive())) {
-            data.setIsActive("Y");
-            return true;
-        } else if ( !active && "Y".equals(data.getIsActive())) {
-            data.setIsActive("N");
-            return true;
-        }
-
-        return false;
     }
 
     private ArrayList<TableDataRow> getSampleTypeModel(TestTypeOfSampleManager man) {
