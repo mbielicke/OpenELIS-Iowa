@@ -135,7 +135,8 @@ public class EOrderImportBean {
 
         eorderDO = new EOrderDO();
         eorderDO.setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-        eorderDO.setPaperOrderValidator(XMLUtil.getNodeText(eorderElem, "paper_order_validator"));
+        if (XMLUtil.getNodeText(eorderElem, "paper_order_validator") != null)
+            eorderDO.setPaperOrderValidator(XMLUtil.getNodeText(eorderElem, "paper_order_validator").toUpperCase());
         eorderDO.setDescription(XMLUtil.getNodeText(eorderElem, "description"));
 
         eorderBodyElem = (Element)orderElem.getElementsByTagName("eorder_body").item(0);
