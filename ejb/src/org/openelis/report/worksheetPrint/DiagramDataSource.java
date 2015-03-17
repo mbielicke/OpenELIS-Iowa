@@ -26,6 +26,7 @@
 package org.openelis.report.worksheetPrint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.domain.WorksheetAnalysisViewDO;
@@ -42,6 +43,7 @@ public class DiagramDataSource implements JRDataSource {
 
     private int rowIndex;
     private ArrayList<RowObject> rowList;
+    private HashMap<Integer, String> wellLabels;
     private Integer diagramCapacity, worksheetId;
     private String worksheetDescription;
 	
@@ -57,6 +59,7 @@ public class DiagramDataSource implements JRDataSource {
             this.diagramCapacity = diagramCapacity;
         else
             this.diagramCapacity = 500;
+        wellLabels = new HashMap<Integer, String>(diagramCapacity);
         
 		try {
             wm = EJBFactory.getWorksheetManager1();
@@ -78,6 +81,14 @@ public class DiagramDataSource implements JRDataSource {
                         waVDO = wman.analysis.get(wiDO, j);
                         row = new RowObject(wiDO, waVDO);
                         rowList.add(row);
+                        if (j > 0) {
+                            wellLabels.put(wiDO.getPosition(), worksheetId + "." + wiDO.getPosition());
+                        } else {
+                            if (waVDO.getAnalysisId() != null)
+                                wellLabels.put(wiDO.getPosition(), waVDO.getAccessionNumber());
+                            else if (row.waVDO.getQcLotId() != null)
+                                wellLabels.put(wiDO.getPosition(), waVDO.getDescription());
+                        }
                     }
                 }
             } catch (NotFoundException e) {
@@ -142,23 +153,10 @@ public class DiagramDataSource implements JRDataSource {
 	}
 	
     public String getWellLabel(Integer page, Integer well) {
-        Integer rowIndex;
-        RowObject row;
-        String ret;
+        Integer position;
         
-        ret = null;
-        rowIndex = (page - 1) * diagramCapacity + well - 1;
-        if (rowIndex < rowList.size()) {
-            row = rowList.get(rowIndex);
-            if (row.waVDO != null) {
-                if (row.waVDO.getAnalysisId() != null)
-                    ret = row.waVDO.getAccessionNumber();
-                else if (row.waVDO.getQcLotId() != null)
-                    ret = row.waVDO.getDescription();
-            }
-        }
-        
-        return ret;
+        position = (page - 1) * diagramCapacity + well;
+        return wellLabels.get(position);
     }
     
     private class RowObject {
