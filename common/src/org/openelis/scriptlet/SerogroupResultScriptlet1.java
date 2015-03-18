@@ -82,7 +82,6 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
                    for (j = 0; j < sm.result.count(ana, i); j++ ) {
                        res = sm.result.get(ana, i, j);
                        if ("serogroup".equals(res.getAnalyteExternalId())) {
-                           res = sm.result.get(ana, i, 0);
                            setResult(data, ana, res);
                            break;
                        }
