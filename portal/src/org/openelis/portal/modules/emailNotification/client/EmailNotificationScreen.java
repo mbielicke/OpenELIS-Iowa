@@ -182,6 +182,8 @@ public class EmailNotificationScreen extends Screen {
         }
         try {
             params = EmailNotificationService.get().fetchParametersByOrganizationIds(orgIds);
+        } catch (NotFoundException e) {
+            return model;
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return model;
