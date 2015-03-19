@@ -1716,15 +1716,18 @@ public class SampleManagerOrderHelperBean {
                                           SampleManager1 sm, boolean move, ValidationErrorsList e) throws Exception {
         int i, j, min;
         boolean found;
-        String tmName;
+        Integer anaId;
+        String tmName, reportable;
         AnalysisViewDO ana;
         SampleItemViewDO item;
         AnalysisItem anaItem;
-        OrderTest ot;
+        OrderTest orderTest;
         SampleTestReturnVO ret;
-        ArrayList<OrderTest> ots;
+        ArrayList<OrderTest> orderTests;
         ArrayList<AnalysisItem> anaItems;
         ArrayList<SampleTestRequestVO> tests;
+        HashSet<Integer> repAnalytes;
+        HashMap<Integer, HashSet<Integer>> repAnalyteMap;
         HashMap<String, ArrayList<AnalysisItem>> anaItemMap;
         HashMap<Integer, SampleItemViewDO> itemIdMap, itemSeqMap, itemTypeMap;
 
@@ -1770,9 +1773,10 @@ public class SampleManagerOrderHelperBean {
          * is not specified
          */
         tests = new ArrayList<SampleTestRequestVO>();
+        repAnalyteMap = new HashMap<Integer, HashSet<Integer>>();
         for (Map.Entry<String, ArrayList<OrderTest>> entry : orderTestMap.entrySet()) {
             tmName = entry.getKey();
-            ots = entry.getValue();
+            orderTests = entry.getValue();
 
             anaItems = anaItemMap.get(tmName);
             if (anaItems != null) {
@@ -1785,17 +1789,19 @@ public class SampleManagerOrderHelperBean {
                  * need to be moved or added
                  */
                 i = 0;
-                while (i < ots.size()) {
-                    ot = ots.get(i);
+                while (i < orderTests.size()) {
+                    orderTest = orderTests.get(i);
                     found = false;
                     for (j = 0; j < anaItems.size(); j++ ) {
                         anaItem = anaItems.get(j);
                         item = anaItem.sampleItem;
-                        if (ot.sequence != null &&
-                            DataBaseUtil.isSame(ot.sequence, item.getItemSequence())) {
-                            found = true;
-                            break;
-                        } else if (DataBaseUtil.isSame(ot.sampleTypeId, item.getTypeOfSampleId())) {
+                        if (orderTest.sequence != null) {
+                            if (DataBaseUtil.isSame(orderTest.sequence, item.getItemSequence())) {
+                                found = true;
+                                break;
+                            }
+                        } else if (DataBaseUtil.isSame(orderTest.sampleTypeId,
+                                                       item.getTypeOfSampleId())) {
                             found = true;
                             break;
                         }
@@ -1803,9 +1809,13 @@ public class SampleManagerOrderHelperBean {
                     if (found) {
                         /*
                          * the test is present in the sample, where it's
-                         * specified by the order
+                         * specified by the order; this map will be used to mark
+                         * the results of the analysis reportable, according to
+                         * the order
                          */
-                        ots.remove(i);
+                        repAnalyteMap.put(anaItems.get(i).analysis.getId(),
+                                          new HashSet<Integer>(orderTest.analyteIds));
+                        orderTests.remove(i);
                         anaItems.remove(j);
                     } else {
                         i++ ;
@@ -1821,8 +1831,8 @@ public class SampleManagerOrderHelperBean {
                  * specified in the order; if the order has more instances of
                  * the test, they will need to be added to the sample
                  */
-                while (ots.size() > 0) {
-                    ot = ots.get(0);
+                while (orderTests.size() > 0) {
+                    orderTest = orderTests.get(0);
                     if (anaItems.size() == 0)
                         break;
                     ana = anaItems.get(0).analysis;
@@ -1834,21 +1844,26 @@ public class SampleManagerOrderHelperBean {
                          * specified in the order, move the analysis to the item
                          * with the minimum sequence
                          */
-                        if (ot.sequence != null)
-                            item = itemSeqMap.get(ot.sequence);
+                        if (orderTest.sequence != null)
+                            item = itemSeqMap.get(orderTest.sequence);
                         else
-                            item = itemTypeMap.get(ot.sampleTypeId);
+                            item = itemTypeMap.get(orderTest.sampleTypeId);
 
                         if (item == null)
                             item = itemSeqMap.get(min);
                         ana.setSampleItemId(item.getId());
+                        /*
+                         * this map will be used to mark the results of the
+                         * analysis reportable, according to the order
+                         */
+                        repAnalyteMap.put(ana.getId(), new HashSet<Integer>(orderTest.analyteIds));
                     }
                     /*
                      * since the test is present in the sample, it shouldn't be
                      * added again, regardless of whether or not it was moved;
                      * the following makes sure of that
                      */
-                    ots.remove(0);
+                    orderTests.remove(0);
                     anaItems.remove(0);
                 }
             }
@@ -1859,29 +1874,49 @@ public class SampleManagerOrderHelperBean {
              * item with that sequence; otherwise add it to the item with the
              * specified sample type
              */
-            for (i = 0; i < ots.size(); i++ ) {
-                ot = ots.get(i);
+            for (i = 0; i < orderTests.size(); i++ ) {
+                orderTest = orderTests.get(i);
                 /*
                  * if no item is found for a sequence or sample type specified
                  * in the order, add the analysis to the item with the minimum
                  * sequence
                  */
-                if (ot.sequence != null)
-                    item = itemSeqMap.get(ot.sequence);
+                if (orderTest.sequence != null)
+                    item = itemSeqMap.get(orderTest.sequence);
                 else
-                    item = itemTypeMap.get(ot.sampleTypeId);
+                    item = itemTypeMap.get(orderTest.sampleTypeId);
 
                 if (item == null)
                     item = itemSeqMap.get(min);
                 tests.add(new SampleTestRequestVO(sm.getSample().getId(),
                                                   item.getId(),
-                                                  ot.testId,
+                                                  orderTest.testId,
                                                   null,
                                                   null,
                                                   null,
                                                   null,
                                                   false,
-                                                  ot.analyteIds));
+                                                  orderTest.analyteIds));
+            }
+        }
+
+        if (repAnalyteMap.size() > 0) {
+            /*
+             * mark the results of tests present in both the sample and the
+             * order, reportable according to the order
+             */
+            anaId = null;
+            repAnalytes = null;
+            for (ResultViewDO data : getResults(sm)) {
+                if ( !data.getAnalysisId().equals(anaId)) {
+                    repAnalytes = repAnalyteMap.get(data.getAnalysisId());
+                    anaId = data.getAnalysisId();
+                }
+                if (repAnalytes != null && "N".equals(data.getIsColumn())) {
+                    reportable = repAnalytes.contains(data.getAnalyteId()) ? "Y" : "N";
+                    if ( !reportable.equals(data.getIsReportable()))
+                        data.setIsReportable(reportable);
+                }
             }
         }
 

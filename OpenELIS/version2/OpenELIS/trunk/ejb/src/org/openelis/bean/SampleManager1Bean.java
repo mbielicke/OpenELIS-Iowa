@@ -2398,8 +2398,8 @@ public class SampleManager1Bean {
                 if (anaByTest.get(a.getTestId()) == null &&
                     !Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId())) {
                     anaByTest.put(a.getTestId(), a);
-                    anaById.put(a.getId(), a);
                 }
+                anaById.put(a.getId(), a);
             }
         }
 
