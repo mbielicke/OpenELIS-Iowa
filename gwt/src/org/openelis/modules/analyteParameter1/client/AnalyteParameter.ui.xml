@@ -89,7 +89,7 @@
                     required="true"
                   >
                     <w:popup>
-                      <t:Table visibleRows="10" header="true">
+                      <t:Table visibleRows="10">
                         <t:Column width="300">
                           <t:LabelCell />
                         </t:Column>

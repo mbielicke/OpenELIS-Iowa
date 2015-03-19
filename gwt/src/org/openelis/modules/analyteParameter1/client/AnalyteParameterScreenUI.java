@@ -127,8 +127,8 @@ public class AnalyteParameterScreenUI extends Screen {
 
     @UiField
     protected Button                                               query, previous, next, add,
-                    update, commit, abort, nextPageButton, duplicateButton,
-                    addParameterButton, removeRowButton, expandButton, collapseButton;
+                    update, commit, abort, nextPageButton, duplicateButton, addParameterButton,
+                    removeRowButton, expandButton, collapseButton;
 
     @UiField
     protected Dropdown<Integer>                                    atozReferenceTable,
@@ -264,8 +264,7 @@ public class AnalyteParameterScreenUI extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<ReferenceIdTableIdNameVO>(atozTable,
-                                                            nextPageButton) {
+        nav = new ScreenNavigator<ReferenceIdTableIdNameVO>(atozTable, nextPageButton) {
             public void executeQuery(final Query query) {
                 setBusy(Messages.get().gen_querying());
 
@@ -274,13 +273,13 @@ public class AnalyteParameterScreenUI extends Screen {
                         public void success(ArrayList<ReferenceIdTableIdNameVO> result) {
                             ReferenceIdTableIdNameVO data;
                             ArrayList<ReferenceIdTableIdNameVO> addedList;
-                            
+
                             clearStatus();
-                            //setQueryResult(result);
                             if (nav.getQuery().getPage() == 0) {
                                 setQueryResult(result);
                                 data = result.get(0);
-                                fetchByRefIdRefTableId(data.getReferenceId(), data.getReferenceTableId());
+                                fetchByRefIdRefTableId(data.getReferenceId(),
+                                                       data.getReferenceTableId());
                                 select(0);
                             } else {
                                 addedList = getQueryResult();
@@ -392,7 +391,7 @@ public class AnalyteParameterScreenUI extends Screen {
 
         addScreenHandler(referenceName, REFERENCE_NAME_KEY, new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent event) {
-                referenceName.setValue(getReferenceTableId(), getReferenceName());
+                referenceName.setValue(getReferenceId(), getReferenceName());
             }
 
             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
@@ -457,7 +456,7 @@ public class AnalyteParameterScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 tree.setEnabled(isState(DISPLAY, ADD, UPDATE));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? duplicateButton : referenceName;
             }
@@ -633,7 +632,7 @@ public class AnalyteParameterScreenUI extends Screen {
                              */
                             if (val instanceof Datetime)
                                 data.setActiveBegin((Datetime)val);
-                            else 
+                            else
                                 data.setActiveBegin(null);
                             /*
                              * show an error if the begin date for this
@@ -659,8 +658,9 @@ public class AnalyteParameterScreenUI extends Screen {
                                  * date if the previous parameter's end date is
                                  * not before this parameter's begin date
                                  */
-                                if ( !DataBaseUtil.isAfter(data.getActiveBegin(),
-                                                           prevData.getActiveEnd())) {
+                                if (prevData.getActiveEnd() != null &&
+                                    !DataBaseUtil.isAfter(data.getActiveBegin(),
+                                                          prevData.getActiveEnd())) {
                                     prevData.getActiveEnd()
                                             .getDate()
                                             .setTime(data.getActiveBegin().getDate().getTime() - 60000);
@@ -676,7 +676,7 @@ public class AnalyteParameterScreenUI extends Screen {
                              */
                             if (val instanceof Datetime)
                                 data.setActiveEnd((Datetime)val);
-                            else 
+                            else
                                 data.setActiveEnd(null);
                             /*
                              * show an error if the end date for this parameter
@@ -1110,7 +1110,7 @@ public class AnalyteParameterScreenUI extends Screen {
                     uid = node.getData();
                     newNode = createParameterNode((AnalyteParameterViewDO)manager.getObject(uid));
                     tree.addNodeAt(p, newNode, 0);
-                    if (!p.isOpen())
+                    if ( !p.isOpen())
                         tree.open(p);
                 }
             }
@@ -1139,9 +1139,9 @@ public class AnalyteParameterScreenUI extends Screen {
         newNode = new Node(5);
         newNode.setType(PARAMETER_LEAF);
         tree.addNodeAt(node, newNode, 0);
-        if (!node.isOpen())
+        if ( !node.isOpen())
             tree.open(node);
-        tree.selectNodeAt(newNode);        
+        tree.selectNodeAt(newNode);
         addParameterButton.setEnabled(false);
     }
 
@@ -1627,7 +1627,7 @@ public class AnalyteParameterScreenUI extends Screen {
 
         ac = manager.analyte.get((Integer)analyte.getData());
         ac.setTypeOfSampleId(sampleTypeId);
-        for (int i = 0; i < analyte.getChildCount(); i++) {
+        for (int i = 0; i < analyte.getChildCount(); i++ ) {
             param = analyte.getChildAt(i);
             data = (AnalyteParameterViewDO)manager.getObject((String)param.getData());
             data.setTypeOfSampleId(sampleTypeId);
@@ -1644,7 +1644,7 @@ public class AnalyteParameterScreenUI extends Screen {
 
         ac = manager.analyte.get((Integer)analyte.getData());
         ac.setUnitOfMeasureId(unitId);
-        for (int i = 0; i < analyte.getChildCount(); i++) {
+        for (int i = 0; i < analyte.getChildCount(); i++ ) {
             param = analyte.getChildAt(i);
             data = (AnalyteParameterViewDO)manager.getObject((String)param.getData());
             data.setUnitOfMeasureId(unitId);

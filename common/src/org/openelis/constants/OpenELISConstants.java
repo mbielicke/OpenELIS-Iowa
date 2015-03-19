@@ -4,7 +4,7 @@ package org.openelis.constants;
  * Interface to represent the messages contained in resource bundle:
  * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
-public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
+public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
   /**
    * Translated "QA Event".
@@ -1744,20 +1744,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analyteParameter_p3();
 
   /**
-   * Translated "{0} already has existing parameters".
+   * Translated "\"{0}\" already has existing parameters".
    * 
-   * @return translated "{0} already has existing parameters"
+   * @return translated "\"{0}\" already has existing parameters"
    */
-  @DefaultMessage("{0} already has existing parameters")
+  @DefaultMessage("\"{0}\" already has existing parameters")
   @Key("analyteParameter.parametersExistException")
   String analyteParameter_parametersExistException(String arg0);
 
   /**
-   * Translated "{0} must have at least one parameter".
+   * Translated "\"{0}\" must have at least one parameter".
    * 
-   * @return translated "{0} must have at least one parameter"
+   * @return translated "\"{0}\" must have at least one parameter"
    */
-  @DefaultMessage("{0} must have at least one parameter")
+  @DefaultMessage("\"{0}\" must have at least one parameter")
   @Key("analyteParameter.recordHasNoParametersException")
   String analyteParameter_recordHasNoParametersException(String arg0);
 
@@ -14677,11 +14677,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_cantDuplicateReflexAnaException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present ".
+   * Translated "The order can''t be loaded because the patient is locked".
    * 
-   * @return translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present "
+   * @return translated "The order can''t be loaded because the patient is locked"
    */
-  @DefaultMessage("Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present ")
+  @DefaultMessage("The order can''t be loaded because the patient is locked")
+  @Key("sample.cantLoadEOrderPatientLocked")
+  String sample_cantLoadEOrderPatientLocked();
+
+  /**
+   * Translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present".
+   * 
+   * @return translated "Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present"
+   */
+  @DefaultMessage("Accession # {0,number,#0}: A quick entered sample cannot be loaded if the order # is present")
   @Key("sample.cantLoadQEOrderPresentException")
   String sample_cantLoadQEOrderPresentException(Integer arg0);
 
