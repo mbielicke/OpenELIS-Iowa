@@ -3919,6 +3919,11 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             orderId.setValue(null);
             return;
         }
+        
+        if (isPatientLocked) {
+            Window.alert(Messages.get().sample_cantLoadEOrderPatientLocked());
+            return;
+        }
 
         showEOrderLookup(ordId);
     }
@@ -3963,13 +3968,15 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     manager.getSampleClinical()
                            .setPaperOrderValidator(eorderDO.getPaperOrderValidator());
                     orderId.setValue(eorderDO.getPaperOrderValidator());
+                    evaluateEdit();
                     setData();
+                    screen.setState(screen.state);
                     revalidate = true;
                     screen.fireDataChange();
                     screen.clearStatus();
                     revalidate = false;
-                    try {
 
+                    try {
                         /*
                          * add scriptlets for any newly added tests and aux data
                          */

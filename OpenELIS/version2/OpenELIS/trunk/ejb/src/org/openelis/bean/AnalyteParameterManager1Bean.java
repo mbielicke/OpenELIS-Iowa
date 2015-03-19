@@ -418,9 +418,9 @@ public class AnalyteParameterManager1Bean {
         if (getReferenceId(apm) == null)
             e.add(new FormErrorException(Messages.get().analyteParameter_nameRequiredException()));
 
+        hasParams = false;
         if (getCombinations(apm) != null) {
             combos = new HashSet<String>();
-            hasParams = false;
             for (i = 0; i < getCombinations(apm).size(); i++ ) {
                 ac = getCombinations(apm).get(i);
                 combo = getCombination(ac);
@@ -467,32 +467,32 @@ public class AnalyteParameterManager1Bean {
                     prev = data;
                 }
             }
+        }
 
-            if ( !isUpdate) {
+        if ( !isUpdate) {
+            /*
+             * the user is trying to commit in Add mode; show an error if some
+             * parameters already exist in the database for the record; don't
+             * allow committing without any parameters
+             */
+            refName = DataBaseUtil.toString(getReferenceName(apm));
+            if (hasParams) {
                 /*
-                 * the user is trying to commit in Add mode; show an error if
-                 * some parameters already exist in the database for the record;
-                 * don't allow committing without any parameters
+                 * a dynamic query is not used here because the "query" method
+                 * in AnalyteParameterBean uses reference name and not reference
+                 * id; to get the name, the test or qc will have to be fetched
+                 * here first; the manager doesn't have just the name, but a
+                 * description e.g. name and id for qcs
                  */
-                refName = getReferenceName(apm);
-                if (hasParams) {
-                    /*
-                     * a dynamic query is not used here because the "query"
-                     * method in AnalyteParameterBean uses reference name and
-                     * not reference id; to get the name, the test or qc will
-                     * have to be fetched here first; the manager doesn't have
-                     * just the name, but a description e.g. name and id for qcs
-                     */
-                    params = analyteParameter.fetchByReferenceIdReferenceTableId(getReferenceId(apm),
-                                                                                 getReferenceTableId(apm),
-                                                                                 1);
-                    if ( !params.isEmpty())
-                        e.add(new FormErrorException(Messages.get()
-                                                             .analyteParameter_parametersExistException(refName)));
-                } else {
+                params = analyteParameter.fetchByReferenceIdReferenceTableId(getReferenceId(apm),
+                                                                             getReferenceTableId(apm),
+                                                                             1);
+                if ( !params.isEmpty())
                     e.add(new FormErrorException(Messages.get()
-                                                         .analyteParameter_recordHasNoParametersException(refName)));
-                }
+                                                         .analyteParameter_parametersExistException(refName)));
+            } else {
+                e.add(new FormErrorException(Messages.get()
+                                                     .analyteParameter_recordHasNoParametersException(refName)));
             }
         }
 
