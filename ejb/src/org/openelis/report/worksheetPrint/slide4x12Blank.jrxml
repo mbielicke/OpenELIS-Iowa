@@ -12,7 +12,7 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     w.description as worksheet_description, wi.position, wav.worksheet_id, wav.accession_number,
+     w.description as worksheet_description, wi.position, wav.id as wav_id, wav.worksheet_id, wav.accession_number,
      wav.description, wav.analysis_id, wav.qc_lot_id
 FROM
      worksheet_analysis_view wav
@@ -21,10 +21,11 @@ FROM
 WHERE
      wav.worksheet_id = $P{WORKSHEET_ID}
 ORDER BY
-     wi.position, wav.id]]>
+     wi.position, wav_id]]>
 	</queryString>
 	<field name="worksheet_description" class="java.lang.String"/>
 	<field name="position" class="java.lang.Integer"/>
+	<field name="wav_id" class="java.lang.Integer"/>
 	<field name="worksheet_id" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
