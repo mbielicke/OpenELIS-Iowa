@@ -310,7 +310,7 @@ public class AnalyteParameterScreenUI extends Screen {
                     };
                 }
 
-                query.setRowsPerPage(20);
+                query.setRowsPerPage(22);
                 AnalyteParameterService1.get().query(query, queryCall);
             }
 
