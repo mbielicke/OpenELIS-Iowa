@@ -266,10 +266,11 @@ public class ReportUtil {
             System.out.println("args: "+ args);
             exec(args);
             status = "print queued to " + destination;            
-            if (delete)
-                Files.delete(path);
         } catch (Exception e) {
             throw new Exception("Could not print to queue " + destination + "; " + e.getMessage());
+        } finally {
+            if (delete)
+                Files.delete(path);
         }
 
         return status;
@@ -321,6 +322,8 @@ public class ReportUtil {
             status = "fax queued for " + faxNumber;
         } catch (Exception e) {
             throw new Exception("Could not fax; " + e.getMessage());
+        } finally {
+            Files.delete(path);
         }
 
         return status;
