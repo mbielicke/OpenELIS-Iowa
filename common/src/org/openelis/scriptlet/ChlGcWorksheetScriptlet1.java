@@ -92,18 +92,15 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
         ArrayList<SampleManager1> sms;
         ArrayList<WorksheetAnalysisViewDO> nonPooledAnalyses, pooledAnalyses;
         HashMap<Integer, SampleItemViewDO> siVDOsByAnalysisId;
-        HashMap<Integer, WorksheetItemDO> itemsByPosition;
         SampleItemViewDO siVDO;
         WorksheetAnalysisViewDO waVDO;
         WorksheetItemDO wiDO;
         WorksheetManager1 wm;
 
         wm = data.getManager();
-        itemsByPosition = new HashMap<Integer, WorksheetItemDO>();
         analysisIds = new ArrayList<Integer>();
         for (i = 0; i < wm.item.count(); i++) {
             wiDO = wm.item.get(i);
-            itemsByPosition.put(wiDO.getPosition(), wiDO);
             for (j = 0; j < wm.analysis.count(wiDO); j++) {
                 waVDO = wm.analysis.get(wiDO, j);
                 if (waVDO.getAnalysisId() != null)
@@ -153,17 +150,15 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
             }
         }
 
-        j = 1;
-        wiDO = itemsByPosition.get(j);
+        j = 0;
+        wiDO = wm.item.get(j);
         lastIndex = pooledAnalyses.size() / 4 * 4;
         try {
             for (i = 0; i < lastIndex; i++) {
                 if (i != 0 && i % 4 == 0) {
-                    wiDO = itemsByPosition.get(++j);
-                    if (wiDO == null) {
+                    wiDO = wm.item.get(++j);
+                    if (wiDO == null)
                         wiDO = wm.item.add(j);
-                        itemsByPosition.put(j, wiDO);
-                    }
                 }
                 waVDO = pooledAnalyses.get(i);
                 wm.analysis.move(waVDO, wiDO);
@@ -173,11 +168,9 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
                 j++;
             if (i < pooledAnalyses.size()) {
                 for (; i < pooledAnalyses.size(); i++) {
-                    wiDO = itemsByPosition.get(j);
-                    if (wiDO == null) {
+                    wiDO = wm.item.get(j);
+                    if (wiDO == null)
                         wiDO = wm.item.add(j);
-                        itemsByPosition.put(j, wiDO);
-                    }
                     waVDO = pooledAnalyses.get(i);
                     wm.analysis.move(waVDO, wiDO);
                     j++;
@@ -185,11 +178,9 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
             }
                 
             for (i = 0; i < nonPooledAnalyses.size(); i++) {
-                wiDO = itemsByPosition.get(j);
-                if (wiDO == null) {
+                wiDO = wm.item.get(j);
+                if (wiDO == null)
                     wiDO = wm.item.add(j);
-                    itemsByPosition.put(j, wiDO);
-                }
                 waVDO = nonPooledAnalyses.get(i);
                 wm.analysis.move(waVDO, wiDO);
                 j++;
