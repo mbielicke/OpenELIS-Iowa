@@ -18916,6 +18916,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String trfAttachment_trfAttachment();
 
   /**
+   * Translated "Unlock".
+   * 
+   * @return translated "Unlock"
+   */
+  @DefaultMessage("Unlock")
+  @Key("trfAttachment.unlock")
+  String trfAttachment_unlock();
+
+  /**
    * Translated "Tube #".
    * 
    * @return translated "Tube #"
