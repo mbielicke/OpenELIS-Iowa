@@ -627,15 +627,17 @@ public class BillingExportBean {
                     charge.isValid = true;
                     if (resultMap.get(a.getId()) != null) {
                         for (ResultViewDO r : resultMap.get(a.getId())) {
-                            if (r.getAnalyteId().equals(SECTION_ANALYTE_ID) && r.getValue() != null) {
-                                try {
-                                    dictDO = dictionary.getById(Integer.valueOf(r.getValue()));
-                                    charge.labSection = dictDO.getEntry();
-                                } catch (Exception anyE) {
-                                    // log the fact that there was a invalid section
-                                    // and continue as if no section was chosen
-                                    log.severe("Accession #" + hdr.accession +
-                                               " has an invalid section for miscellaneous or rush billing");
+                            if (r.getAnalyteId().equals(SECTION_ANALYTE_ID)) {
+                                if (r.getValue() != null) {
+                                    try {
+                                        dictDO = dictionary.getById(Integer.valueOf(r.getValue()));
+                                        charge.labSection = dictDO.getEntry();
+                                    } catch (Exception anyE) {
+                                        // log the fact that there was a invalid section
+                                        // and continue as if no section was chosen
+                                        log.severe("Accession #" + hdr.accession +
+                                                   " has an invalid section for miscellaneous or rush billing");
+                                    }
                                 }
                             } else {
                                 try {
