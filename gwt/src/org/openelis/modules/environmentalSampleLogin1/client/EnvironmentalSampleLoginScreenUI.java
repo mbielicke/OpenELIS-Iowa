@@ -70,7 +70,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.attachment.client.AttachmentAddedEvent;
-import org.openelis.modules.attachment.client.AttachmentScreenUI;
+import org.openelis.modules.attachment.client.TRFAttachmentScreenUI;
 import org.openelis.modules.attachment.client.AttachmentUtil;
 import org.openelis.modules.attachment.client.DisplayAttachmentEvent;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
@@ -275,7 +275,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected AttachmentScreenUI                        attachmentScreen;
+    protected TRFAttachmentScreenUI                      trfAttachmentScreen;
 
     protected Focusable                                 focusedWidget;
 
@@ -546,11 +546,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                /*
-                 * disable until the new data entry attachment screen is ready
-                 * to be used
-                 */
-                fromTRF.setEnabled(false);
+                fromTRF.setEnabled(true);
             }
         });
 
@@ -2227,7 +2223,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                          */
                         event.cancel();
                         closeLoginScreen = true;
-                        attachmentScreen.getWindow().close();
+                        trfAttachmentScreen.getWindow().close();
                         closeLoginScreen = false;
                     } else {
                         /*
@@ -2497,8 +2493,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                      */
                     cache = null;
                     clearScriptlets();
-                    if (attachmentScreen != null)
-                        attachmentScreen.removeReservation(true);
                 }
 
                 public void validationErrors(ValidationErrorsList e) {
@@ -2550,8 +2544,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             setDone(Messages.get().gen_addAborted());
             cache = null;
             clearScriptlets();
-            if (attachmentScreen != null)
-                attachmentScreen.removeReservation(false);
         } else if (isState(UPDATE)) {
             if (unlockCall == null) {
                 unlockCall = new AsyncCallbackUI<SampleManager1>() {
@@ -2687,8 +2679,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * record locked on it, the checkbox doesn't stay unchecked
              */
             fromTRF.setCheck(true);
-            if (attachmentScreen != null)
-                attachmentScreen.getWindow().close();
+            if (trfAttachmentScreen != null)
+                trfAttachmentScreen.getWindow().close();
             return;
         }
 
@@ -2705,13 +2697,8 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
              * the user checked the checkbox for showing attachment screen, so
              * open that screen if it's closed
              */
-            if (attachmentScreen == null) {
-                attachmentScreen = new AttachmentScreenUI() {
-                    @Override
-                    public boolean isDataEntry() {
-                        return true;
-                    }
-
+            if (trfAttachmentScreen == null) {
+                trfAttachmentScreen = new TRFAttachmentScreenUI() {
                     @Override
                     public void search() {
                         QueryData field;
@@ -2723,9 +2710,6 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
                         field = new QueryData();
                         field.setQuery(attachmentPatternVariable.getValue());
                         query.setFields(field);
-                        query.setRowsPerPage(ROWS_PER_PAGE);
-                        isNewQuery = true;
-                        isLoadedFromQuery = true;
                         managers = null;
 
                         executeQuery(query);
@@ -2739,14 +2723,14 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
             }
 
             window = new org.openelis.ui.widget.Window();
-            window.setName(Messages.get().attachment_attachment());
-            window.setSize("782px", "521px");
-            attachmentScreen.setWindow(window);
-            window.setContent(attachmentScreen);
-            OpenELIS.getBrowser().addWindow(window, "attachment");
+            window.setName(Messages.get().trfAttachment_trfAttachment());
+            window.setSize("610px", "520px");
+            trfAttachmentScreen.setWindow(window);
+            window.setContent(trfAttachmentScreen);
+            OpenELIS.getBrowser().addWindow(window, "trfAttachment");
             isAttachmentScreenOpen = true;
 
-            attachmentScreen.search();
+            trfAttachmentScreen.search();
             window.addCloseHandler(new CloseHandler<WindowInt>() {
                 @Override
                 public void onClose(CloseEvent<WindowInt> event) {
@@ -3318,7 +3302,7 @@ public class EnvironmentalSampleLoginScreenUI extends Screen implements CachePro
         AttachmentDO att;
         AttachmentItemViewDO atti;
 
-        am = attachmentScreen.getReserved();
+        am = trfAttachmentScreen.getReserved();
         /*
          * add an attachment item for the record selected on the attachment
          * screen
