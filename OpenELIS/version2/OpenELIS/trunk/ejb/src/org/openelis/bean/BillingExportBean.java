@@ -642,7 +642,7 @@ public class BillingExportBean {
                             } else {
                                 try {
                                     charge.billedOverride += Double.parseDouble(r.getValue());
-                                } catch (NumberFormatException numE) {
+                                } catch (Exception anyE) {
                                     log.severe("Accession #" + hdr.accession +
                                                " has an invalid price for miscellaneous or rush billing");
                                     charge.billedOverride = -9.99;
