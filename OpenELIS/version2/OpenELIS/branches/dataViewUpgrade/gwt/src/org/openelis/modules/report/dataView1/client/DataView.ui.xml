@@ -1,0 +1,115 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:d='urn:import:org.openelis.modules.report.dataView1.client'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="30px">
+      <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
+        <g:HorizontalPanel>
+          <w:Button css="{res.buttonPanel}" ui:field="openQueryButton" leftIcon="{res.icon.OpenButtonImage}"
+            text="{msg.dataView_openQuery}" />
+          <w:Button css="{res.buttonPanel}" ui:field="saveQueryButton" leftIcon="{res.icon.SaveButtonImage}"
+            text="{msg.dataView_saveQuery}" />
+          <w:Button css="{res.buttonPanel}" ui:field="executeQueryButton" leftIcon="{res.icon.NextButtonImage}"
+            text="{msg.dataView_executeQuery}" />
+        </g:HorizontalPanel>
+      </g:AbsolutePanel>
+    </g:layer>
+    <g:layer top="30px" bottom="0px">
+      <w:TabLayoutPanel ui:field="tabPanel" barHeight="23" barUnit="PX">
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.gen_query}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:QueryTabUI ui:field="queryTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.dataView_common}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:CommonTabUI ui:field="commonTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_environmental}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:EnvironmentalTabUI ui:field="environmentalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_privateWell}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:PrivateWellTabUI ui:field="privateWellTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_sdwis}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:SDWISTabUI ui:field="sdwisTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_clinical}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:ClinicalTabUI ui:field="clinicalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_neonatal}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:NeonatalTabUI ui:field="neonatalTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+        <w:tab>
+          <w:customHeader>
+            <w:TabWidget text="{msg.sample_pt}" />
+          </w:customHeader>
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
+            <g:layer>
+              <d:PTTabUI ui:field="ptTab" />
+            </g:layer>
+          </g:LayoutPanel>
+        </w:tab>
+      </w:TabLayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>

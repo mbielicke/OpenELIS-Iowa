@@ -1,0 +1,124 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="0px">
+      <g:LayoutPanel>
+        <g:layer top="0px" height="25px" left="0px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Heading}">
+                  <ui:text from="{msg.dataView_selectSdwisField}" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="25px" bottom="0px" left="60px" right="0px">
+          <g:HTMLPanel>
+            <table class="{res.style.Form}">
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="sdwisPwsId" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.pws_id}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="40px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="pwsName" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.sampleSDWIS_pwsName}" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="sdwisStateLabId" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.sampleSDWIS_stateLabNo}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="40px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="sdwisFacilityId" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.sampleSDWIS_facilityId}" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="sdwisSampleTypeId" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.gen_sampleType}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="40px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="sdwisSampleCategoryId" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.sampleSDWIS_sampleCat}" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="sdwisSamplePointId" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.sampleSDWIS_samplePtId}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="40px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="sdwisLocation" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.gen_location}" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <w:CheckBox ui:field="sdwisPriority" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.gen_priority}" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="40px" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="sdwisCollector" />
+                </td>
+                <td class="{res.style.LeftAlignPrompt}">
+                  <ui:text from="{msg.sample_collector}" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
