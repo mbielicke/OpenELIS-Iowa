@@ -14,6 +14,8 @@ public interface Style extends CssResource {
 	
 	public String Prompt();
 	
+	public String LeftAlignPrompt();
+	
 	public String WarningLabel();
 	
 	public String favorite();
@@ -27,4 +29,6 @@ public interface Style extends CssResource {
 	public String ScreenLabelLink();
 	
     public String Title();
+    
+    public String Heading();
 }

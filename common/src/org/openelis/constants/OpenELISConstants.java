@@ -871,11 +871,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_cantSetAsPrepException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
-   * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ".
+   * Translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4}".
    * 
-   * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} "
+   * @return translated "Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4}"
    */
-  @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4} ")
+  @DefaultMessage("Accession # {0,number,#0}: Cannot unrelease {1}, {2} - Sample has a released {3}, {4}")
   @Key("analysis.cantUnreleaseCarrierException")
   String analysis_cantUnreleaseCarrierException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
@@ -923,6 +923,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: Item {1,number} - {2}, {3} - Completed date can''t be in the future")
   @Key("analysis.completedDateInFutureException")
   String analysis_completedDateInFutureException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Analysis Id".
+   * 
+   * @return translated "Analysis Id"
+   */
+  @DefaultMessage("Analysis Id")
+  @Key("analysis.id")
+  String analysis_id();
 
   /**
    * Translated "Accession # {0,number,#0}: Item {1,number,#0} - {2}, {3} - Unit ''{4}'' is inactive and was not duplicated".
@@ -1123,15 +1132,6 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_qaEvents();
 
   /**
-   * Translated "Released".
-   * 
-   * @return translated "Released"
-   */
-  @DefaultMessage("Released")
-  @Key("analysis.released")
-  String analysis_released();
-
-  /**
    * Translated "Analysis Released Date".
    * 
    * @return translated "Analysis Released Date"
@@ -1141,11 +1141,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analysis_releasedDate();
 
   /**
-   * Translated "Revision".
+   * Translated "Analysis Revision ".
    * 
-   * @return translated "Revision"
+   * @return translated "Analysis Revision "
    */
-  @DefaultMessage("Revision")
+  @DefaultMessage("Analysis Revision ")
   @Key("analysis.revision")
   String analysis_revision();
 
@@ -1942,11 +1942,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aptSuite();
 
   /**
-   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled ".
+   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled".
    * 
-   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled "
+   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled"
    */
-  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled ")
+  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled")
   @Key("atLeastOnePairFilledException")
   String atLeastOnePairFilledException();
 
@@ -3859,6 +3859,321 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView();
 
   /**
+   * Translated "Analysis Fields To Search By".
+   * 
+   * @return translated "Analysis Fields To Search By"
+   */
+  @DefaultMessage("Analysis Fields To Search By")
+  @Key("dataView.analysisFieldSearchBy")
+  String dataView_analysisFieldSearchBy();
+
+  /**
+   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled".
+   * 
+   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled"
+   */
+  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled")
+  @Key("dataView.atLeastOnePairFilledException")
+  String dataView_atLeastOnePairFilledException();
+
+  /**
+   * Translated "By".
+   * 
+   * @return translated "By"
+   */
+  @DefaultMessage("By")
+  @Key("dataView.by")
+  String dataView_by();
+
+  /**
+   * Translated "Common".
+   * 
+   * @return translated "Common"
+   */
+  @DefaultMessage("Common")
+  @Key("dataView.common")
+  String dataView_common();
+
+  /**
+   * Translated "Completed By".
+   * 
+   * @return translated "Completed By"
+   */
+  @DefaultMessage("Completed By")
+  @Key("dataView.completedBy")
+  String dataView_completedBy();
+
+  /**
+   * Translated "Data View".
+   * 
+   * @return translated "Data View"
+   */
+  @DefaultMessage("Data View")
+  @Key("dataView.dataView")
+  String dataView_dataView();
+
+  /**
+   * Translated "Exclude Aux Data".
+   * 
+   * @return translated "Exclude Aux Data"
+   */
+  @DefaultMessage("Exclude Aux Data")
+  @Key("dataView.excludeAuxData")
+  String dataView_excludeAuxData();
+
+  /**
+   * Translated "Exclude Result Override".
+   * 
+   * @return translated "Exclude Result Override"
+   */
+  @DefaultMessage("Exclude Result Override")
+  @Key("dataView.excludeResultOverride")
+  String dataView_excludeResultOverride();
+
+  /**
+   * Translated "Exclude Results".
+   * 
+   * @return translated "Exclude Results"
+   */
+  @DefaultMessage("Exclude Results")
+  @Key("dataView.excludeResults")
+  String dataView_excludeResults();
+
+  /**
+   * Translated "Execute Query".
+   * 
+   * @return translated "Execute Query"
+   */
+  @DefaultMessage("Execute Query")
+  @Key("dataView.executeQuery")
+  String dataView_executeQuery();
+
+  /**
+   * Translated "Location Address".
+   * 
+   * @return translated "Location Address"
+   */
+  @DefaultMessage("Location Address")
+  @Key("dataView.locationAddress")
+  String dataView_locationAddress();
+
+  /**
+   * Translated "Location Apt/Suite #".
+   * 
+   * @return translated "Location Apt/Suite #"
+   */
+  @DefaultMessage("Location Apt/Suite #")
+  @Key("dataView.locationAptSuite")
+  String dataView_locationAptSuite();
+
+  /**
+   * Translated "Location City".
+   * 
+   * @return translated "Location City"
+   */
+  @DefaultMessage("Location City")
+  @Key("dataView.locationCity")
+  String dataView_locationCity();
+
+  /**
+   * Translated "Location State".
+   * 
+   * @return translated "Location State"
+   */
+  @DefaultMessage("Location State")
+  @Key("dataView.locationState")
+  String dataView_locationState();
+
+  /**
+   * Translated "Location Zip Code".
+   * 
+   * @return translated "Location Zip Code"
+   */
+  @DefaultMessage("Location Zip Code")
+  @Key("dataView.locationZipCode")
+  String dataView_locationZipCode();
+
+  /**
+   * Translated "State Hygienic Laboratory University of Iowa Test Results".
+   * 
+   * @return translated "State Hygienic Laboratory University of Iowa Test Results"
+   */
+  @DefaultMessage("State Hygienic Laboratory University of Iowa Test Results")
+  @Key("dataView.messageOnTopOfSpreadsheet")
+  String dataView_messageOnTopOfSpreadsheet();
+
+  /**
+   * Translated "Open Query".
+   * 
+   * @return translated "Open Query"
+   */
+  @DefaultMessage("Open Query")
+  @Key("dataView.openQuery")
+  String dataView_openQuery();
+
+  /**
+   * Translated "Released By".
+   * 
+   * @return translated "Released By"
+   */
+  @DefaultMessage("Released By")
+  @Key("dataView.releasedBy")
+  String dataView_releasedBy();
+
+  /**
+   * Translated "Result Fields To Search By".
+   * 
+   * @return translated "Result Fields To Search By"
+   */
+  @DefaultMessage("Result Fields To Search By")
+  @Key("dataView.resultFieldSearchBy")
+  String dataView_resultFieldSearchBy();
+
+  /**
+   * Translated "Sample Fields To Search By".
+   * 
+   * @return translated "Sample Fields To Search By"
+   */
+  @DefaultMessage("Sample Fields To Search By")
+  @Key("dataView.sampleFieldSearchBy")
+  String dataView_sampleFieldSearchBy();
+
+  /**
+   * Translated "Save Query".
+   * 
+   * @return translated "Save Query"
+   */
+  @DefaultMessage("Save Query")
+  @Key("dataView.saveQuery")
+  String dataView_saveQuery();
+
+  /**
+   * Translated "Please select at least one common or domain field".
+   * 
+   * @return translated "Please select at least one common or domain field"
+   */
+  @DefaultMessage("Please select at least one common or domain field")
+  @Key("dataView.selAtleastOneField")
+  String dataView_selAtleastOneField();
+
+  /**
+   * Translated "Please select fields from only one domain".
+   * 
+   * @return translated "Please select fields from only one domain"
+   */
+  @DefaultMessage("Please select fields from only one domain")
+  @Key("dataView.selFieldsOneDomain")
+  String dataView_selFieldsOneDomain();
+
+  /**
+   * Translated "Select Analysis Fields For Output".
+   * 
+   * @return translated "Select Analysis Fields For Output"
+   */
+  @DefaultMessage("Select Analysis Fields For Output")
+  @Key("dataView.selectAnalysisField")
+  String dataView_selectAnalysisField();
+
+  /**
+   * Translated "Select Environmental Fields For Output".
+   * 
+   * @return translated "Select Environmental Fields For Output"
+   */
+  @DefaultMessage("Select Environmental Fields For Output")
+  @Key("dataView.selectEnvironmentalField")
+  String dataView_selectEnvironmentalField();
+
+  /**
+   * Translated "Select Neonatal Fields For Output".
+   * 
+   * @return translated "Select Neonatal Fields For Output"
+   */
+  @DefaultMessage("Select Neonatal Fields For Output")
+  @Key("dataView.selectNeonatalField")
+  String dataView_selectNeonatalField();
+
+  /**
+   * Translated "Select Next Of Kin Fields For Output".
+   * 
+   * @return translated "Select Next Of Kin Fields For Output"
+   */
+  @DefaultMessage("Select Next Of Kin Fields For Output")
+  @Key("dataView.selectNextOfKinField")
+  String dataView_selectNextOfKinField();
+
+  /**
+   * Translated "Select Organization Fields For Output".
+   * 
+   * @return translated "Select Organization Fields For Output"
+   */
+  @DefaultMessage("Select Organization Fields For Output")
+  @Key("dataView.selectOrganizationField")
+  String dataView_selectOrganizationField();
+
+  /**
+   * Translated "Select PT Fields For Output".
+   * 
+   * @return translated "Select PT Fields For Output"
+   */
+  @DefaultMessage("Select PT Fields For Output")
+  @Key("dataView.selectPTField")
+  String dataView_selectPTField();
+
+  /**
+   * Translated "Select Patient Fields For Output".
+   * 
+   * @return translated "Select Patient Fields For Output"
+   */
+  @DefaultMessage("Select Patient Fields For Output")
+  @Key("dataView.selectPatientField")
+  String dataView_selectPatientField();
+
+  /**
+   * Translated "Select Private Well Fields For Output".
+   * 
+   * @return translated "Select Private Well Fields For Output"
+   */
+  @DefaultMessage("Select Private Well Fields For Output")
+  @Key("dataView.selectPrivateWellField")
+  String dataView_selectPrivateWellField();
+
+  /**
+   * Translated "Select Provider Fields For Output".
+   * 
+   * @return translated "Select Provider Fields For Output"
+   */
+  @DefaultMessage("Select Provider Fields For Output")
+  @Key("dataView.selectProviderField")
+  String dataView_selectProviderField();
+
+  /**
+   * Translated "Select Sample Fields For Output".
+   * 
+   * @return translated "Select Sample Fields For Output"
+   */
+  @DefaultMessage("Select Sample Fields For Output")
+  @Key("dataView.selectSampleField")
+  String dataView_selectSampleField();
+
+  /**
+   * Translated "Select Sample Item Fields For Output".
+   * 
+   * @return translated "Select Sample Item Fields For Output"
+   */
+  @DefaultMessage("Select Sample Item Fields For Output")
+  @Key("dataView.selectSampleItemField")
+  String dataView_selectSampleItemField();
+
+  /**
+   * Translated "Select SDWIS Fields For Output".
+   * 
+   * @return translated "Select SDWIS Fields For Output"
+   */
+  @DefaultMessage("Select SDWIS Fields For Output")
+  @Key("dataView.selectSdwisField")
+  String dataView_selectSdwisField();
+
+  /**
    * Translated "Date Collected".
    * 
    * @return translated "Date Collected"
@@ -5515,6 +5830,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String filled();
 
   /**
+   * Translated "Filter by Test Analyte and Aux Data".
+   * 
+   * @return translated "Filter by Test Analyte and Aux Data"
+   */
+  @DefaultMessage("Filter by Test Analyte and Aux Data")
+  @Key("filterScreen.testAnalyteAuxDataFilter")
+  String filterScreen_testAnalyteAuxDataFilter();
+
+  /**
    * Translated "Final Report".
    * 
    * @return translated "Final Report"
@@ -5893,6 +6217,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_billable();
 
   /**
+   * Translated "By".
+   * 
+   * @return translated "By"
+   */
+  @DefaultMessage("By")
+  @Key("gen.by")
+  String gen_by();
+
+  /**
    * Translated "Cancel".
    * 
    * @return translated "Cancel"
@@ -5965,6 +6298,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_collapse();
 
   /**
+   * Translated "Collection Date".
+   * 
+   * @return translated "Collection Date"
+   */
+  @DefaultMessage("Collection Date")
+  @Key("gen.collectionDate")
+  String gen_collectionDate();
+
+  /**
    * Translated "Standard Comment Library".
    * 
    * @return translated "Standard Comment Library"
@@ -5990,6 +6332,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Complete")
   @Key("gen.complete")
   String gen_complete();
+
+  /**
+   * Translated "Completed Date".
+   * 
+   * @return translated "Completed Date"
+   */
+  @DefaultMessage("Completed Date")
+  @Key("gen.completedDate")
+  String gen_completedDate();
 
   /**
    * Translated "Container".
@@ -6134,6 +6485,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Enter information in the fields, then press Commit")
   @Key("gen.enterInformationPressCommit")
   String gen_enterInformationPressCommit();
+
+  /**
+   * Translated "Entered".
+   * 
+   * @return translated "Entered"
+   */
+  @DefaultMessage("Entered")
+  @Key("gen.entered")
+  String gen_entered();
 
   /**
    * Translated "Entered Date".
@@ -6386,6 +6746,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Lot #")
   @Key("gen.lotNum")
   String gen_lotNum();
+
+  /**
+   * Translated "Maiden Name".
+   * 
+   * @return translated "Maiden Name"
+   */
+  @DefaultMessage("Maiden Name")
+  @Key("gen.maidenName")
+  String gen_maidenName();
 
   /**
    * Translated "Method".
@@ -6667,6 +7036,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_print();
 
   /**
+   * Translated "Printed Date".
+   * 
+   * @return translated "Printed Date"
+   */
+  @DefaultMessage("Printed Date")
+  @Key("gen.printedDate")
+  String gen_printedDate();
+
+  /**
    * Translated "Printer".
    * 
    * @return translated "Printer"
@@ -6793,6 +7171,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_release();
 
   /**
+   * Translated "Released".
+   * 
+   * @return translated "Released"
+   */
+  @DefaultMessage("Released")
+  @Key("gen.released")
+  String gen_released();
+
+  /**
    * Translated "Remove".
    * 
    * @return translated "Remove"
@@ -6827,6 +7214,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Reportable")
   @Key("gen.reportable")
   String gen_reportable();
+
+  /**
+   * Translated "Revision".
+   * 
+   * @return translated "Revision"
+   */
+  @DefaultMessage("Revision")
+  @Key("gen.revision")
+  String gen_revision();
 
   /**
    * Translated "Sample Type".
@@ -6937,6 +7333,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_similar();
 
   /**
+   * Translated "Started Date".
+   * 
+   * @return translated "Started Date"
+   */
+  @DefaultMessage("Started Date")
+  @Key("gen.startedDate")
+  String gen_startedDate();
+
+  /**
    * Translated "Status".
    * 
    * @return translated "Status"
@@ -6980,6 +7385,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Time")
   @Key("gen.time")
   String gen_time();
+
+  /**
+   * Translated "To".
+   * 
+   * @return translated "To"
+   */
+  @DefaultMessage("To")
+  @Key("gen.to")
+  String gen_to();
 
   /**
    * Translated "Type".
@@ -13084,6 +13498,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String pwsViolationSampleId();
 
   /**
+   * Translated "QA Event".
+   * 
+   * @return translated "QA Event"
+   */
+  @DefaultMessage("QA Event")
+  @Key("qaEvent.qaEvent")
+  String qaEvent_qaEvent();
+
+  /**
    * Translated "QA Events".
    * 
    * @return translated "QA Events"
@@ -14308,6 +14731,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String result_partSamNotFoundException(Integer arg0,  String arg1,  String arg2,  Integer arg3);
 
   /**
+   * Translated "Result".
+   * 
+   * @return translated "Result"
+   */
+  @DefaultMessage("Result")
+  @Key("result.result")
+  String result_result();
+
+  /**
    * Translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid".
    * 
    * @return translated "Accession # {0,number,#0}: {1}, {2} - {3} with value ''{4}'' invalid"
@@ -14810,6 +15242,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Sample Description")
   @Key("sample.description")
   String sample_description();
+
+  /**
+   * Translated "Domain".
+   * 
+   * @return translated "Domain"
+   */
+  @DefaultMessage("Domain")
+  @Key("sample.domain")
+  String sample_domain();
 
   /**
    * Translated "The domain of this sample has changed".
@@ -17951,6 +18392,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Analyte")
   @Key("testAnalyte")
   String testAnalyte();
+
+  /**
+   * Translated "Test Analyte".
+   * 
+   * @return translated "Test Analyte"
+   */
+  @DefaultMessage("Test Analyte")
+  @Key("testAnalyte.testAnalyte")
+  String testAnalyte_testAnalyte();
 
   /**
    * Translated "Filter by Test Analyte and Aux Data".
