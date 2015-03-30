@@ -1,0 +1,366 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" bottom="0px">
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectPatientField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_id}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientLastName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_lastName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientFirstName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_firstName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientBirthDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_birth}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientBirthTime" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_time}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientAddrMultipleUnit" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_aptSuite}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientAddrStreetAddress" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_address}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientAddrCity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_city}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientAddrState" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_state}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientAddrZipCode" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_zipcode}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientGender" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_gender}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientRace" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_race}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientEthnicity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_ethnicity}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectNeonatalField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalIsNicu" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_nicu}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalBirthOrder" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_birthOrder}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalGestationalAge" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_gestAge}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalFeedingId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_feeding}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalWeight" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_weight}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalIsTransfused" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_transfused}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalTransfusionDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_transAge}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalIsRepeat" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_repeat}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalCollectionAge" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_collectAge}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalIsCollectionValid" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.sampleNeonatal_collectValid}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalFormNumber" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_barcode}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectNextOfKinField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_id}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinLastName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_lastName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinMiddleName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_maidenName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinFirstName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_firstName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinRelationId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_relation}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinBirthDate" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_birth}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalPatientNationalId" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_nationalId}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinAddrMultipleUnit" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_aptSuite}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinAddrStreetAddress" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_address}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinAddrCity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_city}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinAddrState" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_state}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinAddrZipCode" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_zipcode}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinAddrHomePhone" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.address_phone}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinGender" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_gender}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinRace" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_race}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalNextOfKinEthnicity" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.patient_ethnicity}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <g:VerticalPanel height="5px" />
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Heading}" colspan="7">
+              <ui:text from="{msg.dataView_selectProviderField}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:HorizontalPanel width="56px" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalProviderLastName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_lastName}" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="neonatalProviderFirstName" />
+            </td>
+            <td class="{res.style.LeftAlignPrompt}">
+              <ui:text from="{msg.gen_firstName}" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
