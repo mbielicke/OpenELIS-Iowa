@@ -1102,6 +1102,9 @@ public class AnalysisTabUI extends Screen {
                     TestMethodVO data;
 
                     switch (event.getSelectedItem().intValue()) {
+                        case 0:
+                            method.setValue(getMethodId(), getMethodName());
+                            break;
                         case 1:
                             /*
                              * the argument passed to setMethod is not used here
