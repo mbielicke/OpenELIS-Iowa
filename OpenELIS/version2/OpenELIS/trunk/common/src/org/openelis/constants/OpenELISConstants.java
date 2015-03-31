@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -3038,6 +3038,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Check Out date must not be before Check In date.")
   @Key("checkinDateAfterCheckoutDateException")
   String checkinDateAfterCheckoutDateException();
+
+  /**
+   * Translated "Chl-Gc to CDC Export".
+   * 
+   * @return translated "Chl-Gc to CDC Export"
+   */
+  @DefaultMessage("Chl-Gc to CDC Export")
+  @Key("chlGcToCDC.chlGcToCDCExport")
+  String chlGcToCDC_chlGcToCDCExport();
 
   /**
    * Translated "Choose Dictionary Entry".

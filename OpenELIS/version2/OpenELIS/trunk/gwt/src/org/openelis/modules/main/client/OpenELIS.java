@@ -84,7 +84,8 @@ public class OpenELIS extends Screen {
                     analyte, dictionary, auxiliaryPrompt, exchangeVocabularyMap,
                     exchangeDataSelection, label, standardNote, trailerForTest, storageUnit,
                     storageLocation, instrument, scriptlet, systemVariable, pws, cron, logs,
-                    instrumentBarcodeReport, attachment, privateWellAttachment, tubeLabelReport;
+                    instrumentBarcodeReport, attachment, privateWellAttachment, tubeLabelReport,
+                    chlGcToCDCExport;
 
     @UiField
     protected Menu                  maintenanceMenu;
@@ -613,6 +614,11 @@ public class OpenELIS extends Screen {
             addCommand(privateWellAttachment, "sampletracking", new Command() {
                 public void execute() {
                     showScreen(PRIVATE_WELL_ATTACHMENT);
+                }
+            });
+            addCommand(chlGcToCDCExport, "sampletracking", new Command() {
+                public void execute() {
+                    showScreen(CHL_GC_TO_CDC_EXPORT);
                 }
             });
         }
