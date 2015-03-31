@@ -365,7 +365,7 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getReleasedFrom(),
-                         SampleWebMeta.getReleasedDateFrom(),
+                         SampleWebMeta.getAnalysisReleasedDateFrom(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  if (data.getReleasedDateFrom() != null)
@@ -395,7 +395,7 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getReleasedTo(),
-                         SampleWebMeta.getReleasedDateTo(),
+                         SampleWebMeta.getAnalysisReleasedDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  if (data.getReleasedDateTo() != null)
@@ -1545,9 +1545,9 @@ public class DataViewScreen extends Screen {
         }
 
         try {
-            getRangeQuery(SampleWebMeta.getReleasedDateFrom(),
-                          SampleWebMeta.getReleasedDateTo(),
-                          SampleWebMeta.getReleasedDate(),
+            getRangeQuery(SampleWebMeta.getAnalysisReleasedDateFrom(),
+                          SampleWebMeta.getAnalysisReleasedDateTo(),
+                          SampleWebMeta.getAnalysisReleasedDate(),
                           fieldMap);
         } catch (Exception e) {
             ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
