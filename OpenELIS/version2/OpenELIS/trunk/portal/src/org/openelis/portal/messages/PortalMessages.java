@@ -205,11 +205,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_pws();
 
   /**
-   * Translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
+   * Translated "The date and time that an individual test was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
    * 
-   * @return translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field."
+   * @return translated "The date and time that an individual test was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field."
    */
-  @DefaultMessage("The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
+  @DefaultMessage("The date and time that an individual test was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
   @Key("dataView.help.released")
   String dataView_help_released();
 
@@ -637,11 +637,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_pws();
 
   /**
-   * Translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
+   * Translated "The date and time that an individual test or an entire sample was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
    * 
-   * @return translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field."
+   * @return translated "The date and time that an individual test or an entire sample was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field."
    */
-  @DefaultMessage("The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
+  @DefaultMessage("The date and time that an individual test or an entire sample was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
   @Key("finalReport.help.released")
   String finalReport_help_released();
 
@@ -1429,11 +1429,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sampleStatus_help_pws();
 
   /**
-   * Translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
+   * Translated "The date and time that an individual test or an entire sample was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field.".
    * 
-   * @return translated "The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field."
+   * @return translated "The date and time that an individual test or an entire sample was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field."
    */
-  @DefaultMessage("The date and time that the sample was released (finalized). You must enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
+  @DefaultMessage("The date and time that an individual test or an entire sample was released (finalized). It is best to enter a beginning date and time in the Released Date field and an ending date and time in the To field.")
   @Key("sampleStatus.help.released")
   String sampleStatus_help_released();
 
