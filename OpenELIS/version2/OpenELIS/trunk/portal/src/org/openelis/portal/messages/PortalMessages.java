@@ -142,11 +142,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String dataView_help_clientReference();
 
   /**
-   * Translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.".
+   * Translated "The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field.".
    * 
-   * @return translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field."
+   * @return translated "The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field."
    */
-  @DefaultMessage("The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.")
+  @DefaultMessage("The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field.")
   @Key("dataView.help.collected")
   String dataView_help_collected();
 
@@ -574,11 +574,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String finalReport_help_clientReference();
 
   /**
-   * Translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.".
+   * Translated "The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field.".
    * 
-   * @return translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field."
+   * @return translated "The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field."
    */
-  @DefaultMessage("The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.")
+  @DefaultMessage("The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field.")
   @Key("finalReport.help.collected")
   String finalReport_help_collected();
 
@@ -1366,11 +1366,11 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String sampleStatus_help_clientReference();
 
   /**
-   * Translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.".
+   * Translated "The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field.".
    * 
-   * @return translated "The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field."
+   * @return translated "The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field."
    */
-  @DefaultMessage("The date that the sample was collected. You must enter a beginning date in the Collected Date field and an ending date in the To field.")
+  @DefaultMessage("The date that the sample was collected. To search by a range of dates enter a beginning date in the Collected Date field and an ending date in the To field.")
   @Key("sampleStatus.help.collected")
   String sampleStatus_help_collected();
 
