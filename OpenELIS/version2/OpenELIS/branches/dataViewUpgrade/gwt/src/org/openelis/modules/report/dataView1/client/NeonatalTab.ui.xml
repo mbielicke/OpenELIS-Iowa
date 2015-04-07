@@ -97,19 +97,19 @@
               <g:HorizontalPanel width="56px" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalPatientGender" />
+              <w:CheckBox ui:field="neonatalPatientGenderId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_gender}" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalPatientRace" />
+              <w:CheckBox ui:field="neonatalPatientRaceId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_race}" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalPatientEthnicity" />
+              <w:CheckBox ui:field="neonatalPatientEthnicityId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_ethnicity}" />
@@ -262,7 +262,7 @@
               <ui:text from="{msg.patient_birth}" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalPatientNationalId" />
+              <w:CheckBox ui:field="neonatalNextOfKinNationalId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_nationalId}" />
@@ -309,13 +309,13 @@
               <ui:text from="{msg.address_phone}" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalNextOfKinGender" />
+              <w:CheckBox ui:field="neonatalNextOfKinGenderId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_gender}" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalNextOfKinRace" />
+              <w:CheckBox ui:field="neonatalNextOfKinRaceId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_race}" />
@@ -326,7 +326,7 @@
               <g:HorizontalPanel width="56px" />
             </td>
             <td>
-              <w:CheckBox ui:field="neonatalNextOfKinEthnicity" />
+              <w:CheckBox ui:field="neonatalNextOfKinEthnicityId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_ethnicity}" />

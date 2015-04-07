@@ -1385,7 +1385,6 @@ public class SampleMeta implements Meta, MetaMap {
         return PT_ADDITIONAL_DOMAIN;
     }
                     
-
     public static String getItemId() {
         return ITEM_ID;
     }

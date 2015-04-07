@@ -6514,6 +6514,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_entry();
 
   /**
+   * Translated "(Error 1 of {0,number}) {1} ".
+   * 
+   * @return translated "(Error 1 of {0,number}) {1} "
+   */
+  @DefaultMessage("(Error 1 of {0,number}) {1} ")
+  @Key("gen.errorOneOfMultiple")
+  String gen_errorOneOfMultiple(Integer arg0,  String arg1);
+
+  /**
    * Translated "Exp Date".
    * 
    * @return translated "Exp Date"
@@ -6584,6 +6593,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Fetching ...")
   @Key("gen.fetching")
   String gen_fetching();
+
+  /**
+   * Translated "Field is required".
+   * 
+   * @return translated "Field is required"
+   */
+  @DefaultMessage("Field is required")
+  @Key("gen.fieldRequiredException")
+  String gen_fieldRequiredException();
 
   /**
    * Translated "First".

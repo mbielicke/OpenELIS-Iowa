@@ -35,13 +35,13 @@
                   <ui:text from="{msg.sample_accessionNum}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="accessionNumberFrom" field="String" width="85px" />
+                  <w:TextBox ui:field="accessionNumberFrom" field="Integer" width="85px" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_to}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="accessionNumberTo" field="String" width="85px" />
+                  <w:TextBox ui:field="accessionNumberTo" field="Integer" width="85px" />
                 </td>
               </tr>
               <tr>
@@ -97,7 +97,7 @@
                   <ui:text from="{msg.project_project}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="projectId" field="Integer" width="125px" />
+                  <w:MultiDropdown ui:field="projectId" field="Integer" width="125px" />
                 </td>
               </tr>
               <tr>
@@ -163,7 +163,7 @@
                   <ui:text from="{msg.gen_status}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="analysisStatus" field="String" width="125px" />
+                  <w:Dropdown ui:field="analysisStatusId" field="Integer" width="125px" />
                 </td>
               </tr>
               <tr>
