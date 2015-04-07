@@ -58,7 +58,7 @@
                   <g:HorizontalPanel width="42px" />
                 </td>
                 <td>
-                  <w:CheckBox ui:field="wellReportToAddressWorkPhon" />
+                  <w:CheckBox ui:field="wellReportToAddressWorkPhone" />
                 </td>
                 <td class="{res.style.LeftAlignPrompt}">
                   <ui:text from="{msg.address_phone}" />
@@ -109,7 +109,7 @@
                   <g:HorizontalPanel width="42px" />
                 </td>
                 <td>
-                  <w:CheckBox ui:field="WellLocationAddrState" />
+                  <w:CheckBox ui:field="wellLocationAddrState" />
                 </td>
                 <td class="{res.style.LeftAlignPrompt}">
                   <ui:text from="{msg.dataView_locationState}" />

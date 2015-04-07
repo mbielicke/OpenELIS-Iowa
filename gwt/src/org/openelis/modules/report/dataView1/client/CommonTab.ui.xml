@@ -255,7 +255,7 @@
               <ui:text from="{msg.gen_revision}" />
             </td>
             <td>
-              <w:CheckBox ui:field="analysisIsReportable" />
+              <w:CheckBox ui:field="analysisIsReportableHeader" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.gen_reportable}" />

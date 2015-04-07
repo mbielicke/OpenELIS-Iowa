@@ -104,19 +104,19 @@
               <ui:text from="{msg.address_phone}" />
             </td>
             <td>
-              <w:CheckBox ui:field="clinicalPatientGender" />
+              <w:CheckBox ui:field="clinicalPatientGenderId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_gender}" />
             </td>
             <td>
-              <w:CheckBox ui:field="clinicalPatientRace" />
+              <w:CheckBox ui:field="clinicalPatientRaceId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_race}" />
             </td>
             <td>
-              <w:CheckBox ui:field="clinicalPatientEthnicity" />
+              <w:CheckBox ui:field="clinicalPatientEthnicityId" />
             </td>
             <td class="{res.style.LeftAlignPrompt}">
               <ui:text from="{msg.patient_ethnicity}" />
