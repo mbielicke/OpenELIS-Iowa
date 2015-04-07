@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -14684,6 +14684,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis")
   @Key("sample.cantDuplicateReflexAnaException")
   String sample_cantDuplicateReflexAnaException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "The order can''t be loaded because the next of kin is locked".
+   * 
+   * @return translated "The order can''t be loaded because the next of kin is locked"
+   */
+  @DefaultMessage("The order can''t be loaded because the next of kin is locked")
+  @Key("sample.cantLoadEOrderNextOfKinLocked")
+  String sample_cantLoadEOrderNextOfKinLocked();
 
   /**
    * Translated "The order can''t be loaded because the patient is locked".
