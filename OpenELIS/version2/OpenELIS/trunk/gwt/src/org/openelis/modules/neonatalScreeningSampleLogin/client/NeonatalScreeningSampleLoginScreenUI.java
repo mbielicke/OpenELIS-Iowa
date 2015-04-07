@@ -339,8 +339,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         AUX_DATA, ATTACHMENT
     };
 
-    protected static final String                       REPORT_TO_KEY = "reportTo",
-                    BIRTH_HOSPITAL_KEY = "birthHospital";
+    protected static final String REPORT_TO_KEY = "reportTo", BIRTH_HOSPITAL_KEY = "birthHospital";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -4327,7 +4326,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         AnalysisQaEventViewDO aqa;
         EnumSet<Action_After> actionAfter;
         ValidationErrorsList errors;
-        
+
         /*
          * scriptletRunner will be null here if this method is called by a
          * widget losing focus but the reason for the lost focus was the user
@@ -4772,6 +4771,27 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             orderId.setValue(null);
+            return;
+        }
+
+        if (getAccessionNumber() == null) {
+            Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
+            manager.getSample().setOrderId(null);
+            manager.getSampleClinical().setPaperOrderValidator(null);
+            orderId.setValue(null);
+            return;
+        }
+
+        /*
+         * don't allow loading the order if the patient or next of kin is locked
+         */
+        if (isPatientLocked) {
+            Window.alert(Messages.get().sample_cantLoadEOrderPatientLocked());
+            orderId.setValue(getOrderId());
+            return;
+        } else if (isNextOfKinLocked) {
+            Window.alert(Messages.get().sample_cantLoadEOrderNextOfKinLocked());
+            orderId.setValue(getOrderId());
             return;
         }
 
