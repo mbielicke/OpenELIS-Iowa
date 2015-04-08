@@ -652,7 +652,7 @@ public class SampleManagerOrderHelperBean {
             patientDO = scVDO.getPatient();
             loadPatientData(patientDO, "patient", dataMap, externalTermMap, e);
 
-            queryPatientDO = lookupExistingPatient(patientDO, e);
+            queryPatientDO = lookupExistingPatient(patientDO, e, true);
             if (queryPatientDO != null) {
                 scVDO.setPatient(queryPatientDO);
                 scVDO.setPatientId(queryPatientDO.getId());
@@ -662,8 +662,21 @@ public class SampleManagerOrderHelperBean {
             patientDO = snVDO.getPatient();
             relatedPatientDO = snVDO.getNextOfKin();
             loadPatientData(patientDO, "patient", dataMap, externalTermMap, e);
+            
+            queryPatientDO = lookupExistingPatient(patientDO, e, false);
+            if (queryPatientDO != null) {
+                snVDO.setPatient(queryPatientDO);
+                snVDO.setPatientId(queryPatientDO.getId());
+            }
+            
             if (dataMap.get("related_patient.last_name") != null) {
                 loadPatientData(relatedPatientDO, "related_patient", dataMap, externalTermMap, e);
+                queryPatientDO = lookupExistingPatient(patientDO, e, true);
+                if (queryPatientDO != null) {
+                    snVDO.setNextOfKin(queryPatientDO);
+                    snVDO.setNextOfKinId(queryPatientDO.getId());
+                }
+                
                 snVDO.setNextOfKinRelationId(getLocalTermFromCodedElement("related_patient.type",
                                                                           dataMap.get("related_patient.type"),
                                                                           externalTermMap,
@@ -738,20 +751,27 @@ public class SampleManagerOrderHelperBean {
         ProviderDO providerDO;
         QueryData field;
         SampleClinicalViewDO scVDO;
+        SampleNeonatalViewDO snVDO;
         String firstName, lastName, npi;
 
         found = false;
         npi = dataMap.get("provider.npi");
         lastName = dataMap.get("provider.last_name");
         firstName = dataMap.get("provider.first_name");
+        scVDO = getSampleClinical(sm);
+        snVDO = getSampleNeonatal(sm);
         try {
             if (npi != null && npi.length() > 0) {
                 providers = provider.fetchByLastNameNpiExternalId(npi, 5);
                 if (providers.size() == 1) {
                     providerDO = providers.get(0);
-                    scVDO = getSampleClinical(sm);
-                    scVDO.setProvider(providerDO);
-                    scVDO.setProviderId(providerDO.getId());
+                    if (scVDO != null) {
+                        scVDO.setProvider(providerDO);
+                        scVDO.setProviderId(providerDO.getId());
+                    } else if (snVDO != null) {
+                        snVDO.setProvider(providerDO);
+                        snVDO.setProviderId(providerDO.getId());
+                    } 
                     found = true;
                 } else if (providers.size() > 1) {
                     matchedProviders = new ArrayList<ProviderDO>();
@@ -774,9 +794,13 @@ public class SampleManagerOrderHelperBean {
                         found = true;
                     } else if (matchedProviders.size() == 1) {
                         providerDO = matchedProviders.get(0);
-                        scVDO = getSampleClinical(sm);
-                        scVDO.setProvider(providerDO);
-                        scVDO.setProviderId(providerDO.getId());
+                        if (scVDO != null) {
+                            scVDO.setProvider(providerDO);
+                            scVDO.setProviderId(providerDO.getId());
+                        } else if (snVDO != null) {
+                            snVDO.setProvider(providerDO);
+                            snVDO.setProviderId(providerDO.getId());
+                        }
                         found = true;
                     }
                 }
@@ -813,15 +837,19 @@ public class SampleManagerOrderHelperBean {
                                                                .eorderImport_multipleLocalTerms(firstName,
                                                                                                 "provider.first_name")));
                     } else {
-                        scVDO = getSampleClinical(sm);
                         providerDO = new ProviderDO(iflnVOs.get(0).getId(),
                                                     iflnVOs.get(0).getLastName(),
                                                     iflnVOs.get(0).getFirstName(),
                                                     null,
                                                     null,
                                                     null);
-                        scVDO.setProvider(providerDO);
-                        scVDO.setProviderId(providerDO.getId());
+                        if (scVDO != null) {
+                            scVDO.setProvider(providerDO);
+                            scVDO.setProviderId(providerDO.getId());
+                        } else if (snVDO != null) {
+                            snVDO.setProvider(providerDO);
+                            snVDO.setProviderId(providerDO.getId());
+                        }
                     }
                 } catch (NotFoundException nfE) {
                     e.add(new FormErrorWarning(Messages.get()
@@ -1647,7 +1675,7 @@ public class SampleManagerOrderHelperBean {
         }
     }
 
-    private PatientDO lookupExistingPatient(PatientDO patDO, ValidationErrorsList e) {
+    private PatientDO lookupExistingPatient(PatientDO patDO, ValidationErrorsList e, boolean queryByFirstName) {
         ArrayList<PatientDO> patientDOs;
         ArrayList<QueryData> fields;
         PatientDO existingDO;
@@ -1663,7 +1691,7 @@ public class SampleManagerOrderHelperBean {
             field.setQuery(patDO.getLastName());
             fields.add(field);
         }
-        if (patDO.getFirstName() != null && patDO.getFirstName().length() > 0) {
+        if (queryByFirstName && patDO.getFirstName() != null && patDO.getFirstName().length() > 0) {
             field = new QueryData();
             field.setKey(PatientMeta.getFirstName());
             field.setType(QueryData.Type.STRING);

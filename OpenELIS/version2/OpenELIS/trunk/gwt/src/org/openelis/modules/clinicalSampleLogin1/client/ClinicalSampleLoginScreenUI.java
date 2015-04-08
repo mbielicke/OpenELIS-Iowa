@@ -3953,7 +3953,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     }
 
                     try {
-                        screen.setBusy(Messages.get().fetching());
+                        screen.setBusy(Messages.get().gen_fetching());
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
                     } catch (Exception e) {
                         manager.getSample().setOrderId(null);
