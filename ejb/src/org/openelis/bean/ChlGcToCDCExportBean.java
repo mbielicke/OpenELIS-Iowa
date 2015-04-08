@@ -204,6 +204,12 @@ public class ChlGcToCDCExportBean {
             fields.add(field);
 
             field = new QueryData();
+            field.setKey(SampleMeta.getStatusId());
+            field.setQuery("!"+Constants.dictionary().SAMPLE_NOT_VERIFIED);
+            field.setType(QueryData.Type.INTEGER);
+            fields.add(field);
+
+            field = new QueryData();
             field.setKey(SampleMeta.getSampleOrgTypeId());
             field.setQuery(orgReportToId.toString());
             field.setType(QueryData.Type.INTEGER);
