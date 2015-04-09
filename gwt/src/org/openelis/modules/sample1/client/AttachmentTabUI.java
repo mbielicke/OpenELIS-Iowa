@@ -208,7 +208,7 @@ public abstract class AttachmentTabUI extends Screen {
 
         addScreenHandler(detachButton, "detachButton", new ScreenHandler<ArrayList<Row>>() {
             public void onStateChange(StateChangeEvent event) {
-                detachButton.setEnabled(false);
+                detachButton.setEnabled(isState(ADD, UPDATE) && currentTable.getSelectedRow() > -1);
             }
 
             public Widget onTab(boolean forward) {

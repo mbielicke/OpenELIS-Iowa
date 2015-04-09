@@ -169,7 +169,7 @@ public class SampleManagerOrderHelperBean {
             throw new InconsistencyException(Messages.get()
                                                      .sample_orderIdInvalidException(accession,
                                                                                      orderId));
-        else if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
+        else if (!Constants.order().SEND_OUT.equals(om.getOrder().getType()))
             throw new InconsistencyException(Messages.get()
                                                      .sample_orderIdInvalidException(accession,
                                                                                      orderId));
@@ -235,7 +235,7 @@ public class SampleManagerOrderHelperBean {
         externalTermMap = new HashMap<String, ArrayList<ExchangeExternalTermViewDO>>();
         document = XMLUtil.parse(eobDO.getXml());
         eorderBodyElem = (Element)document.getDocumentElement();
-        if ( !eorderBodyElem.hasChildNodes())
+        if (!eorderBodyElem.hasChildNodes())
             throw new InconsistencyException(Messages.get().eorder_noSampleDataException());
 
         loadDataMapFromXml(eorderBodyElem, dataMap, testMap, resultMap, externalTermMap);
@@ -287,7 +287,7 @@ public class SampleManagerOrderHelperBean {
          * created and filled
          */
         items = getItems(sm);
-        for (i = 0; i < ocs.size(); i++ ) {
+        for (i = 0; i < ocs.size(); i++) {
             if (items != null && i < items.size()) {
                 item = items.get(i);
             } else {
@@ -298,7 +298,7 @@ public class SampleManagerOrderHelperBean {
                 addItem(sm, item);
             }
 
-            if ( !DataBaseUtil.isSame(item.getItemSequence(), i))
+            if (!DataBaseUtil.isSame(item.getItemSequence(), i))
                 item.setItemSequence(i);
 
             oc = ocs.get(i);
@@ -365,7 +365,7 @@ public class SampleManagerOrderHelperBean {
          * resequence the rest of the sample items
          */
         if (items != null) {
-            for (i = ocs.size(); i < items.size(); i++ )
+            for (i = ocs.size(); i < items.size(); i++)
                 items.get(i).setItemSequence(i);
         }
 
@@ -652,7 +652,7 @@ public class SampleManagerOrderHelperBean {
             patientDO = scVDO.getPatient();
             loadPatientData(patientDO, "patient", dataMap, externalTermMap, e);
 
-            queryPatientDO = lookupExistingPatient(patientDO, e);
+            queryPatientDO = lookupExistingPatient(patientDO, e, true);
             if (queryPatientDO != null) {
                 scVDO.setPatient(queryPatientDO);
                 scVDO.setPatientId(queryPatientDO.getId());
@@ -662,8 +662,21 @@ public class SampleManagerOrderHelperBean {
             patientDO = snVDO.getPatient();
             relatedPatientDO = snVDO.getNextOfKin();
             loadPatientData(patientDO, "patient", dataMap, externalTermMap, e);
+            
+            queryPatientDO = lookupExistingPatient(patientDO, e, false);
+            if (queryPatientDO != null) {
+                snVDO.setPatient(queryPatientDO);
+                snVDO.setPatientId(queryPatientDO.getId());
+            }
+            
             if (dataMap.get("related_patient.last_name") != null) {
                 loadPatientData(relatedPatientDO, "related_patient", dataMap, externalTermMap, e);
+                queryPatientDO = lookupExistingPatient(patientDO, e, true);
+                if (queryPatientDO != null) {
+                    snVDO.setNextOfKin(queryPatientDO);
+                    snVDO.setNextOfKinId(queryPatientDO.getId());
+                }
+                
                 snVDO.setNextOfKinRelationId(getLocalTermFromCodedElement("related_patient.type",
                                                                           dataMap.get("related_patient.type"),
                                                                           externalTermMap,
@@ -738,24 +751,31 @@ public class SampleManagerOrderHelperBean {
         ProviderDO providerDO;
         QueryData field;
         SampleClinicalViewDO scVDO;
+        SampleNeonatalViewDO snVDO;
         String firstName, lastName, npi;
 
         found = false;
         npi = dataMap.get("provider.npi");
         lastName = dataMap.get("provider.last_name");
         firstName = dataMap.get("provider.first_name");
+        scVDO = getSampleClinical(sm);
+        snVDO = getSampleNeonatal(sm);
         try {
             if (npi != null && npi.length() > 0) {
                 providers = provider.fetchByLastNameNpiExternalId(npi, 5);
                 if (providers.size() == 1) {
                     providerDO = providers.get(0);
-                    scVDO = getSampleClinical(sm);
-                    scVDO.setProvider(providerDO);
-                    scVDO.setProviderId(providerDO.getId());
+                    if (scVDO != null) {
+                        scVDO.setProvider(providerDO);
+                        scVDO.setProviderId(providerDO.getId());
+                    } else if (snVDO != null) {
+                        snVDO.setProvider(providerDO);
+                        snVDO.setProviderId(providerDO.getId());
+                    } 
                     found = true;
                 } else if (providers.size() > 1) {
                     matchedProviders = new ArrayList<ProviderDO>();
-                    for (i = 0; i < providers.size(); i++ ) {
+                    for (i = 0; i < providers.size(); i++) {
                         providerDO = providers.get(i);
                         if (lastName != null && lastName.length() > 0 &&
                             lastName.equals(providerDO.getLastName())) {
@@ -774,15 +794,19 @@ public class SampleManagerOrderHelperBean {
                         found = true;
                     } else if (matchedProviders.size() == 1) {
                         providerDO = matchedProviders.get(0);
-                        scVDO = getSampleClinical(sm);
-                        scVDO.setProvider(providerDO);
-                        scVDO.setProviderId(providerDO.getId());
+                        if (scVDO != null) {
+                            scVDO.setProvider(providerDO);
+                            scVDO.setProviderId(providerDO.getId());
+                        } else if (snVDO != null) {
+                            snVDO.setProvider(providerDO);
+                            snVDO.setProviderId(providerDO.getId());
+                        }
                         found = true;
                     }
                 }
             }
 
-            if ( !found) {
+            if (!found) {
                 fields = new ArrayList<QueryData>();
 
                 if (lastName != null && lastName.length() > 0) {
@@ -813,15 +837,19 @@ public class SampleManagerOrderHelperBean {
                                                                .eorderImport_multipleLocalTerms(firstName,
                                                                                                 "provider.first_name")));
                     } else {
-                        scVDO = getSampleClinical(sm);
                         providerDO = new ProviderDO(iflnVOs.get(0).getId(),
                                                     iflnVOs.get(0).getLastName(),
                                                     iflnVOs.get(0).getFirstName(),
                                                     null,
                                                     null,
                                                     null);
-                        scVDO.setProvider(providerDO);
-                        scVDO.setProviderId(providerDO.getId());
+                        if (scVDO != null) {
+                            scVDO.setProvider(providerDO);
+                            scVDO.setProviderId(providerDO.getId());
+                        } else if (snVDO != null) {
+                            snVDO.setProvider(providerDO);
+                            snVDO.setProviderId(providerDO.getId());
+                        }
                     }
                 } catch (NotFoundException nfE) {
                     e.add(new FormErrorWarning(Messages.get()
@@ -890,7 +918,7 @@ public class SampleManagerOrderHelperBean {
                                                     e);
         siVDO = null;
         if (sampleTypeId != null && getItems(sm) != null) {
-            for (i = 0; i < getItems(sm).size(); i++ ) {
+            for (i = 0; i < getItems(sm).size(); i++) {
                 tempSiVDO = getItems(sm).get(i);
                 if (tempSiVDO.getTypeOfSampleId() != null &&
                     tempSiVDO.getTypeOfSampleId().equals(sampleTypeId)) {
@@ -941,7 +969,7 @@ public class SampleManagerOrderHelperBean {
                 if (siVDO.getSourceOfSampleId() == null) {
                     siVDO.setSourceOfSampleId(dictDO.getId());
                     siVDO.setSourceOfSample(dictDO.getEntry());
-                } else if ( !siVDO.getSourceOfSampleId().equals(sampleSourceId)) {
+                } else if (!siVDO.getSourceOfSampleId().equals(sampleSourceId)) {
                     e.add(new FormErrorWarning(Messages.get()
                                                        .eorderImport_sourceOfSampleMismatch(siVDO.getSourceOfSample(),
                                                                                             dictDO.getEntry())));
@@ -960,7 +988,7 @@ public class SampleManagerOrderHelperBean {
         if (sampleSourceOther != null && sampleSourceOther.length() > 0) {
             if (siVDO.getSourceOther() == null)
                 siVDO.setSourceOther(sampleSourceOther);
-            else if ( !siVDO.getSourceOther().equals(sampleSourceOther))
+            else if (!siVDO.getSourceOther().equals(sampleSourceOther))
                 e.add(new FormErrorWarning(Messages.get()
                                                    .eorderImport_sourceOtherMismatch(siVDO.getSourceOther(),
                                                                                      sampleSourceOther)));
@@ -968,7 +996,7 @@ public class SampleManagerOrderHelperBean {
 
         testAnalysisIndexMap = new HashMap<Integer, Integer>();
         if (getAnalyses(sm) != null) {
-            for (i = 0; i < getAnalyses(sm).size(); i++ ) {
+            for (i = 0; i < getAnalyses(sm).size(); i++) {
                 aVDO = getAnalyses(sm).get(i);
                 if (aVDO.getSampleItemId().equals(siVDO.getId()) && aVDO.getTestId() != null &&
                     !Constants.dictionary().ANALYSIS_CANCELLED.equals(aVDO.getStatusId()) &&
@@ -997,7 +1025,7 @@ public class SampleManagerOrderHelperBean {
                 panelTestVOs = panel.fetchTestIdsFromPanel(panelId);
                 for (IdVO ptVO : panelTestVOs) {
                     testIds.add(ptVO.getId());
-                    if ( !testAnalysisIndexMap.containsKey(ptVO.getId()))
+                    if (!testAnalysisIndexMap.containsKey(ptVO.getId()))
                         tests.add(new SampleTestRequestVO(sm.getSample().getId(),
                                                           siVDO.getId(),
                                                           ptVO.getId(),
@@ -1081,7 +1109,7 @@ public class SampleManagerOrderHelperBean {
         analysisIds = new HashSet<Integer>();
         testAnalysisMap = new HashMap<Integer, AnalysisViewDO>();
         if (getAnalyses(sm) != null) {
-            for (i = 0; i < getAnalyses(sm).size(); i++ ) {
+            for (i = 0; i < getAnalyses(sm).size(); i++) {
                 aVDO = getAnalyses(sm).get(i);
                 if (aVDO.getSampleItemId().equals(siVDO.getId()) && aVDO.getTestId() != null &&
                     !Constants.dictionary().ANALYSIS_CANCELLED.equals(aVDO.getStatusId()) &&
@@ -1095,7 +1123,7 @@ public class SampleManagerOrderHelperBean {
 
         analysisResultIndexMap = new HashMap<Integer, ArrayList<HashMap<Integer, Integer>>>();
         if (getResults(sm) != null) {
-            for (i = 0; i < getResults(sm).size(); i++ ) {
+            for (i = 0; i < getResults(sm).size(); i++) {
                 rVDO = getResults(sm).get(i);
                 if (analysisIds.contains(rVDO.getAnalysisId()) && "N".equals(rVDO.getIsColumn())) {
                     indexMaps = analysisResultIndexMap.get(rVDO.getAnalysisId());
@@ -1106,10 +1134,10 @@ public class SampleManagerOrderHelperBean {
                         analysisResultIndexMap.put(rVDO.getAnalysisId(), indexMaps);
                     }
                     testAnalyteResultIndexMap = indexMaps.get(0);
-                    if ( !testAnalyteResultIndexMap.containsKey(rVDO.getTestAnalyteId()))
+                    if (!testAnalyteResultIndexMap.containsKey(rVDO.getTestAnalyteId()))
                         testAnalyteResultIndexMap.put(rVDO.getTestAnalyteId(), i);
                     analyteResultIndexMap = indexMaps.get(1);
-                    if ( !analyteResultIndexMap.containsKey(rVDO.getAnalyteId()))
+                    if (!analyteResultIndexMap.containsKey(rVDO.getAnalyteId()))
                         analyteResultIndexMap.put(rVDO.getAnalyteId(), i);
                 }
             }
@@ -1367,7 +1395,7 @@ public class SampleManagerOrderHelperBean {
         String termKey, termKey2, placerOrderNum, noteText;
 
         childNodes = node.getChildNodes();
-        for (i = 0; i < childNodes.getLength(); i++ ) {
+        for (i = 0; i < childNodes.getLength(); i++) {
             childNode = childNodes.item(i);
             if (childNode.hasChildNodes() &&
                 Node.ELEMENT_NODE == childNode.getFirstChild().getNodeType()) {
@@ -1376,8 +1404,8 @@ public class SampleManagerOrderHelperBean {
                     if (placerOrderNum != null) {
                         childNode2 = ((Element)childNode).getElementsByTagName("name").item(0);
                         termKey = "extTerm:" + XMLUtil.getNodeText((Element)childNode2, "term");
-                        if ( !externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
-                                                                              "term")))
+                        if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
+                                                                             "term")))
                             externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"),
                                                 new ArrayList<ExchangeExternalTermViewDO>());
                         if ( ((Element)childNode2).getElementsByTagName("coding_system") != null &&
@@ -1392,8 +1420,8 @@ public class SampleManagerOrderHelperBean {
                             childNode2 = ((Element)childNode).getElementsByTagName("sample_type")
                                                              .item(0);
                             termKey = "extTerm:" + XMLUtil.getNodeText((Element)childNode2, "term");
-                            if ( !externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
-                                                                                  "term")))
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
+                                                                                 "term")))
                                 externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"),
                                                     new ArrayList<ExchangeExternalTermViewDO>());
                             if ( ((Element)childNode2).getElementsByTagName("coding_system") != null &&
@@ -1410,8 +1438,8 @@ public class SampleManagerOrderHelperBean {
                             childNode2 = ((Element)childNode).getElementsByTagName("sample_source")
                                                              .item(0);
                             termKey = "extTerm:" + XMLUtil.getNodeText((Element)childNode2, "term");
-                            if ( !externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
-                                                                                  "term")))
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
+                                                                                 "term")))
                                 externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"),
                                                     new ArrayList<ExchangeExternalTermViewDO>());
                             if ( ((Element)childNode2).getElementsByTagName("coding_system") != null &&
@@ -1432,7 +1460,7 @@ public class SampleManagerOrderHelperBean {
                             resultMap.put(placerOrderNum, results);
                         }
                         resultNodes = ((Element)childNode).getElementsByTagName("result");
-                        for (j = 0; j < resultNodes.getLength(); j++ ) {
+                        for (j = 0; j < resultNodes.getLength(); j++) {
                             childNode2 = resultNodes.item(j);
                             obvNode = ((Element)childNode2).getElementsByTagName("observation")
                                                            .item(0);
@@ -1440,8 +1468,8 @@ public class SampleManagerOrderHelperBean {
                             identNode = ((Element)obvNode).getElementsByTagName("identifier")
                                                           .item(0);
                             termKey = "extTerm:" + XMLUtil.getNodeText((Element)identNode, "term");
-                            if ( !externalTermMap.containsKey(XMLUtil.getNodeText((Element)identNode,
-                                                                                  "term")))
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)identNode,
+                                                                                 "term")))
                                 externalTermMap.put(XMLUtil.getNodeText((Element)identNode, "term"),
                                                     new ArrayList<ExchangeExternalTermViewDO>());
                             if ( ((Element)identNode).getElementsByTagName("coding_system") != null &&
@@ -1455,8 +1483,8 @@ public class SampleManagerOrderHelperBean {
                             if ("CE".equals(XMLUtil.getNodeText((Element)obvNode, "value_type"))) {
                                 termKey2 = "extTerm:" +
                                            XMLUtil.getNodeText((Element)valueNode, "term");
-                                if ( !externalTermMap.containsKey(XMLUtil.getNodeText((Element)valueNode,
-                                                                                      "term")))
+                                if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)valueNode,
+                                                                                     "term")))
                                     externalTermMap.put(XMLUtil.getNodeText((Element)valueNode,
                                                                             "term"),
                                                         new ArrayList<ExchangeExternalTermViewDO>());
@@ -1478,13 +1506,13 @@ public class SampleManagerOrderHelperBean {
                         noteText = "";
                         noteNodes = ((Element)childNode).getElementsByTagName("note");
                         if (noteNodes != null && noteNodes.getLength() > 0) {
-                            for (j = 0; j < noteNodes.getLength(); j++ ) {
+                            for (j = 0; j < noteNodes.getLength(); j++) {
                                 childNode2 = noteNodes.item(j);
                                 noteTextNodes = ((Element)childNode2).getElementsByTagName("text");
                                 if (noteTextNodes != null && noteTextNodes.getLength() > 0) {
                                     if (noteText.length() > 0)
                                         noteText += "\n";
-                                    for (k = 0; k < noteTextNodes.getLength(); k++ ) {
+                                    for (k = 0; k < noteTextNodes.getLength(); k++) {
                                         if (noteText.length() > 0)
                                             noteText += "\n";
                                         noteText += noteTextNodes.item(k)
@@ -1507,9 +1535,9 @@ public class SampleManagerOrderHelperBean {
                     "name".equals(childNode.getNodeName()) && childNode.getFirstChild() != null) {
                     dataMap.put(node.getNodeName() + "." + childNode.getNodeName(),
                                 "extTerm:" + childNode.getFirstChild().getNodeValue().trim());
-                    if ( !externalTermMap.containsKey(childNode.getFirstChild()
-                                                               .getNodeValue()
-                                                               .trim()))
+                    if (!externalTermMap.containsKey(childNode.getFirstChild()
+                                                              .getNodeValue()
+                                                              .trim()))
                         externalTermMap.put(childNode.getFirstChild().getNodeValue().trim(),
                                             new ArrayList<ExchangeExternalTermViewDO>());
                 } else if ("patient".equals(node.getNodeName())) {
@@ -1549,15 +1577,15 @@ public class SampleManagerOrderHelperBean {
                 } else if ("term".equals(childNode.getNodeName())) {
                     termKey = "extTerm:" + childNode.getFirstChild().getNodeValue().trim();
                     childNode2 = null;
-                    while ( ++i < childNodes.getLength()) {
+                    while (++i < childNodes.getLength()) {
                         if ("coding_system".equals(childNodes.item(i).getNodeName()))
                             childNode2 = childNodes.item(i);
                     }
                     if (childNode2 != null && childNode2.getFirstChild() != null)
                         termKey += "extCS:" + childNode2.getFirstChild().getNodeValue().trim();
-                    if ( !externalTermMap.containsKey(childNode.getFirstChild()
-                                                               .getNodeValue()
-                                                               .trim()))
+                    if (!externalTermMap.containsKey(childNode.getFirstChild()
+                                                              .getNodeValue()
+                                                              .trim()))
                         externalTermMap.put(childNode.getFirstChild().getNodeValue().trim(),
                                             new ArrayList<ExchangeExternalTermViewDO>());
 
@@ -1603,7 +1631,7 @@ public class SampleManagerOrderHelperBean {
                 for (ExchangeExternalTermViewDO eetVDO : externalTerms) {
                     if (referenceTableId.equals(eetVDO.getExchangeLocalTermReferenceTableId())) {
                         if (externalCodingSystem != null) {
-                            if ( !externalCodingSystem.equals(eetVDO.getExternalCodingSystem()))
+                            if (!externalCodingSystem.equals(eetVDO.getExternalCodingSystem()))
                                 continue;
                         }
                         matchedTerms.add(eetVDO);
@@ -1615,7 +1643,7 @@ public class SampleManagerOrderHelperBean {
                 return matchedTerms.get(0).getExchangeLocalTermReferenceId();
             } else {
                 if (matchedTerms.size() == 0) {
-                    if ( !Constants.table().PANEL.equals(referenceTableId) &&
+                    if (!Constants.table().PANEL.equals(referenceTableId) &&
                         !Constants.table().TEST_ANALYTE.equals(referenceTableId))
                         e.add(new FormErrorWarning(Messages.get()
                                                            .eorderImport_localTermNotFound(externalTerm,
@@ -1647,7 +1675,7 @@ public class SampleManagerOrderHelperBean {
         }
     }
 
-    private PatientDO lookupExistingPatient(PatientDO patDO, ValidationErrorsList e) {
+    private PatientDO lookupExistingPatient(PatientDO patDO, ValidationErrorsList e, boolean queryByFirstName) {
         ArrayList<PatientDO> patientDOs;
         ArrayList<QueryData> fields;
         PatientDO existingDO;
@@ -1663,7 +1691,7 @@ public class SampleManagerOrderHelperBean {
             field.setQuery(patDO.getLastName());
             fields.add(field);
         }
-        if (patDO.getFirstName() != null && patDO.getFirstName().length() > 0) {
+        if (queryByFirstName && patDO.getFirstName() != null && patDO.getFirstName().length() > 0) {
             field = new QueryData();
             field.setKey(PatientMeta.getFirstName());
             field.setType(QueryData.Type.STRING);
@@ -1739,7 +1767,7 @@ public class SampleManagerOrderHelperBean {
         itemSeqMap = new HashMap<Integer, SampleItemViewDO>();
         itemTypeMap = new HashMap<Integer, SampleItemViewDO>();
         min = 0;
-        for (i = 0; i < getItems(sm).size(); i++ ) {
+        for (i = 0; i < getItems(sm).size(); i++) {
             item = getItems(sm).get(i);
             itemIdMap.put(item.getId(), item);
             itemSeqMap.put(item.getItemSequence(), item);
@@ -1754,7 +1782,7 @@ public class SampleManagerOrderHelperBean {
          */
         anaItemMap = new HashMap<String, ArrayList<AnalysisItem>>();
         if (getAnalyses(sm) != null) {
-            for (i = 0; i < getAnalyses(sm).size(); i++ ) {
+            for (i = 0; i < getAnalyses(sm).size(); i++) {
                 ana = getAnalyses(sm).get(i);
                 tmName = getTestMethodName(ana.getTestName(), ana.getMethodName());
                 anaItems = anaItemMap.get(tmName);
@@ -1792,7 +1820,7 @@ public class SampleManagerOrderHelperBean {
                 while (i < orderTests.size()) {
                     orderTest = orderTests.get(i);
                     found = false;
-                    for (j = 0; j < anaItems.size(); j++ ) {
+                    for (j = 0; j < anaItems.size(); j++) {
                         anaItem = anaItems.get(j);
                         item = anaItem.sampleItem;
                         if (orderTest.sequence != null) {
@@ -1818,7 +1846,7 @@ public class SampleManagerOrderHelperBean {
                         orderTests.remove(i);
                         anaItems.remove(j);
                     } else {
-                        i++ ;
+                        i++;
                     }
                 }
 
@@ -1874,7 +1902,7 @@ public class SampleManagerOrderHelperBean {
              * item with that sequence; otherwise add it to the item with the
              * specified sample type
              */
-            for (i = 0; i < orderTests.size(); i++ ) {
+            for (i = 0; i < orderTests.size(); i++) {
                 orderTest = orderTests.get(i);
                 /*
                  * if no item is found for a sequence or sample type specified
@@ -1908,13 +1936,13 @@ public class SampleManagerOrderHelperBean {
             anaId = null;
             repAnalytes = null;
             for (ResultViewDO data : getResults(sm)) {
-                if ( !data.getAnalysisId().equals(anaId)) {
+                if (!data.getAnalysisId().equals(anaId)) {
                     repAnalytes = repAnalyteMap.get(data.getAnalysisId());
                     anaId = data.getAnalysisId();
                 }
                 if (repAnalytes != null && "N".equals(data.getIsColumn())) {
                     reportable = repAnalytes.contains(data.getAnalyteId()) ? "Y" : "N";
-                    if ( !reportable.equals(data.getIsReportable()))
+                    if (!reportable.equals(data.getIsReportable()))
                         data.setIsReportable(reportable);
                 }
             }

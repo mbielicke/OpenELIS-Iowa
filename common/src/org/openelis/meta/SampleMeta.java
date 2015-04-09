@@ -383,6 +383,7 @@ public class SampleMeta implements Meta, MetaMap {
 
                     ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID = "_testResult.flagsId",
 
+                    ORG_PARAM_TYPE_ID = "_organizationParameter.typeId",
                     ORG_PARAM_VALUE = "_organizationParameter.value",
                     
                     EORDER_PAPER_ORDER_VALIDATOR = "_eorder.paperOrderValidator",
@@ -694,6 +695,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   ANALYSIS_METHOD_ID,
                                                   ANALYSIS_TEST_IS_ACTIVE,
                                                   ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
+                                                  ORG_PARAM_TYPE_ID,
                                                   ORG_PARAM_VALUE,
                                                   EORDER_PAPER_ORDER_VALIDATOR,
                                                   ATT_ITEM_ATTACHMENT_CREATED_DATE,
@@ -1897,6 +1899,10 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID;
     }
 
+    public static String getOrgParamTypeId() {
+        return ORG_PARAM_TYPE_ID;
+    }
+    
     public static String getOrgParamValue() {
         return ORG_PARAM_VALUE;
     }

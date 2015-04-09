@@ -203,8 +203,8 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     @UiField
     protected TextBox<String>                           clientReference, orderId, patientLastName,
                     patientFirstName, patientNationalId, patientAddrMultipleUnit,
-                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode, patientAddrHomePhone,
-                    providerFirstName, providerPhone;
+                    patientAddrStreetAddress, patientAddrCity, patientAddrZipCode,
+                    patientAddrHomePhone, providerFirstName, providerPhone;
 
     @UiField
     protected Dropdown<Integer>                         status, patientGender, patientRace,
@@ -313,14 +313,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     SampleManager1.Load.PROJECT, SampleManager1.Load.QA,
                     SampleManager1.Load.RESULT, SampleManager1.Load.STORAGE,
                     SampleManager1.Load.WORKSHEET, SampleManager1.Load.ATTACHMENT};
-    
+
     protected enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA, ATTACHMENT
     };
 
-    private static final String                         REPORT_TO_KEY = "reportTo",
-                    BILL_TO_KEY = "billTo";
+    private static final String REPORT_TO_KEY = "reportTo", BILL_TO_KEY = "billTo";
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -1254,7 +1253,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? patientAddrHomePhone : patientAddrState;
                              }
                          });
-        
+
         addScreenHandler(patientAddrHomePhone,
                          SampleMeta.getClinicalPatientAddrHomePhone(),
                          new ScreenHandler<String>() {
@@ -1262,17 +1261,17 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  patientAddrHomePhone.setValue(getPatientAddressHomePhone());
                              }
 
-                            public void onValueChange(ValueChangeEvent<String> event) {
+                             public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientAddressHomePhone(event.getValue());
                                  runScriptlets(null,
                                                SampleMeta.getClinicalPatientAddrHomePhone(),
                                                null);
                              }
 
-                            public void onStateChange(StateChangeEvent event) {
+                             public void onStateChange(StateChangeEvent event) {
                                  patientAddrHomePhone.setEnabled(isState(QUERY) ||
-                                                               (canEditSample && canEditPatient && isState(ADD,
-                                                                                                           UPDATE)));
+                                                                 (canEditSample && canEditPatient && isState(ADD,
+                                                                                                             UPDATE)));
                                  patientAddrHomePhone.setQueryMode(isState(QUERY));
                              }
 
@@ -1280,7 +1279,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                                  return forward ? patientGender : patientAddrZipCode;
                              }
                          });
-        
+
         addScreenHandler(patientGender,
                          SampleMeta.getClinicalPatientGenderId(),
                          new ScreenHandler<Integer>() {
@@ -2197,7 +2196,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                 setTabNotification(Tabs.ATTACHMENT, item, ana);
             }
         });
-        
+
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -3911,7 +3910,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             manager.getSampleClinical().setPaperOrderValidator(null);
             return;
         }
-        
+
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().sample_enterAccNumBeforeOrderLoad());
             manager.getSample().setOrderId(null);
@@ -3919,9 +3918,13 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             orderId.setValue(null);
             return;
         }
-        
+
+        /*
+         * don't allow loading the order if the patient is locked
+         */
         if (isPatientLocked) {
             Window.alert(Messages.get().sample_cantLoadEOrderPatientLocked());
+            orderId.setValue(getOrderId());
             return;
         }
 
@@ -3950,7 +3953,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
                     }
 
                     try {
-                        screen.setBusy(Messages.get().fetching());
+                        screen.setBusy(Messages.get().gen_fetching());
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
                     } catch (Exception e) {
                         manager.getSample().setOrderId(null);
@@ -4354,7 +4357,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
     private void setPatientAddressZipCode(String zipCode) {
         manager.getSampleClinical().getPatient().getAddress().setZipCode(zipCode);
     }
-    
+
     /**
      * Returns the patient's home phone or null if either the manager or the
      * patient DO is null
@@ -4702,7 +4705,7 @@ public class ClinicalSampleLoginScreenUI extends Screen implements CacheProvider
             if (Constants.dictionary().ORG_REPORT_TO.equals(type))
                 setReportTo(data);
             else if (Constants.dictionary().ORG_BILL_TO.equals(type))
-                setBillTo(data);            
+                setBillTo(data);
         }
     }
 
