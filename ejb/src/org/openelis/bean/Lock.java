@@ -3,16 +3,20 @@ package org.openelis.bean;
 public class Lock {
 
     protected Key key;
-    
     protected Long expires;
-
     protected Integer systemUserId;
-
     protected String sessionId;
    
     public Lock(Integer referenceTableId, Integer referenceId) {
     	this.key = new Key(referenceTableId,referenceId);
     } 
+    
+    public Lock(Integer tableId, Integer id, Integer systemUserId, Long expires, String sessionId) {
+    	this(tableId,id);
+    	this.systemUserId = systemUserId;
+    	this.expires = expires;
+    	this.sessionId = sessionId;
+    }
     
     @Override
     public int hashCode() {
@@ -30,9 +34,9 @@ public class Lock {
     @Override
     public String toString() {
     	StringBuilder sb = new StringBuilder();
-    	sb.append(key.referenceTableId);
+    	sb.append(key.tableId);
     	sb.append(":");
-    	sb.append(key.referenceId);
+    	sb.append(key.id);
     	sb.append(":");
     	sb.append(expires);
     	sb.append(":");
@@ -43,28 +47,26 @@ public class Lock {
     }
     
     public static class Key {
-        protected Integer referenceTableId;
-
-        protected Integer referenceId;
-        
-        public Key(Integer referenceTableId, Integer referenceId) {
-        	this.referenceTableId = referenceTableId;
-        	this.referenceId = referenceId;
+        protected Integer tableId,id;
+       
+        public Key(Integer tableId, Integer id) {
+        	this.tableId = tableId;
+        	this.id = id;
         }
         
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 17 * hash + (referenceTableId == null ? 0 : referenceTableId.hashCode());
-            hash = 17 * hash + (referenceId == null ? 0 : referenceId.hashCode());
+            hash = 17 * hash + (tableId == null ? 0 : tableId.hashCode());
+            hash = 17 * hash + (id == null ? 0 : id.hashCode());
             return hash;
         }
         
         @Override
         public boolean equals(Object obj) {
         	if (obj instanceof Key) {
-        		return referenceTableId.equals(((Key)obj).referenceTableId) &&
-        			   referenceId.equals(((Key)obj).referenceId);
+        		return tableId.equals(((Key)obj).tableId) &&
+        			   id.equals(((Key)obj).id);
         	}
         	return false;
         }

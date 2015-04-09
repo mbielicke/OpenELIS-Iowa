@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,18 @@ public class LockCacheBean {
 	@javax.ejb.Lock(LockType.READ)
 	public Lock get(Lock.Key key) {
 		return locks.get(key);
+	}
+	
+	public List<Lock> get(Collection<Lock.Key> keys) {
+		ArrayList<Lock> locks = new ArrayList<Lock>();
+		Lock lock = null;
+		for(Lock.Key key : keys) {
+			lock = get(key);
+			if(lock != null) {
+				locks.add(get(key));
+			}
+		}
+		return locks;
 	}
 	
 	public void remove(Lock lock) {
@@ -42,7 +55,12 @@ public class LockCacheBean {
 		return locks.keySet().containsAll(keys);
 	}
 	
+	@javax.ejb.Lock(LockType.READ)
 	public Collection<Lock> getAll() {
 		return locks.values();
+	}
+	
+	public void removeAll() {
+		locks.clear();
 	}
 }
