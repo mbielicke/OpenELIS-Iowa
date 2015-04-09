@@ -179,7 +179,7 @@ public class BillingExportBean {
                                          SampleManager1.Load.AUXDATA,
                                          SampleManager1.Load.RESULT);
 
-        log.fine("Considering " + sms.size() + " cases to run");
+        log.info("Considering " + sms.size() + " cases to run");
         if (sms.size() == 0) {
             systemVariable.abortUpdate(lastRun.getId());
             return;

@@ -3040,6 +3040,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String checkinDateAfterCheckoutDateException();
 
   /**
+   * Translated "Chl-Gc to CDC Export".
+   * 
+   * @return translated "Chl-Gc to CDC Export"
+   */
+  @DefaultMessage("Chl-Gc to CDC Export")
+  @Key("chlGcToCDC.chlGcToCDCExport")
+  String chlGcToCDC_chlGcToCDCExport();
+
+  /**
    * Translated "Choose Dictionary Entry".
    * 
    * @return translated "Choose Dictionary Entry"
@@ -15125,6 +15134,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Accession # {0,number,#0}: Cannot duplicate sample - {1}, {2} has been reflexed by another analysis")
   @Key("sample.cantDuplicateReflexAnaException")
   String sample_cantDuplicateReflexAnaException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "The order can''t be loaded because the next of kin is locked".
+   * 
+   * @return translated "The order can''t be loaded because the next of kin is locked"
+   */
+  @DefaultMessage("The order can''t be loaded because the next of kin is locked")
+  @Key("sample.cantLoadEOrderNextOfKinLocked")
+  String sample_cantLoadEOrderNextOfKinLocked();
 
   /**
    * Translated "The order can''t be loaded because the patient is locked".
