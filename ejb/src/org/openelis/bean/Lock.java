@@ -7,8 +7,8 @@ public class Lock {
     protected Integer systemUserId;
     protected String sessionId;
    
-    public Lock(Integer referenceTableId, Integer referenceId) {
-    	this.key = new Key(referenceTableId,referenceId);
+    public Lock(Integer tableId, Integer id) {
+    	this.key = new Key(tableId,id);
     } 
     
     public Lock(Integer tableId, Integer id, Integer systemUserId, Long expires, String sessionId) {
