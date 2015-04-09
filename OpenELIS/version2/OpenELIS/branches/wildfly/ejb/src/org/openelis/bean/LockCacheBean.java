@@ -47,7 +47,7 @@ public class LockCacheBean {
 
 	@javax.ejb.Lock(LockType.READ)
 	public boolean containsAllLocks(List<Lock> locks) {
-		return locks.containsAll(locks);
+		return this.locks.values().containsAll(locks);
 	}
 	
 	@javax.ejb.Lock(LockType.READ)
