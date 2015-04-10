@@ -1478,6 +1478,12 @@ public class WorksheetCompletionScreenUI extends Screen {
                     fireDataChange();
                 }
                 
+                public void validationErrors(ValidationErrorsList e) {
+                    statusPanel.hide();
+                    statusScreen.setStatus(null);
+                    showErrors(e);
+                }
+                
                 public void failure(Throwable e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
