@@ -25,8 +25,6 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.ui.common.DataBaseUtil.asList;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,23 +74,7 @@ public class LockBean implements SessionSynchronization {
     	sessionId = User.getSessionId(ctx);
     }
     
-    /**
-     * Method creates a new lock entry for the specified table reference and id.
-     * If a valid lock currently exist, a EntityLockedException is thrown.
-     */
-    public void lock(int tableId, Integer id) throws Exception {
-        lock(tableId, id, DEFAULT_LOCK_TIME);
-    }
-
-    /**
-     * Method creates a new lock entry for the specified table reference and id
-     * for the specified time on milliseconds. If a valid lock currently exist,
-     * a EntityLockedException is thrown.
-     */
-    public void lock(int tableId, Integer id, long lockTimeMillis) throws Exception {
-        lock(tableId, asList(id), lockTimeMillis);
-    }
-
+    
     /**
      * Method creates new lock entries for the specified table reference and
      * ids. If a valid lock currently exist for any of the ids, a
@@ -101,63 +83,86 @@ public class LockBean implements SessionSynchronization {
     public void lock(int tableId, List<Integer> ids) throws Exception {
         lock(tableId, ids, DEFAULT_LOCK_TIME);
     }
-
+    
     /**
      * Method creates new lock entries for the specified table reference and ids
      * and specified time on milliseconds. If a valid lock currently exist for
      * any of the ids, a EntityLockedException is thrown.
      */
     public void lock(int tableId, List<Integer> ids, long lockTimeMillis) throws Exception {
-        checkIfLockedByOther(tableId,ids,System.currentTimeMillis());
-        createLocks(tableId,ids,System.currentTimeMillis()+lockTimeMillis);
-    }
-    
-    private void checkIfLockedByOther(Integer tableId, List<Integer> ids,long time) throws Exception {
-    	for (Lock lock : getLocks(tableId,ids)) {
-    		if (lock != null && lock.expires >= time) {
-    			throw createLockedByOtherException(lock);
-    		}
-    		lockCache.remove(lock.key);
-    	}
-    }
-    
-    private void createLocks(Integer tableId, List<Integer> ids, long expires) throws Exception {
-    	Lock lock;
-        for (Integer id : ids) {
-            lock = new Lock(tableId,id,user,expires,sessionId);
-            lockCache.add(lock);
-            setLocks.add(lock);
-        }
-    }
-    
-    private List<Lock> getLocks(Integer tableId, List<Integer> ids) {
-    	return lockCache.get(createLockKeys(tableId,ids));
-    }
-    
-    private List<Lock.Key> createLockKeys(Integer tableId, List<Integer> ids) {
-    	ArrayList<Lock.Key> locks;
-    	
-    	locks = new ArrayList<Lock.Key>();
     	for (Integer id : ids) {
-    		locks.add(new Lock.Key(tableId,id));
+    		lock(tableId,id,lockTimeMillis);
     	}
-    	return locks;
     }
     
-    private EntityLockedException createLockedByOtherException(Lock lock) throws Exception {
+    /**
+     * Method creates a new lock entry for the specified table reference and id.
+     * If a valid lock currently exist, a EntityLockedException is thrown.
+     */
+    public void lock(int tableId, Integer id) throws Exception {
+        lock(tableId, id, DEFAULT_LOCK_TIME);
+    }
+    
+    /**
+     * Method creates a new lock entry for the specified table reference and id
+     * for the specified time on milliseconds. If a valid lock currently exist,
+     * a EntityLockedException is thrown.
+     */
+    public void lock(int tableId, Integer id, long lockTimeMillis) throws Exception {
+    	long now;
+    	
+    	now = System.currentTimeMillis();
+        checkIfLockedByOther(tableId,id,now);
+        createLock(tableId,id,now+lockTimeMillis);
+    }
+
+    private void checkIfLockedByOther(Integer tableId, Integer id, long time) throws Exception {
+    	Lock lock;
+    	
+    	lock = getLock(tableId, id);
+   		if (lock != null && lock.expires >= time) {
+   			throw lockedByOtherException(lock);
+   		} else if (lock != null) {
+   			lockCache.remove(lock.key);
+   		}
+    }
+    
+    private void createLock(Integer tableId, Integer id, long expires) throws Exception {
+    	Lock lock;
+
+        lock = new Lock(tableId,id,user,expires,sessionId);
+        lockCache.add(lock);
+        setLocks.add(lock);
+    }
+    
+    private Lock getLock(Integer tableId, Integer id) {
+    	return lockCache.get(createLockKey(tableId,id));
+    }
+    
+    private Lock.Key createLockKey(Integer tableId, Integer id) {
+    	return new Lock.Key(tableId,id);
+    }
+    
+    private EntityLockedException lockedByOtherException(Lock lock) throws Exception {
     	String loginName, expires, msg;
     	
-    	loginName = getLoginName(lock.systemUserId);
+    	loginName = getLockedByLoginName(lock.systemUserId);
     	expires = new Date(lock.expires).toString();
     	msg = Messages.get().entityLockException(loginName,expires);
     	return new EntityLockedException(msg);
     }
 
-    private String getLoginName(Integer id) {
+    private String getLockedByLoginName(Integer id) {
     	SystemUserVO user;
     	
     	user = id != null && id > -1 ? userCache.getSystemUser(id) : null; 
     	return user != null ? user.getLoginName() : "unknown";
+    }
+    
+    public void unlock(int tableId, List<Integer> ids) {
+        for (Integer id : ids) {
+        	unlock(tableId, id);
+   		}
     }
     
     /**
@@ -165,34 +170,18 @@ public class LockBean implements SessionSynchronization {
      * id. The lock record must be owned by the user before the lock is removed.
      */
     public void unlock(int tableId, Integer id) {
-        unlock(tableId, asList(id));
+    	Lock lock;
+    	
+    	lock = getLock(tableId,id);
+    	if (ownsLock(lock)) {
+    		lockCache.remove(lock.key);
+		}
     }
 
-    public void unlock(int tableId, List<Integer> ids) {
-        for (Lock lock : getLocks(tableId,ids)) {
-        	if (ownsLock(lock)) {
-        		lockCache.remove(lock.key);
-   			}
-   		}
-    }
-    
     private boolean ownsLock(Lock lock) {
     	return lock.systemUserId.equals(user) && lock.sessionId.equals(sessionId);
     }
-
-    /**
-     * This method will search for an existing lock for the specified reference
-     * table and id. If a lock is not found or the lock does not belong to the
-     * calling user, the method throws EntityLockException specifying that the
-     * lock is not valid. Note that expired locks are valid (because no one else
-     * has requested for the same resource to be locked) and this method resets
-     * the expiration time of expired or nearly expire locks by a constant grace
-     * time.
-     */
-    public void validateLock(int tableId, Integer id) throws Exception {
-        validateLock(tableId, asList(id));
-    }
-
+    
     /**
      * This method will search for a list of existing lock for the specified
      * reference table and ids. If locks are not found or they don't belong to
@@ -203,29 +192,39 @@ public class LockBean implements SessionSynchronization {
      * constant grace time.
      */
     public void validateLock(int tableId, List<Integer> ids) throws Exception {
-    	List<Lock.Key> keys;
-    	
-    	keys = createLockKeys(tableId,ids);
-        checkIfLocksExist(keys);
-        checkIfLocksValid(lockCache.get(keys));
+    	for (Integer id : ids) {
+    		validateLock(tableId,id);
+    	}
     }
     
-    private void checkIfLocksExist(List<Lock.Key> keys) throws Exception {
-    	if (!lockCache.containsAllKeys(keys)) {
+    /**
+     * This method will search for an existing lock for the specified reference
+     * table and id. If a lock is not found or the lock does not belong to the
+     * calling user, the method throws EntityLockException specifying that the
+     * lock is not valid. Note that expired locks are valid (because no one else
+     * has requested for the same resource to be locked) and this method resets
+     * the expiration time of expired or nearly expire locks by a constant grace
+     * time.
+     */
+    public void validateLock(int tableId, Integer id) throws Exception {
+    	checkIfLockExist(createLockKey(tableId,id));
+        checkIfLockValid(getLock(tableId,id));
+    }
+    
+    private void checkIfLockExist(Lock.Key key) throws Exception {
+    	if (lockCache.get(key) == null) {
     		throw new EntityLockedException(Messages.get().expiredLockException());
     	}
     }
     
-    private void checkIfLocksValid(List<Lock> locks) throws Exception {
+    private void checkIfLockValid(Lock lock) throws Exception {
         long time;
         
         time = System.currentTimeMillis();
-        for (Lock lock : locks) {
-            if (!ownsLock(lock)) {
-                throw createLockedByOtherException(lock);
-            }
-            checkAndRefreshExpires(lock,time);
+        if (!ownsLock(lock)) {
+            throw lockedByOtherException(lock);
         }
+        checkAndRefreshExpires(lock,time);
     }
     
     private void checkAndRefreshExpires(Lock lock, long time) {
@@ -271,7 +270,7 @@ public class LockBean implements SessionSynchronization {
 				lockCache.remove(lock);
 			}
 		}
-		destroy();
+		setLocks.clear();
 	}
 	
 	@Remove
