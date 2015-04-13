@@ -1,0 +1,201 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:t='urn:import:org.openelis.ui.widget.table'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="135px">
+      <g:LayoutPanel>
+        <g:layer top="0px" bottom="0px" left="0px" width="53%">
+          <g:HTMLPanel width="100%">
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_id}:" />
+                </td>
+                <td colspan="3">
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="patientId" width="50px" field="Integer" />
+                    <w:Button ui:field="emptySearchButton" leftIcon="{res.icon.QueryButtonImage}"
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_fullWindowSearch}" />
+                    <w:Button ui:field="fieldSearchButton" leftIcon="{res.icon.refreshButtonImage}"
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_searchByFields}" />
+                    <w:Button ui:field="unlinkPatientButton" leftIcon="{res.icon.DeleteButtonImage}"
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_unlink}" />
+                    <w:Button ui:field="editPatientButton" leftIcon="{res.icon.UpdateButtonImage}"
+                      text="" css="{res.FormFieldButton}" tip="{msg.patient_edit}" />
+                  </g:HorizontalPanel>
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_last}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="patientLastName" width="290px" field="String"
+                    maxLength="30" case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_first}:" />
+                </td>
+                <td colspan="3">
+                  <w:TextBox ui:field="patientFirstName" width="225px" field="String"
+                    maxLength="20" case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.patient_birth}:" />
+                </td>
+                <td>
+                  <c:Calendar ui:field="patientBirthDate" width="90px" begin="0" end="2" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.patient_nationalId}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="patientNationalId" width="75px" field="String"
+                    maxLength="11" mask="{msg.gen_nationalIdPattern}" case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_aptSuite}:" />
+                </td>
+                <td colspan="5">
+                  <w:TextBox ui:field="patientAddrMultipleUnit" field="String" width="222px"
+                    case="UPPER" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="0px" bottom="0px" right="0px" width="47%">
+          <g:HTMLPanel width="100%">
+            <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_address}:" />
+                </td>
+                <td colspan="5">
+                  <w:TextBox ui:field="patientAddrStreetAddress" field="String" width="233px"
+                    case="UPPER" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_cityStateZip}:" />
+                </td>
+                <td colspan="3">
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="patientAddrCity" field="String" width="100px"
+                      case="UPPER" />
+                    <g:HorizontalPanel width="4px" />
+                    <w:Dropdown ui:field="patientAddrState" field="String" width="42px" />
+                    <g:HorizontalPanel width="4px" />
+                    <w:TextBox ui:field="patientAddrZipCode" field="String" width="75px"
+                      mask="{msg.gen_zipcodePattern}" case="UPPER" />
+                  </g:HorizontalPanel>
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.address_phone}:" />
+                </td>
+                <td>
+                  <w:TextBox ui:field="patientAddrHomePhone" field="String" width="80px"
+                    maxLength="12" mask="{msg.gen_phonePattern}" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.patient_gender}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="patientGender" width="75px" dropHeight="100px"
+                    field="String" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.patient_race}:" />
+                </td>
+                <td colspan="3">
+                  <w:Dropdown ui:field="patientRace" width="233px" dropWidth="235px"
+                    field="String" />
+                </td>
+              </tr>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.patient_ethnicity}:" />
+                </td>
+                <td>
+                  <w:Dropdown ui:field="patientEthnicity" width="100px" field="String"
+                    dropHeight="120px" />
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+    <g:layer top="140px" bottom="0px">
+      <g:HTMLPanel width="100%">
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.provider_lf}:" />
+            </td>
+            <td colspan="3">
+              <g:HorizontalPanel>
+                <w:AutoComplete ui:field="providerLastName" width="112px" dropWidth="520px"
+                  dropHeight="400px" case="UPPER"
+                >
+                  <w:popup>
+                    <t:Table visibleRows="10" header="true">
+                      <t:Column width="150" label="{msg.gen_lastName}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="150" label="{msg.gen_firstName}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="100" label="{msg.gen_middleName}">
+                        <t:LabelCell />
+                      </t:Column>
+                      <t:Column width="100" label="{msg.provider_npi}">
+                        <t:LabelCell />
+                      </t:Column>
+                    </t:Table>
+                  </w:popup>
+                </w:AutoComplete>
+                <g:HorizontalPanel width="4px" />
+                <w:TextBox ui:field="providerFirstName" width="111px" field="String" case="UPPER" />
+              </g:HorizontalPanel>
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.address_phone}:" />
+            </td>
+            <td colspan="3">
+              <w:TextBox ui:field="providerPhone" width="115px" field="String" maxLength="17"
+                mask="{msg.gen_phoneWithExtensionPattern}" />
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
