@@ -246,7 +246,7 @@ public class ChlGcToCDCExportBean {
             fields.add(field);
 
             sms = new ArrayList<SampleManager1>();
-            sms = sampleManager.fetchByQuery(fields, 0, 1000, SampleManager1.Load.ORGANIZATION,
+            sms = sampleManager.fetchByQuery(fields, 0, 10000, SampleManager1.Load.ORGANIZATION,
                                              SampleManager1.Load.QA, SampleManager1.Load.RESULT);
             ds = AnalysisDataSource.getInstance(sms, con);
             
