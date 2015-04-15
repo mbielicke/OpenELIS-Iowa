@@ -1,0 +1,15 @@
+@sprite .helpImage {
+	gwt-image: 'helpImage';
+}
+
+@sprite .reportImage {
+	gwt-image: 'reportImage';
+}
+
+@sprite .emailImage {
+	gwt-image: 'emailImage';
+}
+
+@sprite .spreadsheetImage {
+	gwt-image: 'spreadsheetImage';
+}
