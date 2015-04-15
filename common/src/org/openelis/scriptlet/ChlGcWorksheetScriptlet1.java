@@ -238,7 +238,7 @@ public class ChlGcWorksheetScriptlet1 implements ScriptletInt<WorksheetSO> {
                             wrVDO = wm.result.get(waVDO, k);
                             if ("chl_result".equals(wrVDO.getAnalyteExternalId()) ||
                                 "gc_result".equals(wrVDO.getAnalyteExternalId())) {
-                                if ("Detected".equals(wrVDO.getValueAt(resultColumn - 1))) {
+                                if ("Detected".equals(wrVDO.getValueAt(resultColumn))) {
                                     for (j = 0; j < wm.analysis.count(wiDO); j++) {
                                         waVDO = wm.analysis.get(wiDO, j);
                                         waVDO.setStatusId(Constants.dictionary().ANALYSIS_REQUEUE);
