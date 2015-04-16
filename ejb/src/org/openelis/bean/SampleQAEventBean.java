@@ -103,24 +103,6 @@ public class SampleQAEventBean  {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception {
-        Query query;
-        List returnList;        
-
-        if (ids.size() == 0)
-            throw new NotFoundException();
-        
-        query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleIds");
-        query.setParameter("ids", ids);
-        
-        returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
-            throw new NotFoundException();
-        
-        return DataBaseUtil.toArrayList(returnList);
-    }
-    
     public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleId(Integer id) throws Exception {
         Query query;
         List returnList;

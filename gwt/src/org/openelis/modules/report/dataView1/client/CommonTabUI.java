@@ -25,7 +25,6 @@
  */
 package org.openelis.modules.report.dataView1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
@@ -631,7 +630,6 @@ public class CommonTabUI extends Screen {
         Widget w;
         CheckBox cb;
 
-        logger.fine("Common tab");
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
             w = entry.getValue().widget;
             if (w instanceof CheckBox) {
