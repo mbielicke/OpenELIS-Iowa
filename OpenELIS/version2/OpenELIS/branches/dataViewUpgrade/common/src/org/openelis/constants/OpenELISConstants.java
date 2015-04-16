@@ -4183,6 +4183,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_selectSdwisField();
 
   /**
+   * Translated "This tab''s fields are disabled because another domain has been selected on Query tab ".
+   * 
+   * @return translated "This tab''s fields are disabled because another domain has been selected on Query tab "
+   */
+  @DefaultMessage("This tab''s fields are disabled because another domain has been selected on Query tab ")
+  @Key("dataView.tabFieldsDisabled")
+  String dataView_tabFieldsDisabled();
+
+  /**
    * Translated "Date Collected".
    * 
    * @return translated "Date Collected"

@@ -25,12 +25,12 @@
  */
 package org.openelis.modules.report.dataView1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataViewVO1;
 import org.openelis.meta.SampleWebMeta;
@@ -40,6 +40,7 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.CheckBox;
+import org.openelis.ui.widget.Label;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
@@ -59,6 +60,9 @@ public class SDWISTabUI extends Screen {
     protected CheckBox              sdwisPwsId, pwsName, sdwisStateLabId, sdwisFacilityId,
                     sdwisSampleTypeId, sdwisSampleCategoryId, sdwisSamplePointId, sdwisLocation,
                     sdwisPriority, sdwisCollector;
+
+    @UiField
+    protected Label<String>         fieldsDisabledLabel;
 
     protected Screen                parentScreen;
 
@@ -237,6 +241,13 @@ public class SDWISTabUI extends Screen {
                              }
                          });
 
+        addScreenHandler(fieldsDisabledLabel, "fieldsDisabledLabel", new ScreenHandler<String>() {
+            public void onStateChange(StateChangeEvent event) {
+                fieldsDisabledLabel.setText(canEdit ? null : Messages.get()
+                                                                     .dataView_tabFieldsDisabled());
+            }
+        });
+
         parentBus.addHandler(DomainChangeEvent.getType(), new DomainChangeEvent.Handler() {
             @Override
             public void onDomainChange(DomainChangeEvent event) {
@@ -263,18 +274,18 @@ public class SDWISTabUI extends Screen {
     public void onDataChange() {
         fireDataChange();
     }
-    
+
     /**
-     * Adds the keys for all checked checkboxes to the list of columns shown
-     * in the generated excel file
+     * Adds the keys for all checked checkboxes to the list of columns shown in
+     * the generated excel file
      */
     public void addColumns(ArrayList<String> columns) {
         Widget w;
         CheckBox cb;
-        
-        if (!canEdit)
+
+        if ( !canEdit)
             return;
-        
+
         for (Map.Entry<String, ScreenHandler<?>> entry : handlers.entrySet()) {
             w = entry.getValue().widget;
             if (w instanceof CheckBox) {

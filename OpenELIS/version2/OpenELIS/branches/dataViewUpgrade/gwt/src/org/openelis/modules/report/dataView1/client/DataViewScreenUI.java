@@ -288,7 +288,6 @@ public class DataViewScreenUI extends Screen {
         ModalWindow modal;
         ArrayList<String> columns;
         ArrayList<Exception> errors;
-        ArrayList<QueryData> queryFields;
 
         finishEditing();
 
@@ -305,8 +304,8 @@ public class DataViewScreenUI extends Screen {
         ptTab.addColumns(columns);
 
         /*
-         * if the both results and aux data are excluded then at least one
-         * column must be selected
+         * if both results and aux data are excluded then at least one column
+         * must be selected
          */
         excludeResults = "Y".equals(data.getExcludeResults());
         excludeAuxData = "Y".equals(data.getExcludeAuxData());

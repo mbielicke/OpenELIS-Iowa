@@ -14,7 +14,7 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" bottom="0px">
+    <g:layer top="0px" bottom="25px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
@@ -360,6 +360,11 @@
             </td>
           </tr>
         </table>
+      </g:HTMLPanel>
+    </g:layer>
+    <g:layer bottom="15px" height="25px" left="0px" right="0px">
+      <g:HTMLPanel>
+        <w:Label ui:field="fieldsDisabledLabel" styleName="{res.style.WarningLabel}" />
       </g:HTMLPanel>
     </g:layer>
   </g:LayoutPanel>
