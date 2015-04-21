@@ -42,19 +42,19 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderReturnVO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderReturnVO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.TestManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
@@ -125,7 +125,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
 
-    protected OrderManager1                  manager;
+    protected IOrderManager1                  manager;
 
     protected ModulePermission               userPermission;
 
@@ -216,17 +216,17 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
-    protected AsyncCallbackUI<OrderManager1>           addCall, fetchForUpdateCall, 
+    protected AsyncCallbackUI<IOrderManager1>           addCall, fetchForUpdateCall, 
                                                          updateCall, fetchByIdCall, unlockCall;   
     
-    protected AsyncCallbackUI<OrderReturnVO>   duplicateCall;
+    protected AsyncCallbackUI<IOrderReturnVO>   duplicateCall;
 
     // @formatter:off
-    protected OrderManager1.Load             elements[] = {
-                                                            OrderManager1.Load.SAMPLE_DATA,
-                                                            OrderManager1.Load.ORGANIZATION,
-                                                            OrderManager1.Load.ITEMS,
-                                                            OrderManager1.Load.RECURRENCE
+    protected IOrderManager1.Load             elements[] = {
+                                                            IOrderManager1.Load.SAMPLE_DATA,
+                                                            IOrderManager1.Load.ORGANIZATION,
+                                                            IOrderManager1.Load.ITEMS,
+                                                            IOrderManager1.Load.RECURRENCE
                                                     };
     // @formatter:on
 
@@ -288,12 +288,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
             @Override
             public String getAuxFieldMetaKey() {
-                return OrderMeta.getAuxDataAuxFieldId();
+                return IOrderMeta.getAuxDataAuxFieldId();
             }
 
             @Override
             public String getValueMetaKey() {
-                return OrderMeta.getAuxDataValue();
+                return IOrderMeta.getAuxDataValue();
             }
         };
 
@@ -500,7 +500,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         //
         // screen fields
         //
-        addScreenHandler(id, OrderMeta.getId(), new ScreenHandler<Integer>() {
+        addScreenHandler(id, IOrderMeta.getId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(getId());
             }
@@ -515,7 +515,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(neededDays, OrderMeta.getNeededInDays(), new ScreenHandler<Integer>() {
+        addScreenHandler(neededDays, IOrderMeta.getNeededInDays(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 neededDays.setValue(getNeededDays());
             }
@@ -534,7 +534,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(numberOfForms, OrderMeta.getNumberOfForms(), new ScreenHandler<Integer>() {
+        addScreenHandler(numberOfForms, IOrderMeta.getNumberOfForms(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 numberOfForms.setValue(getNumberOfForms());
             }
@@ -553,7 +553,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(shipFrom, OrderMeta.getShipFromId(), new ScreenHandler<Integer>() {
+        addScreenHandler(shipFrom, IOrderMeta.getShipFromId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 shipFrom.setValue(getShipFromId());
             }
@@ -572,7 +572,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(shipTo, OrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
+        addScreenHandler(shipTo, IOrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 setOrganizationNameSelection();
             }
@@ -597,7 +597,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(status, OrderMeta.getStatusId(), new ScreenHandler<Integer>() {
+        addScreenHandler(status, IOrderMeta.getStatusId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 status.setValue(getStatusId());
             }
@@ -651,7 +651,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          * enabled for an existing order and only if it is
                          * pending or on hold
                          */
-                        item.setEnabled(manager.getOrder().getId() != null &&
+                        item.setEnabled(manager.getIorder().getId() != null &&
                                         (Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId) || Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(statusId)));
                     else
                         item.setEnabled(false);
@@ -665,7 +665,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(organizationAttention,
-                         OrderMeta.getOrganizationAttention(),
+                         IOrderMeta.getOrganizationAttention(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  organizationAttention.setValue(getOrganizationAttention());
@@ -685,7 +685,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                              }
                          });
 
-        addScreenHandler(orderedDate, OrderMeta.getOrderedDate(), new ScreenHandler<Datetime>() {
+        addScreenHandler(orderedDate, IOrderMeta.getOrderedDate(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 orderedDate.setValue(getOrderedDate());
             }
@@ -705,7 +705,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(multipleUnit,
-                         OrderMeta.getOrderOrganizationOrganizationAddressMultipleUnit(),
+                         IOrderMeta.getIorderOrganizationOrganizationAddressMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  multipleUnit.setValue(getMultipleUnit());
@@ -721,7 +721,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                              }
                          });
 
-        addScreenHandler(requestedBy, OrderMeta.getRequestedBy(), new ScreenHandler<String>() {
+        addScreenHandler(requestedBy, IOrderMeta.getRequestedBy(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 requestedBy.setValue(getRequestedBy());
             }
@@ -741,7 +741,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(streetAddress,
-                         OrderMeta.getOrganizationAddressStreetAddress(),
+                         IOrderMeta.getOrganizationAddressStreetAddress(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  streetAddress.setValue(getStreetAddress());
@@ -757,7 +757,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                              }
                          });
 
-        addScreenHandler(costCenter, OrderMeta.getCostCenterId(), new ScreenHandler<Integer>() {
+        addScreenHandler(costCenter, IOrderMeta.getCostCenterId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 costCenter.setValue(getCostCenterId());
             }
@@ -776,7 +776,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(city, OrderMeta.getOrganizationAddressCity(), new ScreenHandler<String>() {
+        addScreenHandler(city, IOrderMeta.getOrganizationAddressCity(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 city.setValue(getCity());
             }
@@ -791,7 +791,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        addScreenHandler(description, OrderMeta.getDescription(), new ScreenHandler<String>() {
+        addScreenHandler(description, IOrderMeta.getDescription(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 setDescriptionSelection();
             }
@@ -817,7 +817,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         });
 
         addScreenHandler(orgState,
-                         OrderMeta.getOrganizationAddressState(),
+                         IOrderMeta.getOrganizationAddressState(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  orgState.setValue(getState());
@@ -834,7 +834,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                          });
 
         addScreenHandler(zipCode,
-                         OrderMeta.getOrganizationAddressZipCode(),
+                         IOrderMeta.getOrganizationAddressZipCode(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
                                  zipCode.setValue(getZipCode());
@@ -1049,9 +1049,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 /*
                  * this screen should only query for send-out orders
                  */
-                field = new QueryData(OrderMeta.getType(),
+                field = new QueryData(IOrderMeta.getType(),
                                       QueryData.Type.STRING,
-                                      Constants.order().SEND_OUT);
+                                      Constants.iorder().SEND_OUT);
                 query.setFields(field);
                 query.setRowsPerPage(25);
                 OrderService1.get().query(query, queryCall);
@@ -1098,7 +1098,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 QueryData field;
 
                 field = new QueryData();
-                field.setKey(OrderMeta.getId());
+                field.setKey(IOrderMeta.getId());
                 field.setQuery( ((Button)event.getSource()).getAction());
                 field.setType(QueryData.Type.INTEGER);
 
@@ -1130,7 +1130,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                OrderReturnVO ret;
+                IOrderReturnVO ret;
                 ArrayList<Integer> ids;
 
                 if (screen == event.getSource())
@@ -1274,8 +1274,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         setBusy();
 
         if (addCall == null) {
-            addCall = new AsyncCallbackUI<OrderManager1>() {
-                public void success(OrderManager1 result) {
+            addCall = new AsyncCallbackUI<IOrderManager1>() {
+                public void success(IOrderManager1 result) {
                     manager = result;
                     cache = new HashMap<String, Object>();
                     setData();
@@ -1293,7 +1293,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             };
         }
 
-        OrderService1.get().getInstance(Constants.order().SEND_OUT, addCall);
+        OrderService1.get().getInstance(Constants.iorder().SEND_OUT, addCall);
     }
 
     @UiHandler("update")
@@ -1301,18 +1301,18 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         setBusy(Messages.get().lockForUpdate());
 
         if (fetchForUpdateCall == null) {
-            fetchForUpdateCall = new AsyncCallbackUI<OrderManager1>() {
-                public void success(OrderManager1 result) {
+            fetchForUpdateCall = new AsyncCallbackUI<IOrderManager1>() {
+                public void success(IOrderManager1 result) {
                     manager = result;
-                    if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder()
+                    if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getIorder()
                                                                                     .getStatusId())) {
                         Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
                         try {
-                            manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                                 OrderManager1.Load.SAMPLE_DATA,
-                                                                 OrderManager1.Load.ORGANIZATION,
-                                                                 OrderManager1.Load.ITEMS,
-                                                                 OrderManager1.Load.RECURRENCE);
+                            manager = OrderService1.get().unlock(manager.getIorder().getId(),
+                                                                 IOrderManager1.Load.SAMPLE_DATA,
+                                                                 IOrderManager1.Load.ORGANIZATION,
+                                                                 IOrderManager1.Load.ITEMS,
+                                                                 IOrderManager1.Load.RECURRENCE);
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
@@ -1348,7 +1348,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
 
         OrderService1.get()
-                     .fetchForUpdate(manager.getOrder().getId(), elements, fetchForUpdateCall);
+                     .fetchForUpdate(manager.getIorder().getId(), elements, fetchForUpdateCall);
     }
 
     @UiHandler("commit")
@@ -1412,8 +1412,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             setBusy(Messages.get().gen_updating());
 
         if (updateCall == null) {
-            updateCall = new AsyncCallbackUI<OrderManager1>() {
-                public void success(OrderManager1 result) {
+            updateCall = new AsyncCallbackUI<IOrderManager1>() {
+                public void success(IOrderManager1 result) {
                     manager = result;
                     setData();
                     setState(DISPLAY);
@@ -1479,8 +1479,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             if (unlockCall == null) {
-                unlockCall = new AsyncCallbackUI<OrderManager1>() {
-                    public void success(OrderManager1 result) {
+                unlockCall = new AsyncCallbackUI<IOrderManager1>() {
+                    public void success(IOrderManager1 result) {
                         manager = result;
                         setData();
                         setState(DISPLAY);
@@ -1496,21 +1496,21 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 };
             }
 
-            OrderService1.get().unlock(manager.getOrder().getId(), elements, unlockCall);
+            OrderService1.get().unlock(manager.getIorder().getId(), elements, unlockCall);
         }
         cache = null;
     }
 
     protected void duplicate() {
         if (duplicateCall == null) {
-            duplicateCall = new AsyncCallbackUI<OrderReturnVO>() {
-                public void success(OrderReturnVO result) {
+            duplicateCall = new AsyncCallbackUI<IOrderReturnVO>() {
+                public void success(IOrderReturnVO result) {
                     manager = result.getManager();
                     if (result.getErrors().hasWarnings())
                         Window.alert(getWarnings(result.getErrors().getErrorList(), false));
                     if ( !result.getErrors().hasWarnings() && result.getErrors().hasErrors())
                         showErrors(result.getErrors());
-                    manager.getOrder().setParentOrderId(null);
+                    manager.getIorder().setParentIorderId(null);
                     /*
                      * the screen is in add state, so we need the cache here
                      */
@@ -1532,14 +1532,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             };
         }
 
-        OrderService1.get().duplicate(manager.getOrder().getId(), duplicateCall);
+        OrderService1.get().duplicate(manager.getIorder().getId(), duplicateCall);
     }
 
     protected void shippingInfo() {
         try {
             setBusy(Messages.get().gen_fetching());
 
-            ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
+            ShippingService.get().fetchByOrderId(manager.getIorder().getId(),
                                                  new SyncCallback<ShippingViewDO>() {
                                                      public void onSuccess(ShippingViewDO result) {
                                                          try {
@@ -1584,8 +1584,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         query = new Query();
         field = new QueryData();
-        field.setKey("ORDERID");
-        field.setQuery(manager.getOrder().getId().toString());
+        field.setKey("ORDER_ID");
+        field.setQuery(manager.getIorder().getId().toString());
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
@@ -1620,16 +1620,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void orderHistory() {
         IdNameVO hist;
 
-        hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
+        hist = new IdNameVO(manager.getIorder().getId(), manager.getIorder().getId().toString());
         HistoryScreen.showHistory(Messages.get().order_orderHistory(),
-                                  Constants.table().ORDER,
+                                  Constants.table().IORDER,
                                   hist);
     }
 
     protected void orderOrganizationHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderOrganizationViewDO data;
+        IOrderOrganizationViewDO data;
 
         count = manager.organization.count();
         refVoList = new IdNameVO[count];
@@ -1639,14 +1639,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
 
         HistoryScreen.showHistory(Messages.get().order_orderOrganizationHistory(),
-                                  Constants.table().ORDER_ORGANIZATION,
+                                  Constants.table().IORDER_ORGANIZATION,
                                   refVoList);
     }
 
     protected void orderItemHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderItemViewDO data;
+        IOrderItemViewDO data;
 
         count = manager.item.count();
         refVoList = new IdNameVO[count];
@@ -1655,14 +1655,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             refVoList[i] = new IdNameVO(data.getId(), data.getInventoryItemName());
         }
         HistoryScreen.showHistory(Messages.get().order_orderItemHistory(),
-                                  Constants.table().ORDER_ITEM,
+                                  Constants.table().IORDER_ITEM,
                                   refVoList);
     }
 
     protected void orderTestHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderTestViewDO data;
+        IOrderTestViewDO data;
 
         count = manager.test.count();
         refVoList = new IdNameVO[count];
@@ -1671,14 +1671,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             refVoList[i] = new IdNameVO(data.getId(), data.getTestName());
         }
         HistoryScreen.showHistory(Messages.get().order_orderTestHistory(),
-                                  Constants.table().ORDER_TEST,
+                                  Constants.table().IORDER_TEST,
                                   refVoList);
     }
 
     protected void orderContainerHistory() {
         int i, count;
         IdNameVO refVoList[];
-        OrderContainerDO data;
+        IOrderContainerDO data;
         DictionaryDO dict;
 
         try {
@@ -1690,7 +1690,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
             }
             HistoryScreen.showHistory(Messages.get().order_orderContainerHistory(),
-                                      Constants.table().ORDER_CONTAINER,
+                                      Constants.table().IORDER_CONTAINER,
                                       refVoList);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1711,7 +1711,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         query = new Query();
         query.setRowsPerPage(25);
         field = new QueryData();
-        field.setKey(OrderMeta.getId());
+        field.setKey(IOrderMeta.getId());
         field.setQuery(id.toString());
         field.setType(QueryData.Type.INTEGER);
 
@@ -1781,8 +1781,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
              * isn't a ship-to selected currently, then there must have been
              * before, thus it needs to be removed from the manager
              */
-            manager.getOrder().setOrganizationId(null);
-            manager.getOrder().setOrganization(null);
+            manager.getIorder().setOrganizationId(null);
+            manager.getIorder().setOrganization(null);
             shipTo.setValue(null, "");
             multipleUnit.setValue(null);
             streetAddress.setValue(null);
@@ -1791,8 +1791,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             zipCode.setValue(null);
         } else {
             org = (OrganizationDO)row.getData();
-            manager.getOrder().setOrganizationId(org.getId());
-            manager.getOrder().setOrganization(org);
+            manager.getIorder().setOrganizationId(org.getId());
+            manager.getIorder().setOrganization(org);
             shipTo.setValue(org.getId(), org.getName());
             multipleUnit.setValue(org.getAddress().getMultipleUnit());
             streetAddress.setValue(org.getAddress().getStreetAddress());
@@ -1859,10 +1859,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         row = description.getValue();
         if (row == null || row.getId() == null || row.getData() == null) {
-            manager.getOrder().setDescription(null);
+            manager.getIorder().setDescription(null);
         } else {
             data = (IdNameVO)row.getData();
-            manager.getOrder().setDescription(data.getName());
+            manager.getIorder().setDescription(data.getName());
         }
 
     }
@@ -1912,27 +1912,27 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     private Integer getId() {
         if (manager == null)
             return null;
-        return manager.getOrder().getId();
+        return manager.getIorder().getId();
     }
 
     private Integer getNeededDays() {
         if (manager == null)
             return null;
-        return manager.getOrder().getNeededInDays();
+        return manager.getIorder().getNeededInDays();
     }
 
     private void setNeededDays(Integer neededDays) {
-        manager.getOrder().setNeededInDays(neededDays);
+        manager.getIorder().setNeededInDays(neededDays);
     }
 
     private Integer getNumberOfForms() {
         if (manager == null)
             return null;
-        return manager.getOrder().getNumberOfForms();
+        return manager.getIorder().getNumberOfForms();
     }
 
     private void setNumberOfForms(Integer numberOfForms) {
-        manager.getOrder().setNumberOfForms(numberOfForms);
+        manager.getIorder().setNumberOfForms(numberOfForms);
     }
 
     private String getMultipleUnit() {
@@ -1947,21 +1947,21 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     private String getOrganizationAttention() {
         if (manager == null)
             return null;
-        return manager.getOrder().getOrganizationAttention();
+        return manager.getIorder().getOrganizationAttention();
     }
 
     private void setOrganizationAttention(String organizationAttention) {
-        manager.getOrder().setOrganizationAttention(organizationAttention);
+        manager.getIorder().setOrganizationAttention(organizationAttention);
     }
 
     private String getRequestedBy() {
         if (manager == null)
             return null;
-        return manager.getOrder().getRequestedBy();
+        return manager.getIorder().getRequestedBy();
     }
 
     private void setRequestedBy(String requestedBy) {
-        manager.getOrder().setRequestedBy(requestedBy);
+        manager.getIorder().setRequestedBy(requestedBy);
     }
 
     private String getStreetAddress() {
@@ -1994,41 +1994,41 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     private Datetime getOrderedDate() {
         if (manager == null)
             return null;
-        return manager.getOrder().getOrderedDate();
+        return manager.getIorder().getOrderedDate();
     }
 
     private void setOrderedDate(Datetime date) {
-        manager.getOrder().setOrderedDate(date);
+        manager.getIorder().setOrderedDate(date);
     }
 
     private Integer getStatusId() {
         if (manager == null)
             return null;
-        return manager.getOrder().getStatusId();
+        return manager.getIorder().getStatusId();
     }
 
     private void setStatusId(Integer statusId) {
-        manager.getOrder().setStatusId(statusId);
+        manager.getIorder().setStatusId(statusId);
     }
 
     private Integer getShipFromId() {
         if (manager == null)
             return null;
-        return manager.getOrder().getShipFromId();
+        return manager.getIorder().getShipFromId();
     }
 
     private void setShipFromId(Integer shipFromId) {
-        manager.getOrder().setShipFromId(shipFromId);
+        manager.getIorder().setShipFromId(shipFromId);
     }
 
     private Integer getCostCenterId() {
         if (manager == null)
             return null;
-        return manager.getOrder().getCostCenterId();
+        return manager.getIorder().getCostCenterId();
     }
 
     private void setCostCenterId(Integer costCenterId) {
-        manager.getOrder().setCostCenterId(costCenterId);
+        manager.getIorder().setCostCenterId(costCenterId);
     }
 
     private String getState() {
@@ -2043,7 +2043,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     private String getDescription() {
         if (manager == null)
             return null;
-        return manager.getOrder().getDescription();
+        return manager.getIorder().getDescription();
     }
 
     /**
@@ -2053,7 +2053,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         if (manager == null)
             return null;
 
-        return manager.getOrder().getOrganization();
+        return manager.getIorder().getOrganization();
     }
 
     /**
@@ -2082,8 +2082,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         } else {
             setBusy(Messages.get().gen_fetching());
             if (fetchByIdCall == null) {
-                fetchByIdCall = new AsyncCallbackUI<OrderManager1>() {
-                    public void success(OrderManager1 result) {
+                fetchByIdCall = new AsyncCallbackUI<IOrderManager1>() {
+                    public void success(IOrderManager1 result) {
                         manager = result;
                         setData();
                         setState(DISPLAY);
@@ -2125,7 +2125,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         Integer prevId;
         ArrayList<Integer> ids;
         AuxDataViewDO aux;
-        OrderTestViewDO test;
+        IOrderTestViewDO test;
         ArrayList<TestManager> tms;
         ArrayList<AuxFieldGroupManager> afgms;
 
@@ -2191,7 +2191,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     private void addTest(Integer id, boolean isTest, Integer index) {
         int numAuxBef, numAuxAft;
-        OrderReturnVO ret;
+        IOrderReturnVO ret;
         try {
             numAuxBef = manager.auxData.count();
             ret = OrderService1.get().addTest(manager, id, isTest, index);

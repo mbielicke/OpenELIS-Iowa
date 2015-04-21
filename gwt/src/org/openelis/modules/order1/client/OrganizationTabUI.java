@@ -36,10 +36,10 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderOrganizationViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.manager.OrderManager1;
-import org.openelis.meta.OrderMeta;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
@@ -108,7 +108,7 @@ public class OrganizationTabUI extends Screen {
 
     protected boolean                      isVisible, redraw;
 
-    protected OrderManager1                manager;
+    protected IOrderManager1                manager;
 
     public OrganizationTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -146,31 +146,31 @@ public class OrganizationTabUI extends Screen {
                     if (qd != null) {
                         switch (i) {
                             case 0:
-                                qd.setKey(OrderMeta.getOrderOrganizationTypeId());
+                                qd.setKey(IOrderMeta.getIorderOrganizationTypeId());
                                 break;
                             case 1:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAttention());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAttention());
                                 break;
                             case 2:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationName());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationName());
                                 break;
                             case 3:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAddressMultipleUnit());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressMultipleUnit());
                                 break;
                             case 4:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAddressStreetAddress());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressStreetAddress());
                                 break;
                             case 5:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAddressCity());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressCity());
                                 break;
                             case 6:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAddressState());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressState());
                                 break;
                             case 7:
-                                qd.setKey(OrderMeta.getOrganizationOrganizationAddressZipCode());
+                                qd.setKey(IOrderMeta.getIorganizationOrganizationAddressZipCode());
                                 break;
                             case 8:
-                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAddressCountry());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressCountry());
                                 break;
                         }
                         qds.add(qd);
@@ -192,7 +192,7 @@ public class OrganizationTabUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                OrderOrganizationViewDO data;
+                IOrderOrganizationViewDO data;
                 OrganizationDO org;
 
                 r = event.getRow();
@@ -252,7 +252,7 @@ public class OrganizationTabUI extends Screen {
 
         table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                OrderOrganizationViewDO data;
+                IOrderOrganizationViewDO data;
 
                 /*
                  * When the fields of the order organizations are updated in the
@@ -264,7 +264,7 @@ public class OrganizationTabUI extends Screen {
                  * added to the manager.
                  */
                 data = manager.organization.add();
-                data.setOrderId(manager.getOrder().getId());
+                data.setIorderId(manager.getIorder().getId());
                 event.getRow().setData(data);
             }
         });
@@ -349,7 +349,7 @@ public class OrganizationTabUI extends Screen {
         table.startEditing(n, 0);
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
         }
@@ -363,7 +363,7 @@ public class OrganizationTabUI extends Screen {
     public void onDataChange() {
         int count1, count2;
         String name;
-        OrderOrganizationViewDO org;
+        IOrderOrganizationViewDO org;
         Row r;
 
         count1 = table.getRowCount();
@@ -416,7 +416,7 @@ public class OrganizationTabUI extends Screen {
     private ArrayList<Row> getTableModel() {
         int i;
         Row row;
-        OrderOrganizationViewDO data;
+        IOrderOrganizationViewDO data;
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();

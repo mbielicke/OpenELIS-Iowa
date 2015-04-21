@@ -27,25 +27,25 @@ package org.openelis.manager;
 
 import org.openelis.modules.order.client.OrderService;
 
-public class OrderItemManagerProxy {
-    
-    public OrderItemManagerProxy() {
+public class IOrderFillManagerProxy {
+
+    public IOrderFillManagerProxy() {
     }
 
-    public OrderItemManager fetchByOrderId(Integer orgId) throws Exception {
-        return OrderService.get().fetchItemByOrderId(orgId);
+    public IOrderFillManager fetchByIorderId(Integer id) throws Exception {
+        return OrderService.get().fetchFillByIorderId(id);
     }
 
-    public OrderItemManager add(OrderItemManager man) throws Exception {
+    public IOrderFillManager add(IOrderFillManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public OrderItemManager update(OrderItemManager man) throws Exception {
+    public IOrderFillManager update(IOrderFillManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public void validate(OrderItemManager man, String type) throws Exception {
+    public void validate(IOrderFillManager man) throws Exception {
     }
 }

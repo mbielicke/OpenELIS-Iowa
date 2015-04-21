@@ -25,36 +25,36 @@
  */
 package org.openelis.manager;
 
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.modules.order.client.OrderService;
 
-public class OrderTestAnalyteManagerProxy {
+public class IOrderTestAnalyteManagerProxy {
 
-    public OrderTestAnalyteManagerProxy() {
+    public IOrderTestAnalyteManagerProxy() {
     }
 
-    public OrderTestAnalyteManager fetchByOrderTestId(Integer id) throws Exception {
-        return OrderService.get().fetchTestAnalyteByOrderTestId(id);
+    public IOrderTestAnalyteManager fetchByIorderTestId(Integer id) throws Exception {
+        return OrderService.get().fetchTestAnalyteByIorderTestId(id);
     }
     
-    public OrderTestAnalyteManager fetchMergedByOrderTestId(Integer id) throws Exception {
-        return OrderService.get().fetchMergedTestAnalyteByOrderTestId(id);
+    public IOrderTestAnalyteManager fetchMergedByIorderTestId(Integer id) throws Exception {
+        return OrderService.get().fetchMergedTestAnalyteByIorderTestId(id);
     }
     
-    public OrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
+    public IOrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
         return OrderService.get().fetchTestAnalyteByTestId(id);
     }
 
-    public OrderTestAnalyteManager add(OrderTestAnalyteManager man) throws Exception {
+    public IOrderTestAnalyteManager add(IOrderTestAnalyteManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public OrderTestAnalyteManager update(OrderTestAnalyteManager man) throws Exception {
+    public IOrderTestAnalyteManager update(IOrderTestAnalyteManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public void validate(OrderTestAnalyteManager man, OrderTestViewDO test, int index) throws Exception {
+    public void validate(IOrderTestAnalyteManager man, IOrderTestViewDO test, int index) throws Exception {
     }
 }

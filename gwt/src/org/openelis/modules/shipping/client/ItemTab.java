@@ -30,7 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -51,7 +51,7 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
@@ -383,7 +383,7 @@ public class ItemTab extends Screen {
             return;
 
         data = (ShippingItemDO)row.data;
-        if (data.getReferenceTableId().equals(Constants.table().ORDER_ITEM)) {
+        if (data.getReferenceTableId().equals(Constants.table().IORDER_ITEM)) {
             showOrder(data);
         } else if (data.getReferenceTableId().equals(Constants.table().SAMPLE_ITEM)) {
             showSample(data);
@@ -393,8 +393,8 @@ public class ItemTab extends Screen {
     private void showOrder(ShippingItemDO data) {
         try {
             window.setBusy(Messages.get().fetching());
-            OrderService.get().fetchByOrderItemId(data.getReferenceId(), new SyncCallback<OrderManager>() {
-                public void onSuccess(OrderManager result) {                    
+            OrderService.get().fetchByIorderItemId(data.getReferenceId(), new SyncCallback<IOrderManager>() {
+                public void onSuccess(IOrderManager result) {                    
                     ScreenWindow modal;
                     try {
                         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);

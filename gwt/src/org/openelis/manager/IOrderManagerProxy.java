@@ -28,9 +28,9 @@ package org.openelis.manager;
 import java.util.HashMap;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FieldErrorWarning;
@@ -39,71 +39,71 @@ import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.test.client.TestService;
 
-public class OrderManagerProxy {
+public class IOrderManagerProxy {
 
-    public OrderManagerProxy() {
+    public IOrderManagerProxy() {
     }
 
-    public OrderManager fetchById(Integer id) throws Exception {
+    public IOrderManager fetchById(Integer id) throws Exception {
         return OrderService.get().fetchById(id);
     }
     
-    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
+    public IOrderManager fetchWithOrganizations(Integer id) throws Exception {
         return OrderService.get().fetchWithOrganizations(id);
     }
 
-    public OrderManager fetchWithItems(Integer id) throws Exception {
+    public IOrderManager fetchWithItems(Integer id) throws Exception {
         return OrderService.get().fetchWithItems(id);
     }
 
-    public OrderManager fetchWithFills(Integer id) throws Exception {
+    public IOrderManager fetchWithFills(Integer id) throws Exception {
         return OrderService.get().fetchWithFills(id);
     }
 
-    public OrderManager fetchWithNotes(Integer id) throws Exception {
+    public IOrderManager fetchWithNotes(Integer id) throws Exception {
         return OrderService.get().fetchWithNotes(id);
     }
     
-    public OrderManager fetchWithTests(Integer id) throws Exception {
+    public IOrderManager fetchWithTests(Integer id) throws Exception {
         return OrderService.get().fetchWithTests(id);
     }
     
-    public OrderManager fetchWithContainers(Integer id) throws Exception {
+    public IOrderManager fetchWithContainers(Integer id) throws Exception {
         return OrderService.get().fetchWithContainers(id);
     }
     
-    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+    public IOrderManager fetchWithRecurring(Integer id) throws Exception {
         return OrderService.get().fetchWithRecurring(id);
     }
     
-    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
-        return OrderService.get().fetchRecurrenceByOrderId(id);
+    public IOrderRecurrenceDO fetchRecurrenceByIorderId(Integer id) throws Exception {
+        return OrderService.get().fetchRecurrenceByIorderId(id);
     }
 
-    public OrderManager add(OrderManager man) throws Exception {
+    public IOrderManager add(IOrderManager man) throws Exception {
         return OrderService.get().add(man);
     }
 
-    public OrderManager update(OrderManager man) throws Exception {
+    public IOrderManager update(IOrderManager man) throws Exception {
         return OrderService.get().update(man);
     }
 
-    public OrderManager fetchForUpdate(Integer id) throws Exception {
+    public IOrderManager fetchForUpdate(Integer id) throws Exception {
         return OrderService.get().fetchForUpdate(id);
     }
 
-    public OrderManager abortUpdate(Integer id) throws Exception {
+    public IOrderManager abortUpdate(Integer id) throws Exception {
         return OrderService.get().abortUpdate(id);
     }
 
-    public void validate(OrderManager man) throws Exception {
+    public void validate(IOrderManager man) throws Exception {
         int i, testCount, contCount;
         Integer sequence, testId;
         Boolean testHasSamType;
-        OrderTestManager testMan;
-        OrderContainerManager contMan;
-        OrderTestViewDO test;
-        OrderContainerDO cont;
+        IOrderTestManager testMan;
+        IOrderContainerManager contMan;
+        IOrderTestViewDO test;
+        IOrderContainerDO cont;
         ValidationErrorsList warnList;
         HashMap<Integer, Boolean> samTypeMap;
         TestTypeOfSampleManager samTypeMan;
@@ -180,7 +180,7 @@ public class OrderManagerProxy {
         return Boolean.FALSE;
     }
     
-    private String getTestLabel(OrderTestViewDO test) {
+    private String getTestLabel(IOrderTestViewDO test) {
         return (test.getTestId() == null) ? "" :
             DataBaseUtil.concatWithSeparator(test.getTestName(), ", ", test.getMethodName());
     }

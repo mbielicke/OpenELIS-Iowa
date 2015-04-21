@@ -3,20 +3,20 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
-import org.openelis.manager.OrderReceiptManager;
-import org.openelis.manager.OrderTestAnalyteManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.IOrderContainerManager;
+import org.openelis.manager.IOrderFillManager;
+import org.openelis.manager.IOrderItemManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderOrganizationManager;
+import org.openelis.manager.IOrderReceiptManager;
+import org.openelis.manager.IOrderTestAnalyteManager;
+import org.openelis.manager.IOrderTestManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -41,17 +41,17 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public void abortUpdate(Integer id, AsyncCallback<OrderManager> callback) {
+    public void abortUpdate(Integer id, AsyncCallback<IOrderManager> callback) {
         service.abortUpdate(id, callback);
     }
 
     @Override
-    public void add(OrderManager man, AsyncCallback<OrderManager> callback) {
+    public void add(IOrderManager man, AsyncCallback<IOrderManager> callback) {
         service.add(man, callback);
     }
 
     @Override
-    public void duplicate(Integer id, AsyncCallback<OrderManager> callback) {
+    public void duplicate(Integer id, AsyncCallback<IOrderManager> callback) {
         service.duplicate(id, callback);
     }
 
@@ -61,99 +61,99 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public void fetchById(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchById(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchById(id, callback);
     }
 
     @Override
-    public void fetchByOrderItemId(Integer id, AsyncCallback<OrderManager> callback) {
-        service.fetchByOrderItemId(id, callback);
+    public void fetchByIorderItemId(Integer id, AsyncCallback<IOrderManager> callback) {
+        service.fetchByIorderItemId(id, callback);
     }
 
     @Override
-    public void fetchContainerByOrderId(Integer id, AsyncCallback<OrderContainerManager> callback) {
+    public void fetchContainerByOrderId(Integer id, AsyncCallback<IOrderContainerManager> callback) {
         service.fetchContainerByOrderId(id, callback);
     }
 
     @Override
-    public void fetchFillByOrderId(Integer id, AsyncCallback<OrderFillManager> callback) {
-        service.fetchFillByOrderId(id, callback);
+    public void fetchFillByIorderId(Integer id, AsyncCallback<IOrderFillManager> callback) {
+        service.fetchFillByIorderId(id, callback);
     }
 
     @Override
-    public void fetchForUpdate(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchForUpdate(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchForUpdate(id, callback);
     }
 
     @Override
-    public void fetchItemByOrderId(Integer id, AsyncCallback<OrderItemManager> callback) {
-        service.fetchItemByOrderId(id, callback);
+    public void fetchItemByIorderId(Integer id, AsyncCallback<IOrderItemManager> callback) {
+        service.fetchItemByIorderId(id, callback);
     }
 
     @Override
-    public void fetchOrganizationByOrderId(Integer id,
-                                           AsyncCallback<OrderOrganizationManager> callback) {
-        service.fetchOrganizationByOrderId(id, callback);
+    public void fetchOrganizationByIorderId(Integer id,
+                                           AsyncCallback<IOrderOrganizationManager> callback) {
+        service.fetchOrganizationByIorderId(id, callback);
     }
 
     @Override
-    public void fetchReceiptByOrderId(Integer id, AsyncCallback<OrderReceiptManager> callback) {
-        service.fetchReceiptByOrderId(id, callback);
+    public void fetchReceiptByIorderId(Integer id, AsyncCallback<IOrderReceiptManager> callback) {
+        service.fetchReceiptByIorderId(id, callback);
     }
 
     @Override
-    public void fetchRecurrenceByOrderId(Integer id, AsyncCallback<OrderRecurrenceDO> callback) {
-        service.fetchRecurrenceByOrderId(id, callback);
+    public void fetchRecurrenceByIorderId(Integer id, AsyncCallback<IOrderRecurrenceDO> callback) {
+        service.fetchRecurrenceByIorderId(id, callback);
     }
 
     @Override
-    public void fetchTestAnalyteByOrderTestId(Integer id,
-                                              AsyncCallback<OrderTestAnalyteManager> callback) {
-        service.fetchTestAnalyteByOrderTestId(id, callback);
+    public void fetchTestAnalyteByIorderTestId(Integer id,
+                                              AsyncCallback<IOrderTestAnalyteManager> callback) {
+        service.fetchTestAnalyteByIorderTestId(id, callback);
     }
 
     @Override
-    public void fetchTestAnalyteByTestId(Integer id, AsyncCallback<OrderTestAnalyteManager> callback) {
+    public void fetchTestAnalyteByTestId(Integer id, AsyncCallback<IOrderTestAnalyteManager> callback) {
         service.fetchTestAnalyteByTestId(id, callback);
     }
 
     @Override
-    public void fetchTestByOrderId(Integer id, AsyncCallback<OrderTestManager> callback) {
-        service.fetchTestByOrderId(id, callback);
+    public void fetchTestByIorderId(Integer id, AsyncCallback<IOrderTestManager> callback) {
+        service.fetchTestByIorderId(id, callback);
     }
 
     @Override
-    public void fetchWithContainers(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithContainers(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithContainers(id, callback);
     }
 
     @Override
-    public void fetchWithFills(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithFills(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithFills(id, callback);
     }
 
     @Override
-    public void fetchWithItems(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithItems(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithItems(id, callback);
     }
 
     @Override
-    public void fetchWithNotes(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithNotes(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithNotes(id, callback);
     }
 
     @Override
-    public void fetchWithOrganizations(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithOrganizations(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithOrganizations(id, callback);
     }
 
     @Override
-    public void fetchWithRecurring(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithRecurring(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithRecurring(id, callback);
     }
 
     @Override
-    public void fetchWithTests(Integer id, AsyncCallback<OrderManager> callback) {
+    public void fetchWithTests(Integer id, AsyncCallback<IOrderManager> callback) {
         service.fetchWithTests(id, callback);
     }
 
@@ -168,20 +168,20 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public void queryOrderFill(Query query, AsyncCallback<ArrayList<OrderViewDO>> callback) {
+    public void queryOrderFill(Query query, AsyncCallback<ArrayList<IOrderViewDO>> callback) {
         service.queryOrderFill(query, callback);
     }
 
     @Override
-    public void update(OrderManager man, AsyncCallback<OrderManager> callback) {
+    public void update(IOrderManager man, AsyncCallback<IOrderManager> callback) {
         service.update(man, callback);
     }
 
     @Override
-    public OrderManager fetchById(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchById(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchById(id, callback);
         return callback.getResult();
     }
@@ -197,79 +197,79 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public OrderManager fetchByOrderItemId(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchByIorderItemId(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
-        service.fetchByOrderItemId(id, callback);
+        callback = new Callback<IOrderManager>();
+        service.fetchByIorderItemId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithOrganizations(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithOrganizations(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchWithItems(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithItems(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithItems(id, callback);
         return callback.getResult();
     }
 
     @Override
-    public OrderManager fetchWithFills(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithFills(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithFills(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchWithNotes(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithNotes(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithNotes(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchWithTests(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithTests(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithTests(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchWithContainers(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithContainers(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithContainers(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchWithRecurring(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchWithRecurring(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchWithRecurring(id, callback);
         return callback.getResult();
 
@@ -286,150 +286,150 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {
-        Callback<ArrayList<OrderViewDO>> callback;
+    public ArrayList<IOrderViewDO> queryOrderFill(Query query) throws Exception {
+        Callback<ArrayList<IOrderViewDO>> callback;
         
-        callback = new Callback<ArrayList<OrderViewDO>>();
+        callback = new Callback<ArrayList<IOrderViewDO>>();
         service.queryOrderFill(query, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager add(OrderManager man) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager add(IOrderManager man) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.add(man, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager update(OrderManager man) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager update(IOrderManager man) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.update(man, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager fetchForUpdate(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager fetchForUpdate(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.fetchForUpdate(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager abortUpdate(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager abortUpdate(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.abortUpdate(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderManager duplicate(Integer id) throws Exception {
-        Callback<OrderManager> callback;
+    public IOrderManager duplicate(Integer id) throws Exception {
+        Callback<IOrderManager> callback;
         
-        callback = new Callback<OrderManager>();
+        callback = new Callback<IOrderManager>();
         service.duplicate(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception {
-        Callback<OrderOrganizationManager> callback;
+    public IOrderOrganizationManager fetchOrganizationByIorderId(Integer id) throws Exception {
+        Callback<IOrderOrganizationManager> callback;
         
-        callback = new Callback<OrderOrganizationManager>();
-        service.fetchOrganizationByOrderId(id, callback);
+        callback = new Callback<IOrderOrganizationManager>();
+        service.fetchOrganizationByIorderId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
-        Callback<OrderItemManager> callback;
+    public IOrderItemManager fetchItemByIorderId(Integer id) throws Exception {
+        Callback<IOrderItemManager> callback;
         
-        callback = new Callback<OrderItemManager>();
-        service.fetchItemByOrderId(id, callback);
+        callback = new Callback<IOrderItemManager>();
+        service.fetchItemByIorderId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
-        Callback<OrderFillManager> callback;
+    public IOrderFillManager fetchFillByIorderId(Integer id) throws Exception {
+        Callback<IOrderFillManager> callback;
         
-        callback = new Callback<OrderFillManager>();
-        service.fetchFillByOrderId(id, callback);
+        callback = new Callback<IOrderFillManager>();
+        service.fetchFillByIorderId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception {
-        Callback<OrderReceiptManager> callback;
+    public IOrderReceiptManager fetchReceiptByIorderId(Integer id) throws Exception {
+        Callback<IOrderReceiptManager> callback;
         
-        callback = new Callback<OrderReceiptManager>();
-        service.fetchReceiptByOrderId(id, callback);
+        callback = new Callback<IOrderReceiptManager>();
+        service.fetchReceiptByIorderId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {
-        Callback<OrderTestManager> callback;
+    public IOrderTestManager fetchTestByIorderId(Integer id) throws Exception {
+        Callback<IOrderTestManager> callback;
         
-        callback = new Callback<OrderTestManager>();
-        service.fetchTestByOrderId(id, callback);
+        callback = new Callback<IOrderTestManager>();
+        service.fetchTestByIorderId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception {
-        Callback<OrderTestAnalyteManager> callback;
+    public IOrderTestAnalyteManager fetchTestAnalyteByIorderTestId(Integer id) throws Exception {
+        Callback<IOrderTestAnalyteManager> callback;
         
-        callback = new Callback<OrderTestAnalyteManager>();
-        service.fetchTestAnalyteByOrderTestId(id, callback);
+        callback = new Callback<IOrderTestAnalyteManager>();
+        service.fetchTestAnalyteByIorderTestId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
-        Callback<OrderTestAnalyteManager> callback;
+    public IOrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
+        Callback<IOrderTestAnalyteManager> callback;
         
-        callback = new Callback<OrderTestAnalyteManager>();
+        callback = new Callback<IOrderTestAnalyteManager>();
         service.fetchTestAnalyteByTestId(id, callback);
         return callback.getResult();
     }
 
     @Override
-    public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
-        Callback<OrderContainerManager> callback;
+    public IOrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
+        Callback<IOrderContainerManager> callback;
         
-        callback = new Callback<OrderContainerManager>();
+        callback = new Callback<IOrderContainerManager>();
         service.fetchContainerByOrderId(id, callback);
         return callback.getResult();
 
     }
 
     @Override
-    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
-        Callback<OrderRecurrenceDO> callback;
+    public IOrderRecurrenceDO fetchRecurrenceByIorderId(Integer id) throws Exception {
+        Callback<IOrderRecurrenceDO> callback;
         
-        callback = new Callback<OrderRecurrenceDO>();
-        service.fetchRecurrenceByOrderId(id, callback);
+        callback = new Callback<IOrderRecurrenceDO>();
+        service.fetchRecurrenceByIorderId(id, callback);
         return callback.getResult();
 
     }
@@ -445,18 +445,18 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public void fetchMergedTestAnalyteByOrderTestId(Integer id,
-                                                    AsyncCallback<OrderTestAnalyteManager> callback) {
-        service.fetchMergedTestAnalyteByOrderTestId(id, callback);
+    public void fetchMergedTestAnalyteByIorderTestId(Integer id,
+                                                    AsyncCallback<IOrderTestAnalyteManager> callback) {
+        service.fetchMergedTestAnalyteByIorderTestId(id, callback);
         
     }
 
     @Override
-    public OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception {
-        Callback<OrderTestAnalyteManager> callback;
+    public IOrderTestAnalyteManager fetchMergedTestAnalyteByIorderTestId(Integer id) throws Exception {
+        Callback<IOrderTestAnalyteManager> callback;
         
-        callback = new Callback<OrderTestAnalyteManager>();
-        service.fetchMergedTestAnalyteByOrderTestId(id, callback);
+        callback = new Callback<IOrderTestAnalyteManager>();
+        service.fetchMergedTestAnalyteByIorderTestId(id, callback);
         return callback.getResult();
 
     }
