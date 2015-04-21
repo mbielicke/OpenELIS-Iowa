@@ -129,6 +129,7 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.Warning;
@@ -287,7 +288,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected boolean                                   canEditSample, canEditPatient,
                     isPatientLocked, canEditNextOfKin, isNextOfKinLocked, isBusy,
-                    setSelectedAsNextOfKin, closeLoginScreen, isAttachmentScreenOpen, revalidate;
+                    setSelectedAsNextOfKin, closeLoginScreen, isAttachmentScreenOpen, revalidate,
+                    hasDomainScriptlet;
 
     protected ModulePermission                          userPermission;
 
@@ -470,6 +472,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         initWidget(uiBinder.createAndBindUi(this));
 
         manager = null;
+        hasDomainScriptlet = true;
 
         initialize();
         evaluateEdit();
@@ -2898,7 +2901,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 setTabNotification(Tabs.ATTACHMENT, item, ana);
             }
         });
-        
+
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -4274,17 +4277,41 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void addScriptlets() throws Exception {
         if (scriptletRunner == null)
             scriptletRunner = new ScriptletRunner<SampleSO>();
-
+        
         /*
          * add the scriptlet for the domain, which is the value of this system
-         * variable
+         * variable; don't try to look up the system variable again if it's not
+         * found the first time because the scriptlet is optional
          */
-        if (domainScriptletVariable == null) {
-            domainScriptletVariable = SystemVariableService.get()
-                                                           .fetchByExactName("neonatal_ia_scriptlet_1");
-            domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+        if (hasDomainScriptlet) {
+            try {
+                domainScriptletVariable = SystemVariableService.get()
+                                                               .fetchByExactName("neonatal_scriptlet");
+            } catch (NotFoundException e) {
+                // ignore
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+
+            /*
+             * if the system variable was found, its value must point to an
+             * existing dictionary entry; so if an exception is thrown on trying
+             * to look up the dictionary, the user must be informed of it
+             * even if it's a NotFoundException
+             */
+            if (domainScriptletVariable != null) {
+                try {
+                    domainScriptletId = DictionaryCache.getIdBySystemName(domainScriptletVariable.getValue());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+            hasDomainScriptlet = false;
         }
-        addScriptlet(domainScriptletId, null);
+        if (domainScriptletId != null)
+            addScriptlet(domainScriptletId, null);
 
         /*
          * add all the scriptlets for all tests, test analytes and aux fields
@@ -4830,7 +4857,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         isBusy = false;
                         return;
                     }
-                    
+
                     try {
                         screen.setBusy(Messages.get().gen_fetching());
                         ret = SampleService1.get().importOrder(manager, eorderDO.getId());
