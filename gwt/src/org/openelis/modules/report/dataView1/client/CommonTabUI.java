@@ -30,7 +30,7 @@ import static org.openelis.ui.screen.State.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.openelis.domain.DataViewVO1;
+import org.openelis.domain.DataView1VO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -69,7 +69,7 @@ public class CommonTabUI extends Screen {
 
     protected EventBus               parentBus;
 
-    protected DataViewVO1            data;
+    protected DataView1VO            data;
 
     public CommonTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -614,7 +614,7 @@ public class CommonTabUI extends Screen {
         });
     }
     
-    public void setData(DataViewVO1 data) {
+    public void setData(DataView1VO data) {
         this.data = data;
     }
 

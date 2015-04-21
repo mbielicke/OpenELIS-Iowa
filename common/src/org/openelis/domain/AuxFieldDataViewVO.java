@@ -38,19 +38,10 @@ public class AuxFieldDataViewVO implements Serializable {
 
     private static final long             serialVersionUID = 1L;
 
-    protected Integer                     auxFieldId, analyteId;
+    protected Integer                     analyteId;
     protected String                      analyteName;   
     protected ArrayList<AuxDataDataViewVO>    values;
     protected String                      isIncluded;
-    
-
-    public Integer getAuxFieldId() {
-        return auxFieldId;
-    }
-
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
-    }
 
     public String getAnalyteName() {
         return analyteName;

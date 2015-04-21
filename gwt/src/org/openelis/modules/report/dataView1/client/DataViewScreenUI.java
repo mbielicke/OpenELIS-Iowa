@@ -29,19 +29,20 @@ import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.DataViewVO1;
+import org.openelis.domain.DataView1VO;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.TabLayoutPanel;
@@ -53,6 +54,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DataViewScreenUI extends Screen {
@@ -61,40 +63,42 @@ public class DataViewScreenUI extends Screen {
     interface DataViewScreenUiBinder extends UiBinder<Widget, DataViewScreenUI> {
     };
 
-    private static DataViewScreenUiBinder uiBinder = GWT.create(DataViewScreenUiBinder.class);
+    private static DataViewScreenUiBinder  uiBinder = GWT.create(DataViewScreenUiBinder.class);
 
-    protected DataViewVO1                 data;
+    protected DataView1VO                  data;
 
     @UiField
-    protected Button                      openQueryButton, saveQueryButton, executeQueryButton;
+    protected Button                       openQueryButton, saveQueryButton, executeQueryButton;
     @UiField
-    protected TabLayoutPanel              tabPanel;
+    protected TabLayoutPanel               tabPanel;
 
     @UiField(provided = true)
-    protected QueryTabUI                  queryTab;
+    protected QueryTabUI                   queryTab;
 
     @UiField(provided = true)
-    protected CommonTabUI                 commonTab;
+    protected CommonTabUI                  commonTab;
 
     @UiField(provided = true)
-    protected EnvironmentalTabUI          environmentalTab;
+    protected EnvironmentalTabUI           environmentalTab;
 
     @UiField(provided = true)
-    protected PrivateWellTabUI            privateWellTab;
+    protected PrivateWellTabUI             privateWellTab;
 
     @UiField(provided = true)
-    protected SDWISTabUI                  sdwisTab;
+    protected SDWISTabUI                   sdwisTab;
 
     @UiField(provided = true)
-    protected ClinicalTabUI               clinicalTab;
+    protected ClinicalTabUI                clinicalTab;
 
     @UiField(provided = true)
-    protected NeonatalTabUI               neonatalTab;
+    protected NeonatalTabUI                neonatalTab;
 
     @UiField(provided = true)
-    protected PTTabUI                     ptTab;
+    protected PTTabUI                      ptTab;
 
-    protected FilterScreenUI              filterScreen;
+    protected FilterScreenUI               filterScreen;
+
+    protected AsyncCallbackUI<DataView1VO> fetchTestAnalyteAndAuxFieldCall;
 
     public DataViewScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -111,7 +115,7 @@ public class DataViewScreenUI extends Screen {
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
-        data = new DataViewVO1();
+        data = new DataView1VO();
         setData();
         setState(DEFAULT);
         fireDataChange();
@@ -285,7 +289,6 @@ public class DataViewScreenUI extends Screen {
     protected void executeQuery(ClickEvent event) {
         boolean excludeResults, excludeAuxData;
         Validation validation;
-        ModalWindow modal;
         ArrayList<String> columns;
         ArrayList<Exception> errors;
 
@@ -331,7 +334,43 @@ public class DataViewScreenUI extends Screen {
         }
 
         data.setQueryFields(getQueryFields());
+        data.setTestAnalytes(null);
+        data.setAuxFields(null);
         data.setColumns(columns);
+        setBusy(Messages.get().querying());
+        if (excludeResults && excludeAuxData) {
+
+        } else {
+            if (fetchTestAnalyteAndAuxFieldCall == null) {
+                fetchTestAnalyteAndAuxFieldCall = new AsyncCallbackUI<DataView1VO>() {
+                    @Override
+                    public void success(DataView1VO result) {
+                        data.setTestAnalytes(result.getTestAnalytes());
+                        data.setAuxFields(result.getAuxFields());
+                        showFilter(data);
+                        clearStatus();
+                    }
+
+                    @Override
+                    public void notFound() {
+                        setDone(Messages.get().noRecordsFound());
+                    }
+
+                    public void failure(Throwable e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                    }
+                };
+            }
+
+            DataViewReportService1.get().fetchTestAnalyteAndAuxField(data,
+                                                                 fetchTestAnalyteAndAuxFieldCall);
+        }
+    }
+
+    private void showFilter(DataView1VO data) {
+        ModalWindow modal;
 
         if (filterScreen == null) {
             filterScreen = new FilterScreenUI() {
@@ -354,6 +393,6 @@ public class DataViewScreenUI extends Screen {
         modal.setContent(filterScreen);
 
         filterScreen.setWindow(modal);
-        // filterScreen.setData(manager, state);
+        filterScreen.setData(data);
     }
 }

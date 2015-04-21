@@ -36,16 +36,24 @@ import org.openelis.ui.common.data.QueryData;
  * This class is used to carry the data entered on Data View screen to the
  * back-end and also between different screens
  */
-public class DataViewVO1 implements Serializable {
+public class DataView1VO implements Serializable {
 
     private static final long                  serialVersionUID = 1L;
 
     protected String                           excludeResultOverride, excludeResults,
-                    excludeAuxData;
+                    includeOnlyReportableResults, excludeAuxData, includeOnlyReportableAuxData;
     protected ArrayList<QueryData>             queryFields;
     protected ArrayList<String>                columns;
     protected ArrayList<TestAnalyteDataViewVO> testAnalytes;
     protected ArrayList<AuxFieldDataViewVO>    auxFields;
+    
+    public DataView1VO() {
+        excludeResultOverride = "N";
+        excludeResults = "N";
+        includeOnlyReportableResults = "Y";
+        excludeAuxData = "N";
+        includeOnlyReportableAuxData = "Y";        
+    }
 
     public String getExcludeResultOverride() {
         return excludeResultOverride;
@@ -54,13 +62,21 @@ public class DataViewVO1 implements Serializable {
     public void setExcludeResultOverride(String excludeResultOverride) {
         this.excludeResultOverride = DataBaseUtil.trim(excludeResultOverride);
     }
-    
+
     public String getExcludeResults() {
         return excludeResults;
     }
 
     public void setExcludeResults(String excludeResults) {
         this.excludeResults = DataBaseUtil.trim(excludeResults);
+    }
+
+    public String getIncludeOnlyReportableResults() {
+        return includeOnlyReportableResults;
+    }
+
+    public void setIncludeOnlyReportableResults(String includeOnlyReportableResults) {
+        this.includeOnlyReportableResults = DataBaseUtil.trim(includeOnlyReportableResults);
     }
 
     public String getExcludeAuxData() {
@@ -71,6 +87,14 @@ public class DataViewVO1 implements Serializable {
         this.excludeAuxData = DataBaseUtil.trim(excludeAuxData);
     }
 
+    public String getIncludeOnlyReportableAuxData() {
+        return includeOnlyReportableAuxData;
+    }
+
+    public void setIncludeOnlyReportableAuxData(String includeOnlyReportableAuxData) {
+        this.includeOnlyReportableAuxData = DataBaseUtil.trim(includeOnlyReportableAuxData);
+    }
+
     public ArrayList<QueryData> getQueryFields() {
         return queryFields;
     }
@@ -78,7 +102,7 @@ public class DataViewVO1 implements Serializable {
     public void setQueryFields(ArrayList<QueryData> queryFields) {
         this.queryFields = queryFields;
     }
-    
+
     public ArrayList<String> getColumns() {
         return columns;
     }
@@ -91,7 +115,7 @@ public class DataViewVO1 implements Serializable {
         return testAnalytes;
     }
 
-    public void setAnalytes(ArrayList<TestAnalyteDataViewVO> testAnalytes) {
+    public void setTestAnalytes(ArrayList<TestAnalyteDataViewVO> testAnalytes) {
         this.testAnalytes = testAnalytes;
     }
 

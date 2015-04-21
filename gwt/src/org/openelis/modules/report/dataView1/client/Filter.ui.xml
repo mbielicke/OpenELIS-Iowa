@@ -109,7 +109,7 @@
                 <g:layer width="45%" left="0px">
                   <g:LayoutPanel>
                     <g:layer top="0px" bottom="25px">
-                      <t:Table ui:field="auxDataTable" verticalScroll="ALWAYS"
+                      <t:Table ui:field="auxFieldTable" verticalScroll="ALWAYS"
                         horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}"
                       >
                         <t:Column width="20" label="">
@@ -135,7 +135,7 @@
                 <g:layer width="45%" right="0px">
                   <g:LayoutPanel>
                     <g:layer top="0px" bottom="25px">
-                      <t:Table ui:field="valueTable" verticalScroll="ALWAYS"
+                      <t:Table ui:field="auxDataTable" verticalScroll="ALWAYS"
                         horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}"
                       >
                         <t:Column width="20" label="">

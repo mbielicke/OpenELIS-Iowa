@@ -30,23 +30,24 @@ import java.io.Serializable;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * This class is used in the query to fetch the aux analytes and values shown to
- * the user, so that he/she can choose the analytes and values shown in the file
- * generated for data view
+ * This class is used in the query to fetch the result analytes and values shown
+ * to the user, so that he/she can choose the analytes and values shown in the
+ * file generated for data view
  */
 
-public class DataViewAuxDataFetchVO1 implements Serializable {
+public class DataViewResultFetch1VO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, auxFieldAnalyteId, typeId;
+    protected Integer         sampleId, analysisId, analyteId, typeId;
 
     protected String          value;
 
-    public DataViewAuxDataFetchVO1(Integer sampleId, Integer auxFieldAnalyteId, Integer typeId,
-                                   String value) {
+    public DataViewResultFetch1VO(Integer sampleId, Integer analysisId, Integer analyteId,
+                                  Integer typeId, String value) {
         setSampleId(sampleId);
-        setAuxFieldAnalyteId(auxFieldAnalyteId);
+        setAnalysisId(analysisId);
+        setAnalyteId(analyteId);
         setTypeId(typeId);
         setValue(value);
     }
@@ -59,12 +60,20 @@ public class DataViewAuxDataFetchVO1 implements Serializable {
         this.sampleId = sampleId;
     }
 
-    public Integer getAnalyteId() {
-        return auxFieldAnalyteId;
+    public Integer getAnalysisId() {
+        return analysisId;
     }
 
-    public void setAuxFieldAnalyteId(Integer analyteId) {
-        this.auxFieldAnalyteId = analyteId;
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
+    }
+
+    public Integer getAnalyteId() {
+        return analyteId;
+    }
+
+    public void setAnalyteId(Integer analyteId) {
+        this.analyteId = analyteId;
     }
 
     public Integer getTypeId() {

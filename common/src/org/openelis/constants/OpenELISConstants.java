@@ -3877,11 +3877,11 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_analysisFieldSearchBy();
 
   /**
-   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled".
+   * Translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled".
    * 
-   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled"
+   * @return translated "At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled"
    */
-  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. the ones for Completed Date, must be filled")
+  @DefaultMessage("At least one pair of \"From\" and \"To\" fields, e.g. Completed Date, must be filled")
   @Key("dataView.atLeastOnePairFilledException")
   String dataView_atLeastOnePairFilledException();
 
@@ -3958,6 +3958,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_executeQuery();
 
   /**
+   * Translated "Filters".
+   * 
+   * @return translated "Filters"
+   */
+  @DefaultMessage("Filters")
+  @Key("dataView.filters")
+  String dataView_filters();
+
+  /**
    * Translated "Location Address".
    * 
    * @return translated "Location Address"
@@ -4030,13 +4039,13 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dataView_releasedBy();
 
   /**
-   * Translated "Result Fields To Search By".
+   * Translated "Reportable Only".
    * 
-   * @return translated "Result Fields To Search By"
+   * @return translated "Reportable Only"
    */
-  @DefaultMessage("Result Fields To Search By")
-  @Key("dataView.resultFieldSearchBy")
-  String dataView_resultFieldSearchBy();
+  @DefaultMessage("Reportable Only")
+  @Key("dataView.reportableOnly")
+  String dataView_reportableOnly();
 
   /**
    * Translated "Sample Fields To Search By".

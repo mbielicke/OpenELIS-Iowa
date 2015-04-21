@@ -28,7 +28,7 @@ public class DataViewEntry implements EntryPoint, ShowScreenHandler {
                 try {
                     org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                     window.setName(Messages.get().dataView_dataView());
-                    window.setSize("660px", "548px");
+                    window.setSize("660px", "573px");
                     window.setContent(new DataViewScreenUI(window));
                     OpenELIS.getBrowser().addWindow(window, "dataView");
                 } catch (Throwable e) {

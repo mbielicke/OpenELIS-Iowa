@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DataViewVO1;
+import org.openelis.domain.DataView1VO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
@@ -82,7 +82,7 @@ public class NeonatalTabUI extends Screen {
 
     protected EventBus                 parentBus;
 
-    protected DataViewVO1              data;
+    protected DataView1VO              data;
 
     protected String                   domain;
 
@@ -818,7 +818,7 @@ public class NeonatalTabUI extends Screen {
         });
     }
 
-    public void setData(DataViewVO1 data) {
+    public void setData(DataView1VO data) {
         this.data = data;
     }
 

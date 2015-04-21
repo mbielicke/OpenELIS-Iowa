@@ -30,24 +30,23 @@ import java.io.Serializable;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * This class is used in the query to fetch the result analytes and values shown
- * to the user, so that he/she can choose the analytes and values shown in the
- * file generated for data view
+ * This class is used in the query to fetch the aux analytes and values shown to
+ * the user, so that he/she can choose the analytes and values shown in the file
+ * generated for data view
  */
 
-public class DataViewResultFetchVO1 implements Serializable {
+public class DataViewAuxDataFetch1VO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, analysisId, analyteId, typeId;
+    protected Integer         sampleId, auxFieldAnalyteId, typeId;
 
     protected String          value;
 
-    public DataViewResultFetchVO1(Integer analysisId, Integer sampleId, Integer analyteId,
-                                  Integer typeId, String value) {
-        setAnalysisId(analysisId);
+    public DataViewAuxDataFetch1VO(Integer sampleId, Integer auxFieldAnalyteId, Integer typeId,
+                                   String value) {
         setSampleId(sampleId);
-        setAnalyteId(analyteId);
+        setAuxFieldAnalyteId(auxFieldAnalyteId);
         setTypeId(typeId);
         setValue(value);
     }
@@ -60,20 +59,12 @@ public class DataViewResultFetchVO1 implements Serializable {
         this.sampleId = sampleId;
     }
 
-    public Integer getAnalysisId() {
-        return analysisId;
-    }
-
-    public void setAnalysisId(Integer analysisId) {
-        this.analysisId = analysisId;
-    }
-
     public Integer getAnalyteId() {
-        return analyteId;
+        return auxFieldAnalyteId;
     }
 
-    public void setAnalyteId(Integer analyteId) {
-        this.analyteId = analyteId;
+    public void setAuxFieldAnalyteId(Integer analyteId) {
+        this.auxFieldAnalyteId = analyteId;
     }
 
     public Integer getTypeId() {
