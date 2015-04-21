@@ -91,7 +91,7 @@
                   <ui:text from="{msg.sample_clntRef}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="clientReference" field="String" width="125px" />
+                  <w:TextBox ui:field="clientReference" field="String" width="125px" case="LOWER" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.project_project}:" />
@@ -105,7 +105,7 @@
                   <ui:text from="{msg.sampleOrganization_reportTo}:" />
                 </td>
                 <td colspan="3">
-                  <w:TextBox ui:field="reportTo" field="String" width="305px" />
+                  <w:TextBox ui:field="reportTo" field="String" width="305px"  case = "UPPER" />
                 </td>
               </tr>
               <tr>
@@ -134,7 +134,7 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="25px" bottom="0px" left="50px" right="0px">
+        <g:layer top="25px" bottom="0px" left="125px" right="0px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
@@ -142,7 +142,8 @@
                   <ui:text from="{msg.gen_test}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="analysisTestName" field="String" width="125px" case="LOWER" />
+                  <w:TextBox ui:field="analysisTestName" field="String" width="125px"
+                    case="LOWER" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_method}:" />
@@ -154,10 +155,10 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.dataView_excludeResultOverride}:" />
+                  <ui:text from="{msg.gen_reportable}:" />
                 </td>
                 <td>
-                  <w:CheckBox ui:field="excludeResultOverride" />
+                  <w:Dropdown ui:field="analysisIsReportable" field="String" width="85px" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_status}:" />
@@ -196,35 +197,35 @@
                   <c:Calendar ui:field="analysisReleasedDateTo" begin="0" end="4" width="125px" />
                 </td>
               </tr>
-              <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.gen_reportable}:" />
-                </td>
-                <td>
-                  <w:Dropdown ui:field="analysisIsReportable" field="String" width="85px" />
-                </td>
-              </tr>
             </table>
           </g:HTMLPanel>
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="365px" bottom="0px">
+    <g:layer top="340px" bottom="0px">
       <g:LayoutPanel>
         <g:layer top="0px" height="25px" left="0px" right="0px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
                 <td class="{res.style.Heading}">
-                  <ui:text from="{msg.dataView_resultFieldSearchBy}" />
+                  <ui:text from="{msg.dataView_filters}" />
                 </td>
               </tr>
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="25px" bottom="0px" left="97px" right="0px">
+        <g:layer top="25px" bottom="0px" left="49px" right="0px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.dataView_excludeResultOverride}:" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="excludeResultOverride" />
+                </td>
+              </tr>
               <tr>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.dataView_excludeResults}:" />
@@ -233,13 +234,30 @@
                   <w:CheckBox ui:field="excludeResults" />
                 </td>
                 <td>
-                  <g:HorizontalPanel width="50px" />
+                  <g:HorizontalPanel width="63px" />
                 </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.dataView_reportableOnly}:" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="includeOnlyReportableResults" />
+                </td>
+              </tr>
+              <tr>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.dataView_excludeAuxData}:" />
                 </td>
                 <td>
                   <w:CheckBox ui:field="excludeAuxData" />
+                </td>
+                <td>
+                  <g:HorizontalPanel width="63px" />
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.dataView_reportableOnly}:" />
+                </td>
+                <td>
+                  <w:CheckBox ui:field="includeOnlyReportableAuxData" />
                 </td>
               </tr>
             </table>

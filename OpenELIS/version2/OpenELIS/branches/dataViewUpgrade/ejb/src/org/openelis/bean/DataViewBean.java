@@ -934,9 +934,9 @@ public class DataViewBean {
 
         builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetchVO(" +
                           SampleWebMeta.getAccessionNumber() + ", " +
-                          SampleWebMeta.getAuxDataAuxFieldAnalyteName() + ", " +
+                          SampleWebMeta.getAuxDataFieldAnalyteName() + ", " +
                           SampleWebMeta.getId() + ", " + SampleWebMeta.getDomain() + ", " +
-                          SampleWebMeta.getAuxDataAuxFieldAnalyteId() + ", " +
+                          SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
                           SampleWebMeta.getAuxDataTypeId() + ", " +
                           SampleWebMeta.getAuxDataValue() + ")");
         builder.constructWhere(fields);
@@ -962,7 +962,7 @@ public class DataViewBean {
          * the user wants to see aux data for all analytes. Otherwise, in that
          * case the clause won't get added.
          */
-        builder.addWhere(SampleWebMeta.getAuxDataAuxFieldAnalyteName() + "!=" + "null");
+        builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteName() + "!=" + "null");
 
         /*
          * Add the clause for limiting the aux data by analytes only if the user
@@ -971,12 +971,12 @@ public class DataViewBean {
          * records returned by the query
          */
         if (unselAnalytes != null && unselAnalytes.size() > 0) {
-            builder.addWhere(SampleWebMeta.getAuxDataAuxFieldAnalyteId() +
+            builder.addWhere(SampleWebMeta.getAuxDataFieldAnalyteId() +
                              getAnalyteClause(auxFieldValueMap.keySet(), unselAnalytes) + ")");
         }
 
         builder.setOrderBy(SampleWebMeta.getAccessionNumber() + "," +
-                           SampleWebMeta.getAuxDataAuxFieldAnalyteName());
+                           SampleWebMeta.getAuxDataFieldAnalyteName());
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
         return query.getResultList();
@@ -1814,7 +1814,6 @@ public class DataViewBean {
                 anadd = new TestAnalyteDataViewVO();
                 anadd.setAnalyteId(res.getAnalyteId());
                 anadd.setAnalyteName(res.getAnalyte());
-                anadd.setTestAnalyteId(res.getTestAnalyteId());
                 anadd.setIsIncluded("N");
                 resddList = new ArrayList<ResultDataViewVO>();
                 anadd.setResults(resddList);
@@ -1877,7 +1876,6 @@ public class DataViewBean {
                 anadd = new AuxFieldDataViewVO();
                 anadd.setAnalyteId(res.getAnalyteId());
                 anadd.setAnalyteName(res.getAnalyteName());
-                anadd.setAuxFieldId(res.getAuxFieldId());
                 anadd.setIsIncluded("N");
                 resddList = new ArrayList<AuxDataDataViewVO>();
                 anadd.setValues(resddList);

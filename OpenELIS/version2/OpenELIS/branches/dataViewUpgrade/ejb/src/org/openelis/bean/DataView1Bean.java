@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
@@ -43,12 +44,18 @@ import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.AnalyteViewDO;
+import org.openelis.domain.AuxDataDataViewVO;
+import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DataViewAuxDataFetchVO1;
-import org.openelis.domain.DataViewResultFetchVO1;
-import org.openelis.domain.DataViewVO1;
+import org.openelis.domain.DataView1VO;
+import org.openelis.domain.DataViewAuxDataFetch1VO;
+import org.openelis.domain.DataViewResultFetch1VO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.TestAnalyteDataViewVO;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
@@ -75,6 +82,12 @@ public class DataView1Bean {
     @EJB
     private AnalysisQAEventBean        analysisQAEvent;
 
+    @EJB
+    private AnalyteBean                analyte;
+
+    @EJB
+    private DictionaryBean             dictionary;
+
     private static final SampleWebMeta meta = new SampleWebMeta();
 
     private static final Logger        log  = Logger.getLogger("openelis");
@@ -97,7 +110,7 @@ public class DataView1Bean {
 
     @TransactionTimeout(180)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public DataViewVO1 fetchAnalyteAndAuxField(DataViewVO1 data) throws Exception {
+    public DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data) throws Exception {
         ArrayList<QueryData> fields;
 
         if (data == null)
@@ -107,12 +120,12 @@ public class DataView1Bean {
         if (fields == null || fields.size() == 0)
             throw new InconsistencyException(Messages.get().gen_emptyQueryException());
 
-        return fetchAnalyteAndAuxField(data, null);
+        return fetchTestAnalyteAndAuxField(data, null);
     }
 
     @TransactionTimeout(180)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public DataViewVO1 fetchAnalyteAndAuxFieldForPortal(DataViewVO1 data) throws Exception {
+    public DataView1VO fetchAnalyteAndAuxFieldForPortal(DataView1VO data) throws Exception {
         ArrayList<QueryData> fields;
 
         if (data == null)
@@ -122,13 +135,13 @@ public class DataView1Bean {
         if (fields == null || fields.size() == 0)
             throw new InconsistencyException(Messages.get().gen_emptyQueryException());
 
-        return fetchAnalyteAndAuxField(data, "w_dataview");
+        return fetchTestAnalyteAndAuxField(data, "w_dataview");
     }
 
     @RolesAllowed("w_dataview-select")
     @TransactionTimeout(600)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public ReportStatus runReportForPortal(DataViewVO1 data) throws Exception {
+    public ReportStatus runReportForPortal(DataView1VO data) throws Exception {
         ArrayList<QueryData> fields;
 
         fields = data.getQueryFields();
@@ -140,20 +153,30 @@ public class DataView1Bean {
 
     @TransactionTimeout(600)
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public ReportStatus runReport(DataViewVO1 data) throws Exception {
+    public ReportStatus runReport(DataView1VO data) throws Exception {
         return runReport(data, null, false);
     }
 
-    private DataViewVO1 fetchAnalyteAndAuxField(DataViewVO1 data, String moduleName) throws Exception {
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public ReportStatus saveQuery(DataView1VO data) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private DataView1VO fetchTestAnalyteAndAuxField(DataView1VO data, String moduleName) throws Exception {
         boolean excludeOverride, excludeResults, excludeAuxData;
-        QueryBuilderV2 builder;
         QueryData reportTo;
+        QueryBuilderV2 builder;
         ArrayList<QueryData> fields;
-        List<DataViewResultFetchVO1> results;
-        List<DataViewAuxDataFetchVO1> auxiliary;
+        List<DataViewResultFetch1VO> results;
+        List<DataViewAuxDataFetch1VO> auxiliary;
         ArrayList<SampleQaEventViewDO> sqas;
         ArrayList<AnalysisQaEventViewDO> aqas;
+        ArrayList<AnalyteViewDO> analytes;
+        ArrayList<DictionaryViewDO> dictionaries;
         HashSet<Integer> sampleIds, analysisIds, analyteIds, dictIds;
+        HashMap<Integer, AnalyteViewDO> analyteMap;
+        HashMap<Integer, DictionaryViewDO> dictMap;
 
         excludeOverride = "Y".equals(data.getExcludeResultOverride());
         excludeResults = "Y".equals(data.getExcludeResults());
@@ -163,6 +186,8 @@ public class DataView1Bean {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
 
+        fields = data.getQueryFields();
+
         /*
          * find out if the user if there is query field for report to, because
          * its key will need to be changed
@@ -171,6 +196,7 @@ public class DataView1Bean {
         for (QueryData f : fields) {
             if ("reportTo".equals(f.getKey())) {
                 reportTo = f;
+                reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
                 break;
             }
         }
@@ -181,13 +207,13 @@ public class DataView1Bean {
             /*
              * fetch results
              */
-            builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO1(" +
+            builder.setSelect("distinct new org.openelis.domain.DataViewResultFetch1VO(" +
                               SampleWebMeta.getId() + "," + SampleWebMeta.getAnalysisId() + "," +
                               SampleWebMeta.getResultAnalyteId() + "," +
-                              SampleWebMeta.getResultValue() + "," +
-                              SampleWebMeta.getResultTypeId() + ") ");
-            buildWhere(builder, fields, moduleName, reportTo, true);
-            results = (List<DataViewResultFetchVO1>)fetchAnalytesAndValues(SampleWebMeta.getId(),
+                              SampleWebMeta.getResultTypeId() + "," +
+                              SampleWebMeta.getResultValue() + ") ");
+            buildWhere(builder, data, moduleName, true, reportTo);
+            results = (List<DataViewResultFetch1VO>)fetchAnalytesAndValues(SampleWebMeta.getId(),
                                                                            builder,
                                                                            fields);
         }
@@ -198,47 +224,56 @@ public class DataView1Bean {
             /*
              * fetch aux data
              */
-            builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetchVO1(" +
+            builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetch1VO(" +
                               SampleWebMeta.getId() + ", " +
-                              SampleWebMeta.getAuxDataAuxFieldAnalyteId() + ", " +
+                              SampleWebMeta.getAuxDataFieldAnalyteId() + ", " +
                               SampleWebMeta.getAuxDataTypeId() + ", " +
                               SampleWebMeta.getAuxDataValue() + ") ");
-            buildWhere(builder, fields, moduleName, reportTo, false);
-            auxiliary = (List<DataViewAuxDataFetchVO1>)fetchAnalytesAndValues(SampleWebMeta.getId(),
+            buildWhere(builder, data, moduleName, false, reportTo);
+            auxiliary = (List<DataViewAuxDataFetch1VO>)fetchAnalytesAndValues(SampleWebMeta.getId(),
                                                                               builder,
                                                                               fields);
         }
 
-        if ( (results != null && results.isEmpty()) || (auxiliary != null && auxiliary.isEmpty()))
+        if ( (results == null && auxiliary == null) ||
+            ( (results != null && results.isEmpty()) && (auxiliary != null && auxiliary.isEmpty())))
             throw new NotFoundException();
 
-        sampleIds = null;
-        analysisIds = null;
+        /*
+         * go through the fetched results and aux data to make lists of their
+         * sample, analysis ids, analyte and dictionary ids so that any qa
+         * events etc. linked to them can be fetched
+         */
+        sampleIds = new HashSet<Integer>();
+        analysisIds = new HashSet<Integer>();
+        analyteIds = new HashSet<Integer>();
+        dictIds = new HashSet<Integer>();
+        if (results != null) {
+            for (DataViewResultFetch1VO res : results) {
+                sampleIds.add(res.getSampleId());
+                analysisIds.add(res.getAnalysisId());
+                analyteIds.add(res.getAnalyteId());
+                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId()))
+                    dictIds.add(Integer.valueOf(res.getValue()));
+            }
+        }
+
+        if (auxiliary != null) {
+            for (DataViewAuxDataFetch1VO aux : auxiliary) {
+                sampleIds.add(aux.getSampleId());
+                analyteIds.add(aux.getAnalyteId());
+                if (Constants.dictionary().AUX_DICTIONARY.equals(aux.getTypeId()))
+                    dictIds.add(Integer.valueOf(aux.getValue()));
+
+            }
+        }
+
         if (excludeOverride) {
             /*
              * the user wants to exclude results and aux data linked to samples
-             * or analyses with result override qa events; go through the
-             * fetched results and aux data to make lists of their sample and
-             * analysis ids so that any qa events linked to them can be fetched
-             */
-            sampleIds = new HashSet<Integer>();
-            analysisIds = new HashSet<Integer>();
-            if (results != null) {
-                for (DataViewResultFetchVO1 res : results) {
-                    sampleIds.add(res.getSampleId());
-                    analysisIds.add(res.getAnalysisId());
-                }
-            }
-
-            if (auxiliary != null) {
-                for (DataViewAuxDataFetchVO1 aux : auxiliary)
-                    sampleIds.add(aux.getSampleId());
-            }
-
-            /*
-             * fetch the sample and analysis qa events; keep the ids of only
-             * those samples and analyses that don't have any result override qa
-             * events
+             * or analyses with result override qa events; fetch the sample and
+             * analysis qa events; keep the ids of only those samples and
+             * analyses that don't have any result override qa events
              */
             sqas = sampleQAEvent.fetchBySampleIds(new ArrayList<Integer>(sampleIds));
             for (SampleQaEventViewDO sqa : sqas) {
@@ -255,25 +290,36 @@ public class DataView1Bean {
             }
         }
 
-        /*
-         * 
-         */
-        if (results != null) {
-            for (DataViewResultFetchVO1 res : results) {
-                sampleIds.add(res.getSampleId());
-                analysisIds.add(res.getAnalysisId());
-            }
+        if ( (sampleIds.size() == 0 || ( !excludeResults && excludeAuxData && analysisIds.size() == 0)))
+            throw new NotFoundException();
+
+        analytes = analyte.fetchByIds(analyteIds);
+        analyteMap = new HashMap<Integer, AnalyteViewDO>();
+        for (AnalyteViewDO ana : analytes)
+            analyteMap.put(ana.getId(), ana);
+
+        dictMap = null;
+        if (dictIds.size() > 0) {
+            dictionaries = dictionary.fetchByIds(dictIds);
+            dictMap = new HashMap<Integer, DictionaryViewDO>();
+            for (DictionaryViewDO dict : dictionaries)
+                dictMap.put(dict.getId(), dict);
         }
 
-        if (auxiliary != null) {
-            for (DataViewAuxDataFetchVO1 aux : auxiliary)
-                sampleIds.add(aux.getSampleId());
-        }
+        if ( !excludeResults)
+            data.setTestAnalytes(getTestAnalytes(results,
+                                                 sampleIds,
+                                                 analysisIds,
+                                                 analyteMap,
+                                                 dictMap));
 
-        return null;
+        if ( !excludeAuxData)
+            data.setAuxFields(getAuxFields(auxiliary, sampleIds, analyteMap, dictMap));
+
+        return data;
     }
 
-    private ReportStatus runReport(DataViewVO1 data, String moduleName,
+    private ReportStatus runReport(DataView1VO data, String moduleName,
                                    boolean showReportableColumnsOnly) throws Exception {
         return null;
     }
@@ -293,9 +339,9 @@ public class DataView1Bean {
      * clause; if the boolean flag is true it means that query is for results,
      * otherwise it's for aux data and the appropriate where
      */
-    private void buildWhere(QueryBuilderV2 builder, ArrayList<QueryData> fields, String moduleName,
-                            QueryData reportTo, boolean forResult) throws Exception {
-        builder.constructWhere(fields);
+    private void buildWhere(QueryBuilderV2 builder, DataView1VO data, String moduleName,
+                            boolean forResult, QueryData reportTo) throws Exception {
+        builder.constructWhere(data.getQueryFields());
         /*
          * if moduleName is not null, then this query is being executed for the
          * web and we need to report only released analyses
@@ -308,27 +354,33 @@ public class DataView1Bean {
         }
 
         if (forResult) {
-            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
+            if ("Y".equals(data.getIncludeOnlyReportableResults()))
+                builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
             builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
             builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
         } else {
-            builder.addWhere(SampleWebMeta.getAuxDataIsReportable() + "=" + "'Y'");
+            if ("Y".equals(data.getIncludeOnlyReportableAuxData()))
+                builder.addWhere(SampleWebMeta.getAuxDataIsReportable() + "=" + "'Y'");
             builder.addWhere(SampleWebMeta.getAuxDataValue() + "!=" + "null");
+            /*
+             * this is done so that the alias for "auxField" gets added to the
+             * query; otherwise the query will not execute
+             */
+            builder.addWhere(SampleWebMeta.getAuxDataAuxFieldId() + "=" +
+                             SampleWebMeta.getAuxDataFieldId());
         }
 
         /*
-         * this is done to establish the link between aliases to be able to
-         * query for analyses and/or results
+         * this is done so that the alias for "sampleItem" gets added to the
+         * query; otherwise the query will not execute
          */
         if (moduleName != null || forResult)
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
 
-        if (reportTo != null) {
-            reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
+        if (reportTo != null)
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
-        }
     }
 
     private List fetchAnalytesAndValues(String key, QueryBuilderV2 builder,
@@ -339,5 +391,144 @@ public class DataView1Bean {
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
         return query.getResultList();
+    }
+
+    private ArrayList<TestAnalyteDataViewVO> getTestAnalytes(List<DataViewResultFetch1VO> results,
+                                                             HashSet<Integer> sampleIds,
+                                                             HashSet<Integer> analysisIds,
+                                                             HashMap<Integer, AnalyteViewDO> analyteMap,
+                                                             HashMap<Integer, DictionaryViewDO> dictMap) {
+        Integer analyteId, dictId;
+        String value;
+        TestAnalyteDataViewVO testAnalyte;
+        ResultDataViewVO result;
+        HashSet<String> values;
+        ArrayList<TestAnalyteDataViewVO> testAnalytes;
+        ArrayList<ResultDataViewVO> dispResults;
+        HashMap<Integer, TestAnalyteDataViewVO> testAnalyteMap;
+        HashMap<Integer, HashSet<String>> analyteValuesMap;
+
+        /*
+         * a TestAnalyteDataViewVO is created for an analyte only once, no
+         * matter how many times it appears in the list of
+         * DataViewResultFetch1VOs
+         */
+        testAnalytes = new ArrayList<TestAnalyteDataViewVO>();
+        testAnalyteMap = new HashMap<Integer, TestAnalyteDataViewVO>();
+        analyteValuesMap = new HashMap<Integer, HashSet<String>>();
+        values = null;
+        for (DataViewResultFetch1VO res : results) {
+            if ( !sampleIds.contains(res.getSampleId()) ||
+                !analysisIds.contains(res.getAnalysisId()))
+                continue;
+            analyteId = res.getAnalyteId();
+            testAnalyte = testAnalyteMap.get(analyteId);
+            if (testAnalyte == null) {
+                testAnalyte = new TestAnalyteDataViewVO();
+                testAnalyte.setAnalyteId(analyteId);
+                testAnalyte.setAnalyteName(analyteMap.get(analyteId).getName());
+                testAnalyte.setIsIncluded("N");
+                dispResults = new ArrayList<ResultDataViewVO>();
+                testAnalyte.setResults(dispResults);
+                testAnalytes.add(testAnalyte);
+                testAnalyteMap.put(analyteId, testAnalyte);
+                values = new HashSet<String>();
+                analyteValuesMap.put(analyteId, values);
+            } else {
+                dispResults = testAnalyte.getResults();
+                values = analyteValuesMap.get(analyteId);
+            }
+
+            value = res.getValue();
+            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId())) {
+                dictId = Integer.parseInt(value);
+                value = dictMap.get(dictId).getEntry();
+            }
+
+            /*
+             * don't allow the same value to be shown more than once for the
+             * same analyte
+             */
+            if (values.contains(value))
+                continue;
+            values.add(value);
+
+            result = new ResultDataViewVO();
+            result.setValue(value);
+            result.setIsIncluded("N");
+            dispResults.add(result);
+        }
+        return testAnalytes;
+    }
+
+    /**
+     * Returns a list of aux fields and the aux data for each of those fields in
+     * the passed list; if for any  
+     */
+    private ArrayList<AuxFieldDataViewVO> getAuxFields(List<DataViewAuxDataFetch1VO> auxiliary,
+                                                       HashSet<Integer> sampleIds,
+                                                       HashMap<Integer, AnalyteViewDO> analyteMap,
+                                                       HashMap<Integer, DictionaryViewDO> dictMap) throws Exception {
+        Integer analyteId, dictId;
+        String value;
+        AuxFieldDataViewVO auxField;
+        AuxDataDataViewVO auxData;
+        HashSet<String> values;
+        ArrayList<AuxFieldDataViewVO> auxFields;
+        ArrayList<AuxDataDataViewVO> auxDataList;
+        HashMap<Integer, AuxFieldDataViewVO> auxFieldMap;
+        HashMap<Integer, HashSet<String>> analyteValuesMap;
+
+        /*
+         * an AuxFieldDataViewVO is created for an analyte only once, no matter
+         * how many times it appears in the list of DataViewAuxDataFetchVO1s
+         */
+        auxDataList = null;
+        auxFields = new ArrayList<AuxFieldDataViewVO>();
+        auxFieldMap = new HashMap<Integer, AuxFieldDataViewVO>();
+        analyteValuesMap = new HashMap<Integer, HashSet<String>>();
+        values = null;
+        for (DataViewAuxDataFetch1VO aux : auxiliary) {
+            if ( !sampleIds.contains(aux.getSampleId()))
+                continue;
+            analyteId = aux.getAnalyteId();
+            auxField = auxFieldMap.get(analyteId);
+            if (auxField == null) {
+                auxField = new AuxFieldDataViewVO();
+                auxField.setAnalyteId(aux.getAnalyteId());
+                auxField.setAnalyteName(analyteMap.get(analyteId).getName());
+                auxField.setIsIncluded("N");
+                auxDataList = new ArrayList<AuxDataDataViewVO>();
+                auxField.setValues(auxDataList);
+                auxFields.add(auxField);
+                auxFieldMap.put(analyteId, auxField);
+                values = new HashSet<String>();
+                analyteValuesMap.put(analyteId, values);
+            } else {
+                auxDataList = auxField.getValues();
+                values = analyteValuesMap.get(analyteId);
+            }
+
+            value = aux.getValue();
+
+            if (Constants.dictionary().AUX_DICTIONARY.equals(aux.getTypeId())) {
+                dictId = Integer.parseInt(value);
+                value = dictMap.get(dictId).getEntry();
+            }
+
+            /*
+             * don't allow the same value to be shown more than once for the
+             * same analyte
+             */
+            if (values.contains(value))
+                continue;
+            values.add(value);
+
+            auxData = new AuxDataDataViewVO();
+            auxData.setValue(value);
+            auxData.setIsIncluded("N");
+            auxDataList.add(auxData);
+        }
+        return auxFields;
     }
 }
