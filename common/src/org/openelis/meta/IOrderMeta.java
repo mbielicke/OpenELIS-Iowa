@@ -26,7 +26,7 @@
 package org.openelis.meta;
 
 /**
-  * Order META Data
+  * IOrder META Data
   */
 
 import java.util.Arrays;
@@ -35,25 +35,25 @@ import java.util.HashSet;
 import org.openelis.ui.common.Meta;
 import org.openelis.ui.common.MetaMap;
 
-public class OrderMeta implements Meta, MetaMap {
-	private static final String    ID = "_order.id",
-	                               PARENT_ORDER_ID = "_order.parentOrderId", 
-	                               DESCRIPTION = "_order.description",
-	                               STATUS_ID = "_order.statusId",
-	                               ORDERED_DATE = "_order.orderedDate",
-	                               NEEDED_IN_DAYS = "_order.neededInDays",
-	                               REQUESTED_BY = "_order.requestedBy",
-	                               COST_CENTER_ID = "_order.costCenterId",
-	                               ORGANIZATION_ID = "_order.organizationId",
-	                               ORGANIZATION_ATTENTION = "_order.organizationAttention",
-	                               TYPE = "_order.type",
-	                               EXTERNAL_ORDER_NUMBER = "_order.externalOrderNumber",
-	                               REPORT_TO_ID = "_order.reportToId",
-	                               REPORT_TO_ATTENTION = "_order.reportToAttention",
-	                               BILL_TO_ID = "_order.billToId",
-	                               BILL_TO_ATTENTION = "_order.billToAttention",
-	                               SHIP_FROM_ID = "_order.shipFromId",
-	                               NUMBER_OF_FORMS = "_order.numberOfForms",
+public class IOrderMeta implements Meta, MetaMap {
+	private static final String    ID = "_iorder.id",
+	                               PARENT_IORDER_ID = "_iorder.parentIorderId", 
+	                               DESCRIPTION = "_iorder.description",
+	                               STATUS_ID = "_iorder.statusId",
+	                               ORDERED_DATE = "_iorder.orderedDate",
+	                               NEEDED_IN_DAYS = "_iorder.neededInDays",
+	                               REQUESTED_BY = "_iorder.requestedBy",
+	                               COST_CENTER_ID = "_iorder.costCenterId",
+	                               ORGANIZATION_ID = "_iorder.organizationId",
+	                               ORGANIZATION_ATTENTION = "_iorder.organizationAttention",
+	                               TYPE = "_iorder.type",
+	                               EXTERNAL_ORDER_NUMBER = "_iorder.externalOrderNumber",
+	                               REPORT_TO_ID = "_iorder.reportToId",
+	                               REPORT_TO_ATTENTION = "_iorder.reportToAttention",
+	                               BILL_TO_ID = "_iorder.billToId",
+	                               BILL_TO_ATTENTION = "_iorder.billToAttention",
+	                               SHIP_FROM_ID = "_iorder.shipFromId",
+	                               NUMBER_OF_FORMS = "_iorder.numberOfForms",
 	                               
                                    ORGANIZATION_ADDRESS_ID = "_organization.address.id",
                                    ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_organization.address.multipleUnit",
@@ -68,36 +68,36 @@ public class OrderMeta implements Meta, MetaMap {
                                    ORGANIZATION_ADDRESS_EMAIL = "_organization.address.email",
                                    ORGANIZATION_ADDRESS_COUNTRY = "_organization.address.country",
 	                               
-	                               ORDER_ORG_ID = "_orderOrganization.id",
-	                               ORDER_ORG_ORDER_ID = "_orderOrganization.orderId",
-	                               ORDER_ORG_ORGANIZATION_ID = "_orderOrganization.organizationId",
-	                               ORDER_ORG_ORGANIZATION_ATTENTION = "_orderOrganization.organizationAttention",
-	                               ORDER_ORG_TYPE_ID = "_orderOrganization.typeId",
+	                               IORDER_ORG_ID = "_iorderOrganization.id",
+	                               IORDER_ORG_IORDER_ID = "_iorderOrganization.iorderId",
+	                               IORDER_ORG_ORGANIZATION_ID = "_iorderOrganization.organizationId",
+	                               IORDER_ORG_ORGANIZATION_ATTENTION = "_iorderOrganization.organizationAttention",
+	                               IORDER_ORG_TYPE_ID = "_iorderOrganization.typeId",
 	                               
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_ID = "_orderOrganization.organization.addressId",	   
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_ID = "_iorderOrganization.organization.addressId",	   
 	                               
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_orderOrganizationOrganization.address.multipleUnit",
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS = "_orderOrganizationOrganization.address.streetAddress", 
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_CITY = "_orderOrganizationOrganization.address.city",
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_STATE = "_orderOrganizationOrganization.address.state", 
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE = "_orderOrganizationOrganization.address.zipCode",
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_WORK_PHONE = "_orderOrganizationOrganization.address.workPhone", 
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_HOME_PHONE = "_orderOrganizationOrganization.address.homePhone",
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_CELL_PHONE = "_orderOrganizationOrganization.address.cellPhone", 
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_FAX_PHONE = "_orderOrganizationOrganization.address.faxPhone",
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_EMAIL = "_orderOrganizationOrganization.address.email", 
-	                               ORDER_ORG_ORGANIZATION_ADDRESS_COUNTRY = "_orderOrganizationOrganization.address.country",
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_iorderOrganizationOrganization.address.multipleUnit",
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS = "_iorderOrganizationOrganization.address.streetAddress", 
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_CITY = "_iorderOrganizationOrganization.address.city",
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_STATE = "_iorderOrganizationOrganization.address.state", 
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE = "_iorderOrganizationOrganization.address.zipCode",
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_WORK_PHONE = "_iorderOrganizationOrganization.address.workPhone", 
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_HOME_PHONE = "_iorderOrganizationOrganization.address.homePhone",
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_CELL_PHONE = "_iorderOrganizationOrganization.address.cellPhone", 
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_FAX_PHONE = "_iorderOrganizationOrganization.address.faxPhone",
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_EMAIL = "_iorderOrganizationOrganization.address.email", 
+	                               IORDER_ORG_ORGANIZATION_ADDRESS_COUNTRY = "_iorderOrganizationOrganization.address.country",
 	                               
-	                               ITEM_ID = "_orderItem.id",
-	                               ITEM_ORDER_ID = "_orderItem.orderId",
-	                               ITEM_INVENTORY_ITEM_ID = "_orderItem.inventoryItemId",
-	                               ITEM_QUANTITY = "_orderItem.quantity",
-	                               ITEM_CATALOG_NUMBER = "_orderItem.catalogNumber",
-	                               ITEM_UNIT_COST = "_orderItem.unitCost",
+	                               ITEM_ID = "_iorderItem.id",
+	                               ITEM_IORDER_ID = "_iorderItem.iorderId",
+	                               ITEM_INVENTORY_ITEM_ID = "_iorderItem.inventoryItemId",
+	                               ITEM_QUANTITY = "_iorderItem.quantity",
+	                               ITEM_CATALOG_NUMBER = "_iorderItem.catalogNumber",
+	                               ITEM_UNIT_COST = "_iorderItem.unitCost",
 	                               
 	                               RCPT_ID = "_inventoryReceipt.id",
 	                               RCPT_INVENTORY_ITEM_ID = "_inventoryReceipt.inventoryItemId",
-	                               RCPT_ORDER_ITEM_ID = "_inventoryReceipt.orderItemId",
+	                               RCPT_IORDER_ITEM_ID = "_inventoryReceipt.iorderItemId",
 	                               RCPT_ORGANIZATION_ID = "_inventoryReceipt.organizationId",
 	                               RCPT_RECEIVED_DATE = "_inventoryReceipt.receivedDate",
 	                               RCPT_QUANTITY_RECEIVED = "_inventoryReceipt.quantityReceived",
@@ -106,18 +106,18 @@ public class OrderMeta implements Meta, MetaMap {
 	                               RCPT_EXTERNAL_REFERENCE = "_inventoryReceipt.externalReference",
 	                               RCPT_UPC = "_inventoryReceipt.upc",	                              	                              
 	                               
-	                               CONT_ID = "_orderContainer.id",
-	                               CONT_ORDER_ID = "_orderContainer.orderId",
-	                               CONT_CONTAINER_ID = "_orderContainer.containerId",
-	                               CONT_ITEM_SEQUENCE = "_orderContainer.itemSequence",
-	                               CONT_TYPE_OF_SAMPLE_ID = "_orderContainer.typeOfSampleId",
+	                               CONT_ID = "_iorderContainer.id",
+	                               CONT_IORDER_ID = "_iorderContainer.iorderId",
+	                               CONT_CONTAINER_ID = "_iorderContainer.containerId",
+	                               CONT_ITEM_SEQUENCE = "_iorderContainer.itemSequence",
+	                               CONT_TYPE_OF_SAMPLE_ID = "_iorderContainer.typeOfSampleId",
 	                               
-	                               TEST_ID = "_orderTest.id",
-	                               TEST_ORDER_ID = "_orderTest.orderId",
-	                               TEST_ITEM_SEQUENCE = "_orderTest.itemSequence",
-	                               TEST_SORT_ORDER = "_orderTest.sortOrder",
-	                               TEST_REFERENCE_ID = "_orderTest.referenceId",
-	                               TEST_REFERENCE_TABLE_ID = "_orderTest.referenceTableId",
+	                               TEST_ID = "_iorderTest.id",
+	                               TEST_IORDER_ID = "_iorderTest.iorderId",
+	                               TEST_ITEM_SEQUENCE = "_iorderTest.itemSequence",
+	                               TEST_SORT_ORDER = "_iorderTest.sortOrder",
+	                               TEST_REFERENCE_ID = "_iorderTest.referenceId",
+	                               TEST_REFERENCE_TABLE_ID = "_iorderTest.referenceTableId",
 	                               
 	                               AUX_DATA_ID = "_auxData.id",
 	                               AUX_DATA_AUX_FIELD_ID = "_auxData.auxFieldId",
@@ -127,20 +127,20 @@ public class OrderMeta implements Meta, MetaMap {
 	                               AUX_DATA_TYPE_ID = "_auxData.typeId",
 	                               AUX_DATA_VALUE = "_auxData.value",
 	                               
-                                   RECUR_ID = "_orderRecurrence.id",
-                                   RECUR_ORDER_ID = "_orderRecurrence.orderId",
-                                   RECUR_IS_ACTIVE = "_orderRecurrence.isActive",
-                                   RECUR_ACTIVE_BEGIN = "_orderRecurrence.activeBegin",
-                                   RECUR_ACTIVE_END = "_orderRecurrence.activeEnd",
-                                   RECUR_FREQUENCY = "_orderRecurrence.frequency",
-                                   RECUR_UNIT_ID = "_orderRecurrence.unitId",
+                                   RECUR_ID = "_iorderRecurrence.id",
+                                   RECUR_IORDER_ID = "_iorderRecurrence.iorderId",
+                                   RECUR_IS_ACTIVE = "_iorderRecurrence.isActive",
+                                   RECUR_ACTIVE_BEGIN = "_iorderRecurrence.activeBegin",
+                                   RECUR_ACTIVE_END = "_iorderRecurrence.activeEnd",
+                                   RECUR_FREQUENCY = "_iorderRecurrence.frequency",
+                                   RECUR_UNIT_ID = "_iorderRecurrence.unitId",
 	                               	                               
-	                               ORGANIZATION_NAME = "_order.organization.name",
-	                               ORDER_ORG_ORGANIZATION_NAME = "_orderOrganization.organization.name", 
+	                               ORGANIZATION_NAME = "_iorder.organization.name",
+	                               IORDER_ORG_ORGANIZATION_NAME = "_iorderOrganization.organization.name", 
 	                               REPORT_TO_NAME = "_reportTo.name",
                                    BILL_TO_NAME = "_billTo.name",
-                                   ITEM_INVENTORY_ITEM_NAME = "_orderItem.inventoryItem.name",
-	                               ITEM_INVENTORY_ITEM_STORE_ID = "_orderItem.inventoryItem.storeId",
+                                   ITEM_INVENTORY_ITEM_NAME = "_iorderItem.inventoryItem.name",
+	                               ITEM_INVENTORY_ITEM_STORE_ID = "_iorderItem.inventoryItem.storeId",
 	                               TEST_NAME = "_test.name",
 	                               TEST_METHOD_NAME = "_test.method.name";
 	                                                
@@ -148,7 +148,7 @@ public class OrderMeta implements Meta, MetaMap {
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(ID, PARENT_ORDER_ID, DESCRIPTION, STATUS_ID, ORDERED_DATE,
+        names = new HashSet<String>(Arrays.asList(ID, PARENT_IORDER_ID, DESCRIPTION, STATUS_ID, ORDERED_DATE,
                                                   NEEDED_IN_DAYS, REQUESTED_BY, COST_CENTER_ID,
                                                   ORGANIZATION_ID,ORGANIZATION_ATTENTION, TYPE,
                                                   EXTERNAL_ORDER_NUMBER, REPORT_TO_ID, REPORT_TO_ATTENTION,
@@ -161,38 +161,38 @@ public class OrderMeta implements Meta, MetaMap {
                                                   ORGANIZATION_ADDRESS_CELL_PHONE, ORGANIZATION_ADDRESS_FAX_PHONE,
                                                   ORGANIZATION_ADDRESS_EMAIL, ORGANIZATION_ADDRESS_COUNTRY,
                                                   
-                                                  ORDER_ORG_ID, ORDER_ORG_ORDER_ID, ORDER_ORG_ORGANIZATION_ID,
-                                                  ORDER_ORG_TYPE_ID, ORDER_ORG_ORGANIZATION_ATTENTION,
+                                                  IORDER_ORG_ID, IORDER_ORG_IORDER_ID, IORDER_ORG_ORGANIZATION_ID,
+                                                  IORDER_ORG_TYPE_ID, IORDER_ORG_ORGANIZATION_ATTENTION,
                                                   
-                                                  ORDER_ORG_ORGANIZATION_NAME,  ORDER_ORG_ORGANIZATION_ADDRESS_ID,                                                       
+                                                  IORDER_ORG_ORGANIZATION_NAME,  IORDER_ORG_ORGANIZATION_ADDRESS_ID,                                                       
                                                   
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS, 
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_CITY, ORDER_ORG_ORGANIZATION_ADDRESS_STATE, 
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE, ORDER_ORG_ORGANIZATION_ADDRESS_WORK_PHONE, 
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_HOME_PHONE, ORDER_ORG_ORGANIZATION_ADDRESS_CELL_PHONE, 
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_FAX_PHONE, ORDER_ORG_ORGANIZATION_ADDRESS_EMAIL, 
-                                                  ORDER_ORG_ORGANIZATION_ADDRESS_COUNTRY,
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS, 
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_CITY, IORDER_ORG_ORGANIZATION_ADDRESS_STATE, 
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE, IORDER_ORG_ORGANIZATION_ADDRESS_WORK_PHONE, 
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_HOME_PHONE, IORDER_ORG_ORGANIZATION_ADDRESS_CELL_PHONE, 
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_FAX_PHONE, IORDER_ORG_ORGANIZATION_ADDRESS_EMAIL, 
+                                                  IORDER_ORG_ORGANIZATION_ADDRESS_COUNTRY,
                                                   
-                                                  ITEM_ID, ITEM_ORDER_ID, ITEM_INVENTORY_ITEM_ID,
+                                                  ITEM_ID, ITEM_IORDER_ID, ITEM_INVENTORY_ITEM_ID,
                                                   ITEM_QUANTITY, ITEM_CATALOG_NUMBER, ITEM_UNIT_COST,
 
-                                                  RCPT_ID, RCPT_INVENTORY_ITEM_ID, RCPT_ORDER_ITEM_ID,
+                                                  RCPT_ID, RCPT_INVENTORY_ITEM_ID, RCPT_IORDER_ITEM_ID,
                                                   RCPT_ORGANIZATION_ID, RCPT_RECEIVED_DATE, RCPT_QUANTITY_RECEIVED,
                                                   RCPT_UNIT_COST, RCPT_QC_REFERENCE, RCPT_EXTERNAL_REFERENCE,
                                                   RCPT_UPC,                                                
                                                   
-                                                  CONT_ID, CONT_ORDER_ID, CONT_CONTAINER_ID,
+                                                  CONT_ID, CONT_IORDER_ID, CONT_CONTAINER_ID,
                                                   CONT_ITEM_SEQUENCE, CONT_TYPE_OF_SAMPLE_ID,
                                                   
-                                                  TEST_ID, TEST_ORDER_ID, TEST_ITEM_SEQUENCE, TEST_SORT_ORDER,
+                                                  TEST_ID, TEST_IORDER_ID, TEST_ITEM_SEQUENCE, TEST_SORT_ORDER,
                                                   TEST_REFERENCE_ID, TEST_REFERENCE_TABLE_ID,
                                                   
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID, AUX_DATA_REFERENCE_ID,
                                                   AUX_DATA_REFERENCE_TABLE_ID, AUX_DATA_IS_REPORTABLE,
                                                   AUX_DATA_TYPE_ID, AUX_DATA_VALUE,
                                                   
-                                                  RECUR_ID, RECUR_ORDER_ID, RECUR_IS_ACTIVE, RECUR_ACTIVE_BEGIN,
+                                                  RECUR_ID, RECUR_IORDER_ID, RECUR_IS_ACTIVE, RECUR_ACTIVE_BEGIN,
                                                   RECUR_ACTIVE_END, RECUR_FREQUENCY, RECUR_UNIT_ID,
                                                   
                                                   ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
@@ -204,8 +204,8 @@ public class OrderMeta implements Meta, MetaMap {
         return ID;
     }
     
-    public static String getParentOrderId() {
-        return PARENT_ORDER_ID;
+    public static String getParentIorderId() {
+        return PARENT_IORDER_ID;
     }
 
     public static String getDescription() {
@@ -320,99 +320,99 @@ public class OrderMeta implements Meta, MetaMap {
         return ORGANIZATION_ADDRESS_COUNTRY;
     }
     
-    public static String getOrderOrganizationId() {        
-        return ORDER_ORG_ID;
+    public static String getIorderOrganizationId() {        
+        return IORDER_ORG_ID;
     }
     
-    public static String getOrderOrganizationOrderId() {
-        return ORDER_ORG_ORDER_ID;
+    public static String getIorderOrganizationOrderId() {
+        return IORDER_ORG_IORDER_ID;
     }
     
-    public static String getOrderOrganizationOrganizationId() {
-        return ORDER_ORG_ORGANIZATION_ID;
+    public static String getIorderOrganizationOrganizationId() {
+        return IORDER_ORG_ORGANIZATION_ID;
     }
     
-    public static String getOrderOrganizationOrganizationAttention() {
-        return ORDER_ORG_ORGANIZATION_ATTENTION;
+    public static String getIorderOrganizationOrganizationAttention() {
+        return IORDER_ORG_ORGANIZATION_ATTENTION;
     }
     
-    public static String getOrderOrganizationTypeId() {
-        return ORDER_ORG_TYPE_ID;
+    public static String getIorderOrganizationTypeId() {
+        return IORDER_ORG_TYPE_ID;
     }
     
-    public static String getOrderOrganizationOrganizationName()  {
-        return ORDER_ORG_ORGANIZATION_NAME;
+    public static String getIorderOrganizationOrganizationName()  {
+        return IORDER_ORG_ORGANIZATION_NAME;
     }
     
-    public static String getOrderOrganizationOrganizationAddressId() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_ID;                           
+    public static String getIorderOrganizationOrganizationAddressId() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_ID;                           
     }
     
-    public static String getOrderOrganizationOrganizationAddressMultipleUnit() {
-       return ORDER_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT;
+    public static String getIorderOrganizationOrganizationAddressMultipleUnit() {
+       return IORDER_ORG_ORGANIZATION_ADDRESS_MULTIPLE_UNIT;
     }
     
-    public static String getOrderOrganizationOrganizationAddressStreetAddress() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS; 
+    public static String getIorderOrganizationOrganizationAddressStreetAddress() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_STREET_ADDRESS; 
     }
     
-    public static String getOrderOrganizationOrganizationAddressCity() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_CITY;
+    public static String getIorderOrganizationOrganizationAddressCity() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_CITY;
     }
     
-    public static String getOrderOrganizationOrganizationAddressState() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_STATE; 
+    public static String getIorderOrganizationOrganizationAddressState() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_STATE; 
     }
     
-    public static String getOrganizationOrganizationAddressZipCode() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE; 
+    public static String getIorganizationOrganizationAddressZipCode() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE; 
     }
     
-    public static String getOrderOrganizationOrganizationAddressWorkPhone() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_WORK_PHONE;
+    public static String getIorderOrganizationOrganizationAddressWorkPhone() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_WORK_PHONE;
     }
     
-    public static String getOrderOrganizationOrganizationAddressHomePhone() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_HOME_PHONE;
+    public static String getIorderOrganizationOrganizationAddressHomePhone() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_HOME_PHONE;
     }
     
-    public static String getOrderOrganizationOrganizationAddressCellPhone() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_CELL_PHONE; 
+    public static String getIorderOrganizationOrganizationAddressCellPhone() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_CELL_PHONE; 
     }
        
-    public static String getOrderOrganizationOrganizationAddressFaxPhone() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_FAX_PHONE;
+    public static String getIorderOrganizationOrganizationAddressFaxPhone() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_FAX_PHONE;
     }
     
-    public static String getOrderOrganizationOrganizationAddressEmail() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_EMAIL;
+    public static String getIorderOrganizationOrganizationAddressEmail() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_EMAIL;
     } 
     
-    public static String getOrderOrganizationOrganizationAddressCountry() {
-        return ORDER_ORG_ORGANIZATION_ADDRESS_COUNTRY;
+    public static String getIorderOrganizationOrganizationAddressCountry() {
+        return IORDER_ORG_ORGANIZATION_ADDRESS_COUNTRY;
     }
 
-    public static String getOrderItemId() {
+    public static String getIorderItemId() {
         return ITEM_ID;
     }
 
-    public static String getOrderItemOrderId() {
-        return ITEM_ORDER_ID;
+    public static String getIorderItemOrderId() {
+        return ITEM_IORDER_ID;
     }
 
-    public static String getOrderItemInventoryItemId() {
+    public static String getIorderItemInventoryItemId() {
         return ITEM_INVENTORY_ITEM_ID;
     }
 
-    public static String getOrderItemQuantity() {
+    public static String getIorderItemQuantity() {
         return ITEM_QUANTITY;
     }
 
-    public static String getOrderItemCatalogNumber() {
+    public static String getIorderItemCatalogNumber() {
         return ITEM_CATALOG_NUMBER;
     }
 
-    public static String getOrderItemUnitCost() {
+    public static String getIorderItemUnitCost() {
         return ITEM_UNIT_COST;
     }
 
@@ -424,8 +424,8 @@ public class OrderMeta implements Meta, MetaMap {
         return RCPT_INVENTORY_ITEM_ID;
     }
 
-    public static String getInventoryReceiptOrderItemId() {
-        return RCPT_ORDER_ITEM_ID;
+    public static String getInventoryReceiptIorderItemId() {
+        return RCPT_IORDER_ITEM_ID;
     }
 
     public static String getInventoryReceiptOrganizationId() {
@@ -460,8 +460,8 @@ public class OrderMeta implements Meta, MetaMap {
         return CONT_ID;
     }
     
-    public static String getContainerOrderId() {
-        return CONT_ORDER_ID;
+    public static String getContainerIorderId() {
+        return CONT_IORDER_ID;
     }
     
     public static String getContainerContainerId() {
@@ -480,8 +480,8 @@ public class OrderMeta implements Meta, MetaMap {
         return TEST_ID;
     }
     
-    public static String getTestOrderId() {
-        return TEST_ORDER_ID;
+    public static String getTestIorderId() {
+        return TEST_IORDER_ID;
     }
     
     public static String getTestItemSequence() {
@@ -533,7 +533,7 @@ public class OrderMeta implements Meta, MetaMap {
     }
     
     public static String getRecurrenceOrderId(){
-        return RECUR_ORDER_ID;
+        return RECUR_IORDER_ID;
     }
     
     public static String getRecurrenceIsActive(){
@@ -568,11 +568,11 @@ public class OrderMeta implements Meta, MetaMap {
         return BILL_TO_NAME;
     }
 
-    public static String getOrderItemInventoryItemName() {
+    public static String getIorderItemInventoryItemName() {
         return ITEM_INVENTORY_ITEM_NAME;
     }
 
-    public static String getOrderItemInventoryItemStoreId() {
+    public static String getIorderItemInventoryItemStoreId() {
         return ITEM_INVENTORY_ITEM_STORE_ID;
     }
     
@@ -591,11 +591,11 @@ public class OrderMeta implements Meta, MetaMap {
     public String buildFrom(String where) {
         String from, oiFrom, irFrom;
         
-        oiFrom = ",IN (_order.orderItem) _orderItem ";
-        irFrom = ",IN (_orderItem.inventoryReceipt) _inventoryReceipt ";
+        oiFrom = ",IN (_iorder.iorderItem) _iorderItem ";
+        irFrom = ",IN (_iorderItem.inventoryReceipt) _inventoryReceipt ";
         
-        from = "Order _order ";
-        if (where.indexOf("orderItem.") > -1)
+        from = "IOrder _iorder ";
+        if (where.indexOf("iorderItem.") > -1)
             from += oiFrom;
         
         if (where.indexOf("inventoryReceipt.") > -1)
@@ -605,33 +605,33 @@ public class OrderMeta implements Meta, MetaMap {
                 from += irFrom;
         
         if (where.indexOf("organization.") > -1)
-            from += ",IN (_order.organization) _organization "; 
+            from += ",IN (_iorder.organization) _organization "; 
         
-        if (where.indexOf("orderOrganization.") > -1)
-            from += ",IN (_order.orderOrganization) _orderOrganization ";
+        if (where.indexOf("iorderOrganization.") > -1)
+            from += ",IN (_iorder.iorderOrganization) _iorderOrganization ";
         
-        if (where.indexOf("orderOrganizationOrganization.") > -1) {
-            if (from.indexOf("orderOrganization") < 0) 
-                from += ",IN (_order.orderOrganization) _orderOrganization ";
-            from += ",IN (_orderOrganization.organization) _orderOrganizationOrganization ";
+        if (where.indexOf("iorderOrganizationOrganization.") > -1) {
+            if (from.indexOf("iorderOrganization") < 0) 
+                from += ",IN (_iorder.iorderOrganization) _iorderOrganization ";
+            from += ",IN (_iorderOrganization.organization) _iorderOrganizationOrganization ";
         }
         
         if (where.indexOf("reportTo.") > -1)
-            from += ",IN (_order.reportTo) _reportTo ";
+            from += ",IN (_iorder.reportTo) _reportTo ";
         if (where.indexOf("billTo.") > -1)
-            from += ",IN (_order.billTo) _billTo ";
-        if (where.indexOf("orderContainer.") > -1)
-            from += ",IN (_order.orderContainer) _orderContainer ";
+            from += ",IN (_iorder.billTo) _billTo ";
+        if (where.indexOf("iorderContainer.") > -1)
+            from += ",IN (_iorder.iorderContainer) _iorderContainer ";
         if (where.indexOf("_test.") > -1) {
-            from += ",IN (_order.orderTest) _orderTest ";        
-            from += ",IN (_orderTest.test) _test ";
+            from += ",IN (_iorder.iorderTest) _iorderTest ";        
+            from += ",IN (_iorderTest.test) _test ";
         }
-        if (where.indexOf("_orderTest.") > -1 && from.indexOf("_orderTest.") == -1) 
-            from += ",IN (_order.orderTest) _orderTest ";        
+        if (where.indexOf("_iorderTest.") > -1 && from.indexOf("_iorderTest.") == -1) 
+            from += ",IN (_iorder.iorderTest) _iorderTest ";        
         if(where.indexOf("auxData.") > -1)
-            from += ", IN (_order.auxData) _auxData ";
-        if(where.indexOf("orderRecurrence.") > -1)
-            from += ", IN (_order.orderRecurrence) _orderRecurrence ";
+            from += ", IN (_iorder.auxData) _auxData ";
+        if(where.indexOf("iorderRecurrence.") > -1)
+            from += ", IN (_iorder.iorderRecurrence) _iorderRecurrence ";
 
         return from;
     }

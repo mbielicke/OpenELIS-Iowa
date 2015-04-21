@@ -28,24 +28,24 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * Class represents the fields in database table order_item.
+ * Class represents the fields in database table iorder_item.
  */
 
-public class OrderItemDO extends DataObject {
+public class IOrderItemDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, orderId, inventoryItemId, quantity;
+    protected Integer         id, iorderId, inventoryItemId, quantity;
     protected String          catalogNumber;
     protected Double          unitCost;
 
-    public OrderItemDO() {
+    public IOrderItemDO() {
     }
 
-    public OrderItemDO(Integer id, Integer orderId, Integer inventoryItemId,
+    public IOrderItemDO(Integer id, Integer iorderId, Integer inventoryItemId,
                        Integer quantity, String catalogNumber, Double unitCost) {
         setId(id);
-        setOrderId(orderId);
+        setIorderId(iorderId);
         setInventoryItemId(inventoryItemId);
         setQuantity(quantity);
         setCatalogNumber(catalogNumber);
@@ -62,12 +62,12 @@ public class OrderItemDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        this.iorderId = iorderId;
         _changed = true;
     }
 

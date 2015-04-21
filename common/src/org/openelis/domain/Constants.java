@@ -42,7 +42,7 @@ public class Constants implements Serializable {
     protected Domain          domain           = new Domain();
     protected Audit           audit            = new Audit();
     protected Dictionary      dictionary       = new Dictionary();
-    protected Order           order            = new Order();
+    protected IOrder          iorder           = new IOrder();
     protected SystemProperty  systemProperty   = new SystemProperty();
     protected UID             uid              = new UID();
 
@@ -91,8 +91,8 @@ public class Constants implements Serializable {
     /**
      * OrderType reference
      */
-    public static Order order() {
-        return constants.order;
+    public static IOrder iorder() {
+        return constants.iorder;
     }
 
     /**
@@ -126,28 +126,28 @@ public class Constants implements Serializable {
                         TEST_WORKSHEET_ITEM = 27, SECTION = 28, TEST_TRAILER = 29, METHOD = 30,
                         SAMPLE_PRIVATE_WELL = 31, PROJECT = 33, PROJECT_PARAMETER = 34,
                         INVENTORY_ITEM = 35, INVENTORY_COMPONENT = 36, INVENTORY_LOCATION = 37,
-                        INVENTORY_RECEIPT = 38, ORDER = 39, ORDER_ITEM = 40, INSTRUMENT = 41,
+                        INVENTORY_RECEIPT = 38, IORDER = 39, IORDER_ITEM = 40, INSTRUMENT = 41,
                         INSTRUMENT_LOG = 42, INSTRUMENT_METHOD = 43, HISTORY = 44,
                         REFERENCE_TABLE = 45, PANEL = 46, PANEL_ITEM = 47, ANALYTE = 48,
                         CATEGORY = 49, DICTIONARY = 50, QC = 51, QC_ANALYTE = 52,
                         STORAGE_UNIT = 53, STORAGE_LOCATION = 54, STORAGE = 55, SCRIPTLET = 56,
                         LABEL = 57, ATTACHMENT = 58, ATTACHMENT_ITEM = 59, SYSTEM_VARIABLE = 60,
                         ADDRESS = 61, AUX_FIELD = 62, AUX_FIELD_VALUE = 63, AUX_DATA = 64,
-                        ORDER_CUSTOMER_NOTE = 65, ORDER_SHIPPING_NOTE = 66, INVENTORY_X_USE = 68,
+                        IORDER_CUSTOMER_NOTE = 65, IORDER_SHIPPING_NOTE = 66, INVENTORY_X_USE = 68,
                         INVENTORY_X_PUT = 70, INVENTORY_X_ADJUST = 71, INVENTORY_ADJUSTMENT = 72,
                         SHIPPING = 73, SHIPPING_TRACKING = 74, SHIPPING_ITEM = 75, LOCK = 76,
                         PROVIDER_LOCATION = 78, PREFERENCES = 79, AUX_FIELD_GROUP = 80,
                         INVENTORY_ITEM_MANUFACTURING = 82, SAMPLE_SDWIS = 83, SAMPLE_QAEVENT = 85,
-                        WORKSHEET = 86, INVENTORY_RECEIPT_ORDER_ITEM = 87,
+                        WORKSHEET = 86, INVENTORY_RECEIPT_IORDER_ITEM = 87,
                         ORGANIZATION_PARAMETER = 88, TEST_PREP = 89, TEST_SECTION = 90,
                         TEST_TYPE_OF_SAMPLE = 91, TEST_WORKSHEET_ANALYTE = 92,
                         WORKSHEET_ANALYSIS = 93, WORKSHEET_ITEM = 94, WORKSHEET_QC_RESULT = 96,
                         WORKSHEET_RESULT = 97, INVENTORY_TRANSACTION = 98, PWS = 99,
                         PWS_FACILITY = 100, PWS_ADDRESS = 101, PWS_MONITOR = 102,
-                        ORDER_CONTAINER = 103, ORDER_TEST = 104, ANALYTE_PARAMETER = 105,
+                        IORDER_CONTAINER = 103, IORDER_TEST = 104, ANALYTE_PARAMETER = 105,
                         SECTION_PARAMETER = 106, ANALYSIS_REPORT_FLAGS = 107,
-                        ORDER_RECURRENCE = 108, CRON = 109, ORDER_ORGANIZATION = 110,
-                        ORDER_TEST_ANALYTE = 111, ORDER_SAMPLE_NOTE = 112,
+                        IORDER_RECURRENCE = 108, CRON = 109, IORDER_ORGANIZATION = 110,
+                        IORDER_TEST_ANALYTE = 111, IORDER_SAMPLE_NOTE = 112,
                         EXCHANGE_LOCAL_TERM = 113, EXCHANGE_EXTERNAL_TERM = 114,
                         EXCHANGE_CRITERIA = 115, EXCHANGE_PROFILE = 116, EVENT_LOG = 117,
                         QC_LOT = 118, SAMPLE_NEONATAL = 119, CASE = 120, CASE_ANALYSIS = 121,
@@ -243,14 +243,14 @@ public class Constants implements Serializable {
     }
 
     /**
-     * The class represents all the order types that can be used in order record
+     * The class represents all the iorder types that can be used in iorder record
      */
-    public static class Order implements Serializable {
+    public static class IOrder implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final String       INTERNAL, VENDOR, SEND_OUT;
         
-        private Order() {
+        private IOrder() {
         	INTERNAL = "I";
         	VENDOR = "V";
         	SEND_OUT = "S";
@@ -318,12 +318,12 @@ public class Constants implements Serializable {
             return getAuxFieldGroup(data.getId());
         }
 
-        public String get(OrderTestDO data) {
-            return getOrderTest(data.getId());
+        public String get(IOrderTestDO data) {
+            return getIorderTest(data.getId());
         }
 
-        public String get(OrderTestAnalyteDO data) {
-            return getOrderTestAnalyte(data.getId());
+        public String get(IOrderTestAnalyteDO data) {
+            return getIorderTestAnalyte(data.getId());
         }
 
         public String get(AuxDataDO data) {
@@ -381,12 +381,12 @@ public class Constants implements Serializable {
             return Constants.table().AUX_FIELD_GROUP + ":" + id;
         }
 
-        public String getOrderTest(Integer id) {
-            return Constants.table().ORDER_TEST + ":" + id;
+        public String getIorderTest(Integer id) {
+            return Constants.table().IORDER_TEST + ":" + id;
         }
 
-        public String getOrderTestAnalyte(Integer id) {
-            return Constants.table().ORDER_TEST_ANALYTE + ":" + id;
+        public String getIorderTestAnalyte(Integer id) {
+            return Constants.table().IORDER_TEST_ANALYTE + ":" + id;
         }
 
         public String getAuxData(Integer id) {

@@ -4,25 +4,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderOrganizationViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 
-public class OrderOrganizationManager implements Serializable {
+public class IOrderOrganizationManager implements Serializable {
     private static final long                                serialVersionUID = 1L;
 
-    protected Integer                                        orderId;
-    protected ArrayList<OrderOrganizationViewDO>             organizations, deletedList;
+    protected Integer                                        iorderId;
+    protected ArrayList<IOrderOrganizationViewDO>            organizations, deletedList;
 
-    protected transient static OrderOrganizationManagerProxy proxy;
+    protected transient static IOrderOrganizationManagerProxy proxy;
 
     /**
      * Creates a new instance of this object.
      */
-    public static OrderOrganizationManager getInstance() {
-        OrderOrganizationManager man;
+    public static IOrderOrganizationManager getInstance() {
+        IOrderOrganizationManager man;
 
-        man = new OrderOrganizationManager();
-        man.organizations = new ArrayList<OrderOrganizationViewDO>();
+        man = new IOrderOrganizationManager();
+        man.organizations = new ArrayList<IOrderOrganizationViewDO>();
 
         return man;
     }
@@ -31,43 +31,43 @@ public class OrderOrganizationManager implements Serializable {
      * Creates a new instance of this object with the specified Order id. Use
      * this function to load an instance of this object from database.
      */
-    public static OrderOrganizationManager fetchByOrderId(Integer orderId) throws Exception {
-        return proxy().fetchByOrderId(orderId);
+    public static IOrderOrganizationManager fetchByIorderId(Integer orderId) throws Exception {
+        return proxy().fetchByIorderId(orderId);
     }
 
     // service methods
-    public OrderOrganizationManager add() throws Exception {
+    public IOrderOrganizationManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public OrderOrganizationManager update() throws Exception {
+    public IOrderOrganizationManager update() throws Exception {
         return proxy().update(this);
     }
 
-    public OrderOrganizationViewDO getOrganizationAt(int i) {
+    public IOrderOrganizationViewDO getOrganizationAt(int i) {
         return organizations.get(i);
     }
 
-    public void setOrganizationAt(OrderOrganizationViewDO organization, int i) {
+    public void setOrganizationAt(IOrderOrganizationViewDO organization, int i) {
         organizations.set(i, organization);
     }
 
-    public void addOrganization(OrderOrganizationViewDO organization) {
+    public void addOrganization(IOrderOrganizationViewDO organization) {
         if (organizations == null)
-            organizations = new ArrayList<OrderOrganizationViewDO>();
+            organizations = new ArrayList<IOrderOrganizationViewDO>();
 
         organizations.add(organization);
     }
 
-    public void addOrganizationAt(OrderOrganizationViewDO organization, int i) {
+    public void addOrganizationAt(IOrderOrganizationViewDO organization, int i) {
         if (organizations == null)
-            organizations = new ArrayList<OrderOrganizationViewDO>();
+            organizations = new ArrayList<IOrderOrganizationViewDO>();
 
         organizations.add(i, organization);
     }
 
     public void removeOrganizationAt(int i) {
-        OrderOrganizationViewDO tmp;
+        IOrderOrganizationViewDO tmp;
         if (organizations == null || i >= organizations.size())
             return;
 
@@ -75,7 +75,7 @@ public class OrderOrganizationManager implements Serializable {
 
         if (tmp.getId() != null) {
             if (deletedList == null)
-                deletedList = new ArrayList<OrderOrganizationViewDO>();
+                deletedList = new ArrayList<IOrderOrganizationViewDO>();
             deletedList.add(tmp);
         }
     }
@@ -83,7 +83,7 @@ public class OrderOrganizationManager implements Serializable {
     //
     // helper methods
     //
-    public OrderOrganizationViewDO getBillTo() {
+    public IOrderOrganizationViewDO getBillTo() {
         int i = 0;
 
         while (i < organizations.size() &&
@@ -97,7 +97,7 @@ public class OrderOrganizationManager implements Serializable {
             return null;
     }
 
-    public OrderOrganizationViewDO getReportTo() {
+    public IOrderOrganizationViewDO getReportTo() {
         int i = 0;
 
         while (i < organizations.size() &&
@@ -124,19 +124,19 @@ public class OrderOrganizationManager implements Serializable {
 
     // these are friendly methods so only managers and proxies can call this
     // method
-    Integer getOrderId() {
-        return orderId;
+    Integer getIorderId() {
+        return iorderId;
     }
 
-    void setOrderId(Integer OrderId) {
-        this.orderId = OrderId;
+    void setIorderId(Integer iorderId) {
+        this.iorderId = iorderId;
     }
 
-    ArrayList<OrderOrganizationViewDO> getOrganizations() {
+    ArrayList<IOrderOrganizationViewDO> getOrganizations() {
         return organizations;
     }
 
-    void setOrganizations(ArrayList<OrderOrganizationViewDO> organizations) {
+    void setOrganizations(ArrayList<IOrderOrganizationViewDO> organizations) {
         this.organizations = organizations;
     }
 
@@ -147,13 +147,13 @@ public class OrderOrganizationManager implements Serializable {
         return deletedList.size();
     }
 
-    OrderOrganizationViewDO getDeletedAt(int i) {
+    IOrderOrganizationViewDO getDeletedAt(int i) {
         return deletedList.get(i);
     }
 
-    private static OrderOrganizationManagerProxy proxy() {
+    private static IOrderOrganizationManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderOrganizationManagerProxy();
+            proxy = new IOrderOrganizationManagerProxy();
 
         return proxy;
     }

@@ -34,7 +34,7 @@ import org.openelis.domain.AttachmentItemViewDO;
 /**
  * This class encapsulates an attachment and all its items. Although the class
  * provides some basic functions internally, it is designed to interact with EJB
- * methods to provide majority of the operations needed to manage an order.
+ * methods to provide majority of the operations needed to manage an attachment.
  */
 public class AttachmentManager implements Serializable {
     private static final long                 serialVersionUID = 1L;
@@ -69,7 +69,7 @@ public class AttachmentManager implements Serializable {
         }
 
         /**
-         * Returns the number of items associated with this order
+         * Returns the number of items associated with this attachment-
          */
         public int count() {
             if (items != null)

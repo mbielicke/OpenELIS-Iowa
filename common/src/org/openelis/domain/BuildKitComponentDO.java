@@ -42,20 +42,20 @@ public class BuildKitComponentDO implements Serializable {
     protected Double          unit;
     protected Integer         total;
     protected Integer         qtyOnHand;
-    protected Integer         orderItemId;
+    protected Integer         iorderItemId;
     protected Integer         inventoryXUseId;
-    protected Integer         inventoryReceiptOrderItemId;
+    protected Integer         inventoryReceiptIorderItemId;
 
     public BuildKitComponentDO() {
 
     }
 
-    public Integer getInventoryReceiptOrderItemId() {
-        return inventoryReceiptOrderItemId;
+    public Integer getInventoryReceiptIorderItemId() {
+        return inventoryReceiptIorderItemId;
     }
 
-    public void setInventoryReceiptOrderItemId(Integer inventoryReceiptOrderItemId) {
-        this.inventoryReceiptOrderItemId = inventoryReceiptOrderItemId;
+    public void setInventoryReceiptIorderItemId(Integer inventoryReceiptIorderItemId) {
+        this.inventoryReceiptIorderItemId = inventoryReceiptIorderItemId;
     }
 
     public Integer getInventoryXUseId() {
@@ -122,12 +122,12 @@ public class BuildKitComponentDO implements Serializable {
         this.unit = unit;
     }
 
-    public Integer getOrderItemId() {
-        return orderItemId;
+    public Integer getIorderItemId() {
+        return iorderItemId;
     }
 
-    public void setOrderItemId(Integer orderItemId) {
-        this.orderItemId = orderItemId;
+    public void setIorderItemId(Integer iorderItemId) {
+        this.iorderItemId = iorderItemId;
     }
 
     public Integer getInventoryItemId() {
