@@ -10,11 +10,11 @@
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="FROM_DATE" class="java.lang.String">
+	<parameter name="FROM_DATE" class="java.sql.Timestamp">
 		<parameterDescription><![CDATA[starting date-time released]]></parameterDescription>
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TO_DATE" class="java.lang.String">
+	<parameter name="TO_DATE" class="java.sql.Timestamp">
 		<parameterDescription><![CDATA[ending date-time released]]></parameterDescription>
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -22,22 +22,25 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT t.description tst_name, m.name mth_name,
-       s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec,
-       a.available_date a_avail,  a.completed_date a_com, a.released_date a_rel
-FROM   sample s, sample_item si, analysis a, test t, method m, test_section ts, section se, dictionary d
+		<![CDATA[SELECT t.description as tst_name, m.name as mth_name,
+       s.collection_date as s_col_date, s.collection_time as s_col_time, s.received_date as s_rec,
+       a.available_date as a_avail,  a.completed_date as a_com, a.released_date as a_rel
+FROM   sample s
+       join sample_item si on si.sample_id = s.id
+       join analysis a on si.id = a.sample_item_id
+       join test t on t.id = a.test_id
+       join method m on m.id = t.method_id
+       join section se on se.id = a.section_id
+       join dictionary d on d.id = a.status_id and d.system_name = 'analysis_released'
 WHERE  a.released_date between $P{FROM_DATE} and $P{TO_DATE} and
-       s.id = si.sample_id and a.sample_item_id = si.id and
-       a.test_id = t.id and t.method_id = m.id and ts.section_id = se.id and ts.test_id = t.id and
-       a.section_id = se.id and a.revision = 0 and
-       d.id=a.status_id and d.system_name = 'analysis_released' and
-       --a.printed_date is not null and
+       a.revision = 0 and
        a.id not in
          (
-          SELECT  analysis_qaevent.analysis_id
-          FROM   analysis_qaevent, qaevent
-          WHERE  analysis_qaevent.analysis_id = qaevent.id and
-                 qaevent.type_id = d.id and d.system_name = 'qaevent_override'
+          SELECT aq.analysis_id
+          FROM   analysis_qaevent aq
+                 join qaevent q on q.id = aq.qaevent_id
+                 join dictionary d1 on d1.id = q.type_id and d1.system_name = 'qaevent_override'
+          WHERE  aq.analysis_id = a.id
          )
         $P!{SECTION}
 order by 1, 2]]>

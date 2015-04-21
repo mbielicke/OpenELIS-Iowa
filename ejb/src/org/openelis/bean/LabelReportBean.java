@@ -83,7 +83,7 @@ public class LabelReportBean {
         f.printf("^FO15,%d^A040,40^FD%s^FS",p+=50, csz);                     // the lab's city, state, zip code
         f.printf("^FO560,%d^A040,40^FD%s^FS",p, shippingId);                 // readable shipping id
         if (costCenter != null)
-            f.printf("^FO560,%d^A040,40^FD%s^FS",p+=50, costCenter);         // the order's cost center
+            f.printf("^FO560,%d^A040,40^FD%s^FS",p+=50, costCenter);         // the iorder's cost center
         p = 500;
         if (attention != null)
             f.printf("^FO150,%d^A048,42^FD%s^FS",p, attention);                // the attention line for the receiver
@@ -114,9 +114,9 @@ public class LabelReportBean {
         f.print("^CF025,35");        
         f.print("^FO15,200^FDLot #: "+DataBaseUtil.toString(lotNumber)+"^FS");            // the lot # given to the kit, if any         
         f.print("^FO550,200^FDCreated: "+createdDate+"^FS");                              // the date on which the kit was created
-        f.print("^FO15,250^FDBuild Id: ^FS^FO150,250^BY2^BCN,50,N,N,N^FD"+buildId+"^FS"); // the id of the internal order created when                                         
+        f.print("^FO15,250^FDBuild Id: ^FS^FO150,250^BY2^BCN,50,N,N,N^FD"+buildId+"^FS"); // the id of the internal iorder created when                                         
         f.print("^FO550,250^FDExpires: "+DataBaseUtil.toString(expiredDate)+"^FS");       // the date of expiration of the kit, if any
-        f.print("^FO200,300^FD"+buildId+"^FS");                                           // the human-readable internal order number
+        f.print("^FO200,300^FD"+buildId+"^FS");                                           // the human-readable internal iorder number
         f.print("^FO15,350^FD"+kitDescription+"^FS");                                     // the descriptive text for the kit         
         f.print("^FO0,400^GB900,5,5^FS");
         f.print("^FO15,420^FB900,4,0,C,0");                                               // defines the region for printing the special instructions     

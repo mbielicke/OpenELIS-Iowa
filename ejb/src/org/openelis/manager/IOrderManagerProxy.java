@@ -26,29 +26,29 @@
 package org.openelis.manager;
 
 import org.openelis.domain.Constants;
-import org.openelis.bean.OrderRecurrenceBean;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.bean.IOrderRecurrenceBean;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderManagerProxy {
+public class IOrderManagerProxy {
 
-    public OrderManager fetchById(Integer id) throws Exception {
-        OrderViewDO data;
-        OrderManager m;
+    public IOrderManager fetchById(Integer id) throws Exception {
+        IOrderViewDO data;
+        IOrderManager m;
 
-        data = EJBFactory.getOrder().fetchById(id);
-        m = OrderManager.getInstance();
+        data = EJBFactory.getIOrder().fetchById(id);
+        m = IOrderManager.getInstance();
 
-        m.setOrder(data);
+        m.setIorder(data);
 
         return m;
     }
 
-    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
-        OrderManager m;
+    public IOrderManager fetchWithOrganizations(Integer id) throws Exception {
+        IOrderManager m;
 
         m = fetchById(id);
         m.getOrganizations();
@@ -56,8 +56,8 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithItems(Integer id) throws Exception {
-        OrderManager m;
+    public IOrderManager fetchWithItems(Integer id) throws Exception {
+        IOrderManager m;
 
         m = fetchById(id);
         m.getItems();
@@ -65,8 +65,8 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithFills(Integer id) throws Exception {
-        OrderManager m;
+    public IOrderManager fetchWithFills(Integer id) throws Exception {
+        IOrderManager m;
 
         m = fetchById(id);
         m.getFills();
@@ -74,8 +74,8 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithNotes(Integer id) throws Exception {
-        OrderManager m;
+    public IOrderManager fetchWithNotes(Integer id) throws Exception {
+        IOrderManager m;
 
         m = fetchById(id);
         m.getShippingNotes();
@@ -86,8 +86,8 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithTests(Integer id) throws Exception {
-        OrderManager m;
+    public IOrderManager fetchWithTests(Integer id) throws Exception {
+        IOrderManager m;
 
         m = fetchById(id);
         m.getTests();
@@ -95,8 +95,8 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithContainers(Integer id) throws Exception {
-        OrderManager m;
+    public IOrderManager fetchWithContainers(Integer id) throws Exception {
+        IOrderManager m;
 
         m = fetchById(id);
         m.getContainers();
@@ -104,26 +104,26 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+    public IOrderManager fetchWithRecurring(Integer id) throws Exception {
         return fetchById(id);
     }
 
-    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
-        return EJBFactory.getOrderRecurrence().fetchByOrderId(id);
+    public IOrderRecurrenceDO fetchRecurrenceByIorderId(Integer id) throws Exception {
+        return EJBFactory.getIOrderRecurrence().fetchByIorderId(id);
     }
 
-    public OrderManager add(OrderManager man) throws Exception {
+    public IOrderManager add(IOrderManager man) throws Exception {
         Integer id;
-        OrderViewDO data;
-        OrderRecurrenceDO ord;
-        OrderRecurrenceBean orl;
+        IOrderViewDO data;
+        IOrderRecurrenceDO ord;
+        IOrderRecurrenceBean orl;
 
-        data = man.getOrder();
-        EJBFactory.getOrder().add(data);
+        data = man.getIorder();
+        EJBFactory.getIOrder().add(data);
         id = data.getId();
 
         if (man.organizations != null) {
-            man.getOrganizations().setOrderId(id);
+            man.getOrganizations().setIorderId(id);
             man.getOrganizations().add();
         }
 
@@ -140,32 +140,32 @@ public class OrderManagerProxy {
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
             man.getShippingNotes()
-               .setReferenceTableId(Constants.table().ORDER_SHIPPING_NOTE);
+               .setReferenceTableId(Constants.table().IORDER_SHIPPING_NOTE);
             man.getShippingNotes().add();
         }
 
         if (man.customerNotes != null) {
             man.getCustomerNotes().setReferenceId(id);
             man.getCustomerNotes()
-               .setReferenceTableId(Constants.table().ORDER_CUSTOMER_NOTE);
+               .setReferenceTableId(Constants.table().IORDER_CUSTOMER_NOTE);
             man.getCustomerNotes().add();
         }
 
         if (man.internalNotes != null) {
             man.getInternalNotes().setReferenceId(id);
-            man.getInternalNotes().setReferenceTableId(Constants.table().ORDER);
+            man.getInternalNotes().setReferenceTableId(Constants.table().IORDER);
             man.getInternalNotes().add();
         }
 
         if (man.sampleNotes != null) {
             man.getSampleNotes().setReferenceId(id);
-            man.getSampleNotes().setReferenceTableId(Constants.table().ORDER_SAMPLE_NOTE);
+            man.getSampleNotes().setReferenceTableId(Constants.table().IORDER_SAMPLE_NOTE);
             man.getSampleNotes().add();
         }
 
         if (man.auxData != null) {
             man.getAuxData().setReferenceId(id);
-            man.getAuxData().setReferenceTableId(Constants.table().ORDER);
+            man.getAuxData().setReferenceTableId(Constants.table().IORDER);
             man.getAuxData().add();
         }
 
@@ -175,15 +175,15 @@ public class OrderManagerProxy {
         }
 
         if (man.tests != null) {
-            man.getTests().setOrderId(id);
+            man.getTests().setIorderId(id);
             man.getTests().add();
         }
 
         ord = man.recurrence;
         if (ord != null && ord.isChanged()) {
-            orl = EJBFactory.getOrderRecurrence();
+            orl = EJBFactory.getIOrderRecurrence();
             if ( !orl.isEmpty(ord)) {
-                ord.setOrderId(id);
+                ord.setIorderId(id);
                 orl.add(ord);
             }
         }
@@ -191,17 +191,17 @@ public class OrderManagerProxy {
         return man;
     }
 
-    public OrderManager update(OrderManager man) throws Exception {
+    public IOrderManager update(IOrderManager man) throws Exception {
         Integer id;
-        OrderViewDO data;
-        OrderRecurrenceDO ord;
+        IOrderViewDO data;
+        IOrderRecurrenceDO ord;
 
-        data = man.getOrder();
+        data = man.getIorder();
         id = data.getId();
-        EJBFactory.getOrder().update(data);
+        EJBFactory.getIOrder().update(data);
 
         if (man.organizations != null) {
-            man.getOrganizations().setOrderId(id);
+            man.getOrganizations().setIorderId(id);
             man.getOrganizations().update();
         }
 
@@ -218,32 +218,32 @@ public class OrderManagerProxy {
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
             man.getShippingNotes()
-               .setReferenceTableId(Constants.table().ORDER_SHIPPING_NOTE);
+               .setReferenceTableId(Constants.table().IORDER_SHIPPING_NOTE);
             man.getShippingNotes().update();
         }
 
         if (man.customerNotes != null) {
             man.getCustomerNotes().setReferenceId(id);
             man.getCustomerNotes()
-               .setReferenceTableId(Constants.table().ORDER_CUSTOMER_NOTE);
+               .setReferenceTableId(Constants.table().IORDER_CUSTOMER_NOTE);
             man.getCustomerNotes().update();
         }
 
         if (man.internalNotes != null) {
             man.getInternalNotes().setReferenceId(id);
-            man.getInternalNotes().setReferenceTableId(Constants.table().ORDER);
+            man.getInternalNotes().setReferenceTableId(Constants.table().IORDER);
             man.getInternalNotes().update();
         }
 
         if (man.sampleNotes != null) {
             man.getSampleNotes().setReferenceId(id);
-            man.getSampleNotes().setReferenceTableId(Constants.table().ORDER_SAMPLE_NOTE);
+            man.getSampleNotes().setReferenceTableId(Constants.table().IORDER_SAMPLE_NOTE);
             man.getSampleNotes().update();
         }
 
         if (man.auxData != null) {
             man.getAuxData().setReferenceId(id);
-            man.getAuxData().setReferenceTableId(Constants.table().ORDER);
+            man.getAuxData().setReferenceTableId(Constants.table().IORDER);
             man.getAuxData().update();
         }
 
@@ -253,45 +253,45 @@ public class OrderManagerProxy {
         }
 
         if (man.tests != null) {
-            man.getTests().setOrderId(id);
+            man.getTests().setIorderId(id);
             man.getTests().update();
         }
 
         ord = man.recurrence;
         if (ord != null && ord.isChanged()) {
-            if (ord.getOrderId() == null) {
-                man.recurrence.setOrderId(id);
-                EJBFactory.getOrderRecurrence().add(ord);
+            if (ord.getIorderId() == null) {
+                man.recurrence.setIorderId(id);
+                EJBFactory.getIOrderRecurrence().add(ord);
             } else {
-                EJBFactory.getOrderRecurrence().update(ord);
+                EJBFactory.getIOrderRecurrence().update(ord);
             }
         }
 
         return man;
     }
 
-    public OrderManager fetchForUpdate(OrderManager man) throws Exception {
+    public IOrderManager fetchForUpdate(IOrderManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public OrderManager fetchForUpdate(Integer id) throws Exception {
+    public IOrderManager fetchForUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public OrderManager abortUpdate(Integer id) throws Exception {
+    public IOrderManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public void validate(OrderManager man) throws Exception {
+    public void validate(IOrderManager man) throws Exception {
         ValidationErrorsList list;
-        OrderRecurrenceDO data;
+        IOrderRecurrenceDO data;
 
         list = new ValidationErrorsList();
         try {
-            EJBFactory.getOrder().validate(man.getOrder());
+            EJBFactory.getIOrder().validate(man.getIorder());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -305,7 +305,7 @@ public class OrderManagerProxy {
 
         try {
             if (man.items != null)
-                man.getItems().validate(man.getOrder().getType());
+                man.getItems().validate(man.getIorder().getType());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -337,7 +337,7 @@ public class OrderManagerProxy {
         data = man.recurrence;
         if (data != null && "Y".equals(data.getIsActive()) && data.isChanged()) {
             try {
-                EJBFactory.getOrderRecurrence().validate(data);
+                EJBFactory.getIOrderRecurrence().validate(data);
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e);
             }

@@ -55,42 +55,42 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-               @NamedQuery(name = "Order.FetchById",
-                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
-                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
-                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                                   + " from Order o where o.id = :id"),
-               @NamedQuery(name = "Order.FetchByIds",
-                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
-                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
-                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                                   + " from Order o where o.id in ( :ids )"),
-               @NamedQuery(name = "Order.FetchByDescription",
-                           query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
-                                   + " from Order o where o.description like :description"),
-               @NamedQuery(name = "Order.FetchByOrderItemId",
-                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
-                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
-                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                                   + " from Order o left join o.orderItem i where i.id = :id"),
-               @NamedQuery(name = "Order.FetchByShippingId",
-                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
-                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
-                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                                   + " from Order o left join o.orderItem i "
-                                   + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.shippingId = :shippingId)")})
+   @NamedQuery(name = "IOrder.FetchById",
+               query = "select new org.openelis.domain.IOrderViewDO(o.id,o.parentIorderId,o.description,o.statusId,o.orderedDate,"
+                       + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                       + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                       + " from IOrder o where o.id = :id"),
+   @NamedQuery(name = "IOrder.FetchByIds",
+               query = "select new org.openelis.domain.IOrderViewDO(o.id,o.parentIorderId,o.description,o.statusId,o.orderedDate,"
+                       + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                       + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                       + " from IOrder o where o.id in ( :ids )"),
+   @NamedQuery(name = "IOrder.FetchByDescription",
+               query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
+                       + " from IOrder o where o.description like :description"),
+   @NamedQuery(name = "IOrder.FetchByIorderItemId",
+               query = "select new org.openelis.domain.IOrderViewDO(o.id,o.parentIorderId,o.description,o.statusId,o.orderedDate,"
+                       + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                       + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                       + " from IOrder o left join o.iorderItem i where i.id = :id"),
+   @NamedQuery(name = "IOrder.FetchByShippingId",
+               query = "select new org.openelis.domain.IOrderViewDO(o.id,o.parentIorderId,o.description,o.statusId,o.orderedDate,"
+                       + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                       + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                       + " from IOrder o left join o.iorderItem i "
+                       + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.shippingId = :shippingId)")})
 @Entity
-@Table(name = "order")
+@Table(name = "iorder")
 @EntityListeners({AuditUtil.class})
-public class Order implements Auditable, Cloneable {
+public class IOrder implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                       id;
 
-    @Column(name = "parent_order_id")
-    private Integer                       parentOrderId;
+    @Column(name = "parent_iorder_id")
+    private Integer                       parentIorderId;
 
     @Column(name = "description")
     private String                        description;
@@ -133,31 +133,31 @@ public class Order implements Auditable, Cloneable {
     private Organization                  organization;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Collection<OrderOrganization> orderOrganization;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private Collection<IOrderOrganization> iorderOrganization;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Collection<OrderItem>         orderItem;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private Collection<IOrderItem>         iorderItem;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Collection<OrderContainer>    orderContainer;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private Collection<IOrderContainer>    iorderContainer;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Collection<OrderTest>         orderTest;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private Collection<IOrderTest>         iorderTest;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Collection<AuxData>           auxData;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Collection<OrderRecurrence>   orderRecurrence;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private Collection<IOrderRecurrence>   iorderRecurrence;
 
     @Transient
-    private Order                         original;
+    private IOrder                         original;
 
     public Integer getId() {
         return id;
@@ -168,13 +168,13 @@ public class Order implements Auditable, Cloneable {
             this.id = id;
     }
 
-    public Integer getParentOrderId() {
-        return parentOrderId;
+    public Integer getParentIorderId() {
+        return parentIorderId;
     }
 
-    public void setParentOrderId(Integer parentOrderId) {
-        if (DataBaseUtil.isDifferent(parentOrderId, this.parentOrderId))
-            this.parentOrderId = parentOrderId;
+    public void setParentIorderId(Integer parentOrderId) {
+        if (DataBaseUtil.isDifferent(parentOrderId, this.parentIorderId))
+            this.parentIorderId = parentOrderId;
     }
 
     public String getDescription() {
@@ -289,36 +289,36 @@ public class Order implements Auditable, Cloneable {
         return organization;
     }
 
-    public Collection<OrderOrganization> getOrderOrganization() {
-        return orderOrganization;
+    public Collection<IOrderOrganization> getIorderOrganization() {
+        return iorderOrganization;
     }
 
-    public void setOrderOrganization(Collection<OrderOrganization> orderOrganization) {
-        this.orderOrganization = orderOrganization;
+    public void setIorderOrganization(Collection<IOrderOrganization> iorderOrganization) {
+        this.iorderOrganization = iorderOrganization;
     }
 
-    public Collection<OrderItem> getOrderItem() {
-        return orderItem;
+    public Collection<IOrderItem> getIorderItem() {
+        return iorderItem;
     }
 
-    public void setOrderItem(Collection<OrderItem> orderItem) {
-        this.orderItem = orderItem;
+    public void setIorderItem(Collection<IOrderItem> iorderItem) {
+        this.iorderItem = iorderItem;
     }
 
-    public Collection<OrderContainer> getOrderContainer() {
-        return orderContainer;
+    public Collection<IOrderContainer> getIorderContainer() {
+        return iorderContainer;
     }
 
-    public void setOrderContainer(Collection<OrderContainer> orderContainer) {
-        this.orderContainer = orderContainer;
+    public void setIorderContainer(Collection<IOrderContainer> iorderContainer) {
+        this.iorderContainer = iorderContainer;
     }
 
-    public Collection<OrderTest> getOrderTest() {
-        return orderTest;
+    public Collection<IOrderTest> getIorderTest() {
+        return iorderTest;
     }
 
-    public void setOrderTest(Collection<OrderTest> orderTest) {
-        this.orderTest = orderTest;
+    public void setIorderTest(Collection<IOrderTest> iorderTest) {
+        this.iorderTest = iorderTest;
     }
 
     public Collection<AuxData> getAuxData() {
@@ -329,17 +329,17 @@ public class Order implements Auditable, Cloneable {
         this.auxData = auxData;
     }
 
-    public Collection<OrderRecurrence> getOrderRecurrence() {
-        return orderRecurrence;
+    public Collection<IOrderRecurrence> getIorderRecurrence() {
+        return iorderRecurrence;
     }
 
-    public void setOrderRecurrence(Collection<OrderRecurrence> orderRecurrence) {
-        this.orderRecurrence = orderRecurrence;
+    public void setIorderRecurrence(Collection<IOrderRecurrence> iorderRecurrence) {
+        this.iorderRecurrence = iorderRecurrence;
     }
 
     public void setClone() {
         try {
-            original = (Order)this.clone();
+            original = (IOrder)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -349,11 +349,11 @@ public class Order implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER);
+        audit.setReferenceTableId(Constants.table().IORDER);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("parentOrderId", parentOrderId, original.parentOrderId)
+                 .setField("parentIorderId", parentIorderId, original.parentIorderId)
                  .setField("description", description, original.description)
                  .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("ordered_date", orderedDate, original.orderedDate)

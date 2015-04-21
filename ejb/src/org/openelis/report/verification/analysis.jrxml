@@ -11,18 +11,20 @@
 	<parameter name="SAMPLE_ITEM_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT
-     a.id a_id, a.revision, a.is_reportable, d1.entry unit, d2.entry status,
-     t.description t_description, m.description m_description, s.name section_name
+     a.id as a_id, a.revision, a.is_reportable, d1.entry as unit, d2.entry as status,
+     t.description as t_description, m.description as m_description, s.name as section_name
 FROM
-     analysis a, test t, method m, outer (analysis pa, test pt, method pm), outer dictionary d1, dictionary d2,
-     section s
+     analysis a
+     join test t on a.test_id = t.id
+     join method m on t.method_id = m.id
+     join section s on a.section_id = s.id
+     left join analysis pa on a.pre_analysis_id = pa.id
+     left join test pt on pa.test_id = pt.id
+     left join method pm on pt.method_id = pm.id
+     left join dictionary d1 on a.unit_of_measure_id = d1.id
+     left join dictionary d2 on a.status_id = d2.id
 WHERE
      a.sample_item_id = $P{SAMPLE_ITEM_ID}
-     AND a.test_id = t.id AND t.method_id = m.id
-     AND a.pre_analysis_id = pa.id AND pa.test_id = pt.id AND pt.method_id = pm.id
-     AND a.unit_of_measure_id = d1.id
-     AND a.status_id = d2.id
-     AND a.section_id = s.id
 ORDER BY t_description, m_description]]>
 	</queryString>
 	<field name="a_id" class="java.lang.Integer"/>

@@ -9,7 +9,7 @@
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="WORKSHEET_ID" class="java.lang.String">
+	<parameter name="WORKSHEET_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="BARCODE_TYPE" class="java.lang.String">
@@ -19,19 +19,21 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select w.id w_id, w.created_date, w.description, i.name i_name, wi.position,
+		<![CDATA[SELECT
+       w.id as w_id, w.created_date, w.description, i.name as i_name, wi.position,
        wav.accession_number, wav.worksheet_analysis_id, wav.test_name, wav.method_name, wav.unit_of_measure,
-       q.name qc_name, ql.lot_number, d1.entry qc_type, d1.code qc_code
-  from worksheet_analysis_view wav, worksheet_item wi, worksheet w, outer instrument i,
-       outer(qc_lot ql, qc q, outer dictionary d1)
- where wav.worksheet_item_id = wi.id and
-       wav.worksheet_id = w.id and
-       w.instrument_id = i.id and
-       wav.qc_id = q.id and
-       q.type_id = d1.id and
-       wav.qc_lot_id = ql.id and
+       q.name as qc_name, ql.lot_number, d1.entry as qc_type, d1.code as qc_code
+FROM
+       worksheet_analysis_view wav
+       join worksheet_item wi on wi.id = wav.worksheet_item_id
+       join worksheet w on w.id = wav.worksheet_id
+       left join instrument i on i.id = w.instrument_id
+       left join qc_lot ql on ql.id = wav.qc_lot_id
+       left join qc q on q.id = wav.qc_id
+       left join dictionary d1 on d1.id = q.type_id
+WHERE
        wav.worksheet_id = $P{WORKSHEET_ID}
-order by 1,5;]]>
+ORDER BY 1,5;]]>
 	</queryString>
 	<field name="w_id" class="java.lang.Integer"/>
 	<field name="created_date" class="java.sql.Timestamp"/>

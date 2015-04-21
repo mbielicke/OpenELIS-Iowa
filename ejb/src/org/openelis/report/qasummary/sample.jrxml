@@ -32,11 +32,15 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT distinct s.accession_number s_no, q.name q_name, q.reporting_sequence, sq.id sq_id
-FROM sample_qaevent sq, qaevent q, sample s
-WHERE s.id = $P{SAMPLE_ID} and
-      sq.qaevent_id = q.id and s.id = sq.sample_id
-ORDER BY q.reporting_sequence, sq_id]]>
+		<![CDATA[SELECT distinct
+      s.accession_number as s_no, q.name as q_name, q.reporting_sequence, sq.id as sq_id
+FROM
+      sample s
+      join sample_qaevent sq on sq.sample_id = s.id
+      join qaevent q on q.id = sq.qaevent_id
+WHERE
+      s.id = $P{SAMPLE_ID}
+ORDER BY reporting_sequence, sq_id]]>
 	</queryString>
 	<field name="s_no" class="java.lang.Integer"/>
 	<field name="q_name" class="java.lang.String"/>

@@ -36,9 +36,9 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderOrganizationDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.entity.OrderOrganization;
+import org.openelis.domain.IOrderOrganizationDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.entity.IOrderOrganization;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
@@ -46,15 +46,15 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderOrganizationBean {
+public class IOrderOrganizationBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    public ArrayList<OrderOrganizationViewDO> fetchByOrderId(Integer orderId) throws Exception {
-        List<OrderOrganizationViewDO> returnList;
+    public ArrayList<IOrderOrganizationViewDO> fetchByIorderId(Integer orderId) throws Exception {
+        List<IOrderOrganizationViewDO> returnList;
         Query query;
 
-        query = manager.createNamedQuery("OrderOrganization.FetchByOrderId");
+        query = manager.createNamedQuery("IOrderOrganization.FetchByIorderId");
         query.setParameter("id", orderId);
         returnList = query.getResultList();
 
@@ -64,22 +64,22 @@ public class OrderOrganizationBean {
         return DataBaseUtil.toArrayList(returnList);
     }
 
-    public ArrayList<OrderOrganizationViewDO> fetchByOrderIds(ArrayList<Integer> orderIds) {
+    public ArrayList<IOrderOrganizationViewDO> fetchByIorderIds(ArrayList<Integer> orderIds) {
         Query query;
 
-        query = manager.createNamedQuery("OrderOrganization.FetchByOrderIds");
+        query = manager.createNamedQuery("IOrderOrganization.FetchByIorderIds");
         query.setParameter("ids", orderIds);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public OrderOrganizationDO add(OrderOrganizationDO data) throws Exception {
-        OrderOrganization entity;
+    public IOrderOrganizationDO add(IOrderOrganizationDO data) throws Exception {
+        IOrderOrganization entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new OrderOrganization();
-        entity.setOrderId(data.getOrderId());
+        entity = new IOrderOrganization();
+        entity.setIorderId(data.getIorderId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setTypeId(data.getTypeId());
@@ -90,16 +90,16 @@ public class OrderOrganizationBean {
         return data;
     }
 
-    public OrderOrganizationDO update(OrderOrganizationDO data) throws Exception {
-        OrderOrganization entity;
+    public IOrderOrganizationDO update(IOrderOrganizationDO data) throws Exception {
+        IOrderOrganization entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderOrganization.class, data.getId());
-        entity.setOrderId(data.getOrderId());
+        entity = manager.find(IOrderOrganization.class, data.getId());
+        entity.setIorderId(data.getIorderId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setTypeId(data.getTypeId());
@@ -107,35 +107,35 @@ public class OrderOrganizationBean {
         return data;
     }
 
-    public void delete(OrderOrganizationDO data) throws Exception {
-        OrderOrganization entity;
+    public void delete(IOrderOrganizationDO data) throws Exception {
+        IOrderOrganization entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderOrganization.class, data.getId());
+        entity = manager.find(IOrderOrganization.class, data.getId());
 
         if (entity != null)
             manager.remove(entity);
     }
 
-    public void validate(OrderOrganizationDO data) throws Exception {
-        Integer orderId;
+    public void validate(IOrderOrganizationDO data) throws Exception {
+        Integer iorderId;
         ValidationErrorsList list;
 
         /*
          * for display
          */
-        orderId = data.getOrderId();
-        if (orderId == null)
-            orderId = 0;
+        iorderId = data.getIorderId();
+        if (iorderId == null)
+            iorderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_organizationTypeRequiredException(orderId)));
+                                                    .order_organizationTypeRequiredException(iorderId)));
         if (DataBaseUtil.isEmpty(data.getOrganizationId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_organizationRequiredException(orderId)));
+                                                    .order_organizationRequiredException(iorderId)));
 
         if (list.size() > 0)
             throw list;

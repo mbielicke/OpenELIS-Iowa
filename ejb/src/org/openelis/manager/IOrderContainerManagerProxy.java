@@ -27,45 +27,45 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.bean.OrderContainerBean;
-import org.openelis.domain.OrderContainerDO;
+import org.openelis.bean.IOrderContainerBean;
+import org.openelis.domain.IOrderContainerDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderContainerManagerProxy {
+public class IOrderContainerManagerProxy {
     
-    public OrderContainerManager fetchByOrderId(Integer id) throws Exception {
-        OrderContainerManager m;
-        ArrayList<OrderContainerDO> data;
+    public IOrderContainerManager fetchByIorderId(Integer id) throws Exception {
+        IOrderContainerManager m;
+        ArrayList<IOrderContainerDO> data;
 
-        data = EJBFactory.getOrderContainer().fetchByOrderId(id);
-        m = OrderContainerManager.getInstance();
+        data = EJBFactory.getIOrderContainer().fetchByIorderId(id);
+        m = IOrderContainerManager.getInstance();
         m.setOrderId(id);
         m.setContainers(data);
 
         return m;
     }
 
-    public OrderContainerManager add(OrderContainerManager man) throws Exception {
-        OrderContainerBean cl;
-        OrderContainerDO data;
+    public IOrderContainerManager add(IOrderContainerManager man) throws Exception {
+        IOrderContainerBean cl;
+        IOrderContainerDO data;
 
-        cl = EJBFactory.getOrderContainer();
+        cl = EJBFactory.getIOrderContainer();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getContainerAt(i);
-            data.setOrderId(man.getOrderId());
+            data.setIorderId(man.getOrderId());
             cl.add(data);
         }
 
         return man;
     }
 
-    public OrderContainerManager update(OrderContainerManager man) throws Exception {
-        OrderContainerBean cl;
-        OrderContainerDO data;
+    public IOrderContainerManager update(IOrderContainerManager man) throws Exception {
+        IOrderContainerBean cl;
+        IOrderContainerDO data;
 
-        cl = EJBFactory.getOrderContainer();
+        cl = EJBFactory.getIOrderContainer();
         for (int j = 0; j < man.deleteCount(); j++ )
             cl.delete(man.getDeletedAt(j));
 
@@ -73,7 +73,7 @@ public class OrderContainerManagerProxy {
             data = man.getContainerAt(i);
 
             if (data.getId() == null) {
-                data.setOrderId(man.getOrderId());
+                data.setIorderId(man.getOrderId());
                 cl.add(data);
             } else {
                 cl.update(data);
@@ -83,11 +83,11 @@ public class OrderContainerManagerProxy {
         return man;
     }
     
-    public void validate(OrderContainerManager man) throws Exception {
+    public void validate(IOrderContainerManager man) throws Exception {
         ValidationErrorsList list;
-        OrderContainerBean cl;
+        IOrderContainerBean cl;
 
-        cl = EJBFactory.getOrderContainer();
+        cl = EJBFactory.getIOrderContainer();
         list = new ValidationErrorsList();
         
         for (int i = 0; i < man.count(); i++ ) {

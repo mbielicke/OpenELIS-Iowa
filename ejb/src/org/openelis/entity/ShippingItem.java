@@ -80,7 +80,7 @@ public class ShippingItem implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
-    private OrderItem    orderItem;
+    private IOrderItem    iorderItem;
 
     @Transient
     private ShippingItem original;
@@ -139,12 +139,12 @@ public class ShippingItem implements Auditable, Cloneable {
             this.description = description;
     }
 
-    public OrderItem getOrderItem() {
-        return orderItem;
+    public IOrderItem getIorderItem() {
+        return iorderItem;
     }
 
-    public void setOrderItem(OrderItem orderItem) {
-        this.orderItem = orderItem;
+    public void setIorderItem(IOrderItem iorderItem) {
+        this.iorderItem = iorderItem;
     }
 
     public void setClone() {

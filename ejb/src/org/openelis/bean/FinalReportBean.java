@@ -5,7 +5,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -169,10 +168,10 @@ public class FinalReportBean {
      * primary or secondary organization(s) ordered by organization.
      */
     public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception {
-        Integer orgId, typeId, zero;
+        Integer orgId, typeId, accession, zero;
         ReportStatus status;
         OrganizationPrint orgPrint;
-        String orgParam, accession, printer, faxNumber, fromCompany, faxAttention, toCompany, faxNote;
+        String printer, faxNumber, fromCompany, faxAttention, toCompany, faxNote;
         HashMap<String, QueryData> param;
         ArrayList<FinalReportVO> results;
         ArrayList<OrganizationPrint> orgPrintList;
@@ -181,14 +180,14 @@ public class FinalReportBean {
          * Recover all the parameters and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
-        orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        faxNumber = ReportUtil.getSingleParameter(param, "FAX_NUMBER");
-        fromCompany = ReportUtil.getSingleParameter(param, "FROM_COMPANY");
-        toCompany = ReportUtil.getSingleParameter(param, "TO_COMPANY");
-        faxAttention = ReportUtil.getSingleParameter(param, "FAX_ATTENTION");
-        faxNote = ReportUtil.getSingleParameter(param, "FAX_NOTE");
+        accession = ReportUtil.getIntegerParameter(param, "ACCESSION_NUMBER");
+        orgId = ReportUtil.getIntegerParameter(param, "ORGANIZATION_ID");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
+        faxNumber = ReportUtil.getStringParameter(param, "FAX_NUMBER");
+        fromCompany = ReportUtil.getStringParameter(param, "FROM_COMPANY");
+        toCompany = ReportUtil.getStringParameter(param, "TO_COMPANY");
+        faxAttention = ReportUtil.getStringParameter(param, "FAX_ATTENTION");
+        faxNote = ReportUtil.getStringParameter(param, "FAX_NOTE");
 
         if (DataBaseUtil.isEmpty(accession) ||
             (DataBaseUtil.isEmpty(printer) && DataBaseUtil.isEmpty(faxNumber)))
@@ -202,19 +201,9 @@ public class FinalReportBean {
          * find the sample
          */
         try {
-            results = sample.fetchForFinalReportSingle(Integer.parseInt(accession));
-            /*
-             * if the user didn't specify an id for an organization then a
-             * report is created for all the organizations associated with the
-             * sample, otherwise a report is created for the organization, the
-             * id for which is specified by the user if it can be found in the
-             * list of organizations for that sample
-             */
-            orgId = null;
-            if (orgParam != null)
-                orgId = Integer.parseInt(orgParam);
-
+            results = sample.fetchForFinalReportSingle(accession);
             orgPrint = null;
+
             /*
              * find all the report to organizations for given sample
              */
@@ -289,7 +278,7 @@ public class FinalReportBean {
     public ReportStatus runReportForPreview(ArrayList<QueryData> paramList) throws Exception {
         ReportStatus status;
         OrganizationPrint print;
-        String accession;
+        Integer accession;
         HashMap<String, QueryData> param;
         FinalReportVO result;
         ArrayList<OrganizationPrint> printList;
@@ -298,7 +287,7 @@ public class FinalReportBean {
          * Recover the accession number
          */
         param = ReportUtil.getMapParameter(paramList);
-        accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
+        accession = ReportUtil.getIntegerParameter(param, "ACCESSION_NUMBER");
 
         status = new ReportStatus();
         status.setMessage("Initializing report");
@@ -308,7 +297,7 @@ public class FinalReportBean {
          * find the sample
          */
         try {
-            result = sample.fetchForFinalReportPreview(Integer.parseInt(accession));
+            result = sample.fetchForFinalReportPreview(accession);
 
             print = new OrganizationPrint(result.getOrganizationId(),
                                           result.getOrganizationName(),
@@ -501,7 +490,7 @@ public class FinalReportBean {
          * Recover the printer
          */
         param = ReportUtil.getMapParameter(paramList);
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         status = new ReportStatus();
         status.setMessage("Initializing report");
@@ -676,7 +665,6 @@ public class FinalReportBean {
         Date beginPrinted, endPrinted;
         HashMap<String, QueryData> param;
         OrganizationPrint print;
-        SimpleDateFormat format;
         ArrayList<AuxDataViewDO> auxList;
         ArrayList<OrganizationParameterDO> orgParamList;
 
@@ -684,15 +672,14 @@ public class FinalReportBean {
          * Recover the printer and printed date range
          */
         param = ReportUtil.getMapParameter(paramList);
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("FinalReport", status);
 
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        beginPrinted = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_PRINTED"));
-        endPrinted = format.parse(ReportUtil.getSingleParameter(param, "END_PRINTED"));
+        beginPrinted = ReportUtil.getTimestampParameter(param, "BEGIN_PRINTED");
+        endPrinted = ReportUtil.getTimestampParameter(param, "END_PRINTED");
 
         /*
          * obtain the list of sample ids and organization ids

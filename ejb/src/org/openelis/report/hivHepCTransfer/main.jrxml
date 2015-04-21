@@ -27,8 +27,8 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select s.id s_id, s.accession_number, s.released_date, s.client_reference,
-       t.name test_name, dr.entry result, a.id a_id, o.id o_id
+		<![CDATA[select s.id as s_id, s.accession_number, s.released_date, s.client_reference,
+       t.name as test_name, dr.entry as result, a.id as a_id, o.id as o_id
   from sample s
        join sample_organization so on so.sample_id = s.id and
                                       so.type_id = (select id from dictionary where system_name = 'org_report_to')

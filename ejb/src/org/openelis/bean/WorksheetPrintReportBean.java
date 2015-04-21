@@ -138,7 +138,8 @@ public class WorksheetPrintReportBean {
         Path path;
         DiagramDataSource dDS;
         ReportStatus status;
-        String format, dir, printer, printstat, userName, worksheetId;
+        String format, dir, printer, printstat, userName;
+        Integer worksheetId;
         URL url;
 
         /*
@@ -153,11 +154,11 @@ public class WorksheetPrintReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        worksheetId = ReportUtil.getSingleParameter(param, "WORKSHEET_ID");
-        format = ReportUtil.getSingleParameter(param, "FORMAT");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        worksheetId = ReportUtil.getIntegerParameter(param, "WORKSHEET_ID");
+        format = ReportUtil.getStringParameter(param, "FORMAT");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
-        if (DataBaseUtil.isEmpty(worksheetId) || DataBaseUtil.isEmpty(format) ||
+        if (worksheetId == null || DataBaseUtil.isEmpty(format) ||
             DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify the worksheet id, format and printer for this report");
 
@@ -187,7 +188,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 case "6x10":
-                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 60);
+                    dDS = DiagramDataSource.getInstance(worksheetId, 60);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide6x10.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);
@@ -196,7 +197,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 case "6x12":
-                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 72);
+                    dDS = DiagramDataSource.getInstance(worksheetId, 72);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/slide6x12.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);
@@ -214,7 +215,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 case "96H":
-                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 96);
+                    dDS = DiagramDataSource.getInstance(worksheetId, 96);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plate96Horizontal.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);
@@ -223,7 +224,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 case "96V":
-                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 96);
+                    dDS = DiagramDataSource.getInstance(worksheetId, 96);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plate96Vertical.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);
@@ -252,7 +253,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 case "QFTG":
-                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 36);
+                    dDS = DiagramDataSource.getInstance(worksheetId, 36);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateQFTG.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);
@@ -261,7 +262,7 @@ public class WorksheetPrintReportBean {
                     break;
 
                 case "WNV":
-                    dDS = DiagramDataSource.getInstance(Integer.parseInt(worksheetId), 15);
+                    dDS = DiagramDataSource.getInstance(worksheetId, 15);
                     url = ReportUtil.getResourceURL("org/openelis/report/worksheetPrint/plateWNV.jasper");
                     dir = ReportUtil.getResourcePath(url);
                     status.setMessage("Outputing report").setPercentComplete(20);

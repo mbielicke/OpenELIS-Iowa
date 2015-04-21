@@ -18,27 +18,40 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT dsm.system_name sorting_method, t.reporting_sequence, t.test_trailer_id,
-     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
-     u.entry unit_name, u.id unit_id,
-     a.id a_id, a.released_date a_released_date, a.revision a_revision, dt.system_name analysis_type, s.name s_name,
-     pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description, tos.entry type_of_sample,
-     sos.entry source_of_sample, si.source_other
+		<![CDATA[SELECT
+      dsm.system_name as sorting_method, t.reporting_sequence, t.test_trailer_id,
+      t.reporting_description as t_reporting_description, m.reporting_description as m_reporting_description,
+      d.system_name as test_format, u.entry as unit_name, u.id as unit_id, a.id as a_id,
+      a.released_date as a_released_date, a.revision as a_revision, dt.system_name as analysis_type,
+      s.name as s_name, pat.reporting_description as pat_reporting_description,
+      pam.reporting_description as pam_reporting_description, tos.entry as type_of_sample,
+      sos.entry as source_of_sample, si.source_other
 FROM
-     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam),
-     outer dictionary u, outer dictionary dt, outer dictionary tos, outer dictionary sos, dictionary dsm
+     sample_item si
+     join analysis a on a.sample_item_id = si.id
+     join test t on t.id = a.test_id
+     join method m on m.id = t.method_id
+     join dictionary dsm on dsm.id = t.sorting_method_id
+     join section s on s.id = a.section_id
+     join dictionary d on d.id = t.test_format_id
+     left join dictionary u on u.id = a.unit_of_measure_id
+     left join dictionary dt on dt.id = a.type_id
+     left join dictionary tos on tos.id = si.type_of_sample_id
+     left join dictionary sos on sos.id = si.source_of_sample_id
+     left join analysis pa on pa.id = a.pre_analysis_id
+     left join test pat on pat.id = pa.test_id
+     left join method pam on pam.id = pat.method_id
 WHERE
-     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
-     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
-     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
-     a.type_id = dt.id and si.type_of_sample_id = tos.id and si.source_of_sample_id = sos.id and
-     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = 'R' and system_name = 'analysis_released') or
-                                                                             ($P{REPORT_TYPE} = 'C' and system_name in ('analysis_completed','analysis_released'))) and
-     t.sorting_method_id = dsm.id
-ORDER BY sorting_method,
-         case when sorting_method = 'test_sequence' then reporting_sequence end,
-         case when sorting_method = 'test_sequence' then a_id end,
-         case when sorting_method = 'analyses_complete' then a_released_date end desc]]>
+     si.sample_id = $P{SAMPLE_ID} and a.is_reportable = 'Y' and
+     a.status_id in (select id
+                     from dictionary
+                     where ($P{REPORT_TYPE}='R' and system_name='analysis_released') or
+                           ($P{REPORT_TYPE}='C' and system_name in ('analysis_completed','analysis_released'))
+                    )
+ORDER BY dsm.system_name,
+         case when dsm.system_name = 'test_sequence' then t.reporting_sequence end,
+         case when dsm.system_name = 'test_sequence' then a.id end,
+         case when dsm.system_name = 'analyses_complete' then a.released_date end desc]]>
 	</queryString>
 	<field name="sorting_method" class="java.lang.String"/>
 	<field name="reporting_sequence" class="java.lang.Integer"/>

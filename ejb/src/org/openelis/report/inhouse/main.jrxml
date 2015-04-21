@@ -15,8 +15,12 @@
 	<parameter name="TEST" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="FROM" class="java.lang.String"/>
-	<parameter name="TO" class="java.lang.String"/>
+	<parameter name="FROM" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TO" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<parameter name="STATUS" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -33,51 +37,88 @@
 		<defaultValueExpression><![CDATA["accession_number"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
-       se.priority, t.name t_name, t.time_ta_average, t.time_holding,
-       m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
-FROM sample s, sample_item si, sample_environmental se, analysis a,
-     test t, method m, section sec, dictionary d, dictionary d1,
-     sample_organization sd
-WHERE s.domain = 'E' and
+		<![CDATA[SELECT
+      s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+      se.priority, t.name as t_name, t.time_ta_average, t.time_holding,
+      m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id
+FROM
+      sample s
+      join sample_environmental se on se.sample_id = s.id
+      join sample_organization sd on sd.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join test t on t.id = a.test_id
+      join method m on m.id = t.method_id
+      join section sec on sec.id = a.section_id
+      join dictionary d on d.id = a.status_id
+      join dictionary d1 on d1.id = si.type_of_sample_id
+WHERE
       s.entered_date between $P{FROM} and $P{TO} and
-      s.id = si.sample_id and s.id = se.sample_id and
-      si.id = a.sample_item_id and a.test_id = t.id and
-      t.method_id = m.id and a.section_id = sec.id and
-      a.status_id = d.id and si.type_of_sample_id = d1.id and
-      s.id = sd.sample_id
+      s.domain = 'E'
       $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 
 UNION
 
-SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
-       cast(null as integer), t.name t_name, t.time_ta_average, t.time_holding,
-       m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
-FROM sample s, sample_item si, sample_private_well sd, analysis a,
-     test t, method m, section sec, dictionary d, dictionary d1
-WHERE s.domain = 'W' and
+SELECT
+      s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+      ss.priority, t.name as t_name, t.time_ta_average, t.time_holding,
+      m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id
+FROM
+      sample s
+      join sample_sdwis ss on ss.sample_id = s.id
+      join sample_organization sd on sd.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join test t on t.id = a.test_id
+      join method m on m.id = t.method_id
+      join section sec on sec.id = a.section_id
+      join dictionary d on d.id = a.status_id
+      join dictionary d1 on d1.id = si.type_of_sample_id
+WHERE
       s.entered_date between $P{FROM} and $P{TO} and
-      s.id = si.sample_id and s.id = sd.sample_id and
-      si.id = a.sample_item_id and a.test_id = t.id and
-      t.method_id = m.id and a.section_id = sec.id and
-      a.status_id = d.id and si.type_of_sample_id = d1.id
+      s.domain = 'S'
       $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 
 UNION
 
-SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
-       cast(null as integer), t.name t_name, t.time_ta_average, t.time_holding,
-       m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
-FROM sample s, sample_item si, analysis a,
-     test t, method m, section sec, dictionary d, dictionary d1,
-     sample_organization sd
-WHERE s.domain not in ('E', 'W') and
+SELECT
+      s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+      null::integer, t.name as t_name, t.time_ta_average, t.time_holding,
+      m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id
+FROM
+      sample s
+      join sample_private_well sd on sd.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join test t on t.id = a.test_id
+      join method m on m.id = t.method_id
+      join section sec on sec.id = a.section_id
+      join dictionary d on d.id = a.status_id
+      join dictionary d1 on d1.id = si.type_of_sample_id
+WHERE
       s.entered_date between $P{FROM} and $P{TO} and
-      s.id = si.sample_id and
-      si.id = a.sample_item_id and a.test_id = t.id and
-      t.method_id = m.id and a.section_id = sec.id and
-      a.status_id = d.id and  si.type_of_sample_id = d1.id and
-      s.id = sd.sample_id
+      s.domain = 'W'
+      $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+
+UNION
+
+SELECT
+      s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+      null::integer, t.name as t_name, t.time_ta_average, t.time_holding,
+      m.name as m_name, d.entry as status, d1.entry as sample_type, a.id as a_id
+FROM
+      sample s
+      join sample_organization sd on sd.sample_id = s.id
+      join sample_item si on si.sample_id = s.id
+      join analysis a on a.sample_item_id = si.id
+      join test t on t.id = a.test_id
+      join method m on m.id = t.method_id
+      join section sec on sec.id = a.section_id
+      join dictionary d on d.id = a.status_id
+      join dictionary d1 on d1.id = si.type_of_sample_id
+WHERE
+      s.entered_date between $P{FROM} and $P{TO} and
+      s.domain not in ('E', 'W', 'S')
       $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 
 ORDER BY $P!{ORDER_BY}]]>

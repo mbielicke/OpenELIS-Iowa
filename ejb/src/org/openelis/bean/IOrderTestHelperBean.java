@@ -25,8 +25,8 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.addAnalyte;
-import static org.openelis.manager.OrderManager1Accessor.getTests;
+import static org.openelis.manager.IOrderManager1Accessor.addAnalyte;
+import static org.openelis.manager.IOrderManager1Accessor.getTests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,11 +37,11 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.ui.common.FormErrorWarning;
@@ -55,7 +55,7 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderTestHelperBean {
+public class IOrderTestHelperBean {
 
     @EJB
     private TestManagerBean testManager;
@@ -103,12 +103,12 @@ public class OrderTestHelperBean {
     /**
      * Adds the test in the test manager to the order
      */
-    public OrderTestViewDO addTest(OrderManager1 om, TestManager tm, Integer index) throws Exception {
-        OrderTestViewDO ot;
+    public IOrderTestViewDO addTest(IOrderManager1 om, TestManager tm, Integer index) throws Exception {
+        IOrderTestViewDO ot;
         TestViewDO t;
 
         t = tm.getTest();
-        ot = new OrderTestViewDO();
+        ot = new IOrderTestViewDO();
         ot.setId(om.getNextUID());
         ot.setItemSequence(0);
         ot.setTestId(t.getId());
@@ -124,8 +124,8 @@ public class OrderTestHelperBean {
     /**
      * Adds analytes for this test from the TestManager
      */
-    public void addAnalytes(OrderManager1 om, TestManager tm, Integer orderTestId) throws Exception {
-        OrderTestAnalyteViewDO ota;
+    public void addAnalytes(IOrderManager1 om, TestManager tm, Integer orderTestId) throws Exception {
+        IOrderTestAnalyteViewDO ota;
         TestAnalyteManager tam;
         TestAnalyteViewDO ta;
 
@@ -137,11 +137,11 @@ public class OrderTestHelperBean {
         for (ArrayList<TestAnalyteViewDO> list : tam.getAnalytes()) {
             ta = list.get(0);
 
-            ota = new OrderTestAnalyteViewDO();
+            ota = new IOrderTestAnalyteViewDO();
             ota.setId(om.getNextUID());
             ota.setAnalyteId(ta.getAnalyteId());
             ota.setAnalyteName(ta.getAnalyteName());
-            ota.setOrderTestId(orderTestId);
+            ota.setIorderTestId(orderTestId);
             if ("Y".equals(ta.getIsReportable()) &&
                 !Constants.dictionary().TEST_ANALYTE_SUPLMTL.equals(ta.getTypeId()))
                 ota.setTestAnalyteIsReportable("Y");
@@ -157,10 +157,10 @@ public class OrderTestHelperBean {
      * order test analytes
      */
     public void mergeAnalytes(ArrayList<Integer> testIds,
-                              HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> otaMap,
-                              ArrayList<OrderManager1> oms) throws Exception {
+                              HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>> otaMap,
+                              ArrayList<IOrderManager1> oms) throws Exception {
         HashMap<Integer, ArrayList<TestAnalyteViewDO>> taMap;
-        ArrayList<OrderTestAnalyteViewDO> otas;
+        ArrayList<IOrderTestAnalyteViewDO> otas;
         ArrayList<TestAnalyteViewDO> tas;
 
         /*
@@ -179,12 +179,12 @@ public class OrderTestHelperBean {
             tas.add(ta);
         }
 
-        for (OrderManager1 om : oms) {
+        for (IOrderManager1 om : oms) {
             /*
              * merge each order test's analytes with the analytes added to its
              * test
              */
-            for (OrderTestViewDO ot : getTests(om)) {
+            for (IOrderTestViewDO ot : getTests(om)) {
                 otas = otaMap.get(ot.getId());
                 tas = taMap.get(ot.getTestId());
                 mergeAnalytes(om, ot.getId(), otas, tas);
@@ -196,12 +196,12 @@ public class OrderTestHelperBean {
      * merges test analytes and order test analytes into a single list of order
      * test analytes
      */
-    private void mergeAnalytes(OrderManager1 om, Integer otid,
-                               ArrayList<OrderTestAnalyteViewDO> otas,
+    private void mergeAnalytes(IOrderManager1 om, Integer otid,
+                               ArrayList<IOrderTestAnalyteViewDO> otas,
                                ArrayList<TestAnalyteViewDO> tas) {
         String reportable;
-        OrderTestAnalyteViewDO ota;
-        HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> map;
+        IOrderTestAnalyteViewDO ota;
+        HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>> map;
 
         /*
          * Since the list of analytes for a test is assumed to not change, if
@@ -216,10 +216,10 @@ public class OrderTestHelperBean {
             /*
              * some analytes were added to the order from this test previously
              */
-            map = new HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>>();
-            for (OrderTestAnalyteViewDO d1 : otas) {
+            map = new HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>>();
+            for (IOrderTestAnalyteViewDO d1 : otas) {
                 if (map.get(d1.getAnalyteId()) == null)
-                    map.put(d1.getAnalyteId(), new ArrayList<OrderTestAnalyteViewDO>());
+                    map.put(d1.getAnalyteId(), new ArrayList<IOrderTestAnalyteViewDO>());
                 map.get(d1.getAnalyteId()).add(d1);
             }
         }
@@ -251,9 +251,9 @@ public class OrderTestHelperBean {
                 reportable = ta.getIsReportable();
             }
 
-            ota = new OrderTestAnalyteViewDO();
+            ota = new IOrderTestAnalyteViewDO();
             ota.setId(om.getNextUID());
-            ota.setOrderTestId(otid);
+            ota.setIorderTestId(otid);
             ota.setAnalyteId(ta.getAnalyteId());
             ota.setAnalyteName(ta.getAnalyteName());
             ota.setTestAnalyteIsReportable(reportable);

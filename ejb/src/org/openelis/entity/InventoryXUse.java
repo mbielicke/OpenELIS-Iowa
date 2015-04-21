@@ -45,20 +45,20 @@ import javax.persistence.Table;
 import org.openelis.ui.common.DataBaseUtil;
 
 @NamedQueries({
-               @NamedQuery(name = "InventoryXUse.FetchByOrderId",
-                           query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.orderItemId,"
-                                   + "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location,"
-                                   + "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.orderId)"
-                                   + " from InventoryXUse i join i.inventoryLocation l join l.storageLocation s"
-                                   + " join s.storageUnit u join i.orderItem o join o.inventoryItem oi "
-                                   + " left join o.inventoryReceipt r where o.order.id = :id order by o.id"),
-               @NamedQuery(name = "InventoryXUse.FetchByOrderIds",
-                           query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.orderItemId,"
-                                   + "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location,"
-                                   + "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.orderId)"
-                                   + " from InventoryXUse i join i.inventoryLocation l join l.storageLocation s"
-                                   + " join s.storageUnit u join i.orderItem o join o.inventoryItem oi "
-                                   + " left join o.inventoryReceipt r where o.order.id in ( :ids ) order by o.id")})
+   @NamedQuery(name = "InventoryXUse.FetchByIorderId",
+               query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.iorderItemId,"
+                       + "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location,"
+                       + "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.iorderId)"
+                       + " from InventoryXUse i join i.inventoryLocation l join l.storageLocation s"
+                       + " join s.storageUnit u join i.iorderItem o join o.inventoryItem oi "
+                       + " left join o.inventoryReceipt r where o.iorder.id = :id order by o.id"),
+   @NamedQuery(name = "InventoryXUse.FetchByIorderIds",
+               query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.iorderItemId,"
+                       + "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location,"
+                       + "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.iorderId)"
+                       + " from InventoryXUse i join i.inventoryLocation l join l.storageLocation s"
+                       + " join s.storageUnit u join i.iorderItem o join o.inventoryItem oi "
+                       + " left join o.inventoryReceipt r where o.iorder.id in ( :ids ) order by o.id")})
 @Entity
 @Table(name = "inventory_x_use")
 public class InventoryXUse {
@@ -71,23 +71,19 @@ public class InventoryXUse {
     @Column(name = "inventory_location_id")
     private Integer           inventoryLocationId;
 
-    @Column(name = "order_item_id")
-    private Integer           orderItemId;
+    @Column(name = "iorder_item_id")
+    private Integer           iorderItemId;
 
     @Column(name = "quantity")
     private Integer           quantity;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-    private OrderItem         orderItem;
+    @JoinColumn(name = "iorder_item_id", insertable = false, updatable = false)
+    private IOrderItem         iorderItem;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
     private InventoryLocation inventoryLocation;
-
-    public OrderItem getOrderItem() {
-        return orderItem;
-    }
 
     public Integer getId() {
         return id;
@@ -107,13 +103,13 @@ public class InventoryXUse {
             this.inventoryLocationId = inventoryLocationId;
     }
 
-    public Integer getOrderItemId() {
-        return orderItemId;
+    public Integer getIorderItemId() {
+        return iorderItemId;
     }
 
-    public void setOrderItemId(Integer orderItemId) {
-        if (DataBaseUtil.isDifferent(orderItemId, this.orderItemId))
-            this.orderItemId = orderItemId;
+    public void setIorderItemId(Integer iorderItemId) {
+        if (DataBaseUtil.isDifferent(iorderItemId, this.iorderItemId))
+            this.iorderItemId = iorderItemId;
     }
 
     public Integer getQuantity() {
@@ -127,5 +123,13 @@ public class InventoryXUse {
 
     public InventoryLocation getInventoryLocation() {
         return inventoryLocation;
+    }
+
+    public IOrderItem getIorderItem() {
+        return iorderItem;
+    }
+    
+    public void setIorderItem(IOrderItem iorderItem) {
+        this.iorderItem = iorderItem;
     }
 }

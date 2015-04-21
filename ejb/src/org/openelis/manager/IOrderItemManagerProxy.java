@@ -27,48 +27,48 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.bean.OrderItemBean;
+import org.openelis.bean.IOrderItemBean;
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.meta.OrderMeta;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.TableFieldErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderItemManagerProxy {
+public class IOrderItemManagerProxy {
 
-    public OrderItemManager fetchByOrderId(Integer id) throws Exception {
-        OrderItemManager m;
-        ArrayList<OrderItemViewDO> items;
+    public IOrderItemManager fetchByIorderId(Integer id) throws Exception {
+        IOrderItemManager m;
+        ArrayList<IOrderItemViewDO> items;
 
-        items = EJBFactory.getOrderItem().fetchByOrderId(id);
-        m = OrderItemManager.getInstance();
+        items = EJBFactory.getIOrderItem().fetchByIorderId(id);
+        m = IOrderItemManager.getInstance();
         m.setOrderId(id);
         m.setItems(items);
 
         return m;
     }
 
-    public OrderItemManager add(OrderItemManager man) throws Exception {
-        OrderItemBean cl;
-        OrderItemViewDO item;
+    public IOrderItemManager add(IOrderItemManager man) throws Exception {
+        IOrderItemBean cl;
+        IOrderItemViewDO item;
 
-        cl = EJBFactory.getOrderItem();
+        cl = EJBFactory.getIOrderItem();
         for (int i = 0; i < man.count(); i++ ) {
             item = man.getItemAt(i);
-            item.setOrderId(man.getOrderId());
+            item.setIorderId(man.getOrderId());
             cl.add(item);
         }
 
         return man;
     }
 
-    public OrderItemManager update(OrderItemManager man) throws Exception {
-        OrderItemBean cl;
-        OrderItemViewDO item;
+    public IOrderItemManager update(IOrderItemManager man) throws Exception {
+        IOrderItemBean cl;
+        IOrderItemViewDO item;
 
-        cl = EJBFactory.getOrderItem();
+        cl = EJBFactory.getIOrderItem();
         for (int j = 0; j < man.deleteCount(); j++ )
             cl.delete(man.getDeletedAt(j));
 
@@ -76,7 +76,7 @@ public class OrderItemManagerProxy {
             item = man.getItemAt(i);
 
             if (item.getId() == null) {
-                item.setOrderId(man.getOrderId());
+                item.setIorderId(man.getOrderId());
                 cl.add(item);
             } else {
                 cl.update(item);
@@ -86,16 +86,16 @@ public class OrderItemManagerProxy {
         return man;
     }
     
-    public void validate(OrderItemManager man, String type) throws Exception {
+    public void validate(IOrderItemManager man, String type) throws Exception {
         Integer invItemId;
         ArrayList<Integer> invItemIdList;
         ValidationErrorsList list;
-        OrderItemBean cl;        
+        IOrderItemBean cl;        
 
-        cl = EJBFactory.getOrderItem();
+        cl = EJBFactory.getIOrderItem();
         list = new ValidationErrorsList();
         invItemIdList = null;
-        if (OrderManager.TYPE_VENDOR.equals(type))
+        if (IOrderManager.TYPE_VENDOR.equals(type))
             invItemIdList = new ArrayList<Integer>();
         
         for (int i = 0; i < man.count(); i++ ) {
@@ -105,14 +105,14 @@ public class OrderItemManagerProxy {
                 DataBaseUtil.mergeException(list, e, "itemTable", i);
             }
                         
-            if (!OrderManager.TYPE_VENDOR.equals(type))
+            if (!IOrderManager.TYPE_VENDOR.equals(type))
                 continue;
             
             invItemId = man.getItemAt(i).getInventoryItemId();
             if (invItemId != null) {
                 if (invItemIdList.contains(invItemId)) 
                     list.add(new TableFieldErrorException(Messages.get().duplicateInvItemVendorOrderException(),i,
-                                                          OrderMeta.getOrderItemInventoryItemName(), "itemTable"));
+                                                          IOrderMeta.getIorderItemInventoryItemName(), "itemTable"));
                 else
                     invItemIdList.add(invItemId);
             }

@@ -38,7 +38,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.entity.InventoryItem;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
@@ -54,11 +54,11 @@ public class InventoryXUseBean {
     @PersistenceContext(unitName = "openelis")
     EntityManager          manager;
 
-    public ArrayList<InventoryXUseViewDO> fetchByOrderId(Integer id) throws Exception {
+    public ArrayList<InventoryXUseViewDO> fetchByIorderId(Integer id) throws Exception {
         Query query;
         List list;
         
-        query = manager.createNamedQuery("InventoryXUse.FetchByOrderId");
+        query = manager.createNamedQuery("InventoryXUse.FetchByIorderId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -68,10 +68,10 @@ public class InventoryXUseBean {
         return DataBaseUtil.toArrayList(list);
     }    
     
-    public ArrayList<InventoryXUseViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
+    public ArrayList<InventoryXUseViewDO> fetchByIorderIds(ArrayList<Integer> ids) {
         Query query;
         
-        query = manager.createNamedQuery("InventoryXUse.FetchByOrderIds");
+        query = manager.createNamedQuery("InventoryXUse.FetchByIorderIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -96,7 +96,7 @@ public class InventoryXUseBean {
         
         entity = new InventoryXUse();
         entity.setInventoryLocationId(data.getInventoryLocationId());
-        entity.setOrderItemId(data.getOrderItemId());
+        entity.setIorderItemId(data.getIorderItemId());
         entity.setQuantity(data.getQuantity());
                         
         manager.persist(entity);
@@ -105,9 +105,9 @@ public class InventoryXUseBean {
         return data;
     }
     
-    public ArrayList<InventoryXUseViewDO> add(ArrayList<OrderItemViewDO> items, 
+    public ArrayList<InventoryXUseViewDO> add(ArrayList<IOrderItemViewDO> items, 
                                               ArrayList<Integer> locationIdList) throws Exception {
-        OrderItemViewDO item;
+        IOrderItemViewDO item;
         InventoryXUseViewDO data;
         ArrayList<InventoryXUseViewDO> fills;
         
@@ -117,7 +117,7 @@ public class InventoryXUseBean {
             item = items.get(i);      
             data.setInventoryLocationId(locationIdList.get(i));
             data.setInventoryItemId(item.getInventoryItemId());
-            data.setOrderItemId(item.getId());
+            data.setIorderItemId(item.getId());
             data.setQuantity(item.getQuantity());
             add(data);
             fills.add(data);
@@ -170,7 +170,7 @@ public class InventoryXUseBean {
         newLoc.setQuantityOnhand(newLoc.getQuantityOnhand() - newQty);        
         
         entity.setInventoryLocationId(data.getInventoryLocationId());
-        entity.setOrderItemId(data.getOrderItemId());
+        entity.setIorderItemId(data.getIorderItemId());
         entity.setQuantity(newQty);              
 
         return data;
@@ -189,5 +189,4 @@ public class InventoryXUseBean {
             manager.remove(entity);
         }
     }        
-
 }

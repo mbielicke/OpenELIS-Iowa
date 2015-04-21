@@ -35,23 +35,23 @@ import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderFillManagerProxy {
+public class IOrderFillManagerProxy {
 
-    public OrderFillManager fetchByOrderId(Integer id) throws Exception {
+    public IOrderFillManager fetchByIorderId(Integer id) throws Exception {
         InventoryXUseBean ul;
-        OrderFillManager m;
+        IOrderFillManager m;
         ArrayList<InventoryXUseViewDO> list;
 
         ul = EJBFactory.getInventoryXUse();
-        list = ul.fetchByOrderId(id);
-        m = OrderFillManager.getInstance();
+        list = ul.fetchByIorderId(id);
+        m = IOrderFillManager.getInstance();
 
         m.setFills(list);
 
         return m;
     }
 
-    public OrderFillManager add(OrderFillManager man) throws Exception {
+    public IOrderFillManager add(IOrderFillManager man) throws Exception {
         InventoryXUseBean ul;
         InventoryXUseViewDO fill; 
 
@@ -64,7 +64,7 @@ public class OrderFillManagerProxy {
         return man;
     }
 
-    public OrderFillManager update(OrderFillManager man) throws Exception {
+    public IOrderFillManager update(IOrderFillManager man) throws Exception {
         InventoryXUseBean ul;
         InventoryXUseViewDO fill;        
 
@@ -84,17 +84,17 @@ public class OrderFillManagerProxy {
         return man;
     }
 
-    public OrderFillManager fetchForUpdate(OrderFillManager man) throws Exception {
+    public IOrderFillManager fetchForUpdate(IOrderFillManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public OrderFillManager abortUpdate(Integer id) throws Exception {
+    public IOrderFillManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public void validate(OrderFillManager man) throws Exception {
+    public void validate(IOrderFillManager man) throws Exception {
         boolean isChanged;
         int j;
         Integer sum, locationId;

@@ -29,84 +29,83 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.openelis.bean.IOrderTestAnalyteBean;
 import org.openelis.domain.Constants;
-import org.openelis.bean.DictionaryBean;
-import org.openelis.bean.OrderTestAnalyteBean;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderTestAnalyteManagerProxy {
+public class IOrderTestAnalyteManagerProxy {
     
-    public OrderTestAnalyteManager fetchByOrderTestId(Integer id) throws Exception {
-        OrderTestAnalyteManager man;
-        ArrayList<OrderTestAnalyteViewDO> analytes;
+    public IOrderTestAnalyteManager fetchByIorderTestId(Integer id) throws Exception {
+        IOrderTestAnalyteManager man;
+        ArrayList<IOrderTestAnalyteViewDO> analytes;
 
-        man = OrderTestAnalyteManager.getInstance();
-        man.setOrderTestId(id);
-        analytes =  EJBFactory.getOrderTestAnalyte().fetchByOrderTestId(id);
+        man = IOrderTestAnalyteManager.getInstance();
+        man.setIorderTestId(id);
+        analytes =  EJBFactory.getIOrderTestAnalyte().fetchByIorderTestId(id);
         man.setAnalytes(analytes);
 
         return man;
     }
     
-    public OrderTestAnalyteManager fetchMergedByOrderTestId(Integer id) throws Exception {
-        OrderTestAnalyteManager man;
-        ArrayList<OrderTestAnalyteViewDO> analytes;
-        ArrayList<OrderTestAnalyteViewDO> testAnalytes;
+    public IOrderTestAnalyteManager fetchMergedByIorderTestId(Integer id) throws Exception {
+        IOrderTestAnalyteManager man;
+        ArrayList<IOrderTestAnalyteViewDO> analytes;
+        ArrayList<IOrderTestAnalyteViewDO> testAnalytes;
 
-        man = OrderTestAnalyteManager.getInstance();
-        man.setOrderTestId(id);
+        man = IOrderTestAnalyteManager.getInstance();
+        man.setIorderTestId(id);
         try {
-            analytes = EJBFactory.getOrderTestAnalyte().fetchByOrderTestId(id);
+            analytes = EJBFactory.getIOrderTestAnalyte().fetchByIorderTestId(id);
         } catch (NotFoundException e) {
             analytes = null;
         }
         try {
-            testAnalytes = EJBFactory.getOrderTestAnalyte().fetchRowAnalytesByOrderTestId(id);
+            testAnalytes = EJBFactory.getIOrderTestAnalyte().fetchRowAnalytesByIorderTestId(id);
         } catch (NotFoundException e) {
-            testAnalytes = new ArrayList<OrderTestAnalyteViewDO>();
+            testAnalytes = new ArrayList<IOrderTestAnalyteViewDO>();
         }
         man.setAnalytes(mergeAnalytes(analytes, testAnalytes));
 
         return man;
     }
     
-    public OrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
-        OrderTestAnalyteManager man;
-        ArrayList<OrderTestAnalyteViewDO> testAnalytes;
+    public IOrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
+        IOrderTestAnalyteManager man;
+        ArrayList<IOrderTestAnalyteViewDO> testAnalytes;
 
-        man = OrderTestAnalyteManager.getInstance();
-        testAnalytes =  EJBFactory.getOrderTestAnalyte().fetchRowAnalytesByTestId(id);
+        man = IOrderTestAnalyteManager.getInstance();
+        testAnalytes =  EJBFactory.getIOrderTestAnalyte().fetchRowAnalytesByTestId(id);
         man.setAnalytes(mergeAnalytes(null, testAnalytes));
 
         return man;
     }
     
-    public OrderTestAnalyteManager add(OrderTestAnalyteManager man) throws Exception {
+    public IOrderTestAnalyteManager add(IOrderTestAnalyteManager man) throws Exception {
         int i;
-        OrderTestAnalyteBean tal;
-        OrderTestAnalyteViewDO data;
+        IOrderTestAnalyteBean tal;
+        IOrderTestAnalyteViewDO data;
 
-        tal = EJBFactory.getOrderTestAnalyte();
+        tal = EJBFactory.getIOrderTestAnalyte();
         
         for (i = 0; i < man.count(); i++) {
             data = man.getAnalyteAt(i);
-            data.setOrderTestId(man.getOrderTestId());
+            data.setIorderTestId(man.getIorderTestId());
             tal.add(data);
         }
 
         return man;
     }
 
-    public OrderTestAnalyteManager update(OrderTestAnalyteManager man) throws Exception {
+    public IOrderTestAnalyteManager update(IOrderTestAnalyteManager man) throws Exception {
         int i;
-        OrderTestAnalyteBean tal;
-        OrderTestAnalyteViewDO data;
+        IOrderTestAnalyteBean tal;
+        IOrderTestAnalyteViewDO data;
 
-        tal = EJBFactory.getOrderTestAnalyte();
+        tal = EJBFactory.getIOrderTestAnalyte();
 
         for (i = 0; i < man.deleteCount(); i++ )
             tal.delete(man.getDeletedAt(i));        
@@ -114,7 +113,7 @@ public class OrderTestAnalyteManagerProxy {
         for (i = 0; i < man.count(); i++) {
             data = man.getAnalyteAt(i);
             if (data.getId() == null) {
-                data.setOrderTestId(man.getOrderTestId());
+                data.setIorderTestId(man.getIorderTestId());
                 tal.add(data);
             } else {
                 tal.update(data);
@@ -123,13 +122,13 @@ public class OrderTestAnalyteManagerProxy {
         return man;
     }
 
-    public void validate(OrderTestAnalyteManager man, OrderTestViewDO test, int index) throws Exception {
+    public void validate(IOrderTestAnalyteManager man, IOrderTestViewDO test, int index) throws Exception {
         ValidationErrorsList list;
-        OrderTestAnalyteViewDO data;        
-        OrderTestAnalyteBean al;
+        IOrderTestAnalyteViewDO data;        
+        IOrderTestAnalyteBean al;
         
         list = new ValidationErrorsList();
-        al = EJBFactory.getOrderTestAnalyte();
+        al = EJBFactory.getIOrderTestAnalyte();
         for (int i = 0; i < man.count(); i++) {
             data = man.getAnalyteAt(i);
             try {
@@ -143,11 +142,11 @@ public class OrderTestAnalyteManagerProxy {
             throw list;
     }
     
-    private ArrayList<OrderTestAnalyteViewDO> mergeAnalytes(ArrayList<OrderTestAnalyteViewDO> ordTestAnaList,
-                                                            ArrayList<OrderTestAnalyteViewDO> testAnaList) {
-        HashMap<Integer, OrderTestAnalyteViewDO> map;
-        OrderTestAnalyteViewDO data;
-        Iterator<OrderTestAnalyteViewDO> iter;
+    private ArrayList<IOrderTestAnalyteViewDO> mergeAnalytes(ArrayList<IOrderTestAnalyteViewDO> ordTestAnaList,
+                                                            ArrayList<IOrderTestAnalyteViewDO> testAnaList) {
+        HashMap<Integer, IOrderTestAnalyteViewDO> map;
+        IOrderTestAnalyteViewDO data;
+        Iterator<IOrderTestAnalyteViewDO> iter;
         
         /*
          * this method assumes that the list that potentially has the data for one
@@ -160,12 +159,12 @@ public class OrderTestAnalyteManagerProxy {
             /*
              * some analytes were added to the order from this test previously
              */
-            map = new HashMap<Integer, OrderTestAnalyteViewDO>();
-            for (OrderTestAnalyteViewDO d1: ordTestAnaList)               
+            map = new HashMap<Integer, IOrderTestAnalyteViewDO>();
+            for (IOrderTestAnalyteViewDO d1: ordTestAnaList)               
                 map.put(d1.getAnalyteId(), d1);
         }
                                 
-        for (OrderTestAnalyteViewDO testAna : testAnaList) {
+        for (IOrderTestAnalyteViewDO testAna : testAnaList) {
             if (map != null) {
                 data = map.get(testAna.getAnalyteId());
                 if (data != null) {
@@ -176,7 +175,7 @@ public class OrderTestAnalyteManagerProxy {
                      * not present in the test anymore
                      */
                     testAna.setId(data.getId());
-                    testAna.setOrderTestId(data.getOrderTestId());
+                    testAna.setIorderTestId(data.getIorderTestId());
                     testAna.setTestAnalyteIsReportable("Y");
                     testAna.setTestAnalyteIsPresent("Y");
                     map.remove(testAna.getAnalyteId());

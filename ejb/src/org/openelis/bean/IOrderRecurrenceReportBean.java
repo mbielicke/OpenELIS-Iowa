@@ -37,20 +37,20 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderRecurrenceDO;
+import org.openelis.domain.IOrderRecurrenceDO;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.Prompt;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderRecurrenceReportBean {
+public class IOrderRecurrenceReportBean {
 
     @EJB
-    private OrderRecurrenceBean orderRecurrence;
+    private IOrderRecurrenceBean iorderRecurrence;
 
     @EJB
-    private OrderManager1Bean   orderManager1;
+    private IOrderManager1Bean   iorderManager1;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -64,49 +64,49 @@ public class OrderRecurrenceReportBean {
     }
 
     /**
-     * Creates new orders from the orders that are to be recurred today
+     * Creates new iorders from the iorders that are to be recurred today
      */
     @Asynchronous
     @TransactionTimeout(600)
-    public void recurOrders() {
+    public void recurIOrders() {
         Datetime today;
         Calendar cal;
-        ArrayList<OrderRecurrenceDO> list;
+        ArrayList<IOrderRecurrenceDO> list;
 
         cal = Calendar.getInstance();
         today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         cal.setTime(today.getDate());
 
         try {
-            list = orderRecurrence.fetchActiveList();
+            list = iorderRecurrence.fetchActiveList();
         } catch (NotFoundException e) {
-            log.fine("No recurring orders found");
+            log.fine("No recurring iorders found");
             return;
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to fetch orders", e);
+            log.log(Level.SEVERE, "Failed to fetch iorders", e);
             return;
         }
 
-        for (OrderRecurrenceDO data : list) {
+        for (IOrderRecurrenceDO data : list) {
             try {
                 /*
-                 * we need to make sure that the order can be recurred today
+                 * we need to make sure that the iorder can be recurred today
                  * before creating a new one from it
                  */
                 if (recurs(cal, data))
-                    orderManager1.recur(data.getOrderId());
+                    iorderManager1.recur(data.getIorderId());
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Failed to recur order: " + data.getOrderId().toString(), e);
+                log.log(Level.SEVERE, "Failed to recur iorder: " + data.getIorderId().toString(), e);
             }
         }
     }
 
     /**
-     * An order only recurs on a given date if adding a specific number
+     * An iorder only recurs on a given date if adding a specific number
      * (frequency) of units (days,months etc.) to its begin date produces that
      * date exactly
      */
-    private boolean recurs(Calendar today, OrderRecurrenceDO data) {
+    private boolean recurs(Calendar today, IOrderRecurrenceDO data) {
         Integer freq, unitId;
         Datetime bd;
         Calendar next;

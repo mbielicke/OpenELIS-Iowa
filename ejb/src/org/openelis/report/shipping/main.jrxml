@@ -6,13 +6,16 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SHIPPING_ID" class="java.lang.String">
-		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	<parameter name="SHIPPING_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT s.*, sl.entry ship_from_location
-FROM shipping s, outer dictionary sl
-WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
+		<![CDATA[SELECT s.id, s.status_id, s.shipped_from_id, s.shipped_to_id, s.shipped_to_attention, s.processed_by,
+       s.processed_date, s.shipped_method_id, s.shipped_date, s.number_of_packages, s.cost,
+       d.entry as ship_from_location
+FROM   shipping s
+       left join dictionary d on d.id = s.shipped_from_id
+WHERE s.id = $P{SHIPPING_ID}]]>
 	</queryString>
 	<field name="id" class="java.lang.Integer"/>
 	<field name="status_id" class="java.lang.Integer"/>
@@ -180,13 +183,6 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 				<reportElement x="0" y="6" width="576" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="2" y="8" width="118" height="10"/>
-				<textElement>
-					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="120" y="8" width="175" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
@@ -206,15 +202,6 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="2" y="18" width="118" height="10">
-					<printWhenExpression><![CDATA[Boolean.FALSE]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Michael A. Pentella, Ph.D.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="18" width="175" height="10"/>
@@ -238,13 +225,6 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="28" width="118" height="10"/>
-				<textElement>
-					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Associate Director]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="120" y="28" width="175" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
@@ -266,7 +246,7 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="38" width="118" height="10"/>
+				<reportElement x="2" y="18" width="118" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>

@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -164,7 +165,8 @@ public class QASummaryReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String fromDate, toDate, section, test, detail, userName, printer, dir, printstat;
+        Timestamp fromDate, toDate;
+        String section, test, detail, userName, printer, dir, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -177,22 +179,16 @@ public class QASummaryReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        fromDate = ReportUtil.getSingleParameter(param, "FROM_ENTERED");
-        toDate = ReportUtil.getSingleParameter(param, "TO_ENTERED");
+        fromDate = ReportUtil.getTimestampParameter(param, "FROM_ENTERED");
+        toDate = ReportUtil.getTimestampParameter(param, "TO_ENTERED");
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
-        detail = ReportUtil.getSingleParameter(param, "DETAIL");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        detail = ReportUtil.getStringParameter(param, "DETAIL");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
-        if (DataBaseUtil.isEmpty(fromDate) || DataBaseUtil.isEmpty(toDate) ||
+        if (fromDate == null || toDate == null ||
             DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify From Date, To Date, Status and printer for this report");
-
-        if (fromDate != null && fromDate.length() > 0)
-            fromDate += ":00";
-
-        if (toDate != null && toDate.length() > 0)
-            toDate += ":59";
 
         if ( !DataBaseUtil.isEmpty(section))
             section = " and se.id " + section;

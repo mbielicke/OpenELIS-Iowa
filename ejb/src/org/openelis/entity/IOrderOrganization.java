@@ -50,33 +50,32 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-
-               @NamedQuery(name = "OrderOrganization.FetchByOrderId",
-                           query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, "
-                                   + "oo.orderId, oo.organizationId, oo.organizationAttention, "
-                                   + "oo.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, "
-                                   + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
-                                   + "o.address.faxPhone, o.address.country)"
-                                   + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId = :id"),
-               @NamedQuery(name = "OrderOrganization.FetchByOrderIds",
-                           query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, "
-                                   + "oo.orderId, oo.organizationId, oo.organizationAttention, "
-                                   + "oo.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, "
-                                   + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
-                                   + "o.address.faxPhone, o.address.country)"
-                                   + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId in ( :ids )")})
+   @NamedQuery(name = "IOrderOrganization.FetchByIorderId",
+               query = "select new org.openelis.domain.IOrderOrganizationViewDO(oo.id, "
+                       + "oo.iorderId, oo.organizationId, oo.organizationAttention, "
+                       + "oo.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, "
+                       + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
+                       + "o.address.faxPhone, o.address.country)"
+                       + " from IOrderOrganization oo LEFT JOIN oo.organization o where oo.iorderId = :id"),
+   @NamedQuery(name = "IOrderOrganization.FetchByIorderIds",
+               query = "select new org.openelis.domain.IOrderOrganizationViewDO(oo.id, "
+                       + "oo.iorderId, oo.organizationId, oo.organizationAttention, "
+                       + "oo.typeId, o.name, o.isActive, o.address.multipleUnit, o.address.streetAddress, "
+                       + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
+                       + "o.address.faxPhone, o.address.country)"
+                       + " from IOrderOrganization oo LEFT JOIN oo.organization o where oo.iorderId in ( :ids )")})
 @Entity
-@Table(name = "order_organization")
+@Table(name = "iorder_organization")
 @EntityListeners({AuditUtil.class})
-public class OrderOrganization implements Auditable, Cloneable {
+public class IOrderOrganization implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer           id;
 
-    @Column(name = "order_id")
-    private Integer           orderId;
+    @Column(name = "iorder_id")
+    private Integer           iorderId;
 
     @Column(name = "organization_id")
     private Integer           organizationId;
@@ -88,15 +87,15 @@ public class OrderOrganization implements Auditable, Cloneable {
     private Integer           typeId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Order             order;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private IOrder             iorder;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
     private Organization      organization;
 
     @Transient
-    private OrderOrganization original;
+    private IOrderOrganization original;
 
     public Integer getId() {
         return id;
@@ -107,13 +106,13 @@ public class OrderOrganization implements Auditable, Cloneable {
             this.id = id;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        if (DataBaseUtil.isDifferent(orderId, this.orderId))
-            this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        if (DataBaseUtil.isDifferent(iorderId, this.iorderId))
+            this.iorderId = iorderId;
     }
 
     public Integer getOrganizationId() {
@@ -151,17 +150,17 @@ public class OrderOrganization implements Auditable, Cloneable {
         this.organization = organization;
     }
 
-    public Order getorder() {
-        return order;
+    public IOrder getIorder() {
+        return iorder;
     }
 
-    public void setorder(Order order) {
-        this.order = order;
+    public void setIorder(IOrder iorder) {
+        this.iorder = iorder;
     }
 
     public void setClone() {
         try {
-            original = (OrderOrganization)this.clone();
+            original = (IOrderOrganization)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,11 +170,11 @@ public class OrderOrganization implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER_ORGANIZATION);
+        audit.setReferenceTableId(Constants.table().IORDER_ORGANIZATION);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("order_id", orderId, original.orderId)
+                 .setField("iorder_id", iorderId, original.iorderId)
                  .setField("organization_id",
                            organizationId,
                            original.organizationId,

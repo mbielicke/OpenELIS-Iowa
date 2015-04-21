@@ -89,11 +89,6 @@ public class MCLViolationReportBean {
     private HashMap<String, String> contaminantIds, methodCodes;
     private String                  dnrEmail;
 
-    @PostConstruct
-    public void init() {
-
-    }
-
     /*
      * Returns the prompt for a single re-print
      */

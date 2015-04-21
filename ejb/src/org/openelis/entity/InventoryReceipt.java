@@ -56,10 +56,10 @@ import org.openelis.utils.Auditable;
  
 @NamedQueries( {
     @NamedQuery ( name = "InventoryReceipt.FetchById",
-                 query = "select distinct new org.openelis.domain.InventoryReceiptViewDO(r.id, r.inventoryItemId, r.orderItemId, r.organizationId," +
+                 query = "select distinct new org.openelis.domain.InventoryReceiptViewDO(r.id, r.inventoryItemId, r.iorderItemId, r.organizationId," +
     		             "r.receivedDate, r.quantityReceived, r.unitCost, r.qcReference, r.externalReference, r.upc, i.quantity, o.id," +
     		             "o.externalOrderNumber, i.unitCost)"
-                       + " from InventoryReceipt r left join r.orderItem i left join i.order o where r.id = :id"),
+                       + " from InventoryReceipt r left join r.iorderItem i left join i.iorder o where r.id = :id"),
     @NamedQuery ( name = "InventoryReceipt.FetchByUpc",
                  query = "select distinct new org.openelis.domain.IdNameVO(r.inventoryItemId, r.upc, i.name)"
                        + " from InventoryReceipt r left join r.inventoryItem i where r.upc like :upc")})
@@ -77,8 +77,8 @@ public class InventoryReceipt implements Auditable, Cloneable {
     @Column(name = "inventory_item_id")
     private Integer                   inventoryItemId;
 
-    @Column(name = "order_item_id")
-    private Integer                   orderItemId;
+    @Column(name = "iorder_item_id")
+    private Integer                   iorderItemId;
 
     @Column(name = "organization_id")
     private Integer                   organizationId;
@@ -110,8 +110,8 @@ public class InventoryReceipt implements Auditable, Cloneable {
     private Organization              organization;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-    private OrderItem                 orderItem;
+    @JoinColumn(name = "iorder_item_id", insertable = false, updatable = false)
+    private IOrderItem                 iorderItem;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
@@ -138,13 +138,13 @@ public class InventoryReceipt implements Auditable, Cloneable {
             this.inventoryItemId = inventoryItemId;
     }
 
-    public Integer getOrderItemId() {
-        return orderItemId;
+    public Integer getIorderItemId() {
+        return iorderItemId;
     }
 
-    public void setOrderItemId(Integer orderItemId) {
-        if (DataBaseUtil.isDifferent(orderItemId, this.orderItemId))
-            this.orderItemId = orderItemId;
+    public void setIorderItemId(Integer iorderItemId) {
+        if (DataBaseUtil.isDifferent(iorderItemId, this.iorderItemId))
+            this.iorderItemId = iorderItemId;
     }
 
     public Integer getOrganizationId() {
@@ -222,6 +222,10 @@ public class InventoryReceipt implements Auditable, Cloneable {
         return organization;
     }
 
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     public void setInventoryXPut(Collection<InventoryXPut> inventoryXPut) {
         this.inventoryXPut = inventoryXPut;
     }
@@ -230,12 +234,12 @@ public class InventoryReceipt implements Auditable, Cloneable {
         return inventoryXPut;
     }
 
-    public OrderItem getOrderItem() {
-        return orderItem;
+    public IOrderItem getIorderItem() {
+        return iorderItem;
     }
 
-    public void setOrderItem(OrderItem orderItem) {
-        this.orderItem = orderItem;
+    public void setIorderItem(IOrderItem iorderItem) {
+        this.iorderItem = iorderItem;
     }
 
     public void setClone() {
@@ -255,7 +259,7 @@ public class InventoryReceipt implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, Constants.table().INVENTORY_ITEM)
-                 .setField("order_item_id", orderItemId, original.orderItemId, Constants.table().ORDER_ITEM)
+                 .setField("iorder_item_id", iorderItemId, original.iorderItemId, Constants.table().IORDER_ITEM)
                  .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
                  .setField("received_date", receivedDate, original.receivedDate)
                  .setField("quantity_received", quantityReceived, original.quantityReceived)
@@ -266,5 +270,4 @@ public class InventoryReceipt implements Auditable, Cloneable {
 
         return audit;
     }
-
 }

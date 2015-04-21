@@ -219,7 +219,6 @@ public class SDWISUnloadReportBean {
         SampleDO sDO;
         SampleSDWISViewDO ssVDO;
         SectionViewDO secVDO;
-        SimpleDateFormat format;
         StatusDataSource sds;
         String location, printer;
         URL url;
@@ -235,11 +234,9 @@ public class SDWISUnloadReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
-        endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        beginReleased = ReportUtil.getTimestampParameter(param, "BEGIN_RELEASED");
+        endReleased = ReportUtil.getTimestampParameter(param, "END_RELEASED");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         out = null;
         try {

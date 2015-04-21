@@ -20,8 +20,8 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT DISTINCT
-     s.id s_id, s.domain, s.accession_number, s.revision, s.order_id, s.collection_date, s.collection_time,
-     s.received_date, d.entry s_status, s.client_reference
+     s.id as s_id, s.domain, s.accession_number, s.revision, s.order_id, s.collection_date, s.collection_time,
+     s.received_date, d.entry as s_status, s.client_reference
 FROM
      history h
      join sample s on h.reference_id = s.id and
@@ -37,7 +37,7 @@ ORDER BY
 	<field name="accession_number" class="java.lang.Integer"/>
 	<field name="revision" class="java.lang.Integer"/>
 	<field name="order_id" class="java.lang.Integer"/>
-	<field name="collection_date" class="java.sql.Date"/>
+	<field name="collection_date" class="java.util.Date"/>
 	<field name="collection_time" class="java.sql.Time"/>
 	<field name="received_date" class="java.sql.Timestamp"/>
 	<field name="s_status" class="java.lang.String"/>
@@ -66,7 +66,7 @@ ORDER BY
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of "]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement key="pageTotal" mode="Transparent" x="732" y="0" width="20" height="12"/>
