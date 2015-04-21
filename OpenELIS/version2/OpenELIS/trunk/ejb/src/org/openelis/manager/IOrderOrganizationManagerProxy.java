@@ -27,39 +27,38 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.IOrderOrganizationBean;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.bean.DictionaryBean;
-import org.openelis.bean.OrderOrganizationBean;
-import org.openelis.domain.OrderOrganizationViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderOrganizationManagerProxy {
+public class IOrderOrganizationManagerProxy {
 
-    public OrderOrganizationManager fetchByOrderId(Integer OrderId) throws Exception {
-        ArrayList<OrderOrganizationViewDO> orgs;
-        OrderOrganizationManager som;
+    public IOrderOrganizationManager fetchByIorderId(Integer id) throws Exception {
+        ArrayList<IOrderOrganizationViewDO> orgs;
+        IOrderOrganizationManager som;
 
-        orgs = EJBFactory.getOrderOrganization().fetchByOrderId(OrderId);
+        orgs = EJBFactory.getIOrderOrganization().fetchByIorderId(id);
 
-        som = OrderOrganizationManager.getInstance();
+        som = IOrderOrganizationManager.getInstance();
         som.setOrganizations(orgs);
-        som.setOrderId(OrderId);
+        som.setIorderId(id);
 
         return som;
     }
 
-    public OrderOrganizationManager add(OrderOrganizationManager man) throws Exception {
-        OrderOrganizationViewDO data;
-        OrderOrganizationBean l;
+    public IOrderOrganizationManager add(IOrderOrganizationManager man) throws Exception {
+        IOrderOrganizationViewDO data;
+        IOrderOrganizationBean l;
 
-        l = EJBFactory.getOrderOrganization();
+        l = EJBFactory.getIOrderOrganization();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getOrganizationAt(i);
-            data.setOrderId(man.getOrderId());
+            data.setIorderId(man.getIorderId());
 
             l.add(data);
         }
@@ -67,12 +66,12 @@ public class OrderOrganizationManagerProxy {
         return man;
     }
 
-    public OrderOrganizationManager update(OrderOrganizationManager man) throws Exception {
+    public IOrderOrganizationManager update(IOrderOrganizationManager man) throws Exception {
         int i;
-        OrderOrganizationViewDO data;
-        OrderOrganizationBean l;
+        IOrderOrganizationViewDO data;
+        IOrderOrganizationBean l;
 
-        l = EJBFactory.getOrderOrganization();
+        l = EJBFactory.getIOrderOrganization();
         for (i = 0; i < man.deleteCount(); i++ ) {
             l.delete(man.getDeletedAt(i));
         }
@@ -81,7 +80,7 @@ public class OrderOrganizationManagerProxy {
             data = man.getOrganizationAt(i);
 
             if (data.getId() == null) {
-                data.setOrderId(man.getOrderId());
+                data.setIorderId(man.getIorderId());
                 l.add(data);
             } else {
                 l.update(data);
@@ -91,13 +90,13 @@ public class OrderOrganizationManagerProxy {
         return man;
     }
 
-    public void validate(OrderOrganizationManager man) throws Exception {
+    public void validate(IOrderOrganizationManager man) throws Exception {
         int numBillTo, numReportTo;
-        OrderOrganizationViewDO data;
+        IOrderOrganizationViewDO data;
         ValidationErrorsList list;
-        OrderOrganizationBean ol;
+        IOrderOrganizationBean ol;
 
-        ol = EJBFactory.getOrderOrganization();
+        ol = EJBFactory.getIOrderOrganization();
         numReportTo = 0;
         numBillTo = 0;
         list = new ValidationErrorsList();

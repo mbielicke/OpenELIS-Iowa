@@ -25,28 +25,28 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-               @NamedQuery(name = "OrderTest.FetchByOrderId",
-                           query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"
-                                   + " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id,"
-                                   + " o.test.method.name, o.test.description, o.test.isActive)"
-                                   + " from OrderTest o where o.orderId = :id order by o.itemSequence, o.sortOrder"),
-               @NamedQuery(name = "OrderTest.FetchByOrderIds",
-                           query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"
-                                   + " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id,"
-                                   + " o.test.method.name, o.test.description, o.test.isActive)"
-                                   + " from OrderTest o where o.orderId in ( :ids ) order by o.itemSequence, o.sortOrder")})
+   @NamedQuery(name = "IOrderTest.FetchByIorderId",
+               query = "select distinct new org.openelis.domain.IOrderTestViewDO(o.id, o.iorderId,"
+                       + " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id,"
+                       + " o.test.method.name, o.test.description, o.test.isActive)"
+                       + " from IOrderTest o where o.iorderId = :id order by o.itemSequence, o.sortOrder"),
+   @NamedQuery(name = "IOrderTest.FetchByIorderIds",
+               query = "select distinct new org.openelis.domain.IOrderTestViewDO(o.id, o.iorderId,"
+                       + " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id,"
+                       + " o.test.method.name, o.test.description, o.test.isActive)"
+                       + " from IOrderTest o where o.iorderId in ( :ids ) order by o.itemSequence, o.sortOrder")})
 @Entity
-@Table(name = "order_test")
+@Table(name = "iorder_test")
 @EntityListeners({AuditUtil.class})
-public class OrderTest implements Auditable, Cloneable {
+public class IOrderTest implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer   id;
 
-    @Column(name = "order_id")
-    private Integer   orderId;
+    @Column(name = "iorder_id")
+    private Integer   iorderId;
 
     @Column(name = "item_sequence")
     private Integer   itemSequence;
@@ -62,7 +62,7 @@ public class OrderTest implements Auditable, Cloneable {
     private Test      test;
 
     @Transient
-    private OrderTest original;
+    private IOrderTest original;
 
     public Integer getId() {
         return id;
@@ -73,13 +73,13 @@ public class OrderTest implements Auditable, Cloneable {
             this.id = id;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        if (DataBaseUtil.isDifferent(orderId, this.orderId))
-            this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        if (DataBaseUtil.isDifferent(iorderId, this.iorderId))
+            this.iorderId = iorderId;
     }
 
     public Integer getItemSequence() {
@@ -119,7 +119,7 @@ public class OrderTest implements Auditable, Cloneable {
 
     public void setClone() {
         try {
-            original = (OrderTest)this.clone();
+            original = (IOrderTest)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,16 +129,15 @@ public class OrderTest implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER_TEST);
+        audit.setReferenceTableId(Constants.table().IORDER_TEST);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("order_id", orderId, original.orderId)
+                 .setField("iorder_id", iorderId, original.iorderId)
                  .setField("item_sequence", itemSequence, original.itemSequence)
                  .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("test_id", testId, original.testId, Constants.table().TEST);
 
         return audit;
     }
-
 }

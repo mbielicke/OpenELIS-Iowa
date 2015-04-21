@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -133,8 +134,9 @@ public class VolumeReportBean {
         JasperPrint jprint;
         JRExporter jexport;
         OutputStream out;
-        String frDate, tDate, fromDate, toDate, section, userName;
-        fromDate = toDate = null;
+        Timestamp fromDate, toDate;
+        String section, userName;
+
         /*
          * push status into session so we can query it while the report is
          * running
@@ -149,20 +151,12 @@ public class VolumeReportBean {
 
         userName = User.getName(ctx);
 
-        frDate = ReportUtil.getSingleParameter(param, "FROM");
-        tDate = ReportUtil.getSingleParameter(param, "TO");
+        fromDate = ReportUtil.getTimestampParameter(param, "FROM");
+        toDate = ReportUtil.getTimestampParameter(param, "TO");
         section = ReportUtil.getListParameter(param, "SECTION");
 
-        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
+        if (fromDate == null || toDate == null)
             throw new InconsistencyException("You must specify From Date and To Date for this report");
-
-        if (frDate != null && frDate.length() > 0) {
-            fromDate = frDate + ":00";
-        }
-        if (tDate != null && tDate.length() > 0) {
-            toDate = tDate + ":59";
-
-        }
 
         if ( !DataBaseUtil.isEmpty(section))
             section = " and se.id " + section;

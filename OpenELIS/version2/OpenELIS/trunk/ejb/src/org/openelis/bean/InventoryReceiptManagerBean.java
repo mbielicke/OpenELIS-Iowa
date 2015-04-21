@@ -36,7 +36,7 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.InventoryReceiptViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
@@ -79,18 +79,18 @@ public class InventoryReceiptManagerBean {
 
     public InventoryReceiptManager update(InventoryReceiptManager man) throws Exception {
         UserTransaction ut;
-        OrderViewDO order;
+        IOrderViewDO iorder;
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
 
         ut = ctx.getUserTransaction();
-        order = man.getOrder().getOrder();
+        iorder = man.getIorder().getIorder();
         try {
             ut.begin();
-            lockBean.validateLock(Constants.table().ORDER, order.getId());
+            lockBean.validateLock(Constants.table().IORDER, iorder.getId());
             man.update();
-            lockBean.unlock(Constants.table().ORDER, order.getId());
+            lockBean.unlock(Constants.table().IORDER, iorder.getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();

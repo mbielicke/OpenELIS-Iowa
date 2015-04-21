@@ -83,7 +83,7 @@ public class TubeLabelReportBean {
      */
     @RolesAllowed("r_tubelabel-select")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int samples;
+        Integer samples;
         Path path;
         String printer, printstat;
         ReportStatus status;
@@ -103,17 +103,11 @@ public class TubeLabelReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
+        samples = ReportUtil.getIntegerParameter(param, "SAMPLES");
+        printer = ReportUtil.getStringParameter(param, "BARCODE");
 
-        samples = 0;
-        try {
-            samples = Integer.parseInt(ReportUtil.getSingleParameter(param, "SAMPLES"));
-        } catch (Exception e) {
+        if (samples == null || samples > 300)
             throw new InconsistencyException("You must specify valid number for samples (<= 300)");
-        } finally {
-            if (samples > 300)
-                throw new InconsistencyException("Number of sample labels can not exceed 300");
-        }
-        printer = ReportUtil.getSingleParameter(param, "BARCODE");
 
         if (DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify # of samples and printer for this report");

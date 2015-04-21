@@ -25,43 +25,43 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.addAnalyte;
-import static org.openelis.manager.OrderManager1Accessor.addAuxilliary;
-import static org.openelis.manager.OrderManager1Accessor.addContainer;
-import static org.openelis.manager.OrderManager1Accessor.addFill;
-import static org.openelis.manager.OrderManager1Accessor.addInternalNote;
-import static org.openelis.manager.OrderManager1Accessor.addItem;
-import static org.openelis.manager.OrderManager1Accessor.addOrganization;
-import static org.openelis.manager.OrderManager1Accessor.addReceipt;
-import static org.openelis.manager.OrderManager1Accessor.getAnalytes;
-import static org.openelis.manager.OrderManager1Accessor.getAuxilliary;
-import static org.openelis.manager.OrderManager1Accessor.getContainers;
-import static org.openelis.manager.OrderManager1Accessor.getCustomerNote;
-import static org.openelis.manager.OrderManager1Accessor.getFills;
-import static org.openelis.manager.OrderManager1Accessor.getInternalNotes;
-import static org.openelis.manager.OrderManager1Accessor.getItems;
-import static org.openelis.manager.OrderManager1Accessor.getOrder;
-import static org.openelis.manager.OrderManager1Accessor.getOrganizations;
-import static org.openelis.manager.OrderManager1Accessor.getRecurrence;
-import static org.openelis.manager.OrderManager1Accessor.getRemoved;
-import static org.openelis.manager.OrderManager1Accessor.getSampleNote;
-import static org.openelis.manager.OrderManager1Accessor.getShippingNote;
-import static org.openelis.manager.OrderManager1Accessor.getTests;
-import static org.openelis.manager.OrderManager1Accessor.setAnalytes;
-import static org.openelis.manager.OrderManager1Accessor.setAuxilliary;
-import static org.openelis.manager.OrderManager1Accessor.setContainers;
-import static org.openelis.manager.OrderManager1Accessor.setCustomerNote;
-import static org.openelis.manager.OrderManager1Accessor.setFills;
-import static org.openelis.manager.OrderManager1Accessor.setInternalNotes;
-import static org.openelis.manager.OrderManager1Accessor.setItems;
-import static org.openelis.manager.OrderManager1Accessor.setOrder;
-import static org.openelis.manager.OrderManager1Accessor.setOrganizations;
-import static org.openelis.manager.OrderManager1Accessor.setReceipts;
-import static org.openelis.manager.OrderManager1Accessor.setRecurrence;
-import static org.openelis.manager.OrderManager1Accessor.setRemoved;
-import static org.openelis.manager.OrderManager1Accessor.setSampleNote;
-import static org.openelis.manager.OrderManager1Accessor.setShippingNote;
-import static org.openelis.manager.OrderManager1Accessor.setTests;
+import static org.openelis.manager.IOrderManager1Accessor.addAnalyte;
+import static org.openelis.manager.IOrderManager1Accessor.addAuxilliary;
+import static org.openelis.manager.IOrderManager1Accessor.addContainer;
+import static org.openelis.manager.IOrderManager1Accessor.addFill;
+import static org.openelis.manager.IOrderManager1Accessor.addInternalNote;
+import static org.openelis.manager.IOrderManager1Accessor.addItem;
+import static org.openelis.manager.IOrderManager1Accessor.addOrganization;
+import static org.openelis.manager.IOrderManager1Accessor.addReceipt;
+import static org.openelis.manager.IOrderManager1Accessor.getAnalytes;
+import static org.openelis.manager.IOrderManager1Accessor.getAuxilliary;
+import static org.openelis.manager.IOrderManager1Accessor.getContainers;
+import static org.openelis.manager.IOrderManager1Accessor.getCustomerNote;
+import static org.openelis.manager.IOrderManager1Accessor.getFills;
+import static org.openelis.manager.IOrderManager1Accessor.getInternalNotes;
+import static org.openelis.manager.IOrderManager1Accessor.getItems;
+import static org.openelis.manager.IOrderManager1Accessor.getIorder;
+import static org.openelis.manager.IOrderManager1Accessor.getOrganizations;
+import static org.openelis.manager.IOrderManager1Accessor.getRecurrence;
+import static org.openelis.manager.IOrderManager1Accessor.getRemoved;
+import static org.openelis.manager.IOrderManager1Accessor.getSampleNote;
+import static org.openelis.manager.IOrderManager1Accessor.getShippingNote;
+import static org.openelis.manager.IOrderManager1Accessor.getTests;
+import static org.openelis.manager.IOrderManager1Accessor.setAnalytes;
+import static org.openelis.manager.IOrderManager1Accessor.setAuxilliary;
+import static org.openelis.manager.IOrderManager1Accessor.setContainers;
+import static org.openelis.manager.IOrderManager1Accessor.setCustomerNote;
+import static org.openelis.manager.IOrderManager1Accessor.setFills;
+import static org.openelis.manager.IOrderManager1Accessor.setInternalNotes;
+import static org.openelis.manager.IOrderManager1Accessor.setItems;
+import static org.openelis.manager.IOrderManager1Accessor.setIorder;
+import static org.openelis.manager.IOrderManager1Accessor.setOrganizations;
+import static org.openelis.manager.IOrderManager1Accessor.setReceipts;
+import static org.openelis.manager.IOrderManager1Accessor.setRecurrence;
+import static org.openelis.manager.IOrderManager1Accessor.setRemoved;
+import static org.openelis.manager.IOrderManager1Accessor.setSampleNote;
+import static org.openelis.manager.IOrderManager1Accessor.setShippingNote;
+import static org.openelis.manager.IOrderManager1Accessor.setTests;
 import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
 import static org.openelis.manager.SampleManager1Accessor.getSample;
 
@@ -91,20 +91,20 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderReturnVO;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderReturnVO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
@@ -119,7 +119,7 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderManager1Bean {
+public class IOrderManager1Bean {
 
     @Resource
     private SessionContext         ctx;
@@ -128,31 +128,31 @@ public class OrderManager1Bean {
     private LockBean               lock;
 
     @EJB
-    private OrderBean              order;
+    private IOrderBean              iorder;
 
     @EJB
-    private OrderOrganizationBean  orderOrganization;
+    private IOrderOrganizationBean  iorderOrganization;
 
     @EJB
-    private OrderItemBean          orderItem;
+    private IOrderItemBean          iorderItem;
 
     @EJB
-    private InventoryXUseBean      orderFill;
+    private InventoryXUseBean      iorderFill;
 
     @EJB
-    private InventoryXPutBean      orderReceipt;
+    private InventoryXPutBean      iorderReceipt;
 
     @EJB
-    private OrderContainerBean     orderContainer;
+    private IOrderContainerBean     iorderContainer;
 
     @EJB
-    private OrderTestBean          orderTest;
+    private IOrderTestBean          iorderTest;
 
     @EJB
     private TestManagerBean        testManager;
 
     @EJB
-    private OrderTestAnalyteBean   orderTestAnalyte;
+    private IOrderTestAnalyteBean   iorderTestAnalyte;
 
     @EJB
     private NoteBean               note;
@@ -161,7 +161,7 @@ public class OrderManager1Bean {
     private AuxDataBean            auxdata;
 
     @EJB
-    private OrderRecurrenceBean    orderRecurrence;
+    private IOrderRecurrenceBean    iorderRecurrence;
 
     @EJB
     private PanelBean              panel;
@@ -170,7 +170,7 @@ public class OrderManager1Bean {
     private AuxDataHelperBean      auxDataHelper;
 
     @EJB
-    private OrderTestHelperBean    orderTestHelper;
+    private IOrderTestHelperBean    iorderTestHelper;
 
     @EJB
     private OrganizationBean       organization;
@@ -183,24 +183,24 @@ public class OrderManager1Bean {
 
     private static final Logger    log = Logger.getLogger("openelis");
 
-    public OrderManager1 getInstance(String type) throws Exception {
-        OrderManager1 om;
-        OrderViewDO o;
+    public IOrderManager1 getInstance(String type) throws Exception {
+        IOrderManager1 om;
+        IOrderViewDO o;
         Datetime now;
 
         // order
         now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        om = new OrderManager1();
+        om = new IOrderManager1();
 
-        o = new OrderViewDO();
+        o = new IOrderViewDO();
         o.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         o.setOrderedDate(now);
         o.setRequestedBy(User.getName(ctx));
-        setOrder(om, o);
-        if (Constants.order().SEND_OUT.equals(type))
+        setIorder(om, o);
+        if (Constants.iorder().SEND_OUT.equals(type))
             o.setOrganization(new OrganizationDO());
-        else if ( !Constants.order().INTERNAL.equals(type) &&
-                 !Constants.order().VENDOR.equals(type))
+        else if ( !Constants.iorder().INTERNAL.equals(type) &&
+                 !Constants.iorder().VENDOR.equals(type))
             throw new InconsistencyException("Specified type is invalid");
         o.setType(type);
 
@@ -208,46 +208,46 @@ public class OrderManager1Bean {
     }
 
     /**
-     * Returns an order manager for specified primary id and requested load
+     * Returns an iorder manager for specified primary id and requested load
      * elements
      */
-    public OrderManager1 fetchById(Integer orderId, OrderManager1.Load... elements) throws Exception {
+    public IOrderManager1 fetchById(Integer iorderId, IOrderManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
-        ArrayList<OrderManager1> oms;
+        ArrayList<IOrderManager1> oms;
 
         ids = new ArrayList<Integer>(1);
-        ids.add(orderId);
+        ids.add(iorderId);
         oms = fetchByIds(ids, false, elements);
         return oms.size() == 0 ? null : oms.get(0);
     }
 
     /**
-     * Returns order managers for specified primary ids and requested load
+     * Returns iorder managers for specified primary ids and requested load
      * elements
      */
-    public ArrayList<OrderManager1> fetchByIds(ArrayList<Integer> orderIds,
-                                               OrderManager1.Load... elements) throws Exception {
-        return fetchByIds(orderIds, false, elements);
+    public ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> iorderIds,
+                                               IOrderManager1.Load... elements) throws Exception {
+        return fetchByIds(iorderIds, false, elements);
     }
 
     /**
-     * Returns an order manager based on the specified query and requested load
+     * Returns an iorder manager based on the specified query and requested load
      * elements
      */
-    public ArrayList<OrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                                                 OrderManager1.Load... elements) throws Exception {
+    public ArrayList<IOrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                                                 IOrderManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
 
         ids = new ArrayList<Integer>();
 
-        for (IdNameVO vo : order.query(fields, first, max))
+        for (IdNameVO vo : iorder.query(fields, first, max))
             ids.add(vo.getId());
         return fetchByIds(ids, false, elements);
     }
 
-    public OrderManager1 fetchWith(OrderManager1 om, OrderManager1.Load... elements) throws Exception {
+    public IOrderManager1 fetchWith(IOrderManager1 om, IOrderManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids, ids2;
-        EnumSet<OrderManager1.Load> el;
+        EnumSet<IOrderManager1.Load> el;
 
         if (elements != null)
             el = EnumSet.copyOf(Arrays.asList(elements));
@@ -255,59 +255,59 @@ public class OrderManager1Bean {
             return om;
 
         /*
-         * various lists for each order
+         * various lists for each iorder
          */
         ids = new ArrayList<Integer>(1);
-        ids.add(getOrder(om).getId());
+        ids.add(getIorder(om).getId());
 
-        if (el.contains(OrderManager1.Load.ITEMS)) {
+        if (el.contains(IOrderManager1.Load.ITEMS)) {
             setItems(om, null);
-            for (OrderItemViewDO data : orderItem.fetchByOrderIds(ids))
+            for (IOrderItemViewDO data : iorderItem.fetchByIorderIds(ids))
                 addItem(om, data);
 
             setFills(om, null);
-            for (InventoryXUseViewDO data : orderFill.fetchByOrderIds(ids))
+            for (InventoryXUseViewDO data : iorderFill.fetchByIorderIds(ids))
                 addFill(om, data);
 
             setReceipts(om, null);
-            for (InventoryXPutViewDO data : orderReceipt.fetchByOrderIds(ids))
+            for (InventoryXPutViewDO data : iorderReceipt.fetchByIorderIds(ids))
                 addReceipt(om, data);
         }
 
-        if (el.contains(OrderManager1.Load.ORGANIZATION)) {
+        if (el.contains(IOrderManager1.Load.ORGANIZATION)) {
             setOrganizations(om, null);
-            for (OrderOrganizationViewDO data : orderOrganization.fetchByOrderIds(ids))
+            for (IOrderOrganizationViewDO data : iorderOrganization.fetchByIorderIds(ids))
                 addOrganization(om, data);
         }
 
-        if (el.contains(OrderManager1.Load.SAMPLE_DATA)) {
+        if (el.contains(IOrderManager1.Load.SAMPLE_DATA)) {
             setContainers(om, null);
-            for (OrderContainerDO data : orderContainer.fetchByOrderIds(ids))
+            for (IOrderContainerDO data : iorderContainer.fetchByIorderIds(ids))
                 addContainer(om, data);
 
             setAuxilliary(om, null);
-            for (AuxDataViewDO data : auxdata.fetchByIds(ids, Constants.table().ORDER))
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids, Constants.table().IORDER))
                 addAuxilliary(om, data);
 
             /*
-             * build level 2, everything is based on order test ids
+             * build level 2, everything is based on iorder test ids
              */
             ids2 = new ArrayList<Integer>();
 
             setTests(om, null);
-            for (OrderTestViewDO data : orderTest.fetchByOrderIds(ids)) {
+            for (IOrderTestViewDO data : iorderTest.fetchByIorderIds(ids)) {
                 addTest(om, data.getId(), true, data.getItemSequence());
                 ids2.add(data.getId());
             }
 
             setAnalytes(om, null);
-            for (OrderTestAnalyteViewDO data : orderTestAnalyte.fetchByOrderTestIds(ids2))
+            for (IOrderTestAnalyteViewDO data : iorderTestAnalyte.fetchByIorderTestIds(ids2))
                 addAnalyte(om, data);
         }
 
-        if (el.contains(OrderManager1.Load.RECURRENCE)) {
+        if (el.contains(IOrderManager1.Load.RECURRENCE)) {
             setRecurrence(om, null);
-            for (OrderRecurrenceDO data : orderRecurrence.fetchByOrderIds(ids))
+            for (IOrderRecurrenceDO data : iorderRecurrence.fetchByIorderIds(ids))
                 setRecurrence(om, data);
         }
 
@@ -315,89 +315,89 @@ public class OrderManager1Bean {
     }
 
     /**
-     * Returns a locked order manager with specified order id
+     * Returns a locked iorder manager with specified iorder id
      */
     @RolesAllowed("order-update")
-    public OrderManager1 fetchForUpdate(Integer orderId) throws Exception {
-        return fetchForUpdate(orderId,
-                              OrderManager1.Load.ITEMS,
-                              OrderManager1.Load.ORGANIZATION,
-                              OrderManager1.Load.SAMPLE_DATA,
-                              OrderManager1.Load.RECURRENCE);
+    public IOrderManager1 fetchForUpdate(Integer iorderId) throws Exception {
+        return fetchForUpdate(iorderId,
+                              IOrderManager1.Load.ITEMS,
+                              IOrderManager1.Load.ORGANIZATION,
+                              IOrderManager1.Load.SAMPLE_DATA,
+                              IOrderManager1.Load.RECURRENCE);
     }
 
     /**
-     * Returns a locked order manager with specified order id and requested load
+     * Returns a locked iorder manager with specified iorder id and requested load
      * elements
      */
     @RolesAllowed("order-update")
-    public OrderManager1 fetchForUpdate(Integer orderId, OrderManager1.Load... elements) throws Exception {
+    public IOrderManager1 fetchForUpdate(Integer iorderId, IOrderManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
-        ArrayList<OrderManager1> oms;
+        ArrayList<IOrderManager1> oms;
 
         ids = new ArrayList<Integer>(1);
-        ids.add(orderId);
+        ids.add(iorderId);
         oms = fetchForUpdate(ids, elements);
         return oms.size() == 0 ? null : oms.get(0);
     }
 
     /**
-     * Returns a list of locked order managers with specified order ids and
+     * Returns a list of locked iorder managers with specified iorder ids and
      * requested load elements
      */
     @RolesAllowed("order-update")
-    public ArrayList<OrderManager1> fetchForUpdate(ArrayList<Integer> orderIds,
-                                                   OrderManager1.Load... elements) throws Exception {
-        lock.lock(Constants.table().ORDER, orderIds);
-        return fetchByIds(orderIds, true, elements);
+    public ArrayList<IOrderManager1> fetchForUpdate(ArrayList<Integer> iorderIds,
+                                                   IOrderManager1.Load... elements) throws Exception {
+        lock.lock(Constants.table().IORDER, iorderIds);
+        return fetchByIds(iorderIds, true, elements);
     }
 
     /**
-     * Unlocks and returns a order manager with specified order id and requested
+     * Unlocks and returns a iorder manager with specified iorder id and requested
      * load elements
      */
     @RolesAllowed({"order-add", "order-update"})
-    public OrderManager1 unlock(Integer orderId, OrderManager1.Load... elements) throws Exception {
+    public IOrderManager1 unlock(Integer iorderId, IOrderManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
-        ArrayList<OrderManager1> sms;
+        ArrayList<IOrderManager1> sms;
 
         ids = new ArrayList<Integer>(1);
-        ids.add(orderId);
+        ids.add(iorderId);
         sms = unlock(ids, elements);
         return sms.size() == 0 ? null : sms.get(0);
     }
 
     /**
-     * Unlocks and returns list of order managers with specified order ids and
+     * Unlocks and returns list of iorder managers with specified iorder ids and
      * requested load elements
      */
     @RolesAllowed({"order-add", "order-update"})
-    public ArrayList<OrderManager1> unlock(ArrayList<Integer> orderIds,
-                                           OrderManager1.Load... elements) throws Exception {
-        lock.unlock(Constants.table().ORDER, orderIds);
-        return fetchByIds(orderIds, false, elements);
+    public ArrayList<IOrderManager1> unlock(ArrayList<Integer> iorderIds,
+                                           IOrderManager1.Load... elements) throws Exception {
+        lock.unlock(Constants.table().IORDER, iorderIds);
+        return fetchByIds(iorderIds, false, elements);
     }
 
     /**
-     * duplicates the order with the given order ID and commits the new order
+     * duplicates the iorder with the given iorder ID and commits the new iorder
      */
     public void recur(Integer id) throws Exception {
         StringBuffer noteText;
-        OrderReturnVO order;
-        OrderManager1 om;
+        IOrderReturnVO iorder;
+        IOrderManager1 om;
         NoteViewDO note;
         ArrayList<NoteViewDO> notes;
 
-        order = duplicate(id, false, true);
-        om = order.getManager();
+        iorder = duplicate(id, false, true);
+        om = iorder.getManager();
 
         /*
          * set duplication errors/warnings as an internal note
          */
-        if (order.getErrors() != null && order.getErrors().getErrorList() != null &&
-            order.getErrors().getErrorList().size() > 0) {
+        if (iorder.getErrors() != null && iorder.getErrors().getErrorList() != null &&
+            iorder.getErrors().getErrorList().size() > 0) {
             noteText = new StringBuffer();
-            for (Exception e : order.getErrors().getErrorList()) {
+            for (Exception e : iorder.getErrors().getErrorList()) {
                 noteText.append(e.getMessage()).append("\n");
             }
             note = new NoteViewDO();
@@ -413,37 +413,37 @@ public class OrderManager1Bean {
     }
 
     /**
-     * duplicates the order with the given order ID and returns the new order
+     * duplicates the iorder with the given iorder ID and returns the new iorder
      * manager
      */
-    public OrderReturnVO duplicate(Integer id) throws Exception {
+    public IOrderReturnVO duplicate(Integer id) throws Exception {
         return duplicate(id, false, false);
     }
 
     /**
-     * duplicates the order with the given order ID, with or without sample
-     * notes, and returns the new order manager
+     * duplicates the iorder with the given iorder ID, with or without sample
+     * notes, and returns the new iorder manager
      */
-    public OrderReturnVO duplicate(Integer id, boolean sampleNotes, boolean forRecurrence) throws Exception {
+    public IOrderReturnVO duplicate(Integer id, boolean sampleNotes, boolean forRecurrence) throws Exception {
         Integer oldId, prevGroupId;
         Datetime now;
-        OrderManager1 om;
-        OrderReturnVO ret;
+        IOrderManager1 om;
+        IOrderReturnVO ret;
         DictionaryDO dict;
         InventoryItemDO item;
         ValidationErrorsList errors;
         ArrayList<Integer> ids;
-        ArrayList<OrderManager1> oms;
-        ArrayList<OrderOrganizationViewDO> orgs;
+        ArrayList<IOrderManager1> oms;
+        ArrayList<IOrderOrganizationViewDO> orgs;
         ArrayList<AuxDataViewDO> aux;
-        ArrayList<OrderTestViewDO> tests;
-        ArrayList<OrderTestAnalyteViewDO> analytes;
-        ArrayList<OrderItemViewDO> items;
+        ArrayList<IOrderTestViewDO> tests;
+        ArrayList<IOrderTestAnalyteViewDO> analytes;
+        ArrayList<IOrderItemViewDO> items;
         HashMap<Integer, Integer> tids;
 
         /*
          * fetchByIds is called here instead of fetchById because in this case,
-         * the order test analytes need to be merged with the original test
+         * the iorder test analytes need to be merged with the original test
          * analytes, and we indicate this by passing true for the argument
          * isUpdate, just like in fetchForUpdate
          */
@@ -451,42 +451,42 @@ public class OrderManager1Bean {
         ids.add(id);
         oms = fetchByIds(ids,
                          !forRecurrence,
-                         OrderManager1.Load.SAMPLE_DATA,
-                         OrderManager1.Load.ORGANIZATION,
-                         OrderManager1.Load.ITEMS);
+                         IOrderManager1.Load.SAMPLE_DATA,
+                         IOrderManager1.Load.ORGANIZATION,
+                         IOrderManager1.Load.ITEMS);
 
         om = oms.get(0);
         errors = new ValidationErrorsList();
         if (forRecurrence)
-            getOrder(om).setParentOrderId(getOrder(om).getId());
-        getOrder(om).setId(null);
-        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
+            getIorder(om).setParentIorderId(getIorder(om).getId());
+        getIorder(om).setId(null);
+        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
-        getOrder(om).setOrderedDate(now);
+        getIorder(om).setOrderedDate(now);
         if ( !forRecurrence)
-            getOrder(om).setRequestedBy(User.getName(ctx));
+            getIorder(om).setRequestedBy(User.getName(ctx));
 
-        if ( !"Y".equals(getOrder(om).getOrganization().getIsActive())) {
+        if (getIorder(om).getOrganization() != null && !"Y".equals(getIorder(om).getOrganization().getIsActive())) {
             if (forRecurrence) {
-                getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
             }
             errors.add(new FormErrorWarning(Messages.get()
-                                                    .order_inactiveOrganizationWarning(getOrder(om).getOrganization()
+                                                    .order_inactiveOrganizationWarning(getIorder(om).getOrganization()
                                                                                                    .getName())));
-            getOrder(om).setOrganization(null);
-            getOrder(om).setOrganizationId(null);
+            getIorder(om).setOrganization(null);
+            getIorder(om).setOrganizationId(null);
         }
 
         if (getOrganizations(om) != null) {
-            orgs = new ArrayList<OrderOrganizationViewDO>();
-            for (OrderOrganizationViewDO data : getOrganizations(om)) {
+            orgs = new ArrayList<IOrderOrganizationViewDO>();
+            for (IOrderOrganizationViewDO data : getOrganizations(om)) {
                 if ("Y".equals(data.getOrganizationIsActive())) {
                     data.setId(null);
-                    data.setOrderId(null);
+                    data.setIorderId(null);
                     orgs.add(data);
                 } else {
                     if (forRecurrence) {
-                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
                     }
                     errors.add(new FormErrorWarning(Messages.get()
                                                             .order_inactiveOrganizationWarning(data.getOrganizationName())));
@@ -499,18 +499,18 @@ public class OrderManager1Bean {
         }
 
         if (getItems(om) != null) {
-            items = new ArrayList<OrderItemViewDO>();
-            for (OrderItemViewDO data : getItems(om)) {
+            items = new ArrayList<IOrderItemViewDO>();
+            for (IOrderItemViewDO data : getItems(om)) {
                 item = inventoryItem.getById(data.getInventoryItemId());
                 if ("N".equals(item.getIsActive())) {
                     if (forRecurrence)
-                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
                     errors.add(new FormErrorWarning(Messages.get()
                                                             .order_inactiveItemWarning(item.getName())));
                     continue;
                 }
                 data.setId(null);
-                data.setOrderId(null);
+                data.setIorderId(null);
                 items.add(data);
             }
             if (items.size() > 0)
@@ -545,24 +545,24 @@ public class OrderManager1Bean {
         }
 
         if (getContainers(om) != null) {
-            for (OrderContainerDO data : getContainers(om)) {
+            for (IOrderContainerDO data : getContainers(om)) {
                 dict = dictionary.getById(data.getContainerId());
                 if ("N".equals(dict.getIsActive())) {
                     if (forRecurrence)
-                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
                     errors.add(new FormErrorWarning(Messages.get()
                                                             .order_inactiveContainerWarning(dict.getEntry())));
                 }
                 dict = dictionary.getById(data.getTypeOfSampleId());
                 if ("N".equals(dict.getIsActive())) {
                     if (forRecurrence)
-                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
                     errors.add(new FormErrorWarning(Messages.get()
                                                             .order_inactiveSampleTypeWarning(dict.getEntry())));
                     data.setTypeOfSampleId(null);
                 }
                 data.setId(null);
-                data.setOrderId(null);
+                data.setIorderId(null);
             }
         }
 
@@ -580,7 +580,7 @@ public class OrderManager1Bean {
                     aux.add(data);
                 } else {
                     if (forRecurrence) {
-                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
                     }
                     if ( !data.getAuxFieldGroupId().equals(prevGroupId)) {
                         errors.add(new FormErrorWarning(Messages.get()
@@ -597,8 +597,8 @@ public class OrderManager1Bean {
 
         tids = new HashMap<Integer, Integer>();
         if (getTests(om) != null) {
-            tests = new ArrayList<OrderTestViewDO>();
-            for (OrderTestViewDO data : getTests(om)) {
+            tests = new ArrayList<IOrderTestViewDO>();
+            for (IOrderTestViewDO data : getTests(om)) {
                 if ("Y".equals(data.getIsActive())) {
                     oldId = data.getId();
                     data.setId(om.getNextUID());
@@ -606,7 +606,7 @@ public class OrderManager1Bean {
                     tests.add(data);
                 } else {
                     if (forRecurrence) {
-                        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
+                        getIorder(om).setStatusId(Constants.dictionary().ORDER_STATUS_ERROR);
                         continue;
                     }
                     errors.add(new FormErrorWarning(Messages.get()
@@ -621,11 +621,11 @@ public class OrderManager1Bean {
         }
 
         if (getAnalytes(om) != null) {
-            analytes = new ArrayList<OrderTestAnalyteViewDO>();
-            for (OrderTestAnalyteViewDO data : getAnalytes(om)) {
-                if (tids.get(data.getOrderTestId()) != null) {
+            analytes = new ArrayList<IOrderTestAnalyteViewDO>();
+            for (IOrderTestAnalyteViewDO data : getAnalytes(om)) {
+                if (tids.get(data.getIorderTestId()) != null) {
                     data.setId(om.getNextUID());
-                    data.setOrderTestId(tids.get(data.getOrderTestId()));
+                    data.setIorderTestId(tids.get(data.getIorderTestId()));
                     analytes.add(data);
                 }
             }
@@ -636,39 +636,39 @@ public class OrderManager1Bean {
         }
         setRecurrence(om, null);
 
-        ret = new OrderReturnVO();
+        ret = new IOrderReturnVO();
         ret.setManager(om);
         ret.setErrors(errors);
         return ret;
     }
 
     /**
-     * Adds/updates the order and related records in the database. The records
-     * are validated before add/update and the order record must have a lock
+     * Adds/updates the iorder and related records in the database. The records
+     * are validated before add/update and the iorder record must have a lock
      * record if it has an id.
      */
     @RolesAllowed({"order-add", "order-update"})
-    public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception {
-        ArrayList<OrderManager1> oms;
+    public IOrderManager1 update(IOrderManager1 om, boolean ignoreWarnings) throws Exception {
+        ArrayList<IOrderManager1> oms;
 
-        oms = new ArrayList<OrderManager1>(1);
+        oms = new ArrayList<IOrderManager1>(1);
         oms.add(om);
         update(oms, ignoreWarnings);
         return oms.get(0);
     }
 
     /**
-     * Adds/updates all the orders and related records in the database. All the
-     * records are validated before add/update and the order records must each
+     * Adds/updates all the iorders and related records in the database. All the
+     * records are validated before add/update and the iorder records must each
      * have a lock record if they have an id.
      */
     @RolesAllowed({"order-add", "order-update"})
-    public ArrayList<OrderManager1> update(ArrayList<OrderManager1> oms, boolean ignoreWarnings) throws Exception {
+    public ArrayList<IOrderManager1> update(ArrayList<IOrderManager1> oms, boolean ignoreWarnings) throws Exception {
         int i;
         Integer so, tmpid;
         NoteViewDO nd;
-        OrderRecurrenceDO or;
-        OrderTestAnalyteViewDO ota;
+        IOrderRecurrenceDO or;
+        IOrderTestAnalyteViewDO ota;
         HashSet<Integer> ids;
         HashMap<Integer, TestManager> tms;
         ArrayList<Integer> locks;
@@ -679,9 +679,9 @@ public class OrderManager1Bean {
          * fetch test managers. Also build a test map for permission check.
          */
         ids = new HashSet<Integer>();
-        for (OrderManager1 om : oms) {
+        for (IOrderManager1 om : oms) {
             if (getTests(om) != null) {
-                for (OrderTestViewDO an : getTests(om))
+                for (IOrderTestViewDO an : getTests(om))
                     ids.add(an.getTestId());
             }
         }
@@ -698,31 +698,31 @@ public class OrderManager1Bean {
          * check all the locks
          */
         ids.clear();
-        for (OrderManager1 om : oms) {
-            if (getOrder(om).getId() != null)
-                ids.add(getOrder(om).getId());
+        for (IOrderManager1 om : oms) {
+            if (getIorder(om).getId() != null)
+                ids.add(getIorder(om).getId());
         }
         if (ids.size() > 0) {
             locks = new ArrayList<Integer>(ids);
-            lock.validateLock(Constants.table().ORDER, locks);
+            lock.validateLock(Constants.table().IORDER, locks);
         } else {
             locks = null;
         }
         ids = null;
 
         /*
-         * the front code uses negative ids (temporary ids) to link order tests
-         * and order test analytes. The negative ids are mapped to actual
+         * the front code uses negative ids (temporary ids) to link iorder tests
+         * and iorder test analytes. The negative ids are mapped to actual
          * database ids through tmap.
          */
         tmap = new HashMap<Integer, Integer>();
-        for (OrderManager1 om : oms) {
+        for (IOrderManager1 om : oms) {
             tmap.clear();
 
             if (getAnalytes(om) != null) {
                 i = 0;
                 /*
-                 * For adding and updating, we only keep checked order test
+                 * For adding and updating, we only keep checked iorder test
                  * analytes. Existing unchecked analytes are removed from the
                  * database.
                  */
@@ -746,7 +746,7 @@ public class OrderManager1Bean {
              * if it is now empty
              */
             or = getRecurrence(om);
-            if (or != null && orderRecurrence.isEmpty(or)) {
+            if (or != null && iorderRecurrence.isEmpty(or)) {
                 if (or.getId() != null) {
                     if (getRemoved(om) == null)
                         setRemoved(om, new ArrayList<DataObject>());
@@ -760,43 +760,43 @@ public class OrderManager1Bean {
              */
             if (getRemoved(om) != null) {
                 for (DataObject data : getRemoved(om)) {
-                    if (data instanceof OrderOrganizationViewDO)
-                        orderOrganization.delete( ((OrderOrganizationViewDO)data));
-                    else if (data instanceof OrderItemViewDO)
-                        orderItem.delete( ((OrderItemViewDO)data));
+                    if (data instanceof IOrderOrganizationViewDO)
+                        iorderOrganization.delete( ((IOrderOrganizationViewDO)data));
+                    else if (data instanceof IOrderItemViewDO)
+                        iorderItem.delete( ((IOrderItemViewDO)data));
                     else if (data instanceof InventoryXUseViewDO)
-                        orderFill.delete( ((InventoryXUseViewDO)data));
+                        iorderFill.delete( ((InventoryXUseViewDO)data));
                     else if (data instanceof InventoryXPutViewDO)
-                        orderReceipt.delete( ((InventoryXPutViewDO)data));
-                    else if (data instanceof OrderContainerDO)
-                        orderContainer.delete( ((OrderContainerDO)data));
-                    else if (data instanceof OrderTestViewDO)
-                        orderTest.delete( ((OrderTestViewDO)data));
-                    else if (data instanceof OrderTestAnalyteViewDO)
-                        orderTestAnalyte.delete( ((OrderTestAnalyteViewDO)data));
+                        iorderReceipt.delete( ((InventoryXPutViewDO)data));
+                    else if (data instanceof IOrderContainerDO)
+                        iorderContainer.delete( ((IOrderContainerDO)data));
+                    else if (data instanceof IOrderTestViewDO)
+                        iorderTest.delete( ((IOrderTestViewDO)data));
+                    else if (data instanceof IOrderTestAnalyteViewDO)
+                        iorderTestAnalyte.delete( ((IOrderTestAnalyteViewDO)data));
                     else if (data instanceof NoteViewDO)
                         note.delete( ((NoteViewDO)data));
                     else if (data instanceof AuxDataViewDO)
                         auxdata.delete( ((AuxDataViewDO)data));
-                    else if (data instanceof OrderRecurrenceDO)
-                        orderRecurrence.delete((OrderRecurrenceDO)data);
+                    else if (data instanceof IOrderRecurrenceDO)
+                        iorderRecurrence.delete((IOrderRecurrenceDO)data);
                     else
                         throw new Exception("ERROR: DataObject passed for removal is of unknown type");
                 }
             }
-            // add/update order
-            if (getOrder(om).getId() == null)
-                order.add(getOrder(om));
+            // add/update iorder
+            if (getIorder(om).getId() == null)
+                iorder.add(getIorder(om));
             else
-                order.update(getOrder(om));
+                iorder.update(getIorder(om));
 
             if (getOrganizations(om) != null) {
-                for (OrderOrganizationViewDO data : getOrganizations(om)) {
+                for (IOrderOrganizationViewDO data : getOrganizations(om)) {
                     if (data.getId() == null) {
-                        data.setOrderId(getOrder(om).getId());
-                        orderOrganization.add(data);
+                        data.setIorderId(getIorder(om).getId());
+                        iorderOrganization.add(data);
                     } else {
-                        orderOrganization.update(data);
+                        iorderOrganization.update(data);
                     }
                 }
             }
@@ -808,8 +808,8 @@ public class OrderManager1Bean {
                     if ( !DataBaseUtil.isSame(so, data.getSortOrder()))
                         data.setSortOrder(so);
                     if (data.getId() == null) {
-                        data.setReferenceTableId(Constants.table().ORDER);
-                        data.setReferenceId(getOrder(om).getId());
+                        data.setReferenceTableId(Constants.table().IORDER);
+                        data.setReferenceId(getIorder(om).getId());
                         auxdata.add(data);
                     } else {
                         auxdata.update(data);
@@ -819,48 +819,48 @@ public class OrderManager1Bean {
 
             so = 0;
             if (getTests(om) != null) {
-                for (OrderTestViewDO data : getTests(om)) {
+                for (IOrderTestViewDO data : getTests(om)) {
                     tmpid = data.getId();
                     data.setSortOrder( ++so);
                     if (data.getId() < 0) {
-                        data.setOrderId(getOrder(om).getId());
-                        orderTest.add(data);
+                        data.setIorderId(getIorder(om).getId());
+                        iorderTest.add(data);
                     } else {
-                        orderTest.update(data);
+                        iorderTest.update(data);
                     }
                     tmap.put(tmpid, data.getId());
                 }
             }
 
             if (getAnalytes(om) != null) {
-                for (OrderTestAnalyteViewDO data : getAnalytes(om)) {
+                for (IOrderTestAnalyteViewDO data : getAnalytes(om)) {
                     if (data.getId() < 0) {
-                        data.setOrderTestId(tmap.get(data.getOrderTestId()));
-                        orderTestAnalyte.add(data);
+                        data.setIorderTestId(tmap.get(data.getIorderTestId()));
+                        iorderTestAnalyte.add(data);
                     } else {
-                        orderTestAnalyte.update(data);
+                        iorderTestAnalyte.update(data);
                     }
                 }
             }
 
             if (getContainers(om) != null) {
-                for (OrderContainerDO data : getContainers(om)) {
+                for (IOrderContainerDO data : getContainers(om)) {
                     if (data.getId() == null) {
-                        data.setOrderId(getOrder(om).getId());
-                        orderContainer.add(data);
+                        data.setIorderId(getIorder(om).getId());
+                        iorderContainer.add(data);
                     } else {
-                        orderContainer.update(data);
+                        iorderContainer.update(data);
                     }
                 }
             }
 
             if (getItems(om) != null) {
-                for (OrderItemViewDO data : getItems(om)) {
+                for (IOrderItemViewDO data : getItems(om)) {
                     if (data.getId() == null) {
-                        data.setOrderId(getOrder(om).getId());
-                        orderItem.add(data);
+                        data.setIorderId(getIorder(om).getId());
+                        iorderItem.add(data);
                     } else {
-                        orderItem.update(data);
+                        iorderItem.update(data);
                     }
                 }
             }
@@ -868,8 +868,8 @@ public class OrderManager1Bean {
             if (getShippingNote(om) != null) {
                 nd = getShippingNote(om);
                 if (nd.getId() == null) {
-                    nd.setReferenceTableId(Constants.table().ORDER_SHIPPING_NOTE);
-                    nd.setReferenceId(getOrder(om).getId());
+                    nd.setReferenceTableId(Constants.table().IORDER_SHIPPING_NOTE);
+                    nd.setReferenceId(getIorder(om).getId());
                     note.add(nd);
                 } else {
                     note.update(nd);
@@ -879,8 +879,8 @@ public class OrderManager1Bean {
             if (getCustomerNote(om) != null) {
                 nd = getCustomerNote(om);
                 if (nd.getId() == null) {
-                    nd.setReferenceTableId(Constants.table().ORDER_CUSTOMER_NOTE);
-                    nd.setReferenceId(getOrder(om).getId());
+                    nd.setReferenceTableId(Constants.table().IORDER_CUSTOMER_NOTE);
+                    nd.setReferenceId(getIorder(om).getId());
                     note.add(nd);
                 } else {
                     note.update(nd);
@@ -890,8 +890,8 @@ public class OrderManager1Bean {
             if (getSampleNote(om) != null) {
                 nd = getSampleNote(om);
                 if (nd.getId() == null) {
-                    nd.setReferenceTableId(Constants.table().ORDER_SAMPLE_NOTE);
-                    nd.setReferenceId(getOrder(om).getId());
+                    nd.setReferenceTableId(Constants.table().IORDER_SAMPLE_NOTE);
+                    nd.setReferenceId(getIorder(om).getId());
                     note.add(nd);
                 } else {
                     note.update(nd);
@@ -901,8 +901,8 @@ public class OrderManager1Bean {
             if (getInternalNotes(om) != null) {
                 for (NoteViewDO data : getInternalNotes(om)) {
                     if (data.getId() == null) {
-                        data.setReferenceTableId(Constants.table().ORDER);
-                        data.setReferenceId(getOrder(om).getId());
+                        data.setReferenceTableId(Constants.table().IORDER);
+                        data.setReferenceId(getIorder(om).getId());
                         note.add(data);
                     } else {
                         note.update(data);
@@ -913,37 +913,37 @@ public class OrderManager1Bean {
             if (getRecurrence(om) != null) {
                 or = getRecurrence(om);
                 if (or.getId() == null) {
-                    or.setOrderId(getOrder(om).getId());
-                    orderRecurrence.add(or);
+                    or.setIorderId(getIorder(om).getId());
+                    iorderRecurrence.add(or);
                 } else {
 
-                    orderRecurrence.update(or);
+                    iorderRecurrence.update(or);
                 }
             }
 
             if (getFills(om) != null) {
                 for (InventoryXUseViewDO data : getFills(om)) {
                     if (data.getId() == null) {
-                        data.setOrderItemOrderId(getOrder(om).getId());
-                        orderFill.add(data);
+                        data.setIorderItemIorderId(getIorder(om).getId());
+                        iorderFill.add(data);
                     } else {
-                        orderFill.update(data);
+                        iorderFill.update(data);
                     }
                 }
             }
         }
 
         if (locks != null)
-            lock.unlock(Constants.table().ORDER, locks);
+            lock.unlock(Constants.table().IORDER, locks);
 
         return oms;
     }
 
     /**
-     * Adds aux groups with ids to the order based on the list of group
+     * Adds aux groups with ids to the iorder based on the list of group
      */
-    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
-        OrderReturnVO ret;
+    public IOrderReturnVO addAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        IOrderReturnVO ret;
         ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
 
@@ -953,7 +953,7 @@ public class OrderManager1Bean {
             setAuxilliary(om, auxiliary);
         }
 
-        ret = new OrderReturnVO();
+        ret = new IOrderReturnVO();
         ret.setManager(om);
         errors = new ValidationErrorsList();
         ret.setErrors(errors);
@@ -964,9 +964,9 @@ public class OrderManager1Bean {
     }
 
     /**
-     * Removes aux data from the order based on the list of group ids
+     * Removes aux data from the iorder based on the list of group ids
      */
-    public OrderManager1 removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public IOrderManager1 removeAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> removed;
 
         removed = auxDataHelper.removeAuxGroups(getAuxilliary(om), new HashSet<Integer>(groupIds));
@@ -985,18 +985,18 @@ public class OrderManager1Bean {
     /**
      * Adds a test or all the tests and aux groups from a panel to the manager
      */
-    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
+    public IOrderReturnVO addTest(IOrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
         ValidationErrorsList e;
-        OrderReturnVO ret;
-        OrderTestViewDO ot;
+        IOrderReturnVO ret;
+        IOrderTestViewDO ot;
         TestManager tm;
         HashMap<Integer, TestManager> tms;
         ArrayList<Integer> testIds, groupIds;
         ArrayList<IdVO> pts, pgs;
-        ArrayList<OrderTestViewDO> tests;
+        ArrayList<IOrderTestViewDO> tests;
 
         e = new ValidationErrorsList();
-        ret = new OrderReturnVO();
+        ret = new IOrderReturnVO();
         ret.setManager(om);
         ret.setErrors(e);
         testIds = new ArrayList<Integer>();
@@ -1021,11 +1021,11 @@ public class OrderManager1Bean {
             for (IdVO pg : pgs)
                 groupIds.add(pg.getId());
         }
-        tms = orderTestHelper.getTestManagers(testIds, e);
+        tms = iorderTestHelper.getTestManagers(testIds, e);
 
         tests = getTests(om);
         if (tests == null) {
-            tests = new ArrayList<OrderTestViewDO>();
+            tests = new ArrayList<IOrderTestViewDO>();
             setTests(om, tests);
         }
         if (index == null)
@@ -1037,13 +1037,13 @@ public class OrderManager1Bean {
             tm = tms.get(testId);
             if (tm == null)
                 continue;
-            ot = orderTestHelper.addTest(om, tm, index++ );
-            orderTestHelper.addAnalytes(om, tm, ot.getId());
+            ot = iorderTestHelper.addTest(om, tm, index++ );
+            iorderTestHelper.addAnalytes(om, tm, ot.getId());
         }
 
         /*
          * if a panel was added above and it had any aux groups linked to it
-         * then add them to the order
+         * then add them to the iorder
          */
         if (groupIds != null && groupIds.size() > 0)
             addAuxGroups(om, groupIds);
@@ -1054,7 +1054,7 @@ public class OrderManager1Bean {
     /**
      * Removes a test from the manager
      */
-    public OrderManager1 removeTest(OrderManager1 om, Integer id) throws Exception {
+    public IOrderManager1 removeTest(IOrderManager1 om, Integer id) throws Exception {
         ArrayList<Integer> ids;
 
         ids = new ArrayList<Integer>();
@@ -1065,10 +1065,10 @@ public class OrderManager1Bean {
     /**
      * Removes tests from the manager
      */
-    public OrderManager1 removeTests(OrderManager1 om, ArrayList<Integer> ids) throws Exception {
+    public IOrderManager1 removeTests(IOrderManager1 om, ArrayList<Integer> ids) throws Exception {
         int i;
-        OrderTestViewDO ot;
-        OrderTestAnalyteViewDO ota;
+        IOrderTestViewDO ot;
+        IOrderTestAnalyteViewDO ota;
         HashSet<Integer> set;
 
         set = new HashSet<Integer>(ids);
@@ -1091,7 +1091,7 @@ public class OrderManager1Bean {
             i = 0;
             while (i < getAnalytes(om).size()) {
                 ota = getAnalytes(om).get(i);
-                if ( !set.contains(ota.getOrderTestId())) {
+                if ( !set.contains(ota.getIorderTestId())) {
                     i++ ;
                     continue;
                 }
@@ -1104,19 +1104,19 @@ public class OrderManager1Bean {
     }
 
     /**
-     * Creates an order in the database from the data in the order manager
+     * Creates an iorder in the database from the data in the iorder manager
      * merged with the data in the sample manager; the merged data includes
      * organizations and aux data specified by the list of analytes. Any empty
      * required fields are also set with default values.
      */
-    public void createOrderFromSample(OrderManager1 om, SampleManager1 sm,
+    public void createIOrderFromSample(IOrderManager1 om, SampleManager1 sm,
                                       ArrayList<String> analytes) throws Exception {
         Integer accession;
         SampleOrganizationViewDO sRepOrg, sBillOrg;
-        OrderViewDO data;
+        IOrderViewDO data;
         ArrayList<SampleOrganizationViewDO> sSecOrgs;
 
-        data = getOrder(om);
+        data = getIorder(om);
 
         /*
          * set default values
@@ -1174,7 +1174,7 @@ public class OrderManager1Bean {
                 sRepOrg = sBillOrg;
             }
         } else {
-            addOrganization(om, createOrderOrganization(sRepOrg));
+            addOrganization(om, createIOrderOrganization(sRepOrg));
         }
 
         /*
@@ -1184,11 +1184,11 @@ public class OrderManager1Bean {
         data.setOrganizationAttention(sRepOrg.getOrganizationAttention());
 
         if (sBillOrg != null && !sRepOrg.getOrganizationId().equals(sBillOrg.getOrganizationId()))
-            addOrganization(om, createOrderOrganization(sBillOrg));
+            addOrganization(om, createIOrderOrganization(sBillOrg));
 
         if (sSecOrgs != null) {
             for (SampleOrganizationViewDO sorg : sSecOrgs)
-                addOrganization(om, createOrderOrganization(sorg));
+                addOrganization(om, createIOrderOrganization(sorg));
         }
 
         /*
@@ -1199,13 +1199,13 @@ public class OrderManager1Bean {
     }
 
     /**
-     * create a new order organization object from the data in a sample
+     * create a new iorder organization object from the data in a sample
      * organization object
      */
-    private OrderOrganizationViewDO createOrderOrganization(SampleOrganizationViewDO sorg) {
-        OrderOrganizationViewDO oorg;
+    private IOrderOrganizationViewDO createIOrderOrganization(SampleOrganizationViewDO sorg) {
+        IOrderOrganizationViewDO oorg;
 
-        oorg = new OrderOrganizationViewDO();
+        oorg = new IOrderOrganizationViewDO();
         oorg.setOrganizationId(sorg.getOrganizationId());
         oorg.setOrganizationAttention(sorg.getOrganizationAttention());
         oorg.setTypeId(sorg.getTypeId());
@@ -1213,47 +1213,47 @@ public class OrderManager1Bean {
         return oorg;
     }
 
-    private ArrayList<OrderManager1> fetchByIds(ArrayList<Integer> orderIds, boolean isUpdate,
-                                                OrderManager1.Load... elements) throws Exception {
-        OrderManager1 om;
-        EnumSet<OrderManager1.Load> el;
+    private ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> iorderIds, boolean isUpdate,
+                                                IOrderManager1.Load... elements) throws Exception {
+        IOrderManager1 om;
+        EnumSet<IOrderManager1.Load> el;
         ArrayList<Integer> ids1, ids2, testIds, orgIds;
-        ArrayList<OrderManager1> oms;
-        ArrayList<OrderTestAnalyteViewDO> otas;
+        ArrayList<IOrderManager1> oms;
+        ArrayList<IOrderTestAnalyteViewDO> otas;
         ArrayList<OrganizationViewDO> orgs;
-        ArrayList<OrderViewDO> orders;
+        ArrayList<IOrderViewDO> iorders;
         HashMap<Integer, OrganizationViewDO> orgMap;
-        HashMap<Integer, OrderManager1> map1, map2;
-        HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> otaMap;
+        HashMap<Integer, IOrderManager1> map1, map2;
+        HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>> otaMap;
 
         /*
          * to reduce database select calls, we are going to fetch everything for
          * a given select and unroll through loops.
          */
-        oms = new ArrayList<OrderManager1>();
+        oms = new ArrayList<IOrderManager1>();
         if (elements != null && elements.length > 0)
             el = EnumSet.copyOf(Arrays.asList(elements));
         else
-            el = EnumSet.noneOf(OrderManager1.Load.class);
+            el = EnumSet.noneOf(IOrderManager1.Load.class);
 
         /*
-         * if there are no orders, then return an empty list
+         * if there are no iorders, then return an empty list
          */
-        orders = order.fetchByIds(orderIds);
-        if (orders.size() < 1)
+        iorders = iorder.fetchByIds(iorderIds);
+        if (iorders.size() < 1)
             return oms;
 
         /*
-         * build level 1, everything is based on order ids
+         * build level 1, everything is based on iorder ids
          */
         ids1 = new ArrayList<Integer>();
         ids2 = new ArrayList<Integer>();
-        map1 = new HashMap<Integer, OrderManager1>();
+        map1 = new HashMap<Integer, IOrderManager1>();
         orgIds = new ArrayList<Integer>();
 
-        for (OrderViewDO data : orders) {
-            om = new OrderManager1();
-            setOrder(om, data);
+        for (IOrderViewDO data : iorders) {
+            om = new IOrderManager1();
+            setIorder(om, data);
             oms.add(om);
 
             ids1.add(data.getId()); // for fetch
@@ -1272,24 +1272,24 @@ public class OrderManager1Bean {
             for (OrganizationViewDO org : orgs)
                 orgMap.put(org.getId(), org);
 
-            for (OrderManager1 om1 : oms) {
-                if (getOrder(om1).getOrganizationId() != null)
-                    getOrder(om1).setOrganization(orgMap.get(getOrder(om1).getOrganizationId()));
+            for (IOrderManager1 om1 : oms) {
+                if (getIorder(om1).getOrganizationId() != null)
+                    getIorder(om1).setOrganization(orgMap.get(getIorder(om1).getOrganizationId()));
             }
         }
 
         ids2 = new ArrayList<Integer>();
-        ids2.add(Constants.table().ORDER_SHIPPING_NOTE);
-        ids2.add(Constants.table().ORDER_CUSTOMER_NOTE);
-        ids2.add(Constants.table().ORDER_SAMPLE_NOTE);
-        ids2.add(Constants.table().ORDER);
+        ids2.add(Constants.table().IORDER_SHIPPING_NOTE);
+        ids2.add(Constants.table().IORDER_CUSTOMER_NOTE);
+        ids2.add(Constants.table().IORDER_SAMPLE_NOTE);
+        ids2.add(Constants.table().IORDER);
         for (NoteViewDO data : note.fetchByIdsAndTables(ids1, ids2)) {
             om = map1.get(data.getReferenceId());
-            if (Constants.table().ORDER_SHIPPING_NOTE.equals(data.getReferenceTableId()))
+            if (Constants.table().IORDER_SHIPPING_NOTE.equals(data.getReferenceTableId()))
                 setShippingNote(om, data);
-            else if (Constants.table().ORDER_CUSTOMER_NOTE.equals(data.getReferenceTableId()))
+            else if (Constants.table().IORDER_CUSTOMER_NOTE.equals(data.getReferenceTableId()))
                 setCustomerNote(om, data);
-            else if (Constants.table().ORDER_SAMPLE_NOTE.equals(data.getReferenceTableId()))
+            else if (Constants.table().IORDER_SAMPLE_NOTE.equals(data.getReferenceTableId()))
                 setSampleNote(om, data);
             else
                 addInternalNote(om, data);
@@ -1298,93 +1298,93 @@ public class OrderManager1Bean {
         /*
          * various lists for each order
          */
-        if (el.contains(OrderManager1.Load.ITEMS)) {
-            for (OrderItemViewDO data : orderItem.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getOrderId());
+        if (el.contains(IOrderManager1.Load.ITEMS)) {
+            for (IOrderItemViewDO data : iorderItem.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getIorderId());
                 addItem(om, data);
             }
-            for (InventoryXUseViewDO data : orderFill.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getOrderItemOrderId());
+            for (InventoryXUseViewDO data : iorderFill.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getIorderItemIorderId());
                 addFill(om, data);
             }
-            for (InventoryXPutViewDO data : orderReceipt.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getInventoryReceiptOrderItemOrderId());
+            for (InventoryXPutViewDO data : iorderReceipt.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getInventoryReceiptIorderItemIorderId());
                 addReceipt(om, data);
             }
         }
 
-        if (el.contains(OrderManager1.Load.ORGANIZATION)) {
-            for (OrderOrganizationViewDO data : orderOrganization.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getOrderId());
+        if (el.contains(IOrderManager1.Load.ORGANIZATION)) {
+            for (IOrderOrganizationViewDO data : iorderOrganization.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getIorderId());
                 addOrganization(om, data);
             }
         }
 
-        if (el.contains(OrderManager1.Load.SAMPLE_DATA)) {
-            for (OrderContainerDO data : orderContainer.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getOrderId());
+        if (el.contains(IOrderManager1.Load.SAMPLE_DATA)) {
+            for (IOrderContainerDO data : iorderContainer.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getIorderId());
                 addContainer(om, data);
             }
-            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().ORDER)) {
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().IORDER)) {
                 om = map1.get(data.getReferenceId());
                 addAuxilliary(om, data);
             }
 
             /*
-             * build level 2, everything is based on order test ids
+             * build level 2, everything is based on iorder test ids
              */
             ids2 = new ArrayList<Integer>();
-            map2 = new HashMap<Integer, OrderManager1>();
+            map2 = new HashMap<Integer, IOrderManager1>();
             if (isUpdate)
                 testIds = new ArrayList<Integer>();
             else
                 testIds = null;
 
-            for (OrderTestViewDO data : orderTest.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getOrderId());
-                org.openelis.manager.OrderManager1Accessor.addTest(om, data);
+            for (IOrderTestViewDO data : iorderTest.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getIorderId());
+                org.openelis.manager.IOrderManager1Accessor.addTest(om, data);
                 ids2.add(data.getId());
                 map2.put(data.getId(), om);
                 if (testIds != null)
                     testIds.add(data.getTestId());
             }
             if (isUpdate)
-                otaMap = new HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>>();
+                otaMap = new HashMap<Integer, ArrayList<IOrderTestAnalyteViewDO>>();
             else
                 otaMap = null;
             otas = null;
             if (ids2.size() > 0) {
-                for (OrderTestAnalyteViewDO data : orderTestAnalyte.fetchByOrderTestIds(ids2)) {
-                    om = map2.get(data.getOrderTestId());
+                for (IOrderTestAnalyteViewDO data : iorderTestAnalyte.fetchByIorderTestIds(ids2)) {
+                    om = map2.get(data.getIorderTestId());
 
                     if (otaMap != null) {
                         /*
-                         * create mapping between order tests and their order
+                         * create mapping between iorder tests and their iorder
                          * test analytes
                          */
-                        otas = otaMap.get(data.getOrderTestId());
+                        otas = otaMap.get(data.getIorderTestId());
                         if (otas == null) {
-                            otas = new ArrayList<OrderTestAnalyteViewDO>();
-                            otaMap.put(data.getOrderTestId(), otas);
+                            otas = new ArrayList<IOrderTestAnalyteViewDO>();
+                            otaMap.put(data.getIorderTestId(), otas);
                         }
                         otas.add(data);
                     } else {
                         /*
-                         * the order test analytes don't need to be merged with
+                         * the iorder test analytes don't need to be merged with
                          * the original test's analytes, so they can just be
-                         * added to the order directly
+                         * added to the iorder directly
                          */
                         addAnalyte(om, data);
                     }
                 }
             }
             if (testIds != null && testIds.size() > 0)
-                orderTestHelper.mergeAnalytes(testIds, otaMap, oms);
+                iorderTestHelper.mergeAnalytes(testIds, otaMap, oms);
         }
 
-        if (el.contains(OrderManager1.Load.RECURRENCE)) {
-            for (OrderRecurrenceDO data : orderRecurrence.fetchByOrderIds(ids1)) {
-                om = map1.get(data.getOrderId());
+        if (el.contains(IOrderManager1.Load.RECURRENCE)) {
+            for (IOrderRecurrenceDO data : iorderRecurrence.fetchByIorderIds(ids1)) {
+                om = map1.get(data.getIorderId());
                 setRecurrence(om, data);
             }
         }
@@ -1392,13 +1392,13 @@ public class OrderManager1Bean {
     }
 
     /**
-     * Validates the order manager for add or update. The routine throws a list
-     * of exceptions/warnings listing all the problems for each order.
+     * Validates the iorder manager for add or update. The routine throws a list
+     * of exceptions/warnings listing all the problems for each iorder.
      */
-    private void validate(ArrayList<OrderManager1> oms, HashMap<Integer, TestManager> tms,
+    private void validate(ArrayList<IOrderManager1> oms, HashMap<Integer, TestManager> tms,
                           boolean ignoreWarning) throws Exception {
         int rcnt, bcnt;
-        Integer orderId, itemId;
+        Integer iorderId, itemId;
         ValidationErrorsList e;
         HashSet<Integer> itemIds;
 
@@ -1410,16 +1410,16 @@ public class OrderManager1Bean {
                 throw e;
         }
 
-        for (OrderManager1 om : oms) {
+        for (IOrderManager1 om : oms) {
             /*
              * order level
              */
-            orderId = null;
-            if (getOrder(om) != null) {
-                orderId = getOrder(om).getId();
-                if (getOrder(om).isChanged()) {
+            iorderId = null;
+            if (getIorder(om) != null) {
+                iorderId = getIorder(om).getId();
+                if (getIorder(om).isChanged()) {
                     try {
-                        order.validate(getOrder(om));
+                        iorder.validate(getIorder(om));
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
@@ -1432,9 +1432,9 @@ public class OrderManager1Bean {
             rcnt = 0;
             bcnt = 0;
             if (getOrganizations(om) != null) {
-                for (OrderOrganizationViewDO data : getOrganizations(om)) {
+                for (IOrderOrganizationViewDO data : getOrganizations(om)) {
                     try {
-                        orderOrganization.validate(data);
+                        iorderOrganization.validate(data);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
@@ -1445,16 +1445,16 @@ public class OrderManager1Bean {
                 }
                 if (rcnt > 1)
                     e.add(new FormErrorException(Messages.get()
-                                                         .order_multipleReportToException(orderId)));
+                                                         .order_multipleReportToException(iorderId)));
                 if (bcnt > 1)
                     e.add(new FormErrorException(Messages.get()
-                                                         .order_multipleBillToException(orderId)));
+                                                         .order_multipleBillToException(iorderId)));
             }
 
             if (getContainers(om) != null) {
-                for (OrderContainerDO data : getContainers(om)) {
+                for (IOrderContainerDO data : getContainers(om)) {
                     try {
-                        orderContainer.validate(data);
+                        iorderContainer.validate(data);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
@@ -1463,13 +1463,13 @@ public class OrderManager1Bean {
 
             if (getItems(om) != null) {
                 itemIds = null;
-                for (OrderItemViewDO data : getItems(om)) {
+                for (IOrderItemViewDO data : getItems(om)) {
                     try {
-                        orderItem.validate(data);
+                        iorderItem.validate(data);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
-                    if ( !OrderManager.TYPE_VENDOR.equals(getOrder(om).getType()))
+                    if ( !IOrderManager.TYPE_VENDOR.equals(getIorder(om).getType()))
                         continue;
                     if (itemIds == null)
                         itemIds = new HashSet<Integer>();
@@ -1478,7 +1478,7 @@ public class OrderManager1Bean {
                     if (itemId != null) {
                         if (itemIds.contains(itemId))
                             e.add(new FormErrorException(Messages.get()
-                                                                 .order_duplicateInvItemVendorOrderException(orderId,
+                                                                 .order_duplicateInvItemVendorOrderException(iorderId,
                                                                                                              data.getInventoryItemName())));
                         else
                             itemIds.add(itemId);
@@ -1488,7 +1488,7 @@ public class OrderManager1Bean {
 
             if (getRecurrence(om) != null) {
                 try {
-                    orderRecurrence.validate(getRecurrence(om));
+                    iorderRecurrence.validate(getRecurrence(om));
                 } catch (Exception err) {
                     DataBaseUtil.mergeException(e, err);
                 }
@@ -1499,25 +1499,25 @@ public class OrderManager1Bean {
             throw e;
     }
 
-    private void validateTestsAndContainers(ArrayList<OrderManager1> oms,
+    private void validateTestsAndContainers(ArrayList<IOrderManager1> oms,
                                             HashMap<Integer, TestManager> tms,
                                             ValidationErrorsList e) throws Exception {
         int i, testCount, contCount;
         Integer sequence, testId;
-        Integer orderId;
-        ArrayList<OrderTestViewDO> ots;
-        ArrayList<OrderContainerDO> ocs;
-        OrderTestViewDO test;
-        OrderContainerDO cont;
+        Integer iorderId;
+        ArrayList<IOrderTestViewDO> ots;
+        ArrayList<IOrderContainerDO> ocs;
+        IOrderTestViewDO test;
+        IOrderContainerDO cont;
         TestTypeOfSampleManager samTypeMan;
 
-        for (OrderManager1 om : oms) {
-            orderId = getOrder(om).getId();
+        for (IOrderManager1 om : oms) {
+            iorderId = getIorder(om).getId();
             /*
              * for display
              */
-            if (orderId == null)
-                orderId = 0;
+            if (iorderId == null)
+                iorderId = 0;
             ots = getTests(om);
             ocs = getContainers(om);
 
@@ -1537,7 +1537,7 @@ public class OrderManager1Bean {
                      * no container is present for this item sequence
                      */
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .order_noContainerWithItemNumWarning(orderId,
+                                                       .order_noContainerWithItemNumWarning(iorderId,
                                                                                             sequence.toString(),
                                                                                             getTestLabel(test))));
                 } else if (sequence >= 0 && testId != null) {
@@ -1553,7 +1553,7 @@ public class OrderManager1Bean {
                     samTypeMan = tms.get(testId).getSampleTypes();
                     if ( !testHasSampleType(cont.getTypeOfSampleId(), samTypeMan))
                         e.add(new FormErrorWarning(Messages.get()
-                                                           .order_invalidSampleTypeForTestWarning(orderId,
+                                                           .order_invalidSampleTypeForTestWarning(iorderId,
                                                                                                   sequence.toString(),
                                                                                                   getTestLabel(test))));
 
@@ -1563,7 +1563,7 @@ public class OrderManager1Bean {
                 cont = ocs.get(i);
                 if (cont.getTypeOfSampleId() == null)
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .order_noSampleTypeForContainerWarning(orderId,
+                                                       .order_noSampleTypeForContainerWarning(iorderId,
                                                                                               cont.getItemSequence()
                                                                                                   .toString())));
             }
@@ -1581,7 +1581,7 @@ public class OrderManager1Bean {
         return false;
     }
 
-    private String getTestLabel(OrderTestViewDO test) {
+    private String getTestLabel(IOrderTestViewDO test) {
         return (test.getTestId() == null) ? ""
                                          : DataBaseUtil.concatWithSeparator(test.getTestName(),
                                                                             ", ",

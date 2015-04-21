@@ -36,9 +36,9 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderTestAnalyteDO;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.entity.OrderTestAnalyte;
+import org.openelis.domain.IOrderTestAnalyteDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.entity.IOrderTestAnalyte;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.NotFoundException;
@@ -47,16 +47,16 @@ import org.openelis.ui.common.ValidationErrorsList;
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderTestAnalyteBean {
+public class IOrderTestAnalyteBean {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
 
-    public ArrayList<OrderTestAnalyteViewDO> fetchByOrderTestId(Integer id) throws Exception {
+    public ArrayList<IOrderTestAnalyteViewDO> fetchByIorderTestId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrderTestAnalyte.FetchByOrderTestId");
+        query = manager.createNamedQuery("IOrderTestAnalyte.FetchByIorderTestId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -66,20 +66,20 @@ public class OrderTestAnalyteBean {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public ArrayList<OrderTestAnalyteViewDO> fetchByOrderTestIds(ArrayList<Integer> ids) {
+    public ArrayList<IOrderTestAnalyteViewDO> fetchByIorderTestIds(ArrayList<Integer> ids) {
         Query query;
 
-        query = manager.createNamedQuery("OrderTestAnalyte.FetchByOrderTestIds");
+        query = manager.createNamedQuery("IOrderTestAnalyte.FetchByIorderTestIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<OrderTestAnalyteViewDO> fetchRowAnalytesByOrderTestId(Integer id) throws Exception {
+    public ArrayList<IOrderTestAnalyteViewDO> fetchRowAnalytesByIorderTestId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrderTestAnalyte.FetchRowAnalytesByOrderTestId");
+        query = manager.createNamedQuery("IOrderTestAnalyte.FetchRowAnalytesByIorderTestId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -89,11 +89,11 @@ public class OrderTestAnalyteBean {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public ArrayList<OrderTestAnalyteViewDO> fetchRowAnalytesByTestId(Integer testId) throws Exception {
+    public ArrayList<IOrderTestAnalyteViewDO> fetchRowAnalytesByTestId(Integer testId) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrderTestAnalyte.FetchRowAnalytesByTestId");
+        query = manager.createNamedQuery("IOrderTestAnalyte.FetchRowAnalytesByTestId");
         query.setParameter("testId", testId);
 
         list = query.getResultList();
@@ -103,13 +103,13 @@ public class OrderTestAnalyteBean {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public OrderTestAnalyteDO add(OrderTestAnalyteDO data) throws Exception {
-        OrderTestAnalyte entity;
+    public IOrderTestAnalyteDO add(IOrderTestAnalyteDO data) throws Exception {
+        IOrderTestAnalyte entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new OrderTestAnalyte();       
-        entity.setOrderTestId(data.getOrderTestId());
+        entity = new IOrderTestAnalyte();       
+        entity.setIorderTestId(data.getIorderTestId());
         entity.setAnalyteId(data.getAnalyteId());
         
         manager.persist(entity);
@@ -118,44 +118,44 @@ public class OrderTestAnalyteBean {
         return data;
     }
 
-    public OrderTestAnalyteDO update(OrderTestAnalyteDO data) throws Exception {
-        OrderTestAnalyte entity;
+    public IOrderTestAnalyteDO update(IOrderTestAnalyteDO data) throws Exception {
+        IOrderTestAnalyte entity;
         
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderTestAnalyte.class, data.getId());       
-        entity.setOrderTestId(data.getOrderTestId());
+        entity = manager.find(IOrderTestAnalyte.class, data.getId());       
+        entity.setIorderTestId(data.getIorderTestId());
         entity.setAnalyteId(data.getAnalyteId());
         
         return data;
     }
 
-    public void delete(OrderTestAnalyteDO data) throws Exception {
-        OrderTestAnalyte entity;
+    public void delete(IOrderTestAnalyteDO data) throws Exception {
+        IOrderTestAnalyte entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderTestAnalyte.class, data.getId());
+        entity = manager.find(IOrderTestAnalyte.class, data.getId());
         if (entity != null)
             manager.remove(entity);
     }
     
     public void deleteByOrderTestId(Integer id) throws Exception {
-        ArrayList<OrderTestAnalyteViewDO> list;
+        ArrayList<IOrderTestAnalyteViewDO> list;
 
         try {
-            list = fetchByOrderTestId(id);
-            for (OrderTestAnalyteViewDO data : list)
+            list = fetchByIorderTestId(id);
+            for (IOrderTestAnalyteViewDO data : list)
                 delete(data);
         } catch (NotFoundException e) {
             // the order test may not have any analytes linked to it
         }
     }
 
-    public void validate(OrderTestAnalyteViewDO data, int index) throws Exception {
+    public void validate(IOrderTestAnalyteViewDO data, int index) throws Exception {
         String indexStr;
         ValidationErrorsList list;
         

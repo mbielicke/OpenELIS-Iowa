@@ -27,22 +27,22 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.bean.OrderTestAnalyteBean;
-import org.openelis.bean.OrderTestBean;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.manager.OrderTestManager.OrderTestListItem;
+import org.openelis.bean.IOrderTestAnalyteBean;
+import org.openelis.bean.IOrderTestBean;
+import org.openelis.domain.IOrderTestViewDO;
+import org.openelis.manager.IOrderTestManager.IOrderTestListItem;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
-public class OrderTestManagerProxy {
+public class IOrderTestManagerProxy {
     
-    public OrderTestManager fetchByOrderId(Integer id) throws Exception {
-        OrderTestManager m;
-        ArrayList<OrderTestViewDO> tests;
+    public IOrderTestManager fetchByIorderId(Integer id) throws Exception {
+        IOrderTestManager m;
+        ArrayList<IOrderTestViewDO> tests;
         
-        tests = EJBFactory.getOrderTest().fetchByOrderId(id);
-        m = OrderTestManager.getInstance();
-        m.setOrderId(id);
+        tests = EJBFactory.getIOrderTest().fetchByIorderId(id);
+        m = IOrderTestManager.getInstance();
+        m.setIorderId(id);
         
         for (int i = 0; i < tests.size(); i++ )
             m.addTest(tests.get(i));
@@ -50,35 +50,35 @@ public class OrderTestManagerProxy {
         return m;
     }
     
-    public OrderTestManager add(OrderTestManager man) throws Exception {
-        OrderTestBean tl;
-        OrderTestViewDO data;
-        OrderTestAnalyteManager anaMan;
+    public IOrderTestManager add(IOrderTestManager man) throws Exception {
+        IOrderTestBean tl;
+        IOrderTestViewDO data;
+        IOrderTestAnalyteManager anaMan;
 
-        tl = EJBFactory.getOrderTest();
+        tl = EJBFactory.getIOrderTest();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getTestAt(i);
             data.setSortOrder(i+1);
-            data.setOrderId(man.getOrderId());
+            data.setIorderId(man.getIorderId());
             tl.add(data);
             
             anaMan = man.getAnalytesAt(i);
-            anaMan.setOrderTestId(data.getId());
+            anaMan.setIorderTestId(data.getId());
             anaMan.add();
         }
 
         return man;
     }
 
-    public OrderTestManager update(OrderTestManager man) throws Exception {
-        OrderTestBean tl;
-        OrderTestAnalyteBean al;
-        OrderTestViewDO data;
-        OrderTestAnalyteManager anaMan;
-        OrderTestListItem item;
+    public IOrderTestManager update(IOrderTestManager man) throws Exception {
+        IOrderTestBean tl;
+        IOrderTestAnalyteBean al;
+        IOrderTestViewDO data;
+        IOrderTestAnalyteManager anaMan;
+        IOrderTestListItem item;
         
-        tl = EJBFactory.getOrderTest();
-        al = EJBFactory.getOrderTestAnalyte();
+        tl = EJBFactory.getIOrderTest();
+        al = EJBFactory.getIOrderTestAnalyte();
         
         for (int j = 0; j < man.deleteCount(); j++ ) {            
             item = man.getDeletedAt(j);
@@ -97,26 +97,26 @@ public class OrderTestManagerProxy {
             data = man.getTestAt(i);
             data.setSortOrder(i+1);
             if (data.getId() == null) {
-                data.setOrderId(man.getOrderId());
+                data.setIorderId(man.getIorderId());
                 tl.add(data);
             } else {
                 tl.update(data);
             }
             
             anaMan = man.getAnalytesAt(i);
-            anaMan.setOrderTestId(data.getId());
+            anaMan.setIorderTestId(data.getId());
             anaMan.update();
         }
 
         return man;
     }
     
-    public void validate(OrderTestManager man) throws Exception {
+    public void validate(IOrderTestManager man) throws Exception {
         ValidationErrorsList list;
-        OrderTestBean tl;
-        OrderTestViewDO data;
+        IOrderTestBean tl;
+        IOrderTestViewDO data;
 
-        tl = EJBFactory.getOrderTest();
+        tl = EJBFactory.getIOrderTest();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getTestAt(i);

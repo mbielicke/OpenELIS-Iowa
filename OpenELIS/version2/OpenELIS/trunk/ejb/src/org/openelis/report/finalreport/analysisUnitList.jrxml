@@ -4,16 +4,17 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
-	<parameter name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" isForPrompting="false">
+	<parameter name="UNIT_LIST" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     distinct d.entry unit_name, d1.entry unit_description
+		<![CDATA[SELECT DISTINCT
+      d.entry as unit_name, d1.entry as unit_description
 FROM
-     dictionary d, outer dictionary d1
+      dictionary d
+      left join dictionary d1 on d1.id = d.related_entry_id
 WHERE
-     d.id in ($P!{UNIT_LIST}) and d.related_entry_id = d1.id]]>
+      $X{IN,d.id,UNIT_LIST}]]>
 	</queryString>
 	<field name="unit_name" class="java.lang.String"/>
 	<field name="unit_description" class="java.lang.String"/>

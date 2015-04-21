@@ -36,57 +36,56 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderTestDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.entity.OrderTest;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.entity.IOrderContainer;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderTestBean {
+public class IOrderContainerBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    private EntityManager        manager;
+    private static final Integer MAX_QUANTITY = 99;
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrderTestViewDO> fetchByOrderId(Integer id) throws Exception {
+    public ArrayList<IOrderContainerDO> fetchByIorderId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrderTest.FetchByOrderId");
+        query = manager.createNamedQuery("IOrderContainer.FetchByIorderId");
         query.setParameter("id", id);
 
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
 
-        list = DataBaseUtil.toArrayList(list);
-
-        return (ArrayList)list;
+        return DataBaseUtil.toArrayList(list);
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrderTestViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
+    public ArrayList<IOrderContainerDO> fetchByIorderIds(ArrayList<Integer> ids) {
         Query query;
 
-        query = manager.createNamedQuery("OrderTest.FetchByOrderIds");
+        query = manager.createNamedQuery("IOrderContainer.FetchByIorderIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public OrderTestDO add(OrderTestDO data) throws Exception {
-        OrderTest entity;
+    public IOrderContainerDO add(IOrderContainerDO data) throws Exception {
+        IOrderContainer entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = new OrderTest();
-        entity.setOrderId(data.getOrderId());
+
+        entity = new IOrderContainer();
+        entity.setIorderId(data.getIorderId());
+        entity.setContainerId(data.getContainerId());
         entity.setItemSequence(data.getItemSequence());
-        entity.setSortOrder(data.getSortOrder());
-        entity.setTestId(data.getTestId());
+        entity.setTypeOfSampleId(data.getTypeOfSampleId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -94,51 +93,63 @@ public class OrderTestBean {
         return data;
     }
 
-    public OrderTestDO update(OrderTestDO data) throws Exception {
-        OrderTest entity;
+    public IOrderContainerDO update(IOrderContainerDO data) throws Exception {
+        IOrderContainer entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderTest.class, data.getId());
-        entity.setOrderId(data.getOrderId());
+        entity = manager.find(IOrderContainer.class, data.getId());
+        entity.setIorderId(data.getIorderId());
+        entity.setContainerId(data.getContainerId());
         entity.setItemSequence(data.getItemSequence());
-        entity.setSortOrder(data.getSortOrder());
-        entity.setTestId(data.getTestId());
+        entity.setTypeOfSampleId(data.getTypeOfSampleId());
 
         return data;
     }
 
-    public void delete(OrderTestDO data) throws Exception {
-        OrderTest entity;
+    public void delete(IOrderContainerDO data) throws Exception {
+        IOrderContainer entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderTest.class, data.getId());
+        entity = manager.find(IOrderContainer.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+
     }
 
-    public void validate(OrderTestDO data, int index) throws Exception {
+    public void validate(IOrderContainerDO data) throws Exception {
+        Integer iorderId;
         ValidationErrorsList list;
-        String indexStr;
+        Integer num;
+
+        /*
+         * for display
+         */
+        iorderId = data.getIorderId();
+        if (iorderId == null)
+            iorderId = 0;
 
         list = new ValidationErrorsList();
-        indexStr = String.valueOf(index);
-        if (data.getTestId() == null)
-            list.add(new FieldErrorException(Messages.get().testNameRequiredException(null),
-                                             indexStr));
-
-        if (data.getItemSequence() == null)
-            list.add(new FieldErrorException(Messages.get().itemNumRequiredException(null),
-                                             indexStr));
-        else if (data.getItemSequence() < 0)
-            list.add(new FieldErrorException(Messages.get().itemNumCantBeNegativeException(null),
-                                             indexStr));
+        if (DataBaseUtil.isEmpty(data.getContainerId()))
+            list.add(new FormErrorException(Messages.get()
+                                                    .order_containerRequiredException(iorderId)));
+        num = data.getItemSequence();
+        if (DataBaseUtil.isEmpty(num)) {
+            list.add(new FormErrorException(Messages.get()
+                                                    .order_containerItemSequenceRequiredException(iorderId)));
+        } else if (num > MAX_QUANTITY) {
+            list.add(new FormErrorException(Messages.get()
+                                                    .order_qtyNotMoreThanMaxException(iorderId,
+                                                                                      DataBaseUtil.toString(MAX_QUANTITY))));
+        }
 
         if (list.size() > 0)
             throw list;
+
     }
+
 }

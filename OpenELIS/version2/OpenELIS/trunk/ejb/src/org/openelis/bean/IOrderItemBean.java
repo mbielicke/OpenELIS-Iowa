@@ -37,10 +37,10 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderViewDO;
-import org.openelis.entity.OrderItem;
+import org.openelis.domain.IOrderItemDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderViewDO;
+import org.openelis.entity.IOrderItem;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FormErrorException;
@@ -49,17 +49,17 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderItemBean {
+public class IOrderItemBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrderItemViewDO> fetchByOrderId(Integer id) throws Exception {
+    public ArrayList<IOrderItemViewDO> fetchByIorderId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrderItem.FetchByOrderId");
+        query = manager.createNamedQuery("IOrderItem.FetchByIorderId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -70,23 +70,23 @@ public class OrderItemBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrderItemViewDO> fetchByOrderIds(ArrayList<Integer> ids) throws Exception {
+    public ArrayList<IOrderItemViewDO> fetchByIorderIds(ArrayList<Integer> ids) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("OrderItem.FetchByOrderIds");
+        query = manager.createNamedQuery("IOrderItem.FetchByIorderIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public OrderItemViewDO fetchById(Integer id) throws Exception {
+    public IOrderItemViewDO fetchById(Integer id) throws Exception {
         Query query;
-        OrderItemViewDO data;
+        IOrderItemViewDO data;
 
-        query = manager.createNamedQuery("OrderItem.FetchById");
+        query = manager.createNamedQuery("IOrderItem.FetchById");
         query.setParameter("id", id);
         try {
-            data = (OrderItemViewDO)query.getSingleResult();
+            data = (IOrderItemViewDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -95,13 +95,13 @@ public class OrderItemBean {
         return data;
     }
 
-    public OrderItemDO add(OrderItemDO data) throws Exception {
-        OrderItem entity;
+    public IOrderItemDO add(IOrderItemDO data) throws Exception {
+        IOrderItem entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new OrderItem();
-        entity.setOrderId(data.getOrderId());
+        entity = new IOrderItem();
+        entity.setIorderId(data.getIorderId());
         entity.setInventoryItemId(data.getInventoryItemId());
         entity.setQuantity(data.getQuantity());
         entity.setCatalogNumber(data.getCatalogNumber());
@@ -113,16 +113,16 @@ public class OrderItemBean {
         return data;
     }
 
-    public OrderItemDO update(OrderItemDO data) throws Exception {
-        OrderItem entity;
+    public IOrderItemDO update(IOrderItemDO data) throws Exception {
+        IOrderItem entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderItem.class, data.getId());
-        entity.setOrderId(data.getOrderId());
+        entity = manager.find(IOrderItem.class, data.getId());
+        entity.setIorderId(data.getIorderId());
         entity.setInventoryItemId(data.getInventoryItemId());
         entity.setQuantity(data.getQuantity());
         entity.setCatalogNumber(data.getCatalogNumber());
@@ -131,41 +131,41 @@ public class OrderItemBean {
         return data;
     }
 
-    public ArrayList<OrderItemViewDO> add(OrderViewDO order, ArrayList<OrderItemViewDO> items) throws Exception {
+    public ArrayList<IOrderItemViewDO> add(IOrderViewDO iorder, ArrayList<IOrderItemViewDO> items) throws Exception {
         for (int i = 0; i < items.size(); i++ )
             add(items.get(i));
 
         return items;
     }
 
-    public void delete(OrderItemDO data) throws Exception {
-        OrderItem entity;
+    public void delete(IOrderItemDO data) throws Exception {
+        IOrderItem entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderItem.class, data.getId());
+        entity = manager.find(IOrderItem.class, data.getId());
         if (entity != null)
             manager.remove(entity);
     }
 
-    public void validate(OrderItemDO data) throws Exception {
-        Integer orderId;
+    public void validate(IOrderItemDO data) throws Exception {
+        Integer iorderId;
         ValidationErrorsList list;
 
         /*
          * for display
          */
-        orderId = data.getOrderId();
-        if (orderId == null)
-            orderId = 0;
+        iorderId = data.getIorderId();
+        if (iorderId == null)
+            iorderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getInventoryItemId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_inventoryItemRequiredException(orderId)));
+                                                    .order_inventoryItemRequiredException(iorderId)));
         if (DataBaseUtil.isEmpty(data.getQuantity()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_inventoryQuantityRequiredException(orderId)));
+                                                    .order_inventoryQuantityRequiredException(iorderId)));
         if (list.size() > 0)
             throw list;
     }

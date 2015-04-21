@@ -46,50 +46,52 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-               @NamedQuery(name = "OrderTestAnalyte.FetchByOrderTestId",
-                           query = "select distinct new org.openelis.domain.OrderTestAnalyteViewDO(ota.id,ota.orderTestId,ota.analyteId,a.name,"
-                                   + "0,0,'Y','Y')"
-                                   + " from OrderTestAnalyte ota left join ota.analyte a"
-                                   + " where ota.orderTestId = :id"),
-               @NamedQuery(name = "OrderTestAnalyte.FetchByOrderTestIds",
-                           query = "select distinct new org.openelis.domain.OrderTestAnalyteViewDO(ota.id,ota.orderTestId,ota.analyteId,a.name,"
-                                   + "0,0,'Y','Y')"
-                                   + " from OrderTestAnalyte ota left join ota.analyte a"
-                                   + " where ota.orderTestId in ( :ids )"),
-               @NamedQuery(name = "OrderTestAnalyte.FetchRowAnalytesByOrderTestId",
-                           query = "select distinct new org.openelis.domain.OrderTestAnalyteViewDO(0,0,ta.analyteId,a.name,ta.sortOrder,ta.typeId,ta.isReportable,'Y')"
-                                   + " from OrderTest ot left join ot.test t left join t.testAnalyte ta left join ta.analyte a"
-                                   + " where ot.id = :id and ta.isColumn = 'N' order by ta.sortOrder"),
-               @NamedQuery(name = "OrderTestAnalyte.FetchRowAnalytesByTestId",
-                           query = "select distinct new org.openelis.domain.OrderTestAnalyteViewDO(0,0,ta.analyteId,a.name,ta.sortOrder,ta.typeId,ta.isReportable,'Y')"
-                                   + " from TestAnalyte ta left join ta.analyte a"
-                                   + " where ta.testId = :testId and ta.isColumn = 'N' order by ta.sortOrder")})
+   @NamedQuery(name = "IOrderTestAnalyte.FetchByIorderTestId",
+              query = "select distinct new org.openelis.domain.IOrderTestAnalyteViewDO(ota.id,ota.iorderTestId,"
+                    + "ota.analyteId,a.name,0,0,'Y','Y')"
+                    + " from IOrderTestAnalyte ota left join ota.analyte a"
+                    + " where ota.iorderTestId = :id"),
+   @NamedQuery(name = "IOrderTestAnalyte.FetchByIorderTestIds",
+              query = "select distinct new org.openelis.domain.IOrderTestAnalyteViewDO(ota.id,ota.iorderTestId,"
+                    + "ota.analyteId,a.name,0,0,'Y','Y')"
+                    + " from IOrderTestAnalyte ota left join ota.analyte a"
+                    + " where ota.iorderTestId in ( :ids )"),
+   @NamedQuery(name = "IOrderTestAnalyte.FetchRowAnalytesByIorderTestId",
+              query = "select distinct new org.openelis.domain.IOrderTestAnalyteViewDO(0,0,ta.analyteId,a.name,"
+                    + "ta.sortOrder,ta.typeId,ta.isReportable,'Y')"
+                    + " from IOrderTest ot left join ot.test t left join t.testAnalyte ta left join ta.analyte a"
+                    + " where ot.id = :id and ta.isColumn = 'N' order by ta.sortOrder"),
+   @NamedQuery(name = "IOrderTestAnalyte.FetchRowAnalytesByTestId",
+              query = "select distinct new org.openelis.domain.IOrderTestAnalyteViewDO(0,0,ta.analyteId,"
+                    + "a.name,ta.sortOrder,ta.typeId,ta.isReportable,'Y')"
+                    + " from TestAnalyte ta left join ta.analyte a"
+                    + " where ta.testId = :testId and ta.isColumn = 'N' order by ta.sortOrder")})
 @Entity
-@Table(name = "order_test_analyte")
+@Table(name = "iorder_test_analyte")
 @EntityListeners({AuditUtil.class})
-public class OrderTestAnalyte implements Auditable, Cloneable {
+public class IOrderTestAnalyte implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer          id;
 
-    @Column(name = "order_test_id")
-    private Integer          orderTestId;
+    @Column(name = "iorder_test_id")
+    private Integer          iorderTestId;
 
     @Column(name = "analyte_id")
     private Integer          analyteId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_test_id", insertable = false, updatable = false)
-    private OrderTest        orderTest;
+    @JoinColumn(name = "iorder_test_id", insertable = false, updatable = false)
+    private IOrderTest        iorderTest;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
     private Analyte          analyte;
 
     @Transient
-    private OrderTestAnalyte original;
+    private IOrderTestAnalyte original;
 
     public Integer getId() {
         return id;
@@ -100,13 +102,13 @@ public class OrderTestAnalyte implements Auditable, Cloneable {
             this.id = id;
     }
 
-    public Integer getOrderTestId() {
-        return orderTestId;
+    public Integer getIorderTestId() {
+        return iorderTestId;
     }
 
-    public void setOrderTestId(Integer orderTestId) {
-        if (DataBaseUtil.isDifferent(orderTestId, this.orderTestId))
-            this.orderTestId = orderTestId;
+    public void setIorderTestId(Integer iorderTestId) {
+        if (DataBaseUtil.isDifferent(iorderTestId, this.iorderTestId))
+            this.iorderTestId = iorderTestId;
     }
 
     public void setAnalyteId(Integer analyteId) {
@@ -114,12 +116,12 @@ public class OrderTestAnalyte implements Auditable, Cloneable {
             this.analyteId = analyteId;
     }
 
-    public OrderTest getOrderTest() {
-        return orderTest;
+    public IOrderTest getIorderTest() {
+        return iorderTest;
     }
 
-    public void setOrderTest(OrderTest orderTest) {
-        this.orderTest = orderTest;
+    public void setIorderTest(IOrderTest iorderTest) {
+        this.iorderTest = iorderTest;
     }
 
     public Analyte getAnalyte() {
@@ -132,7 +134,7 @@ public class OrderTestAnalyte implements Auditable, Cloneable {
 
     public void setClone() {
         try {
-            original = (OrderTestAnalyte)this.clone();
+            original = (IOrderTestAnalyte)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,11 +145,11 @@ public class OrderTestAnalyte implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER_TEST_ANALYTE);
+        audit.setReferenceTableId(Constants.table().IORDER_TEST_ANALYTE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("order_test_id", orderTestId, original.orderTestId)
+                 .setField("iorder_test_id", iorderTestId, original.iorderTestId)
                  .setField("analyte_id", analyteId, original.analyteId, Constants.table().ANALYTE);
 
         return audit;

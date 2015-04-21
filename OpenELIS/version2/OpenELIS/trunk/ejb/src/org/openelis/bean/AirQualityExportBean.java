@@ -490,10 +490,10 @@ public class AirQualityExportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        frDate = ReportUtil.getSingleParameter(param, "FROM_DATE");
-        tDate = ReportUtil.getSingleParameter(param, "TO_DATE");
-        accession = ReportUtil.getSingleParameter(param, "ACCESSION");
-        action = ReportUtil.getSingleParameter(param, "ACTION");
+        frDate = ReportUtil.getStringParameter(param, "FROM_DATE");
+        tDate = ReportUtil.getStringParameter(param, "TO_DATE");
+        accession = ReportUtil.getStringParameter(param, "ACCESSION");
+        action = ReportUtil.getStringParameter(param, "ACTION");
         action = dictionary.fetchById(Integer.parseInt(action)).getEntry();
 
         if (DataBaseUtil.isEmpty(action))

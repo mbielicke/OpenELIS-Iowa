@@ -92,33 +92,24 @@ public class TurnaroundStatisticReportBean {
         HashMap<Integer, Boolean> sampleOverrideMap;
         QueryData field;
 
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
         param = ReportUtil.getMapParameter(paramList);
-        plotInterval = ReportUtil.getSingleParameter(param, "PLOT_INTERVAL");
-        excludePT = ReportUtil.getSingleParameter(param, "EXCLUDE_PT");
-
-        anaRelDateFrom = ReportUtil.getSingleParameter(param,
-                                                       SampleWebMeta.getAnalysisReleasedDateFrom());
-        anaRelDateTo = ReportUtil.getSingleParameter(param,
-                                                     SampleWebMeta.getAnalysisReleasedDateTo());
-        anaRelDateParam = format.format(format.parse(anaRelDateFrom)) + ".." +
-                          format.format(format.parse(anaRelDateTo));
+        plotTypeId = ReportUtil.getIntegerParameter(param, "PLOT_INTERVAL");
+        excludePT = ReportUtil.getStringParameter(param, "EXCLUDE_PT");
+        anaRelDateFrom = ReportUtil.getStringParameter(param, SampleWebMeta.getAnalysisReleasedDateFrom());
+        anaRelDateTo = ReportUtil.getStringParameter(param, SampleWebMeta.getAnalysisReleasedDateTo());
         paramList.remove(param.get(SampleWebMeta.getAnalysisReleasedDateFrom()));
         paramList.remove(param.get(SampleWebMeta.getAnalysisReleasedDateTo()));
+        anaRelDateParam = anaRelDateFrom + ".." + anaRelDateTo;
+        currentReleasedDate = ReportUtil.getDatetime(anaRelDateFrom).getDate();
+
         field = new QueryData();
         field.setKey(SampleMeta.getAnalysisReleasedDate());
         field.setQuery(anaRelDateParam);
         field.setType(QueryData.Type.DATE);
         paramList.add(field);
 
-        currentReleasedDate = format.parse(anaRelDateFrom);
-
-        try {
-            plotTypeId = Integer.parseInt(plotInterval);
-        } catch (Exception e) {
+        if (plotTypeId == null)
             throw new InconsistencyException("You must specify a valid plot interval");
-        }
 
         /*
          * Removing the fields which will not be needed in the query from the

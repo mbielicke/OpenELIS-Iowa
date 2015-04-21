@@ -51,27 +51,27 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-               @NamedQuery(name = "InventoryXPut.FetchByInventoryReceiptId",
-                           query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
-                                   + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
-                                   + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.orderId)"
-                                   + " from InventoryXPut tr left join tr.inventoryLocation il left join tr.inventoryReceipt ir left join ir.orderItem oi left join il.storageLocation s left join s.storageUnit su"
-                                   + " left join il.inventoryItem ii where tr.inventoryReceiptId = :id"),
-               @NamedQuery(name = "InventoryXPut.FetchByInventoryLocationId",
-                           query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
-                                   + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
-                                   + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.orderId)"
-                                   + " from InventoryXPut tr left join tr.inventoryLocation il left join tr.inventoryReceipt ir left join ir.orderItem oi left join il.storageLocation s left join s.storageUnit su left join il.inventoryItem ii where tr.inventoryLocationId = :id"),
-               @NamedQuery(name = "InventoryXPut.FetchByOrderId",
-                           query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
-                                   + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
-                                   + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.orderId)"
-                                   + " from InventoryXPut tr join tr.inventoryReceipt ir join ir.orderItem oi join tr.inventoryLocation il join il.inventoryItem ii join il.storageLocation s join s.storageUnit su where oi.orderId = :id"),
-               @NamedQuery(name = "InventoryXPut.FetchByOrderIds",
-                           query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
-                                   + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
-                                   + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.orderId)"
-                                   + " from InventoryXPut tr join tr.inventoryReceipt ir join ir.orderItem oi join tr.inventoryLocation il join il.inventoryItem ii join il.storageLocation s join s.storageUnit su where oi.orderId in ( :ids )")})
+   @NamedQuery(name = "InventoryXPut.FetchByInventoryReceiptId",
+               query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
+                       + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
+                       + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.iorderId)"
+                       + " from InventoryXPut tr left join tr.inventoryLocation il left join tr.inventoryReceipt ir left join ir.iorderItem oi left join il.storageLocation s left join s.storageUnit su"
+                       + " left join il.inventoryItem ii where tr.inventoryReceiptId = :id"),
+   @NamedQuery(name = "InventoryXPut.FetchByInventoryLocationId",
+               query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
+                       + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
+                       + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.iorderId)"
+                       + " from InventoryXPut tr left join tr.inventoryLocation il left join tr.inventoryReceipt ir left join ir.iorderItem oi left join il.storageLocation s left join s.storageUnit su left join il.inventoryItem ii where tr.inventoryLocationId = :id"),
+   @NamedQuery(name = "InventoryXPut.FetchByIorderId",
+               query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
+                       + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
+                       + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.iorderId)"
+                       + " from InventoryXPut tr join tr.inventoryReceipt ir join ir.iorderItem oi join tr.inventoryLocation il join il.inventoryItem ii join il.storageLocation s join s.storageUnit su where oi.iorderId = :id"),
+   @NamedQuery(name = "InventoryXPut.FetchByIorderIds",
+               query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity,"
+                       + "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId,"
+                       + "s.name, su.description, s.location, oi.id, ir.receivedDate, ir.unitCost, ir.externalReference, oi.iorderId)"
+                       + " from InventoryXPut tr join tr.inventoryReceipt ir join ir.iorderItem oi join tr.inventoryLocation il join il.inventoryItem ii join il.storageLocation s join s.storageUnit su where oi.iorderId in ( :ids )")})
 @Entity
 @Table(name = "inventory_x_put")
 @EntityListeners({AuditUtil.class})

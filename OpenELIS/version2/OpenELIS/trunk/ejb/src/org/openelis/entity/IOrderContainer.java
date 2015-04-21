@@ -22,27 +22,27 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-@NamedQuery( name = "OrderContainer.FetchByOrderId",
-            query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
-                     "o.itemSequence,o.typeOfSampleId)"
-                   + " from OrderContainer o where o.orderId = :id order by o.itemSequence"),
-                   @NamedQuery( name = "OrderContainer.FetchByOrderIds",
-                   query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
-                            "o.itemSequence,o.typeOfSampleId)"
-                          + " from OrderContainer o where o.orderId in ( :ids ) order by o.itemSequence")})
+    @NamedQuery( name = "IOrderContainer.FetchByIorderId",
+                query = "select distinct new org.openelis.domain.IOrderContainerDO(o.id,o.iorderId,o.containerId," +
+                        "o.itemSequence,o.typeOfSampleId)"
+                      + " from IOrderContainer o where o.iorderId = :id order by o.itemSequence"),
+    @NamedQuery( name = "IOrderContainer.FetchByIorderIds",
+                query = "select distinct new org.openelis.domain.IOrderContainerDO(o.id,o.iorderId,o.containerId," +
+                        "o.itemSequence,o.typeOfSampleId)"
+                      + " from IOrderContainer o where o.iorderId in ( :ids ) order by o.itemSequence")})
                    
 @Entity
-@Table(name = "order_container")
+@Table(name = "iorder_container")
 @EntityListeners({AuditUtil.class})
-public class OrderContainer implements Auditable, Cloneable {
+public class IOrderContainer implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer        id;
 
-    @Column(name = "order_id")
-    private Integer        orderId;
+    @Column(name = "iorder_id")
+    private Integer        iorderId;
 
     @Column(name = "container_id")
     private Integer        containerId;
@@ -54,7 +54,7 @@ public class OrderContainer implements Auditable, Cloneable {
     private Integer        typeOfSampleId;
 
     @Transient
-    private OrderContainer original;
+    private IOrderContainer original;
 
     public Integer getId() {
         return id;
@@ -65,13 +65,13 @@ public class OrderContainer implements Auditable, Cloneable {
             this.id = id;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        if (DataBaseUtil.isDifferent(orderId, this.orderId))
-            this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        if (DataBaseUtil.isDifferent(iorderId, this.iorderId))
+            this.iorderId = iorderId;
     }
 
     public Integer getContainerId() {
@@ -103,7 +103,7 @@ public class OrderContainer implements Auditable, Cloneable {
 
     public void setClone() {
         try {
-            original = (OrderContainer)this.clone();
+            original = (IOrderContainer)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -113,16 +113,15 @@ public class OrderContainer implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER_CONTAINER);
+        audit.setReferenceTableId(Constants.table().IORDER_CONTAINER);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("order_id", orderId, original.orderId)
+                 .setField("iorder_id", iorderId, original.iorderId)
                  .setField("container_id", containerId, original.containerId, Constants.table().DICTIONARY)
                  .setField("item_sequence", itemSequence, original.itemSequence)
                  .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId, Constants.table().DICTIONARY);
 
         return audit;
     }
-
 }

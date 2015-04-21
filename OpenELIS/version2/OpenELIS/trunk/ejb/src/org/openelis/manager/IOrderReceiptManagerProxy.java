@@ -31,23 +31,23 @@ import org.openelis.bean.InventoryXPutBean;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.utils.EJBFactory;
 
-public class OrderReceiptManagerProxy {
+public class IOrderReceiptManagerProxy {
 
-    public OrderReceiptManager fetchByOrderId(Integer id) throws Exception {
+    public IOrderReceiptManager fetchByIorderId(Integer id) throws Exception {
         InventoryXPutBean pl;
-        OrderReceiptManager m;
+        IOrderReceiptManager m;
         ArrayList<InventoryXPutViewDO> list;
 
         pl = EJBFactory.getInventoryXPut();
-        list = pl.fetchByOrderId(id);
-        m = OrderReceiptManager.getInstance();
+        list = pl.fetchByIorderId(id);
+        m = IOrderReceiptManager.getInstance();
 
         m.setReceipts(list);
 
         return m;
     }
 
-    public OrderReceiptManager add(OrderReceiptManager man) throws Exception {
+    public IOrderReceiptManager add(IOrderReceiptManager man) throws Exception {
         InventoryXPutBean pl;
         InventoryXPutViewDO data;        
 
@@ -60,7 +60,7 @@ public class OrderReceiptManagerProxy {
         return man;
     }
 
-    public OrderReceiptManager update(OrderReceiptManager man) throws Exception {
+    public IOrderReceiptManager update(IOrderReceiptManager man) throws Exception {
         InventoryXPutBean pl;
         InventoryXPutViewDO data;        
 
@@ -80,16 +80,16 @@ public class OrderReceiptManagerProxy {
         return man;
     }
 
-    public OrderReceiptManager fetchForUpdate(OrderReceiptManager man) throws Exception {
+    public IOrderReceiptManager fetchForUpdate(IOrderReceiptManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public OrderReceiptManager abortUpdate(Integer id) throws Exception {
+    public IOrderReceiptManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public void validate(OrderReceiptManager man) throws Exception {   
+    public void validate(IOrderReceiptManager man) throws Exception {   
     }
 }

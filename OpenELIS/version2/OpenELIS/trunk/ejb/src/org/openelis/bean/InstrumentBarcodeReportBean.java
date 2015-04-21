@@ -131,7 +131,8 @@ public class InstrumentBarcodeReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String barcodeType, dir, printer, printstat, userName, worksheetId;
+        Integer worksheetId;
+        String barcodeType, dir, printer, printstat, userName;
         /*
          * push status into session so we can query it while the report is
          * running
@@ -146,9 +147,9 @@ public class InstrumentBarcodeReportBean {
 
         userName = User.getName(ctx);
 
-        worksheetId = ReportUtil.getSingleParameter(param, "WORKSHEET_ID");
-        barcodeType = ReportUtil.getSingleParameter(param, "BARCODE_TYPE");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        worksheetId = ReportUtil.getIntegerParameter(param, "WORKSHEET_ID");
+        barcodeType = ReportUtil.getStringParameter(param, "BARCODE_TYPE");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         /*
          * start the report

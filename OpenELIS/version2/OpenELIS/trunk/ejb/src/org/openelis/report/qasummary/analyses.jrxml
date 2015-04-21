@@ -29,15 +29,17 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT DISTINCT s.accession_number s_no, t.name t_name, q.name q_name, m.name m_name, a.id a_id
-FROM      qaevent q, analysis_qaevent aq, analysis a, test t, section se, test_section ts, method m, sample s,    	sample_item si
-WHERE    si.sample_id = s.id and
-         a.sample_item_id = si.id and
-         a.test_id = t.id and t.method_id = m.id and t.id = ts.test_id and ts.section_id = se.id and
-         s.id = $P{SAMPLE_ID} and
-         aq.analysis_id = a.id and
-         q.id = aq.qaevent_id
-         $P!{TEST} $P!{SECTION}
+		<![CDATA[SELECT DISTINCT s.accession_number as s_no, t.name as t_name, q.name as q_name, m.name as m_name, a.id as a_id
+FROM   sample s
+       join sample_item si on si.sample_id = s.id
+       join analysis a on a.sample_item_id = si.id
+       join test t on t.id = a.test_id
+       join method m on m.id = t.method_id
+       join analysis_qaevent aq on aq.analysis_id = a.id
+       join qaevent q on q.id = aq.qaevent_id
+       join section se on se.id = a.section_id
+WHERE  s.id = $P{SAMPLE_ID}
+       $P!{TEST} $P!{SECTION}
 order by t_name, s_no]]>
 	</queryString>
 	<field name="s_no" class="java.lang.Integer"/>

@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -128,9 +127,6 @@ public class UIHCFinalReportExportBean {
         HashMap<String, QueryData> param;
         HashSet<Integer> uihcOrgIds, pathologyOrgIds;
         ReportStatus status;
-        SimpleDateFormat format;
-
-        format = new SimpleDateFormat(Messages.get().dateTimePattern());
 
         status = new ReportStatus();
         session.setAttribute("UIHCFinalReportExport", status);
@@ -142,8 +138,8 @@ public class UIHCFinalReportExportBean {
         endReleased = null;
         if (paramList != null) {
             param = ReportUtil.getMapParameter(paramList);
-            beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
-            endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
+            beginReleased = ReportUtil.getTimestampParameter(param, "BEGIN_RELEASED");
+            endReleased = ReportUtil.getTimestampParameter(param, "END_RELEASED");
         }
 
         if (beginReleased == null || endReleased == null) {

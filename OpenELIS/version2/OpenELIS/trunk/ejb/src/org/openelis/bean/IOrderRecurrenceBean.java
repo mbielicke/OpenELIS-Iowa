@@ -39,8 +39,8 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.entity.OrderRecurrence;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.entity.IOrderRecurrence;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
@@ -50,19 +50,19 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderRecurrenceBean {
+public class IOrderRecurrenceBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    public OrderRecurrenceDO fetchByOrderId(Integer orderId) throws Exception {
+    public IOrderRecurrenceDO fetchByIorderId(Integer iorderId) throws Exception {
         Query query;
-        OrderRecurrenceDO data;
+        IOrderRecurrenceDO data;
 
-        query = manager.createNamedQuery("OrderRecurrence.FetchByOrderId");
-        query.setParameter("orderId", orderId);
+        query = manager.createNamedQuery("IOrderRecurrence.FetchByIorderId");
+        query.setParameter("orderId", iorderId);
         try {
-            data = (OrderRecurrenceDO)query.getSingleResult();
+            data = (IOrderRecurrenceDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -71,21 +71,21 @@ public class OrderRecurrenceBean {
         return data;
     }
 
-    public ArrayList<OrderRecurrenceDO> fetchByOrderIds(ArrayList<Integer> orderIds) {
+    public ArrayList<IOrderRecurrenceDO> fetchByIorderIds(ArrayList<Integer> iorderIds) {
         Query query;
-        OrderRecurrenceDO data;
+        IOrderRecurrenceDO data;
 
-        query = manager.createNamedQuery("OrderRecurrence.FetchByOrderIds");
-        query.setParameter("orderIds", orderIds);
+        query = manager.createNamedQuery("IOrderRecurrence.FetchByIorderIds");
+        query.setParameter("orderIds", iorderIds);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<OrderRecurrenceDO> fetchActiveList() throws Exception {
+    public ArrayList<IOrderRecurrenceDO> fetchActiveList() throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrderRecurrence.FetchActiveList");
+        query = manager.createNamedQuery("IOrderRecurrence.FetchActiveList");
         list = query.getResultList();
 
         if (list.isEmpty())
@@ -94,13 +94,13 @@ public class OrderRecurrenceBean {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public OrderRecurrenceDO add(OrderRecurrenceDO data) throws Exception {
-        OrderRecurrence entity;
+    public IOrderRecurrenceDO add(IOrderRecurrenceDO data) throws Exception {
+        IOrderRecurrence entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new OrderRecurrence();
-        entity.setOrderId(data.getOrderId());
+        entity = new IOrderRecurrence();
+        entity.setIorderId(data.getIorderId());
         entity.setIsActive(data.getIsActive());
         entity.setActiveBegin(data.getActiveBegin());
         entity.setActiveEnd(data.getActiveEnd());
@@ -113,16 +113,16 @@ public class OrderRecurrenceBean {
         return data;
     }
 
-    public OrderRecurrenceDO update(OrderRecurrenceDO data) throws Exception {
-        OrderRecurrence entity;
+    public IOrderRecurrenceDO update(IOrderRecurrenceDO data) throws Exception {
+        IOrderRecurrence entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderRecurrence.class, data.getId());
-        entity.setOrderId(data.getOrderId());
+        entity = manager.find(IOrderRecurrence.class, data.getId());
+        entity.setIorderId(data.getIorderId());
         entity.setIsActive(data.getIsActive());
         entity.setActiveBegin(data.getActiveBegin());
         entity.setActiveEnd(data.getActiveEnd());
@@ -132,18 +132,18 @@ public class OrderRecurrenceBean {
         return data;
     }
 
-    public void delete(OrderRecurrenceDO data) throws Exception {
-        OrderRecurrence entity;
+    public void delete(IOrderRecurrenceDO data) throws Exception {
+        IOrderRecurrence entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(OrderRecurrence.class, data.getId());
+        entity = manager.find(IOrderRecurrence.class, data.getId());
         if (entity != null)
             manager.remove(entity);
     }
 
-    public void validate(OrderRecurrenceDO data) throws Exception {
-        Integer orderId;
+    public void validate(IOrderRecurrenceDO data) throws Exception {
+        Integer iorderId;
         boolean validateFreq;
         ValidationErrorsList list;
 
@@ -153,37 +153,37 @@ public class OrderRecurrenceBean {
         /*
          * for display
          */
-        orderId = data.getOrderId();
-        if (orderId == null)
-            orderId = 0;
+        iorderId = data.getIorderId();
+        if (iorderId == null)
+            iorderId = 0;
 
         list = new ValidationErrorsList();
         validateFreq = true;
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceActiveBeginRequiredException(orderId)));
+                                                    .order_recurrenceActiveBeginRequiredException(iorderId)));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceActiveEndRequiredException(orderId)));
+                                                    .order_recurrenceActiveEndRequiredException(iorderId)));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getFrequency())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceFrequencyRequiredException(orderId)));
+                                                    .order_recurrenceFrequencyRequiredException(iorderId)));
             validateFreq = false;
         } else if (data.getFrequency() < 1) {
-            list.add(new FormErrorException(Messages.get().order_freqInvalidException(orderId)));
+            list.add(new FormErrorException(Messages.get().order_freqInvalidException(iorderId)));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getUnitId())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceUnitRequiredException(orderId)));
+                                                    .order_recurrenceUnitRequiredException(iorderId)));
             validateFreq = false;
         }
 
@@ -191,18 +191,18 @@ public class OrderRecurrenceBean {
             !DataBaseUtil.isEmpty(data.getActiveEnd()) &&
             DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_endDateAfterBeginDateException(orderId)));
+                                                    .order_endDateAfterBeginDateException(iorderId)));
             validateFreq = false;
         }
 
         if (validateFreq && !isFrequencyValid(data))
-            list.add(new FormErrorException(Messages.get().order_notAllDatesValid(orderId)));
+            list.add(new FormErrorException(Messages.get().order_notAllDatesValid(iorderId)));
 
         if (list.size() > 0)
             throw list;
     }
 
-    public boolean isEmpty(OrderRecurrenceDO data) {
+    public boolean isEmpty(IOrderRecurrenceDO data) {
         if (data == null)
             return true;
 
@@ -215,7 +215,7 @@ public class OrderRecurrenceBean {
         return false;
     }
 
-    private boolean isFrequencyValid(OrderRecurrenceDO data) {
+    private boolean isFrequencyValid(IOrderRecurrenceDO data) {
         int bday, bmon, byr, nday, nmon, nyr, eyr;
         Integer freq, unit;
         Datetime ndt, bdt, edt, now;

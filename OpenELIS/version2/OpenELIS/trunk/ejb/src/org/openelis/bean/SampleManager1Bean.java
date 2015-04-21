@@ -1376,9 +1376,7 @@ public class SampleManager1Bean {
                                 id = amap.get(id);
                             if (id != null && !rmap.containsKey(data.getId())) {
                                 // sort order is per analysis. avoid updating
-                                // sort
-                                // order
-                                // if numbers are ascending
+                                // sort order if numbers are ascending
                                 so = seq.get(id);
                                 if (so == null)
                                     so = 1;

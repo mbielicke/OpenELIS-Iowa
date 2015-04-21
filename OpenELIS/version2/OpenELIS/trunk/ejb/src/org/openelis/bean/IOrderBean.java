@@ -42,10 +42,10 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderDO;
-import org.openelis.domain.OrderViewDO;
-import org.openelis.entity.Order;
-import org.openelis.meta.OrderMeta;
+import org.openelis.domain.IOrderDO;
+import org.openelis.domain.IOrderViewDO;
+import org.openelis.entity.IOrder;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -59,7 +59,7 @@ import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-public class OrderBean {
+public class IOrderBean {
 
     @Resource
     private SessionContext         ctx;
@@ -70,16 +70,16 @@ public class OrderBean {
     @EJB
     private OrganizationBean       organization;
 
-    private static final OrderMeta meta = new OrderMeta();
+    private static final IOrderMeta meta = new IOrderMeta();
 
-    public OrderViewDO fetchById(Integer id) throws Exception {
+    public IOrderViewDO fetchById(Integer id) throws Exception {
         Query query;
-        OrderViewDO data;
+        IOrderViewDO data;
 
-        query = manager.createNamedQuery("Order.FetchById");
+        query = manager.createNamedQuery("IOrder.FetchById");
         query.setParameter("id", id);
         try {
-            data = (OrderViewDO)query.getSingleResult();
+            data = (IOrderViewDO)query.getSingleResult();
             if (data.getOrganizationId() != null)
                 data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
@@ -90,34 +90,34 @@ public class OrderBean {
         return data;
     }
 
-    public ArrayList<OrderViewDO> fetchByIds(ArrayList<Integer> ids) {
+    public ArrayList<IOrderViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
 
-        query = manager.createNamedQuery("Order.FetchByIds");
+        query = manager.createNamedQuery("IOrder.FetchByIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<OrderViewDO> fetchByShippingId(Integer shippingId) throws Exception {
+    public ArrayList<IOrderViewDO> fetchByShippingId(Integer shippingId) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Order.FetchByShippingId");
-        query.setParameter("referenceTableId", Constants.table().ORDER_ITEM);
+        query = manager.createNamedQuery("IOrder.FetchByShippingId");
+        query.setParameter("referenceTableId", Constants.table().IORDER_ITEM);
         query.setParameter("shippingId", shippingId);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public OrderViewDO fetchByOrderItemId(Integer id) throws Exception {
+    public IOrderViewDO fetchByIorderItemId(Integer id) throws Exception {
         Query query;
-        OrderViewDO data;
+        IOrderViewDO data;
 
-        query = manager.createNamedQuery("Order.FetchByOrderItemId");
+        query = manager.createNamedQuery("IOrder.FetchByIorderItemId");
         query.setParameter("id", id);
 
         try {
-            data = (OrderViewDO)query.getSingleResult();
+            data = (IOrderViewDO)query.getSingleResult();
             if (data.getOrganizationId() != null)
                 data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
@@ -131,7 +131,7 @@ public class OrderBean {
     public ArrayList<IdNameVO> fetchByDescription(String match, int max) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Order.FetchByDescription");
+        query = manager.createNamedQuery("IOrder.FetchByDescription");
         query.setParameter("description", match);
         query.setMaxResults(max);
 
@@ -146,13 +146,13 @@ public class OrderBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + OrderMeta.getId() + ", " +
-                          OrderMeta.getRequestedBy() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + IOrderMeta.getId() + ", " +
+                          IOrderMeta.getRequestedBy() + ") ");
         builder.constructWhere(fields);
         if (builder.getWhereClause().indexOf("auxData.") > -1)
             builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
-                             Constants.table().ORDER);
-        builder.setOrderBy(OrderMeta.getId() + " DESC");
+                             Constants.table().IORDER);
+        builder.setOrderBy(IOrderMeta.getId() + " DESC");
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
@@ -168,27 +168,27 @@ public class OrderBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrderViewDO> queryOrderFill(ArrayList<QueryData> fields) throws Exception {
+    public ArrayList<IOrderViewDO> queryOrderFill(ArrayList<QueryData> fields) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
-        OrderViewDO data;
+        IOrderViewDO data;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.OrderViewDO(" + OrderMeta.getId() +
-                          ", " + OrderMeta.getParentOrderId() + ", " + OrderMeta.getDescription() +
-                          ", " + OrderMeta.getStatusId() + ", " + OrderMeta.getOrderedDate() +
-                          ", " + OrderMeta.getNeededInDays() + ", " + OrderMeta.getRequestedBy() +
-                          ", " + OrderMeta.getCostCenterId() + ", " +
-                          OrderMeta.getOrganizationId() + ", " +
-                          OrderMeta.getOrganizationAttention() + ", " + OrderMeta.getType() + ", " +
-                          OrderMeta.getExternalOrderNumber() + ", " + OrderMeta.getShipFromId() +
-                          ", " + OrderMeta.getNumberOfForms() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IOrderViewDO(" + IOrderMeta.getId() +
+                          ", " + IOrderMeta.getParentIorderId() + ", " + IOrderMeta.getDescription() +
+                          ", " + IOrderMeta.getStatusId() + ", " + IOrderMeta.getOrderedDate() +
+                          ", " + IOrderMeta.getNeededInDays() + ", " + IOrderMeta.getRequestedBy() +
+                          ", " + IOrderMeta.getCostCenterId() + ", " +
+                          IOrderMeta.getOrganizationId() + ", " +
+                          IOrderMeta.getOrganizationAttention() + ", " + IOrderMeta.getType() + ", " +
+                          IOrderMeta.getExternalOrderNumber() + ", " + IOrderMeta.getShipFromId() +
+                          ", " + IOrderMeta.getNumberOfForms() + ") ");
         builder.constructWhere(fields);
-        builder.addWhere(OrderMeta.getType() + " <> 'V'");
+        builder.addWhere(IOrderMeta.getType() + " <> 'V'");
 
-        builder.setOrderBy(OrderMeta.getId() + " DESC");
+        builder.setOrderBy(IOrderMeta.getId() + " DESC");
 
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
@@ -202,7 +202,7 @@ public class OrderBean {
 
         try {
             for (int i = 0; i < list.size(); i++ ) {
-                data = (OrderViewDO)list.get(i);
+                data = (IOrderViewDO)list.get(i);
                 if (data.getOrganizationId() != null)
                     data.setOrganization(organization.fetchById(data.getOrganizationId()));
             }
@@ -214,13 +214,13 @@ public class OrderBean {
         }
     }
 
-    public OrderDO add(OrderDO data) throws Exception {
-        Order entity;
+    public IOrderDO add(IOrderDO data) throws Exception {
+        IOrder entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new Order();
-        entity.setParentOrderId(data.getParentOrderId());
+        entity = new IOrder();
+        entity.setParentIorderId(data.getParentIorderId());
         entity.setDescription(data.getDescription());
         entity.setStatusId(data.getStatusId());
         entity.setOrderedDate(data.getOrderedDate());
@@ -242,15 +242,15 @@ public class OrderBean {
         return data;
     }
 
-    public OrderDO update(OrderDO data) throws Exception {
-        Order entity;
+    public IOrderDO update(IOrderDO data) throws Exception {
+        IOrder entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(Order.class, data.getId());
-        entity.setParentOrderId(data.getParentOrderId());
+        entity = manager.find(IOrder.class, data.getId());
+        entity.setParentIorderId(data.getParentIorderId());
         entity.setDescription(data.getDescription());
         entity.setStatusId(data.getStatusId());
         entity.setOrderedDate(data.getOrderedDate());
@@ -269,37 +269,37 @@ public class OrderBean {
         return data;
     }
 
-    public void validate(OrderDO data) throws Exception {
-        Integer orderId;
+    public void validate(IOrderDO data) throws Exception {
+        Integer iorderId;
         ValidationErrorsList list;
 
         /*
          * for display
          */
-        orderId = data.getId();
-        if (orderId == null)
-            orderId = 0;
+        iorderId = data.getId();
+        if (iorderId == null)
+            iorderId = 0;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getStatusId()))
-            list.add(new FormErrorException(Messages.get().order_statusRequiredException(orderId)));
+            list.add(new FormErrorException(Messages.get().order_statusRequiredException(iorderId)));
 
         if (DataBaseUtil.isEmpty(data.getNeededInDays()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_neededInDaysRequiredException(orderId)));
+                                                    .order_neededInDaysRequiredException(iorderId)));
 
-        if (Constants.order().SEND_OUT.equals(data.getType())) {
+        if (Constants.iorder().SEND_OUT.equals(data.getType())) {
             if (DataBaseUtil.isEmpty(data.getNumberOfForms()))
                 list.add(new FormErrorException(Messages.get()
-                                                        .order_numFormsRequiredException(orderId)));
+                                                        .order_numFormsRequiredException(iorderId)));
 
             if (DataBaseUtil.isEmpty(data.getShipFromId()))
                 list.add(new FormErrorException(Messages.get()
-                                                        .order_shipFromRequiredException(orderId)));
+                                                        .order_shipFromRequiredException(iorderId)));
 
             if (DataBaseUtil.isEmpty(data.getCostCenterId()))
                 list.add(new FormErrorException(Messages.get()
-                                                        .order_costCenterRequiredException(orderId)));
+                                                        .order_costCenterRequiredException(iorderId)));
         }
         if (list.size() > 0)
             throw list;

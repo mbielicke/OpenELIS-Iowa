@@ -53,31 +53,31 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery( name = "OrderItem.FetchByOrderId",
-                query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
+    @NamedQuery( name = "IOrderItem.FetchByIorderId",
+                query = "select distinct new org.openelis.domain.IOrderItemViewDO(o.id,o.iorderId,o.inventoryItemId," +
                 		"o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
-                      + " from OrderItem o left join o.inventoryItem i where o.orderId = :id"),
-    @NamedQuery( name = "OrderItem.FetchById",
-                query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
+                      + " from IOrderItem o left join o.inventoryItem i where o.iorderId = :id"),
+    @NamedQuery( name = "IOrderItem.FetchById",
+                query = "select distinct new org.openelis.domain.IOrderItemViewDO(o.id,o.iorderId,o.inventoryItemId," +
                         "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
-                      + " from OrderItem o left join o.inventoryItem i where o.id = :id"),
-    @NamedQuery( name = "OrderItem.FetchByOrderIds",
-                query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
+                      + " from IOrderItem o left join o.inventoryItem i where o.id = :id"),
+    @NamedQuery( name = "IOrderItem.FetchByIorderIds",
+                query = "select distinct new org.openelis.domain.IOrderItemViewDO(o.id,o.iorderId,o.inventoryItemId," +
                         "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
-                      + " from OrderItem o left join o.inventoryItem i where o.orderId in (:ids)")})                      
+                      + " from IOrderItem o left join o.inventoryItem i where o.iorderId in (:ids)")})                      
 
 @Entity
-@Table(name = "order_item")
+@Table(name = "iorder_item")
 @EntityListeners({AuditUtil.class})
-public class OrderItem implements Auditable, Cloneable {
+public class IOrderItem implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                      id;
 
-    @Column(name = "order_id")
-    private Integer                      orderId;
+    @Column(name = "iorder_id")
+    private Integer                      iorderId;
 
     @Column(name = "inventory_item_id")
     private Integer                      inventoryItemId;
@@ -96,19 +96,19 @@ public class OrderItem implements Auditable, Cloneable {
     private InventoryItem                inventoryItem;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Order                        order;
+    @JoinColumn(name = "iorder_id", insertable = false, updatable = false)
+    private IOrder                        iorder;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+    @JoinColumn(name = "iorder_item_id", insertable = false, updatable = false)
     private Collection<InventoryXUse>    inventoryXUse;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+    @JoinColumn(name = "iorder_item_id", insertable = false, updatable = false)
     private Collection<InventoryReceipt> inventoryReceipt;
 
     @Transient
-    private OrderItem                    original;
+    private IOrderItem                    original;
 
     public Integer getId() {
         return id;
@@ -119,13 +119,13 @@ public class OrderItem implements Auditable, Cloneable {
             this.id = id;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        if (DataBaseUtil.isDifferent(orderId, this.orderId))
-            this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        if (DataBaseUtil.isDifferent(iorderId, this.iorderId))
+            this.iorderId = iorderId;
     }
 
     public Integer getInventoryItemId() {
@@ -164,12 +164,12 @@ public class OrderItem implements Auditable, Cloneable {
             this.catalogNumber = catalogNumber;
     }
 
-    public Order getOrder() {
-        return order;
+    public IOrder getIorder() {
+        return iorder;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setIorder(IOrder iorder) {
+        this.iorder = iorder;
     }
 
     public InventoryItem getInventoryItem() {
@@ -198,7 +198,7 @@ public class OrderItem implements Auditable, Cloneable {
 
     public void setClone() {
         try {
-            original = (OrderItem)this.clone();
+            original = (IOrderItem)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,11 +208,11 @@ public class OrderItem implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER_ITEM);
+        audit.setReferenceTableId(Constants.table().IORDER_ITEM);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("order_id", orderId, original.orderId)
+                 .setField("iorder_id", iorderId, original.iorderId)
                  .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, Constants.table().INVENTORY_ITEM)
                  .setField("quantity", quantity, original.quantity)
                  .setField("catalog_number", catalogNumber, original.catalogNumber)

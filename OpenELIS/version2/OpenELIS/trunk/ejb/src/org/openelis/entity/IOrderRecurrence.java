@@ -50,31 +50,31 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "OrderRecurrence.FetchByOrderId",
-                query = "select new org.openelis.domain.OrderRecurrenceDO(r.id, r.orderId,r.isActive," +
+    @NamedQuery( name = "IOrderRecurrence.FetchByIorderId",
+                query = "select new org.openelis.domain.IOrderRecurrenceDO(r.id, r.iorderId,r.isActive," +
                 		"r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
-                      + " from OrderRecurrence r where r.orderId = :orderId"),
-                      @NamedQuery( name = "OrderRecurrence.FetchByOrderIds",
-                      query = "select new org.openelis.domain.OrderRecurrenceDO(r.id, r.orderId,r.isActive," +
-                              "r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
-                            + " from OrderRecurrence r where r.orderId in ( :orderIds )"),
-    @NamedQuery( name = "OrderRecurrence.FetchActiveList",
-                query = "select new org.openelis.domain.OrderRecurrenceDO(r.id, r.orderId,r.isActive," +
+                      + " from IOrderRecurrence r where r.iorderId = :orderId"),
+    @NamedQuery( name = "IOrderRecurrence.FetchByIorderIds",
+                query = "select new org.openelis.domain.IOrderRecurrenceDO(r.id, r.iorderId,r.isActive," +
                         "r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
-                      + " from OrderRecurrence r where r.isActive = 'Y' and r.activeEnd >= TODAY")})
+                      + " from IOrderRecurrence r where r.iorderId in ( :orderIds )"),
+    @NamedQuery( name = "IOrderRecurrence.FetchActiveList",
+                query = "select new org.openelis.domain.IOrderRecurrenceDO(r.id, r.iorderId,r.isActive," +
+                        "r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
+                      + " from IOrderRecurrence r where r.isActive = 'Y' and r.activeEnd >= TODAY")})
         
 @Entity
-@Table(name = "order_recurrence")
+@Table(name = "iorder_recurrence")
 @EntityListeners( {AuditUtil.class})
-public class OrderRecurrence implements Auditable, Cloneable {
+public class IOrderRecurrence implements Auditable, Cloneable {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer               id;
     
-    @Column(name = "order_id")
-    private Integer               orderId;
+    @Column(name = "iorder_id")
+    private Integer               iorderId;
     
     @Column(name = "is_active")
     private String                isActive;
@@ -92,7 +92,7 @@ public class OrderRecurrence implements Auditable, Cloneable {
     private Integer               unitId;
     
     @Transient
-    private OrderRecurrence       original;
+    private IOrderRecurrence      original;
     
     public Integer getId() {
         return id;
@@ -103,13 +103,13 @@ public class OrderRecurrence implements Auditable, Cloneable {
             this.id = id;
     }
     
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        if (DataBaseUtil.isDifferent(orderId, this.orderId))
-            this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        if (DataBaseUtil.isDifferent(iorderId, this.iorderId))
+            this.iorderId = iorderId;
     }
 
     public String getIsActive() {
@@ -159,7 +159,7 @@ public class OrderRecurrence implements Auditable, Cloneable {
 
     public void setClone() {
         try {
-            original = (OrderRecurrence)this.clone();
+            original = (IOrderRecurrence)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -169,11 +169,11 @@ public class OrderRecurrence implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ORDER_RECURRENCE);
+        audit.setReferenceTableId(Constants.table().IORDER_RECURRENCE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("orderId", orderId, original.orderId)
+                 .setField("iorderId", iorderId, original.iorderId)
                  .setField("isActive", isActive, original.isActive)
                  .setField("activeBegin", activeBegin, original.activeBegin)
                  .setField("activeEnd", activeEnd, original.activeEnd)
