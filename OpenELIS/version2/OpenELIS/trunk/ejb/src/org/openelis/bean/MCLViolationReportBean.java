@@ -41,6 +41,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -91,8 +92,6 @@ public class MCLViolationReportBean {
     @PostConstruct
     public void init() {
 
-        initMethodCodes();
-        initContaminantIds();
     }
 
     /*
@@ -146,7 +145,7 @@ public class MCLViolationReportBean {
         StringBuilder bactPosBody, dnrMCLBody, shlMCLBody;
         SystemVariableDO lastRun;
 
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        format = new SimpleDateFormat(Messages.get().dateTimePattern());
 
         status = new ReportStatus();
         session.setAttribute("MCLViolationReport", status);
@@ -162,6 +161,9 @@ public class MCLViolationReportBean {
         lastRun = null;
         toEmail = "";
         try {
+            initMethodCodes();
+            initContaminantIds();
+
             dnrEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
             lastRunDate = format.parse(lastRun.getValue());
@@ -253,7 +255,7 @@ public class MCLViolationReportBean {
                 for (j = 0; j < results.size(); j++) {
                     resultRow = results.get(j);
                     rowResult = resultRow.get(0);
-                    if (!DataBaseUtil.isEmpty(rowResult.getValue())) {
+                    if ("Y".equals(rowResult.getIsReportable()) && !DataBaseUtil.isEmpty(rowResult.getValue())) {
                         for (k = 1; k < resultRow.size(); k++) {
                             colResult = resultRow.get(k);
                             analyte = analyteBean.fetchById(colResult.getAnalyteId());
@@ -320,6 +322,9 @@ public class MCLViolationReportBean {
                 sysVarBean.abortUpdate(lastRun.getId());
             log.log(Level.SEVERE, "Failed to run MCL Violation Report ", e);
             throw e;
+        } finally {
+            contaminantIds = null;
+            methodCodes = null;
         }
 
         return status;
