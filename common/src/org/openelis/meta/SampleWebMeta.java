@@ -273,8 +273,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RESULT_TEST_ANALYTE_TYPE_ID = "_result.testAnalyte.typeId",
                     RESULT_TEST_ANALYTE_RESULT_GROUP = "_result.testAnalyte.resultGroup",
 
-                    AUX_DATA_AUX_FIELD_ANALYTE_ID = "_auxField.analyteId",
-                    AUX_DATA_AUX_FIELD_ANALYTE_NAME = "_auxField.analyte.name";
+                    AUX_DATA_FIELD_ID = "_auxField.id",
+                    AUX_DATA_FIELD_ANALYTE_ID = "_auxField.analyteId",
+                    AUX_DATA_FIELD_ANALYTE_NAME = "_auxField.analyte.name";
 
     private static HashSet<String> names;
 
@@ -302,6 +303,12 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RELEASED_DATE,
                                                   RELEASED_DATE_FROM,
                                                   RELEASED_DATE_TO,
+                                                  CLIN_PATIENT_LAST_NAME,
+                                                  CLIN_PATIENT_FIRST_NAME,
+                                                  CLIN_PATIENT_BIRTH_DATE,
+                                                  CLIN_PATIENT_BIRTH_DATE_FROM,
+                                                  CLIN_PATIENT_BIRTH_DATE_TO,
+                                                  CLIN_PATIENT_BIRTH_TIME,
                                                   ENV_ID,
                                                   ENV_SAMPLE_ID,
                                                   ENV_IS_HAZARDOUS,
@@ -497,8 +504,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RESULT_TEST_ANALYTE_ROW_GROUP,
                                                   RESULT_TEST_ANALYTE_TYPE_ID,
                                                   RESULT_TEST_ANALYTE_RESULT_GROUP,
-                                                  AUX_DATA_AUX_FIELD_ANALYTE_ID,
-                                                  AUX_DATA_AUX_FIELD_ANALYTE_NAME));
+                                                  AUX_DATA_FIELD_ID,
+                                                  AUX_DATA_FIELD_ANALYTE_ID,
+                                                  AUX_DATA_FIELD_ANALYTE_NAME));
     }
 
     public static String getId() {
@@ -591,6 +599,30 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getReleasedDateTo() {
         return RELEASED_DATE_TO;
+    }
+
+    public static String getClinPatientLastName() {
+        return CLIN_PATIENT_LAST_NAME;
+    }
+
+    public static String getClinPatientFirstName() {
+        return CLIN_PATIENT_FIRST_NAME;
+    }
+
+    public static String getClinPatientBirthDate() {
+        return CLIN_PATIENT_BIRTH_DATE;
+    }
+
+    public static String getClinPatientBirthDateFrom() {
+        return CLIN_PATIENT_BIRTH_DATE_FROM;
+    }
+
+    public static String getClinPatientBirthDateTo() {
+        return CLIN_PATIENT_BIRTH_DATE_TO;
+    }
+
+    public static String getClinPatientBirthTime() {
+        return CLIN_PATIENT_BIRTH_TIME;
     }
 
     public static String getEnvLocationAddrId() {
@@ -1373,13 +1405,17 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getResultTestAnalyteResultGroup() {
         return RESULT_TEST_ANALYTE_RESULT_GROUP;
     }
-
-    public static String getAuxDataAuxFieldAnalyteId() {
-        return AUX_DATA_AUX_FIELD_ANALYTE_ID;
+    
+    public static String getAuxDataFieldId() {
+        return AUX_DATA_FIELD_ID;
     }
 
-    public static String getAuxDataAuxFieldAnalyteName() {
-        return AUX_DATA_AUX_FIELD_ANALYTE_NAME;
+    public static String getAuxDataFieldAnalyteId() {
+        return AUX_DATA_FIELD_ANALYTE_ID;
+    }
+
+    public static String getAuxDataFieldAnalyteName() {
+        return AUX_DATA_FIELD_ANALYTE_NAME;
     }
 
     public boolean hasColumn(String columnName) {
