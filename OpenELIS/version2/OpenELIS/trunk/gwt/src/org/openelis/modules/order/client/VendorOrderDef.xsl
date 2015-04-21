@@ -37,7 +37,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.OrderMeta">
+  xmlns:meta="xalan://org.openelis.meta.IOrderMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
@@ -257,10 +257,10 @@ UIRF Software License are applicable instead of those above.
                 <VerticalPanel padding="0" spacing="0">
                   <widget>
                     <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-                      <col key="{meta:getOrderItemQuantity()}" width="60" align="right" header="{resource:getString($constants,'quantity')}">
+                      <col key="{meta:getIorderItemQuantity()}" width="60" align="right" header="{resource:getString($constants,'quantity')}">
                         <textbox field="Integer" required="true" />
                       </col>
-                      <col key="{meta:getOrderItemInventoryItemName()}" width="178" header="{resource:getString($constants,'inventoryItem')}">
+                      <col key="{meta:getIorderItemInventoryItemName()}" width="178" header="{resource:getString($constants,'inventoryItem')}">
                         <autoComplete width="210" case="LOWER" field="Integer">
                           <col width="155" header="{resource:getString($constants,'name')}" />
                           <col width="200" header="{resource:getString($constants,'description')}" />
@@ -272,13 +272,13 @@ UIRF Software License are applicable instead of those above.
                           </col>
                         </autoComplete>
                       </col>
-                      <col key="{meta:getOrderItemInventoryItemStoreId()}" width="163" header="{resource:getString($constants,'store')}">
+                      <col key="{meta:getIorderItemInventoryItemStoreId()}" width="163" header="{resource:getString($constants,'store')}">
                         <dropdown width="163" field="Integer" />
                       </col>
-                      <col key="{meta:getOrderItemUnitCost()}" width="70" header="{resource:getString($constants,'unitCost')}" align = "right">
+                      <col key="{meta:getIorderItemUnitCost()}" width="70" header="{resource:getString($constants,'unitCost')}" align = "right">
                         <textbox field="Double" />
                       </col>
-                      <col key="{meta:getOrderItemCatalogNumber()}" width="87" header="{resource:getString($constants,'catalogNum')}">
+                      <col key="{meta:getIorderItemCatalogNumber()}" width="87" header="{resource:getString($constants,'catalogNum')}">
                         <textbox field="String" />
                       </col>
                     </table>
@@ -308,7 +308,7 @@ UIRF Software License are applicable instead of those above.
 
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <table key="fillTable" width="573" maxRows="10" showScroll="ALWAYS" title="">
-                  <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
+                  <col key="{meta:getInventoryReceiptIorderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                     <label field="String" />
                   </col>
                   <col key="location" width="180" header="{resource:getString($constants,'location')}">

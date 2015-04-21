@@ -28,7 +28,7 @@ UIRF Software License are applicable instead of those above.
   extension-element-prefixes="resource"
   version="1.0"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.OrderMeta"
+  xmlns:meta="xalan://org.openelis.meta.IOrderMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -264,13 +264,13 @@ UIRF Software License are applicable instead of those above.
               <tab key="organizationTab" tab="organizationTable,organizationTable" text="{resource:getString($constants,'organization')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="organizationTable" maxRows="11" showScroll="ALWAYS" tab="organizationTable,organizationTable" title="" width="697">
-                    <col key="{meta:getOrderOrganizationTypeId()}" header="{resource:getString($constants,'type')}" width="125">
+                    <col key="{meta:getIorderOrganizationTypeId()}" header="{resource:getString($constants,'type')}" width="125">
                       <dropdown field="Integer" required="true" width="125" />
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationAttention()}" header="{resource:getString($constants,'attention')}" width="180">
+                    <col key="{meta:getIorderOrganizationOrganizationAttention()}" header="{resource:getString($constants,'attention')}" width="180">
                       <textbox case="UPPER" max = "30" field="String" />
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationName()}" header="{resource:getString($constants,'name')}" width="220">
+                    <col key="{meta:getIorderOrganizationOrganizationName()}" header="{resource:getString($constants,'name')}" width="220">
                       <autoComplete case="UPPER" field="Integer" required="true" width="130">
                         <col header="{resource:getString($constants,'name')}" width="200" />
                         <col header="{resource:getString($constants,'street')}" width="130" />
@@ -278,22 +278,22 @@ UIRF Software License are applicable instead of those above.
                         <col header="{resource:getString($constants,'st')}" width="20" />
                       </autoComplete>
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
+                    <col key="{meta:getIorderOrganizationOrganizationAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
                       <textbox case="UPPER" field="String" />
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
+                    <col key="{meta:getIorderOrganizationOrganizationAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
                       <textbox case="UPPER" field="String" />
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationAddressCity()}" header="{resource:getString($constants,'city')}" width="110">
+                    <col key="{meta:getIorderOrganizationOrganizationAddressCity()}" header="{resource:getString($constants,'city')}" width="110">
                       <textbox case="UPPER" field="String" />
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationAddressState()}" header="{resource:getString($constants,'state')}" width="56">
+                    <col key="{meta:getIorderOrganizationOrganizationAddressState()}" header="{resource:getString($constants,'state')}" width="56">
                       <dropdown case="UPPER" width="40" field="String" />
                     </col>
                     <col key="{meta:getOrganizationOrganizationAddressZipCode()}" width="70" header="{resource:getString($constants,'zipcode')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{meta:getOrderOrganizationOrganizationAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
+                    <col key="{meta:getIorderOrganizationOrganizationAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
                       <dropdown width="110" field="String" />
                     </col>
                   </table>
@@ -472,10 +472,10 @@ UIRF Software License are applicable instead of those above.
               <tab key="itemTab" tab="itemTable, itemTable" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="itemTable" maxRows="11" showScroll="ALWAYS" width="auto">
-                    <col align="right" header="{resource:getString($constants,'quantity')}" key="{meta:getOrderItemQuantity()}" width="65">
+                    <col align="right" header="{resource:getString($constants,'quantity')}" key="{meta:getIorderItemQuantity()}" width="65">
                       <textbox field="Integer" required="true" />
                     </col>
-                    <col header="{resource:getString($constants,'inventoryItem')}" key="{meta:getOrderItemInventoryItemName()}" width="385">
+                    <col header="{resource:getString($constants,'inventoryItem')}" key="{meta:getIorderItemInventoryItemName()}" width="385">
                       <autoComplete case="LOWER" field="Integer" required="true" width="275">
                         <col header="{resource:getString($constants,'name')}" width="155" />
                         <col header="{resource:getString($constants,'description')}" width="200" />
@@ -487,7 +487,7 @@ UIRF Software License are applicable instead of those above.
                         </col>
                       </autoComplete>
                     </col>
-                    <col header="{resource:getString($constants,'store')}" key="{meta:getOrderItemInventoryItemStoreId()}" width="238">
+                    <col header="{resource:getString($constants,'store')}" key="{meta:getIorderItemInventoryItemStoreId()}" width="238">
                       <dropdown field="Integer" width="235" />
                     </col>
                   </table>
@@ -571,7 +571,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'active')" />:
                         </text>
-                        <check key="{meta:getRecurrenceIsActive()}" tab="{meta:getRecurrenceActiveBegin()},{meta:getParentOrderId()}" />
+                        <check key="{meta:getRecurrenceIsActive()}" tab="{meta:getRecurrenceActiveBegin()},{meta:getParentIorderId()}" />
                       </row>
                       <row>
                         <text style="Prompt">
@@ -597,7 +597,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'unit')" />:
                         </text>
-                        <dropdown field="Integer" key="{meta:getRecurrenceUnitId()}" popWidth="auto" tab="{meta:getParentOrderId()},{meta:getRecurrenceFrequency()}" width="50" />
+                        <dropdown field="Integer" key="{meta:getRecurrenceUnitId()}" popWidth="auto" tab="{meta:getParentIorderId()},{meta:getRecurrenceFrequency()}" width="50" />
                       </row>
                     </TablePanel>
                     <VerticalPanel width="472">
@@ -608,7 +608,7 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'parentOrderNum')" />:
                           </text>
-                          <textbox field="Integer" key="{meta:getParentOrderId()}" tab="{meta:getRecurrenceIsActive()},{meta:getRecurrenceUnitId()}" width="90" />
+                          <textbox field="Integer" key="{meta:getParentIorderId()}" tab="{meta:getRecurrenceIsActive()},{meta:getRecurrenceUnitId()}" width="90" />
                         </row>
                       </TablePanel>
                     </VerticalPanel>
@@ -639,7 +639,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="fillTab" tab="fillTable, fillTable" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="fillTable" maxRows="11" showScroll="ALWAYS" width="auto">
-                    <col header="{resource:getString($constants,'inventoryItem')}" key="{meta:getInventoryReceiptOrderItemId()}" width="205">
+                    <col header="{resource:getString($constants,'inventoryItem')}" key="{meta:getInventoryReceiptIorderItemId()}" width="205">
                       <label field="String" />
                     </col>
                     <col header="{resource:getString($constants,'location')}" key="location" width="235">

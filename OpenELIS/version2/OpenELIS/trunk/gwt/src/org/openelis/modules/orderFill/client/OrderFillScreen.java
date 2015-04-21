@@ -40,10 +40,10 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryXUseViewDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingViewDO;
@@ -71,13 +71,13 @@ import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderFillManager;
+import org.openelis.manager.IOrderItemManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.Preferences;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.order.client.CustomerNoteTab;
 import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.order.client.ShipNoteTab;
@@ -130,8 +130,8 @@ public class OrderFillScreen extends Screen {
     private ShippingReportScreen               shippingReportScreen;
 
     private boolean                            treeValid;
-    private HashMap<TableDataRow, OrderViewDO> orderMap;
-    private HashMap<Integer, OrderManager>     combinedMap;
+    private HashMap<TableDataRow, IOrderViewDO> orderMap;
+    private HashMap<Integer, IOrderManager>     combinedMap;
 
     private String                             defaultPrinter, defaultBarcodePrinter;
 
@@ -264,15 +264,15 @@ public class OrderFillScreen extends Screen {
         orderTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 TableDataRow row;
-                OrderManager man;
-                OrderViewDO data;
+                IOrderManager man;
+                IOrderViewDO data;
 
                 row = orderTable.getSelection();
                 data = orderMap.get(row);
                 if (row.data == null)
                     row.data = fetchById(data);
 
-                man = (OrderManager)row.data;
+                man = (IOrderManager)row.data;
                 shipNoteTab.setManager(man);
                 itemTab.setManager(man, combinedMap);
                 custNoteTab.setManager(man);
@@ -285,7 +285,7 @@ public class OrderFillScreen extends Screen {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c;
                 TableDataRow row;
-                OrderViewDO data, prevData;
+                IOrderViewDO data, prevData;
                 String val, type;
                 Integer status;
 
@@ -336,7 +336,7 @@ public class OrderFillScreen extends Screen {
                     }
                 } else {
                     if (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(status) &&
-                        OrderManager.TYPE_SEND_OUT.equals(type))
+                        IOrderManager.TYPE_SEND_OUT.equals(type))
                         shippingInfo.enable(true);
                     else
                         shippingInfo.enable(false);
@@ -352,8 +352,8 @@ public class OrderFillScreen extends Screen {
                 int r, c;
                 String val;
                 TableDataRow row;
-                OrderViewDO data;
-                OrderManager man;
+                IOrderViewDO data;
+                IOrderManager man;
                 Datetime now;
 
                 r = event.getRow();
@@ -366,15 +366,15 @@ public class OrderFillScreen extends Screen {
 
                     if ("Y".equals(val) && (combinedMap.get(data.getId()) == null)) {
                         try {
-                            man = (OrderManager)row.data;
+                            man = (IOrderManager)row.data;
                             if (man == null) {
-                                man = OrderManager.getInstance();
-                                man.setOrder(data);
+                                man = IOrderManager.getInstance();
+                                man.setIorder(data);
                             }
 
                             window.setBusy(Messages.get().lockForUpdate());
                             row.data = man.fetchForUpdate();
-                            man = (OrderManager)row.data;
+                            man = (IOrderManager)row.data;
                             window.clearStatus();
 
                             combinedMap.put(data.getId(), man);
@@ -393,7 +393,7 @@ public class OrderFillScreen extends Screen {
 
                             shipNoteTab.setManager(man);
 
-                            if (OrderManager.TYPE_SEND_OUT.equals(data.getType()))
+                            if (IOrderManager.TYPE_SEND_OUT.equals(data.getType()))
                                 custNoteTab.setState(State.UPDATE);
                             else
                                 custNoteTab.setState(State.DISPLAY);
@@ -414,7 +414,7 @@ public class OrderFillScreen extends Screen {
                         }
 
                         try {
-                            man = (OrderManager)row.data;
+                            man = (IOrderManager)row.data;
                             man = man.abortUpdate();
                             reloadRow(man, row, now);
                             combinedMap.remove(data.getId());
@@ -442,7 +442,7 @@ public class OrderFillScreen extends Screen {
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 int i;
                 TableDataRow row;
-                OrderManager man;
+                IOrderManager man;
 
                 // tab screen order should be the same as enum or this will
                 // not work
@@ -453,9 +453,9 @@ public class OrderFillScreen extends Screen {
                 drawTabs();
                 row = orderTable.getSelection();
                 if (row != null) {
-                    man = (OrderManager)row.data;
+                    man = (IOrderManager)row.data;
                     if (i == 0 && !treeValid && combinedMap != null &&
-                        combinedMap.get(man.getOrder().getId()) != null)
+                        combinedMap.get(man.getIorder().getId()) != null)
                         itemTab.validate();
                 }
                 window.clearStatus();
@@ -532,7 +532,7 @@ public class OrderFillScreen extends Screen {
             model.add(row);
         }
 
-        status = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getStatusId()));
+        status = ((Dropdown<Integer>)orderTable.getColumnWidget(IOrderMeta.getStatusId()));
         status.setModel(model);
 
         model = new ArrayList<TableDataRow>();
@@ -544,24 +544,24 @@ public class OrderFillScreen extends Screen {
             model.add(row);
         }
 
-        shipFrom = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getShipFromId()));
+        shipFrom = ((Dropdown<Integer>)orderTable.getColumnWidget(IOrderMeta.getShipFromId()));
         shipFrom.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        model.add(new TableDataRow(OrderManager.TYPE_INTERNAL, Messages.get().internal()));
-        model.add(new TableDataRow(OrderManager.TYPE_SEND_OUT, Messages.get().sendOut()));
+        model.add(new TableDataRow(IOrderManager.TYPE_INTERNAL, Messages.get().internal()));
+        model.add(new TableDataRow(IOrderManager.TYPE_SEND_OUT, Messages.get().sendOut()));
 
-        type = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getType()));
+        type = ((Dropdown<Integer>)orderTable.getColumnWidget(IOrderMeta.getType()));
         type.setModel(model);
     }
 
     protected void query() {
-        OrderManager man;
+        IOrderManager man;
 
-        man = OrderManager.getInstance();
+        man = IOrderManager.getInstance();
         if (combinedMap == null)
-            combinedMap = new HashMap<Integer, OrderManager>();
+            combinedMap = new HashMap<Integer, IOrderManager>();
         else
             combinedMap.clear();
 
@@ -591,8 +591,8 @@ public class OrderFillScreen extends Screen {
         Query query;
         Set<Integer> set;
         Iterator<Integer> iter;
-        OrderManager man;
-        OrderViewDO data;
+        IOrderManager man;
+        IOrderViewDO data;
         ArrayList<TreeDataItem> model;
 
         if ( !validate()) {
@@ -630,11 +630,11 @@ public class OrderFillScreen extends Screen {
                     man = combinedMap.get(iter.next());
 
                     window.setBusy(Messages.get().updating());
-                    man.getOrder().setStatusId(Constants.dictionary().ORDER_STATUS_PROCESSED);
+                    man.getIorder().setStatusId(Constants.dictionary().ORDER_STATUS_PROCESSED);
                     man = man.update();
                     window.setDone(Messages.get().updatingComplete());
 
-                    combinedMap.put(man.getOrder().getId(), man);
+                    combinedMap.put(man.getIorder().getId(), man);
                 }
                 reloadRows();
                 setState(State.DISPLAY);
@@ -651,11 +651,11 @@ public class OrderFillScreen extends Screen {
     }
 
     protected void abort() {
-        OrderManager man;
+        IOrderManager man;
         Set<Integer> set;
         Iterator<Integer> iter;
 
-        man = OrderManager.getInstance();
+        man = IOrderManager.getInstance();
 
         setFocus(null);
         clearErrors();
@@ -677,11 +677,11 @@ public class OrderFillScreen extends Screen {
                     man = combinedMap.get(iter.next());
 
                     window.setBusy(Messages.get().cancelChanges());
-                    man.getOrder().setStatusId(Constants.dictionary().ORDER_STATUS_PROCESSED);
+                    man.getIorder().setStatusId(Constants.dictionary().ORDER_STATUS_PROCESSED);
                     man = man.abortUpdate();
                     window.setDone(Messages.get().updateAborted());
 
-                    combinedMap.put(man.getOrder().getId(), man);
+                    combinedMap.put(man.getIorder().getId(), man);
                 }
 
                 reloadRows();
@@ -699,14 +699,14 @@ public class OrderFillScreen extends Screen {
     }
 
     protected void shippingInfo() {
-        OrderManager order;
-        OrderViewDO data;
+        IOrderManager order;
+        IOrderViewDO data;
         TableDataRow row;
 
         try {
             row = orderTable.getSelection();
-            order = (OrderManager)row.data;
-            data = order.getOrder();
+            order = (IOrderManager)row.data;
+            data = order.getIorder();
 
             window.setBusy(Messages.get().fetching());
 
@@ -747,7 +747,7 @@ public class OrderFillScreen extends Screen {
     private void validateQuantityOnHand() throws ValidationErrorsList {
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
-        OrderItemViewDO ordItem;
+        IOrderItemViewDO ordItem;
         InventoryItemDO invItem;
         InventoryXUseViewDO data;
         Integer sum, locationId;
@@ -768,7 +768,7 @@ public class OrderFillScreen extends Screen {
 
         for (i = 0; i < model.size(); i++ ) {
             parent = model.get(i);
-            ordItem = (OrderItemViewDO)parent.key;
+            ordItem = (IOrderItemViewDO)parent.key;
             try {
                 invItem = InventoryItemCache.getById(ordItem.getInventoryItemId());
             } catch (Exception e) {
@@ -820,15 +820,15 @@ public class OrderFillScreen extends Screen {
             throw list;
     }
 
-    private OrderManager fetchById(OrderViewDO data) {
-        OrderManager man;
+    private IOrderManager fetchById(IOrderViewDO data) {
+        IOrderManager man;
 
         man = null;
         window.setBusy(Messages.get().fetching());
         try {
-            man = OrderManager.fetchById(data.getId());
+            man = IOrderManager.fetchById(data.getId());
         } catch (NotFoundException e) {
-            man = OrderManager.getInstance();
+            man = IOrderManager.getInstance();
             window.setDone(Messages.get().noRecordsFound());
         } catch (Exception e) {
             Window.alert(Messages.get().fetchFailed() + e.getMessage());
@@ -861,8 +861,8 @@ public class OrderFillScreen extends Screen {
     private void executeQuery(Query query) {
         window.setBusy(Messages.get().querying());
 
-        OrderService.get().queryOrderFill(query, new AsyncCallback<ArrayList<OrderViewDO>>() {
-            public void onSuccess(ArrayList<OrderViewDO> result) {
+        OrderService.get().queryOrderFill(query, new AsyncCallback<ArrayList<IOrderViewDO>>() {
+            public void onSuccess(ArrayList<IOrderViewDO> result) {
                 ArrayList<TableDataRow> model;
                 Datetime now;
                 TableDataRow row;
@@ -880,9 +880,9 @@ public class OrderFillScreen extends Screen {
                         Window.alert("Order Fill Datetime: " + e.getMessage());
                     }
 
-                    orderMap = new HashMap<TableDataRow, OrderViewDO>();
+                    orderMap = new HashMap<TableDataRow, IOrderViewDO>();
 
-                    for (OrderViewDO data : result) {
+                    for (IOrderViewDO data : result) {
                         row = addByLeastNumDaysLeft(data, model, now);
                         orderMap.put(row, data);
                     }
@@ -918,7 +918,7 @@ public class OrderFillScreen extends Screen {
      * date and the current date, in a descending order; it also returns the
      * newly added row
      */
-    private TableDataRow addByLeastNumDaysLeft(OrderViewDO data, ArrayList<TableDataRow> model,
+    private TableDataRow addByLeastNumDaysLeft(IOrderViewDO data, ArrayList<TableDataRow> model,
                                                Datetime now) {
         TableDataRow row, modelRow;
         Datetime ordDate;
@@ -956,7 +956,7 @@ public class OrderFillScreen extends Screen {
         ArrayList<TableDataRow> model;
         TableDataRow row;
         Datetime now;
-        OrderManager man;
+        IOrderManager man;
 
         model = orderTable.getData();
         now = null;
@@ -974,14 +974,14 @@ public class OrderFillScreen extends Screen {
             val = (String)row.cells.get(0).getValue();
 
             if ("Y".equals(val)) {
-                man = (OrderManager)row.data;
+                man = (IOrderManager)row.data;
                 try {
                     /*
                      * reload the rows from the latest data in the managers just
                      * processed or from the old data in the manager if was
                      * selected for processing but abort was clicked
                      */
-                    man = combinedMap.get(man.getOrder().getId());
+                    man = combinedMap.get(man.getIorder().getId());
                     reloadRow(man, row, now);
                     orderTable.setCell(i, 0, "N");
                 } catch (Exception e) {
@@ -999,17 +999,17 @@ public class OrderFillScreen extends Screen {
         }
     }
 
-    private void reloadRow(OrderManager man, TableDataRow row, Datetime now) {
+    private void reloadRow(IOrderManager man, TableDataRow row, Datetime now) {
         row.data = man;
-        getOrderRowFromOrder(man.getOrder(), now, row);
-        orderMap.put(row, man.getOrder());
+        getOrderRowFromOrder(man.getIorder(), now, row);
+        orderMap.put(row, man.getIorder());
     }
 
-    private OrderViewDO getProcessShipData() {
-        OrderViewDO data, order;
+    private IOrderViewDO getProcessShipData() {
+        IOrderViewDO data, order;
         Set<Integer> set;
         Iterator<Integer> iter;
-        OrderManager man;
+        IOrderManager man;
 
         data = null;
 
@@ -1020,9 +1020,9 @@ public class OrderFillScreen extends Screen {
         iter = set.iterator();
 
         man = combinedMap.get(iter.next());
-        order = man.getOrder();
+        order = man.getIorder();
 
-        data = new OrderViewDO();
+        data = new IOrderViewDO();
         data.setShipFromId(order.getShipFromId());
         data.setOrganizationId(order.getOrganizationId());
         data.setOrganization(order.getOrganization());
@@ -1040,7 +1040,7 @@ public class OrderFillScreen extends Screen {
         } else {
             while (iter.hasNext()) {
                 man = combinedMap.get(iter.next());
-                order = man.getOrder();
+                order = man.getIorder();
                 if (order.getOrganizationAttention() != null) {
                     data.setOrganizationAttention(order.getOrganizationAttention());
                     break;
@@ -1052,12 +1052,12 @@ public class OrderFillScreen extends Screen {
     }
 
     private void createShippingItems(ShippingManager manager,
-                                     HashMap<Integer, OrderManager> combinedMap) {
+                                     HashMap<Integer, IOrderManager> combinedMap) {
         ShippingItemManager man;
-        OrderManager orderMan;
-        OrderItemManager orderItemMan;
-        OrderFillManager fillMan;
-        OrderItemViewDO orderItemData;
+        IOrderManager orderMan;
+        IOrderItemManager orderItemMan;
+        IOrderFillManager fillMan;
+        IOrderItemViewDO orderItemData;
         InventoryItemDO invItem;
         InventoryXUseViewDO data;
         ShippingItemDO shippingItem;
@@ -1103,24 +1103,24 @@ public class OrderFillScreen extends Screen {
                         shippingItem = man.getItemAt(index);
                         shippingItem.setQuantity(orderItemData.getQuantity());
                         shippingItem.setDescription(Messages.get().orderNum() + " " +
-                                                    orderItemData.getOrderId() + ": " +
+                                                    orderItemData.getIorderId() + ": " +
                                                     orderItemData.getInventoryItemName());
                         shippingItem.setReferenceId(orderItemData.getId());
-                        shippingItem.setReferenceTableId(Constants.table().ORDER_ITEM);
+                        shippingItem.setReferenceTableId(Constants.table().IORDER_ITEM);
                         continue;
                     }
 
                     for (j = 0; j < fillMan.count(); j++ ) {
                         data = fillMan.getFillAt(j);
-                        if (orderItemData.getId().equals(data.getOrderItemId())) {
+                        if (orderItemData.getId().equals(data.getIorderItemId())) {
                             index = man.addItem();
                             shippingItem = man.getItemAt(index);
                             shippingItem.setQuantity(data.getQuantity());
                             shippingItem.setDescription(Messages.get().orderNum() + " " +
-                                                        data.getOrderItemOrderId() + ": " +
+                                                        data.getIorderItemIorderId() + ": " +
                                                         data.getInventoryItemName());
-                            shippingItem.setReferenceId(data.getOrderItemId());
-                            shippingItem.setReferenceTableId(Constants.table().ORDER_ITEM);
+                            shippingItem.setReferenceId(data.getIorderItemId());
+                            shippingItem.setReferenceTableId(Constants.table().IORDER_ITEM);
                         }
                     }
                 }
@@ -1134,18 +1134,18 @@ public class OrderFillScreen extends Screen {
 
     private void loadProcessRows() {
         TableDataRow row;
-        OrderManager man;
+        IOrderManager man;
 
         row = orderTable.getSelection();
         man = null;
 
         if (row != null && "Y".equals(row.cells.get(0).getValue())) {
-            man = (OrderManager)row.data;
+            man = (IOrderManager)row.data;
         } else {
             for (int i = 0; i < orderTable.numRows(); i++ ) {
                 row = orderTable.getRow(i);
                 if ("Y".equals(row.cells.get(0).getValue())) {
-                    man = (OrderManager)row.data;
+                    man = (IOrderManager)row.data;
                     orderTable.selectRow(i);
                     break;
                 }
@@ -1161,7 +1161,7 @@ public class OrderFillScreen extends Screen {
         }
     }
 
-    private TableDataRow getOrderRowFromOrder(OrderViewDO data, Datetime now, TableDataRow row) {
+    private TableDataRow getOrderRowFromOrder(IOrderViewDO data, Datetime now, TableDataRow row) {
         int num, diff, val, index;
         OrganizationDO organization;
         Datetime ordDate;
@@ -1225,12 +1225,12 @@ public class OrderFillScreen extends Screen {
         return row;
     }
 
-    private ShippingManager getShippingManager(OrderViewDO data) {
+    private ShippingManager getShippingManager(IOrderViewDO data) {
         ShippingManager shippingManager;
         ShippingViewDO shipping;
 
         shippingManager = null;
-        if (OrderManager.TYPE_SEND_OUT.equals(data.getType()) &&
+        if (IOrderManager.TYPE_SEND_OUT.equals(data.getType()) &&
             Constants.dictionary().ORDER_STATUS_PENDING.equals(data.getStatusId())) {
             shipping = new ShippingViewDO();
             shipping.setShippedFromId(data.getShipFromId());

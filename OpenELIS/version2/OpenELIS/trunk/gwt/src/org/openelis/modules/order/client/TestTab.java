@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
@@ -66,9 +66,9 @@ import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderTestAnalyteManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderTestAnalyteManager;
+import org.openelis.manager.IOrderTestManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.panel.client.PanelService;
@@ -83,7 +83,7 @@ import com.google.gwt.user.client.Window;
 
 public class TestTab extends Screen implements HasActionHandlers<TestTab.Action> {
 
-    private OrderManager              manager;
+    private IOrderManager              manager;
     private TestTab                   screen; 
     private AppButton                 addTestButton, removeTestButton, popoutButton,
                                       checkAllButton, uncheckAllButton;
@@ -164,8 +164,8 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         tree.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                OrderTestViewDO data;
-                OrderTestAnalyteViewDO ana;
+                IOrderTestViewDO data;
+                IOrderTestAnalyteViewDO ana;
                 TestMethodVO test;
                 Object val;
                 TreeDataItem row;
@@ -178,16 +178,16 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 switch (c) {
                     case 0:
                         if (TEST_LEAF.equals(row.leafType)) {
-                            data = (OrderTestViewDO)row.data;
+                            data = (IOrderTestViewDO)row.data;
                             data.setItemSequence((Integer)val);
                         } else if (ANALYTE_LEAF.equals(row.leafType)) {
-                            ana = (OrderTestAnalyteViewDO)row.data;
+                            ana = (IOrderTestAnalyteViewDO)row.data;
                             ana.setTestAnalyteIsReportable((String)val);
                         }
                         break;
                     case 1:
                         if (TEST_LEAF.equals(row.leafType)) {
-                            data = (OrderTestViewDO)row.data;
+                            data = (IOrderTestViewDO)row.data;
 
                             if (val != null) {
                                 test = (TestMethodVO) ((TableDataRow)val).data;
@@ -221,9 +221,9 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             public void onRowAdded(RowAddedEvent event) {
                 TableDataRow val;
                 TreeDataItem row;
-                OrderTestViewDO data;
+                IOrderTestViewDO data;
                 TestMethodVO test;                
-                OrderTestManager man;
+                IOrderTestManager man;
                 
                 try {
                     man = manager.getTests();
@@ -291,7 +291,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 String                  value, flag;
                 ArrayList<TableDataRow> model;
                 TableDataRow            row;
-                OrderContainerDO        oData;
+                IOrderContainerDO        oData;
                 PanelDO                 pDO;
                 PanelManager            pMan;
                 TestManager             tMan;
@@ -474,7 +474,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         });
     }
     
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         loaded = false;
     }
@@ -491,8 +491,8 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     }
     
     protected void addAnalytes(int index, TreeDataItem parent) {
-        OrderTestAnalyteManager man;
-        OrderTestAnalyteViewDO data;
+        IOrderTestAnalyteManager man;
+        IOrderTestAnalyteViewDO data;
         TreeDataItem item;
         
         if(parent.getItems().size() > 0)
@@ -525,9 +525,9 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     private ArrayList<TreeDataItem> getTreeModel() {
         int i;
         String label;
-        OrderTestViewDO data;
+        IOrderTestViewDO data;
         ArrayList<TreeDataItem> model;
-        OrderTestManager man;
+        IOrderTestManager man;
         TableDataRow val;
         TreeDataItem row;
                 
@@ -538,7 +538,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         try {
             man = manager.getTests();
             for (i = 0; i < man.count(); i++ ) {
-                data = (OrderTestViewDO)man.getTestAt(i);
+                data = (IOrderTestViewDO)man.getTestAt(i);
                 row = new TreeDataItem(2);
                 row.leafType = TEST_LEAF;
                 row.key = data.getId();
@@ -658,7 +658,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
 
     private void setReportableForTest(TreeDataItem item, String reportable) {
         ArrayList<TreeDataItem> items;
-        OrderTestAnalyteViewDO ana;
+        IOrderTestAnalyteViewDO ana;
         
         if (ANALYTE_LEAF.equals(item.leafType))
             item = item.parent;
@@ -673,7 +673,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         items = item.getItems();
         for (TreeDataItem i : items) {
             i.cells.get(0).setValue(reportable);
-            ana = (OrderTestAnalyteViewDO)i.data;
+            ana = (IOrderTestAnalyteViewDO)i.data;
             ana.setTestAnalyteIsReportable(reportable);
         }
                 

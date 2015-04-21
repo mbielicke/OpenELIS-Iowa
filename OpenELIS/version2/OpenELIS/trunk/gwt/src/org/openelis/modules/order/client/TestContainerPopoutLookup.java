@@ -36,7 +36,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.ui.widget.WindowInt;
 
@@ -49,7 +49,7 @@ import com.google.gwt.user.client.Window;
 public class TestContainerPopoutLookup extends Screen implements 
                                                           HasActionHandlers<TestContainerPopoutLookup.Action> {
 
-    private OrderManager  manager;
+    private IOrderManager  manager;
     private AppButton     okButton;
     private TestTab       testTab;  
     private ContainerTab  containerTab;   
@@ -142,7 +142,7 @@ public class TestContainerPopoutLookup extends Screen implements
         return addHandler(handler, ActionEvent.getType());
     }
     
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         DataChangeEvent.fire(this);
     }

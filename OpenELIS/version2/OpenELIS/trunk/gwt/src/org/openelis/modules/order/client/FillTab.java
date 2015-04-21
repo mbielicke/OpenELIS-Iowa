@@ -14,18 +14,18 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderReceiptManager;
+import org.openelis.manager.IOrderFillManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderReceiptManager;
 import org.openelis.manager.StorageLocationManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
 public class FillTab extends Screen {
 
-    private OrderManager manager;
+    private IOrderManager manager;
     private TableWidget  table;
     private boolean      loaded, hasExtraCols;
 
@@ -65,7 +65,7 @@ public class FillTab extends Screen {
         // variable number of columns. One table has InventoryReceiptReceivedDate
         // and the other one does not
         //
-        hasExtraCols = table.getColumnWidget(OrderMeta.getInventoryReceiptReceivedDate()) != null;
+        hasExtraCols = table.getColumnWidget(IOrderMeta.getInventoryReceiptReceivedDate()) != null;
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -76,8 +76,8 @@ public class FillTab extends Screen {
         InventoryLocationViewDO invLocData;
         ArrayList<TableDataRow> model;
         TableDataRow row;
-        OrderFillManager fillMan;
-        OrderReceiptManager receiptMan;
+        IOrderFillManager fillMan;
+        IOrderReceiptManager receiptMan;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -133,7 +133,7 @@ public class FillTab extends Screen {
         return model;
     }
 
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         loaded = false;
     }

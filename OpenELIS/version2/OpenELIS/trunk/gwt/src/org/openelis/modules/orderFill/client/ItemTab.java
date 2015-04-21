@@ -38,7 +38,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
@@ -70,11 +70,11 @@ import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderFillManager;
+import org.openelis.manager.IOrderItemManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.manager.StorageLocationManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 import org.openelis.ui.widget.WindowInt;
 
@@ -84,7 +84,7 @@ import com.google.gwt.user.client.Window;
 
 public class ItemTab extends Screen {
 
-    private OrderManager                   manager;
+    private IOrderManager                   manager;
     private ItemTab                        screen;  
     private TreeWidget                     itemsTree;
     private Dropdown<Integer>              costCenterId;
@@ -95,7 +95,7 @@ public class ItemTab extends Screen {
     private AppButton                      removeItemButton, addItemButton;
 
     private boolean                        loaded;
-    private HashMap<Integer, OrderManager> combinedMap;
+    private HashMap<Integer, IOrderManager> combinedMap;
     private AppButton                      popoutButton;
     private ItemTreePopoutLookup           popoutLookup;
 
@@ -110,16 +110,16 @@ public class ItemTab extends Screen {
     private void initialize() {
         screen = this;
         
-        costCenterId = (Dropdown)def.getWidget(OrderMeta.getCostCenterId());
+        costCenterId = (Dropdown)def.getWidget(IOrderMeta.getCostCenterId());
         if (costCenterId != null) {
             addScreenHandler(costCenterId, new ScreenEventHandler<Integer>() {
                 public void onDataChange(DataChangeEvent event) {
                     if (manager != null)
-                        costCenterId.setSelection(manager.getOrder().getCostCenterId());
+                        costCenterId.setSelection(manager.getIorder().getCostCenterId());
                 }
 
                 public void onValueChange(ValueChangeEvent<Integer> event) {
-                    manager.getOrder().setCostCenterId(event.getValue());
+                    manager.getIorder().setCostCenterId(event.getValue());
                 }
 
                 public void onStateChange(StateChangeEvent<State> event) {
@@ -128,16 +128,16 @@ public class ItemTab extends Screen {
             });
         }
 
-        organizationAttention = (TextBox)def.getWidget(OrderMeta.getOrganizationAttention());
+        organizationAttention = (TextBox)def.getWidget(IOrderMeta.getOrganizationAttention());
         if (organizationAttention != null) {
             addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
                 public void onDataChange(DataChangeEvent event) {
                     if (manager != null)
-                        organizationAttention.setValue(manager.getOrder().getOrganizationAttention());
+                        organizationAttention.setValue(manager.getIorder().getOrganizationAttention());
                 }
 
                 public void onValueChange(ValueChangeEvent<String> event) {
-                    manager.getOrder().setOrganizationAttention(event.getValue());
+                    manager.getIorder().setOrganizationAttention(event.getValue());
                 }
 
                 public void onStateChange(StateChangeEvent<State> event) {
@@ -147,13 +147,13 @@ public class ItemTab extends Screen {
             });
         }
 
-        organizationAddressMultipleUnit = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressMultipleUnit());
+        organizationAddressMultipleUnit = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressMultipleUnit());
         if (organizationAddressMultipleUnit != null) {
             addScreenHandler(organizationAddressMultipleUnit, new ScreenEventHandler<String>() {
                 public void onDataChange(DataChangeEvent event) {
                     OrganizationDO data;
                     if (manager != null) {
-                        data = manager.getOrder().getOrganization();
+                        data = manager.getIorder().getOrganization();
                         if (data != null)
                             organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
                         else
@@ -172,14 +172,14 @@ public class ItemTab extends Screen {
             });
         }
 
-        organizationAddressStreetAddress = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressStreetAddress());
+        organizationAddressStreetAddress = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressStreetAddress());
         if (organizationAddressStreetAddress != null) {
             addScreenHandler(organizationAddressStreetAddress, new ScreenEventHandler<String>() {
                 public void onDataChange(DataChangeEvent event) {
                     OrganizationDO data;
 
                     if (manager != null) {
-                        data = manager.getOrder().getOrganization();
+                        data = manager.getIorder().getOrganization();
                         if (data != null)
                             organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
                         else
@@ -198,14 +198,14 @@ public class ItemTab extends Screen {
             });
         }
 
-        organizationAddressCity = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressCity());
+        organizationAddressCity = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressCity());
         if (organizationAddressCity != null) {
             addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
                 public void onDataChange(DataChangeEvent event) {
                     OrganizationDO data;
 
                     if (manager != null) {
-                        data = manager.getOrder().getOrganization();
+                        data = manager.getIorder().getOrganization();
                         if (data != null)
                             organizationAddressCity.setValue(data.getAddress().getCity());
                         else
@@ -224,14 +224,14 @@ public class ItemTab extends Screen {
             });
         }
 
-        organizationAddressState = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressState());
+        organizationAddressState = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressState());
         if (organizationAddressState != null) {
             addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
                 public void onDataChange(DataChangeEvent event) {
                     OrganizationDO data;
 
                     if (manager != null) {
-                        data = manager.getOrder().getOrganization();
+                        data = manager.getIorder().getOrganization();
                         if (data != null)
                             organizationAddressState.setValue(data.getAddress().getState());
                         else
@@ -250,14 +250,14 @@ public class ItemTab extends Screen {
             });
         }
 
-        organizationAddressZipCode = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressZipCode());
+        organizationAddressZipCode = (TextBox)def.getWidget(IOrderMeta.getOrganizationAddressZipCode());
         if (organizationAddressZipCode != null) {
             addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
                 public void onDataChange(DataChangeEvent event) {
                     OrganizationDO data;
 
                     if (manager != null) {
-                        data = manager.getOrder().getOrganization();
+                        data = manager.getIorder().getOrganization();
                         if (data != null)
                             organizationAddressZipCode.setValue(data.getAddress().getZipCode());
                         else
@@ -290,7 +290,7 @@ public class ItemTab extends Screen {
                     // selected
                     // to be processed
                     //
-                    present = combinedMap.containsKey(manager.getOrder().getId());
+                    present = combinedMap.containsKey(manager.getIorder().getId());
                     removeItemButton.enable(present);
                     addItemButton.enable(present);
                 }
@@ -304,8 +304,8 @@ public class ItemTab extends Screen {
         itemsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 TreeDataItem item;
-                OrderItemViewDO data;
-                OrderManager man;
+                IOrderItemViewDO data;
+                IOrderManager man;
                 int c;
 
                 if (state != State.UPDATE) {
@@ -317,11 +317,11 @@ public class ItemTab extends Screen {
                 c = event.getCol();
 
                 if ("top".equals(item.leafType)) {
-                    data = (OrderItemViewDO)item.key;
+                    data = (IOrderItemViewDO)item.key;
                     if (combinedMap == null) {
                         event.cancel();
                     } else {
-                        man = combinedMap.get(data.getOrderId());
+                        man = combinedMap.get(data.getIorderId());
                         if (c != 1 || man == null)
                             event.cancel();
                     }
@@ -336,7 +336,7 @@ public class ItemTab extends Screen {
                 TableDataRow row;
                 InventoryLocationViewDO loc;
                 InventoryXUseViewDO fill;
-                OrderItemViewDO item;
+                IOrderItemViewDO item;
                 TreeDataItem child, parent;
                 Integer qty;
                 int r, c;
@@ -348,7 +348,7 @@ public class ItemTab extends Screen {
                 if ("orderItem".equals(child.leafType)) {
                     fill = (InventoryXUseViewDO)child.data;
                     parent = child.parent;
-                    item = (OrderItemViewDO)parent.key;
+                    item = (IOrderItemViewDO)parent.key;
 
                     if (c == 1) {
                         qty = (Integer)child.cells.get(1).getValue();
@@ -391,7 +391,7 @@ public class ItemTab extends Screen {
                     }
                 } else if (c == 1) {
                     qty = (Integer)child.cells.get(1).getValue();
-                    item = (OrderItemViewDO)child.key;
+                    item = (IOrderItemViewDO)child.key;
                     item.setQuantity(qty);
                     validateItemRow(child, r);
                     itemsTree.refreshRow(child);
@@ -412,17 +412,17 @@ public class ItemTab extends Screen {
 
         itemsTree.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                OrderManager man;
-                OrderItemViewDO item;
+                IOrderManager man;
+                IOrderItemViewDO item;
                 InventoryXUseViewDO fill;
-                OrderFillManager fills;
+                IOrderFillManager fills;
                 TreeDataItem row, parent;
                 Integer sum, quantity, difference;
 
                 row = (TreeDataItem)event.getRow();
                 parent = row.parent;
-                item = (OrderItemViewDO)parent.key;
-                man = combinedMap.get(item.getOrderId());
+                item = (IOrderItemViewDO)parent.key;
+                man = combinedMap.get(item.getIorderId());
 
                 try {
                     sum = getSumOfFillQuantityForItem(parent);
@@ -439,8 +439,8 @@ public class ItemTab extends Screen {
                     fill.setQuantity(difference);
                     fill.setInventoryItemId(item.getInventoryItemId());
                     fill.setInventoryItemName(item.getInventoryItemName());
-                    fill.setOrderItemId(item.getId());
-                    fill.setOrderItemOrderId(item.getOrderId());
+                    fill.setIorderItemId(item.getId());
+                    fill.setIorderItemIorderId(item.getIorderId());
 
                     row.data = fill;
 
@@ -469,7 +469,7 @@ public class ItemTab extends Screen {
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
-                OrderItemViewDO key;
+                IOrderItemViewDO key;
 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
@@ -479,7 +479,7 @@ public class ItemTab extends Screen {
                 fields.add(field);
 
                 item = itemsTree.getSelection();
-                key = (OrderItemViewDO)item.parent.key;
+                key = (IOrderItemViewDO)item.parent.key;
 
                 field = new QueryData();
                 field.setQuery(Integer.toString(key.getInventoryItemId()));
@@ -526,8 +526,8 @@ public class ItemTab extends Screen {
             public void onClick(ClickEvent event) {
                 TreeDataItem item, parent;
                 InventoryXUseViewDO data;
-                OrderManager man;
-                OrderFillManager fills;
+                IOrderManager man;
+                IOrderFillManager fills;
 
                 item = itemsTree.getSelection();
 
@@ -538,7 +538,7 @@ public class ItemTab extends Screen {
                     window.setStatus(Messages.get().qtyAdjustedItemNotRemoved(), "");
                 } else {
                     data = (InventoryXUseViewDO)item.data;
-                    man = combinedMap.get(data.getOrderItemOrderId());
+                    man = combinedMap.get(data.getIorderItemIorderId());
                     itemsTree.deleteRow(item);
                     try {
                         fills = man.getFills();
@@ -565,7 +565,7 @@ public class ItemTab extends Screen {
         addScreenHandler(addItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 TreeDataItem item, child, parent;
-                OrderItemViewDO data;
+                IOrderItemViewDO data;
                 InventoryItemDO invItem;
                 int row;
 
@@ -577,7 +577,7 @@ public class ItemTab extends Screen {
 
                 itemsTree.finishEditing();
                 if ("top".equals(item.leafType)) {
-                    data = (OrderItemViewDO)item.key;
+                    data = (IOrderItemViewDO)item.key;
                     try {
                         invItem = InventoryItemCache.getById(data.getInventoryItemId());
                     } catch (Exception e) {
@@ -592,14 +592,14 @@ public class ItemTab extends Screen {
                         return;
                     }
 
-                    child = createAndAddChildToParent((OrderItemViewDO)item.key, item);
+                    child = createAndAddChildToParent((IOrderItemViewDO)item.key, item);
                     itemsTree.select(child);
                     row = itemsTree.getSelectedRow();
                     validateLocationRow(child, row);
                     itemsTree.startEditing(row, 3);
                 } else {
                     parent = item.parent;
-                    child = createAndAddChildToParent((OrderItemViewDO)parent.key, parent);
+                    child = createAndAddChildToParent((IOrderItemViewDO)parent.key, parent);
                     itemsTree.select(child);
                     row = itemsTree.getSelectedRow();
                     validateLocationRow(child, row);
@@ -647,7 +647,7 @@ public class ItemTab extends Screen {
         }
     }
 
-    public void setManager(OrderManager manager, HashMap<Integer, OrderManager> combinedMap) {
+    public void setManager(IOrderManager manager, HashMap<Integer, IOrderManager> combinedMap) {
         this.manager = manager;
         this.combinedMap = combinedMap;
         loaded = false;
@@ -663,7 +663,7 @@ public class ItemTab extends Screen {
     public boolean validate() {
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
-        OrderItemViewDO item;
+        IOrderItemViewDO item;
         InventoryItemDO invItem;
         Integer quantity;
         boolean validate;
@@ -672,13 +672,13 @@ public class ItemTab extends Screen {
         validate = true;
         invItem = null;
 
-        if (combinedMap != null && combinedMap.get(manager.getOrder().getId()) != null) {
+        if (combinedMap != null && combinedMap.get(manager.getIorder().getId()) != null) {
             itemsTree.finishEditing();
             model = itemsTree.getData();
 
             for (i = 0; i < model.size(); i++ ) {
                 parent = model.get(i);
-                item = (OrderItemViewDO)parent.key;
+                item = (IOrderItemViewDO)parent.key;
                 try {
                     invItem = InventoryItemCache.getById(item.getInventoryItemId());
                 } catch (Exception e) {
@@ -717,9 +717,9 @@ public class ItemTab extends Screen {
     private ArrayList<TreeDataItem> getTreeModel() {
         ArrayList<TreeDataItem> model;
         TreeDataItem item;
-        OrderManager man;
-        OrderItemManager itemMan;
-        OrderItemViewDO data, key;
+        IOrderManager man;
+        IOrderItemManager itemMan;
+        IOrderItemViewDO data, key;
         HashMap<Integer, Boolean> itemPresentMap;
         Boolean itemPresent;
         Set<Integer> set;
@@ -729,7 +729,7 @@ public class ItemTab extends Screen {
         if (combinedMap == null)
             return new ArrayList<TreeDataItem>();
 
-        man = combinedMap.get(manager.getOrder().getId());
+        man = combinedMap.get(manager.getIorder().getId());
         model = new ArrayList<TreeDataItem>();
 
         try {
@@ -778,7 +778,7 @@ public class ItemTab extends Screen {
                     item = model.get(j);
                     for (i = 0; i < count; i++ ) {
                         data = itemMan.getItemAt(i);
-                        key = (OrderItemViewDO)item.key;
+                        key = (IOrderItemViewDO)item.key;
                         if (data.getId().equals(key.getId()))
                             itemPresentMap.put(data.getId(), true);
                     }
@@ -802,19 +802,19 @@ public class ItemTab extends Screen {
 
     private void loadChildItems(TreeDataItem item) {
         String location;
-        OrderFillManager fills;
+        IOrderFillManager fills;
         InventoryXUseViewDO fill;
         ArrayList<InventoryXUseViewDO> list;
         TreeDataItem child;
-        OrderManager man;
-        OrderItemViewDO data;
+        IOrderManager man;
+        IOrderItemViewDO data;
 
         list = new ArrayList<InventoryXUseViewDO>();
 
         window.setBusy();
         try {
-            data = (OrderItemViewDO)item.key;
-            man = combinedMap.get(data.getOrderId());
+            data = (IOrderItemViewDO)item.key;
+            man = combinedMap.get(data.getIorderId());
 
             if (man == null)
                 man = manager;
@@ -823,7 +823,7 @@ public class ItemTab extends Screen {
 
             for (int i = 0; i < fills.count(); i++ ) {
                 fill = fills.getFillAt(i);
-                if (fill.getOrderItemId().equals(data.getId())) {
+                if (fill.getIorderItemId().equals(data.getId())) {
                     child = new TreeDataItem(6);
                     child.leafType = "orderItem";
                     child.cells.get(1).setValue(fill.getQuantity());
@@ -854,14 +854,14 @@ public class ItemTab extends Screen {
         item.data = list;
     }
 
-    private TreeDataItem getTopLevelItem(OrderItemViewDO data) {
+    private TreeDataItem getTopLevelItem(IOrderItemViewDO data) {
         TreeDataItem item;
 
         item = new TreeDataItem(3);
         item.leafType = "top";
         item.close();
         item.key = data;
-        item.cells.get(0).setValue(data.getOrderId());
+        item.cells.get(0).setValue(data.getIorderId());
         item.cells.get(1).setValue(data.getQuantity());
         item.cells.get(2).setValue(new TableDataRow(data.getInventoryItemId(),
                                                     data.getInventoryItemName()));
@@ -871,7 +871,7 @@ public class ItemTab extends Screen {
         return item;
     }
 
-    private TreeDataItem createAndAddChildToParent(OrderItemViewDO data, TreeDataItem parent) {
+    private TreeDataItem createAndAddChildToParent(IOrderItemViewDO data, TreeDataItem parent) {
         TreeDataItem child;
 
         child = new TreeDataItem(6);
@@ -921,11 +921,11 @@ public class ItemTab extends Screen {
         int sum;
         boolean valid;
         Integer qty;
-        OrderItemViewDO data;
+        IOrderItemViewDO data;
         InventoryItemDO invItem;
 
         invItem = null;
-        data = (OrderItemViewDO)item.key;
+        data = (IOrderItemViewDO)item.key;
         try {
             invItem = InventoryItemCache.getById(data.getInventoryItemId());
         } catch (Exception e) {
@@ -972,7 +972,7 @@ public class ItemTab extends Screen {
 
     private boolean validateLocationRow(TreeDataItem child, int row) {
         InventoryXUseViewDO fill;
-        OrderItemViewDO item;
+        IOrderItemViewDO item;
         TreeDataItem parent;
         Integer qty, qtyOnHand, qtyOrdered, difference, invLocationId;
         int sum;
@@ -981,7 +981,7 @@ public class ItemTab extends Screen {
         fill = (InventoryXUseViewDO)child.data;
         qtyOnHand = fill.getInventoryLocationQuantityOnhand();
         parent = child.parent;
-        item = (OrderItemViewDO)parent.key;
+        item = (IOrderItemViewDO)parent.key;
         qtyOrdered = item.getQuantity();
         invLocationId = fill.getInventoryLocationId();
         difference = null;

@@ -28,10 +28,10 @@ package org.openelis.modules.order1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderReturnVO;
+import org.openelis.domain.IOrderReturnVO;
 import org.openelis.gwt.screen.Callback;
-import org.openelis.manager.OrderManager1;
-import org.openelis.manager.OrderManager1.Load;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.manager.IOrderManager1.Load;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.services.TokenService;
@@ -65,75 +65,75 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderManager1 getInstance(String type) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 getInstance(String type) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.getInstance(type, callback);
         return callback.getResult();
     }
 
     @Override
-    public void getInstance(String type, AsyncCallback<OrderManager1> callback) {
+    public void getInstance(String type, AsyncCallback<IOrderManager1> callback) {
         service.getInstance(type, callback);
     }
 
     @Override
-    public OrderManager1 fetchById(Integer orderId, Load... elements) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 fetchById(Integer orderId, Load... elements) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.fetchById(orderId, elements, callback);
         return callback.getResult();
     }
 
     @Override
-    public void fetchById(Integer orderId, Load[] elements, AsyncCallback<OrderManager1> callback) {
+    public void fetchById(Integer orderId, Load[] elements, AsyncCallback<IOrderManager1> callback) {
         service.fetchById(orderId, elements, callback);
     }
 
     @Override
-    public ArrayList<OrderManager1> fetchByIds(ArrayList<Integer> orderIds, Load... elements) throws Exception {
-        Callback<ArrayList<OrderManager1>> callback;
+    public ArrayList<IOrderManager1> fetchByIds(ArrayList<Integer> orderIds, Load... elements) throws Exception {
+        Callback<ArrayList<IOrderManager1>> callback;
 
-        callback = new Callback<ArrayList<OrderManager1>>();
+        callback = new Callback<ArrayList<IOrderManager1>>();
         service.fetchByIds(orderIds, elements, callback);
         return callback.getResult();
     }
 
     @Override
     public void fetchByIds(ArrayList<Integer> orderIds, Load[] elements,
-                           AsyncCallback<ArrayList<OrderManager1>> callback) {
+                           AsyncCallback<ArrayList<IOrderManager1>> callback) {
         service.fetchByIds(orderIds, elements, callback);
     }
 
     @Override
-    public ArrayList<OrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+    public ArrayList<IOrderManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                  Load... elements) throws Exception {
-        Callback<ArrayList<OrderManager1>> callback;
+        Callback<ArrayList<IOrderManager1>> callback;
 
-        callback = new Callback<ArrayList<OrderManager1>>();
+        callback = new Callback<ArrayList<IOrderManager1>>();
         service.fetchByQuery(fields, first, max, elements, callback);
         return callback.getResult();
     }
 
     @Override
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max, Load[] elements,
-                             AsyncCallback<ArrayList<OrderManager1>> callback) {
+                             AsyncCallback<ArrayList<IOrderManager1>> callback) {
         service.fetchByQuery(fields, first, max, elements, callback);
     }
 
     @Override
-    public OrderManager1 fetchWith(OrderManager1 om, Load... elements) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 fetchWith(IOrderManager1 om, Load... elements) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.fetchWith(om, elements, callback);
         return callback.getResult();
     }
 
     @Override
-    public void fetchWith(OrderManager1 om, Load[] elements, AsyncCallback<OrderManager1> callback) {
+    public void fetchWith(IOrderManager1 om, Load[] elements, AsyncCallback<IOrderManager1> callback) {
         service.fetchWith(om, elements, callback);
     }
 
@@ -152,104 +152,104 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderManager1 fetchForUpdate(Integer orderId) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 fetchForUpdate(Integer orderId) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.fetchForUpdate(orderId, callback);
         return callback.getResult();
     }
 
     @Override
-    public void fetchForUpdate(Integer orderId, AsyncCallback<OrderManager1> callback) {
+    public void fetchForUpdate(Integer orderId, AsyncCallback<IOrderManager1> callback) {
         service.fetchForUpdate(orderId, callback);
     }
 
     @Override
-    public OrderManager1 fetchForUpdate(Integer orderId, Load... elements) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 fetchForUpdate(Integer orderId, Load... elements) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.fetchForUpdate(orderId, elements, callback);
         return callback.getResult();
     }
 
     @Override
     public void fetchForUpdate(Integer orderId, Load[] elements,
-                               AsyncCallback<OrderManager1> callback) {
+                               AsyncCallback<IOrderManager1> callback) {
         service.fetchForUpdate(orderId, elements, callback);
     }
 
     @Override
-    public ArrayList<OrderManager1> fetchForUpdate(ArrayList<Integer> orderIds, Load... elements) throws Exception {
-        Callback<ArrayList<OrderManager1>> callback;
+    public ArrayList<IOrderManager1> fetchForUpdate(ArrayList<Integer> orderIds, Load... elements) throws Exception {
+        Callback<ArrayList<IOrderManager1>> callback;
 
-        callback = new Callback<ArrayList<OrderManager1>>();
+        callback = new Callback<ArrayList<IOrderManager1>>();
         service.fetchForUpdate(orderIds, elements, callback);
         return callback.getResult();
     }
 
     @Override
     public void fetchForUpdate(ArrayList<Integer> orderIds, Load[] elements,
-                               AsyncCallback<ArrayList<OrderManager1>> callback) {
+                               AsyncCallback<ArrayList<IOrderManager1>> callback) {
         service.fetchForUpdate(orderIds, elements, callback);
     }
 
     @Override
-    public OrderManager1 unlock(Integer orderId, Load... elements) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 unlock(Integer orderId, Load... elements) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.unlock(orderId, elements, callback);
         return callback.getResult();
     }
 
     @Override
-    public void unlock(Integer orderId, Load[] elements, AsyncCallback<OrderManager1> callback) {
+    public void unlock(Integer orderId, Load[] elements, AsyncCallback<IOrderManager1> callback) {
         service.unlock(orderId, elements, callback);
     }
 
     @Override
-    public ArrayList<OrderManager1> unlock(ArrayList<Integer> orderIds, Load... elements) throws Exception {
-        Callback<ArrayList<OrderManager1>> callback;
+    public ArrayList<IOrderManager1> unlock(ArrayList<Integer> orderIds, Load... elements) throws Exception {
+        Callback<ArrayList<IOrderManager1>> callback;
 
-        callback = new Callback<ArrayList<OrderManager1>>();
+        callback = new Callback<ArrayList<IOrderManager1>>();
         service.unlock(orderIds, elements, callback);
         return callback.getResult();
     }
 
     @Override
     public void unlock(ArrayList<Integer> orderIds, Load[] elements,
-                       AsyncCallback<ArrayList<OrderManager1>> callback) {
+                       AsyncCallback<ArrayList<IOrderManager1>> callback) {
         service.unlock(orderIds, elements, callback);
     }
 
     @Override
-    public OrderReturnVO duplicate(Integer id) throws Exception {
-        Callback<OrderReturnVO> callback;
+    public IOrderReturnVO duplicate(Integer id) throws Exception {
+        Callback<IOrderReturnVO> callback;
 
-        callback = new Callback<OrderReturnVO>();
+        callback = new Callback<IOrderReturnVO>();
         service.duplicate(id, callback);
         return callback.getResult();
     }
 
     @Override
-    public void duplicate(Integer id, AsyncCallback<OrderReturnVO> callback) {
+    public void duplicate(Integer id, AsyncCallback<IOrderReturnVO> callback) {
         service.duplicate(id, callback);
     }
 
     @Override
-    public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 update(IOrderManager1 om, boolean ignoreWarnings) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.update(om, ignoreWarnings, callback);
         return callback.getResult();
     }
 
     @Override
-    public void update(OrderManager1 om, boolean ignoreWarnings,
-                       AsyncCallback<OrderManager1> callback) {
+    public void update(IOrderManager1 om, boolean ignoreWarnings,
+                       AsyncCallback<IOrderManager1> callback) {
         service.update(om, ignoreWarnings, callback);
     }
 
@@ -269,62 +269,62 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
-        Callback<OrderReturnVO> callback;
+    public IOrderReturnVO addAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        Callback<IOrderReturnVO> callback;
 
-        callback = new Callback<OrderReturnVO>();
+        callback = new Callback<IOrderReturnVO>();
         service.addAuxGroups(om, groupIds, callback);
         return callback.getResult();
     }
 
     @Override
-    public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderReturnVO> callback) {
+    public void addAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds,
+                             AsyncCallback<IOrderReturnVO> callback) {
         service.addAuxGroups(om, groupIds, callback);
     }
 
     @Override
-    public OrderManager1 removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 removeAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.removeAuxGroups(om, groupIds, callback);
         return callback.getResult();
     }
 
     @Override
-    public void removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                                AsyncCallback<OrderManager1> callback) {
+    public void removeAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds,
+                                AsyncCallback<IOrderManager1> callback) {
         service.removeAuxGroups(om, groupIds, callback);
     }
 
     @Override
-    public OrderReturnVO addTest(OrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
-        Callback<OrderReturnVO> callback;
+    public IOrderReturnVO addTest(IOrderManager1 om, Integer id, boolean isTest, Integer index) throws Exception {
+        Callback<IOrderReturnVO> callback;
 
-        callback = new Callback<OrderReturnVO>();
+        callback = new Callback<IOrderReturnVO>();
         service.addTest(om, id, isTest, index, callback);
         return callback.getResult();
     }
 
     @Override
-    public void addTest(OrderManager1 om, Integer id, boolean isTest, Integer index,
-                        AsyncCallback<OrderReturnVO> callback) {
+    public void addTest(IOrderManager1 om, Integer id, boolean isTest, Integer index,
+                        AsyncCallback<IOrderReturnVO> callback) {
         service.addTest(om, id, isTest, index, callback);
     }
 
     @Override
-    public OrderManager1 removeTests(OrderManager1 om, ArrayList<Integer> ids) throws Exception {
-        Callback<OrderManager1> callback;
+    public IOrderManager1 removeTests(IOrderManager1 om, ArrayList<Integer> ids) throws Exception {
+        Callback<IOrderManager1> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<IOrderManager1>();
         service.removeTests(om, ids, callback);
         return callback.getResult();
     }
 
     @Override
-    public void removeTests(OrderManager1 om, ArrayList<Integer> ids,
-                            AsyncCallback<OrderManager1> callback) {
+    public void removeTests(IOrderManager1 om, ArrayList<Integer> ids,
+                            AsyncCallback<IOrderManager1> callback) {
         service.removeTests(om, ids, callback);
     }
 }
