@@ -800,7 +800,7 @@ public class AnalysisManager implements Serializable {
     
     /**
      * In the case of merging the analyses added through quick entry with the tests
-     * added to an order, all the analyses added through quick entry are preserved
+     * added to an iorder, all the analyses added through quick entry are preserved
      * in the new sample manager, even if their sample item changes. So for those,
      * the test manager can simply be set from the analyses with the same id in 
      * the old sample manager rather than being fetched or duplicated. This method
@@ -874,7 +874,7 @@ public class AnalysisManager implements Serializable {
                 mergeAt(index, data.getTestId());
         } else {
             /*
-             * When the results for a test added from an order, there are no previous
+             * When the results for a test added from an iorder, there are no previous
              * results with which they can be merged. Also, the results included 
              * supplemental analytes.
              */

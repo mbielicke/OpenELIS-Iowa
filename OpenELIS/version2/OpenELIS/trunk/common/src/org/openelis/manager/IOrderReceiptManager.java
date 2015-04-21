@@ -31,23 +31,23 @@ import java.util.ArrayList;
 import org.openelis.domain.InventoryXPutViewDO;
 
 
-public class OrderReceiptManager implements Serializable {
+public class IOrderReceiptManager implements Serializable {
 
     private static final long                           serialVersionUID = 1L;
 
-    protected Integer                                   orderId;
-    protected ArrayList<InventoryXPutViewDO>                receipts, deleted;
+    protected Integer                                   iorderId;
+    protected ArrayList<InventoryXPutViewDO>            receipts, deleted;
 
-    protected transient static OrderReceiptManagerProxy proxy;
+    protected transient static IOrderReceiptManagerProxy proxy;
 
-    protected OrderReceiptManager() {
+    protected IOrderReceiptManager() {
     }
 
     /**
      * Creates a new instance of this object.
      */
-    public static OrderReceiptManager getInstance() {
-        return new OrderReceiptManager();
+    public static IOrderReceiptManager getInstance() {
+        return new IOrderReceiptManager();
     }
 
     public InventoryXPutViewDO getReceiptAt(int i) {
@@ -110,15 +110,15 @@ public class OrderReceiptManager implements Serializable {
     }
 
     // service methods
-    public static OrderReceiptManager fetchByOrderId(Integer id) throws Exception {
-        return proxy().fetchByOrderId(id);
+    public static IOrderReceiptManager fetchByIorderId(Integer id) throws Exception {
+        return proxy().fetchByIorderId(id);
     }
 
-    public OrderReceiptManager add() throws Exception {
+    public IOrderReceiptManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public OrderReceiptManager update() throws Exception {
+    public IOrderReceiptManager update() throws Exception {
         return proxy().update(this);
     }
 
@@ -127,12 +127,12 @@ public class OrderReceiptManager implements Serializable {
     }
 
     // friendly methods used by managers and proxies
-    Integer getOrderId() {
-        return orderId;
+    Integer getIorderId() {
+        return iorderId;
     }
 
-    void setOrderId(Integer id) {
-        orderId = id;
+    void setIorderId(Integer id) {
+        iorderId = id;
     }
 
     ArrayList<InventoryXPutViewDO> getReceipts() {
@@ -153,9 +153,9 @@ public class OrderReceiptManager implements Serializable {
         return deleted.get(i);
     }
 
-    private static OrderReceiptManagerProxy proxy() {
+    private static IOrderReceiptManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderReceiptManagerProxy();
+            proxy = new IOrderReceiptManagerProxy();
         return proxy;
     }
 }

@@ -28,13 +28,13 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * The class extends order organization DO and carries several commonly used
+ * The class extends IOrderOrganizationDO and carries several commonly used
  * fields such as organization name. The additional fields are for read/display
  * only and do not get committed to the database. Note: isChanged will reflect
  * any changes to read/display fields.
  */
 
-public class OrderOrganizationViewDO extends OrderOrganizationDO {
+public class IOrderOrganizationViewDO extends IOrderOrganizationDO {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,10 +44,10 @@ public class OrderOrganizationViewDO extends OrderOrganizationDO {
                     organizationAddressWorkPhone, organizationAddressFaxPhone,
                     organizationAddressCountry;
 
-    public OrderOrganizationViewDO() {
+    public IOrderOrganizationViewDO() {
     }
 
-    public OrderOrganizationViewDO(Integer id, Integer orderId, Integer organizationId,
+    public IOrderOrganizationViewDO(Integer id, Integer iorderId, Integer organizationId,
                                    String organizationAttention, Integer typeId,
                                    String organizationName, String organizationIsActive,
                                    String organizationAddressMultipleUnit,
@@ -57,7 +57,7 @@ public class OrderOrganizationViewDO extends OrderOrganizationDO {
                                    String organizationAddressWorkPhone,
                                    String organizationAddressFaxPhone,
                                    String organizationAddressCountry) {
-        super(id, orderId, organizationId, organizationAttention, typeId);
+        super(id, iorderId, organizationId, organizationAttention, typeId);
         setOrganizationName(organizationName);
         setOrganizationIsActive(organizationIsActive);
         setOrganizationAddressMultipleUnit(organizationAddressMultipleUnit);

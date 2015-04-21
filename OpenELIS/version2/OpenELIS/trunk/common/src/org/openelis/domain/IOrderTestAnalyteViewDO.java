@@ -28,12 +28,12 @@ package org.openelis.domain;
 import org.openelis.ui.common.DataBaseUtil;
 
 /**
- * The class extends order test analyte DO and adds analyte name etc. The
+ * The class extends iorder test analyte DO and adds analyte name etc. The
  * additional fields are for read/display only and do not get committed to the
  * database. Note: isChanged will reflect any changes to read/display fields.
  */
 
-public class OrderTestAnalyteViewDO extends OrderTestAnalyteDO {
+public class IOrderTestAnalyteViewDO extends IOrderTestAnalyteDO {
 
     private static final long serialVersionUID = 1L;
     
@@ -41,14 +41,14 @@ public class OrderTestAnalyteViewDO extends OrderTestAnalyteDO {
     
     protected String analyteName, testAnalyteIsReportable, testAnalyteIsPresent;
     
-    public OrderTestAnalyteViewDO() {
+    public IOrderTestAnalyteViewDO() {
     }
     
-    public OrderTestAnalyteViewDO(Integer id, Integer orderTestId, Integer analyteId,
+    public IOrderTestAnalyteViewDO(Integer id, Integer iorderTestId, Integer analyteId,
                                   String analyteName, Integer testAnalyteSortOrder,
                                   Integer testAnalyteTypeId, String testAnalyteIsReportable,
                                   String testAnalyteIsPresent) {
-        super(id, orderTestId, analyteId);
+        super(id, iorderTestId, analyteId);
         setAnalyteName(analyteName);
         setTestAnalyteSortOrder(testAnalyteSortOrder);
         setTestAnalyteTypeId(testAnalyteTypeId);
