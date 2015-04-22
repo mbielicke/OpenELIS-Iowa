@@ -102,6 +102,12 @@ public interface DataViewUI extends IsWidget {
 
     public CheckBox getPatientEthnicity();
 
+    public CheckBox getPatientPhone();
+
+    public CheckBox getProviderLastName();
+
+    public CheckBox getProviderFirstName();
+
     public CheckBox getPwsIdHeader();
 
     public CheckBox getPwsName();

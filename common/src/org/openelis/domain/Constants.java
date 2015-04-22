@@ -164,18 +164,18 @@ public class Constants implements Serializable {
     public static class Domain implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        public final String       QUICKENTRY, ENVIRONMENTAL, SDWIS,
-                        PRIVATEWELL, NEONATAL, CLINICAL, ANIMAL, PT;
-        
+        public final String       QUICKENTRY, ENVIRONMENTAL, SDWIS, PRIVATEWELL, NEONATAL,
+                        CLINICAL, ANIMAL, PT;
+
         private Domain() {
-        	 QUICKENTRY = "Q";
-        	 ENVIRONMENTAL = "E";
-        	 SDWIS = "S";
-        	 PRIVATEWELL = "W";
-        	 NEONATAL = "N";
-        	 CLINICAL = "C";
-        	 ANIMAL = "A";
-        	 PT = "P";
+            QUICKENTRY = "Q";
+            ENVIRONMENTAL = "E";
+            SDWIS = "S";
+            PRIVATEWELL = "W";
+            NEONATAL = "N";
+            CLINICAL = "C";
+            ANIMAL = "A";
+            PT = "P";
         }
     }
 
@@ -249,11 +249,11 @@ public class Constants implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final String       INTERNAL, VENDOR, SEND_OUT;
-        
+
         private IOrder() {
-        	INTERNAL = "I";
-        	VENDOR = "V";
-        	SEND_OUT = "S";
+            INTERNAL = "I";
+            VENDOR = "V";
+            SEND_OUT = "S";
         }
     }
 
@@ -318,6 +318,14 @@ public class Constants implements Serializable {
             return getAuxFieldGroup(data.getId());
         }
 
+        public String get(AuxFieldDO data) {
+            return getAuxField(data.getId());
+        }
+
+        public String get(AuxFieldValueDO data) {
+            return getAuxFieldValue(data.getId());
+        }
+
         public String get(IOrderTestDO data) {
             return getIorderTest(data.getId());
         }
@@ -328,8 +336,8 @@ public class Constants implements Serializable {
 
         public String get(AuxDataDO data) {
             return getAuxData(data.getId());
-        }       
-        
+        }
+
         public String get(AttachmentItemDO data) {
             return getAttachmentItem(data.getId());
         }
@@ -379,6 +387,14 @@ public class Constants implements Serializable {
 
         public String getAuxFieldGroup(Integer id) {
             return Constants.table().AUX_FIELD_GROUP + ":" + id;
+        }
+
+        public String getAuxField(Integer id) {
+            return Constants.table().AUX_FIELD + ":" + id;
+        }
+
+        public String getAuxFieldValue(Integer id) {
+            return Constants.table().AUX_FIELD_VALUE + ":" + id;
         }
 
         public String getIorderTest(Integer id) {

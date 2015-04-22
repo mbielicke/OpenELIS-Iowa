@@ -51,16 +51,19 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
-    @NamedQuery( name = "Category.FetchById", 
-                query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
-                      + "  from Category c where c.id = :id"),
-    @NamedQuery( name = "Category.FetchBySystemName",
-                query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
-                      + "  from Category c where c.systemName = :systemName"),
-    @NamedQuery( name = "Category.FetchByName", 
-                query = "select distinct new org.openelis.domain.IdNameVO(c.id, c.name) "
-                      + "  from Category c where c.name like :name and c.isSystem = 'N' order by c.name")})
+@NamedQueries({
+               @NamedQuery(name = "Category.FetchById",
+                           query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
+                                   + "  from Category c where c.id = :id"),
+               @NamedQuery(name = "Category.FetchByIds",
+                           query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
+                                   + "  from Category c where c.id in (:ids)"),
+               @NamedQuery(name = "Category.FetchBySystemName",
+                           query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
+                                   + "  from Category c where c.systemName = :systemName"),
+               @NamedQuery(name = "Category.FetchByName",
+                           query = "select distinct new org.openelis.domain.IdNameVO(c.id, c.name) "
+                                   + "  from Category c where c.name like :name and c.isSystem = 'N' order by c.name")})
 @Entity
 @Table(name = "category")
 @EntityListeners({AuditUtil.class})

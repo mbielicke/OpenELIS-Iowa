@@ -122,7 +122,7 @@ public class OpenELIS extends Screen {
 
         addCommand(preference, "openelis", new Command() {
             public void execute() {
-                showScreen(PREFERENCE);
+                showScreen(PREFERENCES);
             }
         });
 

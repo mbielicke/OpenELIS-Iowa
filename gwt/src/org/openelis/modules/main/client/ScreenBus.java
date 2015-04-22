@@ -10,7 +10,7 @@ public class ScreenBus extends SimpleEventBus {
     public static ScreenBus instance;
 
     public static final ShowScreenType ORGANIZATION = new ShowScreenType("Organization"),
-                    PREFERENCE = new ShowScreenType("Preference"),
+                    PREFERENCES = new ShowScreenType("Preference"),
                     QUICK_ENTRY = new ShowScreenType("Quick Entry"),
                     VERIFICATION = new ShowScreenType("Verification"),
                     SAMPLE_TRACKING = new ShowScreenType("Sample Tracking"),

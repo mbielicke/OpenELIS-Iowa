@@ -356,7 +356,8 @@ public class SampleBean {
                                                       (String)result[7],
                                                       (String)result[8],
                                                       (String)result[9],
-                                                      (String)result[10]);
+                                                      (String)result[10],
+                                                      null);
             returnList.add(notificationVo);
         }
         return returnList;
@@ -386,7 +387,8 @@ public class SampleBean {
                                                       (String)result[5],
                                                       (String)result[6],
                                                       (String)result[7],
-                                                      (String)result[8]);
+                                                      (String)result[8],
+                                                      null);
             returnList.add(notificationVo);
         }
         return returnList;
@@ -548,10 +550,10 @@ public class SampleBean {
                 col = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
             } else {
                 e.add(new FormErrorException(Messages.get()
-                                             .sample_collectedTimeWithoutDateException(accession)));
+                                                     .sample_collectedTimeWithoutDateException(accession)));
             }
         }
-        
+
         if (col != null) {
             if (rec != null && col.after(rec))
                 e.add(new FormErrorException(Messages.get()
@@ -559,9 +561,9 @@ public class SampleBean {
             if (col.before(minEnt))
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedTooOldWarning(accession)));
-            if (ent != null && col.after(ent)) 
+            if (ent != null && col.after(ent))
                 e.add(new FormErrorException(Messages.get()
-                                             .sample_collectedDateAfterEnteredException(accession)));
+                                                     .sample_collectedDateAfterEnteredException(accession)));
         }
 
         if (e.size() > 0)

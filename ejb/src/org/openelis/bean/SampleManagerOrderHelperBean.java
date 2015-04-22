@@ -837,12 +837,8 @@ public class SampleManagerOrderHelperBean {
                                                                .eorderImport_multipleLocalTerms(firstName,
                                                                                                 "provider.first_name")));
                     } else {
-                        providerDO = new ProviderDO(iflnVOs.get(0).getId(),
-                                                    iflnVOs.get(0).getLastName(),
-                                                    iflnVOs.get(0).getFirstName(),
-                                                    null,
-                                                    null,
-                                                    null);
+                        providerDO = new ProviderDO(iflnVOs.get(0).getId(), iflnVOs.get(0).getLastName(),
+                                                    iflnVOs.get(0).getFirstName(), null, null, null, null, null);
                         if (scVDO != null) {
                             scVDO.setProvider(providerDO);
                             scVDO.setProviderId(providerDO.getId());

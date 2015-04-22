@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -608,6 +608,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("You must specify From Date and To Date or accession number for this report")
   @Key("airQuality.noDataException")
   String airQuality_noDataException();
+
+  /**
+   * Translated "No samples were found.".
+   * 
+   * @return translated "No samples were found."
+   */
+  @DefaultMessage("No samples were found.")
+  @Key("airQuality.noSamples")
+  String airQuality_noSamples();
+
+  /**
+   * Translated "There was a problem retrieving {0}.".
+   * 
+   * @return translated "There was a problem retrieving {0}."
+   */
+  @DefaultMessage("There was a problem retrieving {0}.")
+  @Key("airQuality.retrievalError")
+  String airQuality_retrievalError(String arg0);
 
   /**
    * Translated "You may only specify From Date and To Date or accession number for this report".
@@ -1501,6 +1519,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String analyte();
 
   /**
+   * Translated "History - Analyte".
+   * 
+   * @return translated "History - Analyte"
+   */
+  @DefaultMessage("History - Analyte")
+  @Key("analyte.history")
+  String analyte_history();
+
+  /**
+   * Translated "Parent Analyte".
+   * 
+   * @return translated "Parent Analyte"
+   */
+  @DefaultMessage("Parent Analyte")
+  @Key("analyte.parent")
+  String analyte_parent();
+
+  /**
    * Translated "Only those analytes that aren''t added to a group can be grouped".
    * 
    * @return translated "Only those analytes that aren''t added to a group can be grouped"
@@ -2212,6 +2248,87 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Analyte ''{0}'': Values belonging to an auxiliary field can have the type \"Default\" only if there is one other type selected for one of them.".
+   * 
+   * @return translated "Analyte ''{0}'': Values belonging to an auxiliary field can have the type \"Default\" only if there is one other type selected for one of them."
+   */
+  @DefaultMessage("Analyte ''{0}'': Values belonging to an auxiliary field can have the type \"Default\" only if there is one other type selected for one of them.")
+  @Key("aux.defaultWithNoOtherTypeException")
+  String aux_defaultWithNoOtherTypeException(String arg0);
+
+  /**
+   * Translated "One or more auxiliary fields cannot be deleted, auxiliary data are linked to them".
+   * 
+   * @return translated "One or more auxiliary fields cannot be deleted, auxiliary data are linked to them"
+   */
+  @DefaultMessage("One or more auxiliary fields cannot be deleted, auxiliary data are linked to them")
+  @Key("aux.deleteException")
+  String aux_deleteException();
+
+  /**
+   * Translated "Analyte ''{0}'': Values of type Dictionary must be unique among the field values belonging to an auxiliary field.".
+   * 
+   * @return translated "Analyte ''{0}'': Values of type Dictionary must be unique among the field values belonging to an auxiliary field."
+   */
+  @DefaultMessage("Analyte ''{0}'': Values of type Dictionary must be unique among the field values belonging to an auxiliary field.")
+  @Key("aux.dictEntryNotUniqueException")
+  String aux_dictEntryNotUniqueException(String arg0);
+
+  /**
+   * Translated "History - Field Group".
+   * 
+   * @return translated "History - Field Group"
+   */
+  @DefaultMessage("History - Field Group")
+  @Key("aux.fieldGroupHistory")
+  String aux_fieldGroupHistory();
+
+  /**
+   * Translated "History - Field".
+   * 
+   * @return translated "History - Field"
+   */
+  @DefaultMessage("History - Field")
+  @Key("aux.fieldHistory")
+  String aux_fieldHistory();
+
+  /**
+   * Translated "History - Field Value".
+   * 
+   * @return translated "History - Field Value"
+   */
+  @DefaultMessage("History - Field Value")
+  @Key("aux.fieldValueHistory")
+  String aux_fieldValueHistory();
+
+  /**
+   * Translated "Auxiliary Group".
+   * 
+   * @return translated "Auxiliary Group"
+   */
+  @DefaultMessage("Auxiliary Group")
+  @Key("aux.group")
+  String aux_group();
+
+  /**
+   * Translated "Group Name".
+   * 
+   * @return translated "Group Name"
+   */
+  @DefaultMessage("Group Name")
+  @Key("aux.groupName")
+  String aux_groupName();
+
+  /**
+   * Translated "Analyte ''{0}'': Value ''{1}'' does not exist in the system.".
+   * 
+   * @return translated "Analyte ''{0}'': Value ''{1}'' does not exist in the system."
+   */
+  @DefaultMessage("Analyte ''{0}'': Value ''{1}'' does not exist in the system.")
+  @Key("aux.illegalDictEntryException")
+  String aux_illegalDictEntryException(String arg0,  String arg1);
+
+  /**
    * Translated "No matching active auxiliary group found for ''{0}''".
    * 
    * @return translated "No matching active auxiliary group found for ''{0}''"
@@ -2221,6 +2338,51 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String aux_inactiveGroupException(String arg0);
 
   /**
+   * Translated "Analyte ''{0}'': Invalid value ''{1}'' for selected type".
+   * 
+   * @return translated "Analyte ''{0}'': Invalid value ''{1}'' for selected type"
+   */
+  @DefaultMessage("Analyte ''{0}'': Invalid value ''{1}'' for selected type")
+  @Key("aux.invalidValueException")
+  String aux_invalidValueException(String arg0,  String arg1);
+
+  /**
+   * Translated "Analyte ''{0}'': Values belonging to an auxiliary field can have only one of these types: \"Alpha Lowercase\",\"Alpha Mixedcase\" and \"Alpha Uppercase\".".
+   * 
+   * @return translated "Analyte ''{0}'': Values belonging to an auxiliary field can have only one of these types: \"Alpha Lowercase\",\"Alpha Mixedcase\" and \"Alpha Uppercase\"."
+   */
+  @DefaultMessage("Analyte ''{0}'': Values belonging to an auxiliary field can have only one of these types: \"Alpha Lowercase\",\"Alpha Mixedcase\" and \"Alpha Uppercase\".")
+  @Key("aux.moreThanOneAlphaTypeException")
+  String aux_moreThanOneAlphaTypeException(String arg0);
+
+  /**
+   * Translated "Analyte ''{0}'': Values belonging to an auxiliary field can have only one of these types: \"Date\",\"Date-Time\" and \"Time\".".
+   * 
+   * @return translated "Analyte ''{0}'': Values belonging to an auxiliary field can have only one of these types: \"Date\",\"Date-Time\" and \"Time\"."
+   */
+  @DefaultMessage("Analyte ''{0}'': Values belonging to an auxiliary field can have only one of these types: \"Date\",\"Date-Time\" and \"Time\".")
+  @Key("aux.moreThanOneDateTypeException")
+  String aux_moreThanOneDateTypeException(String arg0);
+
+  /**
+   * Translated "Analyte ''{0}'': Values belonging to an auxiliary field can have the type \"Default\" only once.".
+   * 
+   * @return translated "Analyte ''{0}'': Values belonging to an auxiliary field can have the type \"Default\" only once."
+   */
+  @DefaultMessage("Analyte ''{0}'': Values belonging to an auxiliary field can have the type \"Default\" only once.")
+  @Key("aux.moreThanOneDefaultException")
+  String aux_moreThanOneDefaultException(String arg0);
+
+  /**
+   * Translated "Analyte ''{0}'': Values belonging to an auxiliary field must have either the same type or the type \"Default\".".
+   * 
+   * @return translated "Analyte ''{0}'': Values belonging to an auxiliary field must have either the same type or the type \"Default\"."
+   */
+  @DefaultMessage("Analyte ''{0}'': Values belonging to an auxiliary field must have either the same type or the type \"Default\".")
+  @Key("aux.moreThanOneTypeException")
+  String aux_moreThanOneTypeException(String arg0);
+
+  /**
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
@@ -2228,6 +2390,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("aux.noSelectedRow")
   String aux_noSelectedRow();
+
+  /**
+   * Translated "Analyte ''{0}'': The range ''{1}'' is overlapping with ranges associated with one or more field values.".
+   * 
+   * @return translated "Analyte ''{0}'': The range ''{1}'' is overlapping with ranges associated with one or more field values."
+   */
+  @DefaultMessage("Analyte ''{0}'': The range ''{1}'' is overlapping with ranges associated with one or more field values.")
+  @Key("aux.numRangeOverlapException")
+  String aux_numRangeOverlapException(String arg0,  String arg1);
 
   /**
    * Translated "This will remove all rows with the same group as this row.\n\nPress Ok to continue.".
@@ -4111,6 +4282,132 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String dictionary();
 
   /**
+   * Translated "Abbreviation".
+   * 
+   * @return translated "Abbreviation"
+   */
+  @DefaultMessage("Abbreviation")
+  @Key("dictionary.abbr")
+  String dictionary_abbr();
+
+  /**
+   * Translated "Category Name".
+   * 
+   * @return translated "Category Name"
+   */
+  @DefaultMessage("Category Name")
+  @Key("dictionary.catName")
+  String dictionary_catName();
+
+  /**
+   * Translated "Categories".
+   * 
+   * @return translated "Categories"
+   */
+  @DefaultMessage("Categories")
+  @Key("dictionary.categories")
+  String dictionary_categories();
+
+  /**
+   * Translated "History - Category".
+   * 
+   * @return translated "History - Category"
+   */
+  @DefaultMessage("History - Category")
+  @Key("dictionary.categoryHistory")
+  String dictionary_categoryHistory();
+
+  /**
+   * Translated "Code".
+   * 
+   * @return translated "Code"
+   */
+  @DefaultMessage("Code")
+  @Key("dictionary.code")
+  String dictionary_code();
+
+  /**
+   * Translated "Dictionary".
+   * 
+   * @return translated "Dictionary"
+   */
+  @DefaultMessage("Dictionary")
+  @Key("dictionary.dictionary")
+  String dictionary_dictionary();
+
+  /**
+   * Translated "History - Dictionary".
+   * 
+   * @return translated "History - Dictionary"
+   */
+  @DefaultMessage("History - Dictionary")
+  @Key("dictionary.dictionaryHistory")
+  String dictionary_dictionaryHistory();
+
+  /**
+   * Translated "Enter Search".
+   * 
+   * @return translated "Enter Search"
+   */
+  @DefaultMessage("Enter Search")
+  @Key("dictionary.enterSearch")
+  String dictionary_enterSearch();
+
+  /**
+   * Translated "Dictionary Entries".
+   * 
+   * @return translated "Dictionary Entries"
+   */
+  @DefaultMessage("Dictionary Entries")
+  @Key("dictionary.entries")
+  String dictionary_entries();
+
+  /**
+   * Translated "Related Entry".
+   * 
+   * @return translated "Related Entry"
+   */
+  @DefaultMessage("Related Entry")
+  @Key("dictionary.relEntry")
+  String dictionary_relEntry();
+
+  /**
+   * Translated "Related Entry ID".
+   * 
+   * @return translated "Related Entry ID"
+   */
+  @DefaultMessage("Related Entry ID")
+  @Key("dictionary.relEntryId")
+  String dictionary_relEntryId();
+
+  /**
+   * Translated "Select Category".
+   * 
+   * @return translated "Select Category"
+   */
+  @DefaultMessage("Select Category")
+  @Key("dictionary.selectCategory")
+  String dictionary_selectCategory();
+
+  /**
+   * Translated "System".
+   * 
+   * @return translated "System"
+   */
+  @DefaultMessage("System")
+  @Key("dictionary.system")
+  String dictionary_system();
+
+  /**
+   * Translated "System Name".
+   * 
+   * @return translated "System Name"
+   */
+  @DefaultMessage("System Name")
+  @Key("dictionary.systemName")
+  String dictionary_systemName();
+
+  /**
    * Translated "One or more dictionary entries cannot be deleted, other entries are linked to them".
    * 
    * @return translated "One or more dictionary entries cannot be deleted, other entries are linked to them"
@@ -5776,6 +6073,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_abort();
 
   /**
+   * Translated "Act".
+   * 
+   * @return translated "Act"
+   */
+  @DefaultMessage("Act")
+  @Key("gen.act")
+  String gen_act();
+
+  /**
    * Translated "Active".
    * 
    * @return translated "Active"
@@ -5929,6 +6235,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_cancelTest();
 
   /**
+   * Translated "Category".
+   * 
+   * @return translated "Category"
+   */
+  @DefaultMessage("Category")
+  @Key("gen.category")
+  String gen_category();
+
+  /**
    * Translated "Check All".
    * 
    * @return translated "Check All"
@@ -6044,6 +6359,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Date Rec")
   @Key("gen.dateRec")
   String gen_dateRec();
+
+  /**
+   * Translated "Delete".
+   * 
+   * @return translated "Delete"
+   */
+  @DefaultMessage("Delete")
+  @Key("gen.delete")
+  String gen_delete();
+
+  /**
+   * Translated "Delete Aborted".
+   * 
+   * @return translated "Delete Aborted"
+   */
+  @DefaultMessage("Delete Aborted")
+  @Key("gen.deleteAborted")
+  String gen_deleteAborted();
 
   /**
    * Translated "Desc".
@@ -6820,6 +7153,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String gen_removeRow();
 
   /**
+   * Translated "Rep".
+   * 
+   * @return translated "Rep"
+   */
+  @DefaultMessage("Rep")
+  @Key("gen.rep")
+  String gen_rep();
+
+  /**
    * Translated "Repeat".
    * 
    * @return translated "Repeat"
@@ -6836,6 +7178,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Reportable")
   @Key("gen.reportable")
   String gen_reportable();
+
+  /**
+   * Translated "Req".
+   * 
+   * @return translated "Req"
+   */
+  @DefaultMessage("Req")
+  @Key("gen.req")
+  String gen_req();
+
+  /**
+   * Translated "Required".
+   * 
+   * @return translated "Required"
+   */
+  @DefaultMessage("Required")
+  @Key("gen.required")
+  String gen_required();
 
   /**
    * Translated "Sample Type".
@@ -6872,6 +7232,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("You do not have permission to access {0}")
   @Key("gen.screenPermException")
   String gen_screenPermException(String arg0);
+
+  /**
+   * Translated "Scriptlet".
+   * 
+   * @return translated "Scriptlet"
+   */
+  @DefaultMessage("Scriptlet")
+  @Key("gen.scriptlet")
+  String gen_scriptlet();
 
   /**
    * Translated "Search".
@@ -6944,6 +7313,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Similar")
   @Key("gen.similar")
   String gen_similar();
+
+  /**
+   * Translated "Sorting...".
+   * 
+   * @return translated "Sorting..."
+   */
+  @DefaultMessage("Sorting...")
+  @Key("gen.sorting")
+  String gen_sorting();
+
+  /**
+   * Translated "Source".
+   * 
+   * @return translated "Source"
+   */
+  @DefaultMessage("Source")
+  @Key("gen.source")
+  String gen_source();
 
   /**
    * Translated "Status".
@@ -11608,6 +11995,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organization();
 
   /**
+   * Translated "History - Organization Address ".
+   * 
+   * @return translated "History - Organization Address "
+   */
+  @DefaultMessage("History - Organization Address ")
+  @Key("organization.addressHistory")
+  String organization_addressHistory();
+
+  /**
    * Translated "Cell #".
    * 
    * @return translated "Cell #"
@@ -11615,6 +12011,24 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Cell #")
   @Key("organization.cellNumber")
   String organization_cellNumber();
+
+  /**
+   * Translated "History - Contact Address".
+   * 
+   * @return translated "History - Contact Address"
+   */
+  @DefaultMessage("History - Contact Address")
+  @Key("organization.contactAddressHistory")
+  String organization_contactAddressHistory();
+
+  /**
+   * Translated "History - Contact".
+   * 
+   * @return translated "History - Contact"
+   */
+  @DefaultMessage("History - Contact")
+  @Key("organization.contactHistory")
+  String organization_contactHistory();
 
   /**
    * Translated "Email".
@@ -11635,6 +12049,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String organization_faxNumber();
 
   /**
+   * Translated "History - Organization".
+   * 
+   * @return translated "History - Organization"
+   */
+  @DefaultMessage("History - Organization")
+  @Key("organization.history")
+  String organization_history();
+
+  /**
    * Translated "Home #".
    * 
    * @return translated "Home #"
@@ -11642,6 +12065,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Home #")
   @Key("organization.homeNumber")
   String organization_homeNumber();
+
+  /**
+   * Translated "History - Parameter".
+   * 
+   * @return translated "History - Parameter"
+   */
+  @DefaultMessage("History - Parameter")
+  @Key("organization.parameterHistory")
+  String organization_parameterHistory();
 
   /**
    * Translated "Work #".
@@ -11786,6 +12218,42 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Panel")
   @Key("panel")
   String panel();
+
+  /**
+   * Translated "History - Panel".
+   * 
+   * @return translated "History - Panel"
+   */
+  @DefaultMessage("History - Panel")
+  @Key("panel.history")
+  String panel_history();
+
+  /**
+   * Translated "Panel Item".
+   * 
+   * @return translated "Panel Item"
+   */
+  @DefaultMessage("Panel Item")
+  @Key("panel.item")
+  String panel_item();
+
+  /**
+   * Translated "History - Panel Item".
+   * 
+   * @return translated "History - Panel Item"
+   */
+  @DefaultMessage("History - Panel Item")
+  @Key("panel.itemHistory")
+  String panel_itemHistory();
+
+  /**
+   * Translated "Test and Auxiliary Item".
+   * 
+   * @return translated "Test and Auxiliary Item"
+   */
+  @DefaultMessage("Test and Auxiliary Item")
+  @Key("panel.testAuxItem")
+  String panel_testAuxItem();
 
   /**
    * Translated "Define a grouping of tests that are often assigned to a sample.".
@@ -12137,6 +12605,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Patient")
   @Key("patient.patient")
   String patient_patient();
+
+  /**
+   * Translated "Patient Phone Number".
+   * 
+   * @return translated "Patient Phone Number"
+   */
+  @DefaultMessage("Patient Phone Number")
+  @Key("patient.phone")
+  String patient_phone();
 
   /**
    * Translated "Race".
@@ -12913,6 +13390,33 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   String provider_externalId();
 
   /**
+   * Translated "Provider First Name".
+   * 
+   * @return translated "Provider First Name"
+   */
+  @DefaultMessage("Provider First Name")
+  @Key("provider.firstName")
+  String provider_firstName();
+
+  /**
+   * Translated "History - Provider".
+   * 
+   * @return translated "History - Provider"
+   */
+  @DefaultMessage("History - Provider")
+  @Key("provider.history")
+  String provider_history();
+
+  /**
+   * Translated "Provider Last Name".
+   * 
+   * @return translated "Provider Last Name"
+   */
+  @DefaultMessage("Provider Last Name")
+  @Key("provider.lastName")
+  String provider_lastName();
+
+  /**
    * Translated "Provider (L,F)".
    * 
    * @return translated "Provider (L,F)"
@@ -12920,6 +13424,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Provider (L,F)")
   @Key("provider.lf")
   String provider_lf();
+
+  /**
+   * Translated "History - Provider Location".
+   * 
+   * @return translated "History - Provider Location"
+   */
+  @DefaultMessage("History - Provider Location")
+  @Key("provider.locationHistory")
+  String provider_locationHistory();
 
   /**
    * Translated "NPI".
@@ -17843,6 +18356,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("System Variable")
   @Key("systemVariable")
   String systemVariable();
+
+  /**
+   * Translated "History - SystemVariable".
+   * 
+   * @return translated "History - SystemVariable"
+   */
+  @DefaultMessage("History - SystemVariable")
+  @Key("systemVariable.history")
+  String systemVariable_history();
 
   /**
    * Translated "Missing/invalid system variable ''{0}''".

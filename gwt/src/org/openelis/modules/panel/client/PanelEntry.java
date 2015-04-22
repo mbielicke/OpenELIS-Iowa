@@ -18,7 +18,7 @@ public class PanelEntry implements EntryPoint, ShowScreenHandler {
     
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.PANEL, this);
+//        ScreenBus.get().addHandler(ScreenBus.PANEL, this);
     }
     
     @Override

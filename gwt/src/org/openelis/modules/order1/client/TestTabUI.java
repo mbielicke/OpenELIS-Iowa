@@ -43,7 +43,8 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.manager.IOrderManager1;
 import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.order1.client.AddTestEvent.AddType;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.panel1.client.PanelService1;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -425,8 +426,8 @@ public class TestTabUI extends Screen {
 
         try {
             parentScreen.getWindow().setBusy();
-            tests = PanelService.get().fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(name +
-                                                                                             "%"));
+            tests = PanelService1Impl.INSTANCE.fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(name +
+                                                                                                     "%"));
 
             model = new ArrayList<Item<Integer>>();
             for (TestMethodVO t : tests) {

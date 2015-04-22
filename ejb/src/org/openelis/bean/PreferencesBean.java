@@ -39,11 +39,10 @@ import org.openelis.entity.Preferences;
  */
 @Stateless
 @SecurityDomain("openelis")
-
 public class PreferencesBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
+    EntityManager manager;
 
     /**
      * Returns the stored XML representation of the preferences for the passed

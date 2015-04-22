@@ -1,0 +1,105 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:t='urn:import:org.openelis.ui.widget.table'>
+
+	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
+
+	<g:LayoutPanel>
+		<g:layer top="0px" bottom="25px">
+			<t:Table ui:field="table" header="true"
+				styleName="{res.table.ScreenTableWithSides}">
+				<t:Column width="106" label="{msg.type}">
+					<t:DropdownCell>
+						<w:Dropdown width="90" required="true" field="Integer"
+							ui:field="type" />
+					</t:DropdownCell>
+				</t:Column>
+				<t:Column width="130" label="{msg.contactName}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="40" required="true" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="100" label="{msg.workNumber}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="21" mask="{msg.phoneWithExtensionPattern}" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="90" label="{msg.homeNumber}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="16" mask="{msg.phonePattern}" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="90" label="{msg.cellNumber}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="16" mask="{msg.phonePattern}" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="90" label="{msg.faxNumber}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="16" mask="{msg.phonePattern}" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="150" label="{msg.email}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="80" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="130" label="{msg.aptSuite}">
+					<t:TextBoxCell>
+						<w:TextBox case="UPPER" maxLength="30" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="130" label="{msg.address}">
+					<t:TextBoxCell>
+						<w:TextBox case="UPPER" maxLength="40" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="130" sortable="true" label="{msg.city}">
+					<t:TextBoxCell>
+						<w:TextBox case="UPPER" maxLength="30" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="56" label="{msg.state}">
+					<t:DropdownCell>
+						<w:Dropdown width="40" case="UPPER" ui:field="stateDrop" />
+					</t:DropdownCell>
+				</t:Column>
+				<t:Column width="68" label="{msg.zipcode}">
+					<t:TextBoxCell>
+						<w:TextBox mask="99999-9999" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="126" label="{msg.country}">
+					<t:DropdownCell>
+						<w:Dropdown width="110" field="String" ui:field="country" />
+					</t:DropdownCell>
+				</t:Column>
+			</t:Table>
+		</g:layer>
+		<g:layer bottom="0px" height="25px">
+			<g:HorizontalPanel>
+				<w:Button ui:field="add" leftIcon="{res.icon.addRowIcon}"
+					text="{msg.addRow}" />
+				<w:Button ui:field="remove" leftIcon="{res.icon.removeRowIcon}"
+					text="{msg.removeRow}" />
+			</g:HorizontalPanel>
+		</g:layer>
+	</g:LayoutPanel>
+
+</ui:UiBinder>
