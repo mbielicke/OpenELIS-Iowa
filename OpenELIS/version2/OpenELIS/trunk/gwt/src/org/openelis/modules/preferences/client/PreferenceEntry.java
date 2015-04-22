@@ -18,7 +18,7 @@ public class PreferenceEntry implements EntryPoint, ShowScreenHandler {
 
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.PREFERENCE, this);        
+//        ScreenBus.get().addHandler(ScreenBus.PREFERENCES, this);        
     }
     
     @Override

@@ -36,7 +36,7 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
                     patientBirthFrom, patientBirthTo;
 
     @UiField
-    protected MultiDropdown<Integer>             projectCode;
+    protected MultiDropdown<Integer>        projectCode;
 
     @UiField
     protected CheckBox                      accession, sampleCollected, sampleReceived,
@@ -46,9 +46,10 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
                     analysisMethod, analysisRevision, analysisUnit, analysisStarted,
                     analysisCompleted, analysisReleased, analysisQa, patientLastName,
                     patientFirstName, patientBirth, patientGender, patientRace, patientEthnicity,
-                    pwsIdHeader, pwsName, sdwisCollectorHeader, sdwisLocation, facilityId,
-                    sdwisSampleType, sampleCategory, samplePointId, envCollectorHeader,
-                    envLocation, envLocationCity, collectorPhone, sampleDescription;
+                    patientPhone, providerLastName, providerFirstName, pwsIdHeader, pwsName,
+                    sdwisCollectorHeader, sdwisLocation, facilityId, sdwisSampleType,
+                    sampleCategory, samplePointId, envCollectorHeader, envLocation,
+                    envLocationCity, collectorPhone, sampleDescription;
 
     @UiField
     protected Table                         analyteTable, auxTable;
@@ -316,6 +317,21 @@ public class DataViewUIMobileImpl extends ResizeComposite implements DataViewUI 
     @Override
     public CheckBox getPatientEthnicity() {
         return patientEthnicity;
+    }
+
+    @Override
+    public CheckBox getPatientPhone() {
+        return patientPhone;
+    }
+
+    @Override
+    public CheckBox getProviderLastName() {
+        return providerLastName;
+    }
+
+    @Override
+    public CheckBox getProviderFirstName() {
+        return providerFirstName;
     }
 
     @Override

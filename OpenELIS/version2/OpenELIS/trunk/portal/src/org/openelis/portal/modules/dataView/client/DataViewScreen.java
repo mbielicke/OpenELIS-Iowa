@@ -209,6 +209,9 @@ public class DataViewScreen extends Screen {
                 ui.getPatientGender().setValue(yes, true);
                 ui.getPatientRace().setValue(yes, true);
                 ui.getPatientEthnicity().setValue(yes, true);
+                ui.getPatientPhone().setValue(yes, true);
+                ui.getProviderLastName().setValue(yes, true);
+                ui.getProviderFirstName().setValue(yes, true);
             }
         });
 
@@ -1159,6 +1162,54 @@ public class DataViewScreen extends Screen {
                              }
                          });
 
+        addScreenHandler(ui.getPatientPhone(), "patientPhoneHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getPatientPhone().setValue(data.getSampleClinicalPatientPhoneNumber());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleClinicalPatientPhoneNumber(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getProviderLastName(),
+                         "providerLastNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getProviderLastName()
+                                   .setValue(data.getSampleClinicalProviderLastName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalProviderLastName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getProviderFirstName(),
+                         "providerFirstNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getProviderFirstName()
+                                   .setValue(data.getSampleClinicalProviderFirstName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalProviderFirstName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
         addScreenHandler(ui.getPwsIdHeader(), "pwsIdHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getPwsIdHeader().setValue(data.getSampleSDWISPwsId());
@@ -1822,6 +1873,9 @@ public class DataViewScreen extends Screen {
         ui.getPatientGender().setValue(no, true);
         ui.getPatientRace().setValue(no, true);
         ui.getPatientEthnicity().setValue(no, true);
+        ui.getPatientPhone().setValue(no, true);
+        ui.getProviderLastName().setValue(no, true);
+        ui.getProviderFirstName().setValue(no, true);
         ui.getPwsIdHeader().setValue(no, true);
         ui.getPwsName().setValue(no, true);
         ui.getSdwisCollectorHeader().setValue(no, true);

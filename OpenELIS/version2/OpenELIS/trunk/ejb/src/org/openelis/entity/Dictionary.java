@@ -54,217 +54,220 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
-    @NamedQuery( name = "Dictionary.FetchByCategoryId",
-                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
-                   		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
-                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.categoryId = :id order by d.sortOrder "),
-    @NamedQuery( name = "Dictionary.FetchBySystemName",
-                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.code, d.entry)"
-                      + " from  Dictionary d where d.systemName = :name "),
-    @NamedQuery( name = "Dictionary.FetchBySystemNames",
-                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.code, d.entry)"
-                     + " from  Dictionary d where d.systemName in (:names) "),
-    @NamedQuery( name = "Dictionary.FetchById",
-                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
-                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id = :id"),
-    @NamedQuery( name = "Dictionary.FetchByIds",
-                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
-                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id in (:ids)"),                  
-    @NamedQuery( name = "Dictionary.FetchByCategorySystemName",
-                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.code, d.entry)"
-                      + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),                                        
-    @NamedQuery( name = "Dictionary.FetchByEntry",
-                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
-                        "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
-                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.entry like :entry")})
-                                  
- @NamedNativeQueries({@NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",     
-                  query = "select operation_id as DICTIONARY_ID from project_parameter where operation_id = :id " +
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from provider where type_id = :id " +
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from qaevent where type_id = :id " +
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from qc where type_id = :id " +
-                          "UNION " +
-                          "select prepared_unit_id as DICTIONARY_ID from qc_lot where prepared_unit_id = :id " +
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from qc_analyte where type_id = :id " +
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from test_analyte where type_id = :id " +
-                          "UNION " +
-                          "select flags_id as DICTIONARY_ID from test_reflex where flags_id = :id "+
-                          "UNION " +
-                          "select unit_of_measure_id as DICTIONARY_ID from test_result where unit_of_measure_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from test_result where type_id = :id "+
-                          "UNION " +
-                          "select rounding_method_id as DICTIONARY_ID from test_result where rounding_method_id = :id "+
-                          "UNION " +
-                          "select flags_id as DICTIONARY_ID from test_result where flags_id = :id "+
-                          "UNION " +
-                          "select flag_id as DICTIONARY_ID from test_section where flag_id = :id "+
-                          "UNION " +
-                          "select type_of_sample_id as DICTIONARY_ID from test_type_of_sample where type_of_sample_id = :id "+
-                          "UNION " +
-                          "select unit_of_measure_id as DICTIONARY_ID from test_type_of_sample where unit_of_measure_id = :id "+
-                          "UNION " +
-                          "select format_id as DICTIONARY_ID from test_worksheet where format_id = :id "+
-                          "UNION " +
-                          "select flag_id as DICTIONARY_ID from test_worksheet_analyte where flag_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from test_worksheet_item where type_id = :id "+
-                          "UNION " +
-                          "select status_id as DICTIONARY_ID from worksheet where status_id = :id "+
-                          "UNION " +
-                          "select format_id as DICTIONARY_ID from worksheet where format_id = :id "+
-                          "UNION " +
-                          "select contact_type_id as DICTIONARY_ID from organization_contact where contact_type_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from organization_parameter where type_id = :id "+
-                          "UNION " +
-                          "select status_id as DICTIONARY_ID from analysis where status_id = :id "+
-                          "UNION " +
-                          "select unit_of_measure_id as DICTIONARY_ID from analysis where unit_of_measure_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from analysis_qaevent where type_id = :id "+
-                          "UNION " +
-                          "select status_id as DICTIONARY_ID from sample where status_id = :id "+
-                          "UNION " +
-                          "select type_of_sample_id as DICTIONARY_ID from sample_item where type_of_sample_id = :id "+
-                          "UNION " +
-                          "select source_of_sample_id as DICTIONARY_ID from sample_item where source_of_sample_id = :id "+
-                          "UNION " +
-                          "select unit_of_measure_id as DICTIONARY_ID from sample_item where unit_of_measure_id = :id "+
-                          "UNION " +
-                          "select printer_type_id as DICTIONARY_ID from label where printer_type_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from aux_data where type_id = :id "+
-                          "UNION " +
-                          "select unit_of_measure_id as DICTIONARY_ID from aux_field where unit_of_measure_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from aux_field_value where type_id = :id "+
-                          "UNION " +
-                          "select category_id as DICTIONARY_ID from storage_unit where category_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from instrument where type_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from instrument_log where type_id = :id "+
-                          "UNION " +
-                          "select category_id as DICTIONARY_ID from inventory_item where category_id = :id "+
-                          "UNION " +
-                          "select store_id as DICTIONARY_ID from inventory_item where store_id = :id "+
-                          "UNION " +
-                          "select dispensed_units_id as DICTIONARY_ID from inventory_item where dispensed_units_id = :id "+
-                          "UNION " +
-                          "select action_id as DICTIONARY_ID from analysis_user where action_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from attachment where type_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from result where type_id = :id "+
-                          "UNION " +
-                          "select animal_common_name_id as DICTIONARY_ID from sample_animal where animal_common_name_id = :id "+
-                          "UNION " +
-                          "select animal_scientific_name_id as DICTIONARY_ID from sample_animal where animal_scientific_name_id = :id "+
-                          "UNION " +
-                          "select container_id as DICTIONARY_ID from sample_item where container_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from sample_organization where type_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from sample_qaevent where type_id = :id "+
-                          "UNION " +
-                          "select sample_type_id as DICTIONARY_ID from sample_sdwis where sample_type_id = :id "+
-                          "UNION " +
-                          "select sample_category_id as DICTIONARY_ID from sample_sdwis where sample_category_id = :id "+
-                          "UNION " +
-                          "select status_id as DICTIONARY_ID from shipping where status_id = :id "+
-                          "UNION " +
-                          "select shipped_from_id as DICTIONARY_ID from shipping where shipped_from_id = :id "+
-                          "UNION " +
-                          "select shipped_method_id as DICTIONARY_ID from shipping where shipped_method_id = :id "+
-                          "UNION " +
-                          "select test_format_id as DICTIONARY_ID from test where test_format_id = :id "+
-                          "UNION " +
-                          "select revision_method_id as DICTIONARY_ID from test where revision_method_id = :id "+
-                          "UNION " +
-                          "select reporting_method_id as DICTIONARY_ID from test where reporting_method_id = :id "+
-                          "UNION " +
-                          "select sorting_method_id as DICTIONARY_ID from test where sorting_method_id = :id "+
-                          "UNION " +
-                          "select status_id as DICTIONARY_ID from order where status_id = :id "+
-                          "UNION " +
-                          "select cost_center_id as DICTIONARY_ID from order where cost_center_id = :id "+
-                          "UNION " +                        
-                          "select ship_from_id as DICTIONARY_ID from order where ship_from_id = :id "+
-                          "UNION " +
-                          "select container_id as DICTIONARY_ID from order_container where container_id = :id "+
-                          "UNION " +
-                          "select type_of_sample_id as DICTIONARY_ID from order_container where type_of_sample_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from order_organization where type_id = :id "+
-                          "UNION " +
-                          "select unit_id as DICTIONARY_ID from order_recurrence where unit_id = :id "+
-                          "UNION " +
-                          "select gender_id as DICTIONARY_ID from patient where gender_id = :id "+
-                          "UNION " +
-                          "select race_id as DICTIONARY_ID from patient where race_id = :id "+
-                          "UNION " +
-                          "select ethnicity_id as DICTIONARY_ID from patient where ethnicity_id = :id "+
-                          "UNION " +
-                          "select relation_id as DICTIONARY_ID from patient_relation where relation_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from standard_note where type_id = :id "+  
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from event_log where type_id = :id "+
-                          "UNION " +
-                          "select level_id as DICTIONARY_ID from event_log where level_id = :id "+
-                          "UNION " +
-                          "select profile_id as DICTIONARY_ID from exchange_external_term where profile_id = :id "+
-                          "UNION " +
-                          "select profile_id as DICTIONARY_ID from exchange_profile where profile_id = :id "+
-                          "UNION " +
-                          "select environment_id as DICTIONARY_ID from exchange_criteria where environment_id = :id "+
-                          "UNION " +
-                          "select type_of_sample_id as DICTIONARY_ID from analyte_parameter where type_of_sample_id = :id "+
-                          "UNION " +
-                          "select type_id as DICTIONARY_ID from section_parameter where type_id = :id "+
-                          "UNION " +
-                          "select scriptlet_id as DICTIONARY_ID from test where scriptlet_id = :id "+
-                          "UNION " +
-                          "select scriptlet_id as DICTIONARY_ID from test_analyte where scriptlet_id = :id "+
-                          "UNION " +
-                          "select scriptlet_id as DICTIONARY_ID from aux_field where scriptlet_id = :id "+
-                          "UNION " +
-                          "select scriptlet_id as DICTIONARY_ID from test_worksheet where scriptlet_id = :id "+
-                          "UNION " +
-                          "select pt_provider_id as DICTIONARY_ID from sample_pt where pt_provider_id = :id ",
-                  resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
-                  @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
-                              query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
-                              		  " tr.type_id = d.id and d.system_name = 'test_res_type_dictionary' " +                                                                           
-                                      " UNION " +
-                                      "select value as VALUE from aux_field_value afv,dictionary d where value = :value and" +
-                                      " afv.type_id = d.id and d.system_name = 'aux_dictionary' ",                          
-                  resultSetMapping="Dictionary.ReferenceCheckForValueMapping"),
-                  @NamedNativeQuery(name = "Dictionary.ReferenceCheckForEntry",     
-                                    query = "select state as ENTRY from address where state = :entry " +
-                                            "UNION " +
-                                            "select country as ENTRY from address where country = :entry ",                       
-                                    resultSetMapping="Dictionary.ReferenceCheckForEntryMapping")})
-                                    
-@SqlResultSetMappings({@SqlResultSetMapping(name="Dictionary.ReferenceCheckForIdMapping",
-                     columns={@ColumnResult(name="DICTIONARY_ID")}),
-@SqlResultSetMapping(name="Dictionary.ReferenceCheckForValueMapping",
-                     columns={@ColumnResult(name="VALUE")}),
-@SqlResultSetMapping(name="Dictionary.ReferenceCheckForEntryMapping",
-                     columns={@ColumnResult(name="ENTRY")})})                     
-                     
+@NamedQueries({
+               @NamedQuery(name = "Dictionary.FetchByCategoryId",
+                           query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder,"
+                                   + "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
+                                   + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.categoryId = :id order by d.sortOrder "),
+               @NamedQuery(name = "Dictionary.FetchByCategoryIds",
+                           query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder,"
+                                   + "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
+                                   + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.categoryId in (:ids) order by d.sortOrder "),
+               @NamedQuery(name = "Dictionary.FetchBySystemName",
+                           query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId,"
+                                   + "d.systemName,d.isActive,  d.code, d.entry)"
+                                   + " from  Dictionary d where d.systemName = :name "),
+               @NamedQuery(name = "Dictionary.FetchBySystemNames",
+                           query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId,"
+                                   + "d.systemName,d.isActive,  d.code, d.entry)"
+                                   + " from  Dictionary d where d.systemName in (:names) "),
+               @NamedQuery(name = "Dictionary.FetchById",
+                           query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId,"
+                                   + "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
+                                   + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id = :id"),
+               @NamedQuery(name = "Dictionary.FetchByIds",
+                           query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId,"
+                                   + "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
+                                   + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id in (:ids)"),
+               @NamedQuery(name = "Dictionary.FetchByCategorySystemName",
+                           query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId,"
+                                   + "d.systemName,d.isActive,  d.code, d.entry)"
+                                   + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),
+               @NamedQuery(name = "Dictionary.FetchByEntry",
+                           query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder,"
+                                   + "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
+                                   + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.entry like :entry")})
+@NamedNativeQueries({
+                     @NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",
+                                       query = "select operation_id as DICTIONARY_ID from project_parameter where operation_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from provider where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from qaevent where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from qc where type_id = :id "
+                                               + "UNION "
+                                               + "select prepared_unit_id as DICTIONARY_ID from qc_lot where prepared_unit_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from qc_analyte where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from test_analyte where type_id = :id "
+                                               + "UNION "
+                                               + "select flags_id as DICTIONARY_ID from test_reflex where flags_id = :id "
+                                               + "UNION "
+                                               + "select unit_of_measure_id as DICTIONARY_ID from test_result where unit_of_measure_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from test_result where type_id = :id "
+                                               + "UNION "
+                                               + "select rounding_method_id as DICTIONARY_ID from test_result where rounding_method_id = :id "
+                                               + "UNION "
+                                               + "select flags_id as DICTIONARY_ID from test_result where flags_id = :id "
+                                               + "UNION "
+                                               + "select flag_id as DICTIONARY_ID from test_section where flag_id = :id "
+                                               + "UNION "
+                                               + "select type_of_sample_id as DICTIONARY_ID from test_type_of_sample where type_of_sample_id = :id "
+                                               + "UNION "
+                                               + "select unit_of_measure_id as DICTIONARY_ID from test_type_of_sample where unit_of_measure_id = :id "
+                                               + "UNION "
+                                               + "select format_id as DICTIONARY_ID from test_worksheet where format_id = :id "
+                                               + "UNION "
+                                               + "select flag_id as DICTIONARY_ID from test_worksheet_analyte where flag_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from test_worksheet_item where type_id = :id "
+                                               + "UNION "
+                                               + "select status_id as DICTIONARY_ID from worksheet where status_id = :id "
+                                               + "UNION "
+                                               + "select format_id as DICTIONARY_ID from worksheet where format_id = :id "
+                                               + "UNION "
+                                               + "select contact_type_id as DICTIONARY_ID from organization_contact where contact_type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from organization_parameter where type_id = :id "
+                                               + "UNION "
+                                               + "select status_id as DICTIONARY_ID from analysis where status_id = :id "
+                                               + "UNION "
+                                               + "select unit_of_measure_id as DICTIONARY_ID from analysis where unit_of_measure_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from analysis_qaevent where type_id = :id "
+                                               + "UNION "
+                                               + "select status_id as DICTIONARY_ID from sample where status_id = :id "
+                                               + "UNION "
+                                               + "select type_of_sample_id as DICTIONARY_ID from sample_item where type_of_sample_id = :id "
+                                               + "UNION "
+                                               + "select source_of_sample_id as DICTIONARY_ID from sample_item where source_of_sample_id = :id "
+                                               + "UNION "
+                                               + "select unit_of_measure_id as DICTIONARY_ID from sample_item where unit_of_measure_id = :id "
+                                               + "UNION "
+                                               + "select printer_type_id as DICTIONARY_ID from label where printer_type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from aux_data where type_id = :id "
+                                               + "UNION "
+                                               + "select unit_of_measure_id as DICTIONARY_ID from aux_field where unit_of_measure_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from aux_field_value where type_id = :id "
+                                               + "UNION "
+                                               + "select category_id as DICTIONARY_ID from storage_unit where category_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from instrument where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from instrument_log where type_id = :id "
+                                               + "UNION "
+                                               + "select category_id as DICTIONARY_ID from inventory_item where category_id = :id "
+                                               + "UNION "
+                                               + "select store_id as DICTIONARY_ID from inventory_item where store_id = :id "
+                                               + "UNION "
+                                               + "select dispensed_units_id as DICTIONARY_ID from inventory_item where dispensed_units_id = :id "
+                                               + "UNION "
+                                               + "select action_id as DICTIONARY_ID from analysis_user where action_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from attachment where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from result where type_id = :id "
+                                               + "UNION "
+                                               + "select animal_common_name_id as DICTIONARY_ID from sample_animal where animal_common_name_id = :id "
+                                               + "UNION "
+                                               + "select animal_scientific_name_id as DICTIONARY_ID from sample_animal where animal_scientific_name_id = :id "
+                                               + "UNION "
+                                               + "select container_id as DICTIONARY_ID from sample_item where container_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from sample_organization where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from sample_qaevent where type_id = :id "
+                                               + "UNION "
+                                               + "select sample_type_id as DICTIONARY_ID from sample_sdwis where sample_type_id = :id "
+                                               + "UNION "
+                                               + "select sample_category_id as DICTIONARY_ID from sample_sdwis where sample_category_id = :id "
+                                               + "UNION "
+                                               + "select status_id as DICTIONARY_ID from shipping where status_id = :id "
+                                               + "UNION "
+                                               + "select shipped_from_id as DICTIONARY_ID from shipping where shipped_from_id = :id "
+                                               + "UNION "
+                                               + "select shipped_method_id as DICTIONARY_ID from shipping where shipped_method_id = :id "
+                                               + "UNION "
+                                               + "select test_format_id as DICTIONARY_ID from test where test_format_id = :id "
+                                               + "UNION "
+                                               + "select revision_method_id as DICTIONARY_ID from test where revision_method_id = :id "
+                                               + "UNION "
+                                               + "select reporting_method_id as DICTIONARY_ID from test where reporting_method_id = :id "
+                                               + "UNION "
+                                               + "select sorting_method_id as DICTIONARY_ID from test where sorting_method_id = :id "
+                                               + "UNION "
+                                               + "select status_id as DICTIONARY_ID from order where status_id = :id "
+                                               + "UNION "
+                                               + "select cost_center_id as DICTIONARY_ID from order where cost_center_id = :id "
+                                               + "UNION "
+                                               + "select ship_from_id as DICTIONARY_ID from order where ship_from_id = :id "
+                                               + "UNION "
+                                               + "select container_id as DICTIONARY_ID from order_container where container_id = :id "
+                                               + "UNION "
+                                               + "select type_of_sample_id as DICTIONARY_ID from order_container where type_of_sample_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from order_organization where type_id = :id "
+                                               + "UNION "
+                                               + "select unit_id as DICTIONARY_ID from order_recurrence where unit_id = :id "
+                                               + "UNION "
+                                               + "select gender_id as DICTIONARY_ID from patient where gender_id = :id "
+                                               + "UNION "
+                                               + "select race_id as DICTIONARY_ID from patient where race_id = :id "
+                                               + "UNION "
+                                               + "select ethnicity_id as DICTIONARY_ID from patient where ethnicity_id = :id "
+                                               + "UNION "
+                                               + "select relation_id as DICTIONARY_ID from patient_relation where relation_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from standard_note where type_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from event_log where type_id = :id "
+                                               + "UNION "
+                                               + "select level_id as DICTIONARY_ID from event_log where level_id = :id "
+                                               + "UNION "
+                                               + "select profile_id as DICTIONARY_ID from exchange_external_term where profile_id = :id "
+                                               + "UNION "
+                                               + "select profile_id as DICTIONARY_ID from exchange_profile where profile_id = :id "
+                                               + "UNION "
+                                               + "select environment_id as DICTIONARY_ID from exchange_criteria where environment_id = :id "
+                                               + "UNION "
+                                               + "select type_of_sample_id as DICTIONARY_ID from analyte_parameter where type_of_sample_id = :id "
+                                               + "UNION "
+                                               + "select type_id as DICTIONARY_ID from section_parameter where type_id = :id "
+                                               + "UNION "
+                                               + "select scriptlet_id as DICTIONARY_ID from test where scriptlet_id = :id "
+                                               + "UNION "
+                                               + "select scriptlet_id as DICTIONARY_ID from test_analyte where scriptlet_id = :id "
+                                               + "UNION "
+                                               + "select scriptlet_id as DICTIONARY_ID from aux_field where scriptlet_id = :id "
+                                               + "UNION "
+                                               + "select scriptlet_id as DICTIONARY_ID from test_worksheet where scriptlet_id = :id "
+                                               + "UNION "
+                                               + "select pt_provider_id as DICTIONARY_ID from sample_pt where pt_provider_id = :id ",
+                                       resultSetMapping = "Dictionary.ReferenceCheckForIdMapping"),
+                     @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",
+                                       query = "select value as VALUE from test_result tr,dictionary d where value = :value and "
+                                               + " tr.type_id = d.id and d.system_name = 'test_res_type_dictionary' "
+                                               + " UNION "
+                                               + "select value as VALUE from aux_field_value afv,dictionary d where value = :value and"
+                                               + " afv.type_id = d.id and d.system_name = 'aux_dictionary' ",
+                                       resultSetMapping = "Dictionary.ReferenceCheckForValueMapping"),
+                     @NamedNativeQuery(name = "Dictionary.ReferenceCheckForEntry",
+                                       query = "select state as ENTRY from address where state = :entry "
+                                               + "UNION "
+                                               + "select country as ENTRY from address where country = :entry ",
+                                       resultSetMapping = "Dictionary.ReferenceCheckForEntryMapping")})
+@SqlResultSetMappings({
+                       @SqlResultSetMapping(name = "Dictionary.ReferenceCheckForIdMapping",
+                                            columns = {@ColumnResult(name = "DICTIONARY_ID")}),
+                       @SqlResultSetMapping(name = "Dictionary.ReferenceCheckForValueMapping",
+                                            columns = {@ColumnResult(name = "VALUE")}),
+                       @SqlResultSetMapping(name = "Dictionary.ReferenceCheckForEntryMapping",
+                                            columns = {@ColumnResult(name = "ENTRY")})})
 @Entity
 @Table(name = "dictionary")
 @EntityListeners({AuditUtil.class})
@@ -409,7 +412,10 @@ public class Dictionary implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("category_id", categoryId, original.categoryId)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("related_entry_id", relatedEntryId, original.relatedEntryId, Constants.table().DICTIONARY)
+                 .setField("related_entry_id",
+                           relatedEntryId,
+                           original.relatedEntryId,
+                           Constants.table().DICTIONARY)
                  .setField("system_name", systemName, original.systemName)
                  .setField("is_active", isActive, original.isActive)
                  .setField("code", code, original.code)

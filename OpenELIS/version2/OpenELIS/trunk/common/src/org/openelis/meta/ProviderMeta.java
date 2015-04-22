@@ -42,6 +42,7 @@ public class ProviderMeta implements Meta, MetaMap {
                                   MIDDLE_NAME = "_provider.middleName",
                                   TYPE_ID = "_provider.typeId",
                                   NPI = "_provider.npi",
+                                  REFERENCE_SOURCE_ID = "_provider.referenceSourceId",
                                   
                                   LOC_ID = "_providerLocation.id", 
                                   LOC_LOCATION = "_providerLocation.location",
@@ -65,7 +66,7 @@ public class ProviderMeta implements Meta, MetaMap {
     
     static {
         names = new HashSet<String>(Arrays.asList(ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, TYPE_ID, NPI,
-                                                  LOC_ID, LOC_LOCATION, LOC_EXTERNAL_ID,
+                                                  REFERENCE_SOURCE_ID, LOC_ID, LOC_LOCATION, LOC_EXTERNAL_ID,
                                                   LOC_PROVIDER_ID, LOC_ADDRESS_ID, LOC_ADDR_ID,
                                                   LOC_ADDR_MULTIPLE_UNIT, LOC_ADDR_STREET_ADDRESS,
                                                   LOC_ADDR_CITY, LOC_ADDR_STATE, LOC_ADDR_ZIP_CODE,
@@ -96,6 +97,10 @@ public class ProviderMeta implements Meta, MetaMap {
 
     public static String getNpi() {
         return NPI;
+    }
+    
+    public static String getReferenceSourceId() {
+        return REFERENCE_SOURCE_ID;
     }
 
     public static String getProviderLocationId() {

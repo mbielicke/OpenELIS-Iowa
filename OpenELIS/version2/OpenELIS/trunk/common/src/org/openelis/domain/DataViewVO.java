@@ -73,7 +73,8 @@ public class DataViewVO implements Serializable {
                     sampleEnvironmentalLocationHeader, sampleClinicalPatientLastName,
                     sampleClinicalPatientFirstName, sampleClinicalPatientBirth,
                     sampleClinicalPatientGender, sampleClinicalPatientRace,
-                    sampleClinicalPatientEthnicity;
+                    sampleClinicalPatientEthnicity, sampleClinicalPatientPhoneNumber,
+                    sampleClinicalProviderLastName, sampleClinicalProviderFirstName;
     protected Integer                          analysisStatusId, accessionNumberFrom,
                     accessionNumberTo, projectId;
     protected Date                             analysisCompletedDateFrom, analysisCompletedDateTo,
@@ -748,6 +749,30 @@ public class DataViewVO implements Serializable {
 
     public void setSampleClinicalPatientEthnicity(String sampleClinicalPatientEthnicity) {
         this.sampleClinicalPatientEthnicity = sampleClinicalPatientEthnicity;
+    }
+
+    public String getSampleClinicalPatientPhoneNumber() {
+        return sampleClinicalPatientPhoneNumber;
+    }
+
+    public void setSampleClinicalPatientPhoneNumber(String sampleClinicalPatientPhoneNumber) {
+        this.sampleClinicalPatientPhoneNumber = sampleClinicalPatientPhoneNumber;
+    }
+
+    public String getSampleClinicalProviderLastName() {
+        return sampleClinicalProviderLastName;
+    }
+
+    public void setSampleClinicalProviderLastName(String sampleClinicalProviderLastName) {
+        this.sampleClinicalProviderLastName = sampleClinicalProviderLastName;
+    }
+
+    public String getSampleClinicalProviderFirstName() {
+        return sampleClinicalProviderFirstName;
+    }
+
+    public void setSampleClinicalProviderFirstName(String sampleClinicalProviderFirstName) {
+        this.sampleClinicalProviderFirstName = sampleClinicalProviderFirstName;
     }
 
     public Integer getAnalysisStatusId() {

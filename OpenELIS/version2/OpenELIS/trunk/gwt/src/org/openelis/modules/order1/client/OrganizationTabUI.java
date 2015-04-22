@@ -428,8 +428,9 @@ public class OrganizationTabUI extends Screen {
             row = new Row(9);
             row.setCell(0, data.getTypeId());
             row.setCell(1, data.getOrganizationAttention());
-            row.setCell(2, new AutoCompleteValue(data.getOrganizationId(),
-                                                 data.getOrganizationName()));
+            if (data.getOrganizationId() != null)
+                row.setCell(2, new AutoCompleteValue(data.getOrganizationId(),
+                                                     data.getOrganizationName()));
             row.setCell(3, data.getOrganizationAddressMultipleUnit());
             row.setCell(4, data.getOrganizationAddressStreetAddress());
             row.setCell(5, data.getOrganizationAddressCity());

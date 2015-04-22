@@ -44,6 +44,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
@@ -51,6 +52,7 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.AuxData;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -296,6 +298,23 @@ public class AuxDataBean {
 
             if (e.size() > 0)
                 throw e;
+        }
+    }
+
+    public void validateForDelete(AuxFieldViewDO data) throws Exception {
+        Query query;
+        ValidationErrorsList list;
+        List result;
+
+        list = new ValidationErrorsList();
+
+        query = manager.createNamedQuery("AuxData.ReferenceCheckForField");
+        query.setParameter("id", data.getId());
+        result = query.getResultList();
+
+        if (result.size() > 0) {
+            list.add(new FieldErrorException(Messages.get().aux_deleteException(), null));
+            throw list;
         }
     }
 }

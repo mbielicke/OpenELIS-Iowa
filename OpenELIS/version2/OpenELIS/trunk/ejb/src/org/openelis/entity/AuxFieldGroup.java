@@ -54,23 +54,27 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
-    @NamedQuery( name = "AuxFieldGroup.FetchByName",
-                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
-                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
-                      + " from AuxFieldGroup afg where afg.name = :name"),
-    @NamedQuery( name = "AuxFieldGroup.FetchActiveByName",
-                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
-                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
-                      + " from AuxFieldGroup afg where afg.name = :name and afg.isActive='Y' order by afg.name"),                  
-    @NamedQuery( name = "AuxFieldGroup.FetchById",                
-                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
-                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
-                      + " from AuxFieldGroup afg where afg.id = :id "),
-    @NamedQuery( name = "AuxFieldGroup.FetchActive",
-                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
-                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
-                      + " from AuxFieldGroup afg where afg.isActive = 'Y' order by afg.name")})
+@NamedQueries({
+               @NamedQuery(name = "AuxFieldGroup.FetchByName",
+                           query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"
+                                   + "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                                   + " from AuxFieldGroup afg where afg.name = :name"),
+               @NamedQuery(name = "AuxFieldGroup.FetchActiveByName",
+                           query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"
+                                   + "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                                   + " from AuxFieldGroup afg where afg.name = :name and afg.isActive='Y' order by afg.name"),
+               @NamedQuery(name = "AuxFieldGroup.FetchById",
+                           query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"
+                                   + "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                                   + " from AuxFieldGroup afg where afg.id = :id "),
+               @NamedQuery(name = "AuxFieldGroup.FetchByIds",
+                           query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"
+                                   + "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                                   + " from AuxFieldGroup afg where afg.id in (:ids) "),
+               @NamedQuery(name = "AuxFieldGroup.FetchActive",
+                           query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"
+                                   + "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                                   + " from AuxFieldGroup afg where afg.isActive = 'Y' order by afg.name")})
 @Entity
 @Table(name = "aux_field_group")
 @EntityListeners({AuditUtil.class})

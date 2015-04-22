@@ -19,7 +19,7 @@ public class AuxiliaryEntry implements EntryPoint, ShowScreenHandler {
     
     @Override
     public void onModuleLoad() {
-        ScreenBus.get().addHandler(ScreenBus.AUXILIARY,this);        
+//        ScreenBus.get().addHandler(ScreenBus.AUXILIARY,this);        
     }
     
     @Override

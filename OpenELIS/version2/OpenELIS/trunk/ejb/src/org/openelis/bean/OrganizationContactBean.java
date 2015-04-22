@@ -47,14 +47,13 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class OrganizationContactBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
+    private EntityManager manager;
 
     @EJB
-    private AddressBean                     addressBean;
+    private AddressBean   addressBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationContactDO> fetchByOrganizationId(Integer id) throws Exception {
@@ -71,13 +70,23 @@ public class OrganizationContactBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<OrganizationContactDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("OrganizationContact.FetchByOrganizationIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public OrganizationContactDO add(OrganizationContactDO data) throws Exception {
         OrganizationContact entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddress());
-        entity = new OrganizationContact();        
+        entity = new OrganizationContact();
         entity.setOrganizationId(data.getOrganizationId());
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
@@ -127,7 +136,7 @@ public class OrganizationContactBean {
         if (DataBaseUtil.isEmpty(data.getName()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrganizationMeta.getContactName()));
-        
+
         if (list.size() > 0)
             throw list;
     }

@@ -56,7 +56,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScrollableTabBar;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -80,13 +79,15 @@ import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.TestMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.dictionary.client.DictionaryService;
+import org.openelis.modules.dictionary1.client.DictionaryLookupScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.GridFieldErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
@@ -115,7 +116,7 @@ public class AnalyteAndResultTab extends Screen
     private AnalyteAndResultTab                          screen;
     private TestAnalyteDisplayManager<TestAnalyteViewDO> displayManager;
 
-    private DictionaryLookupScreen                       dictLookup;
+    private DictionaryLookupScreenUI                       dictLookup;
 
     private TableWidget                                  analyteTable, resultTable;
     private Dropdown<Integer>                            typeId, scriptletId;
@@ -2141,19 +2142,19 @@ public class AnalyteAndResultTab extends Screen
     }
 
     private void showDictionary(String entry, ArrayList<IdNameVO> list) {
-        ScreenWindow modal;
+        ModalWindow modal;
 
         if (dictLookup == null) {
             try {
-                dictLookup = new DictionaryLookupScreen();
+                dictLookup = new DictionaryLookupScreenUI();
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("DictionaryLookup error: " + e.getMessage());
                 return;
             }
 
-            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
-                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+            dictLookup.addActionHandler(new org.openelis.ui.event.ActionHandler<DictionaryLookupScreenUI.Action>() {
+                public void onAction(org.openelis.ui.event.ActionEvent<DictionaryLookupScreenUI.Action> event) {
                     int selTab, r;
                     ArrayList<IdNameVO> list;
                     TestResultViewDO data;
@@ -2163,7 +2164,7 @@ public class AnalyteAndResultTab extends Screen
                     man = null;
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
-                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                    if (event.getAction() == DictionaryLookupScreenUI.Action.OK) {
                         list = (ArrayList<IdNameVO>)event.getData();
                         if (list != null) {
                             r = resultTable.getSelectedRow();
@@ -2220,10 +2221,13 @@ public class AnalyteAndResultTab extends Screen
             });
 
         }
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal = new ModalWindow();
         modal.setName(Messages.get().chooseDictEntry());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(dictLookup);
-        dictLookup.setScreenState(State.DEFAULT);
+        modal.setSize("515px", "390px");
+        dictLookup.setWindow(modal);
+        dictLookup.setState(org.openelis.ui.screen.State.DEFAULT);
         if (list != null) {
             dictLookup.clearFields();
             dictLookup.setQueryResult(entry, list);

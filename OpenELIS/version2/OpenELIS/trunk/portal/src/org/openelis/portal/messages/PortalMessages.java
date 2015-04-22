@@ -1141,6 +1141,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String patient_lastName();
 
   /**
+   * Translated "Patient Phone #".
+   * 
+   * @return translated "Patient Phone #"
+   */
+  @DefaultMessage("Patient Phone #")
+  @Key("patient.phone")
+  String patient_phone();
+
+  /**
    * Translated "Race".
    * 
    * @return translated "Race"
@@ -1148,6 +1157,24 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Race")
   @Key("patient.race")
   String patient_race();
+
+  /**
+   * Translated "Provider First Name".
+   * 
+   * @return translated "Provider First Name"
+   */
+  @DefaultMessage("Provider First Name")
+  @Key("provider.firstName")
+  String provider_firstName();
+
+  /**
+   * Translated "Provider Last Name".
+   * 
+   * @return translated "Provider Last Name"
+   */
+  @DefaultMessage("Provider Last Name")
+  @Key("provider.lastName")
+  String provider_lastName();
 
   /**
    * Translated "PWS ID".
