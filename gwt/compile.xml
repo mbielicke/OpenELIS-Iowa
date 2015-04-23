@@ -41,6 +41,7 @@
     	<pathelement location="../OpenELIS-Common/bin"/>
     	<pathelement location="../OpenELIS-EJB/bin"/>
     	<pathelement location="../OpenELIS-Lib/bin"/>
+		<pathelement location="../OpenELIS-UI/openelis-apt.jar"/>
 		<path refid="ivy.lib"/>
     	<fileset dir="../OpenELIS-Lib/lib" includes="*.jar"/>
 		<fileset dir="lib" includes="*.jar"/>
