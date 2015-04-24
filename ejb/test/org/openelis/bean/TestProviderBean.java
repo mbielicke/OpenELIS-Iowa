@@ -246,7 +246,7 @@ public class TestProviderBean {
             bean.validate(data);
             fail("Should have failed validation");
         } catch (ValidationErrorsList list) {
-            assertEquals(2, list.size());
+            assertEquals(1, list.size());
         }
     }
 }
