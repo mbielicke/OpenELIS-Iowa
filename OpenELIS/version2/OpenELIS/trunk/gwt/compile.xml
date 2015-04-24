@@ -103,6 +103,7 @@
 		<mkdir dir="war/WEB-INF/classes"/>
 		<mkdir dir="../OpenELIS-EJB/bin"/>
 		<mkdir dir="../OpenELIS-Web/war/WEB-INF/classes"/>
+		<mkdir dir=".apt_generated"/>
 		
 		<!-- Projects need to be compiled in the order that they are in until we can remove the manager circular references -->
 		
