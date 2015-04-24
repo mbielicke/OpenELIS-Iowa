@@ -72,6 +72,7 @@
 	<path id="gwt.gwtc.path">
 		<path refid="gwt.jars"/>
 		<pathelement location="src" />
+		<pathelement location=".apt_generated"/>
 		<pathelement location="war/WEB-INF/classes"/>
 		<pathelement location="../OpenELIS-Common/src" />
 		<pathelement location="../OpenELIS-Common/bin"/>
