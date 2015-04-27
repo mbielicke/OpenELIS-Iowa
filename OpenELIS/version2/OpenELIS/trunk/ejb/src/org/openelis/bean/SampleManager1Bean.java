@@ -1056,7 +1056,7 @@ public class SampleManager1Bean {
          * Creating the default AnalysisReportFlags record to be added for each
          * analysis that is added to the database
          */
-        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
+        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, null, null);
 
         /*
          * this will be used as the released date for any newly released
