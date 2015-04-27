@@ -128,7 +128,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 //  
                 //
                 row = reflexTestTree.getRow(event.getRow());
-                if (row.leafType == "reflexTest") {
+                if ("reflexTest".equals(row.leafType)) {
                     if (event.getCol() == 1) {
                         //
                         // Since the dropdown contains the list of all sections
@@ -212,7 +212,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 } else {
                     for (i = 0; i < reflexTestTree.numRows(); i++) {
                         item = reflexTestTree.getRow(i);
-                        if (item.leafType == "reflexTest") {
+                        if ("reflexTest".equals(item.leafType)) {
                             if (item.cells.get(1).getValue() != null) {
                                 if (item.cells.get(1).getValue() instanceof ArrayList) {
                                     if (((ArrayList<Object>)item.cells.get(1).getValue()).size() > 0) {
@@ -270,7 +270,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 } else {
                     for (i = 0; i < reflexTestTree.numRows(); i++) {
                         item = reflexTestTree.getRow(i);
-                        if (item.leafType == "reflexTest") {
+                        if ("reflexTest".equals(item.leafType)) {
                             tsMan = (TestSectionManager) ((ArrayList<Object>)item.data).get(2);
                             for (j = 0; j < tsMan.count(); j++) {
                                 tsVDO = tsMan.getSectionAt(j);
@@ -305,7 +305,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
             errorsList = new ValidationErrorsList();
             for (i = 0; i < reflexTestTree.numRows(); i++) {
                 item = reflexTestTree.getRow(i);
-                if (item.leafType == "analysis")
+                if ("analysis".equals(item.leafType))
                     continue;
                 
                 if ("Y".equals(item.cells.get(2).getValue())) {

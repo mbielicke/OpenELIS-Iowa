@@ -122,7 +122,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 TestSectionViewDO       tsVDO;
                 
                 row = prepTestTree.getRow(event.getRow());
-                if (row.leafType == "prepTest") {
+                if ("prepTest".equals(row.leafType)) {
                     if (event.getCol() == 1) {
                         //
                         // Since the dropdown contains the list of all sections
@@ -216,7 +216,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 } else {
                     for (i = 0; i < prepTestTree.numRows(); i++) {
                         item = prepTestTree.getRow(i);
-                        if (item.leafType == "reflexTest") {
+                        if ("reflexTest".equals(item.leafType)) {
                             if (item.cells.get(1).getValue() != null) {
                                 if (item.cells.get(1).getValue() instanceof ArrayList) {
                                     if (((ArrayList<Object>)item.cells.get(1).getValue()).size() > 0) {
@@ -274,7 +274,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 } else {
                     for (i = 0; i < prepTestTree.numRows(); i++) {
                         item = prepTestTree.getRow(i);
-                        if (item.leafType == "reflexTest") {
+                        if ("reflexTest".equals(item.leafType)) {
                             tsMan = (TestSectionManager) ((ArrayList<Object>)item.data).get(2);
                             for (j = 0; j < tsMan.count(); j++) {
                                 tsVDO = tsMan.getSectionAt(j);
@@ -307,7 +307,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             errorsList = new ValidationErrorsList();
             for (i = 0; i < prepTestTree.numRows(); i++) {
                 item = prepTestTree.getRow(i);
-                if (item.leafType == "analysis")
+                if ("analysis".equals(item.leafType))
                     addPrepTestToSelection(item, (SampleDataBundle)((ArrayList<Object>)item.data).get(0),
                                            selectedBundles, errorsList, i);
             }
