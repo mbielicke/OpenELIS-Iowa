@@ -364,7 +364,7 @@ public class IOrderMeta implements Meta, MetaMap {
         return IORDER_ORG_ORGANIZATION_ADDRESS_STATE; 
     }
     
-    public static String getIorganizationOrganizationAddressZipCode() {
+    public static String getIorderOrganizationOrganizationAddressZipCode() {
         return IORDER_ORG_ORGANIZATION_ADDRESS_ZIP_CODE; 
     }
     
