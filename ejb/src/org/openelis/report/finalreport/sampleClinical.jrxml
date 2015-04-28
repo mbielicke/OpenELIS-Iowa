@@ -176,21 +176,21 @@ WHERE
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="60" width="142" height="12"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pat_multiple_unit}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="72" width="142" height="12"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pat_street_address}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="84" width="142" height="12"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{pat_city}, ", ", DataBaseUtil.concatWithSeparator($F{pat_state}, " ", $F{pat_zip_code}))]]></textFieldExpression>

@@ -83,7 +83,14 @@ ORDER BY dsm.system_name,
 	<detail>
 		<band height="60" splitType="Stretch">
 			<textField isStretchWithOverflow="true">
-				<reportElement mode="Opaque" x="120" y="0" width="310" height="12" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="120" y="0" width="310" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>

@@ -19,21 +19,39 @@
 		<groupHeader>
 			<band height="24" splitType="Stretch">
 				<textField>
-					<reportElement mode="Opaque" x="0" y="12" width="184" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="0" y="12" width="184" height="12" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
 					<textElement>
 						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header0}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="184" y="12" width="183" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="184" y="12" width="183" height="12" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
 					<textElement>
 						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header1}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="367" y="12" width="183" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="367" y="12" width="183" height="12" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
 					<textElement>
 						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
