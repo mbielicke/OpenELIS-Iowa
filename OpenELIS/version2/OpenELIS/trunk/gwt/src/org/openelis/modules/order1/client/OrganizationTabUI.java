@@ -167,7 +167,7 @@ public class OrganizationTabUI extends Screen {
                                 qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressState());
                                 break;
                             case 7:
-                                qd.setKey(IOrderMeta.getIorganizationOrganizationAddressZipCode());
+                                qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressZipCode());
                                 break;
                             case 8:
                                 qd.setKey(IOrderMeta.getIorderOrganizationOrganizationAddressCountry());

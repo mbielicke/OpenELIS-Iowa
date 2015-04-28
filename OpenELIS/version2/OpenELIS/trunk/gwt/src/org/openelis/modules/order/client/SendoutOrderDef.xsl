@@ -290,7 +290,7 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getIorderOrganizationOrganizationAddressState()}" header="{resource:getString($constants,'state')}" width="56">
                       <dropdown case="UPPER" width="40" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationOrganizationAddressZipCode()}" width="70" header="{resource:getString($constants,'zipcode')}">
+                    <col key="{meta:getIorderOrganizationOrganizationAddressZipCode()}" width="70" header="{resource:getString($constants,'zipcode')}">
                       <textbox field="String" />
                     </col>
                     <col key="{meta:getIorderOrganizationOrganizationAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
