@@ -108,6 +108,7 @@ public class SampleStatusPortalBean {
      * fetch samples that match the search criteria
      */
     private ArrayList<SampleViewVO> getSamples(ArrayList<QueryData> fields, String clause) throws Exception {
+        String range;
         QueryBuilderV2 builder;
         Query query;
         ArrayList<Object[]> resultList;
@@ -130,7 +131,13 @@ public class SampleStatusPortalBean {
                           SampleViewMeta.getAnalysisStatusId() + ", " +
                           SampleViewMeta.getTestReportingDescription() + ", " +
                           SampleViewMeta.getMethodReportingDescription());
+        range = getReleasedDateRange(fields);
         builder.constructWhere(fields);
+        if (range != null) {
+            builder.addWhere("(" + SampleViewMeta.getReleasedDate() + " between '" + range +
+                             "' OR " + SampleViewMeta.getAnalysisReleasedDate() + " between '" +
+                             range + "')");
+        }
         builder.addWhere(SampleViewMeta.getStatusId() + " != " +
                          Constants.dictionary().SAMPLE_NOT_VERIFIED);
         builder.addWhere(SampleViewMeta.getAnalysisStatusId() + " != " +
@@ -173,6 +180,7 @@ public class SampleStatusPortalBean {
                                             null,// reportable
                                             (Integer)result[16],// analysis
                                                                 // status
+                                            null,// analysis released
                                             (String)result[17],// test desc
                                             (String)result[18]));// method desc
         }
@@ -252,5 +260,29 @@ public class SampleStatusPortalBean {
         }
 
         return qaMap;
+    }
+
+    /**
+     * adds an OR clause to the query fields to include analysis released date
+     * along with the sample released date range
+     */
+    private String getReleasedDateRange(ArrayList<QueryData> fields) {
+        String range;
+        QueryData field;
+
+        field = null;
+        range = null;
+        for (QueryData data : fields) {
+            if (SampleViewMeta.getReleasedDate().equals(data.getKey())) {
+                field = data;
+                range = data.getQuery();
+                break;
+            }
+        }
+        if (field != null)
+            fields.remove(field);
+        if (range != null)
+            return range.replace("..", ":00' and '").concat(":00");
+        return null;
     }
 }

@@ -79,11 +79,11 @@ public class InventoryXPutBean  {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<InventoryXPutViewDO> fetchByOrderId(Integer id) throws Exception {
+    public ArrayList<InventoryXPutViewDO> fetchByIorderId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("InventoryXPut.FetchByOrderId");
+        query = manager.createNamedQuery("InventoryXPut.FetchByIorderId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -93,10 +93,10 @@ public class InventoryXPutBean  {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public ArrayList<InventoryXPutViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
+    public ArrayList<InventoryXPutViewDO> fetchByIorderIds(ArrayList<Integer> ids) {
         Query query;
 
-        query = manager.createNamedQuery("InventoryXPut.FetchByOrderIds");
+        query = manager.createNamedQuery("InventoryXPut.FetchByIorderIds");
         query.setParameter("ids", ids);
 
 

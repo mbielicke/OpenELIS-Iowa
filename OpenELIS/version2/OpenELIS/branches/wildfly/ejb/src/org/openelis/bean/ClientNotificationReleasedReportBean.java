@@ -41,6 +41,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.bean.OrganizationParameterBean.EmailFilter;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ClientNotificationVO;
@@ -54,16 +55,19 @@ import org.openelis.utils.ReportUtil;
 @SecurityDomain("openelis")
 public class ClientNotificationReleasedReportBean {
     @EJB
-    private SampleBean              sample;
+    private SampleBean                sample;
 
     @EJB
-    private SystemVariableBean      systemVariable;
+    private SystemVariableBean        systemVariable;
 
     @EJB
-    private AnalysisReportFlagsBean analysisReportFlags;
+    private AnalysisReportFlagsBean   analysisReportFlags;
 
-    private static final Logger    log = Logger.getLogger("openelis");
-    
+    @EJB
+    private OrganizationParameterBean organizationParameter;
+
+    private static final Logger       log = Logger.getLogger("openelis");
+
     /*
      * Execute the report and email its output to specified addresses
      */
@@ -96,7 +100,7 @@ public class ClientNotificationReleasedReportBean {
             from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");
             if (from == null)
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
-            
+
             resultList = sample.fetchForClientEmailReleasedReport(lastRunDate, currentRunDate);
             log.fine("Considering " + resultList.size() + " cases to run");
 
@@ -114,14 +118,17 @@ public class ClientNotificationReleasedReportBean {
 
     protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
         Integer accession, lastAccession, sampleId;
-        String email, lastEmail, to, collectedDt, ref;
+        String email, lastEmail, to, collectedDt, ref, filter, filterValue;
+        EmailFilter parsed;
         StringBuilder contents;
         ArrayList<ClientNotificationVO> l;
         ArrayList<Integer> sampleIds;
         ArrayList<AnalysisReportFlagsDO> anaList;
         HashMap<String, ArrayList<ClientNotificationVO>> emails;
-        
+        HashMap<String, EmailFilter> parsedEmails;
+
         emails = new HashMap<String, ArrayList<ClientNotificationVO>>();
+        parsedEmails = new HashMap<String, EmailFilter>();
 
         /*
          * Group unique samples for each email address.
@@ -131,6 +138,39 @@ public class ClientNotificationReleasedReportBean {
         for (ClientNotificationVO data : resultList) {
             accession = data.getAccessionNumber();
             email = data.getEmail();
+            if (parsedEmails.get(email) == null) {
+                parsed = organizationParameter.decodeEmail(email);
+                parsedEmails.put(email, parsed);
+            } else {
+                parsed = parsedEmails.get(email);
+            }
+            email = parsed.getEmail();
+            filter = parsed.getFilter();
+            filterValue = parsed.getfilterValue();
+            if (filter != null)
+                switch (filter) {
+                    case "C:":
+                        /*
+                         * reference field 1 should be collector
+                         */
+                        if ( !data.getReferenceField1().contains(filterValue))
+                            continue;
+                        break;
+                    case "R:":
+                        /*
+                         * reference field 3 should be client reference string
+                         */
+                        if ( !data.getReferenceField3().contains(filterValue))
+                            continue;
+                        break;
+                    case "P:":
+                        // TODO add provider to data object
+                        if ( !data.getReferenceField2().contains(filterValue))
+                            continue;
+                        break;
+                    default:
+                        // do nothing if the filter is invalid
+                }
             l = emails.get(email);
             if (l == null) {
                 l = new ArrayList<ClientNotificationVO>();
@@ -183,11 +223,12 @@ public class ClientNotificationReleasedReportBean {
             }
             printFooter(contents);
             try {
-                ReportUtil.sendEmail(from, to,
+                ReportUtil.sendEmail(from,
+                                     to,
                                      "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
                                      contents.toString());
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not send email to "+ to, e);
+                log.log(Level.SEVERE, "Could not send email to " + to, e);
             }
         }
 
@@ -221,11 +262,14 @@ public class ClientNotificationReleasedReportBean {
                              String dateCollected, String refInfo) {
         body.append("<tr><td>")
             .append(accNum)
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(dateCollected))
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(dateReceived))
-            .append("</td>").append("<td>")
+            .append("</td>")
+            .append("<td>")
             .append(DataBaseUtil.toString(refInfo))
             .append("</td></tr>\r\n");
     }

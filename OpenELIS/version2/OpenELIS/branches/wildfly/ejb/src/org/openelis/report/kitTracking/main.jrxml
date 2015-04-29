@@ -12,8 +12,8 @@
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="FROM_DATE" class="java.lang.String"/>
-	<parameter name="TO_DATE" class="java.lang.String"/>
+	<parameter name="FROM_DATE" class="java.util.Date"/>
+	<parameter name="TO_DATE" class="java.util.Date"/>
 	<parameter name="SHIP_FROM" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -36,21 +36,24 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select distinct o.id o_id, d1.entry status, o.ordered_date, ship_to.id ship_to_id, ship_to.name ship_to_name,
-                  d3.entry ship_from_name, report_to.id report_to_id, report_to.name report_to_name, o.requested_by,
-                  d2.entry cost_center
-  from order o, dictionary d1, outer dictionary d2, outer dictionary d3, organization ship_to,
-       outer(order_organization oo, organization report_to)
-where o.status_id = d1.id and
-      o.cost_center_id = d2.id and
-      o.ship_from_id = d3.id and
-      o.organization_id = ship_to.id and
-      oo.order_id = o.id and
-      oo.organization_id = report_to.id and
-      oo.type_id = (select id from dictionary where system_name = 'org_report_to') and
-      o.type = 'S' and
-      o.ordered_date between $P{FROM_DATE} and $P{TO_DATE}
-$P!{SHIP_FROM} $P!{SHIP_TO} $P!{REPORT_TO} $P!{DESCRIPTION} $P!{STATUS} $P!{SECTION} $P!{SORT_BY}]]>
+		<![CDATA[SELECT DISTINCT
+       o.id as o_id, d1.entry as status, o.ordered_date, ship_to.id as ship_to_id, ship_to.name as ship_to_name,
+       d3.entry as ship_from_name, report_to.id as report_to_id, report_to.name as report_to_name, o.requested_by,
+       d2.entry as cost_center
+FROM
+      iorder o
+      join dictionary d1 on d1.id = o.status_id
+      join organization ship_to on ship_to.id = o.organization_id
+      left join dictionary d2 on d2.id = o.cost_center_id
+      left join dictionary d3 on d3.id = o.ship_from_id
+      left join iorder_organization oo on oo.iorder_id = o.id and
+                oo.type_id = (select id from dictionary where system_name = 'org_report_to')
+      left join organization report_to on report_to.id = oo.organization_id
+WHERE
+      o.ordered_date between $P{FROM_DATE} and $P{TO_DATE} and
+      o.type = 'S' $P!{SHIP_FROM} $P!{SHIP_TO} $P!{REPORT_TO} $P!{DESCRIPTION}
+      $P!{STATUS} $P!{SECTION}
+$P!{SORT_BY}]]>
 	</queryString>
 	<field name="o_id" class="java.lang.Integer"/>
 	<field name="status" class="java.lang.String"/>

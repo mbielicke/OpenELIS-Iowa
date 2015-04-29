@@ -111,9 +111,10 @@ public class SampleLoginLabelReportBean {
      */
     @RolesAllowed("r_loginlabel-select")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int i, j, samples, containers, laccession;
+        int i, j, laccession;
+        Integer samples, containers, locationId;
         Path path;
-        String received, location, locationId, printer, printstat;
+        String received, location, printer, printstat;
         ReportStatus status;
         HashMap<String, QueryData> param;
         DictionaryDO locationDO;
@@ -132,28 +133,22 @@ public class SampleLoginLabelReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        samples = 0;
-        containers = 0;
-        try {
-            samples = Integer.parseInt(ReportUtil.getSingleParameter(param, "SAMPLES"));
-            containers = Integer.parseInt(ReportUtil.getSingleParameter(param, "CONTAINERS"));
-        } catch (Exception e) {
-            throw new InconsistencyException("You must specify valid number for samples (<= 300) and continers (<= 50)");
-        } finally {
-            if (samples > 300 || containers > 50)
-                throw new InconsistencyException("Number of sample labels or container labels\ncan not exceed 300 and 50 respectively");
-        }
-        received = ReportUtil.getSingleParameter(param, "RECEIVED");
-        locationId = ReportUtil.getSingleParameter(param, "LOCATION");
-        printer = ReportUtil.getSingleParameter(param, "BARCODE");
+        samples = ReportUtil.getIntegerParameter(param, "SAMPLES");
+        containers = ReportUtil.getIntegerParameter(param, "CONTAINERS");
+        if (samples == null || samples > 300 || containers == null || containers > 50)
+            throw new InconsistencyException("Sample labels must be < 300 and\ncontainer labels < 50");
 
-        if (DataBaseUtil.isEmpty(received) || DataBaseUtil.isEmpty(locationId) ||
+        received = ReportUtil.getStringParameter(param, "RECEIVED");
+        locationId = ReportUtil.getIntegerParameter(param, "LOCATION");
+        printer = ReportUtil.getStringParameter(param, "BARCODE");
+
+        if (DataBaseUtil.isEmpty(received) || locationId == null ||
             DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify # of samples, # of continers, date received,\nlocation, and printer for this report");
 
         location = "";
         try {
-            locationDO = dictionary.getById(Integer.valueOf(locationId));
+            locationDO = dictionary.getById(locationId);
             location = locationDO.getEntry().substring(0, 1);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error looking up dictionary for location", e);
@@ -249,8 +244,9 @@ public class SampleLoginLabelReportBean {
      */
     @RolesAllowed("r_loginlabelrep-select")
     public ReportStatus runAdditionalReport(ArrayList<QueryData> paramList) throws Exception {
-        int i, accession, starting, containers, laccession;
-        String accStr, received, location, locationId, printer, printstat, parts[];
+        int i, starting, laccession;
+        Integer accession, containers, locationId;
+        String accStr, received, location, printer, printstat, parts[];
         ReportStatus status;
         HashMap<String, QueryData> param;
         DictionaryDO locationDO;
@@ -271,23 +267,18 @@ public class SampleLoginLabelReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        accStr = ReportUtil.getSingleParameter(param, "ACCESSION");
-        containers = 0;
-        try {
-            containers = Integer.parseInt(ReportUtil.getSingleParameter(param, "CONTAINERS"));
-        } catch (Exception e) {
-            throw new InconsistencyException("You must specify valid number of continers (<=50)");
-        } finally {
-            if (containers > 50)
-                throw new InconsistencyException("Number of requested container lables 50");
-        }
-        received = ReportUtil.getSingleParameter(param, "RECEIVED");
-        locationId = ReportUtil.getSingleParameter(param, "LOCATION");
-        printer = ReportUtil.getSingleParameter(param, "BARCODE");
+        accStr = ReportUtil.getStringParameter(param, "ACCESSION");
+        containers = ReportUtil.getIntegerParameter(param, "CONTAINERS");
+        received = ReportUtil.getStringParameter(param, "RECEIVED");
+        locationId = ReportUtil.getIntegerParameter(param, "LOCATION");
+        printer = ReportUtil.getStringParameter(param, "BARCODE");
 
-        if (DataBaseUtil.isEmpty(accStr) || DataBaseUtil.isEmpty(locationId) ||
+        if (DataBaseUtil.isEmpty(accStr) || locationId == null ||
             DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify accession number, location, and printer for this report");
+
+        if (containers == null || containers > 50)
+            throw new InconsistencyException("You must specify valid number of continers (<=50)");
 
         /*
          * accession string might be in nnnn-xx (accession-container)
@@ -305,7 +296,7 @@ public class SampleLoginLabelReportBean {
 
         location = "";
         try {
-            locationDO = dictionary.getById(Integer.valueOf(locationId));
+            locationDO = dictionary.getById(locationId);
             location = locationDO.getEntry().substring(0, 1);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error looking up dictionary for location", e);

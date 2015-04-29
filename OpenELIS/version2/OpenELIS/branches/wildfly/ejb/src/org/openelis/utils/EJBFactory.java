@@ -162,32 +162,32 @@ public class EJBFactory {
         return lookup("NoteBean");
     }
 
-    public static OrderOrganizationBean getOrderOrganization() {
-        return lookup("OrderOrganizationBean");
+    public static IOrderOrganizationBean getIOrderOrganization() {
+        return lookup("IOrderOrganizationBean");
     }
 
-    public static OrderContainerBean getOrderContainer() {
-        return lookup("OrderContainerBean");
+    public static IOrderContainerBean getIOrderContainer() {
+        return lookup("IOrderContainerBean");
     }
 
-    public static OrderItemBean getOrderItem() {
-        return lookup("OrderItemBean");
+    public static IOrderItemBean getIOrderItem() {
+        return lookup("IOrderItemBean");
     }
 
-    public static OrderBean getOrder() {
-        return lookup("OrderBean");
+    public static IOrderBean getIOrder() {
+        return lookup("IOrderBean");
     }
 
-    public static OrderTestBean getOrderTest() {
-        return lookup("OrderTestBean");
+    public static IOrderTestBean getIOrderTest() {
+        return lookup("IOrderTestBean");
     }
 
-    public static OrderTestAnalyteBean getOrderTestAnalyte() {
-        return lookup("OrderTestAnalyteBean");
+    public static IOrderTestAnalyteBean getIOrderTestAnalyte() {
+        return lookup("IOrderTestAnalyteBean");
     }
 
-    public static OrderRecurrenceBean getOrderRecurrence() {
-        return lookup("OrderRecurrenceBean");
+    public static IOrderRecurrenceBean getIOrderRecurrence() {
+        return lookup("IOrderRecurrenceBean");
     }
 
     public static OrganizationContactBean getOrganizationContact() {

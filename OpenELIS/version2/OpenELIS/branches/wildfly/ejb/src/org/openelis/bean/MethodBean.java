@@ -25,11 +25,14 @@
  */
 package org.openelis.bean;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -58,13 +61,13 @@ import org.openelis.ui.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class MethodBean {
+public class MethodBean implements SessionSynchronization {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager           manager;
 
     @EJB
-    LockBean               lock;
+    LockBean                lock;
     
     @EJB
     UserCacheBean           userCache;
@@ -201,6 +204,7 @@ public class MethodBean {
     public MethodDO fetchForUpdate(Integer id) throws Exception {
         try {
             lock.lock(Constants.table().METHOD, id);
+            //throw new DatabaseException("Testing rollback");
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
@@ -300,5 +304,22 @@ public class MethodBean {
     protected OpenELISConstants getMessages() {
         return Messages.get();
     }
+    
+	@Override
+	public void afterBegin() throws EJBException, RemoteException {
+		System.out.println("After Begin");
+		
+	}
+
+	@Override
+	public void beforeCompletion() throws EJBException, RemoteException {
+		System.out.println("Before Completion");
+	}
+
+	@Override
+	public void afterCompletion(boolean committed) throws EJBException,
+			RemoteException {
+		System.out.println("After Completion : "+committed);
+	}
     
 }

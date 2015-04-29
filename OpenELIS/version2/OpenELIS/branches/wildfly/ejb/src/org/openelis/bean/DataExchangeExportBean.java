@@ -139,7 +139,7 @@ public class DataExchangeExportBean {
         int accession;
         EOrderDO eo;
         Calendar cal;
-        Date releaseStart, releaseEnd;
+        Date now, releaseStart, releaseEnd;
         StringBuilder sb;
         ArrayList<Integer> ids;
         ArrayList<EOrderLinkDO> eols;
@@ -166,6 +166,7 @@ public class DataExchangeExportBean {
          * samples). Ending time of released samples/analysis is a minute ago.
          */
         cal = Calendar.getInstance();
+        now = cal.getTime();
         cal.add(Calendar.MINUTE, -1);
         releaseEnd = cal.getTime();
         try {
@@ -236,7 +237,7 @@ public class DataExchangeExportBean {
             addEventLog(Messages.get().dataExchange_executedCriteria(name),
                         cm.getExchangeCriteria().getId(),
                         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION,
-                        releaseEnd,
+                        now,
                         sb.toString());
         } catch (NotFoundException e) {
             addEventLog(Messages.get().dataExchange_noSamplesFound(name),

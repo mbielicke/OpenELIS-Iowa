@@ -15,16 +15,28 @@
 	<parameter name="SECTION" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="FROM" class="java.lang.String"/>
-	<parameter name="TO" class="java.lang.String"/>
+	<parameter name="FROM" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TO" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT se.name se_name, se.id se_id, t.id t_id, t.name t_name, t.description t_description, m.name m_name, d.id ana_id, d.entry as ana_status, d.system_name d_system_name
-FROM sample s, sample_item si, section se, test_section ts, test t,
-     analysis a, method m, dictionary d
-WHERE  s.entered_date BETWEEN $P{FROM} AND $P{TO} and si.sample_id = s.id and a.sample_item_id = si.id and
-      a.test_id = t.id and t.method_id = m.id and t.id = ts.test_id and
-      ts.section_id = se.id and a.section_id = se.id and d.id = a.status_id $P!{SECTION}
-order by se_name, t_name, m_name]]>
+		<![CDATA[SELECT
+     se.name as se_name, se.id as se_id, t.id as t_id, t.name as t_name, t.description as t_description,
+     m.name as m_name, d.id as ana_id, d.entry as ana_status, d.system_name as d_system_name
+FROM
+     sample s
+     join sample_item si on si.sample_id = s.id
+     join analysis a on a.sample_item_id = si.id
+     join dictionary d on d.id = a.status_id
+     join section se on se.id = a.section_id
+     join test t on t.id = a.test_id
+     join method m on m.id = t.method_id
+WHERE
+     s.entered_date between $P{FROM} and $P{TO}
+     $P!{SECTION}
+ORDER BY se_name, t_name, m_name]]>
 	</queryString>
 	<field name="se_name" class="java.lang.String"/>
 	<field name="se_id" class="java.lang.Integer"/>

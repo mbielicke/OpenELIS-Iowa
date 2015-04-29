@@ -9,16 +9,16 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     si.id si_id, si.item_sequence, d1.entry type_of_sample, d2.entry source_of_sample, si.source_other,
-     si.quantity, d3.entry container, si.container_reference, d4.entry unit
+     si.id as si_id, si.item_sequence, d1.entry as type_of_sample, d2.entry as source_of_sample, si.source_other,
+     si.quantity, d3.entry as container, si.container_reference, d4.entry as unit
 FROM
-     sample_item si, outer dictionary d1, outer dictionary d2, outer dictionary d3, outer dictionary d4
+     sample_item si
+     left join dictionary d1 on d1.id = si.type_of_sample_id
+     left join dictionary d2 on d2.id = si.source_of_sample_id
+     left join dictionary d3 on d3.id = si.container_id
+     left join dictionary d4 on d4.id = si.unit_of_measure_id
 WHERE
      si.sample_id = $P{SAMPLE_ID}
-     AND si.type_of_sample_id = d1.id
-     AND si.source_of_sample_id = d2.id
-     AND si.container_id = d3.id
-     AND si.unit_of_measure_id = d4.id
 ORDER BY si.item_sequence]]>
 	</queryString>
 	<field name="si_id" class="java.lang.Integer"/>

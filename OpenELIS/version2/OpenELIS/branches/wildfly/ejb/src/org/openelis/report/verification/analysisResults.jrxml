@@ -6,18 +6,18 @@
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT
-     r.is_column is_column,
-     r.sort_order sort_order,
+     r.is_column as is_column,
+     r.sort_order as sort_order,
      r.is_reportable,
-     a.name a_name,
-     d1.system_name result_type,
-     r.value r_value
+     a.name as a_name,
+     d1.system_name as result_type,
+     r.value as r_value
 FROM
-     analyte a, result r, outer dictionary d1
+     analyte a
+     join result r on r.analyte_id = a.id
+     left join dictionary d1 on d1.id = r.type_id
 WHERE
      r.analysis_id = $P{ANALYSIS_ID}
-     AND r.analyte_id = a.id
-     AND r.type_id = d1.id
 ORDER BY
      r.sort_order]]>
 	</queryString>

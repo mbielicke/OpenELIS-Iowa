@@ -30,7 +30,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,8 +157,8 @@ public class HIVHepCExportBean {
         endReleased = null;
         if (paramList != null) {
             param = ReportUtil.getMapParameter(paramList);
-            beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
-            endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
+            beginReleased = ReportUtil.getTimestampParameter(param, "BEGIN_RELEASED");
+            endReleased = ReportUtil.getTimestampParameter(param, "END_RELEASED");
         }
 
         if (beginReleased == null || endReleased == null) {

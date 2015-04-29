@@ -6,13 +6,13 @@
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT
-     q.reporting_sequence, aq.id, d.entry type, q.description
+     q.reporting_sequence, aq.id, d.entry as type, q.description
 FROM
-     qaevent q, analysis_qaevent aq, dictionary d
+     qaevent q
+     join analysis_qaevent aq on aq.qaevent_id = q.id
+     join dictionary d on d.id = q.type_id
 WHERE
      aq.analysis_id = $P{ANALYSIS_ID}
-     AND aq.qaevent_id = q.id
-     AND q.type_id = d.id
 ORDER BY q.reporting_sequence, aq.id]]>
 	</queryString>
 	<field name="reporting_sequence" class="java.lang.Integer"/>

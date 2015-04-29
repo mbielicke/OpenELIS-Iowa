@@ -9,11 +9,10 @@
 		<![CDATA[SELECT
      p.name
 FROM
-     project p, sample_project sp
+     project p
+     join sample_project sp on sp.project_id = p.id and sp.is_permanent = 'Y'
 WHERE
      sp.sample_id = $P{SAMPLE_ID}
-     AND sp.is_permanent = 'Y'
-     AND p.id = sp.project_id
 ORDER BY p.name]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>

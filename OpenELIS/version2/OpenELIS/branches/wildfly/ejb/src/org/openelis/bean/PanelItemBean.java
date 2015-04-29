@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -48,77 +48,93 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
-public class PanelItemBean  {
+public class PanelItemBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager              manager;
-    
-    @EJB 
-    private TestBean                   test;
-    
+    private EntityManager     manager;
+
     @EJB
-    private AuxFieldGroupBean          auxFieldGroup;
-    
+    private TestBean          test;
+
+    @EJB
+    private AuxFieldGroupBean auxFieldGroup;
+
     @SuppressWarnings("unchecked")
     public ArrayList<PanelItemDO> fetchByPanelId(Integer id) throws Exception {
         Query query;
         List list;
-        
+
         query = manager.createNamedQuery("PanelItem.FetchByPanelId");
         query.setParameter("id", id);
         list = query.getResultList();
-        
+
         if (list.isEmpty())
             throw new NotFoundException();
 
         list = DataBaseUtil.toArrayList(list);
-        
-        return (ArrayList) list;
+
+        return (ArrayList)list;
     }
-    
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<PanelItemDO> fetchByPanelIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("PanelItem.FetchByPanelIds");
+        query.setParameter("ids", ids);
+        list = query.getResultList();
+
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.toArrayList(list);
+
+        return (ArrayList)list;
+    }
+
     public PanelItemDO add(PanelItemDO data) throws Exception {
         PanelItem entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = new PanelItem();       
+        entity = new PanelItem();
         entity.setPanelId(data.getPanelId());
         entity.setType(data.getType());
         entity.setSortOrder(data.getSortOrder());
         entity.setName(data.getName());
         entity.setMethodName(data.getMethodName());
-        
+
         manager.persist(entity);
         data.setId(entity.getId());
 
         return data;
     }
-    
+
     public PanelItemDO update(PanelItemDO data) throws Exception {
         PanelItem entity;
-        
+
         if ( !data.isChanged())
             return data;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
-        entity = manager.find(PanelItem.class, data.getId());       
+
+        entity = manager.find(PanelItem.class, data.getId());
         entity.setPanelId(data.getPanelId());
         entity.setType(data.getType());
         entity.setSortOrder(data.getSortOrder());
         entity.setName(data.getName());
-        entity.setMethodName(data.getMethodName());        
+        entity.setMethodName(data.getMethodName());
 
         return data;
     }
 
     public void delete(PanelItemDO data) throws Exception {
         PanelItem entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
-        entity = manager.find(PanelItem.class, data.getId()); 
-        if(entity != null)
+
+        entity = manager.find(PanelItem.class, data.getId());
+        if (entity != null)
             manager.remove(entity);
     }
 
@@ -134,7 +150,8 @@ public class PanelItemBean  {
             match = false;
 
             if (tests.size() == 0) {
-                list.add(new FieldErrorException(Messages.get().noActiveTestsException(), PanelMeta.getItemName()));
+                list.add(new FieldErrorException(Messages.get().noActiveTestsException(),
+                                                 PanelMeta.getItemName()));
                 throw list;
             } else {
                 for (int i = 0; i < tests.size(); i++ ) {

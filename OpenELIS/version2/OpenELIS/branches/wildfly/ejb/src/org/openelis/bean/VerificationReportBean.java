@@ -97,7 +97,7 @@ public class VerificationReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        String /* beginEntered, endEntered, */userIds, userWhere, userNames, printer, dir, printstat, userName, token;
+        String userIds, userWhere, userNames, printer, dir, printstat, userName, token;
         StringTokenizer tokenizer;
         SystemUserVO sysUserVO;
 
@@ -113,15 +113,8 @@ public class VerificationReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
         userName = User.getName(ctx);
-
-        // beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
-        // if (beginEntered != null && beginEntered.length() > 0)
-        // beginEntered += ":00";
-        // endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED");
-        // if (endEntered != null && endEntered.length() > 0)
-        // endEntered += ":59";
         userWhere = ReportUtil.getListParameter(param, "USER_LIST");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         if ( !DataBaseUtil.isEmpty(userWhere)) {
             userNames = "";
@@ -168,8 +161,6 @@ public class VerificationReportBean {
             dir = ReportUtil.getResourcePath(url);
 
             jparam = new HashMap<String, Object>();
-            // jparam.put("BEGIN_ENTERED", beginEntered);
-            // jparam.put("END_ENTERED", endEntered);
             jparam.put("USER_WHERE", userWhere);
             jparam.put("USER_NAMES", userNames);
             jparam.put("USER_NAME", userName);

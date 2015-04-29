@@ -133,8 +133,8 @@ public class TestReportBean {
 
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
-        detail = ReportUtil.getSingleParameter(param, "DETAIL");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        detail = ReportUtil.getStringParameter(param, "DETAIL");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
         if (DataBaseUtil.isEmpty(detail) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify the detail selection and printer for this report");

@@ -22,14 +22,13 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class ProviderLocationBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                manager;
+    private EntityManager manager;
 
     @EJB
-    private AddressBean                 addressBean;
+    private AddressBean   addressBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<ProviderLocationDO> fetchByProviderId(Integer id) throws Exception {
@@ -47,13 +46,23 @@ public class ProviderLocationBean {
 
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<ProviderLocationDO> fetchByProviderIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("ProviderLocation.FetchByProviderIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public ProviderLocationDO add(ProviderLocationDO data) throws Exception {
         ProviderLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddress());
-        
+
         entity = new ProviderLocation();
         entity.setAddressId(data.getAddress().getId());
         entity.setLocation(data.getLocation());
@@ -69,10 +78,10 @@ public class ProviderLocationBean {
     public ProviderLocationDO update(ProviderLocationDO data) throws Exception {
         ProviderLocation entity;
 
-        if (!data.isChanged() && !data.getAddress().isChanged())
+        if ( !data.isChanged() && !data.getAddress().isChanged())
             return data;
-        
-        manager.setFlushMode(FlushModeType.COMMIT);            
+
+        manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ProviderLocation.class, data.getId());
         entity.setLocation(data.getLocation());
         entity.setExternalId(data.getExternalId());
@@ -99,7 +108,8 @@ public class ProviderLocationBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getProviderLocationLocation()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             ProviderMeta.getProviderLocationLocation()));
 
         if (list.size() > 0)
             throw list;

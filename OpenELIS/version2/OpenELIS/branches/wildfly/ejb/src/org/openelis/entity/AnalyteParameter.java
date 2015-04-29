@@ -43,58 +43,48 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "AnalyteParameter.FetchActiveByAnaIdRefIdRefTableId",
+    @NamedQuery( name = "AnalyteParameter.FetchByRefIdRefTableId",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
-                      +	" ap.referenceTableId = :referenceTableId and ap.isActive = 'Y'"),
-    @NamedQuery( name = "AnalyteParameter.FetchActiveByRefIdRefTableId",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
                         "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
                       + " from AnalyteParameter ap where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId"
-                      + " and ap.isActive = 'Y' order by ap.analyte.name, ap.activeBegin desc"),
+                      + " order by ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin desc"),
     @NamedQuery( name = "AnalyteParameter.FetchByAnaIdRefIdRefTableId",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
                         "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
                        + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
                        + " ap.referenceTableId = :referenceTableId order by ap.analyte.name, ap.activeBegin desc"),                  
     @NamedQuery( name = "AnalyteParameter.FetchById",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
                         "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
                       + " from AnalyteParameter ap where ap.id = :id"),
     @NamedQuery( name = "AnalyteParameter.FetchForQcChartReport",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name) " +
-                        "from AnalyteParameter ap " +
-                        "where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and" +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
+                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)" +
+                        " from AnalyteParameter ap" +
+                        " where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and" +
                         " ap.activeBegin <= :worksheetCreatedDate and ap.activeEnd >= :worksheetCreatedDate"),
     @NamedQuery( name = "AnalyteParameter.FetchByActiveDate",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name) " +
-                        "from AnalyteParameter ap " +
-                        "where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and" +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.unitOfMeasureId, ap.activeBegin," +
+                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)" +
+                        " from AnalyteParameter ap" +
+                        " where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and" +
                         " ap.activeBegin <= :activeDate and ap.activeEnd >= :activeDate order by ap.analyte.name")})
 
 @Entity
 @Table(name = "analyte_parameter")
 @EntityListeners({AuditUtil.class})
-public class AnalyteParameter implements Auditable, Cloneable {
+public class AnalyteParameter implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,9 +102,9 @@ public class AnalyteParameter implements Auditable, Cloneable {
 
     @Column(name = "type_of_sample_id")
     private Integer          typeOfSampleId;
-
-    @Column(name = "is_active")
-    private String           isActive;
+    
+    @Column(name = "unit_of_measure_id")
+    private Integer          unitOfMeasureId;
 
     @Column(name = "active_begin")
     private Date             activeBegin;
@@ -146,9 +136,6 @@ public class AnalyteParameter implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
     private Analyte          analyte;
-
-    @Transient
-    private AnalyteParameter original;
 
     public Integer getId() {
         return id;
@@ -194,14 +181,14 @@ public class AnalyteParameter implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(typeOfSampleId, this.typeOfSampleId))
             this.typeOfSampleId = typeOfSampleId;
     }
-
-    public String getIsActive() {
-        return isActive;
+    
+    public Integer getUnitOfMeasureId() {
+        return unitOfMeasureId;
     }
 
-    public void setIsActive(String isActive) {
-        if (DataBaseUtil.isDifferent(isActive, this.isActive))
-            this.isActive = isActive;
+    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+        if (DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
+            this.unitOfMeasureId = unitOfMeasureId;
     }
 
     public Date getActiveBegin() {
@@ -279,35 +266,5 @@ public class AnalyteParameter implements Auditable, Cloneable {
 
     public void setAnalyte(Analyte analyte) {
         this.analyte = analyte;
-    }
-
-    public void setClone() {
-        try {
-            original = (AnalyteParameter)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit(Integer activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(Constants.table().ANALYTE_PARAMETER);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("reference_id", referenceId, original.referenceId)
-                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
-                 .setField("analyte_id", analyteId, original.analyteId)
-                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId)
-                 .setField("is_active", isActive, original.isActive)
-                 .setField("active_begin", activeBegin, original.activeBegin)
-                 .setField("active_end", activeEnd, original.activeEnd)
-                 .setField("p1", p1, original.p1)
-                 .setField("p2", p2, original.p2)
-                 .setField("p3", p3, original.p3);
-
-        return audit;
     }
 }

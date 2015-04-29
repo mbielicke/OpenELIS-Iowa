@@ -57,7 +57,7 @@ import org.openelis.util.QueryBuilderV2;
 public class ProviderBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager             manager;
+    EntityManager             manager;
 
     private static final ProviderMeta meta = new ProviderMeta();
 

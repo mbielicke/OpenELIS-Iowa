@@ -8,10 +8,15 @@
 	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<parameter name="ORDER_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT DISTINCT t.name tname, m.name mname
-from order_test ot, test t, method m
-where ot.test_id = t.id and t.method_id = m.id and ot.order_id = $P{ORDER_ID}
-order by 1,2]]>
+		<![CDATA[SELECT DISTINCT
+      t.name as tname, m.name as mname
+FROM
+      iorder_test ot
+      join test t on t.id = ot.test_id
+      join method m on m.id = t.method_id
+WHERE
+      ot.iorder_id = $P{ORDER_ID}
+ORDER BY 1,2]]>
 	</queryString>
 	<field name="tname" class="java.lang.String"/>
 	<field name="mname" class="java.lang.String"/>

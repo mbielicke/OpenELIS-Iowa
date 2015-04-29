@@ -9,9 +9,9 @@
 	<parameter name="ORDER_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT DISTINCT s.accession_number
-from sample s
-where s.order_id = $P{ORDER_ID}
-order by 1]]>
+FROM   sample s
+WHERE  s.order_id = $P{ORDER_ID}
+ORDER BY 1]]>
 	</queryString>
 	<field name="accession_number" class="java.lang.Integer"/>
 	<detail>
