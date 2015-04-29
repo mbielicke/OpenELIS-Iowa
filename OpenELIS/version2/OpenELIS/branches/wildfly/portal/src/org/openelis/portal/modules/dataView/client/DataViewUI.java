@@ -5,6 +5,7 @@ import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.MultiDropdown;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
+import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.user.client.ui.DeckPanel;
@@ -102,6 +103,12 @@ public interface DataViewUI extends IsWidget {
 
     public CheckBox getPatientEthnicity();
 
+    public CheckBox getPatientPhone();
+
+    public CheckBox getProviderLastName();
+
+    public CheckBox getProviderFirstName();
+
     public CheckBox getPwsIdHeader();
 
     public CheckBox getPwsName();
@@ -128,9 +135,9 @@ public interface DataViewUI extends IsWidget {
 
     public CheckBox getSampleDescription();
 
-    public Table getAnalyteTable();
+    public Table<Row> getAnalyteTable();
 
-    public Table getAuxTable();
+    public Table<Row> getAuxTable();
 
     public Button getContinueButton();
 

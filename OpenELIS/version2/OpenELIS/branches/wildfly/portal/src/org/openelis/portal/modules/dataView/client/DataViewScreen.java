@@ -209,6 +209,9 @@ public class DataViewScreen extends Screen {
                 ui.getPatientGender().setValue(yes, true);
                 ui.getPatientRace().setValue(yes, true);
                 ui.getPatientEthnicity().setValue(yes, true);
+                ui.getPatientPhone().setValue(yes, true);
+                ui.getProviderLastName().setValue(yes, true);
+                ui.getProviderFirstName().setValue(yes, true);
             }
         });
 
@@ -365,7 +368,7 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getReleasedFrom(),
-                         SampleWebMeta.getReleasedDateFrom(),
+                         SampleWebMeta.getAnalysisReleasedDateFrom(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  if (data.getReleasedDateFrom() != null)
@@ -395,7 +398,7 @@ public class DataViewScreen extends Screen {
                          });
 
         addScreenHandler(ui.getReleasedTo(),
-                         SampleWebMeta.getReleasedDateTo(),
+                         SampleWebMeta.getAnalysisReleasedDateTo(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  if (data.getReleasedDateTo() != null)
@@ -1159,6 +1162,54 @@ public class DataViewScreen extends Screen {
                              }
                          });
 
+        addScreenHandler(ui.getPatientPhone(), "patientPhoneHeader", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                ui.getPatientPhone().setValue(data.getSampleClinicalPatientPhoneNumber());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleClinicalPatientPhoneNumber(event.getValue());
+            }
+
+            public Widget onTab(boolean forward) {
+                return ui.getBackButton();
+            }
+        });
+
+        addScreenHandler(ui.getProviderLastName(),
+                         "providerLastNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getProviderLastName()
+                                   .setValue(data.getSampleClinicalProviderLastName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalProviderLastName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
+        addScreenHandler(ui.getProviderFirstName(),
+                         "providerFirstNameHeader",
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 ui.getProviderFirstName()
+                                   .setValue(data.getSampleClinicalProviderFirstName());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setSampleClinicalProviderFirstName(event.getValue());
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return ui.getBackButton();
+                             }
+                         });
+
         addScreenHandler(ui.getPwsIdHeader(), "pwsIdHeader", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ui.getPwsIdHeader().setValue(data.getSampleSDWISPwsId());
@@ -1545,9 +1596,9 @@ public class DataViewScreen extends Screen {
         }
 
         try {
-            getRangeQuery(SampleWebMeta.getReleasedDateFrom(),
-                          SampleWebMeta.getReleasedDateTo(),
-                          SampleWebMeta.getReleasedDate(),
+            getRangeQuery(SampleWebMeta.getAnalysisReleasedDateFrom(),
+                          SampleWebMeta.getAnalysisReleasedDateTo(),
+                          SampleWebMeta.getAnalysisReleasedDate(),
                           fieldMap);
         } catch (Exception e) {
             ui.setReleasedError(Messages.get().finalReport_error_noStartDate());
@@ -1742,7 +1793,7 @@ public class DataViewScreen extends Screen {
             public void onSuccess(ReportStatus result) {
                 if (result.getStatus() == ReportStatus.Status.SAVED) {
                     String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
-                    Window.open(URL.encode(url), "DataView", null);
+                    Window.open(URL.encode(url), "DataView", "resizable=yes");
                 }
                 window.clearStatus();
                 statusPanel.hide();
@@ -1822,6 +1873,9 @@ public class DataViewScreen extends Screen {
         ui.getPatientGender().setValue(no, true);
         ui.getPatientRace().setValue(no, true);
         ui.getPatientEthnicity().setValue(no, true);
+        ui.getPatientPhone().setValue(no, true);
+        ui.getProviderLastName().setValue(no, true);
+        ui.getProviderFirstName().setValue(no, true);
         ui.getPwsIdHeader().setValue(no, true);
         ui.getPwsName().setValue(no, true);
         ui.getSdwisCollectorHeader().setValue(no, true);
