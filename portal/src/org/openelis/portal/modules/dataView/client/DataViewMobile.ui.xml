@@ -610,6 +610,31 @@
 						</td>
 					</tr>
 					<tr>
+						<td height="36">
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientPhone"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_phone}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="providerLastName"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.provider_lastName}" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="providerFirstName"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.provider_firstName}" />
+						</td>
+					</tr>
+					<tr>
 						<td>
 							<br />
 							<br />

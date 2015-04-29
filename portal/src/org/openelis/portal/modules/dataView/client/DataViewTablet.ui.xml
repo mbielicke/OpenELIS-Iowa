@@ -547,6 +547,20 @@
 						<td>
 							<ui:text from="{msg.patient_birthDate}" />
 						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientGender"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_gender}" />
+						</td>
+						<td>
+							<w:CheckBox css="{res.mcheckbox}" ui:field="patientRace"
+								enabled="true" width="36px" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_race}" />
+						</td>
 					</tr>
 					<tr>
 						<td>
@@ -579,25 +593,29 @@
 						</td>
 						<td width="50px" />
 						<td>
-							<w:CheckBox css="{res.mcheckbox}" ui:field="patientGender"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.patient_gender}" />
-						</td>
-						<td>
-							<w:CheckBox css="{res.mcheckbox}" ui:field="patientRace"
-								enabled="true" width="36px" />
-						</td>
-						<td>
-							<ui:text from="{msg.patient_race}" />
-						</td>
-						<td>
 							<w:CheckBox css="{res.mcheckbox}" ui:field="patientEthnicity"
 								enabled="true" width="36px" />
 						</td>
 						<td>
 							<ui:text from="{msg.patient_ethnicity}" />
+						</td>
+						<td>
+							<w:CheckBox ui:field="patientPhone" enabled="true" />
+						</td>
+						<td>
+							<ui:text from="{msg.patient_phone}" />
+						</td>
+						<td>
+							<w:CheckBox ui:field="providerLastName" enabled="true" />
+						</td>
+						<td>
+							<ui:text from="{msg.provider_lastName}" />
+						</td>
+						<td>
+							<w:CheckBox ui:field="providerFirstName" enabled="true" />
+						</td>
+						<td>
+							<ui:text from="{msg.provider_firstName}" />
 						</td>
 					</tr>
 					<tr>

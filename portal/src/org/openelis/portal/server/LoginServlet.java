@@ -26,7 +26,6 @@
 package org.openelis.portal.server;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,7 +59,7 @@ public class LoginServlet extends HttpServlet {
     
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException,IOException {
-        String error = null,locale = "en";
+        String locale = "en";
         HttpServletRequest hreq = (HttpServletRequest)req;
 
         //
@@ -68,7 +67,14 @@ public class LoginServlet extends HttpServlet {
         //
         if (hreq.getParameter("locale") != null) {
             locale = req.getParameter("locale");
-            hreq.getSession().setAttribute("locale", locale);
+            switch (locale) {
+                case "fr":
+                    hreq.getSession().setAttribute("locale", "fr");
+                    break;
+                case "en":
+                default:
+                    hreq.getSession().setAttribute("locale", "en");
+            }
         }
         
         //

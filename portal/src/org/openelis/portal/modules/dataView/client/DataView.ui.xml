@@ -372,7 +372,6 @@
 								<td>
 									<ui:text from="{msg.org_address}" />
 								</td>
-								<td width="100px" />
 							</tr>
 							<tr>
 								<td>
@@ -448,7 +447,7 @@
 									</g:HorizontalPanel>
 								</td>
 								<td />
-								<td colspan="7">
+								<td colspan="10">
 									<g:HorizontalPanel spacing="10">
 										<g:HTMLPanel>
 											<span style="float:left;font-weight:bold;font-size:10pt;">
@@ -505,6 +504,18 @@
 								<td>
 									<ui:text from="{msg.patient_birthDate}" />
 								</td>
+								<td>
+									<w:CheckBox ui:field="patientGender" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_gender}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="patientRace" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_race}" />
+								</td>
 							</tr>
 							<tr>
 								<td>
@@ -533,22 +544,28 @@
 								</td>
 								<td width="50px" />
 								<td>
-									<w:CheckBox ui:field="patientGender" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_gender}" />
-								</td>
-								<td>
-									<w:CheckBox ui:field="patientRace" enabled="true" />
-								</td>
-								<td>
-									<ui:text from="{msg.patient_race}" />
-								</td>
-								<td>
 									<w:CheckBox ui:field="patientEthnicity" enabled="true" />
 								</td>
 								<td>
 									<ui:text from="{msg.patient_ethnicity}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="patientPhone" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.patient_phone}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="providerLastName" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.provider_lastName}" />
+								</td>
+								<td>
+									<w:CheckBox ui:field="providerFirstName" enabled="true" />
+								</td>
+								<td>
+									<ui:text from="{msg.provider_firstName}" />
 								</td>
 							</tr>
 							<tr>
