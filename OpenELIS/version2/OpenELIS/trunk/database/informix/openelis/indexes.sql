@@ -30,36 +30,6 @@ create        index "dba".ix180_2 on "dba".aux_field_group (name) using btree;
 
 create        index "dba".aux_field_val_2 on "dba".aux_field_value (aux_field_id) using btree;
 
-create unique index "dba".case_1_idx on "dba".case (id) using btree;
-create unique index "dba".case_2_idx on "dba".case (created_date) using btree;
-
-create unique index "dba".case_analysis_1_idx on "dba".case_analysis (id) using btree;
-create        index "dba".case_analysis_2_idx on "dba".case_analysis (case_id) using btree;
-create        index "dba".case_analysis_3_idx on "dba".case_analysis (test_id) using btree;
-create        index "dba".case_analysis_4_idx on "dba".case_analysis (completed_date) using btree;
-
-create unique index "dba".case_contact_1_idx on "dba".case_contact (id) using btree;
-create        index "dba".case_contact_2_idx on "dba".case_contact (source_reference_id, source_reference) using btree;
-
-create unique index "dba".case_contact_location_1_idx on "dba" .case_contact_location (id) using btree;
-create        index "dba".case_contact_location_2_idx on "dba".case_contact_location (case_contact_id) using btree;
-
-create unique index "dba".case_patient_1_idx on "dba".case_patient (id) using btree;
-create        index "dba".case_patient_2_idx on "dba".case_patient (last_name) using btree;
-create        index "dba".case_patient_3_idx on "dba".case_patient (national_id) using btree;
-
-create unique index "dba".case_provider_1_idx on "dba".case_provider (id) using btree;
-create        index "dba".case_provider_2_idx on "dba".case_provider (case_id) using btree;
-
-create unique index "dba".case_result_1_idx on "dba".case_result (id) using btree;
-create        index "dba".case_result_2_idx on "dba".case_result (case_analysis_id) using btree;
-
-create unique index "dba".case_tag_1_idx on "dba".case_tag (id) using btree;
-create        index "dba".case_tag_2_idx on "dba".case_tag (case_id) using btree;
-
-create unique index "dba".case_user_1_idx on "dba".case_user (id) using btree;
-create        index "dba".case_user_2_idx on "dba".case_user (case_id) using btree;
-
 create unique index "dba".ix149_1 on "dba".category (id) using btree;
 create unique index "dba".ix149_2 on "dba".category (system_name) using btree;
 
