@@ -88,7 +88,7 @@ public class QAEventTabUI extends Screen {
     private static QAEventsTabUIBinder uiBinder = GWT.create(QAEventsTabUIBinder.class);
 
     @UiField
-    protected Table                    sampleQATable, analysisQATable;
+    protected Table<Row>                     sampleQATable, analysisQATable;
 
     @UiField
     protected Dropdown<Integer>        sampleQAType, analysisQAType;

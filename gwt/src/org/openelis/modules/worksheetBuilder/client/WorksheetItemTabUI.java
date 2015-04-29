@@ -135,7 +135,7 @@ public class WorksheetItemTabUI extends Screen {
                                                         insertFromQcTableBelow, 
                                                         undoAll, undoManual, undoTemplate;
     @UiField
-    protected Table                                     worksheetItemTable;
+    protected Table<Row>                                worksheetItemTable;
 
     protected ArrayList<Item<Integer>>                  qcLinkModel;
     protected ArrayList<String>                         manualAnalysisUids, templateAnalysisUids;

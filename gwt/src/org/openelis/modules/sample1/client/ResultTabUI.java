@@ -100,7 +100,7 @@ public class ResultTabUI extends Screen {
     private static ResultTabUIBinder                    uiBinder = GWT.create(ResultTabUIBinder.class);
 
     @UiField
-    protected Table                                     table;
+    protected Table<Row>                                table;
 
     @UiField
     protected Button                                    addResultButton, removeResultButton,
@@ -276,7 +276,7 @@ public class ResultTabUI extends Screen {
                             return;
                         }
                     }
-                    rc = (ResultCell)table.getColumnAt(event.getCol()).getCellEditor();
+                    rc = (ResultCell)table.getColumnAt(event.getCol()).<ResultCell.Value>getCellEditor();
                     rc.setModel(model);
                     if (rc.getWidget() instanceof TextBox) {
                         if (caseFlag != null &&
@@ -463,9 +463,9 @@ public class ResultTabUI extends Screen {
             }
         });
 
-        table.addRowDeletedHandler(new RowDeletedHandler() {
+        table.addRowDeletedHandler(new RowDeletedHandler<Row>() {
             @Override
-            public void onRowDeleted(RowDeletedEvent event) {
+            public void onRowDeleted(RowDeletedEvent<Row> event) {
                 manager.result.remove(analysis, (Integer)event.getRow().getData());
             }
         });

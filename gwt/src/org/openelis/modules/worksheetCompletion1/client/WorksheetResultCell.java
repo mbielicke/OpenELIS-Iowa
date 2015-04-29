@@ -27,6 +27,7 @@ package org.openelis.modules.worksheetCompletion1.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -39,6 +40,9 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
+import org.openelis.ui.widget.cell.CellDropdown;
+import org.openelis.ui.widget.cell.CellTextbox;
+import org.openelis.ui.widget.cell.EditableCell;
 import org.openelis.ui.widget.table.CellEditor;
 import org.openelis.ui.widget.table.CellRenderer;
 import org.openelis.ui.widget.table.ColumnInt;
@@ -50,15 +54,15 @@ import org.openelis.ui.widget.table.TextBoxCell;
  * This class is used for displaying, editing and validating the data in the
  * table for the results of analyses.
  */
-public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
+public class WorksheetResultCell extends EditableCell<WorksheetResultCell.Value> implements CellEditor, CellRenderer {
 
     /*
      * The objects responsible for handling display and editing based on the
      * type of the value in the cell
      */
-    private DropdownCell dropdownCell;
+    private CellDropdown<String> dropdownCell;
 
-    private TextBoxCell  textboxCell;
+    private CellTextbox<String> textboxCell;
 
     private Widget       editor;
 
@@ -67,18 +71,22 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
     public WorksheetResultCell() {
         TextBox<String> tb;
 
-        dropdownCell = new DropdownCell(new Dropdown<String>());
+        dropdownCell = new CellDropdown<String>();
 
         tb = new TextBox<String>();
         tb.setMaxLength(80);
-        textboxCell = new TextBoxCell(tb);
+        textboxCell = new CellTextbox<String>(tb);
     }
 
     /**
      * Gets Formatted value from editor and sets it as the cell's display
      */
     public void render(HTMLTable table, int row, int col, Object value) {
-        table.setText(row, col, display(value));
+    	if(editor instanceof Dropdown) {
+    		dropdownCell.render(table.getCellFormatter().getElement(row,col),((Value)value).getDictId());
+    	} else {
+    		textboxCell.render(table.getCellFormatter().getElement(row,col),((Value)value).getDisplay());
+    	}
     }
     
     public SafeHtml bulkRender(Object value) {
@@ -111,12 +119,7 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
 
     @Override
     public void startEditing(Object val, Container container, NativeEvent event) {
-        value = (Value)val;
-        if (editor instanceof Dropdown) {
-            dropdownCell.startEditing(value.dictId, container, event);
-        } else {
-            textboxCell.startEditing(DataBaseUtil.toString(value.display), container, event);
-        }
+    	startEditing(container.getElement(),(Value)val);
     }
 
     @Override
@@ -125,7 +128,7 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
     }
 
     @Override
-    public Object finishEditing() {
+    public Value finishEditing() {
         String display, dictId;
         TextBox<String> tb;
         Dropdown<String> dd;
@@ -172,14 +175,8 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
 
     @Override
     public void setColumn(ColumnInt col) {
-        dropdownCell.setColumn(col);
-        textboxCell.setColumn(col);
-    }
-
-    @Override
-    public Widget asWidget() {
-        // TODO Auto-generated method stub
-        return null;
+        //dropdownCell.setColumn(col);
+        //textboxCell.setColumn(col);
     }
 
     /**
@@ -233,4 +230,35 @@ public class WorksheetResultCell implements CellEditor, CellRenderer, IsWidget {
                    !DataBaseUtil.isDifferent(dictId, value.dictId);
         }
     }
+
+	@Override
+	public void startEditing(Element element, Value val) {
+        value = val;
+        if (editor instanceof Dropdown) {
+            dropdownCell.startEditing(element,value.dictId);
+        } else {
+            textboxCell.startEditing(element,DataBaseUtil.toString(value.display));
+        }
+		
+	}
+
+	@Override
+	public void startEditing(Element element, QueryData qd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SafeHtml asHtml(Value value) {
+        SafeHtmlBuilder builder = new SafeHtmlBuilder();
+        
+        builder.appendEscaped(display(value));
+        
+        return builder.toSafeHtml();
+	}
+
+	@Override
+	public String asString(Value value) {
+		return display(value);
+	}
 }

@@ -64,7 +64,7 @@ public abstract class AuxGroupLookupUI extends Screen {
     private static AuxGroupLookupUIBinder uiBinder = GWT.create(AuxGroupLookupUIBinder.class);
 
     @UiField
-    protected Table                       table;
+    protected Table<Row>                       table;
 
     @UiField
     protected Button                      okButton, cancelButton;

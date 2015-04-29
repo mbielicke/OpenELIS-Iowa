@@ -23,29 +23,38 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.manager;
+package org.openelis.modules.report.client;
 
-import org.openelis.modules.order.client.OrderService;
+import java.util.ArrayList;
 
-public class OrderReceiptManagerProxy {
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.widget.WindowInt;
+import org.openelis.constants.Messages;
+import org.openelis.gwt.screen.ScreenDef;
 
-    public OrderReceiptManagerProxy() {
-    }
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-    public OrderReceiptManager fetchByOrderId(Integer orgId) throws Exception {
-        return OrderService.get().fetchReceiptByOrderId(orgId);
-    }
+/**
+ * This class is used to execute reports on behalf of those screens that don't
+ * implement ReportScreen like Shipping and Fill Order
+ */
+public class ChlGcToCDCExportScreen extends ReportScreen<Query> {
 
-    public OrderReceiptManager add(OrderReceiptManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public OrderReceiptManager update(OrderReceiptManager man) throws Exception {
-        assert false : "not supported";
-        return null;
+    public ChlGcToCDCExportScreen(WindowInt window) throws Exception {
+        setWindow(window);
+        drawScreen(new ScreenDef());
+        setName(Messages.get().chlGcToCDC_chlGcToCDCExport());
     }
     
-    public void validate(OrderReceiptManager man) throws Exception {
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return ChlGcToCDCExportService.get().getPrompts();
+    }
+
+    @Override
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        ChlGcToCDCExportService.get().runReport(query, callback);
     }
 }

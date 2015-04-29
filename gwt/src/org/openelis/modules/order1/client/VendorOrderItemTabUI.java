@@ -39,9 +39,9 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.OrderItemViewDO;
-import org.openelis.manager.OrderManager1;
-import org.openelis.meta.OrderMeta;
+import org.openelis.domain.IOrderItemViewDO;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
@@ -89,7 +89,7 @@ public class VendorOrderItemTabUI extends Screen {
     private static VendorOrderItemTabUiBinder uiBinder = GWT.create(VendorOrderItemTabUiBinder.class);
 
     @UiField
-    protected Table                           table;
+    protected Table<Row>                      table;
 
     @UiField
     protected Dropdown<Integer>               store, autocompleteStore, dispensedUnits;
@@ -106,7 +106,7 @@ public class VendorOrderItemTabUI extends Screen {
 
     protected boolean                         isVisible, canEdit, redraw;
 
-    protected OrderManager1                   manager;
+    protected IOrderManager1                   manager;
 
     public VendorOrderItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -143,19 +143,19 @@ public class VendorOrderItemTabUI extends Screen {
                     if (qd != null) {
                         switch (i) {
                             case 0:
-                                qd.setKey(OrderMeta.getOrderItemQuantity());
+                                qd.setKey(IOrderMeta.getIorderItemQuantity());
                                 break;
                             case 1:
-                                qd.setKey(OrderMeta.getOrderItemInventoryItemName());
+                                qd.setKey(IOrderMeta.getIorderItemInventoryItemName());
                                 break;
                             case 2:
-                                qd.setKey(OrderMeta.getOrderItemInventoryItemStoreId());
+                                qd.setKey(IOrderMeta.getIorderItemInventoryItemStoreId());
                                 break;
                             case 3:
-                                qd.setKey(OrderMeta.getOrderItemUnitCost());
+                                qd.setKey(IOrderMeta.getIorderItemUnitCost());
                                 break;
                             case 4:
-                                qd.setKey(OrderMeta.getOrderItemCatalogNumber());
+                                qd.setKey(IOrderMeta.getIorderItemCatalogNumber());
                                 break;
                         }
                         qds.add(qd);
@@ -169,7 +169,7 @@ public class VendorOrderItemTabUI extends Screen {
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 if ( ( !isState(ADD, UPDATE)) ||
-                    (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                    (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                                  .getStatusId()))) {
                     event.cancel();
                     return;
@@ -186,7 +186,7 @@ public class VendorOrderItemTabUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                OrderItemViewDO data;
+                IOrderItemViewDO data;
                 InventoryItemDO item;
 
                 r = event.getRow();
@@ -309,7 +309,7 @@ public class VendorOrderItemTabUI extends Screen {
         }
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
             evaluateEdit();
@@ -325,7 +325,7 @@ public class VendorOrderItemTabUI extends Screen {
     public void onDataChange() {
         int count1, count2;
         String name;
-        OrderItemViewDO item;
+        IOrderItemViewDO item;
         Row r;
 
         count1 = table.getRowCount();
@@ -374,7 +374,7 @@ public class VendorOrderItemTabUI extends Screen {
     private ArrayList<Row> getTableModel() {
         int i;
         Row row;
-        OrderItemViewDO data;
+        IOrderItemViewDO data;
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
@@ -398,7 +398,7 @@ public class VendorOrderItemTabUI extends Screen {
 
     private void evaluateEdit() {
         canEdit = manager != null &&
-                  !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                  !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                                .getStatusId());
     }
 

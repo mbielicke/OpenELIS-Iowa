@@ -33,7 +33,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdVO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -162,10 +162,10 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @param orderTestList
      * @throws Exception
      */
-    public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
+    public void lookup(SampleDataBundle analysisDataBundle, ArrayList<IOrderTestViewDO> orderTestList) throws Exception {
         int i;
         ArrayList<IdVO> testIds;
-        OrderTestViewDO testDO;
+        IOrderTestViewDO testDO;
 
         assert screen != null : "screen is null";
 

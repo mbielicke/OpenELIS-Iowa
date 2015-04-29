@@ -23,29 +23,27 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.manager;
+package org.openelis.modules.preferences1.server;
 
-import org.openelis.modules.order.client.OrderService;
+import java.util.ArrayList;
 
-public class OrderOrganizationManagerProxy {
-   
-    public OrderOrganizationManagerProxy() {
-    }
+import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
 
-    public OrderOrganizationManager fetchByOrderId(Integer OrderId) throws Exception {
-        return OrderService.get().fetchOrganizationByOrderId(OrderId);
-    }
+import org.openelis.bean.PrinterCacheBean;
+import org.openelis.modules.preferences1.client.PrinterService1;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.server.RemoteServlet;
 
-    public OrderOrganizationManager add(OrderOrganizationManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
+@WebServlet("/openelis/printer1")
+public class PrinterService1Impl extends RemoteServlet implements PrinterService1 {
 
-    public OrderOrganizationManager update(OrderOrganizationManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
+    private static final long serialVersionUID = 1L;
 
-    public void validate(OrderOrganizationManager man) throws Exception {
+    @EJB
+    PrinterCacheBean          printerCache;
+
+    public ArrayList<OptionListItem> getPrinters(String type) {
+        return printerCache.getListByType(type);
     }
 }

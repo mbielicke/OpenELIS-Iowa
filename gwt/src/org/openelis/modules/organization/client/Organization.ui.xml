@@ -110,7 +110,7 @@
                   <ui:text from="{msg.name}" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="name" width="225px" case="UPPER" maxLength="40" />
+                  <w:TextBox ui:field="name" width="241px" case="UPPER" maxLength="40" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.city}" />
@@ -124,7 +124,7 @@
                   <ui:text from="{msg.aptSuite}" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="multipleUnit" width="212px" case="UPPER" maxLength="30" />
+                  <w:TextBox ui:field="multipleUnit" width="241px" case="UPPER" maxLength="30" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.state}" />
@@ -144,7 +144,7 @@
                   <ui:text from="{msg.address}" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="streetAddress" width="212px" case="UPPER"
+                  <w:TextBox ui:field="streetAddress" width="241px" case="UPPER"
                     maxLength="30" />
                 </td>
                 <td class="{res.style.Prompt}">

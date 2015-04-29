@@ -152,7 +152,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField
     protected TabLayoutPanel                              tabPanel;
     @UiField
-    protected Table                                       analyteTable, atozTable;
+    protected Table<Row>                                  analyteTable, atozTable;
     @UiField
     protected TextBox<Integer>                            relatedWorksheetId, worksheetId;
     @UiField

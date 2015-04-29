@@ -88,7 +88,7 @@ public class StorageTabUI extends Screen {
     private static StorageTabUIBinder uiBinder = GWT.create(StorageTabUIBinder.class);
 
     @UiField
-    protected Table                   table;
+    protected Table<Row>              table;
 
     @UiField
     protected Button                  addStorageButton, removeStorageButton;
@@ -196,8 +196,8 @@ public class StorageTabUI extends Screen {
             }
         });
 
-        table.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
+        table.addRowAddedHandler(new RowAddedHandler<Row>() {
+            public void onRowAdded(RowAddedEvent<Row> event) {
                 String uid;
                 StorageViewDO data, prevData;
                 Datetime date;

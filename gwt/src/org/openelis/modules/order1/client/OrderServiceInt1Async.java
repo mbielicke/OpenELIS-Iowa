@@ -28,8 +28,8 @@ package org.openelis.modules.order1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderReturnVO;
-import org.openelis.manager.OrderManager1;
+import org.openelis.domain.IOrderReturnVO;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
@@ -41,54 +41,54 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface OrderServiceInt1Async {
 
-    public void getInstance(String type, AsyncCallback<OrderManager1> callback);
+    public void getInstance(String type, AsyncCallback<IOrderManager1> callback);
 
-    public void fetchById(Integer orderId, OrderManager1.Load elements[],
-                          AsyncCallback<OrderManager1> callback);
+    public void fetchById(Integer orderId, IOrderManager1.Load elements[],
+                          AsyncCallback<IOrderManager1> callback);
 
-    public void fetchByIds(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
-                           AsyncCallback<ArrayList<OrderManager1>> callback);
+    public void fetchByIds(ArrayList<Integer> orderIds, IOrderManager1.Load elements[],
+                           AsyncCallback<ArrayList<IOrderManager1>> callback);
 
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                             OrderManager1.Load elements[],
-                             AsyncCallback<ArrayList<OrderManager1>> callback);
+                             IOrderManager1.Load elements[],
+                             AsyncCallback<ArrayList<IOrderManager1>> callback);
 
-    public void fetchWith(OrderManager1 om, OrderManager1.Load elements[],
-                          AsyncCallback<OrderManager1> callback);
+    public void fetchWith(IOrderManager1 om, IOrderManager1.Load elements[],
+                          AsyncCallback<IOrderManager1> callback);
 
     public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
-    public void fetchForUpdate(Integer orderId, AsyncCallback<OrderManager1> callback);
+    public void fetchForUpdate(Integer orderId, AsyncCallback<IOrderManager1> callback);
 
-    public void fetchForUpdate(Integer orderId, OrderManager1.Load elements[],
-                               AsyncCallback<OrderManager1> callback);
+    public void fetchForUpdate(Integer orderId, IOrderManager1.Load elements[],
+                               AsyncCallback<IOrderManager1> callback);
 
-    public void fetchForUpdate(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
-                               AsyncCallback<ArrayList<OrderManager1>> callback);
+    public void fetchForUpdate(ArrayList<Integer> orderIds, IOrderManager1.Load elements[],
+                               AsyncCallback<ArrayList<IOrderManager1>> callback);
 
-    public void unlock(Integer orderId, OrderManager1.Load elements[],
-                       AsyncCallback<OrderManager1> callback);
+    public void unlock(Integer orderId, IOrderManager1.Load elements[],
+                       AsyncCallback<IOrderManager1> callback);
 
-    public void unlock(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
-                       AsyncCallback<ArrayList<OrderManager1>> callback);
+    public void unlock(ArrayList<Integer> orderIds, IOrderManager1.Load elements[],
+                       AsyncCallback<ArrayList<IOrderManager1>> callback);
 
-    public void duplicate(Integer id, AsyncCallback<OrderReturnVO> callback);
+    public void duplicate(Integer id, AsyncCallback<IOrderReturnVO> callback);
 
-    public void update(OrderManager1 om, boolean ignoreWarnings,
-                       AsyncCallback<OrderManager1> callback);
+    public void update(IOrderManager1 om, boolean ignoreWarnings,
+                       AsyncCallback<IOrderManager1> callback);
 
     public void fetchByDescription(String search, int max,
                                    AsyncCallback<ArrayList<IdNameVO>> callback);
 
-    public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderReturnVO> callback);
+    public void addAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds,
+                             AsyncCallback<IOrderReturnVO> callback);
 
-    public void removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                                AsyncCallback<OrderManager1> callback);
+    public void removeAuxGroups(IOrderManager1 om, ArrayList<Integer> groupIds,
+                                AsyncCallback<IOrderManager1> callback);
 
-    public void addTest(OrderManager1 om, Integer id, boolean isTest, Integer index,
-                        AsyncCallback<OrderReturnVO> callback);
+    public void addTest(IOrderManager1 om, Integer id, boolean isTest, Integer index,
+                        AsyncCallback<IOrderReturnVO> callback);
 
-    public void removeTests(OrderManager1 om, ArrayList<Integer> ids,
-                            AsyncCallback<OrderManager1> callback);
+    public void removeTests(IOrderManager1 om, ArrayList<Integer> ids,
+                            AsyncCallback<IOrderManager1> callback);
 }

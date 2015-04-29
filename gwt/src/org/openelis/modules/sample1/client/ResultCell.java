@@ -36,6 +36,9 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
+import org.openelis.ui.widget.cell.CellDropdown;
+import org.openelis.ui.widget.cell.CellTextbox;
+import org.openelis.ui.widget.cell.EditableCell;
 import org.openelis.ui.widget.table.CellEditor;
 import org.openelis.ui.widget.table.CellRenderer;
 import org.openelis.ui.widget.table.ColumnInt;
@@ -43,6 +46,7 @@ import org.openelis.ui.widget.table.Container;
 import org.openelis.ui.widget.table.DropdownCell;
 import org.openelis.ui.widget.table.TextBoxCell;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -54,45 +58,38 @@ import com.google.gwt.user.client.ui.Widget;
  * This class is used for displaying, editing and validating the data in the
  * table for the results of analyses.
  */
-public class ResultCell implements CellEditor, CellRenderer, IsWidget {
+public class ResultCell extends EditableCell<ResultCell.Value> implements CellEditor, CellRenderer {
 
     /*
      * The objects responsible for handling display and editing based on the
      * type of the value in the cell
      */
-    private DropdownCell dropdownCell;
+    private CellDropdown<Integer> dropdownCell;
 
-    private TextBoxCell  textboxCell;
+    private CellTextbox<String>  textboxCell;
 
     private Widget       editor;
 
     private Value        value;
 
     public ResultCell() {
-        TextBox<String> tb;
-
-        dropdownCell = new DropdownCell(new Dropdown<Integer>());
-
-        tb = new TextBox<String>();
-        tb.setMaxLength(80);
-        textboxCell = new TextBoxCell(tb);
+        dropdownCell = new CellDropdown<Integer>();
+        textboxCell = new CellTextbox<String>();
     }
 
     /**
      * Gets Formatted value from editor and sets it as the cell's display
      */
     public void render(HTMLTable table, int row, int col, Object value) {
-        table.setText(row, col, display(value));
+    	if (editor instanceof Dropdown) {
+    		dropdownCell.render(table.getCellFormatter().getElement(row,col), Integer.valueOf(((Value)value).getDictId()));
+    	} else {
+    		textboxCell.render(table.getCellFormatter().getElement(row,col), ((Value)value).display);
+    	}
     }
     
     public SafeHtml bulkRender(Object value) {
-        SafeHtmlBuilder builder = new SafeHtmlBuilder();
-        
-        builder.appendHtmlConstant("<td>");
-        builder.appendEscaped(display(value));
-        builder.appendHtmlConstant("</td>");
-        
-        return builder.toSafeHtml();
+    	return asHtml((Value)value);
     }
 
     public String display(Object val) {
@@ -128,17 +125,7 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
 
     @Override
     public void startEditing(Object val, Container container, NativeEvent event) {
-        Integer dictId;
-
-        value = (Value)val;
-        if (editor instanceof Dropdown) {
-            dictId = null;
-            if (value.dictId != null)
-                dictId = Integer.valueOf(value.dictId);
-            dropdownCell.startEditing(dictId, container, event);
-        } else {
-            textboxCell.startEditing(DataBaseUtil.toString(value.display), container, event);
-        }
+    	startEditing(container.getElement(),(Value)val);
     }
 
     @Override
@@ -147,7 +134,7 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
     }
 
     @Override
-    public Object finishEditing() {
+    public Value finishEditing() {
         String display, dictId;
         TextBox<String> tb;
         Dropdown<Integer> dd;
@@ -183,8 +170,11 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
 
     @Override
     public boolean ignoreKey(int keyCode) {
-        // TODO Auto-generated method stub
-        return false;
+    	if(editor instanceof Dropdown) {
+    		return dropdownCell.ignoreKey(keyCode);
+    	} else {
+    		return false;
+    	}
     }
 
     @Override
@@ -194,14 +184,8 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
 
     @Override
     public void setColumn(ColumnInt col) {
-        dropdownCell.setColumn(col);
-        textboxCell.setColumn(col);
-    }
-
-    @Override
-    public Widget asWidget() {
-        // TODO Auto-generated method stub
-        return null;
+        //dropdownCell.setColumn(col);
+        //textboxCell.setColumn(col);
     }
 
     /**
@@ -255,4 +239,40 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
                    !DataBaseUtil.isDifferent(dictId, value.dictId);
         }
     }
+
+	@Override
+	public void startEditing(Element element, Value val) {
+        Integer dictId;
+
+        value = value;
+        if (editor instanceof Dropdown) {
+            dictId = null;
+            if (value.dictId != null)
+                dictId = Integer.valueOf(value.dictId);
+            dropdownCell.startEditing(element,dictId);
+        } else {
+            textboxCell.startEditing(element,DataBaseUtil.toString(value.display));
+        }
+		
+	}
+
+	@Override
+	public void startEditing(Element element, QueryData qd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SafeHtml asHtml(Value value) {
+    	if(editor instanceof Dropdown) {
+    		return dropdownCell.asHtml(Integer.valueOf(value.getDictId()));
+    	} else {
+    		return textboxCell.asHtml(value.getDisplay());
+    	}
+	}
+
+	@Override
+	public String asString(Value value) {
+		return display(value);
+	}
 }

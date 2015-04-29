@@ -73,7 +73,7 @@ public abstract class TestAnalyteLookupUI extends Screen {
     protected Integer                        rowGroup;
 
     @UiField
-    protected Table                          table;
+    protected Table<Row>                     table;
 
     @UiField
     protected Dropdown<Integer>              type;

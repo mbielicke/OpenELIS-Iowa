@@ -33,7 +33,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderRecurrenceDO;
+import org.openelis.domain.IOrderRecurrenceDO;
 import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -48,8 +48,8 @@ import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.manager.OrderManager;
-import org.openelis.meta.OrderMeta;
+import org.openelis.manager.IOrderManager;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,8 +58,8 @@ import com.google.gwt.user.client.Window;
 
 public class RecurrenceTab extends Screen {
 
-    private OrderManager      manager;
-    private OrderRecurrenceDO recurrence;
+    private IOrderManager      manager;
+    private IOrderRecurrenceDO recurrence;
     private Dropdown<Integer> recurrenceUnitId;
     private TextBox           recurrenceFrequency, parentOrderId;
     private CalendarLookUp    recurrenceActiveBegin, recurrenceActiveEnd;
@@ -77,7 +77,7 @@ public class RecurrenceTab extends Screen {
     }
 
     private void initialize() {
-        recurrenceIsActive = (CheckBox)def.getWidget(OrderMeta.getRecurrenceIsActive());
+        recurrenceIsActive = (CheckBox)def.getWidget(IOrderMeta.getRecurrenceIsActive());
         addScreenHandler(recurrenceIsActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 recurrenceIsActive.setValue(recurrence.getIsActive());
@@ -95,7 +95,7 @@ public class RecurrenceTab extends Screen {
             }
         });
 
-        recurrenceActiveBegin = (CalendarLookUp)def.getWidget(OrderMeta.getRecurrenceActiveBegin());
+        recurrenceActiveBegin = (CalendarLookUp)def.getWidget(IOrderMeta.getRecurrenceActiveBegin());
         addScreenHandler(recurrenceActiveBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 recurrenceActiveBegin.setValue(recurrence.getActiveBegin());
@@ -112,7 +112,7 @@ public class RecurrenceTab extends Screen {
             }
         });
 
-        recurrenceActiveEnd = (CalendarLookUp)def.getWidget(OrderMeta.getRecurrenceActiveEnd());
+        recurrenceActiveEnd = (CalendarLookUp)def.getWidget(IOrderMeta.getRecurrenceActiveEnd());
         addScreenHandler(recurrenceActiveEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 recurrenceActiveEnd.setValue(recurrence.getActiveEnd());
@@ -129,7 +129,7 @@ public class RecurrenceTab extends Screen {
             }
         });
 
-        recurrenceFrequency = (TextBox)def.getWidget(OrderMeta.getRecurrenceFrequency());
+        recurrenceFrequency = (TextBox)def.getWidget(IOrderMeta.getRecurrenceFrequency());
         addScreenHandler(recurrenceFrequency, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 recurrenceFrequency.setFieldValue(recurrence.getFrequency());
@@ -145,7 +145,7 @@ public class RecurrenceTab extends Screen {
             }
         });
 
-        recurrenceUnitId = (Dropdown<Integer>)def.getWidget(OrderMeta.getRecurrenceUnitId());
+        recurrenceUnitId = (Dropdown<Integer>)def.getWidget(IOrderMeta.getRecurrenceUnitId());
         addScreenHandler(recurrenceUnitId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 recurrenceUnitId.setSelection(recurrence.getUnitId());
@@ -161,10 +161,10 @@ public class RecurrenceTab extends Screen {
             }
         });
 
-        parentOrderId = (TextBox)def.getWidget(OrderMeta.getParentOrderId());
+        parentOrderId = (TextBox)def.getWidget(IOrderMeta.getParentIorderId());
         addScreenHandler(parentOrderId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentOrderId.setFieldValue(manager.getOrder().getParentOrderId());
+                parentOrderId.setFieldValue(manager.getIorder().getParentIorderId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -212,7 +212,7 @@ public class RecurrenceTab extends Screen {
         recurrenceUnitId.setModel(model);
     }
 
-    public void setManager(OrderManager manager) {
+    public void setManager(IOrderManager manager) {
         this.manager = manager;
         loaded = false;
     }
@@ -493,7 +493,7 @@ public class RecurrenceTab extends Screen {
 
     private boolean canEdit(State state) {
         return EnumSet.of(State.QUERY, State.ADD).contains(state) ||
-               (state == State.UPDATE && !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+               (state == State.UPDATE && !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                                                       .getStatusId()));
     }
 }

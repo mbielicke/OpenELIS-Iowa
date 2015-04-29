@@ -34,8 +34,6 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -47,8 +45,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -62,7 +58,11 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.dictionary1.client.DictionaryLookupScreenUI;
+import org.openelis.ui.event.ActionEvent;
+import org.openelis.ui.event.ActionHandler;
+import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -77,7 +77,7 @@ public class AnalyteTab extends Screen {
     private Dropdown<Integer>           analyteTypeId;
     private TableWidget                 table;
 
-    private DictionaryLookupScreen      dictLookup;
+    private DictionaryLookupScreenUI      dictLookup;
 
     private boolean                     loaded;
 
@@ -283,25 +283,25 @@ public class AnalyteTab extends Screen {
     }
 
     private void showDictionary(String entry,ArrayList<IdNameVO> list) {
-        ScreenWindow modal;
+        ModalWindow modal;
 
         if (dictLookup == null) {
             try {
-                dictLookup = new DictionaryLookupScreen();
+                dictLookup = new DictionaryLookupScreenUI();
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("DictionaryLookup Error: " + e.getMessage());
                 return;
             }
         
-            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
-                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreenUI.Action>() {
+                public void onAction(ActionEvent<DictionaryLookupScreenUI.Action> event) {
                     int r;
                     IdNameVO entry;
                     QcAnalyteViewDO data;
                     ArrayList<IdNameVO> list;
 
-                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                    if (event.getAction() == DictionaryLookupScreenUI.Action.OK) {
                         list = (ArrayList<IdNameVO>)event.getData();
                         if (list != null) {
                             r = table.getSelectedRow();
@@ -325,10 +325,13 @@ public class AnalyteTab extends Screen {
                 }
             });
         }
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal = new ModalWindow();
         modal.setName(Messages.get().chooseDictEntry());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(dictLookup);
-        dictLookup.setScreenState(State.DEFAULT);
+        modal.setSize("515px", "390px");
+        dictLookup.setWindow(modal);
+        dictLookup.setState(org.openelis.ui.screen.State.DEFAULT);
         if (list != null) {
             dictLookup.clearFields();
             dictLookup.setQueryResult(entry, list);

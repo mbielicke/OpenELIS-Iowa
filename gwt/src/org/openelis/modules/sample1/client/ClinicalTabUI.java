@@ -25,8 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -39,7 +41,7 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.patient.client.PatientLookupUI;
-import org.openelis.modules.provider.client.ProviderService;
+import org.openelis.modules.provider1.client.ProviderService1;
 import org.openelis.modules.provider.client.ProviderServiceImpl;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;

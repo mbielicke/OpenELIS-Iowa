@@ -40,8 +40,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -63,7 +61,6 @@ import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -84,8 +81,8 @@ import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.dictionary.client.DictionaryService;
+import org.openelis.modules.dictionary1.client.DictionaryLookupScreenUI;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.method.client.MethodServiceImpl;
@@ -102,8 +99,12 @@ import org.openelis.ui.common.TableFieldErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.ActionEvent;
+import org.openelis.ui.event.ActionHandler;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.resources.UIResources;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultRangeNumeric;
 
@@ -135,7 +136,7 @@ public class AuxiliaryScreen extends Screen {
     private AutoComplete<Integer>              analyte, method;
     private TableWidget                        auxFieldTable, auxFieldValueTable;
     private Integer                            prevSelFieldRow;
-    private DictionaryLookupScreen             dictLookup;
+    private DictionaryLookupScreenUI           dictLookup;
 
     private ResultRangeNumeric                 rangeNumeric;
 
@@ -1387,25 +1388,25 @@ public class AuxiliaryScreen extends Screen {
     }
 
     private void showDictionary(String entry, ArrayList<IdNameVO> list) {
-        ScreenWindow modal;
+        ModalWindow modal;
 
         if (dictLookup == null) {
             try {
-                dictLookup = new DictionaryLookupScreen();
+                dictLookup = new DictionaryLookupScreenUI();
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("DictionaryLookup Error: " + e.getMessage());
                 return;
             }
 
-            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
-                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreenUI.Action>() {
+                public void onAction(ActionEvent<DictionaryLookupScreenUI.Action> event) {
                     int r, fr;
                     IdNameVO entry;
                     AuxFieldValueViewDO data;
                     ArrayList<IdNameVO> list;
 
-                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                    if (event.getAction() == DictionaryLookupScreenUI.Action.OK) {
                         list = (ArrayList<IdNameVO>)event.getData();
                         if (list != null) {
                             r = auxFieldValueTable.getSelectedRow();
@@ -1435,10 +1436,13 @@ public class AuxiliaryScreen extends Screen {
                 }
             });
         }
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal = new ModalWindow();
         modal.setName(Messages.get().chooseDictEntry());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(dictLookup);
-        dictLookup.setScreenState(State.DEFAULT);
+        modal.setSize("515px", "390px");
+        dictLookup.setWindow(modal);
+        dictLookup.setState(org.openelis.ui.screen.State.DEFAULT);
         if (list != null) {
             dictLookup.clearFields();
             dictLookup.setQueryResult(entry, list);

@@ -79,7 +79,7 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
     protected Tree                                tree;
 
     @UiField
-    protected Table                               table;
+    protected Table<Row>                          table;
 
     @UiField
     protected Button                              moveButton, okButton;
