@@ -43,7 +43,7 @@ import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.NoteManager;
-import org.openelis.manager.OrderManager;
+import org.openelis.manager.IOrderManager;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.ui.widget.WindowInt;
 
@@ -51,7 +51,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
 public class InternalNoteTab extends Screen {
-    protected OrderManager   orderManager;
+    protected IOrderManager   orderManager;
     protected NoteManager    manager;
 
     protected NotesPanel     notePanel;
@@ -146,7 +146,7 @@ public class InternalNoteTab extends Screen {
         }
     }
 
-    public void setManager(OrderManager orderManager) {
+    public void setManager(IOrderManager orderManager) {
         this.orderManager = orderManager;
         loaded = false;
     }

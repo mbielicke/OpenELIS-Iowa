@@ -28,9 +28,9 @@ UIRF Software License are applicable instead of those above.
   <inherits name="org.openelis.modules.note.NoteService"/>
   <inherits name="org.openelis.modules.order1.Order1"/>
   <inherits name="org.openelis.modules.organization.OrganizationService"/>
-  <inherits name="org.openelis.modules.panel.PanelService"/>
+  <inherits name="org.openelis.modules.panel1.PanelService1"/>
   <inherits name="org.openelis.modules.project.ProjectService"/>
-  <inherits name="org.openelis.modules.provider.ProviderService"/>
+  <inherits name="org.openelis.modules.provider1.ProviderService1"/>
   <inherits name="org.openelis.modules.pws.PWS"/>
   <inherits name="org.openelis.modules.qaevent.QAEventService"/>
   <inherits name="org.openelis.modules.storage.StorageService"/>

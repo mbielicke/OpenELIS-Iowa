@@ -118,7 +118,7 @@ public class WorksheetItemTabUI extends Screen {
     @UiField
     protected Dropdown<Integer>                           analysisStatusId, qcLink;
     @UiField
-    protected Table                                       worksheetItemTable;
+    protected Table<Row>                                  worksheetItemTable;
 
     protected ArrayList<Item<Integer>>                    qcLinkModel;
     protected ArrayList<String>                           manualAnalysisUids, templateAnalysisUids;
@@ -243,7 +243,7 @@ public class WorksheetItemTabUI extends Screen {
                         } else {
                             wqrVDO = (WorksheetQcResultViewDO)data;
                             waVDO = (WorksheetAnalysisViewDO)manager.getObject(manager.getWorksheetAnalysisUid(wqrVDO.getWorksheetAnalysisId()));
-                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
+                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).<WorksheetResultCell.Value>getCellEditor()).setModel(null);
                         }
                     } else if (data instanceof WorksheetResultViewDO) {
                         wrVDO = (WorksheetResultViewDO)data;
@@ -288,7 +288,7 @@ public class WorksheetItemTabUI extends Screen {
                                     event.cancel();
                                 }
                             }
-                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
+                            ((WorksheetResultCell)worksheetItemTable.getColumnAt(event.getCol()).<WorksheetResultCell.Value>getCellEditor()).setModel(model);
                         }
                     }
                 }

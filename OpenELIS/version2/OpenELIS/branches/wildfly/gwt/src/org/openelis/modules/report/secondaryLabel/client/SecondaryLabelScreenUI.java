@@ -104,7 +104,7 @@ public class SecondaryLabelScreenUI extends Screen {
     protected Button                           removeRowButton, printButton;
 
     @UiField
-    protected Table                            table;
+    protected Table<Row>                       table;
 
     protected SecondaryLabelReportScreen       secondaryLabelReportScreen;
 

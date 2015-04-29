@@ -99,8 +99,7 @@ public abstract class PatientLookupUI extends Screen {
     protected Dropdown<String>                              patientState;
 
     @UiField
-    protected Table                                         patientTable, sampleTable,
-                    nextOfKinTable;
+    protected Table<Row>                                    patientTable, sampleTable, nextOfKinTable;
 
     @UiField
     protected TextBox<String>                               lastName, firstName, nationalId;

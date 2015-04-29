@@ -78,7 +78,7 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
     @UiField
     protected CheckBox                                             ifEmpty;
     @UiField
-    protected Table                                                analyteResultTable;
+    protected Table<Row>                                           analyteResultTable;
 
     protected ArrayList<WorksheetAnalysisViewDO>                   analyses;
     protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> qcResultsByQcAnalyteId;
@@ -148,9 +148,9 @@ public abstract class WorksheetEditMultiplePopupUI extends Screen {
                             }
                             dictionaryResultMap.put(resultKey, model);
                         }
-                        ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(model);
+                        ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).<WorksheetResultCell.Value>getCellEditor()).setModel(model);
                     } else {
-                        ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).getCellEditor()).setModel(null);
+                        ((WorksheetResultCell)analyteResultTable.getColumnAt(event.getCol()).<WorksheetResultCell.Value>getCellEditor()).setModel(null);
                     }
                 }
             }

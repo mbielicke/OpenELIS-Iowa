@@ -115,7 +115,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                                                       tableUnit, tableStatus;
     protected HashMap<Integer, AnalysisResultManager> analyteMap;
     @UiField
-    protected Table                                   analysesTable, analyteTable;
+    protected Table<Item<Integer>>                    analysesTable, analyteTable;
     @UiField
     protected TextBox<String>                         methodName;
     @UiField

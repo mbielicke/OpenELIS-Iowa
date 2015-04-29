@@ -25,8 +25,11 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,7 +60,7 @@ import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheetCompletion1.client.WorksheetCompletionScreenUI;
 import org.openelis.ui.common.DataBaseUtil;
@@ -134,7 +137,7 @@ public class AnalysisTabUI extends Screen {
     protected Calendar                 startedDate, completedDate, releasedDate, printedDate;
 
     @UiField
-    protected Table                    worksheetTable, userTable;
+    protected Table<Row>               worksheetTable, userTable;
 
     @UiField
     protected Button                   selectWorksheetButton, addActionButton, removeActionButton;
@@ -443,7 +446,7 @@ public class AnalysisTabUI extends Screen {
                                  samplePrep.setEnabled(isState(ADD, UPDATE) && canEdit);
                                  samplePrep.setQueryMode(false);
                              }
-                             
+
                              public Object getQuery() {
                                  /*
                                   * since this field is not set in query mode,
@@ -594,7 +597,7 @@ public class AnalysisTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 selectWorksheetButton.setEnabled(false);
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? userTable : worksheetTable;
             }
@@ -698,7 +701,7 @@ public class AnalysisTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 addActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? removeActionButton : userTable;
             }
@@ -708,7 +711,7 @@ public class AnalysisTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 removeActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? test : addActionButton;
             }
@@ -896,7 +899,7 @@ public class AnalysisTabUI extends Screen {
 
         try {
             model = new ArrayList<Item<Integer>>();
-            for (PanelDO p : PanelService.get().fetchAll())
+            for (PanelDO p : PanelService1Impl.INSTANCE.fetchAll())
                 model.add(new Item<Integer>(p.getId(), p.getName()));
             panel.setModel(model);
         } catch (Exception e) {
@@ -1102,6 +1105,9 @@ public class AnalysisTabUI extends Screen {
                     TestMethodVO data;
 
                     switch (event.getSelectedItem().intValue()) {
+                        case 0:
+                            method.setValue(getMethodId(), getMethodName());
+                            break;
                         case 1:
                             /*
                              * the argument passed to setMethod is not used here

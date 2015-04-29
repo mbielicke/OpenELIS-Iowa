@@ -25,14 +25,14 @@
  */
 package org.openelis.modules.sampleTracking1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.modules.main.client.Logger.logger;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -75,9 +75,9 @@ public abstract class AddTestLookupUI extends Screen {
     @UiField
     protected Button                     okButton, cancelButton;
 
-    protected Integer                     sampleType;
-    
-    protected TestMethodVO                selectedTest;  
+    protected Integer                    sampleType;
+
+    protected TestMethodVO               selectedTest;
 
     public AddTestLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -97,8 +97,8 @@ public abstract class AddTestLookupUI extends Screen {
             public Widget onTab(boolean forward) {
                 return forward ? okButton : okButton;
             }
-        });              
-        
+        });
+
         test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 Integer key;
@@ -130,7 +130,7 @@ public abstract class AddTestLookupUI extends Screen {
 
                     setBusy();
 
-                    tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
+                    tests = PanelService1Impl.INSTANCE.fetchByNameSampleTypeWithTests(query);
 
                     model = new ArrayList<Item<Integer>>();
                     for (TestMethodVO t : tests) {
@@ -219,7 +219,7 @@ public abstract class AddTestLookupUI extends Screen {
         }
 
         selectedTest = (TestMethodVO)test.getValue().getData();
-        
+
         window.close();
         ok();
     }

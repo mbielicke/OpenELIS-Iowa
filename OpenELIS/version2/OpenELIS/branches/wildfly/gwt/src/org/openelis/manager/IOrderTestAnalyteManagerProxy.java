@@ -25,27 +25,36 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.modules.order.client.OrderService;
 
-public class OrderFillManagerProxy {
+public class IOrderTestAnalyteManagerProxy {
 
-    public OrderFillManagerProxy() {
+    public IOrderTestAnalyteManagerProxy() {
     }
 
-    public OrderFillManager fetchByOrderId(Integer orgId) throws Exception {
-        return OrderService.get().fetchFillByOrderId(orgId);
+    public IOrderTestAnalyteManager fetchByIorderTestId(Integer id) throws Exception {
+        return OrderService.get().fetchTestAnalyteByIorderTestId(id);
+    }
+    
+    public IOrderTestAnalyteManager fetchMergedByIorderTestId(Integer id) throws Exception {
+        return OrderService.get().fetchMergedTestAnalyteByIorderTestId(id);
+    }
+    
+    public IOrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
+        return OrderService.get().fetchTestAnalyteByTestId(id);
     }
 
-    public OrderFillManager add(OrderFillManager man) throws Exception {
+    public IOrderTestAnalyteManager add(IOrderTestAnalyteManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public OrderFillManager update(OrderFillManager man) throws Exception {
+    public IOrderTestAnalyteManager update(IOrderTestAnalyteManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public void validate(OrderFillManager man) throws Exception {
+    public void validate(IOrderTestAnalyteManager man, IOrderTestViewDO test, int index) throws Exception {
     }
 }

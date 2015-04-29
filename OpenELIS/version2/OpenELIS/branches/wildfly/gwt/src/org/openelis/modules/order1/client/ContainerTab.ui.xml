@@ -31,12 +31,12 @@
 						<w:TextBox field="Integer" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="412" label="{msg.gen_container}" required="true">
+				<t:Column width="400" label="{msg.gen_container}" required="true">
 					<t:DropdownCell>
 						<w:Dropdown width="450" field="Integer" ui:field="container" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="231" label="{msg.sample_type}">
+				<t:Column width="208" label="{msg.sample_type}">
 					<t:DropdownCell>
 						<w:Dropdown width="241" field="Integer" ui:field="sampleType" />
 					</t:DropdownCell>

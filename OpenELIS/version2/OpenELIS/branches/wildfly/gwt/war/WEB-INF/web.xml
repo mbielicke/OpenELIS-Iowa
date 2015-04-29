@@ -58,7 +58,7 @@ UIRF Software License are applicable instead of those above.
   
   <servlet>
     <servlet-name>ReportServlet</servlet-name>
-    <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
+    <servlet-class>org.openelis.ui.server.ReportServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
   

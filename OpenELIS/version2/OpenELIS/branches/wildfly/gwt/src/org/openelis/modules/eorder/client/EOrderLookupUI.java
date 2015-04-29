@@ -73,7 +73,7 @@ public abstract class EOrderLookupUI extends Screen {
     @UiField
     protected Button                    search, select, cancel;
     @UiField
-    protected Table                     eorderTable;
+    protected Table<Item<Integer>>                eorderTable;
     @UiField
     protected TextBox<String>           paperOrderValidator;
 

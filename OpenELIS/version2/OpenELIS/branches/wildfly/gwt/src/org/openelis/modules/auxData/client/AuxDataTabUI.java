@@ -96,7 +96,7 @@ public abstract class AuxDataTabUI extends Screen {
     private static AuxDataTabUIBinder                   uiBinder = GWT.create(AuxDataTabUIBinder.class);
 
     @UiField
-    protected Table                                     table;
+    protected Table<Row>                                table;
 
     @UiField
     protected TextBox<String>                           auxMethod, auxUnits, auxDesc;
@@ -780,7 +780,7 @@ public abstract class AuxDataTabUI extends Screen {
          * looked up again
          */
         dictionaryModel.put(key, model);
-        rc = (ResultCell)table.getColumnAt(col).getCellEditor();
+        rc = (ResultCell)table.getColumnAt(col).<ResultCell.Value>getCellEditor();
         rc.setModel(model);
         if (rc.getWidget() instanceof TextBox) {
             if (caseFlag != null &&

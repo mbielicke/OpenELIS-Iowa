@@ -36,9 +36,9 @@ import java.util.Arrays;
 import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.manager.OrderManager1;
-import org.openelis.meta.OrderMeta;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
@@ -80,7 +80,7 @@ public class ContainerTabUI extends Screen {
     private static ContainerTabUiBinder uiBinder = GWT.create(ContainerTabUiBinder.class);
 
     @UiField
-    protected Table                     table;
+    protected Table<Row>                table;
 
     @UiField
     protected Dropdown<Integer>         container, sampleType;
@@ -95,7 +95,7 @@ public class ContainerTabUI extends Screen {
 
     protected boolean                   isVisible, redraw;
 
-    protected OrderManager1             manager;
+    protected IOrderManager1             manager;
 
     public ContainerTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -132,13 +132,13 @@ public class ContainerTabUI extends Screen {
                     if (qd != null) {
                         switch (i) {
                             case 0:
-                                qd.setKey(OrderMeta.getContainerItemSequence());
+                                qd.setKey(IOrderMeta.getContainerItemSequence());
                                 break;
                             case 1:
-                                qd.setKey(OrderMeta.getContainerContainerId());
+                                qd.setKey(IOrderMeta.getContainerContainerId());
                                 break;
                             case 2:
-                                qd.setKey(OrderMeta.getContainerTypeOfSampleId());
+                                qd.setKey(IOrderMeta.getContainerTypeOfSampleId());
                                 break;
                         }
                         qds.add(qd);
@@ -160,7 +160,7 @@ public class ContainerTabUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                OrderContainerDO data;
+                IOrderContainerDO data;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -179,10 +179,10 @@ public class ContainerTabUI extends Screen {
             }
         });
 
-        table.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
+        table.addRowAddedHandler(new RowAddedHandler<Row>() {
+            public void onRowAdded(RowAddedEvent<Row> event) {
                 int index;
-                OrderContainerDO data;
+                IOrderContainerDO data;
                 Row row;
 
                 row = event.getRow();
@@ -260,7 +260,7 @@ public class ContainerTabUI extends Screen {
     @UiHandler("addContainerButton")
     protected void addContainer(ClickEvent event) {
         int n;
-        OrderContainerDO data;
+        IOrderContainerDO data;
         Row row;
 
         table.finishEditing();
@@ -296,10 +296,10 @@ public class ContainerTabUI extends Screen {
     protected void duplicateContainer(ClickEvent event) {
         int n;
         Integer orderId;
-        OrderContainerDO data;
+        IOrderContainerDO data;
         Row row;
 
-        orderId = manager.getOrder().getId();
+        orderId = manager.getIorder().getId();
         if (orderId == null)
             orderId = 0;
 
@@ -332,7 +332,7 @@ public class ContainerTabUI extends Screen {
         int r;
         Integer orderId;
 
-        orderId = manager.getOrder().getId();
+        orderId = manager.getIorder().getId();
         if (orderId == null)
             orderId = 0;
 
@@ -359,7 +359,7 @@ public class ContainerTabUI extends Screen {
         int r;
         Integer orderId;
 
-        orderId = manager.getOrder().getId();
+        orderId = manager.getIorder().getId();
         if (orderId == null)
             orderId = 0;
 
@@ -380,7 +380,7 @@ public class ContainerTabUI extends Screen {
         table.startEditing(r + 1, 1);
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
@@ -392,7 +392,7 @@ public class ContainerTabUI extends Screen {
 
     public void onDataChange() {
         int count1, count2;
-        OrderContainerDO data;
+        IOrderContainerDO data;
         Row r;
 
         count1 = table.getRowCount();
@@ -435,7 +435,7 @@ public class ContainerTabUI extends Screen {
     private ArrayList<Row> getTableModel() {
         int i;
         Row row;
-        OrderContainerDO data;
+        IOrderContainerDO data;
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();

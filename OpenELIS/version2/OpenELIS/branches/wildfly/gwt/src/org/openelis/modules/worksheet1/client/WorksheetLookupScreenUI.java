@@ -101,7 +101,7 @@ public class WorksheetLookupScreenUI extends Screen
     @UiField
     protected Dropdown<Integer>            statusId, tableStatusId;
     @UiField
-    protected Table                        worksheetTable;
+    protected Table<Item<Integer>>         worksheetTable;
     @UiField
     protected TextBox<Integer>             worksheetId;
     @UiField

@@ -37,7 +37,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.OrderMeta">
+  xmlns:meta="xalan://org.openelis.meta.IOrderMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">

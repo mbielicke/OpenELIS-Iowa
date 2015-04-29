@@ -76,7 +76,7 @@ public abstract class QAEventLookupUI extends Screen {
     protected Button                     okButton, cancelButton;
 
     @UiField
-    protected Table                      table;
+    protected Table<Row>                 table;
 
     @UiField
     protected Dropdown<Integer>          type;

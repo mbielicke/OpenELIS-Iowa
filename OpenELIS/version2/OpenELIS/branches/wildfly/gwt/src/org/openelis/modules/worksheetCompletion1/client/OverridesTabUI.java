@@ -86,7 +86,7 @@ public class OverridesTabUI extends Screen {
     protected Button                                    editMultipleButton, selectAllButton,
                                                         unselectAllButton;
     @UiField
-    protected Table                                     overridesTable;
+    protected Table<Row>                                overridesTable;
     
     protected EventBus                                  parentBus;
     protected OverridesEditMultiplePopupUI              editMultiplePopup;

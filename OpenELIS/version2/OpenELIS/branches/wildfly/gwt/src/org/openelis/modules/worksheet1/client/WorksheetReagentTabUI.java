@@ -104,7 +104,7 @@ public class WorksheetReagentTabUI extends Screen {
     protected Button                                    addRowButton, moveDownButton,
                                                         moveUpButton, removeRowButton;
     @UiField
-    protected Table                                     worksheetReagentTable;
+    protected Table<Row>                                worksheetReagentTable;
 
     protected EventBus                                  parentBus;
     protected HashMap<Integer, DictionaryDO>            unitOfMeasureMap;

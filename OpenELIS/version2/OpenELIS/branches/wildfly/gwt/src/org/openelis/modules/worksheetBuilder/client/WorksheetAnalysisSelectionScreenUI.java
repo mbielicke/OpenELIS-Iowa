@@ -82,7 +82,7 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
     @UiField
     protected Button                                  select, cancel;
     @UiField
-    protected Table                                   worksheetAnalysisTable;
+    protected Table<Row>                              worksheetAnalysisTable;
 
     protected Integer                                 worksheetId;
     protected WorksheetManager1                       manager;

@@ -37,9 +37,9 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.manager.OrderManager1;
-import org.openelis.meta.OrderMeta;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.manager.IOrderManager1;
+import org.openelis.meta.IOrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
@@ -102,9 +102,9 @@ public class RecurrenceTabUI extends Screen {
 
     protected boolean                    isVisible, canEdit, redraw;
 
-    protected OrderManager1              manager;
+    protected IOrderManager1              manager;
 
-    protected OrderRecurrenceDO          recurrence;
+    protected IOrderRecurrenceDO          recurrence;
 
     public RecurrenceTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -121,7 +121,7 @@ public class RecurrenceTabUI extends Screen {
         ArrayList<Item<Integer>> model;
         Item<Integer> item;
 
-        addScreenHandler(active, OrderMeta.getRecurrenceIsActive(), new ScreenHandler<String>() {
+        addScreenHandler(active, IOrderMeta.getRecurrenceIsActive(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 active.setValue(getIsActive());
             }
@@ -141,7 +141,7 @@ public class RecurrenceTabUI extends Screen {
         });
 
         addScreenHandler(beginDate,
-                         OrderMeta.getRecurrenceActiveBegin(),
+                         IOrderMeta.getRecurrenceActiveBegin(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  beginDate.setValue(getActiveBegin());
@@ -165,7 +165,7 @@ public class RecurrenceTabUI extends Screen {
                          });
 
         addScreenHandler(endDate,
-                         OrderMeta.getRecurrenceActiveEnd(),
+                         IOrderMeta.getRecurrenceActiveEnd(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
                                  endDate.setValue(getActiveEnd());
@@ -189,7 +189,7 @@ public class RecurrenceTabUI extends Screen {
                          });
 
         addScreenHandler(frequency,
-                         OrderMeta.getRecurrenceFrequency(),
+                         IOrderMeta.getRecurrenceFrequency(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  frequency.setValue(getFrequency());
@@ -211,7 +211,7 @@ public class RecurrenceTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(unit, OrderMeta.getRecurrenceUnitId(), new ScreenHandler<Integer>() {
+        addScreenHandler(unit, IOrderMeta.getRecurrenceUnitId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 unit.setValue(getUnitId());
             }
@@ -232,7 +232,7 @@ public class RecurrenceTabUI extends Screen {
         });
 
         addScreenHandler(parentOrderNum,
-                         OrderMeta.getParentOrderId(),
+                         IOrderMeta.getParentIorderId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  parentOrderNum.setValue(getParentOrderId());
@@ -320,7 +320,7 @@ public class RecurrenceTabUI extends Screen {
 
     }
 
-    public void setData(OrderManager1 manager) {
+    public void setData(IOrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
         }
@@ -513,7 +513,7 @@ public class RecurrenceTabUI extends Screen {
         Date nd;
         Integer orderId;
 
-        orderId = recurrence.getOrderId();
+        orderId = recurrence.getIorderId();
         if (orderId == null)
             orderId = 0;
 
@@ -599,12 +599,12 @@ public class RecurrenceTabUI extends Screen {
     private boolean validateEndDate() {
         Integer orderId;
         Datetime bdt, edt;
-        OrderRecurrenceDO data;
+        IOrderRecurrenceDO data;
 
         data = manager.getRecurrence();
         bdt = data.getActiveBegin();
         edt = data.getActiveEnd();
-        orderId = data.getOrderId();
+        orderId = data.getIorderId();
         if (orderId == null)
             orderId = 0;
 
@@ -623,7 +623,7 @@ public class RecurrenceTabUI extends Screen {
 
     private void evaluateEdit() {
         canEdit = manager != null &&
-                  Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                  Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getIorder()
                                                                               .getStatusId());
     }
 
@@ -699,10 +699,10 @@ public class RecurrenceTabUI extends Screen {
     private Integer getParentOrderId() {
         if (manager == null)
             return null;
-        return manager.getOrder().getParentOrderId();
+        return manager.getIorder().getParentIorderId();
     }
 
-    private OrderRecurrenceDO getRecurrence() {
+    private IOrderRecurrenceDO getRecurrence() {
         if (manager == null)
             return null;
         return manager.getRecurrence();

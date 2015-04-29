@@ -14,6 +14,7 @@
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0" bottom="55px">
       <g:HTMLPanel>

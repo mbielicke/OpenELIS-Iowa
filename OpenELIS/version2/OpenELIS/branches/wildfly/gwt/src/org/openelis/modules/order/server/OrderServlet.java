@@ -30,23 +30,23 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.OrderBean;
-import org.openelis.bean.OrderManagerBean;
-import org.openelis.bean.OrderRecurrenceReportBean;
+import org.openelis.bean.IOrderBean;
+import org.openelis.bean.IOrderManagerBean;
+import org.openelis.bean.IOrderRecurrenceReportBean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderRecurrenceDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
-import org.openelis.manager.OrderReceiptManager;
-import org.openelis.manager.OrderTestAnalyteManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.IOrderContainerManager;
+import org.openelis.manager.IOrderFillManager;
+import org.openelis.manager.IOrderItemManager;
+import org.openelis.manager.IOrderManager;
+import org.openelis.manager.IOrderOrganizationManager;
+import org.openelis.manager.IOrderReceiptManager;
+import org.openelis.manager.IOrderTestAnalyteManager;
+import org.openelis.manager.IOrderTestManager;
 import org.openelis.modules.order.client.OrderServiceInt;
 
 @WebServlet("/openelis/order")
@@ -55,16 +55,16 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
     private static final long serialVersionUID = 1L;
     
     @EJB
-    OrderManagerBean          orderManager;
+    IOrderManagerBean          orderManager;
     
     @EJB
-    OrderBean                 order;
+    IOrderBean                 order;
     
     @EJB
-    OrderRecurrenceReportBean orderRecurrenceReport;
+    IOrderRecurrenceReportBean orderRecurrenceReport;
     
 
-    public OrderManager fetchById(Integer id) throws Exception {
+    public IOrderManager fetchById(Integer id) throws Exception {
         try {
             return orderManager.fetchById(id);
         } catch (Exception anyE) {
@@ -80,15 +80,15 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderManager fetchByOrderItemId(Integer id) throws Exception {
+    public IOrderManager fetchByIorderItemId(Integer id) throws Exception {
         try {
-            return orderManager.fetchByOrderItemId(id);
+            return orderManager.fetchByIorderItemId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
+    public IOrderManager fetchWithOrganizations(Integer id) throws Exception {
         try {
             return orderManager.fetchWithOrganizations(id);
         } catch (Exception anyE) {
@@ -96,7 +96,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager fetchWithItems(Integer id) throws Exception {
+    public IOrderManager fetchWithItems(Integer id) throws Exception {
         try {
             return orderManager.fetchWithItems(id);
         } catch (Exception anyE) {
@@ -104,7 +104,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager fetchWithFills(Integer id) throws Exception {
+    public IOrderManager fetchWithFills(Integer id) throws Exception {
         try {
             return orderManager.fetchWithFills(id);
         } catch (Exception anyE) {
@@ -112,7 +112,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager fetchWithNotes(Integer id) throws Exception {
+    public IOrderManager fetchWithNotes(Integer id) throws Exception {
         try {
             return orderManager.fetchWithNotes(id);
         } catch (Exception anyE) {
@@ -120,7 +120,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderManager fetchWithTests(Integer id) throws Exception {
+    public IOrderManager fetchWithTests(Integer id) throws Exception {
         try {
             return orderManager.fetchWithTests(id);
         } catch (Exception anyE) {
@@ -128,7 +128,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderManager fetchWithContainers(Integer id) throws Exception {
+    public IOrderManager fetchWithContainers(Integer id) throws Exception {
         try {
             return orderManager.fetchWithContainers(id);
         } catch (Exception anyE) {
@@ -136,7 +136,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+    public IOrderManager fetchWithRecurring(Integer id) throws Exception {
         try {
             return orderManager.fetchWithRecurring(id);
         } catch (Exception anyE) {
@@ -152,7 +152,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {
+    public ArrayList<IOrderViewDO> queryOrderFill(Query query) throws Exception {
         try {
             return order.queryOrderFill(query.getFields());
         } catch (Exception anyE) {
@@ -160,7 +160,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager add(OrderManager man) throws Exception {
+    public IOrderManager add(IOrderManager man) throws Exception {
         try {
             return orderManager.add(man);
         } catch (Exception anyE) {
@@ -168,7 +168,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager update(OrderManager man) throws Exception {
+    public IOrderManager update(IOrderManager man) throws Exception {
         try {
             return orderManager.update(man);
         } catch (Exception anyE) {
@@ -176,7 +176,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager fetchForUpdate(Integer id) throws Exception {
+    public IOrderManager fetchForUpdate(Integer id) throws Exception {
         try {
             return orderManager.fetchForUpdate(id);
         } catch (Exception anyE) {
@@ -184,7 +184,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
 
-    public OrderManager abortUpdate(Integer id) throws Exception {
+    public IOrderManager abortUpdate(Integer id) throws Exception {
         try {
             return orderManager.abortUpdate(id);
         } catch (Exception anyE) {
@@ -192,7 +192,7 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderManager duplicate(Integer id) throws Exception {
+    public IOrderManager duplicate(Integer id) throws Exception {
         try {
             return orderManager.duplicate(id);
         } catch (Exception anyE) {
@@ -204,63 +204,63 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
     // support for OrderItemManager, OrderFillManager, OrderTestManager, OrderContainerManager
     //
     
-    public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception {
+    public IOrderOrganizationManager fetchOrganizationByIorderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchOrganizationByOrderId(id);
+            return orderManager.fetchOrganizationByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
+    public IOrderItemManager fetchItemByIorderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchItemByOrderId(id);
+            return orderManager.fetchItemByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
+    public IOrderFillManager fetchFillByIorderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchFillByOrderId(id);
+            return orderManager.fetchFillByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception {
+    public IOrderReceiptManager fetchReceiptByIorderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchReceiptByOrderId(id);
+            return orderManager.fetchReceiptByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {
+    public IOrderTestManager fetchTestByIorderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchTestByOrderId(id);
+            return orderManager.fetchTestByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception {
+    public IOrderTestAnalyteManager fetchTestAnalyteByIorderTestId(Integer id) throws Exception {
         try {
-            return orderManager.fetchTestAnalyteByOrderTestId(id);
+            return orderManager.fetchTestAnalyteByIorderTestId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception {
+    public IOrderTestAnalyteManager fetchMergedTestAnalyteByIorderTestId(Integer id) throws Exception {
         try {
-            return orderManager.fetchMergedTestAnalyteByOrderTestId(id);
+            return orderManager.fetchMergedTestAnalyteByIorderTestId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
+    public IOrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
         try {
             return orderManager.fetchTestAnalyteByTestId(id);
         } catch (Exception anyE) {
@@ -268,17 +268,17 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
+    public IOrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchContainerByOrderId(id);
+            return orderManager.fetchContainerByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
     
-    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
+    public IOrderRecurrenceDO fetchRecurrenceByIorderId(Integer id) throws Exception {
         try {
-            return orderManager.fetchRecurrenceByOrderId(id);
+            return orderManager.fetchRecurrenceByIorderId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

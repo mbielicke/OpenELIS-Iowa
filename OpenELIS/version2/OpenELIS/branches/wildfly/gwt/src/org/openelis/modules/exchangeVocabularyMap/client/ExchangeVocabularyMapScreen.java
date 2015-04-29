@@ -82,7 +82,8 @@ import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.method.client.MethodServiceImpl;
 import org.openelis.modules.organization.client.OrganizationService;
-import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.panel1.client.PanelService1;
+import org.openelis.modules.panel1.client.PanelService1Impl;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.LastPageException;
@@ -287,7 +288,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     Constants.table().TEST_ANALYTE.equals(refTableId))
                     referenceName.setCase(Case.MIXED);
                 else if (Constants.table().METHOD.equals(refTableId) ||
-                         Constants.table().TEST.equals(refTableId)||
+                         Constants.table().TEST.equals(refTableId) ||
                          Constants.table().PANEL.equals(refTableId))
                     referenceName.setCase(Case.LOWER);
                 else if (Constants.table().ORGANIZATION.equals(refTableId))
@@ -568,19 +569,38 @@ public class ExchangeVocabularyMapScreen extends Screen {
             public void executeQuery(final Query query) {
                 String refQuery;
                 Integer refTableId;
-                QueryData refField;
+                Query newQuery;
+                QueryData field, refField;
                 ArrayList<QueryData> fields;
+
+                /*
+                 * the Query object passed to this method can't be sent as is to
+                 * the back-end; that's because some fields need to be added or
+                 * changed for the query in the back-end to execute correctly;
+                 * but that object can't be manipulated because the same object
+                 * is passed every time this method is called and changing it
+                 * will make the logic in this method not work correctly, the
+                 * next time it's called; so a new object is created here and
+                 * changed as needed before sending to the back-end
+                 */
+                newQuery = new Query();
+                newQuery.setPage(query.getPage());
+                for (QueryData qd : query.getFields()) {
+                    field = new QueryData(qd.getKey(), qd.getType(), qd.getQuery());
+                    field.setLogical(qd.getLogical());
+                    newQuery.setFields(field);
+                }
 
                 refTableId = null;
                 refField = null;
-                for (QueryData field : query.getFields()) {
-                    if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.getKey()))
-                        refTableId = Integer.parseInt(field.getQuery());
-                    else if (ExchangeLocalTermMeta.getReferenceName().equals(field.getKey()))
+                for (QueryData qd : newQuery.getFields()) {
+                    if (ExchangeLocalTermMeta.getReferenceTableId().equals(qd.getKey()))
+                        refTableId = Integer.parseInt(qd.getQuery());
+                    else if (ExchangeLocalTermMeta.getReferenceName().equals(qd.getKey()))
                         /*
                          * this field contains the search string
                          */
-                        refField = field;
+                        refField = qd;
                 }
 
                 if (Constants.table().TEST_ANALYTE.equals(refTableId)) {
@@ -591,7 +611,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                          * corresponding to the name of the column queried for
                          * will be added below
                          */
-                        query.getFields().remove(refField);
+                        newQuery.getFields().remove(refField);
                     } else {
                         refQuery = "";
                     }
@@ -601,14 +621,14 @@ public class ExchangeVocabularyMapScreen extends Screen {
                      * in the search string, e.g. test name, row analyte name
                      */
                     fields = getTestAnalyteQueryFields(refQuery);
-                    for (QueryData f : fields)
-                        query.setFields(f);
+                    for (QueryData qd : fields)
+                        newQuery.setFields(qd);
                 } else {
                     if (refField == null) {
                         refField = new QueryData();
                         refField.setQuery("*");
                         refField.setType(QueryData.Type.STRING);
-                        query.setFields(refField);
+                        newQuery.setFields(refField);
                     }
                     /*
                      * depending upon the reference table selected replace the
@@ -632,9 +652,9 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(20);
+                newQuery.setRowsPerPage(20);
                 ExchangeVocabularyMapService.get()
-                                            .query(query,
+                                            .query(newQuery,
                                                    new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
                                                        public void onSuccess(ArrayList<ExchangeLocalTermViewDO> result) {
                                                            setQueryResult(result);
@@ -1213,7 +1233,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = PanelService.get().fetchByName(search);
+            list = PanelService1Impl.INSTANCE.fetchByName(search);
             for (PanelDO data : list) {
                 row = new TableDataRow(data.getId(), data.getName());
                 row.data = data;
