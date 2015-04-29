@@ -28,63 +28,63 @@ package org.openelis.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.IOrderItemViewDO;
 
-public class OrderItemManager implements Serializable {
+public class IOrderItemManager implements Serializable {
 
     private static final long                        serialVersionUID = 1L;
 
-    protected Integer                                orderId;
-    protected ArrayList<OrderItemViewDO>             items, deleted;
+    protected Integer                                iorderId;
+    protected ArrayList<IOrderItemViewDO>            items, deleted;
 
-    protected transient static OrderItemManagerProxy proxy;
+    protected transient static IOrderItemManagerProxy proxy;
 
-    protected OrderItemManager() {
+    protected IOrderItemManager() {
     }
 
     /**
      * Creates a new instance of this object.
      */
-    public static OrderItemManager getInstance() {
-        return new OrderItemManager();
+    public static IOrderItemManager getInstance() {
+        return new IOrderItemManager();
     }
 
-    public OrderItemViewDO getItemAt(int i) {
+    public IOrderItemViewDO getItemAt(int i) {
         return items.get(i);
     }
 
-    public void setItemAt(OrderItemViewDO item, int i) {
+    public void setItemAt(IOrderItemViewDO item, int i) {
         if (items == null)
-            items = new ArrayList<OrderItemViewDO>();
+            items = new ArrayList<IOrderItemViewDO>();
         items.set(i, item);
     }
 
     public int addItem() {
         if (items == null)
-            items = new ArrayList<OrderItemViewDO>();
-        items.add(new OrderItemViewDO());
+            items = new ArrayList<IOrderItemViewDO>();
+        items.add(new IOrderItemViewDO());
 
         return count() - 1;
     }
     
     public int addItemAt(int i) {
         if (items == null)
-            items = new ArrayList<OrderItemViewDO>();
-        items.add(i, new OrderItemViewDO());
+            items = new ArrayList<IOrderItemViewDO>();
+        items.add(i, new IOrderItemViewDO());
 
         return i;
     }
     
-    public int addItem(OrderItemViewDO item) {
+    public int addItem(IOrderItemViewDO item) {
         if (items == null)
-            items = new ArrayList<OrderItemViewDO>();
+            items = new ArrayList<IOrderItemViewDO>();
         items.add(item);
 
         return count() - 1;
     }
 
     public void removeItemAt(int i) {
-        OrderItemViewDO tmp;
+        IOrderItemViewDO tmp;
 
         if (items == null || i >= items.size())
             return;
@@ -92,7 +92,7 @@ public class OrderItemManager implements Serializable {
         tmp = items.remove(i);
         if (tmp.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<OrderItemViewDO>();
+                deleted = new ArrayList<IOrderItemViewDO>();
             deleted.add(tmp);
         }
     }
@@ -105,15 +105,15 @@ public class OrderItemManager implements Serializable {
     }
 
     // service methods
-    public static OrderItemManager fetchByOrderId(Integer id) throws Exception {
-        return proxy().fetchByOrderId(id);
+    public static IOrderItemManager fetchByIorderId(Integer id) throws Exception {
+        return proxy().fetchByIorderId(id);
     }
 
-    public OrderItemManager add() throws Exception {
+    public IOrderItemManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public OrderItemManager update() throws Exception {
+    public IOrderItemManager update() throws Exception {
         return proxy().update(this);
     }
 
@@ -123,18 +123,18 @@ public class OrderItemManager implements Serializable {
 
     // friendly methods used by managers and proxies
     Integer getOrderId() {
-        return orderId;
+        return iorderId;
     }
 
     void setOrderId(Integer id) {
-        orderId = id;
+        iorderId = id;
     }
 
-    ArrayList<OrderItemViewDO> getItems() {
+    ArrayList<IOrderItemViewDO> getItems() {
         return items;
     }
 
-    void setItems(ArrayList<OrderItemViewDO> items) {
+    void setItems(ArrayList<IOrderItemViewDO> items) {
         this.items = items;
     }
 
@@ -144,13 +144,13 @@ public class OrderItemManager implements Serializable {
         return deleted.size();
     }
 
-    OrderItemViewDO getDeletedAt(int i) {
+    IOrderItemViewDO getDeletedAt(int i) {
         return deleted.get(i);
     }
 
-    private static OrderItemManagerProxy proxy() {
+    private static IOrderItemManagerProxy proxy() {
         if (proxy == null)
-            proxy = new OrderItemManagerProxy();
+            proxy = new IOrderItemManagerProxy();
         return proxy;
     }
 }

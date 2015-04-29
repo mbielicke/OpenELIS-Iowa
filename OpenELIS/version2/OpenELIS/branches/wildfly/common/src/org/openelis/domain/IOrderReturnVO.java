@@ -27,26 +27,26 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.ui.common.ValidationErrorsList;
 
 /**
  * This class is used for transporting the data needed for adding tests to a
  * order and any errors or warnings resulting from trying to do so
  */
-public class OrderReturnVO implements Serializable {
+public class IOrderReturnVO implements Serializable {
 
     private static final long      serialVersionUID = 1L;
 
-    protected OrderManager1        manager;
+    protected IOrderManager1        manager;
 
     protected ValidationErrorsList errors;
 
-    public OrderManager1 getManager() {
+    public IOrderManager1 getManager() {
         return manager;
     }
 
-    public void setManager(OrderManager1 manager) {
+    public void setManager(IOrderManager1 manager) {
         this.manager = manager;
     }
 

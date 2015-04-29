@@ -60,8 +60,10 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
 
     @Override
     public SampleSO run(SampleSO data) {
+        int i, j;
         AnalysisViewDO ana;
         ResultViewDO res;
+        SampleManager1 sm;
 
         proxy.log(Level.FINE, "In SerogroupResultScriptlet1.run", null);
         ana = (AnalysisViewDO)data.getManager().getObject(Constants.uid().getAnalysis(analysisId));
@@ -73,18 +75,24 @@ public class SerogroupResultScriptlet1 implements ScriptletInt<SampleSO> {
          * manage result changed
          */
         res = null;
-        if (data.getActionBefore().contains(Action_Before.RESULT)) {
+        if (data.getActionBefore().contains(Action_Before.COMPLETE)) {
+            if (analysisId.equals(ana.getId())) {
+               sm = data.getManager();
+               for (i = 0; i < sm.result.count(ana); i++ ) {
+                   for (j = 0; j < sm.result.count(ana, i); j++ ) {
+                       res = sm.result.get(ana, i, j);
+                       if ("serogroup".equals(res.getAnalyteExternalId())) {
+                           setResult(data, ana, res);
+                           break;
+                       }
+                   }
+               }
+            }
+        } else if (data.getActionBefore().contains(Action_Before.RESULT)) {
             res = (ResultViewDO)data.getManager().getObject(data.getUid());
-            if (!analysisId.equals(res.getAnalysisId()) || !"serogroup".equals(res.getAnalyteExternalId()))
-                return data;
-        } else {
-            return data;
+            if (analysisId.equals(res.getAnalysisId()) && "serogroup".equals(res.getAnalyteExternalId()))
+                setResult(data, ana, res);
         }
-
-        /*
-         * set the value of result based on serogroup
-         */
-        setResult(data, ana, res);
 
         return data;
     }

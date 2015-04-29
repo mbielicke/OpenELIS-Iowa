@@ -25,19 +25,19 @@
 */
 package org.openelis.domain;
 
-public class OrderTestDO extends DataObject {
+public class IOrderTestDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer  id, orderId, itemSequence, sortOrder, testId;    
+    protected Integer  id, iorderId, itemSequence, sortOrder, testId;    
     
-    public OrderTestDO() {        
+    public IOrderTestDO() {        
     }
     
-    public OrderTestDO(Integer  id, Integer orderId, Integer itemSequence, Integer sortOrder,
+    public IOrderTestDO(Integer  id, Integer iorderId, Integer itemSequence, Integer sortOrder,
                        Integer testId) {   
         setId(id);
-        setOrderId(orderId);
+        setIorderId(iorderId);
         setItemSequence(itemSequence);
         setSortOrder(sortOrder);
         setTestId(testId);
@@ -53,12 +53,12 @@ public class OrderTestDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getIorderId() {
+        return iorderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setIorderId(Integer iorderId) {
+        this.iorderId = iorderId;
         _changed = true;
     }
 

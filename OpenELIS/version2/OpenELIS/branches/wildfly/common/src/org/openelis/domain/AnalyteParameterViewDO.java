@@ -32,23 +32,23 @@ import org.openelis.ui.common.DataBaseUtil;
 /**
  * The class extends analyte parameter DO and carries the field reference name.
  * The additional field is for read/display only and do not get committed to
- * the database. Note: isChanged will reflect any changes to read/display fields.
+ * the database.Note: isChanged will reflect any changes to read/display fields.
  */
 public class AnalyteParameterViewDO extends AnalyteParameterDO {
 
     private static final long serialVersionUID = 1L;
     
     protected String          analyteName, referenceName;
-
+    
     public AnalyteParameterViewDO() {
     }
     
     public AnalyteParameterViewDO(Integer id, Integer referenceId, Integer referenceTableId,
-                                  Integer analyteId, Integer typeOfSampleId, 
-                                  String isActive, Date activeBegin, Date activeEnd,
+                                  Integer analyteId, Integer typeOfSampleId, Integer unitOfMeasureId,
+                                  Date activeBegin, Date activeEnd,
                                   Double p1, Double p2, Double p3, String analyteName) {
-        super(id, referenceId, referenceTableId, analyteId, typeOfSampleId, 
-              isActive, activeBegin, activeEnd, p1, p2, p3);
+        super(id, referenceId, referenceTableId, analyteId, typeOfSampleId, unitOfMeasureId, 
+              activeBegin, activeEnd, p1, p2, p3);
         setAnalyteName(analyteName);        
     }   
     

@@ -33,8 +33,7 @@ import org.openelis.ui.common.MetaMap;
 
 public class SampleViewMeta implements Meta, MetaMap {
 
-    private static final String    ID = "_sampleView.sampleId", 
-                    DOMAIN = "_sampleView.domain",
+    private static final String    ID = "_sampleView.sampleId", DOMAIN = "_sampleView.domain",
                     ACCESSION_NUMBER = "_sampleView.accessionNumber",
                     ACCESSION_NUMBER_FROM = "_display.accessionNumberFrom",
                     ACCESSION_NUMBER_TO = "_display.accessionNumberTo",
@@ -50,14 +49,10 @@ public class SampleViewMeta implements Meta, MetaMap {
                     RELEASED_DATE_FROM = "_display.sampleReleasedDateFrom",
                     RELEASED_DATE_TO = "_display.sampleReleasedDateTo",
                     REPORT_TO_ID = "_sampleView.reportToId",
-                    REPORT_TO = "_sampleView.reportToName", 
-                    COLLECTOR = "_sampleView.collector",
-                    LOCATION = "_sampleView.location", 
-                    LOCATION_CITY = "_sampleView.locationCity",
-                    PROJECT_ID = "_sampleView.projectId", 
-                    PROJECT = "_sampleView.projectName",
-                    PWS_NUMBER0 = "_sampleView.pwsNumber0", 
-                    PWS_NAME = "_sampleView.pwsName",
+                    REPORT_TO = "_sampleView.reportToName", COLLECTOR = "_sampleView.collector",
+                    LOCATION = "_sampleView.location", LOCATION_CITY = "_sampleView.locationCity",
+                    PROJECT_ID = "_sampleView.projectId", PROJECT = "_sampleView.projectName",
+                    PWS_NUMBER0 = "_sampleView.pwsNumber0", PWS_NAME = "_sampleView.pwsName",
                     SDWIS_FACILITY_ID = "_sampleView.sdwisFacilityId",
                     PATIENT_LAST_NAME = "_sampleView.patientLastName",
                     PATIENT_FIRST_NAME = "_sampleView.patientFirstName",
@@ -69,6 +64,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                     ANALYSIS_REVISION = "_sampleView.analysisRevision",
                     ANALYSIS_IS_REPORTABLE = "_sampleView.analysisIsReportable",
                     ANALYSIS_STATUS_ID = "_sampleView.analysisStatusId",
+                    ANALYSIS_RELEASED_DATE = "_sampleView.analysisReleasedDate",
                     TEST_REPORTING_DESCRIPTION = "_sampleView.testReportingDescription",
                     METHOD_REPORTING_DESCRIPTION = "_sampleView.methodReportingDescription";
 
@@ -111,6 +107,7 @@ public class SampleViewMeta implements Meta, MetaMap {
                                                   ANALYSIS_REVISION,
                                                   ANALYSIS_IS_REPORTABLE,
                                                   ANALYSIS_STATUS_ID,
+                                                  ANALYSIS_RELEASED_DATE,
                                                   TEST_REPORTING_DESCRIPTION,
                                                   METHOD_REPORTING_DESCRIPTION));
     }
@@ -257,6 +254,10 @@ public class SampleViewMeta implements Meta, MetaMap {
 
     public static String getAnalysisStatusId() {
         return ANALYSIS_STATUS_ID;
+    }
+
+    public static String getAnalysisReleasedDate() {
+        return ANALYSIS_RELEASED_DATE;
     }
 
     public static String getTestReportingDescription() {

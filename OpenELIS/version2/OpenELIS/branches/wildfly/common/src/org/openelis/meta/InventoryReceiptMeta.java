@@ -81,12 +81,12 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
                                  INVENTORY_LOCATION_QUANTITY_ON_HAND = "_inventoryLocation.quantityOnhand",
                                  INVENTORY_LOCATION_EXPIRATION_DATE = "_inventoryLocation.expirationDate",
                                  
-                                 ORDER_ITEM_ID = "_orderItem.id", 
-                                 ORDER_ITEM_ORDER_ID = "_orderItem.orderId",
-                                 ORDER_ITEM_INVENTORY_ITEM_ID = "_orderItem.inventoryItemId",
-                                 ORDER_ITEM_QUANTITY = "_orderItem.quantity",
-                                 ORDER_ITEM_CATALOG_NUMBER = "_orderItem.catalogNumber",
-                                 ORDER_ITEM_UNIT_COST = "_orderItem.unitCost",  
+                                 IORDER_ITEM_ID = "_iorderItem.id", 
+                                 IORDER_ITEM_IORDER_ID = "_iorderItem.iorderId",
+                                 IORDER_ITEM_INVENTORY_ITEM_ID = "_iorderItem.inventoryItemId",
+                                 IORDER_ITEM_QUANTITY = "_iorderItem.quantity",
+                                 IORDER_ITEM_CATALOG_NUMBER = "_iorderItem.catalogNumber",
+                                 IORDER_ITEM_UNIT_COST = "_iorderItem.unitCost",  
                                  
                                  ORGANIZATION_ADDRESS_ID = "_organization.address.id",
                                  ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_organization.address.multipleUnit",
@@ -104,9 +104,9 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
                                  INVENTORY_LOCATION_STORAGE_LOCATION_NAME = "_storageLocation.name",   
                                  INVENTORY_LOCATION_STORAGE_LOCATION_LOCATION = "_storageLocation.location",
                                  INVENTORY_LOCATION_STORAGE_LOCATION_STORAGE_UNIT_DESCRIPTION = "_storageUnit.description", 
-                                 ORDER_ITEM_ORDER_EXTERNAL_ORDER_NUMBER = "_orderItem.order.externalOrderNumber",
-                                 ORDER_ITEM_ORDER_STATUS_ID = "_orderItem.order.statusId",
-                                 ORDER_ITEM_ORDER_TYPE = "_orderItem.order.type",
+                                 IORDER_ITEM_IORDER_EXTERNAL_ORDER_NUMBER = "_iorderItem.iorder.externalOrderNumber",
+                                 IORDER_ITEM_IORDER_STATUS_ID = "_iorderItem.iorder.statusId",
+                                 IORDER_ITEM_IORDER_TYPE = "_iorderItem.iorder.type",
                                  ORGANIZATION_NAME = "_organization.name";
 
     private static HashSet<String> names;
@@ -127,10 +127,10 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
                                                   INVENTORY_X_PUT_INVENTORY_RECEIPT_ID, INVENTORY_X_PUT_INVENTORY_LOCATION_ID,
                                                   INVENTORY_X_PUT_QUANTITY, INVENTORY_LOCATION_LOT_NUMBER,
                                                   INVENTORY_LOCATION_STORAGE_LOCATION_ID, INVENTORY_LOCATION_QUANTITY_ON_HAND,
-                                                  INVENTORY_LOCATION_EXPIRATION_DATE, ORDER_ITEM_ID, ORGANIZATION_ID,
+                                                  INVENTORY_LOCATION_EXPIRATION_DATE, IORDER_ITEM_ID, ORGANIZATION_ID,
                                                   RECEIVED_DATE, QUANTITY_RECEIVED, UNIT_COST, QC_REFERENCE, EXTERNAL_REFERENCE,
-                                                  UPC, ORDER_ITEM_ORDER_ID, ORDER_ITEM_INVENTORY_ITEM_ID, ORDER_ITEM_QUANTITY,
-                                                  ORDER_ITEM_CATALOG_NUMBER, ORDER_ITEM_UNIT_COST,
+                                                  UPC, IORDER_ITEM_IORDER_ID, IORDER_ITEM_INVENTORY_ITEM_ID, IORDER_ITEM_QUANTITY,
+                                                  IORDER_ITEM_CATALOG_NUMBER, IORDER_ITEM_UNIT_COST,
                                                   ORGANIZATION_ADDRESS_ID, ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
                                                   ORGANIZATION_ADDRESS_STREET_ADDRESS, ORGANIZATION_ADDRESS_CITY,
                                                   ORGANIZATION_ADDRESS_STATE, ORGANIZATION_ADDRESS_ZIP_CODE,
@@ -140,8 +140,8 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
                                                   INVENTORY_LOCATION_STORAGE_LOCATION_NAME,   
                                                   INVENTORY_LOCATION_STORAGE_LOCATION_LOCATION,
                                                   INVENTORY_LOCATION_STORAGE_LOCATION_STORAGE_UNIT_DESCRIPTION,
-                                                  ORDER_ITEM_ORDER_EXTERNAL_ORDER_NUMBER, ORDER_ITEM_ORDER_STATUS_ID,
-                                                  ORDER_ITEM_ORDER_TYPE, ORGANIZATION_NAME));
+                                                  IORDER_ITEM_IORDER_EXTERNAL_ORDER_NUMBER, IORDER_ITEM_IORDER_STATUS_ID,
+                                                  IORDER_ITEM_IORDER_TYPE, ORGANIZATION_NAME));
     }
 
     public static String getId() {
@@ -152,8 +152,8 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
         return INVENTORY_ITEM_ID;
     }
 
-    public static String getOrderItemId() {
-        return ORDER_ITEM_ID;
+    public static String getIorderItemId() {
+        return IORDER_ITEM_ID;
     }
 
     public static String getOrganizationId() {
@@ -232,24 +232,24 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
         return ORGANIZATION_ADDRESS_COUNTRY;
     }   
     
-    public static String getOrderItemOrderId() {
-        return ORDER_ITEM_ORDER_ID;
+    public static String getIorderItemIorderId() {
+        return IORDER_ITEM_IORDER_ID;
     }
     
-    public static String getOrderItemInventoryItemId() {
-        return ORDER_ITEM_INVENTORY_ITEM_ID;
+    public static String getIorderItemInventoryItemId() {
+        return IORDER_ITEM_INVENTORY_ITEM_ID;
     }
     
-    public static String getOrderItemQuantity() {
-        return ORDER_ITEM_QUANTITY;
+    public static String getIorderItemQuantity() {
+        return IORDER_ITEM_QUANTITY;
     }
     
-    public static String getOrderItemCatalogNumber() {
-        return ORDER_ITEM_CATALOG_NUMBER;
+    public static String getIorderItemCatalogNumber() {
+        return IORDER_ITEM_CATALOG_NUMBER;
     }
     
-    public static String getOrderItemUnitCost() {
-        return ORDER_ITEM_UNIT_COST;
+    public static String getIorderItemUnitCost() {
+        return IORDER_ITEM_UNIT_COST;
     }
     
     public static String getInventoryItemName() {
@@ -388,16 +388,16 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
         return INVENTORY_LOCATION_EXPIRATION_DATE;
     }     
     
-    public static String getOrderItemOrderExternalOrderNumber() {
-        return ORDER_ITEM_ORDER_EXTERNAL_ORDER_NUMBER;
+    public static String getIorderItemIorderExternalOrderNumber() {
+        return IORDER_ITEM_IORDER_EXTERNAL_ORDER_NUMBER;
     }
     
-    public static String getOrderItemOrderStatusId() {
-        return ORDER_ITEM_ORDER_STATUS_ID;
+    public static String getIorderItemIorderStatusId() {
+        return IORDER_ITEM_IORDER_STATUS_ID;
     }
     
-    public static String getOrderItemOrderType() {
-        return ORDER_ITEM_ORDER_TYPE;
+    public static String getIorderItemIorderType() {
+        return IORDER_ITEM_IORDER_TYPE;
     }
     
     public static String getOrganizationName() {
@@ -415,12 +415,11 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
         
         if (where.indexOf("inventoryReceipt") > -1) {
             from = "InventoryReceipt _inventoryReceipt ";		
-        } else if (where.indexOf("orderItem.") > -1) {
-            from = "OrderItem _orderItem ";
-            from += " left join _orderItem.inventoryReceipt _inventoryReceipt";                                
+        } else if (where.indexOf("iorderItem.") > -1) {
+            from = "IOrderItem _iorderItem ";
+            from += " left join _iorderItem.inventoryReceipt _inventoryReceipt";                                
         }
                 
         return from;
     }
-
 }

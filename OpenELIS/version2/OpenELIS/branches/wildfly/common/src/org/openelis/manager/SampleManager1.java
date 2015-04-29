@@ -165,11 +165,11 @@ public class SampleManager1 implements Serializable {
     public SampleNeonatalViewDO getSampleNeonatal() {
         return sampleNeonatal;
     }
-    
+
     public SampleClinicalViewDO getSampleClinical() {
         return sampleClinical;
     }
-    
+
     public SamplePTDO getSamplePT() {
         return samplePT;
     }
@@ -575,7 +575,7 @@ public class SampleManager1 implements Serializable {
             }
             return false;
         }
-        
+
         /**
          * Returns true if the analysis has a qa event with specified name
          */
@@ -782,7 +782,7 @@ public class SampleManager1 implements Serializable {
             return (sampleIntNotes == null) ? 0 : sampleIntNotes.size();
         }
     }
-    
+
     /**
      * Class to manage the attachments associated with the sample
      */
@@ -801,12 +801,12 @@ public class SampleManager1 implements Serializable {
             AttachmentItemViewDO data;
 
             data = new AttachmentItemViewDO();
-            data.setId(getNextUID());            
+            data.setId(getNextUID());
             if (attachments == null)
                 attachments = new ArrayList<AttachmentItemViewDO>();
             attachments.add(data);
             uidMapAdd(Constants.uid().get(data), data);
-            
+
             return data;
         }
 
@@ -1302,11 +1302,14 @@ public class SampleManager1 implements Serializable {
             NoteViewDO data;
 
             localmapBuild();
-            data = localmap.get(analysis.getId());
-            if (data != null) {
-                analysisExtNotes.remove(data);
-                dataObjectRemove(data.getId(), data);
-                uidMapRemove(Constants.uid().get(data));
+            if (localmap != null) {
+                data = localmap.get(analysis.getId());
+                if (data != null) {
+                    analysisExtNotes.remove(data);
+                    localmap.remove(analysis.getId());
+                    dataObjectRemove(data.getId(), data);
+                    uidMapRemove(Constants.uid().get(data));
+                }
             }
         }
 
@@ -1389,12 +1392,14 @@ public class SampleManager1 implements Serializable {
             ArrayList<NoteViewDO> l;
 
             localmapBuild();
-            l = localmap.get(analysis.getId());
-            if (l != null && l.size() > 0 && l.get(0).getId() < 0) {
-                data = l.remove(0);
-                analysisIntNotes.remove(data);
-                dataObjectRemove(data.getId(), data);
-                uidMapRemove(Constants.uid().get(data));
+            if (localmap != null) {
+                l = localmap.get(analysis.getId());
+                if (l != null && l.size() > 0 && l.get(0).getId() < 0) {
+                    data = l.remove(0);
+                    analysisIntNotes.remove(data);
+                    dataObjectRemove(data.getId(), data);
+                    uidMapRemove(Constants.uid().get(data));
+                }
             }
         }
 
