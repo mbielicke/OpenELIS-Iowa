@@ -128,7 +128,7 @@ public class TurnaroundWarningNotificationBean {
                     /*
                      * If an analysis was found in the turnaround query but not in
                      * the SampleManager query, it is an orphan analysis left over
-                     * from a bug that used to be in the Send-out Order import code.
+                     * from a bug that used to be in the Send-out IOrder import code.
                      */
                     if (aVDO == null)
                         continue;

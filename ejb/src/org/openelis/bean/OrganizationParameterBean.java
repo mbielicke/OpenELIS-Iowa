@@ -70,18 +70,14 @@ public class OrganizationParameterBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<OrganizationParameterDO> fetchByOrganizationIds(ArrayList<Integer> ids) throws Exception {
         Query query;
-        List list;
 
         query = manager.createNamedQuery("OrganizationParameter.FetchByOrganizationIds");
         query.setParameter("ids", ids);
 
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id,
@@ -190,8 +186,10 @@ public class OrganizationParameterBean {
         StringBuffer sb;
         EmailFilter decoded;
 
-        sb = new StringBuffer();
         decoded = new EmailFilter();
+        if (DataBaseUtil.isEmpty(encoded))
+            return decoded;
+        sb = new StringBuffer();
 
         str = encoded.toCharArray();
         for (i = 0; i < encoded.length(); i++ ) {

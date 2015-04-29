@@ -8,9 +8,17 @@
 	<parameter name="WORKSHEET_RESULT_ID" class="java.lang.Integer"/>
 	<parameter name="COLUMN_INDEX" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT DISTINCT wr.*
-from worksheet_result wr
-where wr.id = $P{WORKSHEET_RESULT_ID}]]>
+		<![CDATA[SELECT DISTINCT
+   wr.id, wr.worksheet_analysis_id, wr.test_analyte_id, wr.result_row, wr.analyte_id,
+   wr.value_1, wr.value_2, wr.value_3, wr.value_4, wr.value_5, wr.value_6, wr.value_7,
+   wr.value_8, wr.value_9, wr.value_10, wr.value_11, wr.value_12, wr.value_13, wr.value_14,
+   wr.value_15, wr.value_16, wr.value_17, wr.value_18, wr.value_19, wr.value_20, wr.value_21,
+   wr.value_22, wr.value_23, wr.value_24, wr.value_25, wr.value_26, wr.value_27, wr.value_28,
+   wr.value_29, wr.value_30, wr.change_flags_id
+FROM
+   worksheet_result wr
+WHERE
+   wr.id = $P{WORKSHEET_RESULT_ID}]]>
 	</queryString>
 	<field name="id" class="java.lang.Integer"/>
 	<field name="worksheet_analysis_id" class="java.lang.Integer"/>

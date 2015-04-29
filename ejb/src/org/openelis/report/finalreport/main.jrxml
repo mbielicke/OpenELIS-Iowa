@@ -103,6 +103,22 @@
 					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleClinical.jasper"]]></subreportExpression>
 				</subreport>
+				<subreport>
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA["P".equals($F{domain})]]></printWhenExpression>
+					</reportElement>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="SAMPLE_ID">
+						<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="ORGANIZATION_ID">
+						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePT.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</groupHeader>
 	</group>
@@ -237,7 +253,7 @@
 			</staticText>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[!"C".equals($F{domain})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[!"C".equals($F{domain}) && !"P".equals($F{domain})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
@@ -273,6 +289,25 @@
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisClinical.jasper"]]></subreportExpression>
 			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["P".equals($F{domain})]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="UNIT_LIST">
+					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REPORT_TYPE">
+					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisPT.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
@@ -283,7 +318,7 @@
 					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="UNIT_LIST">
-					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}.get()]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisUnitList.jasper"]]></subreportExpression>

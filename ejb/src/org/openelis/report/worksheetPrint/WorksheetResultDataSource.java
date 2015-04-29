@@ -37,11 +37,11 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.EJBFactory;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
-public class WorksheetResultDataSource implements JRDataSource {
+public class WorksheetResultDataSource implements JRRewindableDataSource {
 
     private int rowIndex;
     private ArrayList<DataObject> rowList;
@@ -126,4 +126,8 @@ public class WorksheetResultDataSource implements JRDataSource {
 
         return hasNext;
 	}
+    
+    public void moveFirst() throws JRException {
+        rowIndex = -1;
+    }
 }

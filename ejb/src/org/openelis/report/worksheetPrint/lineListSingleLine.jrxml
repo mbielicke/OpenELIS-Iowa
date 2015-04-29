@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="WORKSHEET_ID" class="java.lang.String">
+	<parameter name="WORKSHEET_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="USER_NAME" class="java.lang.String">
@@ -14,16 +14,18 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     w.description as worksheet_description, wi.position, wav.*, d1.entry status,
-     a1.name wr_analyte, a2.name wqr_analyte, d3.sort_order, wr.id wr_id, wqr.id wqr_id
+     wav.worksheet_description, wav.position, wav.id, wav.worksheet_item_id,
+     wav.worksheet_id, wav.accession_number, wav.analysis_id, wav.qc_lot_id, wav.qc_id, wav.worksheet_analysis_id,
+     wav.system_users, wav.started_date, wav.completed_date, wav.from_other_id, wav.change_flags_id, wav.description,
+     wav.test_id, wav.test_name, wav.method_name, wav.time_ta_average, wav.time_holding, wav.section_name,
+     wav.unit_of_measure_id, wav.unit_of_measure, wav.analysis_status_id, wav.collection_date, wav.collection_time,
+     wav.received_date, wav.priority, wav.analysis_status,
+     a1.name as wr_analyte, a2.name as wqr_analyte, d3.sort_order, wr.id as wr_id, wqr.id as wqr_id
 FROM
      worksheet_analysis_view wav
-     join worksheet w on wav.worksheet_id = w.id
-     join worksheet_item wi on wav.worksheet_item_id = wi.id
-     join dictionary d2 on w.format_id = d2.id
-     join category c on d2.system_name = c.system_name
-     join dictionary d3 on c.id = d3.category_id and d3.system_name matches '*_final_value'
-     left join dictionary d1 on wav.status_id = d1.id
+     join dictionary d2 on d2.id = wav.format_id
+     join category c on c.system_name = d2.system_name
+     join dictionary d3 on d3.category_id = c.id and d3.system_name like '%_final_value'
      left join worksheet_result wr on wav.id = wr.worksheet_analysis_id and wav.analysis_id is not null
      left join analyte a1 on wr.analyte_id = a1.id
      left join worksheet_qc_result wqr on wav.id = wqr.worksheet_analysis_id and wav.qc_lot_id is not null
@@ -32,7 +34,7 @@ FROM
 WHERE
      wav.worksheet_id = $P{WORKSHEET_ID}
 ORDER BY
-     wi.position, wav.id]]>
+     wav.position, wav.id]]>
 	</queryString>
 	<field name="worksheet_description" class="java.lang.String"/>
 	<field name="position" class="java.lang.Integer"/>
@@ -58,12 +60,12 @@ ORDER BY
 	<field name="section_name" class="java.lang.String"/>
 	<field name="unit_of_measure_id" class="java.lang.Integer"/>
 	<field name="unit_of_measure" class="java.lang.String"/>
-	<field name="status_id" class="java.lang.Integer"/>
-	<field name="collection_date" class="java.sql.Timestamp"/>
+	<field name="analysis_status_id" class="java.lang.Integer"/>
+	<field name="collection_date" class="java.sql.Date"/>
 	<field name="collection_time" class="java.sql.Time"/>
 	<field name="received_date" class="java.sql.Timestamp"/>
 	<field name="priority" class="java.lang.Integer"/>
-	<field name="status" class="java.lang.String"/>
+	<field name="analysis_status" class="java.lang.String"/>
 	<field name="wr_analyte" class="java.lang.String"/>
 	<field name="wqr_analyte" class="java.lang.String"/>
 	<field name="sort_order" class="java.lang.Integer"/>
@@ -209,9 +211,9 @@ ORDER BY
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band height="12" splitType="Prevent">
 			<line>
-				<reportElement key="detail.line" x="0" y="11" width="752" height="1"/>
+				<reportElement key="detail.line" x="0" y="0" width="752" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
@@ -230,7 +232,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="description" isPrintRepeatedValues="false" mode="Transparent" x="90" y="0" width="120" height="12" printWhenGroupChanges="WORKSHEET_ANALYSIS" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
@@ -273,7 +275,7 @@ ORDER BY
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analysis_status}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="wr_analyte" mode="Transparent" x="605" y="0" width="80" height="12" backcolor="#FFFFFF">

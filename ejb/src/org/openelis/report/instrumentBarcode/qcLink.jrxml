@@ -12,10 +12,12 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT DISTINCT wav.accession_number, wi.position
-from worksheet_analysis_view wav
-     join worksheet_item wi on wav.worksheet_item_id = wi.id
-where wav.id = $P{WORKSHEET_ANALYSIS_ID}]]>
+		<![CDATA[SELECT DISTINCT
+      wav.accession_number, wi.position
+FROM
+      worksheet_analysis_view wav
+      join worksheet_item wi on wav.worksheet_item_id = wi.id
+WHERE wav.id = $P{WORKSHEET_ANALYSIS_ID}]]>
 	</queryString>
 	<field name="accession_number" class="java.lang.String"/>
 	<field name="position" class="java.lang.Integer"/>

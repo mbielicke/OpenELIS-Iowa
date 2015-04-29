@@ -7,24 +7,23 @@
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="WORKSHEET_ID" class="java.lang.String">
+	<parameter name="WORKSHEET_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     w.description as worksheet_description, wi.position, wav.worksheet_id, wav.accession_number,
+     wav.worksheet_description, wav.position, wav.id as wav_id, wav.worksheet_id, wav.accession_number,
      wav.description, wav.analysis_id, wav.qc_lot_id
 FROM
      worksheet_analysis_view wav
-     join worksheet w on wav.worksheet_id = w.id
-     join worksheet_item wi on wav.worksheet_item_id = wi.id
 WHERE
      wav.worksheet_id = $P{WORKSHEET_ID}
 ORDER BY
-     wi.position, wav.id]]>
+     wav.position, wav_id]]>
 	</queryString>
 	<field name="worksheet_description" class="java.lang.String"/>
 	<field name="position" class="java.lang.Integer"/>
+	<field name="wav_id" class="java.lang.Integer"/>
 	<field name="worksheet_id" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>

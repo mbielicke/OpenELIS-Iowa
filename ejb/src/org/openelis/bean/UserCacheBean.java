@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.SessionContext;
@@ -64,9 +63,6 @@ public class UserCacheBean {
     @Resource
     private SessionContext      ctx;
 
-    @EJB
-    private LockBean            lock;
-
     private Cache               cache, permCache;
 
     private static final Logger log = Logger.getLogger("openelis");
@@ -74,7 +70,7 @@ public class UserCacheBean {
     @PostConstruct
     public void init() {
         CacheManager cm;
-
+       
         cm = CacheManager.getInstance();
         cache = cm.getCache("user");
         permCache = cm.getCache("userperm");
@@ -210,7 +206,7 @@ public class UserCacheBean {
                 cache.remove(data.getLoginName());
                 cache.remove(data.getSystemUserId());
             }
-            lock.removeLocks();
+            EJBFactory.getLock().removeLocks();
         } catch (Exception e1) {
             log.log(Level.SEVERE, "Can't logout '" + name + "'", e1);
         }
@@ -290,4 +286,12 @@ public class UserCacheBean {
         
         return validUsers;
     }
-}
+    
+    /**
+     * Method used by unit test and other clients that do not have access to session context
+     * @return String sessionId
+     */
+    public String getSessionId() {
+    	return User.getSessionId(ctx);
+    }
+ }

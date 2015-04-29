@@ -25,13 +25,14 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.*;
+import static org.openelis.manager.IOrderManager1Accessor.*;
 import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,10 +50,10 @@ import org.openelis.domain.ExchangeExternalTermViewDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestAnalyteViewDO;
-import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.IOrderContainerDO;
+import org.openelis.domain.IOrderOrganizationViewDO;
+import org.openelis.domain.IOrderTestAnalyteViewDO;
+import org.openelis.domain.IOrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
@@ -66,7 +67,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.exception.ParseException;
-import org.openelis.manager.OrderManager1;
+import org.openelis.manager.IOrderManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.PatientMeta;
@@ -102,16 +103,16 @@ public class SampleManagerOrderHelperBean {
 
     @EJB
     private EOrderBodyBean            eorderBody;
-    
+
     @EJB
     private ExchangeExternalTermBean  exchangeExternalTerm;
 
     @EJB
     private OrganizationBean          organization;
-    
+
     @EJB
     private OrganizationParameterBean organizationParameter;
-    
+
     @EJB
     private PanelBean                 panel;
 
@@ -120,7 +121,7 @@ public class SampleManagerOrderHelperBean {
 
     @EJB
     private ProviderBean              provider;
-    
+
     @EJB
     private TestManagerBean           testManager;
 
@@ -134,7 +135,7 @@ public class SampleManagerOrderHelperBean {
     private AuxDataHelperBean         auxDataHelper;
 
     @EJB
-    private OrderManager1Bean         orderManager1;
+    private IOrderManager1Bean         orderManager1;
 
     private static final Logger       log             = Logger.getLogger("openelis");
 
@@ -150,7 +151,7 @@ public class SampleManagerOrderHelperBean {
                                                  ValidationErrorsList e) throws Exception {
         Integer accession;
         SampleDO data;
-        OrderManager1 om;
+        IOrderManager1 om;
         SampleTestReturnVO ret;
 
         data = getSample(sm);
@@ -162,14 +163,16 @@ public class SampleManagerOrderHelperBean {
             accession = 0;
 
         om = orderManager1.fetchById(orderId,
-                                     OrderManager1.Load.SAMPLE_DATA,
-                                     OrderManager1.Load.ORGANIZATION);
+                                     IOrderManager1.Load.SAMPLE_DATA,
+                                     IOrderManager1.Load.ORGANIZATION);
         if (om == null)
-            throw new InconsistencyException(Messages.get().sample_orderIdInvalidException(accession,
-                                                                                       orderId));        
-        else if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
-            throw new InconsistencyException(Messages.get().sample_orderIdInvalidException(accession,
-                                                                                       orderId));
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_orderIdInvalidException(accession,
+                                                                                     orderId));
+        else if (!Constants.iorder().SEND_OUT.equals(om.getIorder().getType()))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_orderIdInvalidException(accession,
+                                                                                     orderId));
 
         data.setOrderId(orderId);
 
@@ -188,9 +191,9 @@ public class SampleManagerOrderHelperBean {
      * Loads and merges the data in the SampleManager with the corresponding
      * data in the electronic order specified by its id and adds any errors
      * related to invalid data encountered during the process to the
-     * ValidationErrorsList.  If there are any discrepancies between existing data
-     * in the SampleManager and data in the electronic order, warnings are added
-     * to the ValidationErrorsList.
+     * ValidationErrorsList. If there are any discrepancies between existing
+     * data in the SampleManager and data in the electronic order, warnings are
+     * added to the ValidationErrorsList.
      */
     public SampleTestReturnVO importEOrder(SampleManager1 sm, Integer orderId,
                                            ValidationErrorsList e) throws Exception {
@@ -223,7 +226,7 @@ public class SampleManagerOrderHelperBean {
         } catch (NotFoundException ex) {
             throw new InconsistencyException(Messages.get().eorder_noSampleDataException());
         }
-        
+
         data.setOrderId(orderId);
 
         dataMap = new HashMap<String, String>();
@@ -231,18 +234,18 @@ public class SampleManagerOrderHelperBean {
         resultMap = new HashMap<String, ArrayList<OrderResult>>();
         externalTermMap = new HashMap<String, ArrayList<ExchangeExternalTermViewDO>>();
         document = XMLUtil.parse(eobDO.getXml());
-        eorderBodyElem = (Element) document.getDocumentElement();
+        eorderBodyElem = (Element)document.getDocumentElement();
         if (!eorderBodyElem.hasChildNodes())
             throw new InconsistencyException(Messages.get().eorder_noSampleDataException());
-        
+
         loadDataMapFromXml(eorderBodyElem, dataMap, testMap, resultMap, externalTermMap);
-        
+
         externalTerms = exchangeExternalTerm.fetchByExternalTerms(externalTermMap.keySet());
         for (ExchangeExternalTermViewDO eetVDO : externalTerms) {
             mapExternalTerms = externalTermMap.get(eetVDO.getExternalTerm());
             mapExternalTerms.add(eetVDO);
         }
-        
+
         copySample(sm, dataMap, e);
         copyPatient(sm, dataMap, externalTermMap, e);
         copyOrganization(sm, dataMap, externalTermMap, e);
@@ -258,14 +261,14 @@ public class SampleManagerOrderHelperBean {
      * next item sequence in the sample to be greater than the sequence of the
      * last item.
      */
-    private void copySampleItems(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+    private void copySampleItems(SampleManager1 sm, IOrderManager1 om, ValidationErrorsList e) throws Exception {
         int i;
         Integer accession;
-        OrderContainerDO oc;
+        IOrderContainerDO oc;
         DictionaryDO dict;
         SampleItemViewDO item;
         ArrayList<SampleItemViewDO> items;
-        ArrayList<OrderContainerDO> ocs;
+        ArrayList<IOrderContainerDO> ocs;
 
         ocs = getContainers(om);
         if (ocs == null)
@@ -284,7 +287,7 @@ public class SampleManagerOrderHelperBean {
          * created and filled
          */
         items = getItems(sm);
-        for (i = 0; i < ocs.size(); i++ ) {
+        for (i = 0; i < ocs.size(); i++) {
             if (items != null && i < items.size()) {
                 item = items.get(i);
             } else {
@@ -295,7 +298,7 @@ public class SampleManagerOrderHelperBean {
                 addItem(sm, item);
             }
 
-            if ( !DataBaseUtil.isSame(item.getItemSequence(), i))
+            if (!DataBaseUtil.isSame(item.getItemSequence(), i))
                 item.setItemSequence(i);
 
             oc = ocs.get(i);
@@ -362,7 +365,7 @@ public class SampleManagerOrderHelperBean {
          * resequence the rest of the sample items
          */
         if (items != null) {
-            for (i = ocs.size(); i < items.size(); i++ )
+            for (i = ocs.size(); i < items.size(); i++)
                 items.get(i).setItemSequence(i);
         }
 
@@ -380,14 +383,14 @@ public class SampleManagerOrderHelperBean {
      * Adds analyses to the sample from the tests specifed in the order. Adds
      * any unresolved prep tests to the returned VO.
      */
-    private SampleTestReturnVO copyTests(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
-        int min;
+    private SampleTestReturnVO copyTests(SampleManager1 sm, IOrderManager1 om, ValidationErrorsList e) throws Exception {
+        String tmName;
         SampleItemViewDO item;
         SampleTestReturnVO ret;
         ArrayList<Integer> anaIds;
-        ArrayList<SampleTestRequestVO> tests;
-        HashMap<Integer, ArrayList<Integer>> anamap;
-        HashMap<Integer, SampleItemViewDO> items;
+        ArrayList<OrderTest> orderTests;
+        HashMap<Integer, ArrayList<Integer>> anaMap;
+        HashMap<String, ArrayList<OrderTest>> orderTestMap;
 
         ret = new SampleTestReturnVO();
         ret.setManager(sm);
@@ -408,76 +411,54 @@ public class SampleManagerOrderHelperBean {
             getSample(sm).setNextItemSequence(1);
         }
 
-        items = new HashMap<Integer, SampleItemViewDO>();
-        min = 0;
-        for (SampleItemViewDO si : getItems(sm)) {
-            items.put(si.getItemSequence(), si);
-            min = Math.min(min, si.getItemSequence());
-        }
-
         /*
          * find out the analytes that need to be marked reportable for each test
          */
-        anamap = null;
+        anaMap = null;
         if (getAnalytes(om) != null) {
-            anamap = new HashMap<Integer, ArrayList<Integer>>();
-            for (OrderTestAnalyteViewDO ota : getAnalytes(om)) {
-                anaIds = anamap.get(ota.getOrderTestId());
+            anaMap = new HashMap<Integer, ArrayList<Integer>>();
+            for (IOrderTestAnalyteViewDO ota : getAnalytes(om)) {
+                anaIds = anaMap.get(ota.getIorderTestId());
                 if (anaIds == null) {
                     anaIds = new ArrayList<Integer>();
-                    anamap.put(ota.getOrderTestId(), anaIds);
+                    anaMap.put(ota.getIorderTestId(), anaIds);
                 }
                 anaIds.add(ota.getAnalyteId());
             }
         }
 
-        tests = new ArrayList<SampleTestRequestVO>();
-        for (OrderTestViewDO ot : getTests(om)) {
-            item = items.get(ot.getItemSequence());
-            if (item == null)
-                item = items.get(min);
+        /*
+         * create a mapping that specifies the sequences where a test should be
+         * added and the analytes to be marked reportable, as per the order
+         */
+        orderTestMap = new HashMap<String, ArrayList<OrderTest>>();
+        for (IOrderTestViewDO ot : getTests(om)) {
+            tmName = getTestMethodName(ot.getTestName(), ot.getMethodName());
+            orderTests = orderTestMap.get(tmName);
+            if (orderTests == null) {
+                orderTests = new ArrayList<OrderTest>();
+                orderTestMap.put(tmName, orderTests);
+            }
 
             anaIds = null;
-            if (anamap != null)
-                anaIds = anamap.get(ot.getId());
-            /*
-             * add the test and mark the analytes specified by the ids,
-             * reportable
-             */
-            tests.add(new SampleTestRequestVO(sm.getSample().getId(),
-                                              item.getId(),
-                                              ot.getTestId(),
-                                              null,
-                                              null,
-                                              null,
-                                              null,
-                                              false,
-                                              anaIds));
+            if (anaMap != null)
+                anaIds = anaMap.get(ot.getId());
+            orderTests.add(new OrderTest(ot.getTestId(), ot.getItemSequence(), null, anaIds));
         }
 
-        ret = sampleManager1.addAnalyses(sm, tests);
-        /*
-         * add the errors found during importing the order to the ones found
-         * while adding tests, because the object returned by the above method
-         * is different from the one created at the start of this method
-         */
-        if (ret.getErrors() != null)
-            for (Exception ex : ret.getErrors().getErrorList())
-                e.add(ex);
-        ret.setErrors(e);
-        return ret;
+        return mergeTests(orderTestMap, sm, true, e);
     }
 
     /**
      * Adds organizations like report-to and bill-to, to sample based on the
      * organizations specified in the order
      */
-    private void copyOrganizations(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+    private void copyOrganizations(SampleManager1 sm, IOrderManager1 om, ValidationErrorsList e) throws Exception {
         Integer accession;
         String attention;
         OrganizationDO repOrg, billOrg, secOrg, shipOrg;
-        OrderOrganizationViewDO orepOrg, obillOrg;
-        ArrayList<OrderOrganizationViewDO> osecOrgs;
+        IOrderOrganizationViewDO orepOrg, obillOrg;
+        ArrayList<IOrderOrganizationViewDO> osecOrgs;
         SamplePrivateWellViewDO well;
 
         /*
@@ -489,13 +470,13 @@ public class SampleManagerOrderHelperBean {
 
         orepOrg = null;
         obillOrg = null;
-        osecOrgs = new ArrayList<OrderOrganizationViewDO>();
+        osecOrgs = new ArrayList<IOrderOrganizationViewDO>();
 
         /*
          * find out if organizations of various types are specified in the order
          */
         if (getOrganizations(om) != null) {
-            for (OrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
+            for (IOrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
                 if (Constants.dictionary().ORG_REPORT_TO.equals(otmpOrg.getTypeId()))
                     orepOrg = otmpOrg;
                 else if (Constants.dictionary().ORG_BILL_TO.equals(otmpOrg.getTypeId()))
@@ -511,7 +492,7 @@ public class SampleManagerOrderHelperBean {
          */
         repOrg = null;
         attention = null;
-        shipOrg = om.getOrder().getOrganization();
+        shipOrg = om.getIorder().getOrganization();
         if (orepOrg != null) {
             if ("Y".equals(orepOrg.getOrganizationIsActive())) {
                 repOrg = createOrganization(orepOrg);
@@ -522,8 +503,8 @@ public class SampleManagerOrderHelperBean {
                                                                               orepOrg.getOrganizationName())));
             }
         } else if ("Y".equals(shipOrg.getIsActive())) {
-            repOrg = om.getOrder().getOrganization();
-            attention = om.getOrder().getOrganizationAttention();
+            repOrg = om.getIorder().getOrganization();
+            attention = om.getIorder().getOrganizationAttention();
         } else {
             e.add(new FormErrorWarning(Messages.get().sample_inactiveOrgWarning(accession,
                                                                                 shipOrg.getName())));
@@ -575,7 +556,7 @@ public class SampleManagerOrderHelperBean {
          * add secondary report-to organizations if any were specified, but only
          * if they are active
          */
-        for (OrderOrganizationViewDO osecOrg : osecOrgs) {
+        for (IOrderOrganizationViewDO osecOrg : osecOrgs) {
             if ( (repOrg == null || !osecOrg.getOrganizationId().equals(repOrg.getId())) &&
                 "Y".equals(osecOrg.getOrganizationIsActive())) {
                 secOrg = createOrganization(osecOrg);
@@ -597,7 +578,7 @@ public class SampleManagerOrderHelperBean {
      * Adds an internal note to the sample from the "sample" note defined in the
      * order.
      */
-    private void copyNotes(SampleManager1 sm, OrderManager1 om) throws Exception {
+    private void copyNotes(SampleManager1 sm, IOrderManager1 om) throws Exception {
         NoteViewDO note;
         SystemUserVO user;
 
@@ -628,23 +609,27 @@ public class SampleManagerOrderHelperBean {
         Datetime collectionDate, collectionTime;
         SampleDO sampleDO;
         String collectionDateString, collectionTimeString;
-        
+
         sampleDO = getSample(sm);
 
         collectionDateString = dataMap.get("sample.collection_date");
         collectionDate = ReportUtil.getDate(collectionDateString);
-        if (collectionDate == null && collectionDateString != null && collectionDateString.length() > 0)
-            e.add(new FormErrorWarning(Messages.get().eorderImport_unparsableCollectionDate(collectionDateString)));
+        if (collectionDate == null && collectionDateString != null &&
+            collectionDateString.length() > 0)
+            e.add(new FormErrorWarning(Messages.get()
+                                               .eorderImport_unparsableCollectionDate(collectionDateString)));
         else
             sampleDO.setCollectionDate(collectionDate);
 
         collectionTimeString = dataMap.get("sample.collection_time");
         collectionTime = ReportUtil.getTime(collectionTimeString);
-        if (collectionTime == null && collectionTimeString != null && collectionTimeString.length() > 0)
-            e.add(new FormErrorWarning(Messages.get().eorderImport_unparsableCollectionTime(collectionTimeString)));
+        if (collectionTime == null && collectionTimeString != null &&
+            collectionTimeString.length() > 0)
+            e.add(new FormErrorWarning(Messages.get()
+                                               .eorderImport_unparsableCollectionTime(collectionTimeString)));
         else
             sampleDO.setCollectionTime(collectionTime);
-        
+
         sampleDO.setClientReference(dataMap.get("sample.client_reference"));
     }
 
@@ -652,21 +637,22 @@ public class SampleManagerOrderHelperBean {
      * Loads patient data in the SampleManager from elements in the electronic
      * order xml.
      */
-    private void copyPatient(SampleManager1 sm, HashMap<String, String> dataMap,
+    private void copyPatient(SampleManager1 sm,
+                             HashMap<String, String> dataMap,
                              HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap,
                              ValidationErrorsList e) throws Exception {
         PatientDO patientDO, queryPatientDO, relatedPatientDO;
         SampleClinicalViewDO scVDO;
         SampleNeonatalViewDO snVDO;
-        
+
         patientDO = null;
         relatedPatientDO = null;
         if (Constants.domain().CLINICAL.equals(getSample(sm).getDomain())) {
             scVDO = getSampleClinical(sm);
             patientDO = scVDO.getPatient();
             loadPatientData(patientDO, "patient", dataMap, externalTermMap, e);
-            
-            queryPatientDO = lookupExistingPatient(patientDO, e);
+
+            queryPatientDO = lookupExistingPatient(patientDO, e, true);
             if (queryPatientDO != null) {
                 scVDO.setPatient(queryPatientDO);
                 scVDO.setPatientId(queryPatientDO.getId());
@@ -676,20 +662,36 @@ public class SampleManagerOrderHelperBean {
             patientDO = snVDO.getPatient();
             relatedPatientDO = snVDO.getNextOfKin();
             loadPatientData(patientDO, "patient", dataMap, externalTermMap, e);
+            
+            queryPatientDO = lookupExistingPatient(patientDO, e, false);
+            if (queryPatientDO != null) {
+                snVDO.setPatient(queryPatientDO);
+                snVDO.setPatientId(queryPatientDO.getId());
+            }
+            
             if (dataMap.get("related_patient.last_name") != null) {
                 loadPatientData(relatedPatientDO, "related_patient", dataMap, externalTermMap, e);
+                queryPatientDO = lookupExistingPatient(patientDO, e, true);
+                if (queryPatientDO != null) {
+                    snVDO.setNextOfKin(queryPatientDO);
+                    snVDO.setNextOfKinId(queryPatientDO.getId());
+                }
+                
                 snVDO.setNextOfKinRelationId(getLocalTermFromCodedElement("related_patient.type",
                                                                           dataMap.get("related_patient.type"),
-                                                                          externalTermMap, Constants.table().DICTIONARY, e));
+                                                                          externalTermMap,
+                                                                          Constants.table().DICTIONARY,
+                                                                          e));
             }
         }
     }
-    
+
     /**
-     * Loads organization data in the SampleManager from elements in the electronic
-     * order xml.
+     * Loads organization data in the SampleManager from elements in the
+     * electronic order xml.
      */
-    private void copyOrganization(SampleManager1 sm, HashMap<String, String> dataMap,
+    private void copyOrganization(SampleManager1 sm,
+                                  HashMap<String, String> dataMap,
                                   HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap,
                                   ValidationErrorsList e) throws Exception {
         Integer orgId;
@@ -698,32 +700,43 @@ public class SampleManagerOrderHelperBean {
 
         orgCode = dataMap.get("organization.name");
         if (orgCode != null) {
-            orgId = getLocalTermFromCodedElement("organization.name", orgCode, externalTermMap,
-                                                 Constants.table().ORGANIZATION, e);
+            orgId = getLocalTermFromCodedElement("organization.name",
+                                                 orgCode,
+                                                 externalTermMap,
+                                                 Constants.table().ORGANIZATION,
+                                                 e);
             if (orgId != null) {
                 try {
                     orgDO = organization.fetchById(orgId);
                     if ("Y".equals(orgDO.getIsActive())) {
-                        addOrganization(sm, createSampleOrganization(orgDO, sm.getNextUID(),
-                                                                     dataMap.get("organization.attention"),
-                                                                     Constants.dictionary().ORG_REPORT_TO));
+                        addOrganization(sm,
+                                        createSampleOrganization(orgDO,
+                                                                 sm.getNextUID(),
+                                                                 dataMap.get("organization.attention"),
+                                                                 Constants.dictionary().ORG_REPORT_TO));
                     } else {
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_inactiveOrgWarning(orgCode,
-                                                                                                  orgDO.getName(),
-                                                                                                  orgDO.getId().toString())));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_inactiveOrgWarning(orgCode,
+                                                                                            orgDO.getName(),
+                                                                                            orgDO.getId()
+                                                                                                 .toString())));
                     }
                 } catch (NotFoundException nfE) {
-                    e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(orgCode, "organization.name")));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .eorderImport_localTermNotFound(orgCode,
+                                                                                       "organization.name")));
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                    e.add(new FormErrorWarning(Messages.get().eorderImport_localTermLookupFailure(orgCode, "organization.name")));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .eorderImport_localTermLookupFailure(orgCode,
+                                                                                            "organization.name")));
                 }
             }
         } else {
             e.add(new FormErrorWarning(Messages.get().eorderImport_organizationNotSupplied()));
         }
     }
-    
+
     /**
      * Loads provider data in the SampleManager from elements in the electronic
      * order xml.
@@ -738,27 +751,35 @@ public class SampleManagerOrderHelperBean {
         ProviderDO providerDO;
         QueryData field;
         SampleClinicalViewDO scVDO;
+        SampleNeonatalViewDO snVDO;
         String firstName, lastName, npi;
 
         found = false;
         npi = dataMap.get("provider.npi");
         lastName = dataMap.get("provider.last_name");
         firstName = dataMap.get("provider.first_name");
+        scVDO = getSampleClinical(sm);
+        snVDO = getSampleNeonatal(sm);
         try {
             if (npi != null && npi.length() > 0) {
                 providers = provider.fetchByLastNameNpiExternalId(npi, 5);
                 if (providers.size() == 1) {
                     providerDO = providers.get(0);
-                    scVDO = getSampleClinical(sm);
-                    scVDO.setProvider(providerDO);
-                    scVDO.setProviderId(providerDO.getId());
+                    if (scVDO != null) {
+                        scVDO.setProvider(providerDO);
+                        scVDO.setProviderId(providerDO.getId());
+                    } else if (snVDO != null) {
+                        snVDO.setProvider(providerDO);
+                        snVDO.setProviderId(providerDO.getId());
+                    } 
                     found = true;
                 } else if (providers.size() > 1) {
                     matchedProviders = new ArrayList<ProviderDO>();
                     for (i = 0; i < providers.size(); i++) {
                         providerDO = providers.get(i);
-                        if (lastName != null && lastName.length() > 0 && lastName.equals(providerDO.getLastName())) {
-                            if ((firstName != null && firstName.length() > 0 && firstName.equals(providerDO.getFirstName())) ||
+                        if (lastName != null && lastName.length() > 0 &&
+                            lastName.equals(providerDO.getLastName())) {
+                            if ( (firstName != null && firstName.length() > 0 && firstName.equals(providerDO.getFirstName())) ||
                                 firstName == null || firstName.length() == 0) {
                                 matchedProviders.add(providerDO);
                             }
@@ -767,18 +788,24 @@ public class SampleManagerOrderHelperBean {
                         }
                     }
                     if (matchedProviders.size() > 1) {
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(npi, "provider.npi")));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_multipleLocalTerms(npi,
+                                                                                            "provider.npi")));
                         found = true;
                     } else if (matchedProviders.size() == 1) {
                         providerDO = matchedProviders.get(0);
-                        scVDO = getSampleClinical(sm);
-                        scVDO.setProvider(providerDO);
-                        scVDO.setProviderId(providerDO.getId());
+                        if (scVDO != null) {
+                            scVDO.setProvider(providerDO);
+                            scVDO.setProviderId(providerDO.getId());
+                        } else if (snVDO != null) {
+                            snVDO.setProvider(providerDO);
+                            snVDO.setProviderId(providerDO.getId());
+                        }
                         found = true;
                     }
                 }
             }
-                
+
             if (!found) {
                 fields = new ArrayList<QueryData>();
 
@@ -789,7 +816,7 @@ public class SampleManagerOrderHelperBean {
                     field.setQuery(lastName);
                     fields.add(field);
                 }
-                
+
                 if (firstName != null && firstName.length() > 0) {
                     field = new QueryData();
                     field.setKey(ProviderMeta.getFirstName());
@@ -802,42 +829,64 @@ public class SampleManagerOrderHelperBean {
                     iflnVOs = provider.query(fields, 0, 5);
                     if (iflnVOs.size() > 1) {
                         if (lastName != null)
-                            e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(lastName, "provider.last_name")));
+                            e.add(new FormErrorWarning(Messages.get()
+                                                               .eorderImport_multipleLocalTerms(lastName,
+                                                                                                "provider.last_name")));
                         if (firstName != null)
-                            e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(firstName, "provider.first_name")));
+                            e.add(new FormErrorWarning(Messages.get()
+                                                               .eorderImport_multipleLocalTerms(firstName,
+                                                                                                "provider.first_name")));
                     } else {
-                        scVDO = getSampleClinical(sm);
                         providerDO = new ProviderDO(iflnVOs.get(0).getId(), iflnVOs.get(0).getLastName(),
-                                                    iflnVOs.get(0).getFirstName(), null, null, null);
-                        scVDO.setProvider(providerDO);
-                        scVDO.setProviderId(providerDO.getId());
+                                                    iflnVOs.get(0).getFirstName(), null, null, null, null, null);
+                        if (scVDO != null) {
+                            scVDO.setProvider(providerDO);
+                            scVDO.setProviderId(providerDO.getId());
+                        } else if (snVDO != null) {
+                            snVDO.setProvider(providerDO);
+                            snVDO.setProviderId(providerDO.getId());
+                        }
                     }
                 } catch (NotFoundException nfE) {
-                    e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(npi, "provider.npi")));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .eorderImport_localTermNotFound(npi,
+                                                                                       "provider.npi")));
                     if (lastName != null)
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(lastName, "provider.last_name")));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_localTermNotFound(lastName,
+                                                                                           "provider.last_name")));
                     if (firstName != null)
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(firstName, "provider.first_name")));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_localTermNotFound(firstName,
+                                                                                           "provider.first_name")));
                 } catch (Exception anyE) {
                     log.log(Level.SEVERE, anyE.getMessage(), anyE);
                     if (lastName != null)
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_localTermLookupFailure(lastName, "provider.last_name")));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_localTermLookupFailure(lastName,
+                                                                                                "provider.last_name")));
                     if (firstName != null)
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_localTermLookupFailure(firstName, "provider.first_name")));
-                }                    
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_localTermLookupFailure(firstName,
+                                                                                                "provider.first_name")));
+                }
             }
         } catch (Exception anyE) {
             log.log(Level.SEVERE, anyE.getMessage(), anyE);
-            e.add(new FormErrorWarning(Messages.get().eorderImport_localTermLookupFailure(npi, "provider.npi")));
+            e.add(new FormErrorWarning(Messages.get()
+                                               .eorderImport_localTermLookupFailure(npi,
+                                                                                    "provider.npi")));
         }
     }
-    
+
     /**
      * Loads test data in the SampleManager from elements in the electronic
      * order xml.
      */
-    private SampleTestReturnVO copyTests(SampleTestReturnVO ret, HashMap<String, String> dataMap,
-                                         HashMap<String, String> testMap, HashMap<String, ArrayList<OrderResult>> resultMap,
+    private SampleTestReturnVO copyTests(SampleTestReturnVO ret,
+                                         HashMap<String, String> dataMap,
+                                         HashMap<String, String> testMap,
+                                         HashMap<String, ArrayList<OrderResult>> resultMap,
                                          HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap) throws Exception {
         int i, seq;
         AnalysisViewDO aVDO;
@@ -853,18 +902,22 @@ public class SampleManagerOrderHelperBean {
         SampleManager1 sm;
         String placerOrderNum, sampleSourceKey, sampleSourceOther, sampleTypeKey, testKey;
         ValidationErrorsList e;
-        
+
         sm = ret.getManager();
         e = ret.getErrors();
-        
+
         sampleTypeKey = dataMap.get("sample_type");
-        sampleTypeId = getLocalTermFromCodedElement("sample_type", sampleTypeKey,
-                                                    externalTermMap, Constants.table().DICTIONARY, e);
+        sampleTypeId = getLocalTermFromCodedElement("sample_type",
+                                                    sampleTypeKey,
+                                                    externalTermMap,
+                                                    Constants.table().DICTIONARY,
+                                                    e);
         siVDO = null;
         if (sampleTypeId != null && getItems(sm) != null) {
             for (i = 0; i < getItems(sm).size(); i++) {
                 tempSiVDO = getItems(sm).get(i);
-                if (tempSiVDO.getTypeOfSampleId() != null && tempSiVDO.getTypeOfSampleId().equals(sampleTypeId)) {
+                if (tempSiVDO.getTypeOfSampleId() != null &&
+                    tempSiVDO.getTypeOfSampleId().equals(sampleTypeId)) {
                     siVDO = tempSiVDO;
                     break;
                 }
@@ -880,27 +933,32 @@ public class SampleManagerOrderHelperBean {
                 siVDO = new SampleItemViewDO();
                 siVDO.setId(sm.getNextUID());
                 siVDO.setItemSequence(seq);
-    
+
                 if (sampleTypeId != null) {
                     try {
                         dictDO = dictionaryCache.getById(sampleTypeId);
                         siVDO.setTypeOfSampleId(dictDO.getId());
                         siVDO.setTypeOfSample(dictDO.getEntry());
                     } catch (NotFoundException nfE) {
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(sampleTypeKey)));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_dictionaryNotFound(sampleTypeKey)));
                     } catch (Exception anyE) {
                         log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(sampleTypeKey)));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_dictionaryLookupFailure(sampleTypeKey)));
                     }
                 }
-    
+
                 addItem(sm, siVDO);
             }
         }
-        
+
         sampleSourceKey = dataMap.get("sample_source");
-        sampleSourceId = getLocalTermFromCodedElement("sample_source", sampleSourceKey,
-                                                      externalTermMap, Constants.table().DICTIONARY, e);
+        sampleSourceId = getLocalTermFromCodedElement("sample_source",
+                                                      sampleSourceKey,
+                                                      externalTermMap,
+                                                      Constants.table().DICTIONARY,
+                                                      e);
         if (sampleSourceId != null) {
             try {
                 dictDO = dictionaryCache.getById(sampleSourceId);
@@ -908,24 +966,30 @@ public class SampleManagerOrderHelperBean {
                     siVDO.setSourceOfSampleId(dictDO.getId());
                     siVDO.setSourceOfSample(dictDO.getEntry());
                 } else if (!siVDO.getSourceOfSampleId().equals(sampleSourceId)) {
-                    e.add(new FormErrorWarning(Messages.get().eorderImport_sourceOfSampleMismatch(siVDO.getSourceOfSample(), dictDO.getEntry())));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .eorderImport_sourceOfSampleMismatch(siVDO.getSourceOfSample(),
+                                                                                            dictDO.getEntry())));
                 }
             } catch (NotFoundException nfE) {
-                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(sampleSourceKey)));
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .eorderImport_dictionaryNotFound(sampleSourceKey)));
             } catch (Exception anyE) {
                 log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(sampleSourceKey)));
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .eorderImport_dictionaryLookupFailure(sampleSourceKey)));
             }
         }
-        
+
         sampleSourceOther = dataMap.get("sample_source_other");
         if (sampleSourceOther != null && sampleSourceOther.length() > 0) {
             if (siVDO.getSourceOther() == null)
                 siVDO.setSourceOther(sampleSourceOther);
             else if (!siVDO.getSourceOther().equals(sampleSourceOther))
-                e.add(new FormErrorWarning(Messages.get().eorderImport_sourceOtherMismatch(siVDO.getSourceOther(), sampleSourceOther)));
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .eorderImport_sourceOtherMismatch(siVDO.getSourceOther(),
+                                                                                     sampleSourceOther)));
         }
-        
+
         testAnalysisIndexMap = new HashMap<Integer, Integer>();
         if (getAnalyses(sm) != null) {
             for (i = 0; i < getAnalyses(sm).size(); i++) {
@@ -936,7 +1000,7 @@ public class SampleManagerOrderHelperBean {
                     testAnalysisIndexMap.put(aVDO.getTestId(), i);
             }
         }
-        
+
         tests = new ArrayList<SampleTestRequestVO>();
         testCodeIdMap = new HashMap<String, ArrayList<Integer>>();
         orderTestCodes = testMap.keySet().iterator();
@@ -948,8 +1012,11 @@ public class SampleManagerOrderHelperBean {
                 testCodeIdMap.put(placerOrderNum, testIds);
             }
             testKey = testMap.get(placerOrderNum);
-            panelId = getLocalTermFromCodedElement("panel", testKey, externalTermMap,
-                                                   Constants.table().PANEL, e);
+            panelId = getLocalTermFromCodedElement("panel",
+                                                   testKey,
+                                                   externalTermMap,
+                                                   Constants.table().PANEL,
+                                                   e);
             if (panelId != null) {
                 panelTestVOs = panel.fetchTestIdsFromPanel(panelId);
                 for (IdVO ptVO : panelTestVOs) {
@@ -966,8 +1033,11 @@ public class SampleManagerOrderHelperBean {
                                                           null));
                 }
             } else {
-                testId = getLocalTermFromCodedElement("test", testKey, externalTermMap,
-                                                      Constants.table().TEST, e);
+                testId = getLocalTermFromCodedElement("test",
+                                                      testKey,
+                                                      externalTermMap,
+                                                      Constants.table().TEST,
+                                                      e);
                 if (testId != null && !testAnalysisIndexMap.containsKey(testId)) {
                     testIds.add(testId);
                     tests.add(new SampleTestRequestVO(sm.getSample().getId(),
@@ -982,7 +1052,7 @@ public class SampleManagerOrderHelperBean {
                 }
             }
         }
-        
+
         ret = sampleManager1.addAnalyses(sm, tests);
         /*
          * add the errors found during importing the order to the ones found
@@ -995,10 +1065,10 @@ public class SampleManagerOrderHelperBean {
         ret.setErrors(e);
 
         copyResults(ret, siVDO, testCodeIdMap, resultMap, externalTermMap);
-        
+
         return ret;
     }
-    
+
     /**
      * Loads result data in the SampleManager from elements in the electronic
      * order xml.
@@ -1028,10 +1098,10 @@ public class SampleManagerOrderHelperBean {
         SystemUserVO userVO;
         TestManager tMan;
         ValidationErrorsList e;
-        
+
         sm = ret.getManager();
         e = ret.getErrors();
-        
+
         analysisIds = new HashSet<Integer>();
         testAnalysisMap = new HashMap<Integer, AnalysisViewDO>();
         if (getAnalyses(sm) != null) {
@@ -1083,7 +1153,8 @@ public class SampleManagerOrderHelperBean {
                             tMan = testManager.fetchById(testId);
                             tManMap.put(testId, tMan);
                         } catch (Exception anyE) {
-                            e.add(new FormErrorWarning(Messages.get().eorderImport_errorLoadingResultFormatter(testId.toString())));
+                            e.add(new FormErrorWarning(Messages.get()
+                                                               .eorderImport_errorLoadingResultFormatter(testId.toString())));
                             continue;
                         }
                     }
@@ -1094,7 +1165,8 @@ public class SampleManagerOrderHelperBean {
                             noteVDO = new NoteViewDO();
                             noteVDO.setId(sm.getNextUID());
                             noteVDO.setReferenceId(aVDO.getId());
-                            noteVDO.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                            noteVDO.setTimestamp(Datetime.getInstance(Datetime.YEAR,
+                                                                      Datetime.SECOND));
                             noteVDO.setIsExternal("N");
                             userVO = userCache.getSystemUser();
                             noteVDO.setSystemUserId(userVO.getId());
@@ -1103,12 +1175,16 @@ public class SampleManagerOrderHelperBean {
                             noteVDO.setText(orderResult.result);
                             addAnalysisInternalNote(sm, noteVDO);
                         } else {
-                            testAnalyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
+                            testAnalyteId = getLocalTermFromCodedElement("analyte",
+                                                                         orderResult.analyte,
                                                                          externalTermMap,
-                                                                         Constants.table().TEST_ANALYTE, e);
-                            analyteId = getLocalTermFromCodedElement("analyte", orderResult.analyte,
+                                                                         Constants.table().TEST_ANALYTE,
+                                                                         e);
+                            analyteId = getLocalTermFromCodedElement("analyte",
+                                                                     orderResult.analyte,
                                                                      externalTermMap,
-                                                                     Constants.table().ANALYTE, e);
+                                                                     Constants.table().ANALYTE,
+                                                                     e);
                             if (testAnalyteId != null || analyteId != null) {
                                 resultIndex = null;
                                 if (testAnalyteId != null) {
@@ -1125,33 +1201,48 @@ public class SampleManagerOrderHelperBean {
                                         dictId = getLocalTermFromCodedElement("result",
                                                                               orderResult.result,
                                                                               externalTermMap,
-                                                                              Constants.table().DICTIONARY, e);
+                                                                              Constants.table().DICTIONARY,
+                                                                              e);
                                         if (dictId != null) {
                                             dictDO = null;
                                             try {
                                                 dictDO = dictionaryCache.getById(dictId);
                                                 if (dictDO != null)
-                                                    ResultHelper.formatValue(rVDO, dictDO.getEntry(), aVDO.getUnitOfMeasureId(), rf);
+                                                    ResultHelper.formatValue(rVDO,
+                                                                             dictDO.getEntry(),
+                                                                             aVDO.getUnitOfMeasureId(),
+                                                                             rf);
                                             } catch (NotFoundException nfE) {
-                                                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryNotFound(orderResult.result)));
+                                                e.add(new FormErrorWarning(Messages.get()
+                                                                                   .eorderImport_dictionaryNotFound(orderResult.result)));
                                             } catch (ParseException parE) {
-                                                e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(dictDO.getEntry(),
-                                                                                                                    tMan.getTest().getName(),
-                                                                                                                    tMan.getTest().getMethodName(),
-                                                                                                                    rVDO.getAnalyte())));
+                                                e.add(new FormErrorWarning(Messages.get()
+                                                                                   .eorderImport_invalidValue(dictDO.getEntry(),
+                                                                                                              tMan.getTest()
+                                                                                                                  .getName(),
+                                                                                                              tMan.getTest()
+                                                                                                                  .getMethodName(),
+                                                                                                              rVDO.getAnalyte())));
                                             } catch (Exception anyE) {
                                                 log.log(Level.SEVERE, anyE.getMessage(), anyE);
-                                                e.add(new FormErrorWarning(Messages.get().eorderImport_dictionaryLookupFailure(orderResult.result)));
+                                                e.add(new FormErrorWarning(Messages.get()
+                                                                                   .eorderImport_dictionaryLookupFailure(orderResult.result)));
                                             }
                                         }
                                     } else {
                                         try {
-                                            ResultHelper.formatValue(rVDO, orderResult.result, aVDO.getUnitOfMeasureId(), rf);
+                                            ResultHelper.formatValue(rVDO,
+                                                                     orderResult.result,
+                                                                     aVDO.getUnitOfMeasureId(),
+                                                                     rf);
                                         } catch (ParseException parE) {
-                                            e.add(new FormErrorWarning(Messages.get().eorderImport_invalidValue(orderResult.result,
-                                                                                                                tMan.getTest().getName(),
-                                                                                                                tMan.getTest().getMethodName(),
-                                                                                                                rVDO.getAnalyte())));
+                                            e.add(new FormErrorWarning(Messages.get()
+                                                                               .eorderImport_invalidValue(orderResult.result,
+                                                                                                          tMan.getTest()
+                                                                                                              .getName(),
+                                                                                                          tMan.getTest()
+                                                                                                              .getMethodName(),
+                                                                                                          rVDO.getAnalyte())));
                                         } catch (Exception anyE) {
                                             log.log(Level.SEVERE, anyE.getMessage(), anyE);
                                             e.add(new FormErrorWarning(anyE.getMessage()));
@@ -1165,12 +1256,12 @@ public class SampleManagerOrderHelperBean {
             }
         }
     }
-    
+
     /**
      * Returns a newly created OrganizationDO, filled from the
      * OrderOrganizationViewDO
      */
-    private OrganizationDO createOrganization(OrderOrganizationViewDO org) {
+    private OrganizationDO createOrganization(IOrderOrganizationViewDO org) {
         OrganizationDO data;
         AddressDO addr;
 
@@ -1217,114 +1308,148 @@ public class SampleManagerOrderHelperBean {
     }
 
     /**
-     * Loads the specified PatientDO object with data from the specified xml element
+     * Loads the specified PatientDO object with data from the specified xml
+     * element
      */
-    private void loadPatientData(PatientDO patDO, String prefix, HashMap<String, String> dataMap,
+    private void loadPatientData(PatientDO patDO,
+                                 String prefix,
+                                 HashMap<String, String> dataMap,
                                  HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap,
                                  ValidationErrorsList e) {
         Datetime birthDate, birthTime;
         String birthDateString, birthTimeString;
 
-        patDO.setLastName(dataMap.get(prefix+".last_name"));
-        patDO.setFirstName(dataMap.get(prefix+".first_name"));
-        patDO.setMiddleName(dataMap.get(prefix+".maiden_name"));
-        patDO.setNationalId(dataMap.get(prefix+".nid"));
-        
-        loadAddressData(patDO.getAddress(), prefix+".address", dataMap);
+        patDO.setLastName(dataMap.get(prefix + ".last_name"));
+        patDO.setFirstName(dataMap.get(prefix + ".first_name"));
+        patDO.setMiddleName(dataMap.get(prefix + ".maiden_name"));
+        patDO.setNationalId(dataMap.get(prefix + ".nid"));
 
-        birthDateString = dataMap.get(prefix+".birth_date");
+        loadAddressData(patDO.getAddress(), prefix + ".address", dataMap);
+
+        birthDateString = dataMap.get(prefix + ".birth_date");
         birthDate = ReportUtil.getDate(birthDateString);
         if (birthDate == null && birthDateString != null && birthDateString.length() > 0)
-            e.add(new FormErrorWarning(Messages.get().eorderImport_unparsableBirthDate(birthDateString)));
+            e.add(new FormErrorWarning(Messages.get()
+                                               .eorderImport_unparsableBirthDate(birthDateString)));
         else
             patDO.setBirthDate(birthDate);
 
-        birthTimeString = dataMap.get(prefix+".birth_time");
+        birthTimeString = dataMap.get(prefix + ".birth_time");
         birthTime = ReportUtil.getTime(birthTimeString);
         if (birthTime == null && birthTimeString != null && birthTimeString.length() > 0)
-            e.add(new FormErrorWarning(Messages.get().eorderImport_unparsableBirthTime(birthTimeString)));
+            e.add(new FormErrorWarning(Messages.get()
+                                               .eorderImport_unparsableBirthTime(birthTimeString)));
         else
             patDO.setBirthTime(birthTime);
-        
-        patDO.setGenderId(getLocalTermFromCodedElement(prefix+".gender", dataMap.get(prefix+".gender"),
-                                                       externalTermMap, Constants.table().DICTIONARY, e));
-        
-        patDO.setRaceId(getLocalTermFromCodedElement(prefix+".race", dataMap.get(prefix+".race"),
-                                                     externalTermMap, Constants.table().DICTIONARY, e));
 
-        patDO.setEthnicityId(getLocalTermFromCodedElement(prefix+".ethnicity", dataMap.get(prefix+".ethnicity"),
-                                                          externalTermMap, Constants.table().DICTIONARY, e));
+        patDO.setGenderId(getLocalTermFromCodedElement(prefix + ".gender",
+                                                       dataMap.get(prefix + ".gender"),
+                                                       externalTermMap,
+                                                       Constants.table().DICTIONARY,
+                                                       e));
+
+        patDO.setRaceId(getLocalTermFromCodedElement(prefix + ".race",
+                                                     dataMap.get(prefix + ".race"),
+                                                     externalTermMap,
+                                                     Constants.table().DICTIONARY,
+                                                     e));
+
+        patDO.setEthnicityId(getLocalTermFromCodedElement(prefix + ".ethnicity",
+                                                          dataMap.get(prefix + ".ethnicity"),
+                                                          externalTermMap,
+                                                          Constants.table().DICTIONARY,
+                                                          e));
     }
-    
+
     /**
-     * Loads the specified PatientDO object with data from the specified xml element
+     * Loads the specified PatientDO object with data from the specified xml
+     * element
      */
     private void loadAddressData(AddressDO addDO, String prefix, HashMap<String, String> dataMap) {
-        addDO.setMultipleUnit(dataMap.get(prefix+".multiple_unit"));
-        addDO.setStreetAddress(dataMap.get(prefix+".street_address"));
-        addDO.setCity(dataMap.get(prefix+".city"));
-        addDO.setState(dataMap.get(prefix+".state"));
-        addDO.setZipCode(dataMap.get(prefix+".zip_code"));
-        addDO.setWorkPhone(dataMap.get(prefix+".work_phone"));
-        addDO.setHomePhone(dataMap.get(prefix+".home_phone"));
-        addDO.setCellPhone(dataMap.get(prefix+".cell_phone"));
-        addDO.setFaxPhone(dataMap.get(prefix+".fax_phone"));
-        addDO.setEmail(dataMap.get(prefix+".email"));
-        addDO.setCountry(dataMap.get(prefix+".country"));
+        addDO.setMultipleUnit(dataMap.get(prefix + ".multiple_unit"));
+        addDO.setStreetAddress(dataMap.get(prefix + ".street_address"));
+        addDO.setCity(dataMap.get(prefix + ".city"));
+        addDO.setState(dataMap.get(prefix + ".state"));
+        addDO.setZipCode(dataMap.get(prefix + ".zip_code"));
+        addDO.setWorkPhone(dataMap.get(prefix + ".work_phone"));
+        addDO.setHomePhone(dataMap.get(prefix + ".home_phone"));
+        addDO.setCellPhone(dataMap.get(prefix + ".cell_phone"));
+        addDO.setFaxPhone(dataMap.get(prefix + ".fax_phone"));
+        addDO.setEmail(dataMap.get(prefix + ".email"));
+        addDO.setCountry(dataMap.get(prefix + ".country"));
     }
-    
-    private void loadDataMapFromXml(Node node, HashMap<String, String> dataMap,
-                                    HashMap<String, String> testMap, HashMap<String, ArrayList<OrderResult>> resultMap,
+
+    private void loadDataMapFromXml(Node node,
+                                    HashMap<String, String> dataMap,
+                                    HashMap<String, String> testMap,
+                                    HashMap<String, ArrayList<OrderResult>> resultMap,
                                     HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap) {
         int i, j, k;
         ArrayList<OrderResult> results;
         Node childNode, childNode2, identNode, obvNode, parentNode, parentNode2, valueNode;
         NodeList childNodes, resultNodes, noteNodes, noteTextNodes;
         String termKey, termKey2, placerOrderNum, noteText;
-        
+
         childNodes = node.getChildNodes();
         for (i = 0; i < childNodes.getLength(); i++) {
             childNode = childNodes.item(i);
-            if (childNode.hasChildNodes() && Node.ELEMENT_NODE == childNode.getFirstChild().getNodeType()) {
+            if (childNode.hasChildNodes() &&
+                Node.ELEMENT_NODE == childNode.getFirstChild().getNodeType()) {
                 if ("test".equals(childNode.getNodeName())) {
                     placerOrderNum = XMLUtil.getNodeText((Element)childNode, "placer_order_num");
                     if (placerOrderNum != null) {
                         childNode2 = ((Element)childNode).getElementsByTagName("name").item(0);
-                        termKey = "extTerm:"+XMLUtil.getNodeText((Element)childNode2, "term");
-                        if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2, "term")))
-                            externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"), new ArrayList<ExchangeExternalTermViewDO>());
-                        if (((Element)childNode2).getElementsByTagName("coding_system") != null &&
+                        termKey = "extTerm:" + XMLUtil.getNodeText((Element)childNode2, "term");
+                        if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
+                                                                             "term")))
+                            externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"),
+                                                new ArrayList<ExchangeExternalTermViewDO>());
+                        if ( ((Element)childNode2).getElementsByTagName("coding_system") != null &&
                             ((Element)childNode2).getElementsByTagName("coding_system").getLength() > 0 &&
                             XMLUtil.getNodeText((Element)childNode2, "coding_system") != null)
-                            termKey += "extCS:"+XMLUtil.getNodeText((Element)childNode2, "coding_system");
+                            termKey += "extCS:" +
+                                       XMLUtil.getNodeText((Element)childNode2, "coding_system");
                         testMap.put(placerOrderNum, termKey);
-                        
-                        if (((Element)childNode).getElementsByTagName("sample_type") != null && ((Element)childNode).getElementsByTagName("sample_type").getLength() > 0) {
-                            childNode2 = ((Element)childNode).getElementsByTagName("sample_type").item(0);
-                            termKey = "extTerm:"+XMLUtil.getNodeText((Element)childNode2, "term");
-                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2, "term")))
-                                externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"), new ArrayList<ExchangeExternalTermViewDO>());
-                            if (((Element)childNode2).getElementsByTagName("coding_system") != null &&
-                                ((Element)childNode2).getElementsByTagName("coding_system").getLength() > 0 &&
+
+                        if ( ((Element)childNode).getElementsByTagName("sample_type") != null &&
+                            ((Element)childNode).getElementsByTagName("sample_type").getLength() > 0) {
+                            childNode2 = ((Element)childNode).getElementsByTagName("sample_type")
+                                                             .item(0);
+                            termKey = "extTerm:" + XMLUtil.getNodeText((Element)childNode2, "term");
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
+                                                                                 "term")))
+                                externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"),
+                                                    new ArrayList<ExchangeExternalTermViewDO>());
+                            if ( ((Element)childNode2).getElementsByTagName("coding_system") != null &&
+                                ((Element)childNode2).getElementsByTagName("coding_system")
+                                                     .getLength() > 0 &&
                                 XMLUtil.getNodeText((Element)childNode2, "coding_system") != null)
-                                termKey += "extCS:"+XMLUtil.getNodeText((Element)childNode2, "coding_system");
+                                termKey += "extCS:" +
+                                           XMLUtil.getNodeText((Element)childNode2, "coding_system");
                             dataMap.put("sample_type", termKey);
                         }
-                        
-                        if (((Element)childNode).getElementsByTagName("sample_source") != null && ((Element)childNode).getElementsByTagName("sample_source").getLength() > 0) {
-                            childNode2 = ((Element)childNode).getElementsByTagName("sample_source").item(0);
-                            termKey = "extTerm:"+XMLUtil.getNodeText((Element)childNode2, "term");
-                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2, "term")))
-                                externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"), new ArrayList<ExchangeExternalTermViewDO>());
-                            if (((Element)childNode2).getElementsByTagName("coding_system") != null &&
-                                ((Element)childNode2).getElementsByTagName("coding_system").getLength() > 0 &&
+
+                        if ( ((Element)childNode).getElementsByTagName("sample_source") != null &&
+                            ((Element)childNode).getElementsByTagName("sample_source").getLength() > 0) {
+                            childNode2 = ((Element)childNode).getElementsByTagName("sample_source")
+                                                             .item(0);
+                            termKey = "extTerm:" + XMLUtil.getNodeText((Element)childNode2, "term");
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)childNode2,
+                                                                                 "term")))
+                                externalTermMap.put(XMLUtil.getNodeText((Element)childNode2, "term"),
+                                                    new ArrayList<ExchangeExternalTermViewDO>());
+                            if ( ((Element)childNode2).getElementsByTagName("coding_system") != null &&
+                                ((Element)childNode2).getElementsByTagName("coding_system")
+                                                     .getLength() > 0 &&
                                 XMLUtil.getNodeText((Element)childNode2, "coding_system") != null)
-                                termKey += "extCS:"+XMLUtil.getNodeText((Element)childNode2, "coding_system");
+                                termKey += "extCS:" +
+                                           XMLUtil.getNodeText((Element)childNode2, "coding_system");
                             dataMap.put("sample_source", termKey);
                         }
-                        
-                        dataMap.put("source_other", XMLUtil.getNodeText((Element)childNode, "source_other"));
-                        
+
+                        dataMap.put("source_other", XMLUtil.getNodeText((Element)childNode,
+                                                                        "source_other"));
+
                         results = resultMap.get(placerOrderNum);
                         if (results == null) {
                             results = new ArrayList<OrderResult>();
@@ -1333,32 +1458,47 @@ public class SampleManagerOrderHelperBean {
                         resultNodes = ((Element)childNode).getElementsByTagName("result");
                         for (j = 0; j < resultNodes.getLength(); j++) {
                             childNode2 = resultNodes.item(j);
-                            obvNode = ((Element)childNode2).getElementsByTagName("observation").item(0);
+                            obvNode = ((Element)childNode2).getElementsByTagName("observation")
+                                                           .item(0);
 
-                            identNode = ((Element)obvNode).getElementsByTagName("identifier").item(0);
-                            termKey = "extTerm:"+XMLUtil.getNodeText((Element)identNode, "term");
-                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)identNode, "term")))
-                                externalTermMap.put(XMLUtil.getNodeText((Element)identNode, "term"), new ArrayList<ExchangeExternalTermViewDO>());
-                            if (((Element)identNode).getElementsByTagName("coding_system") != null &&
-                                ((Element)identNode).getElementsByTagName("coding_system").getLength() > 0 &&
+                            identNode = ((Element)obvNode).getElementsByTagName("identifier")
+                                                          .item(0);
+                            termKey = "extTerm:" + XMLUtil.getNodeText((Element)identNode, "term");
+                            if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)identNode,
+                                                                                 "term")))
+                                externalTermMap.put(XMLUtil.getNodeText((Element)identNode, "term"),
+                                                    new ArrayList<ExchangeExternalTermViewDO>());
+                            if ( ((Element)identNode).getElementsByTagName("coding_system") != null &&
+                                ((Element)identNode).getElementsByTagName("coding_system")
+                                                    .getLength() > 0 &&
                                 XMLUtil.getNodeText((Element)identNode, "coding_system") != null)
-                                termKey += "extCS:"+XMLUtil.getNodeText((Element)identNode, "coding_system");
-                            
+                                termKey += "extCS:" +
+                                           XMLUtil.getNodeText((Element)identNode, "coding_system");
+
                             valueNode = ((Element)obvNode).getElementsByTagName("value").item(0);
                             if ("CE".equals(XMLUtil.getNodeText((Element)obvNode, "value_type"))) {
-                                termKey2 = "extTerm:"+XMLUtil.getNodeText((Element)valueNode, "term");
-                                if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)valueNode, "term")))
-                                    externalTermMap.put(XMLUtil.getNodeText((Element)valueNode, "term"), new ArrayList<ExchangeExternalTermViewDO>());
-                                if (((Element)valueNode).getElementsByTagName("coding_system") != null &&
-                                    ((Element)valueNode).getElementsByTagName("coding_system").getLength() > 0 &&
+                                termKey2 = "extTerm:" +
+                                           XMLUtil.getNodeText((Element)valueNode, "term");
+                                if (!externalTermMap.containsKey(XMLUtil.getNodeText((Element)valueNode,
+                                                                                     "term")))
+                                    externalTermMap.put(XMLUtil.getNodeText((Element)valueNode,
+                                                                            "term"),
+                                                        new ArrayList<ExchangeExternalTermViewDO>());
+                                if ( ((Element)valueNode).getElementsByTagName("coding_system") != null &&
+                                    ((Element)valueNode).getElementsByTagName("coding_system")
+                                                        .getLength() > 0 &&
                                     XMLUtil.getNodeText((Element)valueNode, "coding_system") != null)
-                                    termKey2 += "extCS:"+XMLUtil.getNodeText((Element)valueNode, "coding_system");
+                                    termKey2 += "extCS:" +
+                                                XMLUtil.getNodeText((Element)valueNode,
+                                                                    "coding_system");
                                 results.add(new OrderResult(termKey, termKey2));
                             } else {
-                                results.add(new OrderResult(termKey, XMLUtil.getNodeText((Element)valueNode, "term")));
+                                results.add(new OrderResult(termKey,
+                                                            XMLUtil.getNodeText((Element)valueNode,
+                                                                                "term")));
                             }
                         }
-                        
+
                         noteText = "";
                         noteNodes = ((Element)childNode).getElementsByTagName("note");
                         if (noteNodes != null && noteNodes.getLength() > 0) {
@@ -1371,74 +1511,99 @@ public class SampleManagerOrderHelperBean {
                                     for (k = 0; k < noteTextNodes.getLength(); k++) {
                                         if (noteText.length() > 0)
                                             noteText += "\n";
-                                        noteText += noteTextNodes.item(k).getFirstChild().getNodeValue();
+                                        noteText += noteTextNodes.item(k)
+                                                                 .getFirstChild()
+                                                                 .getNodeValue();
                                     }
                                 }
                             }
                             results.add(new OrderResult("note", noteText));
                         }
-                    }                        
+                    }
                 } else {
                     loadDataMapFromXml(childNode, dataMap, testMap, resultMap, externalTermMap);
                 }
             } else {
-                if (childNode.getFirstChild() == null || childNode.getFirstChild().getNodeValue() == null)
+                if (childNode.getFirstChild() == null ||
+                    childNode.getFirstChild().getNodeValue() == null)
                     continue;
-                if ("organization".equals(node.getNodeName()) && "name".equals(childNode.getNodeName()) && childNode.getFirstChild() != null) {
-                    dataMap.put(node.getNodeName()+"."+childNode.getNodeName(), "extTerm:"+childNode.getFirstChild().getNodeValue().trim());
-                    if (!externalTermMap.containsKey(childNode.getFirstChild().getNodeValue().trim()))
-                        externalTermMap.put(childNode.getFirstChild().getNodeValue().trim(), new ArrayList<ExchangeExternalTermViewDO>());
+                if ("organization".equals(node.getNodeName()) &&
+                    "name".equals(childNode.getNodeName()) && childNode.getFirstChild() != null) {
+                    dataMap.put(node.getNodeName() + "." + childNode.getNodeName(),
+                                "extTerm:" + childNode.getFirstChild().getNodeValue().trim());
+                    if (!externalTermMap.containsKey(childNode.getFirstChild()
+                                                              .getNodeValue()
+                                                              .trim()))
+                        externalTermMap.put(childNode.getFirstChild().getNodeValue().trim(),
+                                            new ArrayList<ExchangeExternalTermViewDO>());
                 } else if ("patient".equals(node.getNodeName())) {
                     parentNode = node.getParentNode();
                     if (parentNode != null && "related_patient".equals(parentNode.getNodeName()))
-                        dataMap.put(parentNode.getNodeName()+"."+node.getNodeName()+"."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                        dataMap.put(parentNode.getNodeName() + "." + node.getNodeName() + "." +
+                                    childNode.getNodeName(), childNode.getFirstChild()
+                                                                      .getNodeValue()
+                                                                      .trim());
                     else
-                        dataMap.put(node.getNodeName()+"."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                        dataMap.put(node.getNodeName() + "." + childNode.getNodeName(),
+                                    childNode.getFirstChild().getNodeValue().trim());
                 } else if ("address".equals(node.getNodeName())) {
                     parentNode = node.getParentNode();
                     if (parentNode != null) {
                         if ("patient".equals(parentNode.getNodeName())) {
                             parentNode2 = parentNode.getParentNode();
-                            if (parentNode2 != null && "related_patient".equals(parentNode2.getNodeName())) {
-                                dataMap.put("related_patient.address."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                            if (parentNode2 != null &&
+                                "related_patient".equals(parentNode2.getNodeName())) {
+                                dataMap.put("related_patient.address." + childNode.getNodeName(),
+                                            childNode.getFirstChild().getNodeValue().trim());
                             } else {
-                                dataMap.put(parentNode.getNodeName()+"."+node.getNodeName()+"."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                                dataMap.put(parentNode.getNodeName() + "." + node.getNodeName() +
+                                                            "." + childNode.getNodeName(),
+                                            childNode.getFirstChild().getNodeValue().trim());
                             }
                         } else {
-                            dataMap.put(parentNode.getNodeName()+"."+node.getNodeName()+"."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                            dataMap.put(parentNode.getNodeName() + "." + node.getNodeName() + "." +
+                                        childNode.getNodeName(), childNode.getFirstChild()
+                                                                          .getNodeValue()
+                                                                          .trim());
                         }
                     } else {
-                        dataMap.put(node.getNodeName()+"."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                        dataMap.put(node.getNodeName() + "." + childNode.getNodeName(),
+                                    childNode.getFirstChild().getNodeValue().trim());
                     }
                 } else if ("term".equals(childNode.getNodeName())) {
-                    termKey = "extTerm:"+childNode.getFirstChild().getNodeValue().trim();
+                    termKey = "extTerm:" + childNode.getFirstChild().getNodeValue().trim();
                     childNode2 = null;
                     while (++i < childNodes.getLength()) {
                         if ("coding_system".equals(childNodes.item(i).getNodeName()))
                             childNode2 = childNodes.item(i);
                     }
                     if (childNode2 != null && childNode2.getFirstChild() != null)
-                        termKey += "extCS:"+childNode2.getFirstChild().getNodeValue().trim();
-                    if (!externalTermMap.containsKey(childNode.getFirstChild().getNodeValue().trim()))
-                        externalTermMap.put(childNode.getFirstChild().getNodeValue().trim(), new ArrayList<ExchangeExternalTermViewDO>());
-                    
+                        termKey += "extCS:" + childNode2.getFirstChild().getNodeValue().trim();
+                    if (!externalTermMap.containsKey(childNode.getFirstChild()
+                                                              .getNodeValue()
+                                                              .trim()))
+                        externalTermMap.put(childNode.getFirstChild().getNodeValue().trim(),
+                                            new ArrayList<ExchangeExternalTermViewDO>());
+
                     parentNode = node.getParentNode();
                     if (parentNode != null)
-                        dataMap.put(parentNode.getNodeName()+"."+node.getNodeName(), termKey);
+                        dataMap.put(parentNode.getNodeName() + "." + node.getNodeName(), termKey);
                     else
                         dataMap.put(node.getNodeName(), termKey);
                     break;
                 } else {
-                    dataMap.put(node.getNodeName()+"."+childNode.getNodeName(), childNode.getFirstChild().getNodeValue().trim());
+                    dataMap.put(node.getNodeName() + "." + childNode.getNodeName(),
+                                childNode.getFirstChild().getNodeValue().trim());
                 }
             }
         }
     }
-    
+
     /*
      * The external key is of the format "extTerm:<term>extCS:<coding_system>"
      */
-    private Integer getLocalTermFromCodedElement(String fieldName, String externalKey,
+    private Integer getLocalTermFromCodedElement(String fieldName,
+                                                 String externalKey,
                                                  HashMap<String, ArrayList<ExchangeExternalTermViewDO>> externalTermMap,
                                                  Integer referenceTableId, ValidationErrorsList e) {
         int splitIndex;
@@ -1456,7 +1621,7 @@ public class SampleManagerOrderHelperBean {
                 externalTerm = externalKey.substring(8);
                 externalCodingSystem = null;
             }
-            
+
             externalTerms = externalTermMap.get(externalTerm);
             if (externalTerms != null) {
                 for (ExchangeExternalTermViewDO eetVDO : externalTerms) {
@@ -1476,13 +1641,17 @@ public class SampleManagerOrderHelperBean {
                 if (matchedTerms.size() == 0) {
                     if (!Constants.table().PANEL.equals(referenceTableId) &&
                         !Constants.table().TEST_ANALYTE.equals(referenceTableId))
-                        e.add(new FormErrorWarning(Messages.get().eorderImport_localTermNotFound(externalTerm, fieldName)));
+                        e.add(new FormErrorWarning(Messages.get()
+                                                           .eorderImport_localTermNotFound(externalTerm,
+                                                                                           fieldName)));
                 } else {
                     for (ExchangeExternalTermViewDO eetVDO : matchedTerms) {
                         if (Constants.dictionary().PROFILE_ORDER_IN.equals(eetVDO.getProfileId()))
                             return eetVDO.getExchangeLocalTermReferenceId();
                     }
-                    e.add(new FormErrorWarning(Messages.get().eorderImport_multipleLocalTerms(externalTerm, fieldName)));
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .eorderImport_multipleLocalTerms(externalTerm,
+                                                                                        fieldName)));
                 }
             }
         }
@@ -1501,15 +1670,15 @@ public class SampleManagerOrderHelperBean {
             // ignore
         }
     }
-    
-    private PatientDO lookupExistingPatient(PatientDO patDO, ValidationErrorsList e) {
+
+    private PatientDO lookupExistingPatient(PatientDO patDO, ValidationErrorsList e, boolean queryByFirstName) {
         ArrayList<PatientDO> patientDOs;
         ArrayList<QueryData> fields;
         PatientDO existingDO;
         QueryData field;
 
         existingDO = null;
-        
+
         fields = new ArrayList<QueryData>();
         if (patDO.getLastName() != null && patDO.getLastName().length() > 0) {
             field = new QueryData();
@@ -1518,7 +1687,7 @@ public class SampleManagerOrderHelperBean {
             field.setQuery(patDO.getLastName());
             fields.add(field);
         }
-        if (patDO.getFirstName() != null && patDO.getFirstName().length() > 0) {
+        if (queryByFirstName && patDO.getFirstName() != null && patDO.getFirstName().length() > 0) {
             field = new QueryData();
             field.setKey(PatientMeta.getFirstName());
             field.setType(QueryData.Type.STRING);
@@ -1539,7 +1708,7 @@ public class SampleManagerOrderHelperBean {
             field.setQuery(patDO.getNationalId());
             fields.add(field);
         }
-        
+
         if (fields.size() > 0) {
             try {
                 patientDOs = patient.query(fields, 0, 10);
@@ -1555,16 +1724,275 @@ public class SampleManagerOrderHelperBean {
                 e.add(new FormErrorWarning(Messages.get().eorderImport_patientLookupFailure()));
             }
         }
-        
+
         return existingDO;
     }
-    
+
+    /**
+     * The passed map specifies to which sequence or sample type a test should
+     * be added, according to the order; if some tests in the map are present in
+     * the sample and the boolean flag is true, moves analyses linked to them to
+     * the item specified in the map; adds the remaining tests to the sample; if
+     * sequence is specified, uses that to move the analysis, otherwise uses
+     * sample type; doesn't move cancelled or released analyses
+     */
+    private SampleTestReturnVO mergeTests(HashMap<String, ArrayList<OrderTest>> orderTestMap,
+                                          SampleManager1 sm, boolean move, ValidationErrorsList e) throws Exception {
+        int i, j, min;
+        boolean found;
+        Integer anaId;
+        String tmName, reportable;
+        AnalysisViewDO ana;
+        SampleItemViewDO item;
+        AnalysisItem anaItem;
+        OrderTest orderTest;
+        SampleTestReturnVO ret;
+        ArrayList<OrderTest> orderTests;
+        ArrayList<AnalysisItem> anaItems;
+        ArrayList<SampleTestRequestVO> tests;
+        HashSet<Integer> repAnalytes;
+        HashMap<Integer, HashSet<Integer>> repAnalyteMap;
+        HashMap<String, ArrayList<AnalysisItem>> anaItemMap;
+        HashMap<Integer, SampleItemViewDO> itemIdMap, itemSeqMap, itemTypeMap;
+
+        /*
+         * create mappings for finding out which sample item has a particular
+         * id, sequence or sample type; also find the minimum item sequence
+         */
+        itemIdMap = new HashMap<Integer, SampleItemViewDO>();
+        itemSeqMap = new HashMap<Integer, SampleItemViewDO>();
+        itemTypeMap = new HashMap<Integer, SampleItemViewDO>();
+        min = 0;
+        for (i = 0; i < getItems(sm).size(); i++) {
+            item = getItems(sm).get(i);
+            itemIdMap.put(item.getId(), item);
+            itemSeqMap.put(item.getItemSequence(), item);
+            if (itemTypeMap.get(item.getTypeOfSampleId()) == null)
+                itemTypeMap.put(item.getTypeOfSampleId(), item);
+            min = Math.min(min, item.getItemSequence());
+        }
+
+        /*
+         * create a mapping for grouping the analyses linked to a test; also
+         * keep track of the sample item to which those analyses are added
+         */
+        anaItemMap = new HashMap<String, ArrayList<AnalysisItem>>();
+        if (getAnalyses(sm) != null) {
+            for (i = 0; i < getAnalyses(sm).size(); i++) {
+                ana = getAnalyses(sm).get(i);
+                tmName = getTestMethodName(ana.getTestName(), ana.getMethodName());
+                anaItems = anaItemMap.get(tmName);
+                if (anaItems == null) {
+                    anaItems = new ArrayList<AnalysisItem>();
+                    anaItemMap.put(tmName, anaItems);
+                }
+                anaItems.add(new AnalysisItem(ana, itemIdMap.get(ana.getSampleItemId())));
+            }
+        }
+
+        /*
+         * go through the tests defined in the order; if they're present in the
+         * sample but not added to the sequence or sample type specified in the
+         * order, move them to that sample item; type is used only if sequence
+         * is not specified
+         */
+        tests = new ArrayList<SampleTestRequestVO>();
+        repAnalyteMap = new HashMap<Integer, HashSet<Integer>>();
+        for (Map.Entry<String, ArrayList<OrderTest>> entry : orderTestMap.entrySet()) {
+            tmName = entry.getKey();
+            orderTests = entry.getValue();
+
+            anaItems = anaItemMap.get(tmName);
+            if (anaItems != null) {
+                /*
+                 * compare the positions (sequences or sample types) where a
+                 * test is specified to be added by the order, to where the test
+                 * is present in the sample; remove any matches; if there are
+                 * any positions left, that would mean the test is not present
+                 * in the sample where it's specified in the order; so it will
+                 * need to be moved or added
+                 */
+                i = 0;
+                while (i < orderTests.size()) {
+                    orderTest = orderTests.get(i);
+                    found = false;
+                    for (j = 0; j < anaItems.size(); j++) {
+                        anaItem = anaItems.get(j);
+                        item = anaItem.sampleItem;
+                        if (orderTest.sequence != null) {
+                            if (DataBaseUtil.isSame(orderTest.sequence, item.getItemSequence())) {
+                                found = true;
+                                break;
+                            }
+                        } else if (DataBaseUtil.isSame(orderTest.sampleTypeId,
+                                                       item.getTypeOfSampleId())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        /*
+                         * the test is present in the sample, where it's
+                         * specified by the order; this map will be used to mark
+                         * the results of the analysis reportable, according to
+                         * the order
+                         */
+                        repAnalyteMap.put(anaItems.get(i).analysis.getId(),
+                                          new HashSet<Integer>(orderTest.analyteIds));
+                        orderTests.remove(i);
+                        anaItems.remove(j);
+                    } else {
+                        i++;
+                    }
+                }
+
+                /*
+                 * move the test (analysis) to the sample item specified in the
+                 * order; use sequence to move if it's specified, otherwise use
+                 * sample type; don't move cancelled or released analyses or if
+                 * the "move" flag is false; after this loop, all instances of
+                 * the test that could be moved will be in the positions
+                 * specified in the order; if the order has more instances of
+                 * the test, they will need to be added to the sample
+                 */
+                while (orderTests.size() > 0) {
+                    orderTest = orderTests.get(0);
+                    if (anaItems.size() == 0)
+                        break;
+                    ana = anaItems.get(0).analysis;
+                    if (move &&
+                        !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) &&
+                        !Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
+                        /*
+                         * if no item is found for a sequence or sample type
+                         * specified in the order, move the analysis to the item
+                         * with the minimum sequence
+                         */
+                        if (orderTest.sequence != null)
+                            item = itemSeqMap.get(orderTest.sequence);
+                        else
+                            item = itemTypeMap.get(orderTest.sampleTypeId);
+
+                        if (item == null)
+                            item = itemSeqMap.get(min);
+                        ana.setSampleItemId(item.getId());
+                        /*
+                         * this map will be used to mark the results of the
+                         * analysis reportable, according to the order
+                         */
+                        repAnalyteMap.put(ana.getId(), new HashSet<Integer>(orderTest.analyteIds));
+                    }
+                    /*
+                     * since the test is present in the sample, it shouldn't be
+                     * added again, regardless of whether or not it was moved;
+                     * the following makes sure of that
+                     */
+                    orderTests.remove(0);
+                    anaItems.remove(0);
+                }
+            }
+
+            /*
+             * add the tests and mark the analytes specified by the ids,
+             * reportable; if sequence is specified, add the analysis to the
+             * item with that sequence; otherwise add it to the item with the
+             * specified sample type
+             */
+            for (i = 0; i < orderTests.size(); i++) {
+                orderTest = orderTests.get(i);
+                /*
+                 * if no item is found for a sequence or sample type specified
+                 * in the order, add the analysis to the item with the minimum
+                 * sequence
+                 */
+                if (orderTest.sequence != null)
+                    item = itemSeqMap.get(orderTest.sequence);
+                else
+                    item = itemTypeMap.get(orderTest.sampleTypeId);
+
+                if (item == null)
+                    item = itemSeqMap.get(min);
+                tests.add(new SampleTestRequestVO(sm.getSample().getId(),
+                                                  item.getId(),
+                                                  orderTest.testId,
+                                                  null,
+                                                  null,
+                                                  null,
+                                                  null,
+                                                  false,
+                                                  orderTest.analyteIds));
+            }
+        }
+
+        if (repAnalyteMap.size() > 0) {
+            /*
+             * mark the results of tests present in both the sample and the
+             * order, reportable according to the order
+             */
+            anaId = null;
+            repAnalytes = null;
+            for (ResultViewDO data : getResults(sm)) {
+                if (!data.getAnalysisId().equals(anaId)) {
+                    repAnalytes = repAnalyteMap.get(data.getAnalysisId());
+                    anaId = data.getAnalysisId();
+                }
+                if (repAnalytes != null && "N".equals(data.getIsColumn())) {
+                    reportable = repAnalytes.contains(data.getAnalyteId()) ? "Y" : "N";
+                    if (!reportable.equals(data.getIsReportable()))
+                        data.setIsReportable(reportable);
+                }
+            }
+        }
+
+        ret = sampleManager1.addAnalyses(sm, tests);
+        /*
+         * add the errors found during importing the order to the ones found
+         * while adding tests, because the object returned by the above method
+         * is different from the one created at the start of this method
+         */
+        if (ret.getErrors() != null)
+            for (Exception ex : ret.getErrors().getErrorList())
+                e.add(ex);
+        ret.setErrors(e);
+        return ret;
+    }
+
+    /**
+     * Returns a string containing the test and method names, separated by a ":"
+     */
+    private String getTestMethodName(String testName, String methodName) {
+        return DataBaseUtil.concatWithSeparator(testName, ":", methodName);
+    }
+
     private class OrderResult {
         String analyte, result;
-        
+
         public OrderResult(String analyte, String result) {
             this.analyte = analyte;
             this.result = result;
+        }
+    }
+
+    private class OrderTest {
+        Integer            testId, sampleTypeId, sequence;
+        ArrayList<Integer> analyteIds;
+
+        public OrderTest(Integer testId, Integer sequence, Integer sampleTypeId,
+                         ArrayList<Integer> analyteIds) {
+            this.testId = testId;
+            this.sampleTypeId = sampleTypeId;
+            this.sequence = sequence;
+            this.analyteIds = analyteIds;
+        }
+    }
+
+    private class AnalysisItem {
+        AnalysisViewDO   analysis;
+        SampleItemViewDO sampleItem;
+
+        public AnalysisItem(AnalysisViewDO analysis, SampleItemViewDO sampleItem) {
+            this.analysis = analysis;
+            this.sampleItem = sampleItem;
         }
     }
 }

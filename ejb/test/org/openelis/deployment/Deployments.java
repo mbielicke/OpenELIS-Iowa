@@ -9,6 +9,11 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.openelis.bean.ApplicationBean;
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.DictionaryCacheBean;
+import org.openelis.entity.Category;
+import org.openelis.entity.Dictionary;
 
 @ArquillianSuiteDeployment
 public class Deployments {
@@ -28,14 +33,20 @@ public class Deployments {
 		        .addAsLibraries(Maven.resolver().resolve("net.lightoze.gwt-i18n-server:gwt-i18n-server:0.22").withoutTransitivity().asFile());
 	}
 	
+	public static WebArchive createBaseWithApplication() {
+		return createBase().addClasses(ApplicationBean.class,DictionaryBean.class,DictionaryCacheBean.class,Dictionary.class,Category.class);
+	}
 	public static WebArchive createBase() {
 		return ShrinkWrap.create(WebArchive.class)
 				.addAsLibraries(jarupCommon())
 				.addAsLibraries(new File("../OpenELIS-GWT/war/WEB-INF/lib/gwt-servlet.jar"))
 				.addAsLibraries(new File("../OpenELIS-UI/ui.jar"))
+				.addAsLibraries(new File("../Security/security.jar"))
 				.addAsLibraries(Maven.resolver().resolve("net.sf.ehcache:ehcache:1.2").withoutTransitivity().asFile())
+				.addAsLibraries(Maven.resolver().resolve("org.mockito:mockito-all:1.9.5").withTransitivity().asFile())
+				.addAsLibraries(Maven.resolver().resolve("net.lightoze.gwt-i18n-server:gwt-i18n-server:0.22").withoutTransitivity().asFile())
 				.addAsResource(new File("src/resources/META-INF/persistence.xml"),"META-INF/persistence.xml")
-				.addAsResource(new File("src/resources/META-INF/ehcache.xml"),"META-INF/ehcache.xml")
+				.addAsResource(new File("src/resources/META-INF/ehcache.xml"),"ehcache.xml")
 				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 	

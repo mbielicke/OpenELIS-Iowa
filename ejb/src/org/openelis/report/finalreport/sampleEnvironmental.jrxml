@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.ui.common.DataBaseUtil"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -10,18 +11,20 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     s.received_date s_received_date, s.collection_date s_collection_date,
-     s.collection_time s_collection_time, s.client_reference s_client_reference, s.released_date s_released_date,
-     se.description se_description, se.collector se_collector, se.collector_phone se_collector_phone,
-     se.location se_location, l.city loc_address_city
+     s.received_date as s_received_date, s.collection_date as s_collection_date,
+     s.collection_time as s_collection_time, s.client_reference as s_client_reference,
+     s.released_date as s_released_date, se.description as se_description, se.collector as se_collector,
+     se.collector_phone as se_collector_phone, se.location as se_location, l.multiple_unit as loc_multiple_unit,
+     l.street_address as loc_street_address, l.city as loc_city, l.state as loc_state, l.zip_code as loc_zip_code
 FROM
-     sample s, sample_environmental se, outer address l
+     sample s
+     join sample_environmental se on se.sample_id = s.id
+     left join address l on l.id = se.location_address_id
 WHERE
-     s.domain = 'E' and s.id = $P{SAMPLE_ID} and
-     se.sample_id = s.id and l.id = se.location_address_id]]>
+     s.id = $P{SAMPLE_ID} and s.domain = 'E']]>
 	</queryString>
 	<field name="s_received_date" class="java.sql.Timestamp"/>
-	<field name="s_collection_date" class="java.sql.Timestamp"/>
+	<field name="s_collection_date" class="java.sql.Date"/>
 	<field name="s_collection_time" class="java.sql.Time"/>
 	<field name="s_client_reference" class="java.lang.String"/>
 	<field name="s_released_date" class="java.sql.Timestamp"/>
@@ -29,9 +32,13 @@ WHERE
 	<field name="se_collector" class="java.lang.String"/>
 	<field name="se_collector_phone" class="java.lang.String"/>
 	<field name="se_location" class="java.lang.String"/>
-	<field name="loc_address_city" class="java.lang.String"/>
+	<field name="loc_multiple_unit" class="java.lang.String"/>
+	<field name="loc_street_address" class="java.lang.String"/>
+	<field name="loc_city" class="java.lang.String"/>
+	<field name="loc_state" class="java.lang.String"/>
+	<field name="loc_zip_code" class="java.lang.String"/>
 	<detail>
-		<band height="132" splitType="Stretch">
+		<band height="156" splitType="Stretch">
 			<staticText>
 				<reportElement x="284" y="0" width="140" height="12"/>
 				<textElement textAlignment="Right">
@@ -92,7 +99,7 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_collection_date}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{s_collection_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="483" y="48" width="49" height="12"/>
@@ -116,77 +123,91 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{se_location}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="284" y="72" width="140" height="12"/>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
-				</textElement>
-				<text><![CDATA[Collection Town]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="72" width="180" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{loc_address_city}]]></textFieldExpression>
-			</textField>
-			<staticText>
 				<reportElement x="284" y="84" width="140" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
-				<text><![CDATA[Sample Description]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="84" width="180" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{se_description}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="284" y="96" width="140" height="12"/>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
-				</textElement>
-				<text><![CDATA[Client Reference]]></text>
+				<text><![CDATA[Collection Address]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="96" width="180" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_client_reference}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[DataBaseUtil.concatWithSeparator($F{loc_city}, ", ", DataBaseUtil.concatWithSeparator($F{loc_state}, " ", $F{loc_zip_code}))]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="84" width="180" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{loc_street_address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="72" width="180" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{loc_multiple_unit}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="108" width="140" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
-				<text><![CDATA[Collector]]></text>
+				<text><![CDATA[Sample Description]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="108" width="180" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{se_collector}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{se_description}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="120" width="140" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
+				<text><![CDATA[Client Reference]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="120" width="180" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_client_reference}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="132" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Collector]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="132" width="180" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{se_collector}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="144" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
 				<text><![CDATA[Phone]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="120" width="142" height="12"/>
+				<reportElement x="434" y="144" width="142" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{se_collector_phone}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement mode="Opaque" x="429" y="0" width="1" height="120"/>
+				<reportElement mode="Opaque" x="429" y="0" width="1" height="152"/>
 				<graphicElement>
 					<pen lineWidth="1.0"/>
 				</graphicElement>

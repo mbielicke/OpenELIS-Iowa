@@ -5,10 +5,11 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT sp.id sp_id, p.name project_name
+		<![CDATA[SELECT
+      sp.id as sp_id, p.name as project_name
 FROM
-     sample_project sp
-     join project p on  sp.project_id = p.id
+      sample_project sp
+      join project p on sp.project_id = p.id
 WHERE
      sp.sample_id = $P{SAMPLE_ID} and
      sp.is_permanent = 'Y'

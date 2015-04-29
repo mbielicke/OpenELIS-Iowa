@@ -1189,7 +1189,7 @@ public class WorksheetCompletionBean {
                             pMap = new HashMap<Integer, AnalyteParameterViewDO>();
                             apMap.put("T"+testId, pMap);
                             try {
-                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(testId,
+                                anaParams = analyteParameterLocal.fetchByReferenceIdReferenceTableId(testId,
                                                                                                            Constants.table().TEST);
                                 for (AnalyteParameterViewDO anaParam : anaParams)
                                     pMap.put(anaParam.getAnalyteId(), anaParam);
@@ -1324,7 +1324,7 @@ public class WorksheetCompletionBean {
                             pMap = new HashMap<Integer, AnalyteParameterViewDO>();
                             apMap.put("Q"+qcId, pMap);
                             try {
-                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(qcId,
+                                anaParams = analyteParameterLocal.fetchByReferenceIdReferenceTableId(qcId,
                                                                                                            Constants.table().QC);
                                 for (AnalyteParameterViewDO anaParam : anaParams)
                                     pMap.put(anaParam.getAnalyteId(), apVDO);

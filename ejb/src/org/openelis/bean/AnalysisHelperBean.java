@@ -540,7 +540,7 @@ public class AnalysisHelperBean {
         } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
             ana.setAvailableDate(null);
         } else if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId)) {
-            if (ana.getSectionName() == null ||
+            if (ana.getSectionName() == null || perm.getSection(ana.getSectionName()) == null ||
                 !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
                 throw new InconsistencyException(Messages.get()
                                                          .analysis_insufficientPrivilegesInitiateException(accession,
@@ -555,7 +555,7 @@ public class AnalysisHelperBean {
                 /*
                  * the analysis is being completed
                  */
-                if (ana.getSectionName() == null ||
+                if (ana.getSectionName() == null || perm.getSection(ana.getSectionName()) == null ||
                     !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
                     throw new InconsistencyException(Messages.get()
                                                              .analysis_insufficientPrivilegesCompleteException(accession,
@@ -630,7 +630,7 @@ public class AnalysisHelperBean {
                  * the analysis is being unreleased
                  */
 
-                if (ana.getSectionName() == null ||
+                if (ana.getSectionName() == null || perm.getSection(ana.getSectionName()) == null ||
                     !perm.getSection(ana.getSectionName()).hasReleasePermission()) {
                     throw new InconsistencyException(Messages.get()
                                                              .analysis_insufficientPrivilegesUnreleaseException(accession,
@@ -676,7 +676,7 @@ public class AnalysisHelperBean {
                 setPostProcessing(sm, SampleManager1.PostProcessing.UNRELEASE);
             }
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
-            if (ana.getSectionName() == null ||
+            if (ana.getSectionName() == null || perm.getSection(ana.getSectionName()) == null ||
                 !perm.getSection(ana.getSectionName()).hasReleasePermission()) {
                 throw new InconsistencyException(Messages.get()
                                                          .analysis_insufficientPrivilegesReleaseException(accession,
@@ -729,7 +729,7 @@ public class AnalysisHelperBean {
                                                                                                  ana.getTestName(),
                                                                                                  ana.getMethodName()));
 
-            if (ana.getSectionName() == null ||
+            if (ana.getSectionName() == null || perm.getSection(ana.getSectionName()) == null ||
                 !perm.getSection(ana.getSectionName()).hasCancelPermission()) {
                 throw new InconsistencyException(Messages.get()
                                                          .analysis_insufficientPrivilegesCancelException(accession,

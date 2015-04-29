@@ -7,7 +7,7 @@
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<parameter name="SYSTEM_NAME" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT first 1
+		<![CDATA[SELECT
       au.system_user_id
 FROM
       analysis_user au
@@ -19,7 +19,9 @@ WHERE
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="100" height="12"/>
+				<reportElement x="0" y="0" width="100" height="12">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.equals(1)]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>

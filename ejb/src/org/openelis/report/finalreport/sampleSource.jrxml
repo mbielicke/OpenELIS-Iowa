@@ -5,15 +5,15 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT first 1
-     d1.entry type_of_sample, d2.entry source_of_sample, si.source_other
+		<![CDATA[SELECT
+      d1.entry as type_of_sample, d2.entry as source_of_sample, si.source_other
 FROM
-     sample_item si, dictionary d1, outer dictionary d2
+      sample_item si
+      join dictionary d1 on d1.id = si.type_of_sample_id
+      left join dictionary d2 on d2.id = si.source_of_sample_id
 WHERE
-     si.type_of_sample_id = d1.id and
-     si.source_of_sample_id = d2.id and
-     si.item_sequence = 0 and
-     si.sample_id = $P{SAMPLE_ID}]]>
+     si.sample_id = $P{SAMPLE_ID} and si.item_sequence = 0
+     ]]>
 	</queryString>
 	<field name="type_of_sample" class="java.lang.String"/>
 	<field name="source_of_sample" class="java.lang.String"/>
@@ -22,7 +22,7 @@ WHERE
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="142" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[$F{source_other} == null && $F{source_of_sample} == null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{source_other} == null && $F{source_of_sample} == null && $V{REPORT_COUNT}.equals(1)]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
@@ -31,7 +31,7 @@ WHERE
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="142" height="12">
-					<printWhenExpression><![CDATA[$F{source_other} == null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{source_other} == null && $V{REPORT_COUNT}.equals(1)]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
@@ -39,7 +39,9 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="142" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="0" y="0" width="142" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.equals(1)]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>

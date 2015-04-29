@@ -81,6 +81,15 @@ public class AuxFieldGroupBean { //implements AuxFieldGroupRemote, AuxFieldGroup
         return data;
     }
     
+    public ArrayList<AuxFieldGroupDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("AuxFieldGroup.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<AuxFieldGroupDO> fetchByName(String name) throws Exception {
         Query query;

@@ -72,6 +72,12 @@ import org.openelis.utils.Auditable;
                                    + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name, m.name, d.entry)"
                                    + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
                                    + " left join af.method m left join af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder "),
+               @NamedQuery(name = "AuxField.FetchAllActiveByGroupIds",
+                           query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
+                                   + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"
+                                   + "af.isActive,af.isReportable, af.scriptletId, afg.name, a.name, m.name, d.entry)"
+                                   + " from AuxField af left join af.auxFieldGroup afg left join af.analyte a"
+                                   + " left join af.method m left join af.unitOfMeasure d where af.auxFieldGroupId in (:auxFieldGroupIds) and af.isActive = 'Y' order by af.sortOrder "),
                @NamedQuery(name = "AuxField.FetchAll",
                            query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"
                                    + "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"

@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class LockCacheBean {
 	}
 	
 	public void remove(Lock lock) {
+		
 		remove(lock.key);
 	}
 	

@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -184,8 +185,8 @@ public class SampleInhouseReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
-        String fromDate, toDate, section, test, aStatus, project, orgId, userName, orderBy, printer, printstat;
+        Timestamp fromDate, toDate;
+        String section, test, aStatus, project, orgId, userName, orderBy, printer, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -198,25 +199,19 @@ public class SampleInhouseReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        fromDate = ReportUtil.getSingleParameter(param, "FROM_ENTERED");
-        toDate = ReportUtil.getSingleParameter(param, "TO_ENTERED");
+        fromDate = ReportUtil.getTimestampParameter(param, "FROM_ENTERED");
+        toDate = ReportUtil.getTimestampParameter(param, "TO_ENTERED");
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
         aStatus = ReportUtil.getListParameter(param, "STATUS");
         project = ReportUtil.getListParameter(param, "PROJECT");
-        orgId = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
-        orderBy = ReportUtil.getSingleParameter(param, "ORDER_BY");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        orgId = ReportUtil.getStringParameter(param, "ORGANIZATION_ID");
+        orderBy = ReportUtil.getStringParameter(param, "ORDER_BY");
+        printer = ReportUtil.getStringParameter(param, "PRINTER");
 
-        if (DataBaseUtil.isEmpty(fromDate) || DataBaseUtil.isEmpty(toDate) ||
+        if (fromDate == null || toDate == null ||
             DataBaseUtil.isEmpty(orderBy) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify From Date, To Date, Order By, and Printer for this report");
-
-        if (fromDate != null && fromDate.length() > 0)
-            fromDate += ":00";
-
-        if (toDate != null && toDate.length() > 0)
-            toDate += ":59";
 
         if ( !DataBaseUtil.isEmpty(section))
             section = " and sec.id " + section;

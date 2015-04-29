@@ -25,16 +25,15 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
-import static org.openelis.manager.SampleManager1Accessor.getResults;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +47,7 @@ import javax.sql.DataSource;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
@@ -59,6 +59,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
@@ -130,6 +131,9 @@ public class AirQualityExportBean {
     @EJB
     private AuxDataHelperBean                        auxDataHelper;
 
+    @EJB
+    private SectionBean                              section;
+
     private static final String                      delim           = "|", escape = "\\",
                     rawDataType = "RD", precisionType = "QA", time = "00:00",
                     duplicateAssessmentType = "Duplicate", replicateAssessmentType = "Replicate",
@@ -138,11 +142,11 @@ public class AirQualityExportBean {
                     fb = "FB", primaryPOC = "01", secondaryPOC = "02", duplicatePOC = "03",
                     mdlAnalyte = "MDL", mnUnitCode = "108";
 
-    private String                                   ttdsDurationCode, ttdsMethodCode, ttdsMDL,
-                    ttdsParameterCode, tnmocDurationCode, tnmocMethodCode, tnmocMDL,
-                    tnmocParameterCode, pressureParameter, pressureDurationCode,
-                    pressureReportedUnit, pressureMethodCode, temperatureParameter,
-                    temperatureDurationCode, temperatureReportedUnit, temperatureMethodCode;
+    private String                                   ttdsDurationCode, ttdsMethodCode,
+                    ttdsParameterCode, tnmocDurationCode, tnmocMethodCode, tnmocParameterCode,
+                    pressureParameter, pressureDurationCode, pressureReportedUnit,
+                    pressureMethodCode, temperatureParameter, temperatureDurationCode,
+                    temperatureReportedUnit, temperatureMethodCode;
 
     private static final Double                      nitrateConstant = 4.4;
 
@@ -151,8 +155,10 @@ public class AirQualityExportBean {
 
     private ArrayList<String>                        sulfateAnalytes, nitrateAnalytes;
 
+    private HashMap<Integer, Integer>                sectionMap;
+
     private HashMap<Integer, String>                 analyteCodes, unitCodes, methodCodes,
-                    durationCodes;
+                    durationCodes, agencyCodes;
 
     private HashMap<Integer, AnalyteParameterViewDO> analyteParameters;
 
@@ -161,8 +167,6 @@ public class AirQualityExportBean {
 
     private Integer                                  metalLeadTest, metalManganeseTest,
                     metalManganeseAccuracyTest;
-
-    private boolean                                  replicate;
 
     private static final Logger                      log             = Logger.getLogger("openelis");
 
@@ -215,11 +219,11 @@ public class AirQualityExportBean {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         boolean pressureTempString, fileWritten;
-        Integer analysisCount, testId;
+        Integer analysisCount, testId, orgId;
         ReportStatus status;
-        String val, frDate, tDate, accession, action, reportTo, attention, tempArray[], codeArray[], analyteArray[], qualifierCode, airDir, metal, errorMessage;
-        Datetime d;
-        SimpleDateFormat dateTimeFormat;
+        String val, fromDate, toDate, accession, action, reportTo, attention, tempArray[], codeArray[], analyteArray[], qualifierCode, airDir, metal, errorMessage;
+        StringBuffer eMessage;
+        Datetime dt;
         QueryData field;
         Query query;
         ArrayList<SampleManager1> sms;
@@ -230,715 +234,657 @@ public class AirQualityExportBean {
         HashMap<String, ArrayList<SampleManager1>> samples;
         HashMap<String, ArrayList<String>> speciationStrings, stringList;
         HashMap<String, QueryData> param;
-        HashSet<Integer> analyteIds, unitIds, testIds, replicateTests;
-
-        /*
-         * get system variables
-         */
-        try {
-            /*
-             * Report to organization for air quality samples.
-             * 
-             * Format: "organization id"|"organization attention"
-             */
-            val = systemVariable.fetchByName("air_report_to").getValue();
-            tempArray = val.split(escape + delim);
-            reportTo = DataBaseUtil.trim(tempArray[0]);
-            attention = DataBaseUtil.trim(tempArray[1]);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get().systemVariable_missingInvalidSystemVariable("air_report_to"),
-                    e);
-            throw e;
-        }
-
-        airDir = null;
-        try {
-            /*
-             * Location that all files are output to.
-             */
-            airDir = systemVariable.fetchByName("air_report_directory").getValue();
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_report_directory"),
-                    e);
-            throw e;
-        }
+        HashSet<Integer> analyteIds, unitIds, testIds, orgIds;
 
         try {
             /*
-             * Test ids and analyte names for sulfate and nitrate string
-             * creation.
-             * 
-             * Format: "test id";"sulfate analyte";"nitrate analyte"|repeat if
-             * necessary
+             * get system variables
              */
-            val = systemVariable.fetchByName("air_sulfate_nitrate_tests").getValue();
-            tempArray = val.split(escape + delim);
-            sulfateNitrateTests = new ArrayList<Integer>();
-            sulfateAnalytes = new ArrayList<String>();
-            nitrateAnalytes = new ArrayList<String>();
-            for (int i = 0; i < tempArray.length; i++ ) {
-                analyteArray = tempArray[i].split(";");
-                sulfateNitrateTests.add(Integer.parseInt(analyteArray[0]));
-                sulfateAnalytes.add(analyteArray[1]);
-                nitrateAnalytes.add(analyteArray[2]);
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_sulfate_nitrate_tests"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Test ids, method codes, and duration codes for air toxics tests.
-             * 
-             * Format: "test id";"method code";"duration code"|repeating
-             */
-            val = systemVariable.fetchByName("air_toxics_tests").getValue();
-            tempArray = val.split(escape + delim);
-            airToxicsTests = new ArrayList<Integer>();
-            methodCodes = new HashMap<Integer, String>();
-            durationCodes = new HashMap<Integer, String>();
-            for (int i = 0; i < tempArray.length; i++ ) {
-                codeArray = tempArray[i].split(";");
-                testId = Integer.parseInt(codeArray[0]);
-                methodCodes.put(testId, codeArray[1]);
-                durationCodes.put(testId, codeArray[2]);
-                airToxicsTests.add(testId);
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get().systemVariable_missingInvalidSystemVariable("air_toxics_tests"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Test id and filter lot blank for metal lead test.
-             * 
-             * Format: "test id"|"lead filter lot blank"
-             */
-            val = systemVariable.fetchByName("air_metal_lead_test").getValue();
-            tempArray = val.split(escape + delim);
-            metalLeadTest = Integer.parseInt(tempArray[0]);
-            metalLeadFilterLotBlank = Double.parseDouble(tempArray[1]);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_metal_lead_test"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Test id and filter lot blank for metal manganese test.
-             * 
-             * Format: "test id"|"manganese filter lot blank"
-             */
-            val = systemVariable.fetchByName("air_metal_manganese_test").getValue();
-            tempArray = val.split(escape + delim);
-            metalManganeseTest = Integer.parseInt(tempArray[0]);
-            metalManganeseFilterLotBlank = Double.parseDouble(tempArray[1]);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_metal_manganese_test"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Test id for metal manganese accuracy test.
-             */
-            metalManganeseAccuracyTest = Integer.parseInt(systemVariable.fetchByName("air_metal_mn_accuracy_test")
-                                                                        .getValue());
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_metal_mn_accuracy_test"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Constant data for "Total Tolualdehydes" analyte.
-             * 
-             * Format: "parameter code"|"duration code"|"method code"|"MDL"
-             * 
-             * MDL is optional
-             */
-            val = systemVariable.fetchByName("air_total_tolualdehydes").getValue();
-            tempArray = val.split(escape + delim);
-            ttdsParameterCode = tempArray[0];
-            ttdsDurationCode = tempArray[1];
-            ttdsMethodCode = tempArray[2];
             try {
-                ttdsMDL = tempArray[3];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                ttdsMDL = "";
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_total_tolualdehydes"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Constant data for "TNMOC,Speciated" analyte.
-             * 
-             * Format: "parameter code"|"duration code"|"method code"|"MDL"
-             * 
-             * MDL is optional
-             */
-            val = systemVariable.fetchByName("air_tnmoc_speciated").getValue();
-            tempArray = val.split(escape + delim);
-            tnmocParameterCode = tempArray[0];
-            tnmocDurationCode = tempArray[1];
-            tnmocMethodCode = tempArray[2];
-            try {
-                tnmocMDL = tempArray[3];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                tnmocMDL = "";
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_tnmoc_speciated"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Qualifier code constants for air toxics "under limit" qualifier
-             * 
-             * Format: "qualifier code"|"Qualifier result string",repeating
-             */
-            val = systemVariable.fetchByName("air_qualifier_code").getValue();
-            tempArray = val.split(escape + delim);
-            qualifierCode = tempArray[0];
-            tempArray = tempArray[1].split(",");
-            qualifierStrings = new ArrayList<String>();
-            for (int i = 0; i < tempArray.length; i++ )
-                qualifierStrings.add(tempArray[i]);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_qualifier_code"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Constants for pressure strings.
-             * 
-             * Format:
-             * "parameter code"|"duration code"|"reported unit code"|"method code"
-             */
-            val = systemVariable.fetchByName("air_pressure_constants").getValue();
-            tempArray = val.split(escape + delim);
-            pressureParameter = tempArray[0];
-            pressureDurationCode = tempArray[1];
-            pressureReportedUnit = tempArray[2];
-            pressureMethodCode = tempArray[3];
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_pressure_constants"),
-                    e);
-            throw e;
-        }
-
-        try {
-            /*
-             * Constants for temperature strings.
-             * 
-             * Format:
-             * "parameter code"|"duration code"|"reported unit code"|"method code"
-             */
-            val = systemVariable.fetchByName("air_temperature_constants").getValue();
-            tempArray = val.split(escape + delim);
-            temperatureParameter = tempArray[0];
-            temperatureDurationCode = tempArray[1];
-            temperatureReportedUnit = tempArray[2];
-            temperatureMethodCode = tempArray[3];
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    Messages.get()
-                            .systemVariable_missingInvalidSystemVariable("air_temperature_constants"),
-                    e);
-            throw e;
-        }
-
-        status = new ReportStatus();
-
-        /*
-         * recover all the params and build a specific where clause
-         */
-        param = ReportUtil.getMapParameter(paramList);
-
-        frDate = ReportUtil.getSingleParameter(param, "FROM_DATE");
-        tDate = ReportUtil.getSingleParameter(param, "TO_DATE");
-        accession = ReportUtil.getSingleParameter(param, "ACCESSION");
-        action = ReportUtil.getSingleParameter(param, "ACTION");
-        action = dictionary.fetchById(Integer.parseInt(action)).getEntry();
-
-        if (DataBaseUtil.isEmpty(action))
-            throw new InconsistencyException(Messages.get().airQuality_noActionException());
-
-        if (frDate == null || tDate == null) {
-            if (accession == null)
                 /*
-                 * This is the case where there is not enough data to query for
-                 * samples. One or both of the dates is missing, and the
-                 * accession number is missing.
+                 * Report to organization for air quality samples.
+                 * 
+                 * Format: "organization id"|"organization attention"
                  */
-                throw new InconsistencyException(Messages.get().airQuality_noDataException());
-
-            sms = new ArrayList<SampleManager1>();
-            sms.add(sample.fetchByAccession(Integer.parseInt(accession),
-                                            SampleManager1.Load.AUXDATA,
-                                            SampleManager1.Load.RESULT));
-        } else if (accession == null) {
-            fields = new ArrayList<QueryData>();
-            field = new QueryData();
-            field.setQuery(DataBaseUtil.concatWithSeparator(frDate, "..", tDate));
-            field.setKey(SampleMeta.getCollectionDate());
-            field.setType(QueryData.Type.DATE);
-            fields.add(field);
-
-            field = new QueryData();
-            field.setQuery(reportTo);
-            field.setKey(SampleMeta.getSampleOrgOrganizationId());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-
-            field = new QueryData();
-            field.setQuery(DataBaseUtil.toString(Constants.dictionary().ORG_REPORT_TO));
-            field.setKey(SampleMeta.getSampleOrgTypeId());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-
-            field = new QueryData();
-            field.setQuery(attention);
-            field.setKey(SampleMeta.getSampleOrgOrganizationAttention());
-            field.setType(QueryData.Type.STRING);
-            fields.add(field);
-
-            query = new Query();
-            query.setFields(fields);
-            try {
-                sms = sample.fetchByQuery(fields,
-                                          0,
-                                          -1,
-                                          SampleManager1.Load.AUXDATA,
-                                          SampleManager1.Load.RESULT);
+                val = systemVariable.fetchByName("air_report_to").getValue();
+                tempArray = val.split(escape + delim);
+                reportTo = DataBaseUtil.trim(tempArray[0]);
+                attention = DataBaseUtil.trim(tempArray[1]);
             } catch (Exception e) {
-                log.log(Level.SEVERE, e.getMessage());
-                return status;
-            }
-        } else {
-            /*
-             * This is the case where there is too much data to query for
-             * samples. Both dates are filled and the accession number is
-             * filled.
-             */
-            throw new InconsistencyException(Messages.get().airQuality_tooMuchDataException());
-        }
-
-        samples = new HashMap<String, ArrayList<SampleManager1>>();
-        analyteIds = new HashSet<Integer>();
-        unitIds = new HashSet<Integer>();
-        testIds = new HashSet<Integer>();
-        problemSamples = new HashMap<Integer, Datetime>();
-        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
-
-        /*
-         * separate the samples for each site, find duplicate samples, and find
-         * problem samples
-         */
-        for (SampleManager1 sm : sms) {
-            analysisCount = 0;
-            if (DataBaseUtil.isDifferent(Constants.dictionary().SAMPLE_RELEASED, sm.getSample()
-                                                                                   .getStatusId())) {
-                problemSamples.put(sm.getSample().getAccessionNumber(), sm.getSample()
-                                                                          .getCollectionDate());
-                continue;
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_report_to");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
             }
 
+            airDir = null;
+            try {
+                /*
+                 * Location that all files are output to.
+                 */
+                airDir = systemVariable.fetchByName("air_report_directory").getValue();
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_report_directory");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Test ids and analyte names for sulfate and nitrate string
+                 * creation.
+                 * 
+                 * Format: "test id";"sulfate analyte";"nitrate analyte"|repeat
+                 * if necessary
+                 */
+                val = systemVariable.fetchByName("air_sulfate_nitrate_tests").getValue();
+                tempArray = val.split(escape + delim);
+                sulfateNitrateTests = new ArrayList<Integer>();
+                sulfateAnalytes = new ArrayList<String>();
+                nitrateAnalytes = new ArrayList<String>();
+                for (int i = 0; i < tempArray.length; i++ ) {
+                    analyteArray = tempArray[i].split(";");
+                    sulfateNitrateTests.add(Integer.parseInt(analyteArray[0]));
+                    sulfateAnalytes.add(analyteArray[1]);
+                    nitrateAnalytes.add(analyteArray[2]);
+                }
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_sulfate_nitrate_tests");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Test ids, method codes, and duration codes for air toxics
+                 * tests.
+                 * 
+                 * Format: "test id";"method code";"duration code"|repeating
+                 */
+                val = systemVariable.fetchByName("air_toxics_tests").getValue();
+                tempArray = val.split(escape + delim);
+                airToxicsTests = new ArrayList<Integer>();
+                methodCodes = new HashMap<Integer, String>();
+                durationCodes = new HashMap<Integer, String>();
+                for (int i = 0; i < tempArray.length; i++ ) {
+                    codeArray = tempArray[i].split(";");
+                    testId = Integer.parseInt(codeArray[0]);
+                    methodCodes.put(testId, codeArray[1]);
+                    durationCodes.put(testId, codeArray[2]);
+                    airToxicsTests.add(testId);
+                }
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_toxics_tests");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Test id and filter lot blank for metal lead test.
+                 * 
+                 * Format: "test id"|"lead filter lot blank"
+                 */
+                val = systemVariable.fetchByName("air_metal_lead_test").getValue();
+                tempArray = val.split(escape + delim);
+                metalLeadTest = Integer.parseInt(tempArray[0]);
+                metalLeadFilterLotBlank = Double.parseDouble(tempArray[1]);
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_metal_lead_test");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Test id and filter lot blank for metal manganese test.
+                 * 
+                 * Format: "test id"|"manganese filter lot blank"
+                 */
+                val = systemVariable.fetchByName("air_metal_manganese_test").getValue();
+                tempArray = val.split(escape + delim);
+                metalManganeseTest = Integer.parseInt(tempArray[0]);
+                metalManganeseFilterLotBlank = Double.parseDouble(tempArray[1]);
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_metal_manganese_test");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Test id for metal manganese accuracy test.
+                 */
+                metalManganeseAccuracyTest = Integer.parseInt(systemVariable.fetchByName("air_metal_mn_accuracy_test")
+                                                                            .getValue());
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_metal_mn_accuracy_test");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Constant data for "Total Tolualdehydes" analyte.
+                 * 
+                 * Format: "parameter code"|"duration code"|"method code"
+                 */
+                val = systemVariable.fetchByName("air_total_tolualdehydes").getValue();
+                tempArray = val.split(escape + delim);
+                ttdsParameterCode = tempArray[0];
+                ttdsDurationCode = tempArray[1];
+                ttdsMethodCode = tempArray[2];
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_total_tolualdehydes");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Constant data for "TNMOC,Speciated" analyte.
+                 * 
+                 * Format: "parameter code"|"duration code"|"method code"
+                 */
+                val = systemVariable.fetchByName("air_tnmoc_speciated").getValue();
+                tempArray = val.split(escape + delim);
+                tnmocParameterCode = tempArray[0];
+                tnmocDurationCode = tempArray[1];
+                tnmocMethodCode = tempArray[2];
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_tnmoc_speciated");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Qualifier code constants for air toxics "under limit"
+                 * qualifier
+                 * 
+                 * Format: "qualifier code"|"Qualifier result string",repeating
+                 */
+                val = systemVariable.fetchByName("air_qualifier_code").getValue();
+                tempArray = val.split(escape + delim);
+                qualifierCode = tempArray[0];
+                tempArray = tempArray[1].split(",");
+                qualifierStrings = new ArrayList<String>();
+                for (int i = 0; i < tempArray.length; i++ )
+                    qualifierStrings.add(tempArray[i]);
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_qualifier_code");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Constants for pressure strings.
+                 * 
+                 * Format:
+                 * "parameter code"|"duration code"|"reported unit code"|
+                 * "method code"
+                 */
+                val = systemVariable.fetchByName("air_pressure_constants").getValue();
+                tempArray = val.split(escape + delim);
+                pressureParameter = tempArray[0];
+                pressureDurationCode = tempArray[1];
+                pressureReportedUnit = tempArray[2];
+                pressureMethodCode = tempArray[3];
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_pressure_constants");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                /*
+                 * Constants for temperature strings.
+                 * 
+                 * Format:
+                 * "parameter code"|"duration code"|"reported unit code"|
+                 * "method code"
+                 */
+                val = systemVariable.fetchByName("air_temperature_constants").getValue();
+                tempArray = val.split(escape + delim);
+                temperatureParameter = tempArray[0];
+                temperatureDurationCode = tempArray[1];
+                temperatureReportedUnit = tempArray[2];
+                temperatureMethodCode = tempArray[3];
+            } catch (Exception e) {
+                errorMessage = Messages.get()
+                                       .systemVariable_missingInvalidSystemVariable("air_temperature_constants");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            status = new ReportStatus();
+
             /*
-             * find air toxic duplicates
+             * recover all the params and build a specific where clause
              */
-            if (getAnalyses(sm) != null) {
-                for (AnalysisViewDO data : getAnalyses(sm)) {
-                    if ( !DataBaseUtil.isDifferent(Constants.dictionary().ANALYSIS_RELEASED,
-                                                   data.getStatusId())) {
-                        analysisCount++ ;
-                        if (data.getUnitOfMeasureId() != null)
-                            unitIds.add(data.getUnitOfMeasureId());
-                        testIds.add(data.getTestId());
+            param = ReportUtil.getMapParameter(paramList);
+
+            fromDate = ReportUtil.getStringParameter(param, "FROM_DATE");
+            toDate = ReportUtil.getStringParameter(param, "TO_DATE");
+            accession = ReportUtil.getStringParameter(param, "ACCESSION");
+            action = ReportUtil.getStringParameter(param, "ACTION");
+            action = dictionary.fetchById(Integer.parseInt(action)).getEntry();
+
+            if (DataBaseUtil.isEmpty(action))
+                throw new InconsistencyException(Messages.get().airQuality_noActionException());
+
+            if (fromDate == null || toDate == null) {
+                if (accession == null)
+                    /*
+                     * This is the case where there is not enough data to query
+                     * for samples. One or both of the dates is missing, and the
+                     * accession number is missing.
+                     */
+                    throw new InconsistencyException(Messages.get().airQuality_noDataException());
+
+                sms = new ArrayList<SampleManager1>();
+                sms.add(sample.fetchByAccession(Integer.parseInt(accession),
+                                                SampleManager1.Load.AUXDATA,
+                                                SampleManager1.Load.RESULT,
+                                                SampleManager1.Load.QA));
+            } else if (accession == null) {
+                fields = new ArrayList<QueryData>();
+                field = new QueryData();
+                field.setQuery(DataBaseUtil.concatWithSeparator(fromDate, "..", toDate));
+                field.setKey(SampleMeta.getCollectionDate());
+                field.setType(QueryData.Type.DATE);
+                fields.add(field);
+
+                field = new QueryData();
+                field.setQuery(reportTo);
+                field.setKey(SampleMeta.getSampleOrgOrganizationId());
+                field.setType(QueryData.Type.INTEGER);
+                fields.add(field);
+
+                field = new QueryData();
+                field.setQuery(DataBaseUtil.toString(Constants.dictionary().ORG_REPORT_TO));
+                field.setKey(SampleMeta.getSampleOrgTypeId());
+                field.setType(QueryData.Type.INTEGER);
+                fields.add(field);
+
+                field = new QueryData();
+                field.setQuery(attention);
+                field.setKey(SampleMeta.getSampleOrgOrganizationAttention());
+                field.setType(QueryData.Type.STRING);
+                fields.add(field);
+
+                query = new Query();
+                query.setFields(fields);
+                try {
+                    sms = sample.fetchByQuery(fields,
+                                              0,
+                                              -1,
+                                              SampleManager1.Load.AUXDATA,
+                                              SampleManager1.Load.RESULT,
+                                              SampleManager1.Load.QA);
+                } catch (NotFoundException e) {
+                    status.setMessage(Messages.get().airQuality_noSamples());
+                    return status;
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, e.getMessage());
+                    return status;
+                }
+            } else {
+                /*
+                 * This is the case where there is too much data to query for
+                 * samples. Both dates are filled and the accession number is
+                 * filled.
+                 */
+                throw new InconsistencyException(Messages.get().airQuality_tooMuchDataException());
+            }
+            status.setMessage(Messages.get().gen_numberCases(DataBaseUtil.toString(sms.size())));
+            samples = new HashMap<String, ArrayList<SampleManager1>>();
+            analyteIds = new HashSet<Integer>();
+            unitIds = new HashSet<Integer>();
+            testIds = new HashSet<Integer>();
+            orgIds = new HashSet<Integer>();
+            sectionMap = new HashMap<Integer, Integer>();
+            problemSamples = new HashMap<Integer, Datetime>();
+
+            /*
+             * separate the samples for each site, find duplicate samples, and
+             * find problem samples
+             */
+            for (SampleManager1 sm : sms) {
+                analysisCount = 0;
+                if (DataBaseUtil.isDifferent(Constants.dictionary().SAMPLE_RELEASED,
+                                             sm.getSample().getStatusId())) {
+                    problemSamples.put(sm.getSample().getAccessionNumber(), sm.getSample()
+                                                                              .getCollectionDate());
+                    continue;
+                }
+
+                /*
+                 * find air toxic duplicates
+                 */
+                if (getAnalyses(sm) != null) {
+                    for (AnalysisViewDO data : getAnalyses(sm)) {
+                        if ( !DataBaseUtil.isDifferent(Constants.dictionary().ANALYSIS_RELEASED,
+                                                       data.getStatusId())) {
+                            analysisCount++ ;
+                            if (data.getUnitOfMeasureId() != null)
+                                unitIds.add(data.getUnitOfMeasureId());
+                            testIds.add(data.getTestId());
+                            if (sectionMap.get(data.getSectionId()) == null) {
+                                orgId = section.fetchById(data.getSectionId()).getOrganizationId();
+                                if (orgId != null) {
+                                    sectionMap.put(data.getSectionId(), orgId);
+                                    orgIds.add(orgId);
+                                }
+                            }
+
+                        }
                     }
                 }
+
+                /*
+                 * if this sample doesn't have any analyses that strings can be
+                 * created from
+                 */
+                if (analysisCount < 1) {
+                    problemSamples.put(sm.getSample().getAccessionNumber(), sm.getSample()
+                                                                              .getCollectionDate());
+                    continue;
+                }
+
+                /*
+                 * get all analyte IDs to find the corresponding codes
+                 */
+                for (ResultViewDO data : getResults(sm)) {
+                    if (DataBaseUtil.isSame(data.getIsColumn(), "N"))
+                        analyteIds.add(data.getAnalyteId());
+                }
+
+                /*
+                 * create separate lists for each sampling site
+                 */
+                if ( !samples.keySet().contains(sm.getSampleEnvironmental().getLocation()))
+                    samples.put(sm.getSampleEnvironmental().getLocation(),
+                                new ArrayList<SampleManager1>());
+                samples.get(sm.getSampleEnvironmental().getLocation()).add(sm);
             }
 
             /*
-             * if this sample doesn't have any analyses that strings can be
-             * created from
+             * get the air quality codes corresponding with the analytes and
+             * units that are used
              */
-            if (analysisCount < 1) {
-                problemSamples.put(sm.getSample().getAccessionNumber(), sm.getSample()
-                                                                          .getCollectionDate());
-                continue;
+            try {
+                getAnalyteCodes(analyteIds);
+            } catch (Exception e) {
+                errorMessage = Messages.get().airQuality_retrievalError("analyte codes");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
             }
 
-            /*
-             * get all analyte IDs to find the corresponding codes
-             */
-            for (ResultViewDO data : getResults(sm)) {
-                if (data.getIsColumn().equals("N"))
-                    analyteIds.add(data.getAnalyteId());
+            try {
+                getUnitCodes(unitIds);
+            } catch (Exception e) {
+                errorMessage = Messages.get().airQuality_retrievalError("unit codes");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
             }
 
+            try {
+                getAnalyteParameters(testIds);
+            } catch (Exception e) {
+                errorMessage = Messages.get().airQuality_retrievalError("analyte parameters");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            try {
+                getAgencyCodes(orgIds);
+            } catch (Exception e) {
+                errorMessage = Messages.get().airQuality_retrievalError("agency codes");
+                log.log(Level.SEVERE, errorMessage, e);
+                throw new Exception(errorMessage);
+            }
+
+            speciationStrings = new HashMap<String, ArrayList<String>>();
+            metalRawStrings = new HashMap<String, ArrayList<String>>();
+            airToxicRawStrings = new HashMap<String, ArrayList<String>>();
+            airToxicPrecisionStrings = new HashMap<String, ArrayList<String>>();
+            pressureStrings = new HashMap<String, ArrayList<String>>();
+            temperatureStrings = new HashMap<String, ArrayList<String>>();
             /*
-             * create separate lists for each sampling site
+             * create strings for each valid analysis
              */
-            if ( !samples.keySet().contains(sm.getSampleEnvironmental().getLocation()))
-                samples.put(sm.getSampleEnvironmental().getLocation(),
-                            new ArrayList<SampleManager1>());
-            samples.get(sm.getSampleEnvironmental().getLocation()).add(sm);
-        }
+            for (String location : samples.keySet()) {
+                for (SampleManager1 sm : samples.get(location)) {
+                    pressureTempString = false;
+                    if (getResults(sm) != null) {
+                        for (AnalysisViewDO data : getAnalyses(sm)) {
+                            if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
+                                continue;
+                            if (sulfateNitrateTests.contains(data.getTestId())) {
+                                try {
+                                    stringList = getSulfateNitrateStrings(sm, action, data.getId());
+                                } catch (Exception e) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                if (stringList == null || stringList.size() < 1) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                for (String key : stringList.keySet()) {
+                                    if (speciationStrings.get(key) == null)
+                                        speciationStrings.put(key, new ArrayList<String>());
+                                    speciationStrings.get(key).addAll(stringList.get(key));
+                                }
+                            } else if (airToxicsTests.contains(data.getTestId())) {
+                                try {
+                                    stringList = getAirToxicsStrings(sm,
+                                                                     data.getTestId(),
+                                                                     action,
+                                                                     qualifierCode,
+                                                                     qualifierStrings,
+                                                                     data.getId());
+                                } catch (Exception e) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                if (stringList == null) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                for (String key : stringList.keySet()) {
+                                    if (airToxicRawStrings.get(key) == null)
+                                        airToxicRawStrings.put(key, new ArrayList<String>());
+                                    airToxicRawStrings.get(key).addAll(stringList.get(key));
+                                }
+                            } else if (metalLeadTest.equals(data.getTestId())) {
+                                try {
+                                    stringList = getMetalsStrings(sm,
+                                                                  data.getTestId(),
+                                                                  action,
+                                                                  data.getId(),
+                                                                  pressureTempString);
+                                } catch (Exception e) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                if (stringList == null || stringList.size() < 1) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
 
-        /*
-         * get the air quality codes corresponding with the analytes and units
-         * that are used
-         */
-        try {
-            getAnalyteCodes(analyteIds);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw new Exception("There was a problem retrieving analyte codes");
-        }
-
-        try {
-            getUnitCodes(unitIds);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw new Exception("There was a problem retrieving unit codes");
-        }
-
-        try {
-            getAnalyteParameters(testIds);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw new Exception("There was a problem retrieving analyte parameters");
-        }
-
-        speciationStrings = new HashMap<String, ArrayList<String>>();
-        metalRawStrings = new HashMap<String, ArrayList<String>>();
-        airToxicRawStrings = new HashMap<String, ArrayList<String>>();
-        airToxicPrecisionStrings = new HashMap<String, ArrayList<String>>();
-        pressureStrings = new HashMap<String, ArrayList<String>>();
-        temperatureStrings = new HashMap<String, ArrayList<String>>();
-        /*
-         * create strings for each valid analysis
-         */
-        for (String location : samples.keySet()) {
-            for (SampleManager1 sm : samples.get(location)) {
-                replicateTests = null;
-                pressureTempString = false;
-                if (getResults(sm) != null) {
-                    for (AnalysisViewDO data : getAnalyses(sm)) {
-                        /*
-                         * if an analysis with the same test ID has already been
-                         * processed, then the replicate strings have also
-                         * already been generated and the analysis can be
-                         * skipped
-                         */
-                        if (replicateTests != null && replicateTests.contains(data.getTestId()))
-                            continue;
-                        if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
-                            continue;
-                        if (sulfateNitrateTests.contains(data.getTestId())) {
-                            try {
-                                stringList = getSulfateNitrateStrings(sm, action, data.getId());
-                            } catch (Exception e) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            if (stringList == null || stringList.size() < 1) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            for (String key : stringList.keySet()) {
-                                if (speciationStrings.get(key) == null)
-                                    speciationStrings.put(key, new ArrayList<String>());
-                                speciationStrings.get(key).addAll(stringList.get(key));
-                            }
-                        } else if (airToxicsTests.contains(data.getTestId())) {
-                            try {
-                                stringList = getAirToxicsStrings(sm,
-                                                                 data.getTestId(),
-                                                                 action,
-                                                                 qualifierCode,
-                                                                 qualifierStrings,
-                                                                 data.getId());
-                            } catch (Exception e) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            if (stringList == null) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            for (String key : stringList.keySet()) {
-                                if (airToxicRawStrings.get(key) == null)
-                                    airToxicRawStrings.put(key, new ArrayList<String>());
-                                airToxicRawStrings.get(key).addAll(stringList.get(key));
-                            }
-                            /*
-                             * there should only be one set of raw data strings
-                             * for a replicate air toxics sample
-                             */
-                            if (replicate) {
-                                if (replicateTests == null)
-                                    replicateTests = new HashSet<Integer>();
-                                replicateTests.add(data.getTestId());
-                                replicate = false;
-                            }
-                        } else if (metalLeadTest.equals(data.getTestId())) {
-                            try {
-                                stringList = getMetalsStrings(sm,
-                                                              data.getTestId(),
-                                                              action,
-                                                              data.getId(),
-                                                              pressureTempString);
-                            } catch (Exception e) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            if (stringList == null || stringList.size() < 1) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-
-                            for (String key : stringList.keySet()) {
-                                for (int i = 0; i < stringList.get(key).size(); i++ ) {
-                                    metal = stringList.get(key).get(i);
-                                    if (DataBaseUtil.isEmpty(metal))
-                                        continue;
-                                    if (pressureTempString == false && i == 0) {
-                                        if (pressureStrings.get(key) == null)
-                                            pressureStrings.put(key, new ArrayList<String>());
-                                        pressureStrings.get(key).add(metal);
-                                        continue;
-                                    }
-                                    if (pressureTempString == false && i == 1) {
-                                        if (temperatureStrings.get(key) == null)
-                                            temperatureStrings.put(key, new ArrayList<String>());
-                                        temperatureStrings.get(key).add(metal);
-                                        continue;
-                                    }
-                                    if (metal.substring(0, 2).equals(rawDataType)) {
-                                        if (metalRawStrings.get(key) == null)
-                                            metalRawStrings.put(key, new ArrayList<String>());
-                                        metalRawStrings.get(key).add(metal);
+                                for (String key : stringList.keySet()) {
+                                    for (int i = 0; i < stringList.get(key).size(); i++ ) {
+                                        metal = stringList.get(key).get(i);
+                                        if (DataBaseUtil.isEmpty(metal))
+                                            continue;
+                                        if (pressureTempString == false && i == 0) {
+                                            if (pressureStrings.get(key) == null)
+                                                pressureStrings.put(key, new ArrayList<String>());
+                                            pressureStrings.get(key).add(metal);
+                                            continue;
+                                        }
+                                        if (pressureTempString == false && i == 1) {
+                                            if (temperatureStrings.get(key) == null)
+                                                temperatureStrings.put(key, new ArrayList<String>());
+                                            temperatureStrings.get(key).add(metal);
+                                            continue;
+                                        }
+                                        if (metal.substring(0, 2).equals(rawDataType)) {
+                                            if (metalRawStrings.get(key) == null)
+                                                metalRawStrings.put(key, new ArrayList<String>());
+                                            metalRawStrings.get(key).add(metal);
+                                        }
                                     }
                                 }
-                            }
-                            pressureTempString = true;
-                        } else if (metalManganeseAccuracyTest.equals(data.getTestId())) {
-                            try {
-                                stringList = getMetalsStrings(sm,
-                                                              data.getTestId(),
-                                                              action,
-                                                              data.getId(),
-                                                              pressureTempString);
-                            } catch (Exception e) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            if (stringList == null) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            for (String key : stringList.keySet()) {
-                                for (int i = 0; i < stringList.get(key).size(); i++ ) {
-                                    metal = stringList.get(key).get(i);
-                                    if (DataBaseUtil.isEmpty(metal))
-                                        continue;
-                                    if (pressureTempString == false && i == 0) {
-                                        if (pressureStrings.get(key) == null)
-                                            pressureStrings.put(key, new ArrayList<String>());
-                                        pressureStrings.get(key).add(metal);
-                                        continue;
-                                    }
-                                    if (pressureTempString == false && i == 1) {
-                                        if (temperatureStrings.get(key) == null)
-                                            temperatureStrings.put(key, new ArrayList<String>());
-                                        temperatureStrings.get(key).add(metal);
-                                        continue;
-                                    }
-                                    if (metal.substring(0, 2).equals(rawDataType)) {
-                                        if (metalRawStrings.get(key) == null)
-                                            metalRawStrings.put(key, new ArrayList<String>());
-                                        metalRawStrings.get(key).add(metal);
+                                pressureTempString = true;
+                            } else if (metalManganeseAccuracyTest.equals(data.getTestId())) {
+                                try {
+                                    stringList = getMetalsStrings(sm,
+                                                                  data.getTestId(),
+                                                                  action,
+                                                                  data.getId(),
+                                                                  pressureTempString);
+                                } catch (Exception e) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                if (stringList == null) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                for (String key : stringList.keySet()) {
+                                    for (int i = 0; i < stringList.get(key).size(); i++ ) {
+                                        metal = stringList.get(key).get(i);
+                                        if (DataBaseUtil.isEmpty(metal))
+                                            continue;
+                                        if (pressureTempString == false && i == 0) {
+                                            if (pressureStrings.get(key) == null)
+                                                pressureStrings.put(key, new ArrayList<String>());
+                                            pressureStrings.get(key).add(metal);
+                                            continue;
+                                        }
+                                        if (pressureTempString == false && i == 1) {
+                                            if (temperatureStrings.get(key) == null)
+                                                temperatureStrings.put(key, new ArrayList<String>());
+                                            temperatureStrings.get(key).add(metal);
+                                            continue;
+                                        }
+                                        if (metal.substring(0, 2).equals(rawDataType)) {
+                                            if (metalRawStrings.get(key) == null)
+                                                metalRawStrings.put(key, new ArrayList<String>());
+                                            metalRawStrings.get(key).add(metal);
+                                        }
                                     }
                                 }
-                            }
-                            pressureTempString = true;
-                        } else if (metalManganeseTest.equals(data.getTestId())) {
-                            try {
-                                stringList = getMetalsStrings(sm,
-                                                              data.getTestId(),
-                                                              action,
-                                                              data.getId(),
-                                                              pressureTempString);
-                            } catch (Exception e) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            if (stringList == null) {
-                                problemSamples.put(sm.getSample().getAccessionNumber(),
-                                                   sm.getSample().getCollectionDate());
-                                continue;
-                            }
-                            for (String key : stringList.keySet()) {
-                                for (int i = 0; i < stringList.get(key).size(); i++ ) {
-                                    metal = stringList.get(key).get(i);
-                                    if (DataBaseUtil.isEmpty(metal))
-                                        continue;
-                                    if (pressureTempString == false && i == 0) {
-                                        if (pressureStrings.get(key) == null)
-                                            pressureStrings.put(key, new ArrayList<String>());
-                                        pressureStrings.get(key).add(metal);
-                                        continue;
-                                    }
-                                    if (pressureTempString == false && i == 1) {
-                                        if (temperatureStrings.get(key) == null)
-                                            temperatureStrings.put(key, new ArrayList<String>());
-                                        temperatureStrings.get(key).add(metal);
-                                        continue;
-                                    }
-                                    if (metal.substring(0, 2).equals(rawDataType)) {
-                                        if (metalRawStrings.get(key) == null)
-                                            metalRawStrings.put(key, new ArrayList<String>());
-                                        metalRawStrings.get(key).add(metal);
+                                pressureTempString = true;
+                            } else if (metalManganeseTest.equals(data.getTestId())) {
+                                try {
+                                    stringList = getMetalsStrings(sm,
+                                                                  data.getTestId(),
+                                                                  action,
+                                                                  data.getId(),
+                                                                  pressureTempString);
+                                } catch (Exception e) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                if (stringList == null) {
+                                    problemSamples.put(sm.getSample().getAccessionNumber(),
+                                                       sm.getSample().getCollectionDate());
+                                    continue;
+                                }
+                                for (String key : stringList.keySet()) {
+                                    for (int i = 0; i < stringList.get(key).size(); i++ ) {
+                                        metal = stringList.get(key).get(i);
+                                        if (DataBaseUtil.isEmpty(metal))
+                                            continue;
+                                        if (pressureTempString == false && i == 0) {
+                                            if (pressureStrings.get(key) == null)
+                                                pressureStrings.put(key, new ArrayList<String>());
+                                            pressureStrings.get(key).add(metal);
+                                            continue;
+                                        }
+                                        if (pressureTempString == false && i == 1) {
+                                            if (temperatureStrings.get(key) == null)
+                                                temperatureStrings.put(key, new ArrayList<String>());
+                                            temperatureStrings.get(key).add(metal);
+                                            continue;
+                                        }
+                                        if (metal.substring(0, 2).equals(rawDataType)) {
+                                            if (metalRawStrings.get(key) == null)
+                                                metalRawStrings.put(key, new ArrayList<String>());
+                                            metalRawStrings.get(key).add(metal);
+                                        }
                                     }
                                 }
+                                pressureTempString = true;
                             }
-                            pressureTempString = true;
                         }
                     }
                 }
             }
-        }
 
-        /*
-         * write strings out to text files
-         */
-        fileWritten = false;
-        for (String key : speciationStrings.keySet()) {
-            fileWritten = true;
-            File file = File.createTempFile("speciation_" + key + "_", ".txt", new File(airDir));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            for (String s : speciationStrings.get(key)) {
-                writer.write(s + "\n");
-            }
-
-            writer.close();
-        }
-        for (String key : airToxicRawStrings.keySet()) {
-            fileWritten = true;
-            File file = File.createTempFile("airtoxics_raw_" + key + "_", ".txt", new File(airDir));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            for (String s : airToxicRawStrings.get(key)) {
-                writer.write(s + "\n");
-            }
-
-            writer.close();
-        }
-        for (String key : airToxicPrecisionStrings.keySet()) {
-            fileWritten = true;
-            File file = File.createTempFile("airtoxics_precision_" + key + "_",
-                                            ".txt",
-                                            new File(airDir));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            for (String s : airToxicPrecisionStrings.get(key)) {
-                writer.write(s + "\n");
-            }
-
-            writer.close();
-        }
-        for (String key : metalRawStrings.keySet()) {
-            fileWritten = true;
-            File file = File.createTempFile("metals_raw_" + key + "_", ".txt", new File(airDir));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            for (String s : metalRawStrings.get(key)) {
-                writer.write(s + "\n");
-            }
-
-            writer.close();
-        }
-        for (String key : pressureStrings.keySet()) {
-            fileWritten = true;
-            File file = File.createTempFile("pressure_" + key + "_", ".txt", new File(airDir));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            for (String s : pressureStrings.get(key)) {
-                writer.write(s + "\n");
-            }
-
-            writer.close();
-        }
-        for (String key : temperatureStrings.keySet()) {
-            fileWritten = true;
-            File file = File.createTempFile("temperature_" + key + "_", ".txt", new File(airDir));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            for (String s : temperatureStrings.get(key)) {
-                writer.write(s + "\n");
-            }
-
-            writer.close();
-        }
-        /*
-         * if there are any problem samples, throw an exception to let the user
-         * know the accession numbers
-         */
-        if (problemSamples.size() > 0) {
-            errorMessage = "Strings were not created for the following samples:\n";
-            for (Integer i : problemSamples.keySet()) {
-                d = problemSamples.get(i);
-                errorMessage += i + " (" + dateTimeFormat.format(d.getDate()) + ")\n";
+            /*
+             * write strings out to text files
+             */
+            fileWritten = writeFile(speciationStrings, "speciation_", airDir) |
+                          writeFile(airToxicRawStrings, "airtoxics_raw_", airDir) |
+                          writeFile(airToxicPrecisionStrings, "airtoxics_precision_", airDir) |
+                          writeFile(metalRawStrings, "metals_raw_", airDir) |
+                          writeFile(pressureStrings, "pressure_", airDir) |
+                          writeFile(temperatureStrings, "temperature_", airDir);
+            /*
+             * if there are any problem samples, throw an exception to let the
+             * user know the accession numbers
+             */
+            if (problemSamples.size() > 0) {
+                eMessage = new StringBuffer();
+                eMessage.append("Strings were not created for the following samples:")
+                        .append(System.getProperty("line.separator"));
+                for (Integer i : problemSamples.keySet()) {
+                    dt = problemSamples.get(i);
+                    eMessage.append(i)
+                            .append(" (")
+                            .append(ReportUtil.toString(dt.getDate(),
+                                                        Messages.get().dateCompressedPattern()))
+                            .append(")")
+                            .append(System.getProperty("line.separator"));
+                }
+                if (fileWritten)
+                    eMessage.append("Files were written to: ").append(airDir);
+                status.setMessage(eMessage.toString());
+                throw new Exception(eMessage.toString());
             }
             if (fileWritten)
-                errorMessage += "Files were written to: " + airDir;
-            status.setMessage(errorMessage);
-            throw new Exception(errorMessage);
+                status.setMessage("Files were written to: " + airDir);
+            else
+                status.setMessage("No strings were generated");
+            return status;
+        } finally {
+            clearVariables();
         }
-        if (fileWritten)
-            status.setMessage("Files were written to: " + airDir);
-        return status;
     }
 
     /**
@@ -948,9 +894,8 @@ public class AirQualityExportBean {
                                                                         String action,
                                                                         Integer analysisId) throws Exception {
         int sulfateDurationCd, nitrateDurationCd, sulfateMethodCd, nitrateMethodCd;
-        String sulfateValue, nitrateValue, sulfateCode, nitrateCode, stateCode, countyCode, siteId, pocSulfate, pocNitrate, volume, nullDataCd, collectionFreq, date, reportedUnit, sulfateAlternateMethodDetectableLimit, nitrateAlternateMethodDetectableLimit, key;
+        String sulfateValue, nitrateValue, sulfateCode, nitrateCode, stateCode, countyCode, siteId, pocSulfate, pocNitrate, volume, nullDataCd, collectionFreq, cdate, reportedUnit, sulfateAlternateMethodDetectableLimit, nitrateAlternateMethodDetectableLimit, key;
         StringBuilder ssb, nsb;
-        SimpleDateFormat dateTimeFormat;
         AnalyteParameterViewDO sulfateParameter, nitrateParameter;
         DecimalFormat threeDigits, twoDecimals;
         HashMap<String, String> auxData;
@@ -964,19 +909,20 @@ public class AirQualityExportBean {
         twoDecimals.setRoundingMode(RoundingMode.HALF_UP);
         sulfateValue = nitrateValue = sulfateCode = nitrateCode = reportedUnit = sulfateAlternateMethodDetectableLimit = nitrateAlternateMethodDetectableLimit = null;
         sulfateDurationCd = nitrateDurationCd = sulfateMethodCd = nitrateMethodCd = 0;
-        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
 
         /*
          * get auxiliary data from the sample
          */
         auxData = auxDataHelper.fillAirQualityAuxData(sm);
+        pocSulfate = auxData.get(AuxDataHelperBean.POC_SULFATE);
+        pocNitrate = auxData.get(AuxDataHelperBean.POC_NITRATE);
+        if (pocNitrate == null || pocSulfate == null)
+            return null;
         volume = auxData.get(AuxDataHelperBean.VOLUME);
         nullDataCd = auxData.get(AuxDataHelperBean.NULL_DATA_CODE);
         stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
         countyCode = auxData.get(AuxDataHelperBean.COUNTY_CODE);
         siteId = auxData.get(AuxDataHelperBean.SITE_ID);
-        pocSulfate = auxData.get(AuxDataHelperBean.POC_SULFATE);
-        pocNitrate = auxData.get(AuxDataHelperBean.POC_NITRATE);
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
         key = stateCode + "_" + countyCode + "_" + siteId;
 
@@ -1050,14 +996,15 @@ public class AirQualityExportBean {
                       nitrateCode,
                       pocNitrate);
 
-        date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
+        cdate = ReportUtil.toString(sm.getSample().getCollectionDate(),
+                                    Messages.get().dateCompressedPattern());
         ssb.append(sulfateDurationCd)
            .append(delim)
            .append(reportedUnit)
            .append(delim)
            .append(threeDigits.format(sulfateMethodCd))
            .append(delim)
-           .append(date)
+           .append(cdate)
            .append(delim)
            .append(time)
            .append(delim);
@@ -1067,7 +1014,7 @@ public class AirQualityExportBean {
            .append(delim)
            .append(threeDigits.format(nitrateMethodCd))
            .append(delim)
-           .append(date)
+           .append(cdate)
            .append(delim)
            .append(time)
            .append(delim);
@@ -1142,12 +1089,11 @@ public class AirQualityExportBean {
                                                                    String qualifierCode,
                                                                    ArrayList<String> qualifierStrings,
                                                                    Integer analysisId) throws Exception {
-        boolean addTds, addAll;
-        Integer analysisCount;
-        Double ttds, tmnoc;
+        boolean addTds, addAll, isTolualdehyde;
+        Double ttds, tmnoc, maxMdl;
         String stateCode, countyCode, siteId, parameter, durationCode, methodCode, poc, nullDataCd, collectionFreq, date, reportedUnit, value, mdl, qualifier, key, qualifiers[];
         StringBuilder sb;
-        SimpleDateFormat dateTimeFormat;
+        DecimalFormat number;
         HashMap<String, ArrayList<String>> airToxicsStrings;
         HashMap<String, String> auxData;
 
@@ -1165,13 +1111,14 @@ public class AirQualityExportBean {
          */
         addAll = addTds = false;
         tmnoc = ttds = null;
+        maxMdl = new Double(0);
         reportedUnit = parameter = durationCode = methodCode = null;
-        analysisCount = 0;
 
         /*
          * get auxiliary data from the sample
          */
-        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
+        number = new DecimalFormat();
+        number.setMaximumFractionDigits(6);
         auxData = auxDataHelper.fillAirQualityAuxData(sm);
         nullDataCd = auxData.get(AuxDataHelperBean.NULL_DATA_CODE);
         stateCode = auxData.get(AuxDataHelperBean.STATE_CODE);
@@ -1179,7 +1126,8 @@ public class AirQualityExportBean {
         siteId = auxData.get(AuxDataHelperBean.SITE_ID);
         poc = null;
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
-        date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
+        date = ReportUtil.toString(sm.getSample().getCollectionDate(),
+                                   Messages.get().dateCompressedPattern());
         key = stateCode + "_" + countyCode + "_" + siteId;
 
         if (getAnalyses(sm) != null) {
@@ -1198,42 +1146,41 @@ public class AirQualityExportBean {
                         poc = auxData.get(AuxDataHelperBean.POC_TO15);
                     }
                 }
+            }
+        }
 
-                /*
-                 * check if there is another released analysis with the same
-                 * test on the sample. If there is, then create replicate
-                 * strings from that analysis
-                 */
-                if (testId.equals(data.getTestId()) &&
-                    Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
-                    analysisCount++ ;
-                    if (analysisCount > 1) {
-                        /*
-                         * There should never be a null data code on a replicate
-                         * sample, so there is a problem with the sample in this
-                         * case
-                         */
-                        if ( !DataBaseUtil.isEmpty(nullDataCd))
-                            return null;
+        if (poc == null)
+            return null;
 
-                        if (airToxicPrecisionStrings.get(key) == null)
-                            airToxicPrecisionStrings.put(key, new ArrayList<String>());
+        if (getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO qa : getAnalysisQAs(sm)) {
+                if (qa.getAnalysisId().equals(analysisId) &&
+                    "replicate".equals(qa.getQaEventName())) {
+                    /*
+                     * There should never be a null data code on a replicate
+                     * sample, so there is a problem with the sample in this
+                     * case
+                     */
+                    if ( !DataBaseUtil.isEmpty(nullDataCd))
+                        return null;
 
-                        replicate = true;
-                        airToxicPrecisionStrings.get(key)
-                                                .addAll(getAirToxicsPrecisionString(sm,
-                                                                                    testId,
-                                                                                    action,
-                                                                                    stateCode,
-                                                                                    countyCode,
-                                                                                    siteId,
-                                                                                    poc,
-                                                                                    reportedUnit,
-                                                                                    date,
-                                                                                    addAll,
-                                                                                    addTds,
-                                                                                    data.getId()));
-                    }
+                    if (airToxicPrecisionStrings.get(key) == null)
+                        airToxicPrecisionStrings.put(key, new ArrayList<String>());
+                    airToxicPrecisionStrings.get(key)
+                                            .addAll(getAirToxicsPrecisionString(sm,
+                                                                                testId,
+                                                                                action,
+                                                                                stateCode,
+                                                                                countyCode,
+                                                                                siteId,
+                                                                                poc,
+                                                                                reportedUnit,
+                                                                                date,
+                                                                                addAll,
+                                                                                addTds,
+                                                                                analysisId,
+                                                                                true));
+                    return new HashMap<String, ArrayList<String>>();
                 }
             }
         }
@@ -1254,7 +1201,8 @@ public class AirQualityExportBean {
                                                                                      date,
                                                                                      addAll,
                                                                                      addTds,
-                                                                                     analysisId));
+                                                                                     analysisId,
+                                                                                     false));
             }
             /*
              * Raw data strings do not need to be generated in this case
@@ -1267,6 +1215,7 @@ public class AirQualityExportBean {
          */
         airToxicsStrings = new HashMap<String, ArrayList<String>>();
         value = mdl = qualifier = null;
+        isTolualdehyde = false;
         sb = new StringBuilder();
         if (getResults(sm) != null) {
             for (ResultViewDO data : getResults(sm)) {
@@ -1280,7 +1229,7 @@ public class AirQualityExportBean {
                  * screen
                  */
                 if (value == null) {
-                    if (data.getIsColumn().equals("N")) {
+                    if (DataBaseUtil.isSame(data.getIsColumn(), "N")) {
                         if (data.getValue() != null)
                             value = data.getValue();
                         else
@@ -1293,10 +1242,12 @@ public class AirQualityExportBean {
                              * the result value to the extra analyte values if
                              * applicable.
                              */
-                            if (addTds && data.getAnalyte().contains(tolualdehyde) &&
-                                !value.contains("<"))
+                            if (data.getAnalyte().contains(tolualdehyde))
+                                isTolualdehyde = true;
+                            if (addTds && isTolualdehyde && !value.contains("<"))
                                 ttds += Double.parseDouble(value);
-                            value = null;
+                            if ( !isTolualdehyde)
+                                value = null;
                             continue;
                         }
 
@@ -1317,6 +1268,28 @@ public class AirQualityExportBean {
                         qualifier = data.getValue();
                     else
                         qualifier = "";
+                }
+
+                /*
+                 * find the greatest MDL of the analytes being summed
+                 */
+                try {
+                    if (addAll && maxMdl < Double.valueOf(mdl)) {
+                        maxMdl = Double.valueOf(mdl);
+                    }
+                } catch (Exception e) {
+                }
+                if (isTolualdehyde) {
+                    try {
+                        if (maxMdl < Double.valueOf(mdl))
+                            maxMdl = Double.valueOf(mdl);
+                    } catch (Exception e) {
+                    }
+                    value = null;
+                    mdl = null;
+                    qualifier = null;
+                    isTolualdehyde = false;
+                    continue;
                 }
 
                 /*
@@ -1369,6 +1342,7 @@ public class AirQualityExportBean {
                      * are empty
                      */
                     sb.append(delim);
+                    // TODO here is where QA flags need to be put
                     /*
                      * determine if any string in the qualifier field matches an
                      * "under limit" string
@@ -1478,11 +1452,9 @@ public class AirQualityExportBean {
                   .append(delim)
                   .append(delim)
                   .append(delim)
+                  .append(delim)
+                  .append(number.format(maxMdl))
                   .append(delim);
-                if (addAll)
-                    sb.append(tnmocMDL).append(delim);
-                else if (addTds)
-                    sb.append(ttdsMDL).append(delim);
             } else {
                 /*
                  * there is a null data code, so the reported sample value is
@@ -1519,8 +1491,10 @@ public class AirQualityExportBean {
                                                           String countyCode, String siteId,
                                                           String poc, String reportedUnit,
                                                           String date, boolean addAll,
-                                                          boolean addTds, Integer analysisId) throws Exception {
+                                                          boolean addTds, Integer analysisId,
+                                                          boolean replicate) throws Exception {
         Double ttds, tmnoc;
+        Integer orgId;
         String parameter, value, analyte, methodCode;
         StringBuilder sb;
         ArrayList<String> precisions;
@@ -1530,6 +1504,13 @@ public class AirQualityExportBean {
             tmnoc = 0.0;
         } else if (addTds) {
             ttds = 0.0;
+        }
+        orgId = null;
+        if (getAnalyses(sm) != null) {
+            for (AnalysisViewDO data : getAnalyses(sm)) {
+                if ( !DataBaseUtil.isDifferent(data.getId(), analysisId))
+                    orgId = sectionMap.get(data.getSectionId());
+            }
         }
 
         precisions = new ArrayList<String>();
@@ -1546,7 +1527,7 @@ public class AirQualityExportBean {
                  * get all result data for this analyte before creating the
                  * string
                  */
-                if (data.getIsColumn().equals("N")) {
+                if (DataBaseUtil.isSame(data.getIsColumn(), "N")) {
                     value = data.getValue();
                     /*
                      * if the value is insignificant, a string does not need to
@@ -1594,8 +1575,10 @@ public class AirQualityExportBean {
                     sb.append(replicateAssessmentType);
                 else
                     sb.append(duplicateAssessmentType);
+                sb.append(delim);
+                if (orgId != null && agencyCodes.get(orgId) != null)
+                    sb.append(agencyCodes.get(orgId));
                 sb.append(delim)
-                  .append(delim)
                   .append(stateCode)
                   .append(delim)
                   .append(countyCode)
@@ -1649,8 +1632,10 @@ public class AirQualityExportBean {
                 sb.append(replicateAssessmentType);
             else
                 sb.append(duplicateAssessmentType);
+            sb.append(delim);
+            if (orgId != null && agencyCodes.get(orgId) != null)
+                sb.append(agencyCodes.get(orgId));
             sb.append(delim)
-              .append(delim)
               .append(stateCode)
               .append(delim)
               .append(countyCode)
@@ -1687,7 +1672,6 @@ public class AirQualityExportBean {
                                                                 String action, Integer analysisId,
                                                                 boolean pressureTempString) throws Exception {
         String sampleType, stateCode, countyCode, siteId, poc, volume, nullDataCode, stripsPerFilter, collectionFreq, date, reportedUnit, pressure, temperature, key;
-        SimpleDateFormat dateTimeFormat;
         HashMap<String, ArrayList<String>> metalsStrings;
         HashMap<String, String> auxData;
 
@@ -1720,7 +1704,6 @@ public class AirQualityExportBean {
                 reportedUnit = unitCodes.get(data.getUnitOfMeasureId());
         }
         metalsStrings = new HashMap<String, ArrayList<String>>();
-        dateTimeFormat = new SimpleDateFormat("yyyyMMdd");
 
         /*
          * get auxiliary data from the sample
@@ -1744,7 +1727,8 @@ public class AirQualityExportBean {
             return null;
         collectionFreq = auxData.get(AuxDataHelperBean.COLLECTION_FREQUENCY);
 
-        date = dateTimeFormat.format(sm.getSample().getCollectionDate().getDate());
+        date = ReportUtil.toString(sm.getSample().getCollectionDate(),
+                                   Messages.get().dateCompressedPattern());
         if (metalsStrings.get(key) == null)
             metalsStrings.put(key, new ArrayList<String>());
         if (pressureTempString == false) {
@@ -2127,18 +2111,50 @@ public class AirQualityExportBean {
     }
 
     /**
-     * get the analyte parameters for the tests in the valid analyses
+     * get the agengy codes for the valid sections/orgs
+     */
+    private void getAgencyCodes(Set<Integer> orgIds) throws Exception {
+        ArrayList<Integer> profileIds;
+
+        if (orgIds.size() < 1)
+            return;
+
+        agencyCodes = new HashMap<Integer, String>();
+        profileIds = new ArrayList<Integer>();
+        profileIds.add(Constants.dictionary().PROFILE_AIR_STRING);
+
+        for (ExchangeExternalTermViewDO data : exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(Constants.table().ORGANIZATION,
+                                                                                                                  orgIds,
+                                                                                                                  profileIds)) {
+            agencyCodes.put(data.getExchangeLocalTermReferenceId(), data.getExternalTerm());
+        }
+    }
+
+    /**
+     * get the analyte parameters for the tests in the valid analyses. Tries to
+     * find a parameter with a begin date before the current date and an end
+     * date after the current date. If one is not found, the first parameter is
+     * set for that analyte.
      */
     private void getAnalyteParameters(Set<Integer> testIds) throws Exception {
+        Calendar cal;
+        Datetime date;
         analyteParameters = new HashMap<Integer, AnalyteParameterViewDO>();
 
         if (testIds.size() < 1)
             return;
 
+        cal = Calendar.getInstance();
+        date = new Datetime(Datetime.YEAR, Datetime.SECOND, cal.getTime());
         for (Integer testId : testIds) {
-            for (AnalyteParameterViewDO data : analyteParameter.fetchActiveByReferenceIdReferenceTableId(testId,
-                                                                                                         Constants.table().TEST)) {
-                analyteParameters.put(data.getAnalyteId(), data);
+            for (AnalyteParameterViewDO data : analyteParameter.fetchByReferenceIdReferenceTableId(testId,
+                                                                                                   Constants.table().TEST)) {
+                if (DataBaseUtil.isAfter(date, data.getActiveBegin()) &&
+                    DataBaseUtil.isAfter(data.getActiveEnd(), date))
+                    analyteParameters.put(data.getAnalyteId(), data);
+                else if (analyteParameters.get(data.getAnalyteId()) == null) {
+                    analyteParameters.put(data.getAnalyteId(), data);
+                }
             }
         }
     }
@@ -2163,5 +2179,68 @@ public class AirQualityExportBean {
           .append(delim)
           .append(poc)
           .append(delim);
+    }
+
+    /**
+     * writes the strings to a file
+     */
+    private boolean writeFile(HashMap<String, ArrayList<String>> map, String fileName,
+                              String location) throws Exception {
+        boolean fileWritten;
+        File file;
+        BufferedWriter writer;
+
+        fileWritten = false;
+        for (String key : map.keySet()) {
+            fileWritten = true;
+            file = File.createTempFile(fileName + key + "_", ".txt", new File(location));
+            writer = new BufferedWriter(new FileWriter(file));
+            for (String s : map.get(key)) {
+                writer.write(s);
+                writer.newLine();
+            }
+
+            writer.close();
+        }
+        return fileWritten;
+    }
+
+    /**
+     * clears the global variables before the bean returns
+     */
+    private void clearVariables() {
+        ttdsDurationCode = null;
+        ttdsMethodCode = null;
+        ttdsParameterCode = null;
+        tnmocDurationCode = null;
+        tnmocMethodCode = null;
+        tnmocParameterCode = null;
+        pressureParameter = null;
+        pressureDurationCode = null;
+        pressureReportedUnit = null;
+        pressureMethodCode = null;
+        temperatureParameter = null;
+        temperatureDurationCode = null;
+        temperatureReportedUnit = null;
+        temperatureMethodCode = null;
+        metalLeadFilterLotBlank = null;
+        metalManganeseFilterLotBlank = null;
+        sulfateAnalytes = null;
+        nitrateAnalytes = null;
+        sectionMap = null;
+        analyteCodes = null;
+        unitCodes = null;
+        methodCodes = null;
+        durationCodes = null;
+        agencyCodes = null;
+        analyteParameters = null;
+        airToxicRawStrings = null;
+        airToxicPrecisionStrings = null;
+        metalRawStrings = null;
+        pressureStrings = null;
+        temperatureStrings = null;
+        metalLeadTest = null;
+        metalManganeseTest = null;
+        metalManganeseAccuracyTest = null;
     }
 }

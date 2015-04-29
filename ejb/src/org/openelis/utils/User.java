@@ -33,7 +33,7 @@ import javax.ejb.SessionContext;
  * context.
  */
 public class User {
-
+	
     /**
      * Returns the system user's login name associated with this context. Please
      * note that we concat username, sessionId, and locale on initial login and

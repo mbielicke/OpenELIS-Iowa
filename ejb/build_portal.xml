@@ -31,14 +31,15 @@
 	<jar jarfile="build/openelis.jar">
 		<fileset dir="bin">
 			<include name="org/openelis/bean/*.class" />
-			<include name="org/openelis/manager/*.class" />
-			<include name="org/openelis/entity/*.class" />
+            <include name="org/openelis/entity/*.class" />
 			<include name="org/openelis/local/*.class" />
-			<include name="org/openelis/report/**/*" />
+            <include name="org/openelis/manager/*.class" />
+            <include name="org/openelis/report/**/*" />
+            <include name="org/openelis/scriptlet/*.class" />
 			<include name="org/openelis/utils/*.class" />
-			<exclude name="org/openelis/report/**/*.jrxml" />
 			<include name="ehcache.xml" />
 			<include name="dataExchangeDefault.xsl" />
+            <exclude name="org/openelis/report/**/*.jrxml" />
 		</fileset>
 		<fileset dir="src/resources/">
 			<include name="META-INF/persistence.xml" />

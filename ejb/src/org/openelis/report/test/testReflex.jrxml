@@ -9,19 +9,18 @@
 		<defaultValueExpression><![CDATA["org/openelis/report/test/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     a.name a_name, d.entry d_entry, t.id t_id, xt.name xt_name, m.name m_name, tr.value tr_value,
-     d1.system_name d1_system_name
-FROM analyte a,  dictionary d, dictionary d1, test t, test xt, method m, test_analyte ta, test_reflex tx, test_result tr
-WHERE t.id = $P{TEST_ID} and
-      tx.test_id = t.id and
-      tx.test_analyte_id = ta.id and
-      ta.analyte_id = a.id and
-      tx.test_result_id = tr.id and
-      xt.id = tx.add_test_id and
-      xt.method_id = m.id and
-      tx.flags_id = d.id and
-      tr.type_id = d1.id]]>
+		<![CDATA[SELECT a.name as a_name, d.entry as d_entry, t.id as t_id, xt.name as xt_name, m.name as m_name,
+       tr.value as tr_value, d1.system_name as d1_system_name
+FROM   analyte a
+       join test_analyte ta on ta.analyte_id = a.id
+       join test_reflex tx on tx.test_analyte_id = ta.id
+       join test_result tr on tr.id = tx.test_result_id
+       join test t on t.id = tx.test_id
+       join test xt on xt.id = tx.add_test_id
+       join method m on m.id = xt.method_id
+       join dictionary d on d.id = tx.flags_id
+       join dictionary d1 on d1.id = tr.type_id
+WHERE t.id = $P{TEST_ID}]]>
 	</queryString>
 	<field name="a_name" class="java.lang.String"/>
 	<field name="d_entry" class="java.lang.String"/>

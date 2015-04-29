@@ -1056,7 +1056,7 @@ public class SampleManager1Bean {
          * Creating the default AnalysisReportFlags record to be added for each
          * analysis that is added to the database
          */
-        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
+        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, null, null);
 
         /*
          * this will be used as the released date for any newly released
@@ -1376,9 +1376,7 @@ public class SampleManager1Bean {
                                 id = amap.get(id);
                             if (id != null && !rmap.containsKey(data.getId())) {
                                 // sort order is per analysis. avoid updating
-                                // sort
-                                // order
-                                // if numbers are ascending
+                                // sort order if numbers are ascending
                                 so = seq.get(id);
                                 if (so == null)
                                     so = 1;
@@ -2398,8 +2396,8 @@ public class SampleManager1Bean {
                 if (anaByTest.get(a.getTestId()) == null &&
                     !Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId())) {
                     anaByTest.put(a.getTestId(), a);
-                    anaById.put(a.getId(), a);
                 }
+                anaById.put(a.getId(), a);
             }
         }
 

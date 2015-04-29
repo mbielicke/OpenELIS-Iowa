@@ -82,7 +82,10 @@ import org.openelis.utils.Auditable;
                                    + " from AuxData a, AuxField af, Analyte an, AuxFieldGroup afg"
                                    + " where a.auxFieldId = af.id and af.analyteId = an.id and af.auxFieldGroupId = afg.id"
                                    + " and a.referenceId in (:ids) and a.referenceTableId = :tableId and a.isReportable = 'Y'"
-                                   + " and a.value != null order by an.name")})
+                                   + " and a.value != null order by an.name"),
+               @NamedQuery(name = "AuxData.ReferenceCheckForField",
+                           query = "select distinct a.id " + " from AuxData a"
+                                   + " where a.auxFieldId = :id")})
 @Entity
 @Table(name = "aux_data")
 @EntityListeners({AuditUtil.class})
