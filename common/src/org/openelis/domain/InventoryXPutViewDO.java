@@ -38,8 +38,8 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
 
     protected Integer                 inventoryLocationInventoryItemId,
                     inventoryLocationStorageLocationId, inventoryLocationQuantityOnhand,
-                    inventoryLocationInventoryItemStoreId, inventoryReceiptOrderItemOrderId,
-                    inventoryReceiptOrderItemId;
+                    inventoryLocationInventoryItemStoreId, inventoryReceiptIorderItemIorderId,
+                    inventoryReceiptIorderItemId;
     protected Double                  inventoryReceiptUnitCost;
     protected String                  inventoryLocationLotNumber, inventoryItemName,
                     inventoryLocationStorageLocationName,
@@ -58,8 +58,8 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
                                Date expirationDate, String inventoryItemName,
                                Integer inventoryItemStoreId, String storageLocationName,
                                String storageLocationUnitDescription,
-                               String storageLocationLocation, Integer orderItemId, Date receivedDate, Double unitCost,
-                               String externalReference, Integer orderId) {
+                               String storageLocationLocation, Integer iorderItemId, Date receivedDate, Double unitCost,
+                               String externalReference, Integer iorderId) {
         super(id, inventoryReceiptId, inventoryLocationId, quantity);
         inventoryLocation = new InventoryLocationViewDO(inventoryLocationId,
                                                         inventoryItemId,
@@ -72,11 +72,11 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
                                                         storageLocationName,
                                                         storageLocationUnitDescription,
                                                         storageLocationLocation);
-        setInventoryReceiptOrderItemId(orderItemId);
+        setInventoryReceiptIorderItemId(iorderItemId);
         setInventoryReceiptReceivedDate(DataBaseUtil.toYD(receivedDate));
         setInventoryReceiptUnitCost(unitCost);
         setInventoryReceiptExternalReference(externalReference);
-        setInventoryReceiptOrderItemOrderId(orderId);
+        setInventoryReceiptIorderItemIorderId(iorderId);
 
     }
 
@@ -84,12 +84,12 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
         return inventoryLocation;
     }
     
-    public Integer getInventoryReceiptOrderItemId() {
-        return inventoryReceiptOrderItemId;
+    public Integer getInventoryReceiptIorderItemId() {
+        return inventoryReceiptIorderItemId;
     }
 
-    public void setInventoryReceiptOrderItemId(Integer inventoryReceiptOrderItemId) {
-        this.inventoryReceiptOrderItemId = inventoryReceiptOrderItemId;
+    public void setInventoryReceiptIorderItemId(Integer inventoryReceiptIorderItemId) {
+        this.inventoryReceiptIorderItemId = inventoryReceiptIorderItemId;
     }
 
     public Datetime getInventoryReceiptReceivedDate() {
@@ -116,12 +116,11 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
         this.inventoryReceiptExternalReference = DataBaseUtil.trim(externalReference);
     }
     
-    public Integer getInventoryReceiptOrderItemOrderId() {
-        return inventoryReceiptOrderItemOrderId;
+    public Integer getInventoryReceiptIorderItemIorderId() {
+        return inventoryReceiptIorderItemIorderId;
     }
 
-    public void setInventoryReceiptOrderItemOrderId(Integer inventoryReceiptOrderItemOrderId) {
-        this.inventoryReceiptOrderItemOrderId = inventoryReceiptOrderItemOrderId;
+    public void setInventoryReceiptIorderItemIorderId(Integer inventoryReceiptIorderItemIorderId) {
+        this.inventoryReceiptIorderItemIorderId = inventoryReceiptIorderItemIorderId;
     }
-
 }

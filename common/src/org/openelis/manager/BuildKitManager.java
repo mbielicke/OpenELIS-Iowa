@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.InventoryReceiptViewDO;
-import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.IOrderViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.NotFoundException;
 
@@ -39,7 +39,7 @@ public class BuildKitManager implements Serializable {
     protected Integer                               inventoryItemId;
     protected InventoryItemManager                  inventoryItem;
     protected InventoryReceiptViewDO                inventoryReceipt;
-    protected OrderViewDO                           order; 
+    protected IOrderViewDO                          iorder; 
 
     protected transient static BuildKitManagerProxy proxy;         
     /**
@@ -49,7 +49,7 @@ public class BuildKitManager implements Serializable {
         inventoryItemId = null;
         inventoryItem = null;
         inventoryReceipt = null;
-        order = null;
+        iorder = null;
     }
     
     /**
@@ -83,8 +83,8 @@ public class BuildKitManager implements Serializable {
         this.inventoryReceipt = inventoryReceipt;
     }
     
-    public OrderViewDO getOrder() {
-        return order;
+    public IOrderViewDO getIorder() {
+        return iorder;
     }
     
     public BuildKitManager add() throws Exception {

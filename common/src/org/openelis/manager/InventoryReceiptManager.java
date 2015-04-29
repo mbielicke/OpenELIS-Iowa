@@ -36,7 +36,7 @@ public class InventoryReceiptManager implements Serializable {
     private static final long                               serialVersionUID = 1L;
 
     protected ArrayList<InventoryReceiptViewDO>             receipts, deleted;
-    protected OrderManager                                  order;
+    protected IOrderManager                                  iorder;
 
     protected transient static InventoryReceiptManagerProxy proxy;
     
@@ -63,24 +63,24 @@ public class InventoryReceiptManager implements Serializable {
     }
     
     public InventoryReceiptManager fetchForUpdate() throws Exception {        
-        Integer orderId;
+        Integer iorderId;
         InventoryReceiptManager manager;
         InventoryReceiptViewDO data;
         
-        orderId = null;       
+        iorderId = null;       
         manager = null;        
         if (count() > 0) {
             data = getReceiptAt(0);
-            orderId = data.getOrderItemOrderId();
+            iorderId = data.getIorderItemIorderId();
         }
         
         //
-        // if orderId is not null, then this manager refers to an existing order
-        // and thus we need to lock that order; on the other hand if orderId is 
+        // if iorderId is not null, then this manager refers to an existing iorder
+        // and thus we need to lock that iorder; on the other hand if iorderId is 
         // null then this manager refers to some inventory receipt records that
-        // aren't linked to any order and thus we need to lock them individually 
+        // aren't linked to any iorder and thus we need to lock them individually 
         //
-        if (orderId == null) {
+        if (iorderId == null) {
             try {
                 manager = proxy().fetchForUpdate(this);
             } catch (NotFoundException e) {
@@ -89,12 +89,12 @@ public class InventoryReceiptManager implements Serializable {
                 throw e;
             }
         } else {
-            if(order == null) {
-                order = OrderManager.getInstance();
-                order.getOrder().setId(orderId);
+            if(iorder == null) {
+                iorder = IOrderManager.getInstance();
+                iorder.getIorder().setId(iorderId);
             }
             try {
-                order = order.fetchForUpdate();
+                iorder = iorder.fetchForUpdate();
                 manager = this;
             } catch (NotFoundException e) {
                 // ignore
@@ -107,8 +107,8 @@ public class InventoryReceiptManager implements Serializable {
     }  
             
     public InventoryReceiptManager abortUpdate() throws Exception {        
-        if(order != null && order.getOrder().getId() != null) 
-            order = order.abortUpdate();
+        if(iorder != null && iorder.getIorder().getId() != null) 
+            iorder = iorder.abortUpdate();
                 
         return this;
     }
@@ -167,16 +167,16 @@ public class InventoryReceiptManager implements Serializable {
     //
     // other managers
     //    
-    public OrderManager getOrder() throws Exception {
+    public IOrderManager getIorder() throws Exception {
         InventoryReceiptViewDO data;
-        Integer orderId;
+        Integer iorderId;
         
-        if (order == null && count() > 0) {
+        if (iorder == null && count() > 0) {
             data = getReceiptAt(0);
-            orderId = data.getOrderItemOrderId();
-            if (orderId != null) {
+            iorderId = data.getIorderItemIorderId();
+            if (iorderId != null) {
                 try {
-                    order = OrderManager.fetchById(orderId);
+                    iorder = IOrderManager.fetchById(iorderId);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -184,7 +184,7 @@ public class InventoryReceiptManager implements Serializable {
                 }
             }
         }
-        return order;
+        return iorder;
     }       
     
     ArrayList<InventoryReceiptViewDO> getReceipts() {
@@ -211,5 +211,4 @@ public class InventoryReceiptManager implements Serializable {
         
         return proxy;
     }
-
 }
