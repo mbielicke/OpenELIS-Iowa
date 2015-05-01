@@ -42,8 +42,8 @@
       <dependency org="org.openelis" name="security" rev="latest.integration"/>
       -->
 
-	  <dependency org="com.google.dagger" name="dagger" rev="2.0-SNAPSHOT" />
-	  <dependency org="com.google.dagger" name="dagger-compiler" rev="2.0-SNAPSHOT" />
+	  <dependency org="com.google.dagger" name="dagger" rev="2.0" />
+	  <dependency org="com.google.dagger" name="dagger-compiler" rev="2.0" />
 	  
       <!-- This is needed for jenkins -->
       <dependency org="org.slf4j" name="slf4j-api" rev="1.7.7"/>
