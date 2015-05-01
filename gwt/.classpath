@@ -16,7 +16,7 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/tschmidt/Downloads/dagger-2.0-20150212.192445-15-sources.jar"/>
+	<classpathentry kind="lib" path="/home/tschmidt/Downloads/dagger-2.0-sources.jar"/>
 	<classpathentry kind="lib" path="/home/tschmidt/Downloads/javax.inject-1-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

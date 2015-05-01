@@ -11,7 +11,7 @@ import dagger.Component;
 @Singleton
 public interface Screens {
 	
-	static final Screens INSTANCE = Dagger_Screens.builder().screensModule(new ScreensModule()).build();
+	static final Screens INSTANCE = DaggerScreens.builder().screensModule(new ScreensModule()).build();
 	
 	MethodPresenter method();
 	
