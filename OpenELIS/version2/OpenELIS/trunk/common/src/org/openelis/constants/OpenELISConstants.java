@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/bin/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   
@@ -104,6 +104,15 @@ public interface OpenELISConstants extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Abbreviation")
   @Key("abbr")
   String abbr();
+
+  /**
+   * Translated "Abnormals Report".
+   * 
+   * @return translated "Abnormals Report"
+   */
+  @DefaultMessage("Abnormals Report")
+  @Key("abnormals.abnormalsReport")
+  String abnormals_abnormalsReport();
 
   /**
    * Translated "Abort".
