@@ -826,6 +826,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   String gen_dateTimePattern();
 
   /**
+   * Translated "Description".
+   * 
+   * @return translated "Description"
+   */
+  @DefaultMessage("Description")
+  @Key("gen.description")
+  String gen_description();
+
+  /**
    * Translated "Fetching samples....".
    * 
    * @return translated "Fetching samples...."
@@ -842,6 +851,15 @@ public interface PortalMessages extends org.openelis.ui.messages.UIMessages {
   @DefaultMessage("Generating report....")
   @Key("gen.genReportMessage")
   String gen_genReportMessage();
+
+  /**
+   * Translated "Name".
+   * 
+   * @return translated "Name"
+   */
+  @DefaultMessage("Name")
+  @Key("gen.name")
+  String gen_name();
 
   /**
    * Translated "NO".
