@@ -39,7 +39,7 @@ import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/openelis/analyte1")
-public class AnalyteService1Impl extends RemoteServlet implements AnalyteService1 {
+public class AnalyteServlet1 extends RemoteServlet implements AnalyteService1 {
 
     private static final long serialVersionUID = 1L;
 

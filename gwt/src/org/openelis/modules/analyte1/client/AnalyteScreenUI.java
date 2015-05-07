@@ -134,7 +134,7 @@ public class AnalyteScreenUI extends Screen {
 
     private AsyncCallbackUI<AnalyteViewDO>         fetchForUpdateCall, fetchByIdCall, unlockCall;
 
-    private AsyncCallbackUI<AnalyteDO>             updateCall;
+    private AsyncCallbackUI<AnalyteDO>             updateCall, addCall;
 
     public AnalyteScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -547,7 +547,7 @@ public class AnalyteScreenUI extends Screen {
                 commitQuery();
                 break;
             case ADD:
-                commitUpdate();
+                commitAdd();
                 break;
             case UPDATE:
                 commitUpdate();
@@ -563,11 +563,35 @@ public class AnalyteScreenUI extends Screen {
         nav.setQuery(query);
     }
 
+    protected void commitAdd() {
+        setBusy(Messages.get().gen_adding());
+
+        if (addCall == null) {
+            addCall = new AsyncCallbackUI<AnalyteDO>() {
+                public void success(AnalyteDO result) {
+                    data = (AnalyteViewDO)result;
+                    setState(DISPLAY);
+                    fireDataChange();
+                    clearStatus();
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                }
+
+                public void failure(Throwable e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    Window.alert("commitAdd(): " + e.getMessage());
+                    clearStatus();
+                }
+            };
+        }
+
+        service.add(data, addCall);
+    }
+
     protected void commitUpdate() {
-        if (isState(ADD))
-            setBusy(Messages.get().gen_adding());
-        else
-            setBusy(Messages.get().gen_updating());
+        setBusy(Messages.get().gen_updating());
 
         if (updateCall == null) {
             updateCall = new AsyncCallbackUI<AnalyteDO>() {
@@ -584,10 +608,7 @@ public class AnalyteScreenUI extends Screen {
 
                 public void failure(Throwable e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
-                    if (isState(ADD))
-                        Window.alert("commitAdd(): " + e.getMessage());
-                    else
-                        Window.alert("commitUpdate(): " + e.getMessage());
+                    Window.alert("commitUpdate(): " + e.getMessage());
                     clearStatus();
                 }
             };

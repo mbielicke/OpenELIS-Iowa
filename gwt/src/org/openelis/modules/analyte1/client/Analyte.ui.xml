@@ -106,7 +106,7 @@
 									<ui:text from="{msg.gen_name}:" />
 								</td>
 								<td>
-									<w:TextBox ui:field="name" width="350px" field="String"
+									<w:TextBox ui:field="name" width="400px" field="String"
 										required="true" maxLength="60" />
 								</td>
 							</tr>
@@ -116,7 +116,7 @@
 								</td>
 								<td>
 									<w:AutoComplete ui:field="parentAnalyte" case="MIXED"
-										width="184px" dropWidth="300px">
+										width="400px" dropWidth="400px">
 										<w:popup>
 											<t:Table visibleRows="10" header="false">
 												<t:Column width="300">
@@ -132,7 +132,7 @@
 									<ui:text from="{msg.provider_externalId}:" />
 								</td>
 								<td>
-									<w:TextBox ui:field="externalId" width="150px" field="String"
+									<w:TextBox ui:field="externalId" width="200px" field="String"
 										maxLength="20" required="true" />
 								</td>
 							</tr>
