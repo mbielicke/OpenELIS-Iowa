@@ -106,7 +106,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td class="{res.style.Prompt}">
+								<td class="{res.style.Prompt}" valign="top">
 									<ui:text from="{msg.gen_description}:" />
 								</td>
 								<td>
@@ -115,7 +115,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td class="{res.style.Prompt}">
+								<td class="{res.style.Prompt}" valign="top">
 									<ui:text from="{msg.gen_value}:" />
 								</td>
 								<td>

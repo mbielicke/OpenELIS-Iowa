@@ -121,7 +121,7 @@ public class SystemVariableScreenUI extends Screen {
     protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
     protected AsyncCallbackUI<SystemVariableDO>    fetchForUpdateCall, fetchByIdCall, updateCall,
-                    unlockCall;
+                    addCall, unlockCall;
 
     protected SystemVariableScreenUI               screen;
 
@@ -273,8 +273,10 @@ public class SystemVariableScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY, ADD, UPDATE));
-                description.setQueryMode(isState(QUERY));
+                // TODO
+                // description.setEnabled(isState(QUERY, ADD, UPDATE));
+                description.setEnabled(false);
+                // description.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
@@ -344,7 +346,7 @@ public class SystemVariableScreenUI extends Screen {
                         }
                     };
                 }
-                query.setRowsPerPage(14);
+                query.setRowsPerPage(15);
                 service.query(query, queryCall);
             }
 
@@ -526,7 +528,7 @@ public class SystemVariableScreenUI extends Screen {
                 commitQuery();
                 break;
             case ADD:
-                commitUpdate();
+                commitAdd();
                 break;
             case UPDATE:
                 commitUpdate();
@@ -545,11 +547,35 @@ public class SystemVariableScreenUI extends Screen {
         nav.setQuery(query);
     }
 
+    protected void commitAdd() {
+        setBusy(Messages.get().gen_adding());
+
+        if (addCall == null) {
+            addCall = new AsyncCallbackUI<SystemVariableDO>() {
+                public void success(SystemVariableDO result) {
+                    data = result;
+                    setState(DISPLAY);
+                    fireDataChange();
+                    clearStatus();
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                }
+
+                public void failure(Throwable e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    Window.alert("commitAdd(): " + e.getMessage());
+                    clearStatus();
+                }
+            };
+        }
+
+        service.add(data, addCall);
+    }
+
     protected void commitUpdate() {
-        if (isState(ADD))
-            setBusy(Messages.get().gen_adding());
-        else
-            setBusy(Messages.get().gen_updating());
+        setBusy(Messages.get().gen_updating());
 
         if (updateCall == null) {
             updateCall = new AsyncCallbackUI<SystemVariableDO>() {
@@ -566,10 +592,7 @@ public class SystemVariableScreenUI extends Screen {
 
                 public void failure(Throwable e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
-                    if (isState(ADD))
-                        Window.alert("commitAdd(): " + e.getMessage());
-                    else
-                        Window.alert("commitUpdate(): " + e.getMessage());
+                    Window.alert("commitUpdate(): " + e.getMessage());
                     clearStatus();
                 }
             };
